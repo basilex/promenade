@@ -1,0 +1,86 @@
+package postgres
+
+import (
+    "context"
+    "database/sql"
+    
+    "github.com/google/uuid"
+    "github.com/jmoiron/sqlx"
+    "__MODULE__/internal/domain/entity"
+    "__MODULE__/internal/domain/repository"
+)
+
+type __entity__Repository struct {
+    *BaseRepository
+}
+
+func New__ENTITY__Repository(db *sqlx.DB) repository.__ENTITY__Repository {
+    return &__entity__Repository{
+        BaseRepository: NewBaseRepository(db),
+    }
+}
+
+func (r *__entity__Repository) Create(ctx context.Context, __entity__ *entity.__ENTITY__) error {
+    query := `
+        INSERT INTO __entity_snake__s (id, name, active, created_at, updated_at)
+        VALUES (:id, :name, :active, NOW(), NOW())
+    `
+    return r.NamedExec(ctx, query, __entity__)
+}
+
+func (r *__entity__Repository) GetByID(ctx context.Context, id uuid.UUID) (*entity.__ENTITY__, error) {
+    var __entity__ entity.__ENTITY__
+    query := `
+        SELECT id, name, active, created_at, updated_at
+        FROM __entity_snake__s
+        WHERE id = $1
+    `
+    
+    err := r.Get(ctx, &__entity__, query, id)
+    if err == sql.ErrNoRows {
+        return nil, entity.Err__ENTITY__NotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    
+    return &__entity__, nil
+}
+
+func (r *__entity__Repository) Update(ctx context.Context, __entity__ *entity.__ENTITY__) error {
+    query := `
+        UPDATE __entity_snake__s
+        SET name = :name, active = :active, updated_at = NOW()
+        WHERE id = :id
+    `
+    return r.NamedExec(ctx, query, __entity__)
+}
+
+func (r *__entity__Repository) Delete(ctx context.Context, id uuid.UUID) error {
+    query := `DELETE FROM __entity_snake__s WHERE id = $1`
+    return r.Exec(ctx, query, id)
+}
+
+func (r *__entity__Repository) List(ctx context.Context, limit, offset int) ([]*entity.__ENTITY__, error) {
+    var __entity_plural__ []*entity.__ENTITY__
+    query := `
+        SELECT id, name, active, created_at, updated_at
+        FROM __entity_snake__s
+        ORDER BY created_at DESC
+        LIMIT $1 OFFSET $2
+    `
+    
+    err := r.Select(ctx, &__entity_plural__, query, limit, offset)
+    if err != nil {
+        return nil, err
+    }
+    
+    return __entity_plural__, nil
+}
+
+func (r *__entity__Repository) Count(ctx context.Context) (int, error) {
+    var count int
+    query := `SELECT COUNT(*) FROM __entity_snake__s`
+    err := r.Get(ctx, &count, query)
+    return count, err
+}

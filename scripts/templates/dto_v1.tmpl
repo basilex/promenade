@@ -1,0 +1,38 @@
+package dto
+
+import (
+    "time"
+    "github.com/google/uuid"
+    "__MODULE__/internal/domain/entity"
+)
+
+type __ENTITY__Response struct {
+    ID        uuid.UUID `json:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
+    Name      string    `json:"name" example:"Sample __ENTITY__"`
+    Active    bool      `json:"active" example:"true"`
+    CreatedAt time.Time `json:"created_at" example:"2024-01-15T10:30:00Z"`
+}
+
+type Create__ENTITY__Request struct {
+    Name string `json:"name" binding:"required,min=2,max=255" example:"Sample __ENTITY__"`
+}
+
+type Update__ENTITY__Request struct {
+    Name   string `json:"name" binding:"omitempty,min=2,max=255" example:"Updated __ENTITY__"`
+    Active *bool  `json:"active" example:"true"`
+}
+
+type List__ENTITY__sResponse struct {
+    __ENTITY__s []*__ENTITY__Response `json:"__entity_plural__"`
+    Total   int                  `json:"total" example:"100"`
+    Page    int                  `json:"page" example:"1"`
+}
+
+func To__ENTITY__Response(__entity__ *entity.__ENTITY__) *__ENTITY__Response {
+    return &__ENTITY__Response{
+        ID:        __entity__.ID,
+        Name:      __entity__.Name,
+        Active:    __entity__.Active,
+        CreatedAt: __entity__.CreatedAt,
+    }
+}

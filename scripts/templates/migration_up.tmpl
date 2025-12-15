@@ -1,0 +1,16 @@
+CREATE TABLE __entity_snake__s (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx___entity_snake__s_name ON __entity_snake__s(name);
+CREATE INDEX idx___entity_snake__s_active ON __entity_snake__s(active);
+CREATE INDEX idx___entity_snake__s_created_at ON __entity_snake__s(created_at DESC);
+
+CREATE TRIGGER update___entity_snake__s_updated_at
+    BEFORE UPDATE ON __entity_snake__s
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();

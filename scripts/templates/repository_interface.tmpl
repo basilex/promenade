@@ -1,0 +1,16 @@
+package repository
+
+import (
+    "context"
+    "github.com/google/uuid"
+    "__MODULE__/internal/domain/entity"
+)
+
+type __ENTITY__Repository interface {
+    Create(ctx context.Context, __entity__ *entity.__ENTITY__) error
+    GetByID(ctx context.Context, id uuid.UUID) (*entity.__ENTITY__, error)
+    Update(ctx context.Context, __entity__ *entity.__ENTITY__) error
+    Delete(ctx context.Context, id uuid.UUID) error
+    List(ctx context.Context, limit, offset int) ([]*entity.__ENTITY__, error)
+    Count(ctx context.Context) (int, error)
+}
