@@ -53,15 +53,22 @@ cd promenade
 2. Install dependencies:
 ```bash
 go mod download
+# or using make
+make deps
 ```
 
-3. Build the application:
+3. Build and run the application:
+```bash
+# Build only
+make build
+
+# Build and run
+make run
+```
+
+Or manually:
 ```bash
 go build -o bin/promenade ./cmd/server
-```
-
-4. Run the server:
-```bash
 ./bin/promenade
 ```
 
@@ -113,13 +120,44 @@ curl -X DELETE http://localhost:8080/api/resources/{id}
 
 ### Run Tests
 ```bash
+# Using make
+make test
+
+# Or directly
 go test ./... -v
 ```
 
 ### Run Tests with Coverage
 ```bash
+# Using make
+make test-coverage
+
+# Or directly
 go test ./... -cover
 ```
+
+### Code Quality Checks
+```bash
+# Run all checks (format, vet, test)
+make check
+
+# Format code
+make fmt
+
+# Vet code
+make vet
+```
+
+### Makefile Commands
+- `make build` - Build the application
+- `make run` - Build and run the application
+- `make test` - Run tests
+- `make test-coverage` - Run tests with coverage
+- `make fmt` - Format code
+- `make vet` - Vet code
+- `make check` - Run all checks
+- `make clean` - Clean build artifacts
+- `make deps` - Install dependencies
 
 ### Project Structure
 ```
