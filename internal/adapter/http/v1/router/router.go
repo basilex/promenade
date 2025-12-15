@@ -10,17 +10,20 @@ import (
 type V1Router struct {
 	authHandler    *handler.AuthHandler
 	productHandler *handler.ProductHandler
+	roleHandler    *handler.RoleHandler
 	authMiddleware *middleware.AuthMiddleware
 }
 
 func NewV1Router(
 	authHandler *handler.AuthHandler,
 	productHandler *handler.ProductHandler,
+	roleHandler *handler.RoleHandler,
 	authMiddleware *middleware.AuthMiddleware,
 ) *V1Router {
 	return &V1Router{
 		authHandler:    authHandler,
 		productHandler: productHandler,
+		roleHandler:    roleHandler,
 		authMiddleware: authMiddleware,
 	}
 }
@@ -61,5 +64,16 @@ func (r *V1Router) Setup(rg *gin.RouterGroup) {
 		products.GET("", r.productHandler.List)
 		products.PUT("/:id", r.productHandler.Update)
 		products.DELETE("/:id", r.productHandler.Delete)
+	}
+
+	// Role routes (защищенные)
+	roles := v1.Group("/roles")
+	roles.Use(r.authMiddleware.RequireAuth())
+	{
+		roles.POST("", r.roleHandler.Create)
+		roles.GET("/:id", r.roleHandler.GetByID)
+		roles.GET("", r.roleHandler.List)
+		roles.PUT("/:id", r.roleHandler.Update)
+		roles.DELETE("/:id", r.roleHandler.Delete)
 	}
 }

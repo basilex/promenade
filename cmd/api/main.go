@@ -52,14 +52,17 @@ func main() {
 	// Initialize repositories
 	userRepo := postgres.NewUserRepository(db)
 	productRepo := postgres.NewProductRepository(db)
+	roleRepo := postgres.NewRoleRepository(db)
 
 	// Initialize use cases
 	authUseCase := usecase.NewAuthUseCase(userRepo, jwtManager)
 	productUseCase := usecase.NewProductUseCase(productRepo, txManager)
+	roleUseCase := usecase.NewRoleUseCase(roleRepo, txManager)
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authUseCase)
 	productHandler := handler.NewProductHandler(productUseCase)
+	roleHandler := handler.NewRoleHandler(roleUseCase)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -90,7 +93,10 @@ func main() {
 	api := r.Group("/api")
 
 	// V1 Router
-	v1Router := router.NewV1Router(authHandler, productHandler, authMiddleware)
+	v1Router := router.NewV1Router(
+		authHandler, productHandler, roleHandler,
+		authMiddleware,
+	)
 	v1Router.Setup(api)
 
 	// Start server

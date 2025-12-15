@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
+
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/internal/domain/repository"
 	"github.com/basilex/promenade/pkg/jwt"
-	"github.com/google/uuid"
 )
 
 var (

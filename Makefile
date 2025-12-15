@@ -85,7 +85,7 @@ docker-logs: ## View Docker logs
 docker-build: ## Build Docker image
 	docker build -f docker/Dockerfile -t $(APP_NAME):latest .
 
-migrate-create: ## Create new migration (usage: make migrate-create NAME=create_users)
+migrate-create: ## Create new migration (usage: make migrate-create NAME=create_users_table)
 	@if [ -z "$(NAME)" ]; then \
 		echo "Error: NAME is required.  Usage: make migrate-create NAME=create_users"; \
 		exit 1; \
@@ -120,7 +120,7 @@ swagger-v1: ## Generate Swagger docs for API v1
 		--instanceName v1 \
 		--parseDependency \
 		--parseInternal \
-		--dir ./,./internal/adapter/http/v1 \
+		--dir ./internal/adapter/http/v1 \
 		-o docs/v1
 
 swagger-v2: ## Generate Swagger docs for API v2
@@ -128,11 +128,11 @@ swagger-v2: ## Generate Swagger docs for API v2
 		--instanceName v2 \
 		--parseDependency \
 		--parseInternal \
-		--dir ./,./internal/adapter/http/v2 \
+		--dir ./internal/adapter/http/v2 \
 		-o docs/v2
 
 swagger-all: swagger-v1 swagger-v2 ## Generate all Swagger documentation
-	@echo "✅ Swagger documentation generated"
+	@echo "Swagger documentation generated"
 
 lint: ## Run Go linter
 	golangci-lint run
@@ -155,7 +155,7 @@ generate: ## Generate entity (usage: make generate ENTITY=Product)
 generate-interactive: ## Interactive entity generator
 	./scripts/generate-interactive.sh
 
-gen:  generate ## Alias for generate command
+gen: generate ## Alias for generate command
 
 config-show: ## Show current configuration values
 	@echo "========================================="

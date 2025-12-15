@@ -18,6 +18,12 @@ func Success(c *gin.Context, code int, data any) {
 	})
 }
 
+type ErrorResponse struct {
+	Success bool   `json:"success" example:"false"`
+	Message string `json:"message" example:"Error message"`
+	Error   string `json:"error" example:"Detailed error"`
+}
+
 func Error(c *gin.Context, code int, message string, err error) {
 	errMsg := ""
 	if err != nil {
@@ -29,10 +35,4 @@ func Error(c *gin.Context, code int, message string, err error) {
 		Message: message,
 		Error:   errMsg,
 	})
-}
-
-type ErrorResponse struct {
-	Success bool   `json:"success" example:"false"`
-	Message string `json:"message" example:"Error message"`
-	Error   string `json:"error" example:"Detailed error"`
 }
