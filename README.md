@@ -1,6 +1,4 @@
-# Promenade
-
-## MyRestAPI - Clean Architecture REST API
+# Promenade - Clean Architecture REST API
 
 Production-ready REST API with Clean Architecture, PostgreSQL, JWT authentication, and API versioning.
 
@@ -28,9 +26,9 @@ make dev
 
 ## Access
 
-API: http://localhost:8081
-Swagger V1: http://localhost:8081/swagger/v1/index.html
-Swagger V2: http://localhost:8081/swagger/v2/index.html
+- API: http://localhost:8081
+- Swagger V1: http://localhost:8081/swagger/v1/index.html
+- Swagger V2: http://localhost:8081/swagger/v2/index.html
 
 ## Documentation
 
@@ -77,18 +75,18 @@ Infrastructure Layer: Frameworks and drivers (Database, Config)
 
 ### Key Features
 
-✅ Clean Architecture with clear separation of concerns
-✅ API Versioning (v1, v2) with backward compatibility
-✅ JWT Authentication
-✅ Rate Limiting
-✅ PostgreSQL with sqlx (no ORM!)
-✅ Transaction support
-✅ Swagger documentation
-✅ Comprehensive middleware (auth, logging, recovery, CORS)
-✅ Unit, integration, and E2E tests
-✅ Docker support
-✅ Database migrations
-✅ Graceful shutdown
+- Clean Architecture with clear separation of concerns
+- API Versioning (v1, v2) with backward compatibility
+- JWT Authentication
+- Rate Limiting
+- PostgreSQL with sqlx (no ORM!)
+- Transaction support
+- Swagger documentation
+- Comprehensive middleware (auth, logging, recovery, CORS)
+- Unit, integration, and E2E tests
+- Docker support
+- Database migrations
+- Graceful shutdown
 
 ### Configuration
 
@@ -166,11 +164,11 @@ curl -X GET http://localhost:8081/api/v2/users/{id} \
 
 ### Contributing
 
-Fork the repository
-Create your feature branch (git checkout -b feature/amazing-feature)
-Commit your changes (git commit -m 'Add amazing feature')
-Push to the branch (git push origin feature/amazing-feature)
-Open a Pull Request
+- Fork the repository
+- Create your feature branch (git checkout -b feature/amazing-feature)
+- Commit your changes (git commit -m 'Add amazing feature')
+- Push to the branch (git push origin feature/amazing-feature)
+- Open a Pull Request
 
 ### License
 
