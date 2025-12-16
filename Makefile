@@ -108,7 +108,8 @@ swagger-v1: ## Generate Swagger docs for API v1
 		--instanceName v1 \
 		--parseDependency \
 		--parseInternal \
-		--dir ./internal/adapter/http/v1 \
+		--dir . \
+		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker" \
 		-o docs/v1
 
 swagger-v2: ## Generate Swagger docs for API v2
@@ -116,7 +117,8 @@ swagger-v2: ## Generate Swagger docs for API v2
 		--instanceName v2 \
 		--parseDependency \
 		--parseInternal \
-		--dir ./internal/adapter/http/v2 \
+		--dir . \
+		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker,internal/adapter/http/v1" \
 		-o docs/v2
 
 swagger-all: swagger-v1 swagger-v2 ## Generate all Swagger documentation

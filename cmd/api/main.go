@@ -13,6 +13,9 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
@@ -21,13 +24,16 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/logger"
+
+	// Import swagger docs
+	_ "github.com/basilex/promenade/docs/v1"
+	_ "github.com/basilex/promenade/docs/v2"
 )
 
 func main() {
 	// Load config first (before logger init)
 	cfg, err := config.Load()
 	if err != nil {
-		// Use basic logger since structured logger not yet initialized
 		slog.Error("Failed to load config", slog.Any("error", err))
 		os.Exit(1)
 	}
@@ -119,9 +125,31 @@ func main() {
 	// API routes
 	api := r.Group("/api")
 
-	// V1 Router (aggregates all module routers)
-	v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter)
-	v1Router.Setup(api)
+	// API v1
+	v1 := api.Group("/v1")
+	{
+		// Swagger UI for v1
+		v1.GET("/docs/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.InstanceName("v1"),
+			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
+
+		// V1 API endpoints
+		v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter)
+		v1Router.Setup(v1)
+	}
+
+	// API v2 (future)
+	v2 := api.Group("/v2")
+	{
+		// Swagger UI for v2
+		v2.GET("/docs/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.InstanceName("v2"),
+			ginSwagger.URL("/api/v2/docs/swagger/doc.json")))
+
+		// V2 API endpoints will be registered here
+		// v2Router := router.NewV2Router(...)
+		// v2Router.Setup(v2)
+	}
 
 	// Start server
 	srv := &http.Server{

@@ -34,6 +34,12 @@ type ErrorResponse struct {
 	Error   string `json:"error" example:"Detailed error"`
 }
 
+type SuccessResponse struct {
+	Success bool   `json:"success" example:"true"`
+	Message string `json:"message" example:"Operation completed successfully"`
+	Data    any    `json:"data,omitempty"`
+}
+
 func Error(c *gin.Context, code int, message string, err error) {
 	errMsg := ""
 	if err != nil {
