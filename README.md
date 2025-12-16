@@ -11,7 +11,7 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - Integration tests with isolated test database (29 tests, 100% passing)
+- 🧪 **Comprehensive Testing** - 54 tests across all layers (entity, integration, config, handler) - 100% passing
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -63,9 +63,9 @@ make test-integration
 
 ## 📡 API Access
 
-- **API Base URL**: http://localhost:8081
-- **Swagger v1**: http://localhost:8081/swagger/v1/index.html
-- **Swagger v2**: http://localhost:8081/swagger/v2/index.html
+- **API Base URL**: http://localhost:8081/api/v1
+- **Swagger v1**: http://localhost:8081/api/v1/docs/swagger/index.html
+- **Swagger v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 - **Health Check**: http://localhost:8081/health
 
 ## 📚 Documentation

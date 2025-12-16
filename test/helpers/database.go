@@ -43,7 +43,7 @@ func SetupTestDB(t *testing.T) *TestDB {
 // Close closes the test database connection
 func (tdb *TestDB) Close() {
 	if tdb.DB != nil {
-		tdb.DB.Close()
+		_ = tdb.DB.Close()
 	}
 }
 
@@ -68,7 +68,7 @@ func (tdb *TestDB) RunInTransaction(t *testing.T, fn func(tx *sqlx.Tx)) {
 	tx, err := tdb.DB.Beginx()
 	require.NoError(t, err, "Failed to begin transaction")
 
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	fn(tx)
 }

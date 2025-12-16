@@ -66,7 +66,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to connect to database", slog.Any("error", err))
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.Error("Failed to close database connection", slog.Any("error", err))
+		}
+	}()
 
 	// Initialize JWT Manager
 	jwtManager := jwtpkg.NewJWTManager(
