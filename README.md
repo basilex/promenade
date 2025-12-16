@@ -11,7 +11,7 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 74 tests across all layers (19 entity, 13 integration, 4 config, 21 handler, 11 JWT, 6 other) - 100% passing
+- 🧪 **Comprehensive Testing** - 117 tests across all layers (67 handler, 19 entity, 13 integration, 11 JWT, 7 UUID) - 100% passing
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support

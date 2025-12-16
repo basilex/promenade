@@ -12,10 +12,10 @@ import (
 )
 
 type CountryHandler struct {
-	countryUseCase *usecase.CountryUseCase
+	countryUseCase usecase.CountryUseCase
 }
 
-func NewCountryHandler(countryUseCase *usecase.CountryUseCase) *CountryHandler {
+func NewCountryHandler(countryUseCase usecase.CountryUseCase) *CountryHandler {
 	return &CountryHandler{
 		countryUseCase: countryUseCase,
 	}
