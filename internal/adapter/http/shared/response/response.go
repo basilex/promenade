@@ -1,6 +1,8 @@
 package response
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,6 +11,14 @@ type Response struct {
 	Message string `json:"message,omitempty"`
 	Data    any    `json:"data,omitempty"`
 	Error   string `json:"error,omitempty"`
+}
+
+type PaginatedResponse struct {
+	Items      any `json:"items"`
+	Page       int `json:"page"`
+	PageSize   int `json:"page_size"`
+	Total      int `json:"total"`
+	TotalPages int `json:"total_pages"`
 }
 
 func Success(c *gin.Context, code int, data any) {
@@ -35,4 +45,41 @@ func Error(c *gin.Context, code int, message string, err error) {
 		Message: message,
 		Error:   errMsg,
 	})
+}
+
+// GetPageFromQuery gets page number from query params
+func GetPageFromQuery(c *gin.Context) int {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	return page
+}
+
+// GetPageSizeFromQuery gets page size from query params
+func GetPageSizeFromQuery(c *gin.Context) int {
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
+	if pageSize < 1 {
+		pageSize = 20
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+	return pageSize
+}
+
+// NewPaginatedResponse creates a new paginated response
+func NewPaginatedResponse(items any, page, pageSize, total int) PaginatedResponse {
+	totalPages := total / pageSize
+	if total%pageSize > 0 {
+		totalPages++
+	}
+
+	return PaginatedResponse{
+		Items:      items,
+		Page:       page,
+		PageSize:   pageSize,
+		Total:      total,
+		TotalPages: totalPages,
+	}
 }

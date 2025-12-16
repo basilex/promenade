@@ -40,4 +40,4 @@ END;
 $$ language 'plpgsql';
 
 COMMENT ON FUNCTION tfn_entity_updated_at() IS 
-'Trigger function to automatically update updated_at timestamp on row modification';
+    'Trigger function to automatically update updated_at timestamp on row modification';

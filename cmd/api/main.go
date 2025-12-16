@@ -9,8 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
+
+	jwtpkg "github.com/basilex/promenade/pkg/jwt"
+	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
 	"github.com/basilex/promenade/internal/adapter/http/v1/router"
@@ -52,6 +56,8 @@ func main() {
 
 	// Initialize modules (each module encapsulates its own dependencies)
 	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
+	countryRouter := router.InitCountryModule(db)
+	currencyRouter := router.InitCurrencyModule(db)
 	// Future modules:
 	// rbacRouter := router.InitRBACModule(db, authMiddleware)
 	// profileRouter := router.InitProfileModule(db, authMiddleware, cache)
@@ -63,6 +69,13 @@ func main() {
 	}
 
 	r := gin.New()
+
+	// Register custom validators
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		if err := validatorpkg.RegisterCustomValidators(v); err != nil {
+			log.Fatalf("Failed to register custom validators: %v", err)
+		}
+	}
 
 	// Global middleware
 	r.Use(middleware.Recovery())
@@ -83,7 +96,7 @@ func main() {
 	api := r.Group("/api")
 
 	// V1 Router (aggregates all module routers)
-	v1Router := router.NewV1Router(authRouter)
+	v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter)
 	v1Router.Setup(api)
 
 	// Start server

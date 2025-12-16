@@ -73,6 +73,7 @@ make test-integration
 
 - [Testing Guide](docs/TESTING_GUIDE.md) - Comprehensive testing setup and best practices
 - [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test infrastructure overview
+- [Validation](docs/VALIDATION.md) - Multi-layer validation strategy and best practices
 - [UUID v7 Migration](docs/UUID_V7_MIGRATION.md) - Migrating from UUID v4 to v7
 - [ID Strategies](docs/ID_STRATEGIES.md) - Primary key strategy recommendations
 - [Auth Schema](docs/AUTH_SCHEMA.md) - Database schema for authentication system
