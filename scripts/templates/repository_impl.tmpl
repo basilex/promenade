@@ -4,9 +4,9 @@ import (
     "context"
     "database/sql"
     
-    "github.com/google/uuid"
     "github.com/jmoiron/sqlx"
 
+    "__MODULE__/pkg/uuidv7"
     "__MODULE__/internal/domain/entity"
     "__MODULE__/internal/domain/repository"
 )
@@ -29,7 +29,7 @@ func (r *__entity__Repository) Create(ctx context.Context, __entity__ *entity.__
     return r.NamedExec(ctx, query, __entity__)
 }
 
-func (r *__entity__Repository) GetByID(ctx context.Context, id uuid.UUID) (*entity.__ENTITY__, error) {
+func (r *__entity__Repository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.__ENTITY__, error) {
     var __entity__ entity.__ENTITY__
     query := `
         SELECT id, name, active, created_at, updated_at

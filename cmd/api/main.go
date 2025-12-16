@@ -13,12 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
-	"github.com/basilex/promenade/internal/adapter/http/v1/handler"
 	"github.com/basilex/promenade/internal/adapter/http/v1/router"
-	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
-	"github.com/basilex/promenade/internal/usecase"
 )
 
 func main() {
@@ -48,26 +45,19 @@ func main() {
 
 	// Initialize infrastructure
 	txManager := database.NewTransactionManager(db)
+	_ = txManager // Reserved for future use
 
-	// Initialize repositories
-	userRepo := postgres.NewUserRepository(db)
-	productRepo := postgres.NewProductRepository(db)
-	roleRepo := postgres.NewRoleRepository(db)
-
-	// Initialize use cases
-	authUseCase := usecase.NewAuthUseCase(userRepo, jwtManager)
-	productUseCase := usecase.NewProductUseCase(productRepo, txManager)
-	roleUseCase := usecase.NewRoleUseCase(roleRepo, txManager)
-
-	// Initialize handlers
-	authHandler := handler.NewAuthHandler(authUseCase)
-	productHandler := handler.NewProductHandler(productUseCase)
-	roleHandler := handler.NewRoleHandler(roleUseCase)
-
-	// Initialize middleware
+	// Initialize shared middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 
-	// Setup router
+	// Initialize modules (each module encapsulates its own dependencies)
+	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
+	// Future modules:
+	// rbacRouter := router.InitRBACModule(db, authMiddleware)
+	// profileRouter := router.InitProfileModule(db, authMiddleware, cache)
+	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
+
+	// Setup HTTP server
 	if cfg.Server.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -92,11 +82,8 @@ func main() {
 	// API routes
 	api := r.Group("/api")
 
-	// V1 Router
-	v1Router := router.NewV1Router(
-		authHandler, productHandler, roleHandler,
-		authMiddleware,
-	)
+	// V1 Router (aggregates all module routers)
+	v1Router := router.NewV1Router(authRouter)
 	v1Router.Setup(api)
 
 	// Start server
@@ -109,12 +96,7 @@ func main() {
 
 	go func() {
 		log.Printf("Server started on port %s", cfg.Server.Port)
-		log.Printf("Health check: http://localhost:%s/health", cfg.Server.Port)
-		log.Printf("Auth API:")
-		log.Printf("   - Register: POST http://localhost:%s/api/v1/auth/register", cfg.Server.Port)
-		log.Printf("   - Login:    POST http://localhost:%s/api/v1/auth/login", cfg.Server.Port)
-		log.Printf("   - Me:       GET  http://localhost:%s/api/v1/auth/me (protected)", cfg.Server.Port)
-		log.Printf("Products API:  http://localhost:%s/api/v1/products (protected)", cfg.Server.Port)
+		log.Printf("Server health check: http://localhost:%s/health", cfg.Server.Port)
 		log.Println("")
 
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

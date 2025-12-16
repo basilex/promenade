@@ -3,15 +3,15 @@ package entity
 import (
     "time"
 
-    "github.com/google/uuid"
+    "__MODULE__/pkg/uuidv7"
 )
 
 type __ENTITY__ struct {
-    ID        uuid.UUID `db:"id" json:"id"`
-    Name      string    `db:"name" json:"name"`
-    Active    bool      `db:"active" json:"active"`
-    CreatedAt time.Time `db:"created_at" json:"created_at"`
-    UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+    ID        uuidv7.UUID `db:"id" json:"id"`
+    Name      string      `db:"name" json:"name"`
+    Active    bool        `db:"active" json:"active"`
+    CreatedAt time.Time   `db:"created_at" json:"created_at"`
+    UpdatedAt time.Time   `db:"updated_at" json:"updated_at"`
 }
 
 func (e *__ENTITY__) IsActive() bool {

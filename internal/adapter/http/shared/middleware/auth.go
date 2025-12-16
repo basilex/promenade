@@ -27,7 +27,7 @@ func NewAuthMiddleware(jwtManager *jwtpkg.JWTManager) *AuthMiddleware {
 	}
 }
 
-// RequireAuth middleware требует наличия валидного JWT токена
+// RequireAuth middleware requires valid JWT token
 func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := m.extractToken(c)
@@ -44,7 +44,7 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 			return
 		}
 
-		// Сохраняем данные пользователя в контекст
+		// Save user data to context
 		c.Set(userIDKey, claims.UserID)
 		c.Set(userEmailKey, claims.Email)
 
@@ -52,7 +52,7 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	}
 }
 
-// OptionalAuth middleware пытается извлечь токен, но не требует его
+// OptionalAuth middleware tries to extract token but doesn't require it
 func (m *AuthMiddleware) OptionalAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := m.extractToken(c)
@@ -84,7 +84,7 @@ func (m *AuthMiddleware) extractToken(c *gin.Context) string {
 	return strings.TrimPrefix(authHeader, authorizationPrefix)
 }
 
-// Helper функции для получения данных из контекста
+// Helper functions to get data from context
 
 func GetUserID(c *gin.Context) (uuid.UUID, bool) {
 	value, exists := c.Get(userIDKey)
@@ -106,7 +106,7 @@ func GetUserEmail(c *gin.Context) (string, bool) {
 	return email, ok
 }
 
-// MustGetUserID получает UserID или паникует (для защищенных роутов)
+// MustGetUserID gets UserID or panics (for protected routes)
 func MustGetUserID(c *gin.Context) uuid.UUID {
 	userID, ok := GetUserID(c)
 	if !ok {

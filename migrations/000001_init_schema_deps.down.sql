@@ -1,4 +1,5 @@
-DROP FUNCTION IF EXISTS update_updated_at_column();
+DROP FUNCTION IF EXISTS tfn_entity_updated_at();
+DROP FUNCTION IF EXISTS uuid_v7();
 
 DROP EXTENSION IF EXISTS "pgcrypto";
 DROP EXTENSION IF EXISTS "uuid-ossp";

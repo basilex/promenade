@@ -40,24 +40,24 @@ type JWTConfig struct {
 	RefreshTokenTTL time.Duration
 }
 
-// Load загружает конфигурацию из .env файла и environment variables
+// Load loads configuration from .env file and environment variables
 func Load() (*Config, error) {
-	// Загружаем .env файл (если существует)
-	// Приоритет: .env.{environment} > .env.local > .env
+	// Load .env file (if exists)
+	// Priority: .env.{environment} > .env.local > .env
 	env := os.Getenv("ENVIRONMENT")
 	if env == "" {
 		env = "development"
 	}
 
-	// Пробуем загрузить файлы в порядке приоритета
+	// Try to load files in priority order
 	envFiles := []string{
 		fmt.Sprintf(".env.%s.local", env), // .env.development.local (highest priority)
 		fmt.Sprintf(".env.%s", env),       // .env.development
-		".env.local",                      // .env.local (не коммитится в git)
+		".env.local",                      // .env.local (not committed to git)
 		".env",                            // .env (default)
 	}
 
-	// Загружаем первый найденный файл
+	// Load first found file
 	for _, file := range envFiles {
 		if err := godotenv.Load(file); err == nil {
 			fmt.Printf("Loaded config from:  %s\n", file)
@@ -65,7 +65,7 @@ func Load() (*Config, error) {
 		}
 	}
 
-	// Если ни один файл не найден - не ошибка, используем переменные окружения
+	// If no file found - not an error, use environment variables
 	return &Config{
 		Server: ServerConfig{
 			Port:         getEnv("SERVER_PORT", "8080"),
@@ -92,7 +92,7 @@ func Load() (*Config, error) {
 	}, nil
 }
 
-// LoadFromFile загружает конфигурацию из конкретного файла
+// LoadFromFile loads configuration from specific file
 func LoadFromFile(filename string) (*Config, error) {
 	if err := godotenv.Load(filename); err != nil {
 		return nil, fmt.Errorf("failed to load config from %s: %w", filename, err)
@@ -100,7 +100,7 @@ func LoadFromFile(filename string) (*Config, error) {
 	return Load()
 }
 
-// Validate проверяет корректность конфигурации
+// Validate checks configuration correctness
 func (c *Config) Validate() error {
 	if c.JWT.Secret == "your-secret-key-change-in-production" {
 		return fmt.Errorf("JWT_SECRET must be changed in production")

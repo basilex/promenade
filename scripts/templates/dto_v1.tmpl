@@ -3,15 +3,14 @@ package dto
 import (
     "time"
 
-    "github.com/google/uuid"
-
+    "__MODULE__/pkg/uuidv7"
     "__MODULE__/internal/domain/entity"
 )
 
 type __ENTITY__Response struct {
-    ID        uuid.UUID `json:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
-    Name      string    `json:"name" example:"Sample __ENTITY__"`
-    Active    bool      `json:"active" example:"true"`
+    ID        uuidv7.UUID `json:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
+    Name      string      `json:"name" example:"Sample __ENTITY__"`
+    Active    bool        `json:"active" example:"true"`
     CreatedAt time.Time `json:"created_at" example:"2024-01-15T10:30:00Z"`
 }
 

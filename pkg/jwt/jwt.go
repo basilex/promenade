@@ -125,3 +125,13 @@ func (m *JWTManager) RefreshAccessToken(refreshToken string) (string, time.Time,
 
 	return m.GenerateAccessToken(claims.UserID, claims.Email)
 }
+
+// GetRefreshTokenTTL returns refresh token TTL
+func (m *JWTManager) GetRefreshTokenTTL() time.Duration {
+	return m.refreshTokenTTL
+}
+
+// GetAccessTokenTTL returns access token TTL
+func (m *JWTManager) GetAccessTokenTTL() time.Duration {
+	return m.accessTokenTTL
+}

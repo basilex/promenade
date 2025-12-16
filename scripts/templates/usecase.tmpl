@@ -2,9 +2,8 @@ package usecase
 
 import (
     "context"
-    
-    "github.com/google/uuid"
 
+    "__MODULE__/pkg/uuidv7"
     "__MODULE__/internal/domain/entity"
     "__MODULE__/internal/domain/repository"
     "__MODULE__/internal/infrastructure/database"
@@ -31,7 +30,7 @@ func (uc *__ENTITY__UseCase) Create__ENTITY__(ctx context.Context, name string) 
     }
 
     __entity__ := &entity.__ENTITY__{
-        ID:     uuid.New(),
+        ID:     uuidv7.New(),
         Name:   name,
         Active: true,
     }

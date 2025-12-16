@@ -2,78 +2,34 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-
-	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
-	"github.com/basilex/promenade/internal/adapter/http/v1/handler"
 )
 
+// V1Router is the main router for API v1
+// It aggregates all module-specific routers (auth, rbac, etc.)
 type V1Router struct {
-	authHandler    *handler.AuthHandler
-	productHandler *handler.ProductHandler
-	roleHandler    *handler.RoleHandler
-	authMiddleware *middleware.AuthMiddleware
+	authRouter *AuthRouter
+	// rbacRouter *RBACRouter  // Future: role-based access control
+	// profileRouter *ProfileRouter  // Future: user profiles
+	// notificationRouter *NotificationRouter  // Future: notifications
 }
 
+// NewV1Router creates a new V1Router with all sub-routers
 func NewV1Router(
-	authHandler *handler.AuthHandler,
-	productHandler *handler.ProductHandler,
-	roleHandler *handler.RoleHandler,
-	authMiddleware *middleware.AuthMiddleware,
+	authRouter *AuthRouter,
+	// Add other routers here as needed
 ) *V1Router {
 	return &V1Router{
-		authHandler:    authHandler,
-		productHandler: productHandler,
-		roleHandler:    roleHandler,
-		authMiddleware: authMiddleware,
+		authRouter: authRouter,
 	}
 }
 
+// Setup registers all v1 routes by delegating to module-specific routers
 func (r *V1Router) Setup(rg *gin.RouterGroup) {
-	v1 := rg.Group("/v1")
+	// Each module router handles its own routes under its prefix
+	r.authRouter.Setup(rg)
 
-	// ============================================
-	// PUBLIC ROUTES (пока без аутентификации)
-	// ============================================
-
-	// Auth routes
-	auth := v1.Group("/auth")
-	{
-		auth.POST("/register", r.authHandler.Register)
-		auth.POST("/login", r.authHandler.Login)
-		auth.POST("/refresh", r.authHandler.RefreshToken)
-	}
-
-	// ============================================
-	// PROTECTED ROUTES (требуют аутентификацию)
-	// ============================================
-
-	// Auth protected routes
-	authProtected := v1.Group("/auth")
-	authProtected.Use(r.authMiddleware.RequireAuth())
-	{
-		authProtected.GET("/me", r.authHandler.GetMe)
-		authProtected.POST("/logout", r.authHandler.Logout)
-	}
-
-	// Product routes (защищенные)
-	products := v1.Group("/products")
-	products.Use(r.authMiddleware.RequireAuth())
-	{
-		products.POST("", r.productHandler.Create)
-		products.GET("/:id", r.productHandler.GetByID)
-		products.GET("", r.productHandler.List)
-		products.PUT("/:id", r.productHandler.Update)
-		products.DELETE("/:id", r.productHandler.Delete)
-	}
-
-	// Role routes (защищенные)
-	roles := v1.Group("/roles")
-	roles.Use(r.authMiddleware.RequireAuth())
-	{
-		roles.POST("", r.roleHandler.Create)
-		roles.GET("/:id", r.roleHandler.GetByID)
-		roles.GET("", r.roleHandler.List)
-		roles.PUT("/:id", r.roleHandler.Update)
-		roles.DELETE("/:id", r.roleHandler.Delete)
-	}
+	// Future modules:
+	// r.rbacRouter.Setup(rg)  // Will handle /rbac/*
+	// r.profileRouter.Setup(rg)  // Will handle /profiles/*
+	// r.notificationRouter.Setup(rg)  // Will handle /notifications/*
 }

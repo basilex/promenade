@@ -1,10 +1,13 @@
-. PHONY: help install dev build test clean docker swagger migrate
+.PHONY: help install dev build test clean docker swagger migrate
 
 # Load environment variables from .env.development if exists
 ifneq (,$(wildcard ./.env.development))
     include .env.development
     export
 endif
+
+# Include test targets
+include Makefile.test
 
 # Variables
 APP_NAME=promenade
@@ -50,22 +53,7 @@ build: swagger-all ## Build application binary
 run: ## Run compiled binary
 	./bin/$(APP_NAME)
 
-test: ## Run all tests
-	go test -v -race -cover ./...
-
-test-unit: ## Run unit tests only
-	go test -v -race -short ./internal/domain/...  ./internal/usecase/... 
-
-test-integration: ## Run integration tests
-	$(DOCKER_COMPOSE) up -d postgres
-	@sleep 3
-	go test -v -race ./internal/adapter/repository/... 
-	$(DOCKER_COMPOSE) down
-
-test-coverage: ## Generate test coverage report
-	go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-	go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report:  coverage.html"
+# Testing targets are in Makefile.test
 
 clean: ## Clean build artifacts and containers
 	rm -rf bin/
