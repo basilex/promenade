@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +14,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
+	"github.com/basilex/promenade/pkg/logger"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
@@ -23,22 +24,43 @@ import (
 )
 
 func main() {
-	log.Println("Starting Promenade API...")
-
-	// Load config
+	// Load config first (before logger init)
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		// Use basic logger since structured logger not yet initialized
+		slog.Error("Failed to load config", slog.Any("error", err))
+		os.Exit(1)
 	}
+
+	// Initialize structured logger
+	logFormat := "text"
+	if cfg.Server.Environment == "production" {
+		logFormat = "json"
+	}
+
+	logLevel := "info"
+	if cfg.Server.Environment == "development" {
+		logLevel = "debug"
+	}
+
+	logger.Init(logger.Config{
+		Level:      logLevel,
+		Format:     logFormat,
+		AddSource:  cfg.Server.Environment == "development",
+		TimeFormat: time.RFC3339,
+	})
+
+	logger.Info("Starting Promenade API",
+		slog.String("environment", cfg.Server.Environment),
+		slog.String("version", "1.0.0"),
+	)
 
 	// Connect to database
 	db, err := database.NewPostgresConnection(&cfg.Database)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		logger.Fatal("Failed to connect to database", slog.Any("error", err))
 	}
 	defer db.Close()
-
-	log.Println("Connected to database")
 
 	// Initialize JWT Manager
 	jwtManager := jwtpkg.NewJWTManager(
@@ -73,9 +95,11 @@ func main() {
 	// Register custom validators
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		if err := validatorpkg.RegisterCustomValidators(v); err != nil {
-			log.Fatalf("Failed to register custom validators: %v", err)
+			logger.Fatal("Failed to register custom validators", slog.Any("error", err))
 		}
 	}
+
+	logger.Debug("Custom validators registered successfully")
 
 	// Global middleware
 	r.Use(middleware.Recovery())
@@ -108,12 +132,14 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Server started on port %s", cfg.Server.Port)
-		log.Printf("Server health check: http://localhost:%s/health", cfg.Server.Port)
-		log.Println("")
+		logger.Info("Server started",
+			slog.String("port", cfg.Server.Port),
+			slog.String("health_check", "http://localhost:"+cfg.Server.Port+"/health"),
+			slog.String("environment", cfg.Server.Environment),
+		)
 
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+			logger.Fatal("Failed to start server", slog.Any("error", err))
 		}
 	}()
 
@@ -122,14 +148,14 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Shutting down server...")
+	logger.Info("Shutting down server gracefully...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		logger.Fatal("Server forced to shutdown", slog.Any("error", err))
 	}
 
-	log.Println("Server exited gracefully")
+	logger.Info("Server exited gracefully")
 }

@@ -10,7 +10,8 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
-- 🧪 **Comprehensive Testing** - Integration tests with isolated test database (13 tests, 100% passing)
+- 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
+- 🧪 **Comprehensive Testing** - Integration tests with isolated test database (29 tests, 100% passing)
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -71,6 +72,7 @@ make test-integration
 
 ### Technical Documentation
 
+- **[Logging Guide](docs/LOGGING.md)** - Structured logging with slog (JSON/text format, context fields)
 - [Testing Guide](docs/TESTING_GUIDE.md) - Comprehensive testing setup and best practices
 - [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test infrastructure overview
 - [Validation](docs/VALIDATION.md) - Multi-layer validation strategy and best practices
@@ -334,7 +336,73 @@ func TestUserRepository_Create(t *testing.T) {
 
 See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for comprehensive testing documentation.
 
-## 🐳 Docker Deployment
+## � Structured Logging
+
+Promenade uses **slog** (Go 1.21+ structured logging) for production-ready observability.
+
+### Key Features
+
+- ✅ **Structured Format** - JSON (production) or text (development)
+- ✅ **Context Fields** - Automatic request_id, user_id, trace_id tracking
+- ✅ **Zero Dependencies** - Built-in Go stdlib
+- ✅ **Performance** - Zero allocation for common operations
+- ✅ **Integration Ready** - Works with ELK, Loki, DataDog, New Relic
+
+### Log Output Examples
+
+**Development (text format):**
+
+```
+time=2025-12-16T16:55:51+02:00 level=INFO source=promenade/pkg/logger/logger.go:201
+msg="Server started" port=8081 environment=development
+```
+
+**Production (JSON format):**
+
+```json
+{
+  "time": "2025-12-16T16:55:51+02:00",
+  "level": "INFO",
+  "msg": "HTTP request",
+  "method": "GET",
+  "path": "/api/countries",
+  "status": 200,
+  "duration": 5830791,
+  "request_id": "45400d3f-e98f-4c18-bf57-e9cc719df3e7"
+}
+```
+
+### Usage
+
+```go
+import (
+    "log/slog"
+    "github.com/basilex/promenade/pkg/logger"
+)
+
+// Simple logging
+logger.Info("User registered",
+    slog.String("email", user.Email),
+    slog.String("user_id", userID),
+)
+
+// Context-aware (auto-includes request_id)
+logger.InfoContext(ctx, "Processing payment",
+    slog.String("amount", "100.00"),
+    slog.String("currency", "USD"),
+)
+
+// Error logging
+logger.Error("Database query failed",
+    slog.Any("error", err),
+    slog.String("query", sqlQuery),
+    slog.Duration("duration", queryTime),
+)
+```
+
+See **[LOGGING.md](docs/LOGGING.md)** for complete guide with examples for all layers.
+
+## �🐳 Docker Deployment
 
 ### Development
 
