@@ -14,13 +14,13 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
-	"github.com/basilex/promenade/pkg/logger"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
 	"github.com/basilex/promenade/internal/adapter/http/v1/router"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/pkg/logger"
 )
 
 func main() {
