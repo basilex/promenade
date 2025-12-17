@@ -11,7 +11,9 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 171 unit tests across all layers (93 handler, 19 entity, 18 integration, 11 JWT, 7 UUID, 4 config) + 18 integration tests (require DB) - 100% unit tests passing
+- 🧪 **Comprehensive Testing** - 77 tests total across all layers - 100% passing
+  - Unit: 58 tests (30 entity + 28 use case)
+  - Integration: 19 tests (repository layer)
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -165,12 +167,13 @@ promenade/
 │   └── main.go                        # Bootstrap, DI, server setup
 ├── internal/
 │   ├── domain/
-│   │   ├── entity/                    # Business entities (User, Product, Role, Session)
+│   │   ├── entity/                    # Business entities (User, UserContact, Country, Currency, Session)
 │   │   └── repository/                # Repository interfaces (ports)
 │   ├── usecase/                       # Business logic orchestration
 │   │   ├── auth_usecase.go           # Login, register, refresh, logout
-│   │   ├── product_usecase.go        # CRUD operations
-│   │   └── role_usecase.go           # Role management
+│   │   ├── user_contact_usecase.go   # User contacts management
+│   │   ├── country_usecase.go        # Countries CRUD
+│   │   └── currency_usecase.go       # Currencies CRUD
 │   ├── adapter/
 │   │   ├── http/
 │   │   │   ├── shared/middleware/    # Auth, CORS, logging, recovery
@@ -270,10 +273,12 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **13 Integration Tests** - 100% passing
-- **Test Coverage** - Repository layer fully tested
+- **77 Total Tests** - 100% passing
+  - **58 Unit Tests** - Entity (30) + Use Case (28)
+  - **19 Integration Tests** - Repository layer with real PostgreSQL
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
-- **Test Execution** - ~3 seconds for full suite
+- **Test Execution** - ~10 seconds for full suite (unit + integration)
+- **Coverage** - All layers tested (entity validation, business logic, database operations)
 
 ### Running Tests
 
@@ -534,47 +539,75 @@ curl -X GET http://localhost:8081/api/v1/products \
 
 ## 📚 API Examples
 
-### Products API
+### User Contacts API
 
 ```bash
-# List products (with pagination)
-curl "http://localhost:8081/api/v1/products?page=1&limit=10"
-
-# Create product (requires auth)
-curl -X POST http://localhost:8081/api/v1/products \
+# Create contact (requires auth)
+curl -X POST http://localhost:8081/api/v1/users/contacts \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Premium Widget",
-    "description": "High-quality widget",
-    "price": 29.99,
-    "stock": 100
+    "contact_type": "email",
+    "contact_value": "john@example.com",
+    "label": "Work Email",
+    "is_primary": true,
+    "is_public": false,
+    "is_verified": false,
+    "available_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+    "available_from": "09:00",
+    "available_to": "18:00",
+    "timezone": "Europe/Kiev"
   }'
 
-# Get product by ID
-curl http://localhost:8081/api/v1/products/{id}
+# List user contacts
+curl http://localhost:8081/api/v1/users/contacts \
+  -H "Authorization: Bearer YOUR_TOKEN"
 
-# Update product
-curl -X PUT http://localhost:8081/api/v1/products/{id} \
+# Get contact by ID
+curl http://localhost:8081/api/v1/users/contacts/{id} \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Update contact
+curl -X PUT http://localhost:8081/api/v1/users/contacts/{id} \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"price": 24.99, "stock": 150}'
+  -d '{"label": "Personal Email", "is_public": true}'
 
-# Delete product
-curl -X DELETE http://localhost:8081/api/v1/products/{id} \
+# Set as primary contact
+curl -X POST http://localhost:8081/api/v1/users/contacts/{id}/primary \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Toggle contact active status
+curl -X POST http://localhost:8081/api/v1/users/contacts/{id}/toggle \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Get contacts by type
+curl http://localhost:8081/api/v1/users/contacts/type/email \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Get primary contact by type
+curl http://localhost:8081/api/v1/users/contacts/primary/email \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Delete contact
+curl -X DELETE http://localhost:8081/api/v1/users/contacts/{id} \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-### Roles API
+### Countries & Currencies API
 
 ```bash
-# List all roles
-curl http://localhost:8081/api/v1/roles \
-  -H "Authorization: Bearer YOUR_TOKEN"
+# List countries
+curl http://localhost:8081/api/v1/countries
 
-# Get role by ID
-curl http://localhost:8081/api/v1/roles/{id} \
-  -H "Authorization: Bearer YOUR_TOKEN"
+# Get country by code
+curl http://localhost:8081/api/v1/countries/code/UA
+
+# List currencies
+curl http://localhost:8081/api/v1/currencies
+
+# Get currency by code
+curl http://localhost:8081/api/v1/currencies/code/USD
 ```
 
 ## 🛡️ Best Practices

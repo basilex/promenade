@@ -11,9 +11,10 @@ import (
 // UserFixture creates a test user with unique email
 func UserFixture(overrides ...func(*entity.User)) *entity.User {
 	id := uuidv7.New()
+	// Use full UUID for email to ensure uniqueness even with rapid creation
 	user := &entity.User{
 		ID:        id,
-		Email:     fmt.Sprintf("test-%s@example.com", id.String()[:8]),
+		Email:     fmt.Sprintf("test-%s@example.com", id.String()),
 		Name:      "Test User",
 		Password:  "$2a$10$test.hashed.password.dummy", // Pre-hashed dummy
 		Status:    entity.UserStatusActive,

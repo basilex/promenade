@@ -37,7 +37,7 @@ import (
 
 // @contact.name API Support
 // @contact.url https://github.com/basilex/promenade
-// @contact.email support@promenade.dev
+// @contact.email alexander.vasilenko@gmail.com
 
 // @license.name MIT
 // @license.url https://opensource.org/licenses/MIT
@@ -111,6 +111,7 @@ func main() {
 	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
+	userContactRouter := router.InitUserContactModule(db, authMiddleware)
 	// Future modules:
 	// rbacRouter := router.InitRBACModule(db, authMiddleware)
 	// profileRouter := router.InitProfileModule(db, authMiddleware, cache)
@@ -159,7 +160,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter)
+		v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter, userContactRouter)
 		v1Router.Setup(v1)
 	}
 

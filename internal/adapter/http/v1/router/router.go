@@ -7,9 +7,10 @@ import (
 // V1Router is the main router for API v1
 // It aggregates all module-specific routers (auth, rbac, etc.)
 type V1Router struct {
-	authRouter     *AuthRouter
-	countryRouter  *CountryRouter
-	currencyRouter *CurrencyRouter
+	authRouter        *AuthRouter
+	countryRouter     *CountryRouter
+	currencyRouter    *CurrencyRouter
+	userContactRouter *UserContactRouter
 	// rbacRouter *RBACRouter  // Future: role-based access control
 	// profileRouter *ProfileRouter  // Future: user profiles
 	// notificationRouter *NotificationRouter  // Future: notifications
@@ -20,12 +21,14 @@ func NewV1Router(
 	authRouter *AuthRouter,
 	countryRouter *CountryRouter,
 	currencyRouter *CurrencyRouter,
+	userContactRouter *UserContactRouter,
 	// Add other routers here as needed
 ) *V1Router {
 	return &V1Router{
-		authRouter:     authRouter,
-		countryRouter:  countryRouter,
-		currencyRouter: currencyRouter,
+		authRouter:        authRouter,
+		countryRouter:     countryRouter,
+		currencyRouter:    currencyRouter,
+		userContactRouter: userContactRouter,
 	}
 }
 
@@ -33,6 +36,7 @@ func NewV1Router(
 func (r *V1Router) Setup(rg *gin.RouterGroup) {
 	// Each module router handles its own routes under its prefix
 	r.authRouter.Setup(rg)
+	r.userContactRouter.Setup(rg)
 	r.countryRouter.Setup(rg)
 	r.currencyRouter.Setup(rg)
 
