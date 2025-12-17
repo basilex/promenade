@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +23,7 @@ func TestNewJWTManager(t *testing.T) {
 
 func TestJWTManager_GenerateTokenPair(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	tokenPair, err := manager.GenerateTokenPair(userID, email)
@@ -37,7 +37,7 @@ func TestJWTManager_GenerateTokenPair(t *testing.T) {
 
 func TestJWTManager_GenerateAccessToken(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	token, expiresAt, err := manager.GenerateAccessToken(userID, email)
@@ -51,7 +51,7 @@ func TestJWTManager_GenerateAccessToken(t *testing.T) {
 
 func TestJWTManager_ValidateToken(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	t.Run("validates valid token", func(t *testing.T) {
@@ -105,7 +105,7 @@ func TestJWTManager_ValidateToken(t *testing.T) {
 
 func TestJWTManager_RefreshAccessToken(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	t.Run("refreshes access token successfully", func(t *testing.T) {
@@ -140,7 +140,7 @@ func TestJWTManager_RefreshAccessToken(t *testing.T) {
 
 func TestJWTManager_TokenClaims(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	token, expiresAt, err := manager.GenerateAccessToken(userID, email)
@@ -191,7 +191,7 @@ func TestJWTManager_TTLGetters(t *testing.T) {
 func TestJWTManager_TokenExpiration(t *testing.T) {
 	t.Run("access token expires after TTL", func(t *testing.T) {
 		manager := NewJWTManager("test-secret", 100*time.Millisecond, 7*24*time.Hour)
-		userID := uuid.New()
+		userID := uuidv7.New()
 		email := "test@example.com"
 
 		token, _, err := manager.GenerateAccessToken(userID, email)
@@ -208,7 +208,7 @@ func TestJWTManager_TokenExpiration(t *testing.T) {
 
 	t.Run("refresh token expires after TTL", func(t *testing.T) {
 		manager := NewJWTManager("test-secret", 15*time.Minute, 100*time.Millisecond)
-		userID := uuid.New()
+		userID := uuidv7.New()
 		email := "test@example.com"
 
 		tokenPair, err := manager.GenerateTokenPair(userID, email)
@@ -227,9 +227,9 @@ func TestJWTManager_TokenExpiration(t *testing.T) {
 func TestJWTManager_MultipleTokens(t *testing.T) {
 	manager := NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
 
-	user1ID := uuid.New()
+	user1ID := uuidv7.New()
 	user1Email := "user1@example.com"
-	user2ID := uuid.New()
+	user2ID := uuidv7.New()
 	user2Email := "user2@example.com"
 
 	token1, _, err := manager.GenerateAccessToken(user1ID, user1Email)

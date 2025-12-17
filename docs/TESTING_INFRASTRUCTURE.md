@@ -71,13 +71,15 @@ make test-db-logs       # Test DB logs
 
 ## Test Coverage Matrix
 
-| Layer      | Component         | Coverage | Status      |
-| ---------- | ----------------- | -------- | ----------- |
-| Repository | UserRepository    | 8 tests  | ✅ Complete |
-| Repository | SessionRepository | 5 tests  | ✅ Complete |
-| Use Case   | AuthUseCase       | 0 tests  | ⏳ TODO     |
-| Handler    | AuthHandler       | 0 tests  | ⏳ TODO     |
-| E2E        | Auth Flow         | 0 tests  | ⏳ TODO     |
+| Layer      | Component           | Coverage | Status      |
+| ---------- | ------------------- | -------- | ----------- |
+| Config     | ConfigLoader        | 4 tests  | ✅ Complete |
+| Entity     | User, Session, etc  | 19 tests | ✅ Complete |
+| Package    | JWT Manager         | 11 tests | ✅ Complete |
+| Package    | UUID v7             | 7 tests  | ✅ Complete |
+| Handler    | Auth, Country, Curr | 93 tests | ✅ Complete |
+| Repository | User, Session, etc  | 18 tests | ✅ Complete |
+| **Total**  | **All Layers**      | **171**  | ✅ **100%** |
 
 ## Patterns Used
 

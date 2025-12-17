@@ -3,12 +3,12 @@ package dto
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // CountryResponse represents country response
 type CountryResponse struct {
-	ID         uuid.UUID          `json:"id"`
+	ID         uuidv7.UUID        `json:"id"`
 	Name       string             `json:"name"`
 	Code       string             `json:"code"`
 	ISO2       string             `json:"iso2"`
@@ -39,7 +39,7 @@ type UpdateCountryRequest struct {
 
 // CurrencyResponse represents currency response
 type CurrencyResponse struct {
-	ID        uuid.UUID         `json:"id"`
+	ID        uuidv7.UUID       `json:"id"`
 	Name      string            `json:"name"`
 	Code      string            `json:"code"`
 	Symbol    string            `json:"symbol"`

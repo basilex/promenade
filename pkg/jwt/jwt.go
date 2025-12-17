@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 var (
@@ -14,8 +14,8 @@ var (
 )
 
 type Claims struct {
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
 	jwt.RegisteredClaims
 }
 
@@ -40,7 +40,7 @@ func NewJWTManager(secretKey string, accessTTL, refreshTTL time.Duration) *JWTMa
 }
 
 // GenerateTokenPair generates access and refresh tokens
-func (m *JWTManager) GenerateTokenPair(userID uuid.UUID, email string) (*TokenPair, error) {
+func (m *JWTManager) GenerateTokenPair(userID uuidv7.UUID, email string) (*TokenPair, error) {
 	accessToken, expiresAt, err := m.generateToken(userID, email, m.accessTokenTTL)
 	if err != nil {
 		return nil, err
@@ -59,11 +59,11 @@ func (m *JWTManager) GenerateTokenPair(userID uuid.UUID, email string) (*TokenPa
 }
 
 // GenerateAccessToken generates only access token
-func (m *JWTManager) GenerateAccessToken(userID uuid.UUID, email string) (string, time.Time, error) {
+func (m *JWTManager) GenerateAccessToken(userID uuidv7.UUID, email string) (string, time.Time, error) {
 	return m.generateToken(userID, email, m.accessTokenTTL)
 }
 
-func (m *JWTManager) generateToken(userID uuid.UUID, email string, ttl time.Duration) (string, time.Time, error) {
+func (m *JWTManager) generateToken(userID uuidv7.UUID, email string, ttl time.Duration) (string, time.Time, error) {
 	expiresAt := time.Now().Add(ttl)
 
 	claims := Claims{

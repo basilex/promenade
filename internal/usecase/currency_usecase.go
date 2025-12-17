@@ -6,20 +6,20 @@ import (
 
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/internal/domain/repository"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // CurrencyUseCase interface defines operations for currency management
 type CurrencyUseCase interface {
 	Create(ctx context.Context, currency *entity.Currency) error
-	GetByID(ctx context.Context, id uuid.UUID, withCountries bool) (*entity.Currency, error)
+	GetByID(ctx context.Context, id uuidv7.UUID, withCountries bool) (*entity.Currency, error)
 	GetByCode(ctx context.Context, code string, withCountries bool) (*entity.Currency, error)
 	List(ctx context.Context, page, pageSize int, withCountries bool) ([]entity.Currency, int, error)
 	Update(ctx context.Context, currency *entity.Currency) error
-	Delete(ctx context.Context, id uuid.UUID) error
-	AddCountry(ctx context.Context, currencyID, countryID uuid.UUID, isPrimary bool) error
-	RemoveCountry(ctx context.Context, currencyID, countryID uuid.UUID) error
-	GetCountries(ctx context.Context, currencyID uuid.UUID) ([]entity.Country, error)
+	Delete(ctx context.Context, id uuidv7.UUID) error
+	AddCountry(ctx context.Context, currencyID, countryID uuidv7.UUID, isPrimary bool) error
+	RemoveCountry(ctx context.Context, currencyID, countryID uuidv7.UUID) error
+	GetCountries(ctx context.Context, currencyID uuidv7.UUID) ([]entity.Country, error)
 }
 
 type currencyUseCase struct {
@@ -48,7 +48,7 @@ func (uc *currencyUseCase) Create(ctx context.Context, currency *entity.Currency
 }
 
 // GetByID retrieves a currency by ID
-func (uc *currencyUseCase) GetByID(ctx context.Context, id uuid.UUID, withCountries bool) (*entity.Currency, error) {
+func (uc *currencyUseCase) GetByID(ctx context.Context, id uuidv7.UUID, withCountries bool) (*entity.Currency, error) {
 	return uc.currencyRepo.GetByID(ctx, id, withCountries)
 }
 
@@ -91,12 +91,12 @@ func (uc *currencyUseCase) Update(ctx context.Context, currency *entity.Currency
 }
 
 // Delete deletes a currency
-func (uc *currencyUseCase) Delete(ctx context.Context, id uuid.UUID) error {
+func (uc *currencyUseCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	return uc.currencyRepo.Delete(ctx, id)
 }
 
 // AddCountry adds a country to a currency
-func (uc *currencyUseCase) AddCountry(ctx context.Context, currencyID, countryID uuid.UUID, isPrimary bool) error {
+func (uc *currencyUseCase) AddCountry(ctx context.Context, currencyID, countryID uuidv7.UUID, isPrimary bool) error {
 	// Verify currency exists
 	_, err := uc.currencyRepo.GetByID(ctx, currencyID, false)
 	if err != nil {
@@ -113,11 +113,11 @@ func (uc *currencyUseCase) AddCountry(ctx context.Context, currencyID, countryID
 }
 
 // RemoveCountry removes a country from a currency
-func (uc *currencyUseCase) RemoveCountry(ctx context.Context, currencyID, countryID uuid.UUID) error {
+func (uc *currencyUseCase) RemoveCountry(ctx context.Context, currencyID, countryID uuidv7.UUID) error {
 	return uc.currencyRepo.RemoveCountry(ctx, currencyID, countryID)
 }
 
 // GetCountries gets all countries for a currency
-func (uc *currencyUseCase) GetCountries(ctx context.Context, currencyID uuid.UUID) ([]entity.Country, error) {
+func (uc *currencyUseCase) GetCountries(ctx context.Context, currencyID uuidv7.UUID) ([]entity.Country, error) {
 	return uc.currencyRepo.GetCountries(ctx, currencyID)
 }

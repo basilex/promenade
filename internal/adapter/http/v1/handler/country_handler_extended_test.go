@@ -10,9 +10,9 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/http/v1/dto"
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/mocks"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -92,7 +92,7 @@ func TestCountryHandler_Create_Conflict(t *testing.T) {
 func TestCountryHandler_GetByID_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	country := &entity.Country{
 		ID:     countryID,
 		Code:   "+1",
@@ -117,7 +117,7 @@ func TestCountryHandler_GetByID_Success(t *testing.T) {
 func TestCountryHandler_GetByID_NotFound(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	mockUC.On("GetByID", mock.Anything, countryID, false).
 		Return(nil, entity.ErrNotFound)
 
@@ -135,7 +135,7 @@ func TestCountryHandler_GetByCode_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
 	country := &entity.Country{
-		ID:     uuid.New(),
+		ID:     uuidv7.New(),
 		Code:   "+1",
 		Name:   "United States",
 		ISO2:   "US",
@@ -176,7 +176,7 @@ func TestCountryHandler_List_Success(t *testing.T) {
 
 	countries := []entity.Country{
 		{
-			ID:     uuid.New(),
+			ID:     uuidv7.New(),
 			Code:   "+1",
 			Name:   "United States",
 			ISO2:   "US",
@@ -202,7 +202,7 @@ func TestCountryHandler_ListByRegion_Success(t *testing.T) {
 
 	countries := []entity.Country{
 		{
-			ID:     uuid.New(),
+			ID:     uuidv7.New(),
 			Code:   "+1",
 			Name:   "United States",
 			ISO2:   "US",
@@ -227,7 +227,7 @@ func TestCountryHandler_ListByRegion_Success(t *testing.T) {
 func TestCountryHandler_Update_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	req := dto.UpdateCountryRequest{
 		Name:   "United States of America",
 		Code:   "+1",
@@ -254,7 +254,7 @@ func TestCountryHandler_Update_Success(t *testing.T) {
 func TestCountryHandler_Update_NotFound(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	req := dto.UpdateCountryRequest{
 		Name:   "United States of America",
 		Code:   "+1",
@@ -281,7 +281,7 @@ func TestCountryHandler_Update_NotFound(t *testing.T) {
 func TestCountryHandler_Delete_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	mockUC.On("Delete", mock.Anything, countryID).Return(nil)
 
 	r := httptest.NewRequest(http.MethodDelete, "/countries/"+countryID.String(), nil)
@@ -296,7 +296,7 @@ func TestCountryHandler_Delete_Success(t *testing.T) {
 func TestCountryHandler_Delete_NotFound(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	mockUC.On("Delete", mock.Anything, countryID).
 		Return(entity.ErrNotFound)
 
@@ -313,10 +313,10 @@ func TestCountryHandler_Delete_NotFound(t *testing.T) {
 func TestCountryHandler_GetCurrencies_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	currencies := []entity.Currency{
 		{
-			ID:     uuid.New(),
+			ID:     uuidv7.New(),
 			Code:   "USD",
 			Name:   "US Dollar",
 			Symbol: "$",
@@ -338,7 +338,7 @@ func TestCountryHandler_GetCurrencies_Success(t *testing.T) {
 func TestCountryHandler_GetCurrencies_NotFound(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
+	countryID := uuidv7.New()
 	mockUC.On("GetCurrencies", mock.Anything, countryID).
 		Return(nil, entity.ErrNotFound)
 
@@ -355,8 +355,8 @@ func TestCountryHandler_GetCurrencies_NotFound(t *testing.T) {
 func TestCountryHandler_AddCurrency_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
-	currencyID := uuid.New()
+	countryID := uuidv7.New()
+	currencyID := uuidv7.New()
 
 	req := dto.AddCurrencyToCountryRequest{
 		CurrencyID: currencyID.String(),
@@ -381,8 +381,8 @@ func TestCountryHandler_AddCurrency_Success(t *testing.T) {
 func TestCountryHandler_RemoveCurrency_Success(t *testing.T) {
 	router, mockUC := setupCountryExtendedTest()
 
-	countryID := uuid.New()
-	currencyID := uuid.New()
+	countryID := uuidv7.New()
+	currencyID := uuidv7.New()
 
 	mockUC.On("RemoveCurrency", mock.Anything, countryID, currencyID).
 		Return(nil)

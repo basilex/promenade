@@ -6,8 +6,8 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/response"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 const (
@@ -86,13 +86,13 @@ func (m *AuthMiddleware) extractToken(c *gin.Context) string {
 
 // Helper functions to get data from context
 
-func GetUserID(c *gin.Context) (uuid.UUID, bool) {
+func GetUserID(c *gin.Context) (uuidv7.UUID, bool) {
 	value, exists := c.Get(userIDKey)
 	if !exists {
-		return uuid.Nil, false
+		return uuidv7.Nil, false
 	}
 
-	userID, ok := value.(uuid.UUID)
+	userID, ok := value.(uuidv7.UUID)
 	return userID, ok
 }
 
@@ -107,7 +107,7 @@ func GetUserEmail(c *gin.Context) (string, bool) {
 }
 
 // MustGetUserID gets UserID or panics (for protected routes)
-func MustGetUserID(c *gin.Context) uuid.UUID {
+func MustGetUserID(c *gin.Context) uuidv7.UUID {
 	userID, ok := GetUserID(c)
 	if !ok {
 		panic("user_id not found in context")

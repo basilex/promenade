@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/internal/adapter/http/v1/dto"
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/internal/usecase"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type CurrencyHandler struct {
@@ -64,7 +64,7 @@ func (h *CurrencyHandler) Create(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [get]
 func (h *CurrencyHandler) GetByID(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return
@@ -157,7 +157,7 @@ func (h *CurrencyHandler) List(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [put]
 func (h *CurrencyHandler) Update(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return
@@ -200,7 +200,7 @@ func (h *CurrencyHandler) Update(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [delete]
 func (h *CurrencyHandler) Delete(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return
@@ -231,7 +231,7 @@ func (h *CurrencyHandler) Delete(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries [post]
 func (h *CurrencyHandler) AddCountry(c *gin.Context) {
-	currencyID, err := uuid.Parse(c.Param("id"))
+	currencyID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return
@@ -243,7 +243,7 @@ func (h *CurrencyHandler) AddCountry(c *gin.Context) {
 		return
 	}
 
-	countryID, err := uuid.Parse(req.CountryID)
+	countryID, err := uuidv7.Parse(req.CountryID)
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid country ID", err)
 		return
@@ -269,13 +269,13 @@ func (h *CurrencyHandler) AddCountry(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries/{country_id} [delete]
 func (h *CurrencyHandler) RemoveCountry(c *gin.Context) {
-	currencyID, err := uuid.Parse(c.Param("id"))
+	currencyID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return
 	}
 
-	countryID, err := uuid.Parse(c.Param("country_id"))
+	countryID, err := uuidv7.Parse(c.Param("country_id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid country ID", err)
 		return
@@ -299,7 +299,7 @@ func (h *CurrencyHandler) RemoveCountry(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries [get]
 func (h *CurrencyHandler) GetCountries(c *gin.Context) {
-	currencyID, err := uuid.Parse(c.Param("id"))
+	currencyID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid currency ID", err)
 		return

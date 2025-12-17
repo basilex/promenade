@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/basilex/promenade/internal/domain/entity"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // CountryRepository defines the interface for country data access
@@ -13,7 +13,7 @@ type CountryRepository interface {
 	Create(ctx context.Context, country *entity.Country) error
 
 	// GetByID retrieves a country by ID with optional currencies
-	GetByID(ctx context.Context, id uuid.UUID, withCurrencies bool) (*entity.Country, error)
+	GetByID(ctx context.Context, id uuidv7.UUID, withCurrencies bool) (*entity.Country, error)
 
 	// GetByCode retrieves a country by code (iso2 or iso3) with optional currencies
 	GetByCode(ctx context.Context, code string, withCurrencies bool) (*entity.Country, error)
@@ -28,14 +28,14 @@ type CountryRepository interface {
 	Update(ctx context.Context, country *entity.Country) error
 
 	// Delete deletes a country
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, id uuidv7.UUID) error
 
 	// AddCurrency adds a currency to a country
-	AddCurrency(ctx context.Context, countryID, currencyID uuid.UUID, isPrimary bool) error
+	AddCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID, isPrimary bool) error
 
 	// RemoveCurrency removes a currency from a country
-	RemoveCurrency(ctx context.Context, countryID, currencyID uuid.UUID) error
+	RemoveCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID) error
 
 	// GetCurrencies gets all currencies for a country
-	GetCurrencies(ctx context.Context, countryID uuid.UUID) ([]entity.Currency, error)
+	GetCurrencies(ctx context.Context, countryID uuidv7.UUID) ([]entity.Currency, error)
 }

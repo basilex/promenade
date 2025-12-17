@@ -7,7 +7,7 @@ import (
 
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/internal/domain/repository"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -38,7 +38,7 @@ func (r *currencyRepository) Create(ctx context.Context, currency *entity.Curren
 }
 
 // GetByID retrieves a currency by ID
-func (r *currencyRepository) GetByID(ctx context.Context, id uuid.UUID, withCountries bool) (*entity.Currency, error) {
+func (r *currencyRepository) GetByID(ctx context.Context, id uuidv7.UUID, withCountries bool) (*entity.Currency, error) {
 	query := `
 		SELECT id, name, code, symbol, created_at, updated_at
 		FROM currencies
@@ -150,7 +150,7 @@ func (r *currencyRepository) Update(ctx context.Context, currency *entity.Curren
 }
 
 // Delete deletes a currency
-func (r *currencyRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *currencyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `DELETE FROM currencies WHERE id = $1`
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
@@ -170,7 +170,7 @@ func (r *currencyRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // AddCountry adds a country to a currency
-func (r *currencyRepository) AddCountry(ctx context.Context, currencyID, countryID uuid.UUID, isPrimary bool) error {
+func (r *currencyRepository) AddCountry(ctx context.Context, currencyID, countryID uuidv7.UUID, isPrimary bool) error {
 	query := `
 		INSERT INTO country_currencies (country_id, currency_id, is_primary)
 		VALUES ($1, $2, $3)
@@ -183,7 +183,7 @@ func (r *currencyRepository) AddCountry(ctx context.Context, currencyID, country
 }
 
 // RemoveCountry removes a country from a currency
-func (r *currencyRepository) RemoveCountry(ctx context.Context, currencyID, countryID uuid.UUID) error {
+func (r *currencyRepository) RemoveCountry(ctx context.Context, currencyID, countryID uuidv7.UUID) error {
 	query := `DELETE FROM country_currencies WHERE currency_id = $1 AND country_id = $2`
 	result, err := r.db.ExecContext(ctx, query, currencyID, countryID)
 	if err != nil {
@@ -203,7 +203,7 @@ func (r *currencyRepository) RemoveCountry(ctx context.Context, currencyID, coun
 }
 
 // GetCountries gets all countries for a currency
-func (r *currencyRepository) GetCountries(ctx context.Context, currencyID uuid.UUID) ([]entity.Country, error) {
+func (r *currencyRepository) GetCountries(ctx context.Context, currencyID uuidv7.UUID) ([]entity.Country, error) {
 	query := `
 		SELECT c.id, c.name, c.code, c.iso2, c.iso3, c.created_at, c.updated_at
 		FROM countries c

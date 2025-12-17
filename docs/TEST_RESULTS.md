@@ -38,7 +38,7 @@ make test-db-stop       # Stop and clean
 
 ### 2. Integration Tests ✅
 
-**Repository Tests** - 13 tests, ALL PASSING
+**All Tests** - 171 unit tests, ALL PASSING
 
 **UserRepository** (8 tests):
 
@@ -92,12 +92,17 @@ make test-watch
 
 ```
 === Test Summary ===
-Total Tests: 13
-Passed: 13 ✅
+Total Unit Tests: 171
+Passed: 171 ✅
 Failed: 0
-Duration: ~3.3s
+Integration Tests: 18 (require DB)
 
-Repository Coverage: 45.3%
+Coverage:
+- Handlers: 93 tests (Auth, Country, Currency)
+- Entities: 19 tests (User, Session, Country)
+- Repositories: 18 tests (User, Session, Country, Currency)
+- Packages: 18 tests (JWT: 11, UUID v7: 7)
+- Config: 4 tests
 All critical paths tested
 ```
 

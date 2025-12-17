@@ -6,19 +6,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Country represents a country entity
 type Country struct {
-	ID        uuid.UUID `db:"id" json:"id"`
-	Name      string    `db:"name" json:"name" validate:"required,min=2,max=100"`
-	Code      string    `db:"code" json:"code" validate:"required,min=2,max=10,alphanum,uppercase"`
-	ISO2      string    `db:"iso2" json:"iso2" validate:"required,len=2,alpha,uppercase"`
-	ISO3      string    `db:"iso3" json:"iso3" validate:"required,len=3,alpha,uppercase"`
-	Region    string    `db:"region" json:"region" validate:"required,oneof=north_america south_america western_europe eastern_europe asia middle_east africa oceania"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	ID        uuidv7.UUID `db:"id" json:"id"`
+	Name      string      `db:"name" json:"name" validate:"required,min=2,max=100"`
+	Code      string      `db:"code" json:"code" validate:"required,min=2,max=10,alphanum,uppercase"`
+	ISO2      string      `db:"iso2" json:"iso2" validate:"required,len=2,alpha,uppercase"`
+	ISO3      string      `db:"iso3" json:"iso3" validate:"required,len=3,alpha,uppercase"`
+	Region    string      `db:"region" json:"region" validate:"required,oneof=north_america south_america western_europe eastern_europe asia middle_east africa oceania"`
+	CreatedAt time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time   `db:"updated_at" json:"updated_at"`
 
 	// Relationships
 	Currencies []Currency `db:"-" json:"currencies,omitempty"`
@@ -82,12 +82,12 @@ func (c *Country) Validate() error {
 
 // Currency represents a currency entity
 type Currency struct {
-	ID        uuid.UUID `db:"id" json:"id"`
-	Name      string    `db:"name" json:"name" validate:"required,min=2,max=100"`
-	Code      string    `db:"code" json:"code" validate:"required,min=3,max=10,alphanum,uppercase"`
-	Symbol    string    `db:"symbol" json:"symbol" validate:"max=10"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	ID        uuidv7.UUID `db:"id" json:"id"`
+	Name      string      `db:"name" json:"name" validate:"required,min=2,max=100"`
+	Code      string      `db:"code" json:"code" validate:"required,min=3,max=10,alphanum,uppercase"`
+	Symbol    string      `db:"symbol" json:"symbol" validate:"max=10"`
+	CreatedAt time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time   `db:"updated_at" json:"updated_at"`
 
 	// Relationships
 	Countries []Country `db:"-" json:"countries,omitempty"`
@@ -128,18 +128,18 @@ func (c *Currency) Validate() error {
 
 // CountryCurrency represents the many-to-many junction
 type CountryCurrency struct {
-	CountryID  uuid.UUID `db:"country_id" validate:"required"`
-	CurrencyID uuid.UUID `db:"currency_id" validate:"required"`
-	IsPrimary  bool      `db:"is_primary"`
-	CreatedAt  time.Time `db:"created_at"`
+	CountryID  uuidv7.UUID `db:"country_id" validate:"required"`
+	CurrencyID uuidv7.UUID `db:"currency_id" validate:"required"`
+	IsPrimary  bool        `db:"is_primary"`
+	CreatedAt  time.Time   `db:"created_at"`
 }
 
 // Validate validates country-currency relationship
 func (cc *CountryCurrency) Validate() error {
-	if cc.CountryID == uuid.Nil {
+	if cc.CountryID == uuidv7.Nil {
 		return fmt.Errorf("country_id is required")
 	}
-	if cc.CurrencyID == uuid.Nil {
+	if cc.CurrencyID == uuidv7.Nil {
 		return fmt.Errorf("currency_id is required")
 	}
 	return nil

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/basilex/promenade/internal/domain/entity"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -18,7 +18,7 @@ func (m *MockCountryUseCase) Create(ctx context.Context, country *entity.Country
 	return args.Error(0)
 }
 
-func (m *MockCountryUseCase) GetByID(ctx context.Context, id uuid.UUID, withCurrencies bool) (*entity.Country, error) {
+func (m *MockCountryUseCase) GetByID(ctx context.Context, id uuidv7.UUID, withCurrencies bool) (*entity.Country, error) {
 	args := m.Called(ctx, id, withCurrencies)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -55,12 +55,12 @@ func (m *MockCountryUseCase) Update(ctx context.Context, country *entity.Country
 	return args.Error(0)
 }
 
-func (m *MockCountryUseCase) Delete(ctx context.Context, id uuid.UUID) error {
+func (m *MockCountryUseCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
 
-func (m *MockCountryUseCase) GetCurrencies(ctx context.Context, countryID uuid.UUID) ([]entity.Currency, error) {
+func (m *MockCountryUseCase) GetCurrencies(ctx context.Context, countryID uuidv7.UUID) ([]entity.Currency, error) {
 	args := m.Called(ctx, countryID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -68,12 +68,12 @@ func (m *MockCountryUseCase) GetCurrencies(ctx context.Context, countryID uuid.U
 	return args.Get(0).([]entity.Currency), args.Error(1)
 }
 
-func (m *MockCountryUseCase) AddCurrency(ctx context.Context, countryID, currencyID uuid.UUID, isPrimary bool) error {
+func (m *MockCountryUseCase) AddCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID, isPrimary bool) error {
 	args := m.Called(ctx, countryID, currencyID, isPrimary)
 	return args.Error(0)
 }
 
-func (m *MockCountryUseCase) RemoveCurrency(ctx context.Context, countryID, currencyID uuid.UUID) error {
+func (m *MockCountryUseCase) RemoveCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID) error {
 	args := m.Called(ctx, countryID, currencyID)
 	return args.Error(0)
 }

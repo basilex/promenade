@@ -10,9 +10,9 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/http/v1/dto"
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/mocks"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -88,7 +88,7 @@ func TestCurrencyHandler_Create_Conflict(t *testing.T) {
 func TestCurrencyHandler_GetByID_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	currency := &entity.Currency{
 		ID:     currencyID,
 		Code:   "USD",
@@ -111,7 +111,7 @@ func TestCurrencyHandler_GetByID_Success(t *testing.T) {
 func TestCurrencyHandler_GetByID_NotFound(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	mockUC.On("GetByID", mock.Anything, currencyID, false).
 		Return(nil, entity.ErrNotFound)
 
@@ -129,7 +129,7 @@ func TestCurrencyHandler_GetByCode_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
 	currency := &entity.Currency{
-		ID:     uuid.New(),
+		ID:     uuidv7.New(),
 		Code:   "USD",
 		Name:   "US Dollar",
 		Symbol: "$",
@@ -168,7 +168,7 @@ func TestCurrencyHandler_List_Success(t *testing.T) {
 
 	currencies := []entity.Currency{
 		{
-			ID:     uuid.New(),
+			ID:     uuidv7.New(),
 			Code:   "USD",
 			Name:   "US Dollar",
 			Symbol: "$",
@@ -191,7 +191,7 @@ func TestCurrencyHandler_List_Success(t *testing.T) {
 func TestCurrencyHandler_Update_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	req := dto.UpdateCurrencyRequest{
 		Name:   "United States Dollar",
 		Code:   "USD",
@@ -216,7 +216,7 @@ func TestCurrencyHandler_Update_Success(t *testing.T) {
 func TestCurrencyHandler_Update_NotFound(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	req := dto.UpdateCurrencyRequest{
 		Name:   "United States Dollar",
 		Code:   "USD",
@@ -241,7 +241,7 @@ func TestCurrencyHandler_Update_NotFound(t *testing.T) {
 func TestCurrencyHandler_Delete_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	mockUC.On("Delete", mock.Anything, currencyID).Return(nil)
 
 	r := httptest.NewRequest(http.MethodDelete, "/currencies/"+currencyID.String(), nil)
@@ -256,7 +256,7 @@ func TestCurrencyHandler_Delete_Success(t *testing.T) {
 func TestCurrencyHandler_Delete_NotFound(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	mockUC.On("Delete", mock.Anything, currencyID).
 		Return(entity.ErrNotFound)
 
@@ -273,10 +273,10 @@ func TestCurrencyHandler_Delete_NotFound(t *testing.T) {
 func TestCurrencyHandler_GetCountries_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	countries := []entity.Country{
 		{
-			ID:     uuid.New(),
+			ID:     uuidv7.New(),
 			Code:   "+1",
 			Name:   "United States",
 			ISO2:   "US",
@@ -300,7 +300,7 @@ func TestCurrencyHandler_GetCountries_Success(t *testing.T) {
 func TestCurrencyHandler_GetCountries_NotFound(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
+	currencyID := uuidv7.New()
 	mockUC.On("GetCountries", mock.Anything, currencyID).
 		Return(nil, entity.ErrNotFound)
 
@@ -317,8 +317,8 @@ func TestCurrencyHandler_GetCountries_NotFound(t *testing.T) {
 func TestCurrencyHandler_AddCountry_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
-	countryID := uuid.New()
+	currencyID := uuidv7.New()
+	countryID := uuidv7.New()
 
 	req := dto.AddCountryToCurrencyRequest{
 		CountryID: countryID.String(),
@@ -343,8 +343,8 @@ func TestCurrencyHandler_AddCountry_Success(t *testing.T) {
 func TestCurrencyHandler_RemoveCountry_Success(t *testing.T) {
 	router, mockUC := setupCurrencyExtendedTest()
 
-	currencyID := uuid.New()
-	countryID := uuid.New()
+	currencyID := uuidv7.New()
+	countryID := uuidv7.New()
 
 	mockUC.On("RemoveCountry", mock.Anything, currencyID, countryID).
 		Return(nil)
