@@ -11,8 +11,8 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 149 tests total across all layers - 100% passing
-  - Unit: 119 tests (59 entity + 60 use case)
+- 🧪 **Comprehensive Testing** - 177 tests total across all layers - 100% passing
+  - Unit: 147 tests (87 entity + 60 use case)
   - Integration: 30 tests (repository layer with real PostgreSQL)
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
@@ -168,12 +168,13 @@ promenade/
 │   └── main.go                        # Bootstrap, DI, server setup
 ├── internal/
 │   ├── domain/
-│   │   ├── entity/                    # Business entities (User, UserProfile, UserContact, Country, Currency, Session)
+│   │   ├── entity/                    # Business entities (User, UserProfile, UserContact, UserPost, Country, Currency, Session)
 │   │   └── repository/                # Repository interfaces (ports)
 │   ├── usecase/                       # Business logic orchestration
 │   │   ├── auth_usecase.go           # Login, register, refresh, logout
 │   │   ├── user_contact_usecase.go   # User contacts management
 │   │   ├── user_profile_usecase.go   # User profiles, privacy, moderation
+│   │   ├── user_post_usecase.go      # Blog posts, publishing, engagement
 │   │   ├── country_usecase.go        # Countries CRUD
 │   │   └── currency_usecase.go       # Currencies CRUD
 │   ├── adapter/
@@ -275,12 +276,12 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **149 Total Tests** - 100% passing
-  - **119 Unit Tests**
-    - Entity: 59 tests (User, UserProfile, Country validation)
+- **177 Total Tests** - 100% passing
+  - **147 Unit Tests**
+    - Entity: 87 tests (User, UserProfile, UserPost, Country validation)
     - Use Case: 60 tests (Auth, UserProfile, UserContact business logic)
   - **30 Integration Tests** - Repository layer with real PostgreSQL
-    - User, UserProfile, UserContact, Session, Country, Currency repositories
+    - User, UserProfile, UserContact, UserPost, Session, Country, Currency repositories
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
 - **Test Execution** - ~8 seconds for full suite (unit + integration)
 - **Coverage** - All layers tested (entity validation, business logic, database operations)
@@ -292,12 +293,13 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 | **User**        | 0            | 0             | 7                 | 7       |
 | **UserProfile** | 29           | 32            | 11                | 72      |
 | **UserContact** | 0            | 0             | 3                 | 3       |
+| **UserPost**    | 28           | 0             | 0                 | 28      |
 | **Auth**        | 0            | 0             | 0                 | 0       |
 | **Country**     | 30           | 0             | 2                 | 32      |
 | **Currency**    | 0            | 0             | 2                 | 2       |
 | **Session**     | 0            | 0             | 5                 | 5       |
 | **Other**       | 0            | 28            | 0                 | 28      |
-| **Total**       | **59**       | **60**        | **30**            | **149** |
+| **Total**       | **87**       | **60**        | **30**            | **177** |
 
 ### Running Tests
 
@@ -665,6 +667,86 @@ curl http://localhost:8081/api/v1/users/contacts/primary/email \
 
 # Delete contact
 curl -X DELETE http://localhost:8081/api/v1/users/contacts/{id} \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### User Posts API (Blog/Articles)
+
+```bash
+# Create draft post (requires auth)
+curl -X POST http://localhost:8081/api/v1/posts \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Getting Started with Go",
+    "slug": "getting-started-with-go",
+    "excerpt": "Learn the basics of Go programming",
+    "content": "# Introduction\n\nGo is a statically typed...",
+    "tags": ["go", "programming", "tutorial"],
+    "categories": ["Development", "Go"],
+    "meta_title": "Go Tutorial for Beginners",
+    "meta_description": "Complete guide to getting started with Go",
+    "is_public": true,
+    "is_comments_enabled": true
+  }'
+
+# Publish post
+curl -X POST http://localhost:8081/api/v1/posts/{id}/publish \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Schedule post for future
+curl -X POST http://localhost:8081/api/v1/posts/{id}/publish \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"scheduled_at": "2025-12-20T10:00:00Z"}'
+
+# Get published posts (public)
+curl "http://localhost:8081/api/v1/posts/published?limit=10&offset=0"
+
+# Search posts
+curl "http://localhost:8081/api/v1/posts/search?q=golang&limit=10"
+
+# Get posts by tag
+curl "http://localhost:8081/api/v1/posts/tag/golang?limit=10"
+
+# Get featured posts
+curl "http://localhost:8081/api/v1/posts/featured?limit=5"
+
+# Get user's posts
+curl http://localhost:8081/api/v1/posts/user/{userId} \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Like post
+curl -X POST http://localhost:8081/api/v1/posts/{id}/like \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Unlike post
+curl -X DELETE http://localhost:8081/api/v1/posts/{id}/like \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# View post (increments view count)
+curl -X POST http://localhost:8081/api/v1/posts/{id}/view
+
+# Update post
+curl -X PUT http://localhost:8081/api/v1/posts/{id} \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Updated Title", "content": "Updated content"}'
+
+# Unpublish post (back to draft)
+curl -X POST http://localhost:8081/api/v1/posts/{id}/unpublish \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Toggle featured status (admin)
+curl -X POST http://localhost:8081/api/v1/posts/{id}/featured \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# Toggle comments (admin)
+curl -X POST http://localhost:8081/api/v1/posts/{id}/comments \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# Delete post (soft delete)
+curl -X DELETE http://localhost:8081/api/v1/posts/{id} \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
