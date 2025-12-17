@@ -30,6 +30,27 @@ import (
 	_ "github.com/basilex/promenade/docs/v2"
 )
 
+// @title Promenade API
+// @version 1.0
+// @description Production-ready REST API built with Clean Architecture, featuring PostgreSQL with UUID v7, comprehensive testing infrastructure, JWT authentication, and API versioning.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url https://github.com/basilex/promenade
+// @contact.email support@promenade.dev
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8081
+// @BasePath /api/v1
+// @schemes http https
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
 func main() {
 	// Load config first (before logger init)
 	cfg, err := config.Load()

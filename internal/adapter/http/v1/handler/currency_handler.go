@@ -29,6 +29,7 @@ func NewCurrencyHandler(currencyUseCase usecase.CurrencyUseCase) *CurrencyHandle
 // @Param request body dto.CreateCurrencyRequest true "Currency data"
 // @Success 201 {object} response.Response{data=dto.CurrencyResponse}
 // @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response "Currency already exists"
 // @Failure 500 {object} response.Response
 // @Router /currencies [post]
 func (h *CurrencyHandler) Create(c *gin.Context) {
@@ -57,10 +58,11 @@ func (h *CurrencyHandler) Create(c *gin.Context) {
 // @Summary Get currency by ID
 // @Tags currencies
 // @Produce json
-// @Param id path string true "Currency ID"
+// @Param id path string true "Currency ID" format(uuid)
 // @Param with_countries query bool false "Include countries"
 // @Success 200 {object} response.Response{data=dto.CurrencyResponse}
-// @Failure 404 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid ID format"
+// @Failure 404 {object} response.Response "Currency not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [get]
 func (h *CurrencyHandler) GetByID(c *gin.Context) {
@@ -93,7 +95,7 @@ func (h *CurrencyHandler) GetByID(c *gin.Context) {
 // @Param code path string true "Currency code"
 // @Param with_countries query bool false "Include countries"
 // @Success 200 {object} response.Response{data=dto.CurrencyResponse}
-// @Failure 404 {object} response.Response
+// @Failure 404 {object} response.Response "Currency not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/code/{code} [get]
 func (h *CurrencyHandler) GetByCode(c *gin.Context) {
@@ -122,6 +124,7 @@ func (h *CurrencyHandler) GetByCode(c *gin.Context) {
 // @Param page_size query int false "Page size" default(20)
 // @Param with_countries query bool false "Include countries"
 // @Success 200 {object} response.Response{data=response.PaginatedResponse{items=[]dto.CurrencyResponse}}
+// @Failure 400 {object} response.Response "Invalid parameters"
 // @Failure 500 {object} response.Response
 // @Router /currencies [get]
 func (h *CurrencyHandler) List(c *gin.Context) {
@@ -149,11 +152,11 @@ func (h *CurrencyHandler) List(c *gin.Context) {
 // @Tags currencies
 // @Accept json
 // @Produce json
-// @Param id path string true "Currency ID"
+// @Param id path string true "Currency ID" format(uuid)
 // @Param request body dto.UpdateCurrencyRequest true "Currency data"
 // @Success 200 {object} response.Response{data=dto.CurrencyResponse}
-// @Failure 400 {object} response.Response
-// @Failure 404 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid request"
+// @Failure 404 {object} response.Response "Currency not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [put]
 func (h *CurrencyHandler) Update(c *gin.Context) {
@@ -193,10 +196,10 @@ func (h *CurrencyHandler) Update(c *gin.Context) {
 // @Summary Delete currency
 // @Tags currencies
 // @Produce json
-// @Param id path string true "Currency ID"
+// @Param id path string true "Currency ID" format(uuid)
 // @Success 200 {object} response.Response
-// @Failure 400 {object} response.Response
-// @Failure 404 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid ID format"
+// @Failure 404 {object} response.Response "Currency not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id} [delete]
 func (h *CurrencyHandler) Delete(c *gin.Context) {
@@ -223,11 +226,11 @@ func (h *CurrencyHandler) Delete(c *gin.Context) {
 // @Tags currencies
 // @Accept json
 // @Produce json
-// @Param id path string true "Currency ID"
+// @Param id path string true "Currency ID" format(uuid)
 // @Param request body dto.AddCountryToCurrencyRequest true "Country data"
 // @Success 200 {object} response.Response
-// @Failure 400 {object} response.Response
-// @Failure 404 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid request or ID format"
+// @Failure 404 {object} response.Response "Currency or country not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries [post]
 func (h *CurrencyHandler) AddCountry(c *gin.Context) {
@@ -261,11 +264,11 @@ func (h *CurrencyHandler) AddCountry(c *gin.Context) {
 // @Summary Remove country from currency
 // @Tags currencies
 // @Produce json
-// @Param id path string true "Currency ID"
-// @Param country_id path string true "Country ID"
+// @Param id path string true "Currency ID" format(uuid)
+// @Param country_id path string true "Country ID" format(uuid)
 // @Success 200 {object} response.Response
-// @Failure 400 {object} response.Response
-// @Failure 404 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid ID format"
+// @Failure 404 {object} response.Response "Currency or country not found"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries/{country_id} [delete]
 func (h *CurrencyHandler) RemoveCountry(c *gin.Context) {
@@ -293,9 +296,9 @@ func (h *CurrencyHandler) RemoveCountry(c *gin.Context) {
 // @Summary Get currency countries
 // @Tags currencies
 // @Produce json
-// @Param id path string true "Currency ID"
+// @Param id path string true "Currency ID" format(uuid)
 // @Success 200 {object} response.Response{data=[]dto.CountryResponse}
-// @Failure 400 {object} response.Response
+// @Failure 400 {object} response.Response "Invalid ID format"
 // @Failure 500 {object} response.Response
 // @Router /currencies/{id}/countries [get]
 func (h *CurrencyHandler) GetCountries(c *gin.Context) {

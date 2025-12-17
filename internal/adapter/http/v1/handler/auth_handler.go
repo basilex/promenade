@@ -30,10 +30,10 @@ func NewAuthHandler(authUseCase usecase.AuthUseCase) *AuthHandler {
 // @Accept json
 // @Produce json
 // @Param request body dto.RegisterRequest true "Register request"
-// @Success 201 {object} dto.RegisterResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 409 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 201 {object} response.Response{data=dto.RegisterResponse}
+// @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
@@ -67,11 +67,11 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body dto.LoginRequest true "Login request"
-// @Success 200 {object} dto.LoginResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=dto.LoginResponse}
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 403 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
@@ -131,10 +131,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body dto.LogoutRequest true "Logout request"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	var req dto.LogoutRequest
@@ -163,10 +163,10 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body dto.RefreshTokenRequest true "Refresh token request"
-// @Success 200 {object} dto.RefreshTokenResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=dto.RefreshTokenResponse}
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
@@ -206,9 +206,9 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} dto.UserResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=dto.UserResponse}
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/me [get]
 func (h *AuthHandler) GetMe(c *gin.Context) {
 	// Get user ID from context (set by auth middleware)
@@ -244,9 +244,9 @@ func (h *AuthHandler) GetMe(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} []dto.SessionResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=[]dto.SessionResponse}
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/sessions [get]
 func (h *AuthHandler) GetUserSessions(c *gin.Context) {
 	// Get user ID from context (set by auth middleware)
@@ -280,11 +280,11 @@ func (h *AuthHandler) GetUserSessions(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path string true "User ID"
 // @Param request body dto.SuspendUserRequest true "Suspend user request"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/users/{id}/suspend [post]
 func (h *AuthHandler) SuspendUser(c *gin.Context) {
 	userID, err := uuidv7.Parse(c.Param("id"))
@@ -321,11 +321,11 @@ func (h *AuthHandler) SuspendUser(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path string true "User ID"
 // @Param request body dto.BanUserRequest true "Ban user request"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/users/{id}/ban [post]
 func (h *AuthHandler) BanUser(c *gin.Context) {
 	userID, err := uuidv7.Parse(c.Param("id"))
@@ -361,11 +361,11 @@ func (h *AuthHandler) BanUser(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "User ID"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/users/{id}/reactivate [post]
 func (h *AuthHandler) ReactivateUser(c *gin.Context) {
 	userID, err := uuidv7.Parse(c.Param("id"))

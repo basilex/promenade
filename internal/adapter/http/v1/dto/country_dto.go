@@ -14,7 +14,7 @@ type CountryResponse struct {
 	ISO2       string             `json:"iso2"`
 	ISO3       string             `json:"iso3"`
 	Region     string             `json:"region"`
-	Currencies []CurrencyResponse `json:"currencies,omitempty"`
+	Currencies []CurrencyResponse `json:"currencies,omitempty" swaggerignore:"true"`
 	CreatedAt  time.Time          `json:"created_at"`
 	UpdatedAt  time.Time          `json:"updated_at"`
 }
@@ -43,7 +43,7 @@ type CurrencyResponse struct {
 	Name      string            `json:"name"`
 	Code      string            `json:"code"`
 	Symbol    string            `json:"symbol"`
-	Countries []CountryResponse `json:"countries,omitempty"`
+	Countries []CountryResponse `json:"countries,omitempty" swaggerignore:"true"`
 	CreatedAt time.Time         `json:"created_at"`
 	UpdatedAt time.Time         `json:"updated_at"`
 }
