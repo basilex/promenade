@@ -54,7 +54,7 @@ func (tdb *TestDB) CleanupTables(t *testing.T) {
 	tables := []string{
 		"user_profiles",
 		"user_contacts",
-		"sessions",
+		"user_sessions",
 		"login_attempts",
 		"email_verification_tokens",
 		"password_reset_tokens",
