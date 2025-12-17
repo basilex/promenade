@@ -16,6 +16,7 @@ type Config struct {
 }
 
 type ServerConfig struct {
+	Host         string
 	Port         string
 	Environment  string
 	ReadTimeout  time.Duration
@@ -68,6 +69,7 @@ func Load() (*Config, error) {
 	// If no file found - not an error, use environment variables
 	return &Config{
 		Server: ServerConfig{
+			Host:         getEnv("SERVER_HOST", "0.0.0.0"),
 			Port:         getEnv("SERVER_PORT", "8080"),
 			Environment:  getEnv("ENVIRONMENT", "development"),
 			ReadTimeout:  getDurationEnv("SERVER_READ_TIMEOUT", 15*time.Second),
