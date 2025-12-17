@@ -108,6 +108,7 @@ func main() {
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 
 	// Initialize modules (each module encapsulates its own dependencies)
+	healthRouter := router.InitHealthModule()
 	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
@@ -139,15 +140,6 @@ func main() {
 	r.Use(middleware.Logger())
 	r.Use(middleware.CORS())
 
-	// Health check
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"service": "promenade",
-			"time":    time.Now().Unix(),
-		})
-	})
-
 	// API routes
 	api := r.Group("/api")
 
@@ -160,7 +152,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(authRouter, countryRouter, currencyRouter, userContactRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter)
 		v1Router.Setup(v1)
 	}
 

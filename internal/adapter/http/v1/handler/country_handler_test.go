@@ -26,7 +26,7 @@ func TestCountryHandler_Create_InvalidJSON(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 	assert.Contains(t, response, "error")
@@ -46,7 +46,7 @@ func TestCountryHandler_GetByID_InvalidUUID(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Contains(t, response, "error")
 }
@@ -65,7 +65,7 @@ func TestCountryHandler_List_InvalidRegion(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	json.Unmarshal(w.Body.Bytes(), &response)
 	// Response contains "message" field, not "error"
 	assert.Contains(t, response, "message")

@@ -26,7 +26,7 @@ func TestCurrencyHandler_Create_InvalidJSON(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Contains(t, response, "error")
 }
@@ -45,7 +45,7 @@ func TestCurrencyHandler_GetByID_InvalidUUID(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Contains(t, response, "error")
 }
