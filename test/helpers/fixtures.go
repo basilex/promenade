@@ -91,3 +91,68 @@ func ExpiredSessionFixture(userID uuidv7.UUID) *entity.Session {
 		s.ExpiresAt = time.Now().Add(-1 * time.Hour)
 	})
 }
+
+// UserContactFixture creates a test user contact
+func UserContactFixture(userID uuidv7.UUID, contactType entity.ContactType, overrides ...func(*entity.UserContact)) *entity.UserContact {
+	id := uuidv7.New()
+	contactValue := fmt.Sprintf("test-%s@example.com", id.String())
+	if contactType == entity.ContactTypePhone {
+		contactValue = "+1234567890"
+	}
+
+	contact := &entity.UserContact{
+		ID:           id,
+		UserID:       userID,
+		ContactType:  contactType,
+		ContactValue: contactValue,
+		IsVerified:   false,
+		IsPrimary:    false,
+		IsActive:     true,
+		IsPublic:     true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	// Apply overrides
+	for _, override := range overrides {
+		override(contact)
+	}
+
+	return contact
+}
+
+// UserProfileFixture creates a test user profile
+func UserProfileFixture(userID uuidv7.UUID, nickname string, overrides ...func(*entity.UserProfile)) *entity.UserProfile {
+	displayName := "Test User"
+	bio := "Test bio"
+
+	profile := &entity.UserProfile{
+		ID:                uuidv7.New(),
+		UserID:            userID,
+		DisplayName:       &displayName,
+		Nickname:          &nickname,
+		Bio:               &bio,
+		Timezone:          "UTC",
+		Locale:            "en",
+		IsPublic:          true,
+		IsVerified:        false,
+		ShowEmail:         false,
+		ShowLocation:      false,
+		ShowBirthday:      false,
+		ProfileViewsCount: 0,
+		FollowersCount:    0,
+		FollowingCount:    0,
+		IsBanned:          false,
+		SocialLinks:       entity.SocialLinks{},
+		Preferences:       entity.Preferences{},
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
+	}
+
+	// Apply overrides
+	for _, override := range overrides {
+		override(profile)
+	}
+
+	return profile
+}

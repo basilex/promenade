@@ -11,9 +11,9 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 77 tests total across all layers - 100% passing
-  - Unit: 58 tests (30 entity + 28 use case)
-  - Integration: 19 tests (repository layer)
+- 🧪 **Comprehensive Testing** - 149 tests total across all layers - 100% passing
+  - Unit: 119 tests (59 entity + 60 use case)
+  - Integration: 30 tests (repository layer with real PostgreSQL)
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -82,6 +82,7 @@ make test-integration
 - [ID Strategies](docs/ID_STRATEGIES.md) - Primary key strategy recommendations
 - [Auth Schema](docs/AUTH_SCHEMA.md) - Database schema for authentication system
 - [Test Results](docs/TEST_RESULTS.md) - Current test coverage and results
+- [User Profiles Test Results](docs/USER_PROFILES_TEST_RESULTS.md) - User profiles module test coverage (72 tests)
 
 **Language Policy:** All documentation and code comments are in English. Russian versions (.ru.md) are kept for reference.
 
@@ -167,11 +168,12 @@ promenade/
 │   └── main.go                        # Bootstrap, DI, server setup
 ├── internal/
 │   ├── domain/
-│   │   ├── entity/                    # Business entities (User, UserContact, Country, Currency, Session)
+│   │   ├── entity/                    # Business entities (User, UserProfile, UserContact, Country, Currency, Session)
 │   │   └── repository/                # Repository interfaces (ports)
 │   ├── usecase/                       # Business logic orchestration
 │   │   ├── auth_usecase.go           # Login, register, refresh, logout
 │   │   ├── user_contact_usecase.go   # User contacts management
+│   │   ├── user_profile_usecase.go   # User profiles, privacy, moderation
 │   │   ├── country_usecase.go        # Countries CRUD
 │   │   └── currency_usecase.go       # Currencies CRUD
 │   ├── adapter/
@@ -195,7 +197,7 @@ promenade/
 │   │   └── fixtures.go              # User & session fixtures
 │   ├── integration/                  # Integration tests (planned)
 │   ├── e2e/                         # End-to-end tests (planned)
-│   └── mocks/                       # Mock repositories (planned)
+│   └── mocks/                       # Mock repositories (UserProfile, etc.)
 ├── migrations/                       # Database migrations (golang-migrate)
 ├── docker/
 │   ├── docker-compose.yml           # Dev database (port 5432)
@@ -273,12 +275,29 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **77 Total Tests** - 100% passing
-  - **58 Unit Tests** - Entity (30) + Use Case (28)
-  - **19 Integration Tests** - Repository layer with real PostgreSQL
+- **149 Total Tests** - 100% passing
+  - **119 Unit Tests**
+    - Entity: 59 tests (User, UserProfile, Country validation)
+    - Use Case: 60 tests (Auth, UserProfile, UserContact business logic)
+  - **30 Integration Tests** - Repository layer with real PostgreSQL
+    - User, UserProfile, UserContact, Session, Country, Currency repositories
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
-- **Test Execution** - ~10 seconds for full suite (unit + integration)
+- **Test Execution** - ~8 seconds for full suite (unit + integration)
 - **Coverage** - All layers tested (entity validation, business logic, database operations)
+
+#### Module Test Breakdown
+
+| Module          | Entity Tests | UseCase Tests | Integration Tests | Total   |
+| --------------- | ------------ | ------------- | ----------------- | ------- |
+| **User**        | 0            | 0             | 7                 | 7       |
+| **UserProfile** | 29           | 32            | 11                | 72      |
+| **UserContact** | 0            | 0             | 3                 | 3       |
+| **Auth**        | 0            | 0             | 0                 | 0       |
+| **Country**     | 30           | 0             | 2                 | 32      |
+| **Currency**    | 0            | 0             | 2                 | 2       |
+| **Session**     | 0            | 0             | 5                 | 5       |
+| **Other**       | 0            | 28            | 0                 | 28      |
+| **Total**       | **59**       | **60**        | **30**            | **149** |
 
 ### Running Tests
 
@@ -538,6 +557,61 @@ curl -X GET http://localhost:8081/api/v1/products \
 ```
 
 ## 📚 API Examples
+
+### User Profiles API
+
+```bash
+# Create user profile (requires auth)
+curl -X POST http://localhost:8081/api/v1/profiles \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nickname": "johndoe",
+    "display_name": "John Doe",
+    "bio": "Software engineer and tech enthusiast",
+    "timezone": "Europe/Kiev",
+    "locale": "en",
+    "is_public": true
+  }'
+
+# Get user profile
+curl http://localhost:8081/api/v1/profiles/{id} \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Update profile
+curl -X PUT http://localhost:8081/api/v1/profiles/{id} \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bio": "Updated bio",
+    "website": "https://example.com",
+    "location": "Kyiv, Ukraine"
+  }'
+
+# Search profiles
+curl "http://localhost:8081/api/v1/profiles/search?q=john&limit=10&offset=0"
+
+# Get profile by nickname
+curl http://localhost:8081/api/v1/profiles/nickname/johndoe
+
+# Increment profile views (automatically called when viewing)
+curl -X POST http://localhost:8081/api/v1/profiles/{id}/views \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Admin: Ban profile
+curl -X POST http://localhost:8081/api/v1/profiles/{id}/ban \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Violation of terms"}'
+
+# Admin: Unban profile
+curl -X POST http://localhost:8081/api/v1/profiles/{id}/unban \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+# Admin: Verify profile (blue checkmark)
+curl -X POST http://localhost:8081/api/v1/profiles/{id}/verify \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+```
 
 ### User Contacts API
 

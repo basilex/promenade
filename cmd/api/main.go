@@ -113,9 +113,9 @@ func main() {
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
 	userContactRouter := router.InitUserContactModule(db, authMiddleware)
+	userProfileRouter := router.InitUserProfileModule(db, authMiddleware)
 	// Future modules:
 	// rbacRouter := router.InitRBACModule(db, authMiddleware)
-	// profileRouter := router.InitProfileModule(db, authMiddleware, cache)
 	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
 
 	// Setup HTTP server
@@ -152,7 +152,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter)
 		v1Router.Setup(v1)
 	}
 
