@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestCommentLikes_SmokeTest - быстрый end-to-end smoke test для функционала лайков комментариев
+// TestCommentLikes_SmokeTest - fast end-to-end smoke test for comment likes functionality
 func TestCommentLikes_SmokeTest(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping smoke test in short mode")
@@ -150,7 +150,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 	t.Log("🎉 All comment_likes smoke tests passed!")
 }
 
-// TestCommentLikes_Performance - быстрая проверка производительности
+// TestCommentLikes_Performance - quick performance check
 func TestCommentLikes_Performance(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping performance test in short mode")

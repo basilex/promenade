@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestUserProfile_SmokeTest - быстрый end-to-end smoke test для user profiles
+// TestUserProfile_SmokeTest - fast end-to-end smoke test for user profiles
 func TestUserProfile_SmokeTest(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping smoke test in short mode")
