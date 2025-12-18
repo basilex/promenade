@@ -2070,7 +2070,7 @@ This project follows industry best practices:
 - [+] **Swagger documentation** - Auto-generated from code
 - [+] **Code generation** - Templates for boilerplate
 
-## 🤝 Contributing
+## * Contributing
 
 We welcome contributions! Please follow these guidelines:
 
