@@ -21,6 +21,11 @@ Docker Compose runs the following services:
 
    - Database with healthcheck
    - Persistent volume: `postgres_data`
+   - **Auto-creates databases:** On first startup, automatically creates:
+     - `promenade_prod` (production, default)
+     - `promenade_dev` (development)
+     - `promenade_test` (testing)
+   - Init script: `docker/init-db.sh`
 
 2. **Redis** (port 6379)
 
@@ -29,15 +34,16 @@ Docker Compose runs the following services:
 
 3. **Migrate**
 
-   - Applies migrations on startup
+   - Applies migrations to `promenade_prod` on startup
    - Runs once, then exits
+   - For dev database, run manually: `make migrate-up`
 
 4. **App** (port 8080)
    - Promenade API service
    - Depends on postgres and migrate
    - Automatically restarts on failure
 
-##  Building the Image
+## Building the Image
 
 ```bash
 # With version (recommended)
@@ -132,7 +138,68 @@ BUS_RETRY_DELAY=1s
 
 [!] **Important**: Change `JWT_SECRET` and DB passwords in production!
 
+## Database Initialization
+
+### Automatic Database Creation
+
+PostgreSQL container uses an init script (`docker/init-db.sh`) that automatically creates three databases on **first startup**:
+
+```sql
+promenade_prod  -- Production database (migrations applied by migrate service)
+promenade_dev   -- Development database (for local `make dev`)
+promenade_test  -- Test database (for integration tests)
+```
+
+**How it works:**
+
+1. Docker mounts `init-db.sh` to `/docker-entrypoint-initdb.d/`
+2. PostgreSQL executes scripts in this directory once during first container initialization
+3. Databases are created only if they don't exist
+4. Subsequent starts skip init scripts (data persists in `postgres_data` volume)
+
+**Fresh Start:**
+
+```bash
+# Remove all containers and volumes
+make docker-clean
+
+# Restart - databases will be recreated
+make docker-up
+```
+
+### Manual Database Operations
+
+For development work with `promenade_dev`:
+
+```bash
+# Apply migrations to dev database
+make migrate-up
+
+# Rollback last migration
+make migrate-down
+
+# Check migration status
+make migrate-status
+```
+
 ## [!] Troubleshooting
+
+### Issue: Database "promenade_dev" does not exist
+
+**Cause**: You ran `make clean` or `make docker-clean` which removed the volumes.
+
+**Solution**:
+
+```bash
+# Restart Docker services (databases will be auto-created)
+make docker-up
+
+# Apply migrations to dev database
+make migrate-up
+
+# Start app
+make dev
+```
 
 ### Issue: Connection refused to database
 

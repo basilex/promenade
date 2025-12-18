@@ -88,6 +88,14 @@ make docker-up
 curl http://localhost:8080/api/v1/health
 ```
 
+**Database Auto-Creation:** PostgreSQL container automatically creates three databases on first startup:
+
+- `promenade_prod` - Production database (with migrations applied via migrate service)
+- `promenade_dev` - Development database (requires manual `make migrate-up` for local dev)
+- `promenade_test` - Test database (used by integration tests)
+
+**Clean Slate:** Use `make docker-clean` to remove all containers and volumes, then `make docker-up` to recreate with fresh databases.
+
 -> **Docker details**: See [docker/README.md](docker/README.md) for comprehensive Docker documentation.
 
 ### Quick Test
