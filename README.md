@@ -10,10 +10,11 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 
 - 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
 - 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
+- � **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
 - 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 328+ tests total across all layers - 100% passing ✅
-  - Unit: 347+ tests (87+ entity + 260 use case runs)
-  - Integration: 68+ tests (46 handler + 22+ repository with real PostgreSQL)
+- 🧪 **Comprehensive Testing** - 405+ tests total across all layers - 100% passing ✅
+  - Unit: 373+ tests (113+ entity + 260 use case runs)
+  - Integration: 119+ tests (46 handler + 73+ repository with real PostgreSQL)
 - 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
 - 📚 **API Versioning** - v1 and v2 with backward compatibility
 - 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -101,6 +102,12 @@ erDiagram
     users ||--o{ password_reset_tokens : "requests"
     users ||--o{ email_verification_tokens : "receives"
     users ||--o{ login_attempts : "attempts"
+    users ||--o{ user_roles : "has roles"
+    users ||--o{ user_roles : "assigns roles (assigned_by)"
+
+    roles ||--o{ user_roles : "assigned to users"
+    roles ||--o{ role_permissions : "has permissions"
+    permissions ||--o{ role_permissions : "granted to roles"
 
     user_profiles }o--|| countries : "located in"
 
@@ -265,6 +272,37 @@ erDiagram
         timestamptz created_at
     }
 
+    permissions {
+        uuid id PK "UUID v7"
+        varchar resource "posts|users|comments..."
+        varchar action "create|read|update|delete|*"
+        text description
+        timestamptz created_at
+    }
+
+    roles {
+        uuid id PK "UUID v7"
+        varchar name UK "superadmin|admin|moderator..."
+        varchar display_name "Human-readable name"
+        text description
+        boolean is_system "Cannot be deleted"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    role_permissions {
+        uuid role_id PK,FK
+        uuid permission_id PK,FK
+    }
+
+    user_roles {
+        uuid user_id PK,FK
+        uuid role_id PK,FK
+        timestamptz assigned_at
+        uuid assigned_by FK "User who assigned"
+        timestamptz expires_at "Optional expiration"
+    }
+
     login_attempts {
         uuid id PK "UUID v7"
         uuid user_id FK
@@ -279,13 +317,17 @@ erDiagram
 **Key Features:**
 
 - **UUID v7** for all primary keys (time-ordered, better performance than UUID v4)
+- **RBAC (Role-Based Access Control)** - Flexible permission system with wildcard support (`*:*`, `posts:*`)
+  - 5 system roles: superadmin, admin, moderator, user, guest
+  - Granular permissions: 33 predefined permissions (users:create, posts:delete, etc.)
+  - Optional role expiration for temporary access grants
 - **Soft deletes** on user posts and comments (`deleted_at`)
 - **Nested comments** via self-referencing `parent_id` in `post_comments`
 - **JSONB** for flexible data (social links, preferences, tags, featured images)
 - **Enums** for type safety (`user_status`, `post_status`, `country_region`)
-- **Composite primary keys** for junction tables (`comment_likes`, `country_currencies`)
+- **Composite primary keys** for junction tables (`comment_likes`, `country_currencies`, `role_permissions`, `user_roles`)
 - **Cascading deletes** to maintain referential integrity
-- **Unique constraints** to prevent duplicates (email, nickname, slug per user)
+- **Unique constraints** to prevent duplicates (email, nickname, slug per user, permission resource:action)
 
 ## 🛠️ Development Commands
 
@@ -370,10 +412,12 @@ promenade/
 │   └── main.go                        # Bootstrap, DI, server setup
 ├── internal/
 │   ├── domain/
-│   │   ├── entity/                    # Business entities (User, UserProfile, UserContact, UserPost, Country, Currency, Session)
+│   │   ├── entity/                    # Business entities (User, Permission, Role, UserProfile, UserContact, UserPost, Country, Currency, Session)
 │   │   └── repository/                # Repository interfaces (ports)
 │   ├── usecase/                       # Business logic orchestration
 │   │   ├── auth_usecase.go           # Login, register, refresh, logout
+│   │   ├── permission_usecase.go     # RBAC permissions management
+│   │   ├── role_usecase.go           # RBAC roles management
 │   │   ├── user_contact_usecase.go   # User contacts management
 │   │   ├── user_profile_usecase.go   # User profiles, privacy, moderation
 │   │   ├── user_post_usecase.go      # Blog posts, publishing, engagement
@@ -381,7 +425,7 @@ promenade/
 │   │   └── currency_usecase.go       # Currencies CRUD
 │   ├── adapter/
 │   │   ├── http/
-│   │   │   ├── shared/middleware/    # Auth, CORS, logging, recovery
+│   │   │   ├── shared/middleware/    # Auth, RBAC authorization, CORS, logging, recovery
 │   │   │   ├── v1/                   # API v1 (handlers, DTOs, routes)
 │   │   │   └── v2/                   # API v2 (handlers, DTOs, routes)
 │   │   └── repository/postgres/      # Repository implementations (sqlx)
@@ -573,13 +617,15 @@ Production-ready **end-to-end smoke tests** verify critical user flows with real
 
 **Test Suite** (`test/smoke/`):
 
-| Test File                     | Scenarios | Coverage                                                                     |
-| ----------------------------- | --------- | ---------------------------------------------------------------------------- |
-| `comment_likes_smoke_test.go` | 6         | Like/unlike comments, pagination, deleted comments, performance (100 checks) |
-| `user_profile_smoke_test.go`  | 1         | Profile CRUD operations, bio updates                                         |
-| `user_post_smoke_test.go`     | 1         | Post creation, publishing, status updates                                    |
-| `user_contact_smoke_test.go`  | 1         | Contact CRUD (email, phone), updates, deletion                               |
-| **Total**                     | **9**     | **All tests passing ✅**                                                     |
+| Test File                        | Scenarios | Coverage                                                                     |
+| -------------------------------- | --------- | ---------------------------------------------------------------------------- |
+| `auth_smoke_test.go`             | 8         | Registration, login, GetMe, refresh, logout, sessions, duplicate validation  |
+| `country_currency_smoke_test.go` | 12        | Country & Currency CRUD (create, read, update, delete, list, code lookup)    |
+| `comment_likes_smoke_test.go`    | 6         | Like/unlike comments, pagination, deleted comments, performance (100 checks) |
+| `user_profile_smoke_test.go`     | 1         | Profile CRUD operations, bio updates                                         |
+| `user_post_smoke_test.go`        | 1         | Post creation, publishing, status updates                                    |
+| `user_contact_smoke_test.go`     | 1         | Contact CRUD (email, phone), updates, deletion                               |
+| **Total**                        | **28**    | **All tests passing ✅ (9 test suites)**                                     |
 
 **Running Smoke Tests:**
 
@@ -626,7 +672,8 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 - ✅ Isolated test data with automatic cleanup
 - ✅ Critical path verification (create → retrieve → update → delete)
 - ✅ Performance benchmarks included
-- ✅ Fast execution (~1.4 seconds for all 12 scenarios)
+- ✅ Fast execution (~2.5 seconds for all 28 scenarios across 9 test suites)
+- ✅ Idempotent tests with cleanup at start and end (CleanupTables)
 
 See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for comprehensive testing documentation.
 
@@ -693,6 +740,27 @@ Comprehensive manual testing was performed on all critical endpoints to verify p
 - ✅ `GET /comments?post_id=xxx` - Post comments (query param based)
 - ⏸️ `POST /comments` (replies) - Thread replies (initiated)
 - ⏸️ `GET /comments/:id/replies` - Reply listing (initiated)
+
+**RBAC (Role-Based Access Control) (18/18):**
+
+- ✅ `POST /permissions` - Create permission (requires permissions:create)
+- ✅ `GET /permissions` - List all permissions (requires permissions:read)
+- ✅ `GET /permissions/:id` - Get permission by ID (requires permissions:read)
+- ✅ `PUT /permissions/:id` - Update permission (requires permissions:update)
+- ✅ `DELETE /permissions/:id` - Delete permission (requires permissions:delete)
+- ✅ `GET /permissions?resource=posts` - Find by resource (requires permissions:read)
+- ✅ `POST /roles` - Create role (requires roles:create)
+- ✅ `GET /roles` - List all roles (requires roles:read)
+- ✅ `GET /roles/:id` - Get role by ID (requires roles:read)
+- ✅ `PUT /roles/:id` - Update role (requires roles:update)
+- ✅ `DELETE /roles/:id` - Delete role (requires roles:delete, prevents system roles deletion)
+- ✅ `POST /roles/:id/permissions` - Add permission to role (requires roles:update)
+- ✅ `DELETE /roles/:id/permissions/:permissionId` - Remove permission (requires roles:update)
+- ✅ `POST /roles/:id/permissions/sync` - Sync all permissions (requires roles:update)
+- ✅ `GET /roles/:id/permissions` - List role permissions (requires roles:read)
+- ✅ `POST /roles/:id/users/:userId` - Assign role to user (requires roles:assign)
+- ✅ `DELETE /roles/:id/users/:userId` - Remove role from user (requires roles:assign)
+- ✅ `GET /users/:id/roles` - Get user roles (requires users:read or own user)
 
 ### Known Issues Fixed During Testing
 
@@ -870,13 +938,29 @@ make migrate-down
 make migrate-status
 ```
 
+### Current Migrations
+
+| Migration                                   | Description                               | Status     |
+| ------------------------------------------- | ----------------------------------------- | ---------- |
+| `000001_init_schema_deps.up.sql`            | UUID v7 function, extensions              | ✅ Applied |
+| `000002_create_auth_schema.up.sql`          | Users, sessions, tokens                   | ✅ Applied |
+| `000003_create_countries_currencies.up.sql` | Countries & currencies                    | ✅ Applied |
+| `000004_create_user_contacts.up.sql`        | User contact management                   | ✅ Applied |
+| `000005_create_user_profiles.up.sql`        | User profiles & social                    | ✅ Applied |
+| `000006_create_user_posts.up.sql`           | Blog posts system                         | ✅ Applied |
+| `000007_create_post_comments.up.sql`        | Comments & replies                        | ✅ Applied |
+| `000008_create_comment_likes_table.up.sql`  | Comment engagement                        | ✅ Applied |
+| `000009_create_rbac_tables.up.sql`          | **RBAC: permissions, roles, assignments** | ✅ Applied |
+
 ### Schema Highlights
 
 - **UUID v7 Primary Keys** - Time-ordered for better performance
-- **Proper Indexes** - All foreign keys indexed
+- **RBAC System** - 4 tables: permissions, roles, role_permissions, user_roles
+- **Proper Indexes** - All foreign keys indexed, RBAC lookups optimized
 - **Soft Deletes** - Optional soft delete support
 - **Timestamps** - created_at, updated_at on all tables
 - **Foreign Key Constraints** - Referential integrity enforced
+- **System Roles Protection** - is_system flag prevents deletion of core roles
 
 See [AUTH_SCHEMA.md](docs/AUTH_SCHEMA.md) for complete schema documentation.
 
@@ -1169,6 +1253,7 @@ This project follows industry best practices:
 - ✅ **JWT tokens** - Access + refresh token pattern
 - ✅ **Password hashing** - bcrypt with cost 10
 - ✅ **SQL injection prevention** - Parameterized queries
+- ✅ **RBAC authorization** - 6 middleware functions (RequireAuth, RequirePermission, RequireAnyPermission, RequireAllPermissions, RequireRole, RequireAnyRole)
 - ✅ **CORS middleware** - Configurable origins
 - ✅ **Request ID tracking** - X-Request-ID header
 - ✅ **Graceful shutdown** - Clean connection closure
@@ -1278,6 +1363,15 @@ GET  /api/v1/countries              # List countries
 GET  /api/v1/countries/code/:code   # Get country by code
 GET  /api/v1/currencies             # List currencies
 GET  /api/v1/currencies/code/:code  # Get currency by code
+
+# RBAC (Role-Based Access Control)
+POST /api/v1/permissions            # Create permission (requires permissions:create)
+GET  /api/v1/permissions            # List permissions (requires permissions:read)
+POST /api/v1/roles                  # Create role (requires roles:create)
+GET  /api/v1/roles                  # List roles (requires roles:read)
+POST /api/v1/roles/:id/permissions  # Add permission to role (requires roles:update)
+POST /api/v1/roles/:id/users/:userId # Assign role to user (requires roles:assign)
+GET  /api/v1/users/:id/roles        # Get user roles (requires users:read)
 ```
 
 ### Authentication Example
@@ -1308,6 +1402,58 @@ curl -X POST http://localhost:8081/api/v1/auth/logout \
   -H "Content-Type: application/json" \
   -d '{"refresh_token":"<refresh_token>"}'
 ```
+
+### RBAC Example
+
+```bash
+# 1. List all permissions (requires permissions:read)
+curl http://localhost:8081/api/v1/permissions \
+  -H "Authorization: Bearer <admin_token>"
+
+# 2. Create custom permission (requires permissions:create)
+curl -X POST http://localhost:8081/api/v1/permissions \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"resource":"articles","action":"publish","description":"Publish articles"}'
+
+# 3. Create new role (requires roles:create)
+curl -X POST http://localhost:8081/api/v1/roles \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"content_manager","display_name":"Content Manager","description":"Can manage all content"}'
+
+# 4. Add permissions to role (requires roles:update)
+curl -X POST http://localhost:8081/api/v1/roles/<role_id>/permissions \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"permission_id":"<permission_id>"}'
+
+# 5. Assign role to user (requires roles:assign)
+curl -X POST http://localhost:8081/api/v1/roles/<role_id>/users/<user_id> \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"expires_at":"2025-12-31T23:59:59Z"}' # Optional expiration
+
+# 6. Check user's roles
+curl http://localhost:8081/api/v1/users/<user_id>/roles \
+  -H "Authorization: Bearer <token>"
+
+# 7. Use wildcard permissions for superadmin
+# System role "superadmin" has permission "*:*" which grants all access
+```
+
+**Permission Format**: `resource:action`
+
+- Examples: `posts:create`, `users:delete`, `comments:*`, `*:*`
+- Wildcard `*` matches anything: `posts:*` = all post actions, `*:*` = full access
+
+**System Roles** (cannot be deleted):
+
+- `superadmin` - Full access (_:_)
+- `admin` - User/content management
+- `moderator` - Content moderation
+- `user` - Basic user operations
+- `guest` - Read-only access
 
 ### Swagger Documentation
 

@@ -52,6 +52,8 @@ func (tdb *TestDB) Close() {
 // CleanupTables truncates all tables (except migrations)
 func (tdb *TestDB) CleanupTables(t *testing.T) {
 	tables := []string{
+		"user_roles",       // RBAC: must be before roles and users
+		"role_permissions", // RBAC: must be before roles and permissions
 		"comment_likes",
 		"post_comments",
 		"user_posts",
@@ -62,6 +64,10 @@ func (tdb *TestDB) CleanupTables(t *testing.T) {
 		"email_verification_tokens",
 		"password_reset_tokens",
 		"users",
+		"roles",       // RBAC: after junction tables
+		"permissions", // RBAC: after junction tables
+		"countries",   // Geography tables
+		"currencies",  // Geography tables
 	}
 
 	for _, table := range tables {

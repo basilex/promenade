@@ -24,6 +24,7 @@ import (
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/internal/usecase"
 	"github.com/basilex/promenade/pkg/logger"
 
 	// Import swagger docs
@@ -108,6 +109,12 @@ func main() {
 	// Initialize shared middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 
+	// Initialize RBAC use case and authorization middleware
+	roleRepo := postgres.NewRoleRepository(db)
+	permissionRepo := postgres.NewPermissionRepository(db)
+	roleUseCase := usecase.NewRoleUseCase(roleRepo, permissionRepo)
+	authzMiddleware := middleware.NewAuthorizationMiddleware(roleUseCase)
+
 	// Initialize modules (each module encapsulates its own dependencies)
 	healthRouter := router.InitHealthModule()
 	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
@@ -121,8 +128,10 @@ func main() {
 	userPostRepo := postgres.NewUserPostRepository(db)
 	postCommentRouter := router.InitPostCommentModule(db, authMiddleware, userPostRepo)
 
+	// RBAC module
+	rbacRouter := router.InitRBACModule(db, authMiddleware, authzMiddleware)
+
 	// Future modules:
-	// rbacRouter := router.InitRBACModule(db, authMiddleware)
 	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
 
 	// Setup HTTP server
@@ -159,7 +168,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter, rbacRouter)
 		v1Router.Setup(v1)
 	}
 

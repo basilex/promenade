@@ -156,3 +156,62 @@ func UserProfileFixture(userID uuidv7.UUID, nickname string, overrides ...func(*
 
 	return profile
 }
+
+// PermissionFixture creates a test permission
+func PermissionFixture(resource, action string, overrides ...func(*entity.Permission)) *entity.Permission {
+	desc := fmt.Sprintf("Permission to %s %s", action, resource)
+	permission := &entity.Permission{
+		ID:          uuidv7.New(),
+		Resource:    resource,
+		Action:      action,
+		Description: &desc,
+		CreatedAt:   time.Now(),
+	}
+
+	// Apply overrides
+	for _, override := range overrides {
+		override(permission)
+	}
+
+	return permission
+}
+
+// RoleFixture creates a test role
+func RoleFixture(name string, overrides ...func(*entity.Role)) *entity.Role {
+	desc := fmt.Sprintf("Test role: %s", name)
+	role := &entity.Role{
+		ID:          uuidv7.New(),
+		Name:        name,
+		DisplayName: name,
+		Description: &desc,
+		IsSystem:    false,
+		Permissions: []*entity.Permission{},
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	// Apply overrides
+	for _, override := range overrides {
+		override(role)
+	}
+
+	return role
+}
+
+// UserRoleFixture creates a test user role assignment
+func UserRoleFixture(userID, roleID uuidv7.UUID, overrides ...func(*entity.UserRole)) *entity.UserRole {
+	userRole := &entity.UserRole{
+		UserID:     userID,
+		RoleID:     roleID,
+		AssignedAt: time.Now(),
+		AssignedBy: nil,
+		ExpiresAt:  nil,
+	}
+
+	// Apply overrides
+	for _, override := range overrides {
+		override(userRole)
+	}
+
+	return userRole
+}

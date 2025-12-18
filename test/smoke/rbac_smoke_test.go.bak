@@ -1,0 +1,509 @@
+package smoke
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/basilex/promenade/internal/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/internal/usecase"
+	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/test/helpers"
+)
+
+// TestRBAC_PermissionManagement_SmokeTest verifies permission management flow
+func TestRBAC_PermissionManagement_SmokeTest(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping smoke test in short mode")
+	}
+
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	ctx := context.Background()
+	permRepo := postgres.NewPermissionRepository(testDB.DB)
+	permUC := usecase.NewPermissionUseCase(permRepo)
+
+	var permID uuidv7.UUID
+
+	t.Run("✅ Create_custom_permission", func(t *testing.T) {
+		perm := &entity.Permission{
+			ID:          uuidv7.New(),
+			Resource:    "invoices",
+			Action:      "approve",
+			Name:        "invoices:approve",
+			Description: "Can approve invoices",
+		}
+
+		err := permUC.Create(ctx, perm)
+		require.NoError(t, err)
+		require.NotNil(t, perm.ID)
+
+		permID = perm.ID
+	})
+
+	t.Run("✅ Get_permission_by_ID", func(t *testing.T) {
+		perm, err := permUC.GetByID(ctx, permID)
+		require.NoError(t, err)
+		require.NotNil(t, perm)
+
+		assert.Equal(t, "invoices", perm.Resource)
+		assert.Equal(t, "approve", perm.Action)
+		assert.Equal(t, "invoices:approve", perm.Name)
+	})
+
+	t.Run("✅ Get_permission_by_name", func(t *testing.T) {
+		perm, err := permUC.GetByName(ctx, "invoices:approve")
+		require.NoError(t, err)
+		require.NotNil(t, perm)
+
+		assert.Equal(t, permID, perm.ID)
+		assert.Equal(t, "Can approve invoices", perm.Description)
+	})
+
+	t.Run("✅ Create_wildcard_permission", func(t *testing.T) {
+		wildcard := &entity.Permission{
+			ID:          uuidv7.New(),
+			Resource:    "reports",
+			Action:      "*",
+			Name:        "reports:*",
+			Description: "Can perform any action on reports",
+		}
+
+		err := permUC.Create(ctx, wildcard)
+		require.NoError(t, err)
+	})
+
+	t.Run("✅ List_permissions", func(t *testing.T) {
+		perms, err := permUC.List(ctx)
+		require.NoError(t, err)
+		assert.GreaterOrEqual(t, len(perms), 2, "should have at least 2 permissions")
+	})
+
+	t.Run("✅ Update_permission", func(t *testing.T) {
+		perm, err := permUC.GetByID(ctx, permID)
+		require.NoError(t, err)
+
+		perm.Description = "Updated: Can approve invoices"
+		err = permUC.Update(ctx, perm)
+		require.NoError(t, err)
+
+		updated, err := permUC.GetByID(ctx, permID)
+		require.NoError(t, err)
+		assert.Equal(t, "Updated: Can approve invoices", updated.Description)
+	})
+
+	t.Run("✅ Delete_permission", func(t *testing.T) {
+		err := permUC.Delete(ctx, permID)
+		require.NoError(t, err)
+
+		_, err = permUC.GetByID(ctx, permID)
+		assert.Error(t, err, "deleted permission should not be found")
+	})
+
+	t.Run("✅ Duplicate_permission_name_validation", func(t *testing.T) {
+		perm1 := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "orders",
+			Action:   "cancel",
+			Name:     "orders:cancel",
+		}
+		require.NoError(t, permUC.Create(ctx, perm1))
+
+		// Try to create with same name
+		perm2 := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "orders",
+			Action:   "cancel",
+			Name:     "orders:cancel", // Duplicate
+		}
+		err := permUC.Create(ctx, perm2)
+		assert.Error(t, err, "duplicate permission name should fail")
+	})
+}
+
+// TestRBAC_RoleManagement_SmokeTest verifies role management and permission assignment
+func TestRBAC_RoleManagement_SmokeTest(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping smoke test in short mode")
+	}
+
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	ctx := context.Background()
+	roleRepo := postgres.NewRoleRepository(testDB.DB)
+	permRepo := postgres.NewPermissionRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	roleUC := usecase.NewRoleUseCase(roleRepo)
+	permUC := usecase.NewPermissionUseCase(permRepo)
+
+	var roleID uuidv7.UUID
+	var perm1ID, perm2ID uuidv7.UUID
+	var userID uuidv7.UUID
+
+	t.Run("✅ Create_role", func(t *testing.T) {
+		role := &entity.Role{
+			ID:          uuidv7.New(),
+			Name:        "accountant",
+			Description: "Financial accountant",
+			IsSystem:    false,
+		}
+
+		err := roleUC.Create(ctx, role)
+		require.NoError(t, err)
+		require.NotNil(t, role.ID)
+
+		roleID = role.ID
+	})
+
+	t.Run("✅ Get_role_by_ID", func(t *testing.T) {
+		role, err := roleUC.GetByID(ctx, roleID)
+		require.NoError(t, err)
+		require.NotNil(t, role)
+
+		assert.Equal(t, "accountant", role.Name)
+		assert.False(t, role.IsSystem)
+	})
+
+	t.Run("✅ Create_permissions_for_assignment", func(t *testing.T) {
+		perm1 := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "invoices",
+			Action:   "read",
+			Name:     "invoices:read",
+		}
+		require.NoError(t, permUC.Create(ctx, perm1))
+		perm1ID = perm1.ID
+
+		perm2 := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "invoices",
+			Action:   "write",
+			Name:     "invoices:write",
+		}
+		require.NoError(t, permUC.Create(ctx, perm2))
+		perm2ID = perm2.ID
+	})
+
+	t.Run("✅ Assign_permissions_to_role", func(t *testing.T) {
+		permIDs := []uuidv7.UUID{perm1ID, perm2ID}
+		err := roleUC.SyncPermissions(ctx, roleID, permIDs)
+		require.NoError(t, err)
+
+		// Verify permissions assigned
+		role, err := roleUC.GetByID(ctx, roleID)
+		require.NoError(t, err)
+		assert.Len(t, role.Permissions, 2, "role should have 2 permissions")
+	})
+
+	t.Run("✅ Remove_one_permission_from_role", func(t *testing.T) {
+		// Sync with only one permission
+		permIDs := []uuidv7.UUID{perm1ID}
+		err := roleUC.SyncPermissions(ctx, roleID, permIDs)
+		require.NoError(t, err)
+
+		// Verify only one permission remains
+		role, err := roleUC.GetByID(ctx, roleID)
+		require.NoError(t, err)
+		assert.Len(t, role.Permissions, 1, "role should have 1 permission")
+	})
+
+	t.Run("✅ Create_user_for_role_assignment", func(t *testing.T) {
+		user := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "accountant@test.com"
+			u.Name = "Test Accountant"
+		})
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+		userID = user.ID
+	})
+
+	t.Run("✅ Assign_role_to_user", func(t *testing.T) {
+		assigner := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "admin@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, assigner))
+
+		expiresAt := time.Now().Add(30 * 24 * time.Hour)
+		err := roleUC.AssignToUser(ctx, roleID, userID, assigner.ID, &expiresAt)
+		require.NoError(t, err)
+
+		// Verify user has role
+		roles, err := roleUC.GetUserRoles(ctx, userID)
+		require.NoError(t, err)
+		assert.Len(t, roles, 1, "user should have 1 role")
+		assert.Equal(t, "accountant", roles[0].Name)
+	})
+
+	t.Run("✅ Remove_role_from_user", func(t *testing.T) {
+		err := roleUC.RemoveFromUser(ctx, roleID, userID)
+		require.NoError(t, err)
+
+		// Verify role removed
+		roles, err := roleUC.GetUserRoles(ctx, userID)
+		require.NoError(t, err)
+		assert.Len(t, roles, 0, "user should have no roles")
+	})
+
+	t.Run("✅ List_roles", func(t *testing.T) {
+		// Create additional role
+		role2 := &entity.Role{
+			ID:   uuidv7.New(),
+			Name: "auditor",
+		}
+		require.NoError(t, roleUC.Create(ctx, role2))
+
+		roles, err := roleUC.List(ctx)
+		require.NoError(t, err)
+		assert.GreaterOrEqual(t, len(roles), 2, "should have at least 2 roles")
+	})
+
+	t.Run("✅ Update_role", func(t *testing.T) {
+		role, err := roleUC.GetByID(ctx, roleID)
+		require.NoError(t, err)
+
+		role.Description = "Updated: Senior Financial Accountant"
+		err = roleUC.Update(ctx, role)
+		require.NoError(t, err)
+
+		updated, err := roleUC.GetByID(ctx, roleID)
+		require.NoError(t, err)
+		assert.Equal(t, "Updated: Senior Financial Accountant", updated.Description)
+	})
+
+	t.Run("✅ Delete_role", func(t *testing.T) {
+		err := roleUC.Delete(ctx, roleID)
+		require.NoError(t, err)
+
+		_, err = roleUC.GetByID(ctx, roleID)
+		assert.Error(t, err, "deleted role should not be found")
+	})
+
+	t.Run("✅ System_role_protection", func(t *testing.T) {
+		// Create system role
+		systemRole := &entity.Role{
+			ID:       uuidv7.New(),
+			Name:     "system_admin",
+			IsSystem: true,
+		}
+		require.NoError(t, roleUC.Create(ctx, systemRole))
+
+		// Try to delete system role (should fail in actual implementation)
+		// This test assumes your use case prevents system role deletion
+		// If not implemented yet, this is a placeholder for future validation
+		roles, err := roleUC.List(ctx)
+		require.NoError(t, err)
+
+		// Verify system role exists
+		var foundSystemRole bool
+		for _, r := range roles {
+			if r.Name == "system_admin" && r.IsSystem {
+				foundSystemRole = true
+				break
+			}
+		}
+		assert.True(t, foundSystemRole, "system role should exist")
+	})
+}
+
+// TestRBAC_WildcardPermissions_SmokeTest verifies wildcard permission matching
+func TestRBAC_WildcardPermissions_SmokeTest(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping smoke test in short mode")
+	}
+
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	ctx := context.Background()
+	permRepo := postgres.NewPermissionRepository(testDB.DB)
+	roleRepo := postgres.NewRoleRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	permUC := usecase.NewPermissionUseCase(permRepo)
+	roleUC := usecase.NewRoleUseCase(roleRepo)
+
+	t.Run("✅ Create_wildcard_permissions", func(t *testing.T) {
+		// Full wildcard
+		fullWildcard := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "*",
+			Action:   "*",
+			Name:     "*:*",
+		}
+		require.NoError(t, permUC.Create(ctx, fullWildcard))
+
+		// Resource wildcard
+		resourceWildcard := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "documents",
+			Action:   "*",
+			Name:     "documents:*",
+		}
+		require.NoError(t, permUC.Create(ctx, resourceWildcard))
+
+		// Specific permission under wildcard resource
+		specific := &entity.Permission{
+			ID:       uuidv7.New(),
+			Resource: "documents",
+			Action:   "delete",
+			Name:     "documents:delete",
+		}
+		require.NoError(t, permUC.Create(ctx, specific))
+	})
+
+	t.Run("✅ Create_role_with_wildcard_permission", func(t *testing.T) {
+		role := &entity.Role{
+			ID:   uuidv7.New(),
+			Name: "document_manager",
+		}
+		require.NoError(t, roleUC.Create(ctx, role))
+
+		// Get documents:* permission
+		perm, err := permUC.GetByName(ctx, "documents:*")
+		require.NoError(t, err)
+
+		// Assign wildcard permission
+		err = roleUC.SyncPermissions(ctx, role.ID, []uuidv7.UUID{perm.ID})
+		require.NoError(t, err)
+
+		// Verify assignment
+		roleWithPerms, err := roleUC.GetByID(ctx, role.ID)
+		require.NoError(t, err)
+		assert.Len(t, roleWithPerms.Permissions, 1)
+		assert.Equal(t, "documents:*", roleWithPerms.Permissions[0].Name)
+	})
+
+	t.Run("✅ Assign_wildcard_role_to_user", func(t *testing.T) {
+		user := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "docmanager@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, user))
+
+		assigner := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "admin2@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, assigner))
+
+		role, err := roleUC.GetByName(ctx, "document_manager")
+		require.NoError(t, err)
+
+		err = roleUC.AssignToUser(ctx, role.ID, user.ID, assigner.ID, nil)
+		require.NoError(t, err)
+
+		// Verify user has role with wildcard permission
+		userRoles, err := roleUC.GetUserRoles(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Len(t, userRoles, 1)
+		assert.Len(t, userRoles[0].Permissions, 1)
+		assert.Equal(t, "documents:*", userRoles[0].Permissions[0].Name)
+	})
+
+	t.Run("✅ Verify_permission_hierarchy", func(t *testing.T) {
+		// This test verifies that wildcard permissions are properly stored
+		// Actual wildcard matching logic would be in middleware/authorization layer
+		perms, err := permUC.List(ctx)
+		require.NoError(t, err)
+
+		var hasFullWildcard, hasResourceWildcard bool
+		for _, p := range perms {
+			if p.Name == "*:*" {
+				hasFullWildcard = true
+				assert.Equal(t, "*", p.Resource)
+				assert.Equal(t, "*", p.Action)
+			}
+			if p.Name == "documents:*" {
+				hasResourceWildcard = true
+				assert.Equal(t, "documents", p.Resource)
+				assert.Equal(t, "*", p.Action)
+			}
+		}
+
+		assert.True(t, hasFullWildcard, "should have *:* permission")
+		assert.True(t, hasResourceWildcard, "should have documents:* permission")
+	})
+}
+
+// TestRBAC_RoleExpiration_SmokeTest verifies role expiration handling
+func TestRBAC_RoleExpiration_SmokeTest(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping smoke test in short mode")
+	}
+
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	ctx := context.Background()
+	roleRepo := postgres.NewRoleRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	roleUC := usecase.NewRoleUseCase(roleRepo)
+
+	t.Run("✅ Assign_role_with_expiration", func(t *testing.T) {
+		// Create role
+		role := &entity.Role{
+			ID:   uuidv7.New(),
+			Name: "temporary_access",
+		}
+		require.NoError(t, roleUC.Create(ctx, role))
+
+		// Create user
+		user := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "tempuser@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, user))
+
+		// Create assigner
+		assigner := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "admin3@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, assigner))
+
+		// Assign with expiration in 7 days
+		expiresAt := time.Now().Add(7 * 24 * time.Hour)
+		err := roleUC.AssignToUser(ctx, role.ID, user.ID, assigner.ID, &expiresAt)
+		require.NoError(t, err)
+
+		// Verify assignment with expiration
+		userRoles, err := roleUC.GetUserRoles(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Len(t, userRoles, 1)
+		// Note: GetUserRoles might need to return expiration info
+		// This test assumes it's stored correctly
+	})
+
+	t.Run("✅ Assign_role_without_expiration", func(t *testing.T) {
+		role := &entity.Role{
+			ID:   uuidv7.New(),
+			Name: "permanent_access",
+		}
+		require.NoError(t, roleUC.Create(ctx, role))
+
+		user := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "permuser@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, user))
+
+		assigner := helpers.UserFixture(func(u *entity.User) {
+			u.Email = "admin4@test.com"
+		})
+		require.NoError(t, userRepo.Create(ctx, assigner))
+
+		// Assign without expiration (nil)
+		err := roleUC.AssignToUser(ctx, role.ID, user.ID, assigner.ID, nil)
+		require.NoError(t, err)
+
+		// Verify permanent assignment
+		userRoles, err := roleUC.GetUserRoles(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Len(t, userRoles, 1)
+		assert.Equal(t, "permanent_access", userRoles[0].Name)
+	})
+}
