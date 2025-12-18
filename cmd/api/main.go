@@ -21,6 +21,7 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
 	"github.com/basilex/promenade/internal/adapter/http/v1/router"
+	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/logger"
@@ -115,6 +116,11 @@ func main() {
 	userContactRouter := router.InitUserContactModule(db, authMiddleware)
 	userProfileRouter := router.InitUserProfileModule(db, authMiddleware)
 	userPostRouter := router.InitUserPostModule(db, authMiddleware)
+
+	// Post comments module requires userPostRepo for counter updates
+	userPostRepo := postgres.NewUserPostRepository(db)
+	postCommentRouter := router.InitPostCommentModule(db, authMiddleware, userPostRepo)
+
 	// Future modules:
 	// rbacRouter := router.InitRBACModule(db, authMiddleware)
 	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
@@ -153,7 +159,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter)
 		v1Router.Setup(v1)
 	}
 

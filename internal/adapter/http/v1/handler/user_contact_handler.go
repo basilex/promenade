@@ -44,17 +44,13 @@ func (h *UserContactHandler) CreateContact(c *gin.Context) {
 	}
 
 	// Get authenticated user ID from context
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	// Parse time strings
 	availableFrom, err := dto.ParseTimeString(req.AvailableFrom)
@@ -110,17 +106,13 @@ func (h *UserContactHandler) GetContact(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	contact, err := h.contactUC.GetContact(c.Request.Context(), contactID, userUUID)
 	if err != nil {
@@ -152,17 +144,13 @@ func (h *UserContactHandler) GetContact(c *gin.Context) {
 // @Security     BearerAuth
 // @Router       /v1/users/contacts [get]
 func (h *UserContactHandler) GetUserContacts(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	includeInactive := c.Query("include_inactive") == "true"
 
@@ -195,17 +183,13 @@ func (h *UserContactHandler) GetContactsByType(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	contacts, err := h.contactUC.GetUserContactsByType(c.Request.Context(), userUUID, contactType, userUUID)
 	if err != nil {
@@ -237,17 +221,13 @@ func (h *UserContactHandler) GetPrimaryContact(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	contact, err := h.contactUC.GetPrimaryContact(c.Request.Context(), userUUID, contactType, userUUID)
 	if err != nil {
@@ -291,17 +271,13 @@ func (h *UserContactHandler) UpdateContact(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	// Parse time strings
 	availableFrom, err := dto.ParseTimeString(req.AvailableFrom)
@@ -365,17 +341,13 @@ func (h *UserContactHandler) DeleteContact(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	if err := h.contactUC.DeleteContact(c.Request.Context(), contactID, userUUID); err != nil {
 		if errors.Is(err, usecase.ErrContactNotFound) {
@@ -415,17 +387,13 @@ func (h *UserContactHandler) SetPrimaryContact(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	if err := h.contactUC.SetPrimaryContact(c.Request.Context(), contactID, userUUID); err != nil {
 		if errors.Is(err, usecase.ErrContactNotFound) {
@@ -465,17 +433,13 @@ func (h *UserContactHandler) ToggleContactActive(c *gin.Context) {
 		return
 	}
 
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
 	}
 
-	userUUID, err := uuidv7.Parse(userID.(string))
-	if err != nil {
-		response.Error(c, http.StatusBadRequest, "invalid user ID", err)
-		return
-	}
+	userUUID := userID.(uuidv7.UUID)
 
 	if err := h.contactUC.ToggleContactActive(c.Request.Context(), contactID, userUUID); err != nil {
 		if errors.Is(err, usecase.ErrContactNotFound) {

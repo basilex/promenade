@@ -138,9 +138,9 @@ func ToPostResponses(posts []*entity.UserPost) []PostResponse {
 
 // ToPostListResponse converts posts with pagination metadata to response
 func ToPostListResponse(posts []*entity.UserPost, meta *pagination.Metadata) *PostListResponse {
-	return &PostListResponse{
-		Posts: ToPostResponses(posts),
-		Pagination: map[string]interface{}{
+	var paginationData map[string]interface{}
+	if meta != nil {
+		paginationData = map[string]interface{}{
 			"total":        meta.Total,
 			"limit":        meta.Limit,
 			"offset":       meta.Offset,
@@ -148,7 +148,12 @@ func ToPostListResponse(posts []*entity.UserPost, meta *pagination.Metadata) *Po
 			"current_page": meta.CurrentPage,
 			"has_next":     meta.HasNext,
 			"has_prev":     meta.HasPrev,
-		},
+		}
+	}
+
+	return &PostListResponse{
+		Posts:      ToPostResponses(posts),
+		Pagination: paginationData,
 	}
 }
 

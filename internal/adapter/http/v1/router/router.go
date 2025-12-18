@@ -14,6 +14,7 @@ type V1Router struct {
 	userContactRouter *UserContactRouter
 	userProfileRouter *UserProfileRouter
 	userPostRouter    *UserPostRouter
+	postCommentRouter *PostCommentRouter
 	// rbacRouter *RBACRouter  // Future: role-based access control
 	// notificationRouter *NotificationRouter  // Future: notifications
 }
@@ -27,6 +28,7 @@ func NewV1Router(
 	userContactRouter *UserContactRouter,
 	userProfileRouter *UserProfileRouter,
 	userPostRouter *UserPostRouter,
+	postCommentRouter *PostCommentRouter,
 	// Add other routers here as needed
 ) *V1Router {
 	return &V1Router{
@@ -37,6 +39,7 @@ func NewV1Router(
 		userContactRouter: userContactRouter,
 		userProfileRouter: userProfileRouter,
 		userPostRouter:    userPostRouter,
+		postCommentRouter: postCommentRouter,
 	}
 }
 
@@ -46,6 +49,7 @@ func (r *V1Router) Setup(rg *gin.RouterGroup) {
 	r.healthRouter.Setup(rg)
 	r.authRouter.Setup(rg)
 	r.userPostRouter.Setup(rg)
+	r.postCommentRouter.Setup(rg)
 	r.userContactRouter.Setup(rg)
 	r.userProfileRouter.Setup(rg)
 	r.countryRouter.Setup(rg)

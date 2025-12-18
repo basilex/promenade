@@ -105,19 +105,19 @@ migrate-status: ## Show detailed migration status
 
 swagger-v1: ## Generate Swagger docs for API v1
 	swag init -g cmd/api/main.go \
-		--instanceName v1 \
-		--parseDependency \
-		--parseInternal \
 		--dir . \
+		--parseInternal \
+		--parseDependency \
+		--instanceName v1 \
 		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker" \
 		-o docs/v1
 
 swagger-v2: ## Generate Swagger docs for API v2
 	swag init -g cmd/api/main.go \
-		--instanceName v2 \
-		--parseDependency \
-		--parseInternal \
 		--dir . \
+		--parseInternal \
+		--parseDependency \
+		--instanceName v2 \
 		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker,internal/adapter/http/v1" \
 		-o docs/v2
 

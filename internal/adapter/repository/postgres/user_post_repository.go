@@ -34,8 +34,20 @@ func (r *userPostRepository) Create(ctx context.Context, post *entity.UserPost) 
 		return fmt.Errorf("failed to marshal featured image: %w", err)
 	}
 
-	tags, _ := json.Marshal(post.Tags)
-	categories, _ := json.Marshal(post.Categories)
+	// Ensure nil slices are marshaled as empty arrays
+	if post.Tags == nil {
+		post.Tags = []string{}
+	}
+	if post.Categories == nil {
+		post.Categories = []string{}
+	}
+	if post.MetaKeywords == nil {
+		post.MetaKeywords = []string{}
+	}
+
+	tagsJSON, _ := json.Marshal(post.Tags)
+	categoriesJSON, _ := json.Marshal(post.Categories)
+	metaKeywords := pq.Array(post.MetaKeywords)
 
 	query := `
 		INSERT INTO user_posts (
@@ -55,11 +67,19 @@ func (r *userPostRepository) Create(ctx context.Context, post *entity.UserPost) 
 		)
 	`
 
+	// Convert featuredImage to interface{} to ensure NULL is sent for nil
+	var featuredImageParam interface{}
+	if featuredImage != nil && len(featuredImage) > 0 {
+		featuredImageParam = featuredImage
+	} else {
+		featuredImageParam = nil
+	}
+
 	err = r.Exec(ctx, query,
 		post.ID, post.UserID, post.Title, post.Slug, post.Excerpt, post.Content,
-		featuredImage, post.Status, post.IsPublic, post.IsFeatured, post.IsCommentsEnabled,
-		post.PublishedAt, post.ScheduledAt, tags, categories,
-		post.MetaTitle, post.MetaDescription, pq.Array(post.MetaKeywords),
+		featuredImageParam, post.Status, post.IsPublic, post.IsFeatured, post.IsCommentsEnabled,
+		post.PublishedAt, post.ScheduledAt, tagsJSON, categoriesJSON,
+		post.MetaTitle, post.MetaDescription, metaKeywords,
 		post.ViewCount, post.LikeCount, post.CommentCount, post.ShareCount, post.ReadingTimeMinutes,
 		post.CreatedAt, post.UpdatedAt,
 	)
@@ -109,8 +129,28 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 		return fmt.Errorf("failed to marshal featured image: %w", err)
 	}
 
-	tags, _ := json.Marshal(post.Tags)
-	categories, _ := json.Marshal(post.Categories)
+	// Ensure nil slices are marshaled as empty arrays
+	if post.Tags == nil {
+		post.Tags = []string{}
+	}
+	if post.Categories == nil {
+		post.Categories = []string{}
+	}
+	if post.MetaKeywords == nil {
+		post.MetaKeywords = []string{}
+	}
+
+	tagsJSON, _ := json.Marshal(post.Tags)
+	categoriesJSON, _ := json.Marshal(post.Categories)
+	metaKeywords := pq.Array(post.MetaKeywords)
+
+	// Convert featuredImage to interface{} to ensure NULL is sent for nil
+	var featuredImageParam interface{}
+	if featuredImage != nil && len(featuredImage) > 0 {
+		featuredImageParam = featuredImage
+	} else {
+		featuredImageParam = nil
+	}
 
 	query := `
 		UPDATE user_posts SET
@@ -125,9 +165,9 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query,
 		post.Title, post.Slug, post.Excerpt, post.Content,
-		featuredImage, post.Status, post.IsPublic, post.IsFeatured, post.IsCommentsEnabled,
-		post.PublishedAt, post.ScheduledAt, tags, categories,
-		post.MetaTitle, post.MetaDescription, pq.Array(post.MetaKeywords),
+		featuredImageParam, post.Status, post.IsPublic, post.IsFeatured, post.IsCommentsEnabled,
+		post.PublishedAt, post.ScheduledAt, tagsJSON, categoriesJSON,
+		post.MetaTitle, post.MetaDescription, metaKeywords,
 		post.ReadingTimeMinutes, time.Now(), post.ID,
 	)
 

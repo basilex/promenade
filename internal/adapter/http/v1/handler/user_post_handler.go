@@ -39,7 +39,7 @@ func NewUserPostHandler(postUC usecase.UserPostUseCase) *UserPostHandler {
 // @Security BearerAuth
 // @Router /posts [post]
 func (h *UserPostHandler) CreatePost(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -113,7 +113,7 @@ func (h *UserPostHandler) GetPost(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id} [put]
 func (h *UserPostHandler) UpdatePost(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -165,7 +165,7 @@ func (h *UserPostHandler) UpdatePost(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id} [delete]
 func (h *UserPostHandler) DeletePost(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -211,7 +211,7 @@ func (h *UserPostHandler) DeletePost(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id}/publish [post]
 func (h *UserPostHandler) PublishPost(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -267,7 +267,7 @@ func (h *UserPostHandler) PublishPost(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id}/unpublish [post]
 func (h *UserPostHandler) UnpublishPost(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -558,7 +558,7 @@ func (h *UserPostHandler) UnlikePost(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id}/featured [post]
 func (h *UserPostHandler) ToggleFeatured(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -602,7 +602,7 @@ func (h *UserPostHandler) ToggleFeatured(c *gin.Context) {
 // @Security BearerAuth
 // @Router /posts/{id}/comments [post]
 func (h *UserPostHandler) ToggleComments(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
