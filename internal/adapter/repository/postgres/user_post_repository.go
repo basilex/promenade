@@ -69,7 +69,7 @@ func (r *userPostRepository) Create(ctx context.Context, post *entity.UserPost) 
 
 	// Convert featuredImage to interface{} to ensure NULL is sent for nil
 	var featuredImageParam interface{}
-	if featuredImage != nil && len(featuredImage) > 0 {
+	if len(featuredImage) > 0 {
 		featuredImageParam = featuredImage
 	} else {
 		featuredImageParam = nil
@@ -146,7 +146,7 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 
 	// Convert featuredImage to interface{} to ensure NULL is sent for nil
 	var featuredImageParam interface{}
-	if featuredImage != nil && len(featuredImage) > 0 {
+	if len(featuredImage) > 0 {
 		featuredImageParam = featuredImage
 	} else {
 		featuredImageParam = nil
