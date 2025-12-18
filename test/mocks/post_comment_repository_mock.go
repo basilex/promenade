@@ -101,3 +101,30 @@ func (m *MockPostCommentRepository) DecrementReplies(ctx context.Context, id uui
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
+
+// AddLike mocks the AddLike method
+func (m *MockPostCommentRepository) AddLike(ctx context.Context, commentID, userID uuidv7.UUID) error {
+	args := m.Called(ctx, commentID, userID)
+	return args.Error(0)
+}
+
+// RemoveLike mocks the RemoveLike method
+func (m *MockPostCommentRepository) RemoveLike(ctx context.Context, commentID, userID uuidv7.UUID) error {
+	args := m.Called(ctx, commentID, userID)
+	return args.Error(0)
+}
+
+// HasUserLiked mocks the HasUserLiked method
+func (m *MockPostCommentRepository) HasUserLiked(ctx context.Context, commentID, userID uuidv7.UUID) (bool, error) {
+	args := m.Called(ctx, commentID, userID)
+	return args.Bool(0), args.Error(1)
+}
+
+// GetCommentLikers mocks the GetCommentLikers method
+func (m *MockPostCommentRepository) GetCommentLikers(ctx context.Context, commentID uuidv7.UUID, limit, offset int) ([]uuidv7.UUID, error) {
+	args := m.Called(ctx, commentID, limit, offset)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]uuidv7.UUID), args.Error(1)
+}

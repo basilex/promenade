@@ -482,7 +482,25 @@ func TestPostCommentUseCase_LikeComment(t *testing.T) {
 		}
 
 		mockCommentRepo.On("GetByID", ctx, commentID).Return(comment, nil)
-		mockCommentRepo.On("IncrementLikes", ctx, commentID).Return(nil)
+		mockCommentRepo.On("HasUserLiked", ctx, commentID, userID).Return(false, nil)
+		mockCommentRepo.On("AddLike", ctx, commentID, userID).Return(nil)
+
+		err := uc.LikeComment(ctx, commentID, userID)
+		require.NoError(t, err)
+		mockCommentRepo.AssertExpectations(t)
+	})
+
+	t.Run("already liked - idempotent", func(t *testing.T) {
+		mockCommentRepo := new(mocks.MockPostCommentRepository)
+		mockPostRepo := new(mocks.MockUserPostRepository)
+		uc := NewPostCommentUseCase(mockCommentRepo, mockPostRepo)
+
+		comment := &entity.PostComment{
+			ID: commentID,
+		}
+
+		mockCommentRepo.On("GetByID", ctx, commentID).Return(comment, nil)
+		mockCommentRepo.On("HasUserLiked", ctx, commentID, userID).Return(true, nil)
 
 		err := uc.LikeComment(ctx, commentID, userID)
 		require.NoError(t, err)
@@ -535,7 +553,25 @@ func TestPostCommentUseCase_UnlikeComment(t *testing.T) {
 		}
 
 		mockCommentRepo.On("GetByID", ctx, commentID).Return(comment, nil)
-		mockCommentRepo.On("DecrementLikes", ctx, commentID).Return(nil)
+		mockCommentRepo.On("HasUserLiked", ctx, commentID, userID).Return(true, nil)
+		mockCommentRepo.On("RemoveLike", ctx, commentID, userID).Return(nil)
+
+		err := uc.UnlikeComment(ctx, commentID, userID)
+		require.NoError(t, err)
+		mockCommentRepo.AssertExpectations(t)
+	})
+
+	t.Run("not liked - idempotent", func(t *testing.T) {
+		mockCommentRepo := new(mocks.MockPostCommentRepository)
+		mockPostRepo := new(mocks.MockUserPostRepository)
+		uc := NewPostCommentUseCase(mockCommentRepo, mockPostRepo)
+
+		comment := &entity.PostComment{
+			ID: commentID,
+		}
+
+		mockCommentRepo.On("GetByID", ctx, commentID).Return(comment, nil)
+		mockCommentRepo.On("HasUserLiked", ctx, commentID, userID).Return(false, nil)
 
 		err := uc.UnlikeComment(ctx, commentID, userID)
 		require.NoError(t, err)

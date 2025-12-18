@@ -9,6 +9,7 @@ bin/
 # Test binary
 *.test
 *.out
+test_output.txt
 
 # Go workspace file
 go.work

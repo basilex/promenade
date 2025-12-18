@@ -236,8 +236,18 @@ func (uc *postCommentUseCase) LikeComment(ctx context.Context, commentID, userID
 		return ErrCommentDeleted
 	}
 
-	// TODO: Check if user already liked (requires comment_likes table)
-	return uc.commentRepo.IncrementLikes(ctx, commentID)
+	// Check if user already liked the comment
+	alreadyLiked, err := uc.commentRepo.HasUserLiked(ctx, commentID, userID)
+	if err != nil {
+		return err
+	}
+
+	if alreadyLiked {
+		return nil // Already liked, idempotent operation
+	}
+
+	// Add like record and increment counter
+	return uc.commentRepo.AddLike(ctx, commentID, userID)
 }
 
 func (uc *postCommentUseCase) UnlikeComment(ctx context.Context, commentID, userID uuidv7.UUID) error {
@@ -254,6 +264,16 @@ func (uc *postCommentUseCase) UnlikeComment(ctx context.Context, commentID, user
 		return ErrCommentDeleted
 	}
 
-	// TODO: Check if user actually liked (requires comment_likes table)
-	return uc.commentRepo.DecrementLikes(ctx, commentID)
+	// Check if user actually liked the comment
+	hasLiked, err := uc.commentRepo.HasUserLiked(ctx, commentID, userID)
+	if err != nil {
+		return err
+	}
+
+	if !hasLiked {
+		return nil // Not liked, idempotent operation
+	}
+
+	// Remove like record and decrement counter
+	return uc.commentRepo.RemoveLike(ctx, commentID, userID)
 }

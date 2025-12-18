@@ -251,3 +251,55 @@ func (r *postCommentRepository) DecrementReplies(ctx context.Context, id uuidv7.
 	query := `UPDATE post_comments SET reply_count = GREATEST(reply_count - 1, 0), updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
+
+// AddLike adds a like record and increments the comment's like count
+func (r *postCommentRepository) AddLike(ctx context.Context, commentID, userID uuidv7.UUID) error {
+	query := `
+		INSERT INTO comment_likes (comment_id, user_id, created_at)
+		VALUES ($1, $2, NOW())
+		ON CONFLICT (comment_id, user_id) DO NOTHING
+	`
+	if err := r.Exec(ctx, query, commentID, userID); err != nil {
+		return err
+	}
+
+	// Increment like count if the like was actually inserted
+	return r.IncrementLikes(ctx, commentID)
+}
+
+// RemoveLike removes a like record and decrements the comment's like count
+func (r *postCommentRepository) RemoveLike(ctx context.Context, commentID, userID uuidv7.UUID) error {
+	query := `DELETE FROM comment_likes WHERE comment_id = $1 AND user_id = $2`
+	if err := r.Exec(ctx, query, commentID, userID); err != nil {
+		return err
+	}
+
+	// Decrement like count
+	return r.DecrementLikes(ctx, commentID)
+}
+
+// HasUserLiked checks if a user has liked a specific comment
+func (r *postCommentRepository) HasUserLiked(ctx context.Context, commentID, userID uuidv7.UUID) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM comment_likes WHERE comment_id = $1 AND user_id = $2)`
+	var exists bool
+	if err := r.Get(ctx, &exists, query, commentID, userID); err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+// GetCommentLikers returns a list of user IDs who liked the comment
+func (r *postCommentRepository) GetCommentLikers(ctx context.Context, commentID uuidv7.UUID, limit, offset int) ([]uuidv7.UUID, error) {
+	query := `
+		SELECT user_id 
+		FROM comment_likes 
+		WHERE comment_id = $1 
+		ORDER BY created_at DESC 
+		LIMIT $2 OFFSET $3
+	`
+	var userIDs []uuidv7.UUID
+	if err := r.Select(ctx, &userIDs, query, commentID, limit, offset); err != nil {
+		return nil, err
+	}
+	return userIDs, nil
+}

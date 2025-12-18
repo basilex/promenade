@@ -32,4 +32,10 @@ type PostCommentRepository interface {
 	DecrementLikes(ctx context.Context, id uuidv7.UUID) error
 	IncrementReplies(ctx context.Context, id uuidv7.UUID) error
 	DecrementReplies(ctx context.Context, id uuidv7.UUID) error
+
+	// Comment likes tracking
+	AddLike(ctx context.Context, commentID, userID uuidv7.UUID) error
+	RemoveLike(ctx context.Context, commentID, userID uuidv7.UUID) error
+	HasUserLiked(ctx context.Context, commentID, userID uuidv7.UUID) (bool, error)
+	GetCommentLikers(ctx context.Context, commentID uuidv7.UUID, limit, offset int) ([]uuidv7.UUID, error)
 }
