@@ -305,7 +305,7 @@ func TestInitAuthModule(t *testing.T) {
 
 - [+] `internal/adapter/http/v1/router/init_auth.go` - Auth initializer
 - [+] `cmd/api/main.go` - Cleaned up to use initializer
-- 📝 `docs/MODULE_INITIALIZATION.md` - This documentation
+- -> `docs/MODULE_INITIALIZATION.md` - This documentation
 
 ## Real-world Example
 
@@ -355,4 +355,4 @@ func main() {
 }
 ```
 
-**Still maintainable!** 🎯
+**Still maintainable!** *

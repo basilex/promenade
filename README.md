@@ -88,7 +88,7 @@ make docker-up
 curl http://localhost:8080/api/v1/health
 ```
 
-📘 **Docker details**: See [docker/README.md](docker/README.md) for comprehensive Docker documentation.
+-> **Docker details**: See [docker/README.md](docker/README.md) for comprehensive Docker documentation.
 
 ### Quick Test
 
@@ -503,7 +503,7 @@ promenade/
 └── Makefile                         # Development commands
 ```
 
-### 🎯 Working with Nullable Fields (`pkg/ref`)
+### * Working with Nullable Fields (`pkg/ref`)
 
 When working with database entities that have nullable fields (mapped to SQL `NULL`), Go requires using pointer types (`*string`, `*time.Time`, etc.). The `pkg/ref` package provides convenient helpers to avoid verbose manual pointer creation and prevent common mistakes.
 
@@ -610,8 +610,8 @@ displayName := ref.StringOr(profile.DisplayName, profile.Nickname)
 #### Benefits
 
 -  **Type-safe** - Compiler catches mismatches
-- 📝 **Less verbose** - No temporary variables needed
-- 🎯 **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
+- -> **Less verbose** - No temporary variables needed
+- * **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
 - [!] **Fewer bugs** - Eliminates "forgot to add `*`" mistakes after long coding sessions
 - - **Test-friendly** - Safe dereferencing in assertions without panic risk
 
@@ -1122,11 +1122,11 @@ go run examples/event_bus_demo/main.go
 
 [+] Email service started and listening for events...
 
-📝 Simulating user registration: Demo User (demo@example.com)
+-> Simulating user registration: Demo User (demo@example.com)
 [+] Event published to bus (returns immediately)
 ⏳ Email being sent in background goroutine...
 
-📧 Emails sent: 1
+-> Emails sent: 1
   1. To: demo@example.com
      Subject: Welcome to Promenade!
 
@@ -1136,7 +1136,7 @@ go run examples/event_bus_demo/main.go
   Messages Published: 1
   Messages Processed: 1
 
-🎯 Key Takeaways:
+* Key Takeaways:
    • Publish() returns immediately - non-blocking
    • Email sent asynchronously in worker pool
    • User doesn't wait for email delivery
@@ -1304,7 +1304,7 @@ func TestUserRepository_Create(t *testing.T) {
 }
 ```
 
-### 🔥 Smoke Tests
+### * Smoke Tests
 
 Production-ready **end-to-end smoke tests** verify critical user flows with real database operations. These tests ensure core functionality works correctly in integration.
 
@@ -2258,11 +2258,11 @@ Interactive API documentation available at:
 - **v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 
-## 📄 License
+## * License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## * Acknowledgments
 
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [sqlx](https://github.com/jmoiron/sqlx)
