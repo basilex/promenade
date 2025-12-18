@@ -16,6 +16,8 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/basilex/promenade/pkg/bus"
+	"github.com/basilex/promenade/pkg/bus/memory"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
@@ -24,6 +26,7 @@ import (
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/internal/infrastructure/notification"
 	"github.com/basilex/promenade/internal/usecase"
 	"github.com/basilex/promenade/pkg/logger"
 
@@ -106,6 +109,39 @@ func main() {
 	txManager := database.NewTransactionManager(db)
 	_ = txManager // Reserved for future use
 
+	// Initialize Event Bus (config from environment variables)
+	busConfig := bus.NewBusConfig(
+		cfg.Bus.WorkerPoolSize,
+		cfg.Bus.BufferSize,
+		cfg.Bus.RetryAttempts,
+		cfg.Bus.RetryDelay,
+	)
+	eventBus := memory.NewMemoryBus(busConfig)
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := eventBus.Close(ctx); err != nil {
+			logger.Error("Failed to close event bus", slog.Any("error", err))
+		}
+	}()
+	logger.Info("Event bus initialized",
+		slog.Int("worker_pool_size", cfg.Bus.WorkerPoolSize),
+		slog.Int("buffer_size", cfg.Bus.BufferSize),
+		slog.Int("retry_attempts", cfg.Bus.RetryAttempts))
+
+	// Initialize Notification Service (асинхронная отправка email через event bus)
+	emailSender := notification.NewMockEmailSender() // TODO: replace with real SMTP sender in production
+	templatesPath := "templates/email"
+	emailService, err := notification.NewEmailService(eventBus, emailSender, templatesPath)
+	if err != nil {
+		logger.Fatal("Failed to create email service", slog.Any("error", err))
+	}
+	if err := emailService.Start(context.Background()); err != nil {
+		logger.Fatal("Failed to start email service", slog.Any("error", err))
+	}
+	logger.Info("Email notification service started (async via event bus)",
+		slog.String("templates_path", templatesPath))
+
 	// Initialize shared middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 
@@ -117,7 +153,7 @@ func main() {
 
 	// Initialize modules (each module encapsulates its own dependencies)
 	healthRouter := router.InitHealthModule()
-	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware)
+	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware, eventBus)
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
 	userContactRouter := router.InitUserContactModule(db, authMiddleware)

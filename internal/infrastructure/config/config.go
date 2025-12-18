@@ -13,6 +13,7 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	JWT      JWTConfig
+	Bus      BusConfig
 }
 
 type ServerConfig struct {
@@ -39,6 +40,13 @@ type JWTConfig struct {
 	Secret          string
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
+}
+
+type BusConfig struct {
+	WorkerPoolSize int
+	BufferSize     int
+	RetryAttempts  int
+	RetryDelay     time.Duration
 }
 
 // Load loads configuration from .env file and environment variables
@@ -90,6 +98,12 @@ func Load() (*Config, error) {
 			Secret:          getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
 			AccessTokenTTL:  getDurationEnv("JWT_ACCESS_TTL", 15*time.Minute),
 			RefreshTokenTTL: getDurationEnv("JWT_REFRESH_TTL", 168*time.Hour), // 7 days
+		},
+		Bus: BusConfig{
+			WorkerPoolSize: getEnvAsInt("BUS_WORKER_POOL_SIZE", 10),
+			BufferSize:     getEnvAsInt("BUS_BUFFER_SIZE", 1000),
+			RetryAttempts:  getEnvAsInt("BUS_RETRY_ATTEMPTS", 3),
+			RetryDelay:     getDurationEnv("BUS_RETRY_DELAY", 1*time.Second),
 		},
 	}, nil
 }

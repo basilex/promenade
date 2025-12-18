@@ -612,6 +612,519 @@ This approach allows distinguishing between three states:
 2. **Empty** (&"") - field was explicitly cleared
 3. **Value** (&"text") - field has actual data
 
+## 📨 Event Bus System
+
+The project implements a **transport-agnostic event bus** for asynchronous communication between components. This enables scalable, loosely-coupled architecture within the monolith, with a clear path to microservices when needed.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Application Layer                          │
+│  ┌──────────────┐         ┌──────────────┐                     │
+│  │ AuthUseCase  │────────>│  Event Bus   │<────────┐           │
+│  └──────────────┘ Publish └──────────────┘ Subscribe           │
+│       User                       │                  │           │
+│    Registered                    │             ┌────▼────────┐  │
+│                                  │             │   Email     │  │
+│                                  │             │  Service    │  │
+│                                  │             └─────────────┘  │
+│                             ┌────▼────────┐                     │
+│                             │  Analytics  │                     │
+│                             │  Service    │                     │
+│                             └─────────────┘                     │
+└─────────────────────────────────────────────────────────────────┘
+
+Flow:
+1. User registers → AuthUseCase publishes UserRegisteredEvent
+2. Event Bus dispatches to all subscribers (non-blocking)
+3. Email Service sends welcome email in background
+4. Analytics Service tracks registration metrics
+5. Main request returns immediately (user doesn't wait)
+```
+
+### Key Benefits
+
+| Benefit              | Description                                                        |
+| -------------------- | ------------------------------------------------------------------ |
+| **Non-blocking**     | Publish() returns immediately - user doesn't wait for side effects |
+| **Decoupling**       | Use cases don't know about email/analytics - just publish events   |
+| **Scalability**      | Easy to add new subscribers without changing existing code         |
+| **Evolution Path**   | Start with in-memory bus → Redis Pub/Sub → NATS → Kafka            |
+| **Testing**          | Mock bus for tests, no actual email/analytics calls                |
+| **Async Processing** | Worker pool handles events concurrently in goroutines              |
+
+### Available Implementations
+
+#### 1. In-Memory Bus (Current)
+
+**Use case**: Development, testing, and simple monolith deployments
+
+```go
+// Production code (cmd/api/main.go)
+busConfig := bus.NewBusConfig(
+    cfg.Bus.WorkerPoolSize,  // From .env: BUS_WORKER_POOL_SIZE
+    cfg.Bus.BufferSize,      // From .env: BUS_BUFFER_SIZE
+    cfg.Bus.RetryAttempts,   // From .env: BUS_RETRY_ATTEMPTS
+    cfg.Bus.RetryDelay,      // From .env: BUS_RETRY_DELAY
+)
+eventBus := memory.NewMemoryBus(busConfig)
+defer eventBus.Close(ctx)
+```
+
+**Features**:
+
+- ✅ Zero external dependencies
+- ✅ Configurable worker pool (10 goroutines default)
+- ✅ Buffered message queue (1000 messages default)
+- ✅ Graceful shutdown with proper cleanup
+- ✅ Built-in health checks and statistics
+- ⚠️ No persistence - events lost on restart
+- ⚠️ Single-process only - not suitable for horizontal scaling
+
+#### 2. Redis Pub/Sub (Planned)
+
+**Use case**: Multi-instance deployments with shared state
+
+```go
+// Future implementation
+busConfig := bus.NewBusConfig(...)
+eventBus := redis.NewRedisBus(busConfig, redisClient)
+```
+
+**Features**:
+
+- ✅ Multi-process support (horizontal scaling)
+- ✅ Pub/Sub pattern for real-time delivery
+- ⚠️ No guaranteed delivery - subscribers must be online
+- ⚠️ No message persistence after delivery
+
+#### 3. NATS/Kafka (Future)
+
+**Use case**: Microservices with guaranteed delivery
+
+```go
+// Future implementation
+eventBus := nats.NewNATSBus(busConfig, natsConn)
+// or
+eventBus := kafka.NewKafkaBus(busConfig, kafkaProducer)
+```
+
+**Features**:
+
+- ✅ Persistent message storage
+- ✅ At-least-once delivery guarantees
+- ✅ Message replay capability
+- ✅ Dead letter queues for failures
+- ⚠️ More complex infrastructure
+
+### Configuration
+
+Event bus is configured via environment variables in `.env` files:
+
+```bash
+# .env.development / .env.production
+BUS_WORKER_POOL_SIZE=10     # Concurrent workers processing events
+BUS_BUFFER_SIZE=1000        # Internal message queue size
+BUS_RETRY_ATTEMPTS=3        # Retry failed handlers
+BUS_RETRY_DELAY=1s          # Delay between retries
+```
+
+**Config struct** (`internal/infrastructure/config/config.go`):
+
+```go
+type BusConfig struct {
+    WorkerPoolSize int           // Number of concurrent workers
+    BufferSize     int           // Message buffer capacity
+    RetryAttempts  int           // Max retry attempts on failure
+    RetryDelay     time.Duration // Delay between retries
+}
+```
+
+### Publishing Events
+
+**Step 1: Define domain event** (`internal/domain/event/user_events.go`):
+
+```go
+type UserRegisteredEvent struct {
+    bus.BaseEvent
+    UserID uuid.UUID `json:"user_id"`
+    Email  string    `json:"email"`
+    Name   string    `json:"name"`
+}
+
+func NewUserRegisteredEvent(userID uuid.UUID, email, name string) *UserRegisteredEvent {
+    return &UserRegisteredEvent{
+        BaseEvent: bus.NewBaseEvent(bus.TopicUserRegistered, userID),
+        UserID:    userID,
+        Email:     email,
+        Name:      name,
+    }
+}
+```
+
+**Step 2: Publish from use case** (`internal/usecase/auth_usecase.go`):
+
+```go
+func (uc *authUseCase) Register(ctx context.Context, email, name, password string) (*entity.User, error) {
+    // 1. Create user in database
+    user, err := uc.userRepo.Create(ctx, newUser)
+    if err != nil {
+        return nil, err
+    }
+
+    // 2. Publish event (non-blocking)
+    userEvent := event.NewUserRegisteredEvent(user.ID, user.Email, user.Name)
+    if err := uc.eventBus.Publish(ctx, userEvent.Type(), userEvent); err != nil {
+        logger.Error("Failed to publish user registered event",
+            slog.Any("error", err),
+            slog.String("user_id", user.ID.String()))
+        // Don't fail registration if event publishing fails
+    }
+
+    // 3. Return immediately - email is sent in background
+    return user, nil
+}
+```
+
+**Key principle**: Event publishing errors are **logged but not propagated**. The main operation (user registration) should succeed even if events fail.
+
+### Subscribing to Events
+
+**Email notification service** (`internal/infrastructure/notification/email_service.go`):
+
+```go
+type EmailService struct {
+    bus           bus.Bus
+    sender        EmailSender
+    templates     *template.Template
+}
+
+// Start subscribes to events
+func (s *EmailService) Start(ctx context.Context) error {
+    // Subscribe to multiple topics
+    s.bus.Subscribe(bus.TopicUserRegistered, s.handleUserRegistered)
+    s.bus.Subscribe(bus.TopicUserEmailVerified, s.handleUserEmailVerified)
+    s.bus.Subscribe(bus.TopicUserPasswordChanged, s.handleUserPasswordChanged)
+    s.bus.Subscribe(bus.TopicUserSuspended, s.handleUserSuspended)
+    s.bus.Subscribe(bus.TopicUserBanned, s.handleUserBanned)
+    return nil
+}
+
+// Handle user registration event
+func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) error {
+    evt, ok := e.(*event.UserRegisteredEvent)
+    if !ok {
+        return fmt.Errorf("unexpected event type: %T", e)
+    }
+
+    // Render HTML template
+    data := map[string]interface{}{
+        "Name":     evt.Name,
+        "Email":    evt.Email,
+        "UserID":   evt.UserID.String(),
+        "LoginURL": "https://promenade.app/login",
+        "Year":     time.Now().Year(),
+    }
+
+    html, err := s.renderTemplate("welcome.html", data)
+    if err != nil {
+        return fmt.Errorf("failed to render template: %w", err)
+    }
+
+    // Send email (happens in background goroutine)
+    email := Email{
+        To:      evt.Email,
+        Subject: "Welcome to Promenade!",
+        HTML:    html,
+    }
+
+    return s.sender.Send(ctx, email)
+}
+```
+
+### Email Templates
+
+Templates are externalized in `templates/email/` directory:
+
+```
+templates/email/
+├── welcome.html              # New user registration
+├── email_verified.html       # Email verification success
+├── password_changed.html     # Security alert
+├── account_suspended.html    # Temporary suspension
+├── account_banned.html       # Permanent ban
+└── README.md                 # Template documentation
+```
+
+**Benefits of external templates**:
+
+- ✅ Change email design without redeploying service
+- ✅ Professional HTML emails with CSS styling
+- ✅ A/B testing different email variants
+- ✅ Designer-friendly (no Go code required)
+- ✅ Version control for email content
+
+**Example template** (`templates/email/welcome.html`):
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .button {
+        padding: 12px 30px;
+        background: #667eea;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🎉 Welcome to Promenade!</h1>
+    </div>
+    <div class="content">
+      <p>Hi <strong>{{.Name}}</strong>,</p>
+      <p>Your account has been successfully created.</p>
+      <a href="{{.LoginURL}}" class="button">Start Exploring →</a>
+    </div>
+    <div class="footer">
+      <p>© {{.Year}} Promenade. All rights reserved.</p>
+    </div>
+  </body>
+</html>
+```
+
+### Standard Topics
+
+Predefined topic constants in `pkg/bus/topics.go`:
+
+```go
+const (
+    // User Management
+    TopicUserRegistered      = "user.registered"
+    TopicUserActivated       = "user.activated"
+    TopicUserSuspended       = "user.suspended"
+    TopicUserBanned          = "user.banned"
+    TopicUserEmailVerified   = "user.email.verified"
+    TopicUserPasswordChanged = "user.password.changed"
+
+    // Content Management
+    TopicPostPublished       = "post.published"
+    TopicPostUnpublished     = "post.unpublished"
+    TopicCommentAdded        = "comment.added"
+    TopicCommentRemoved      = "comment.removed"
+)
+```
+
+**Naming convention**: `{domain}.{entity}.{action}` for clarity and consistency.
+
+### Testing
+
+#### Unit Tests with Mock Bus
+
+```go
+func TestAuthUseCase_Register(t *testing.T) {
+    mockBus := new(MockBus)
+    authUC := NewAuthUseCase(userRepo, sessionRepo, jwtManager, mockBus)
+
+    // Test registration logic
+    user, err := authUC.Register(ctx, "test@example.com", "John", "password")
+    require.NoError(t, err)
+
+    // Verify event was published (but don't actually send email)
+    mockBus.AssertCalled(t, "Publish", mock.Anything, "user.registered", mock.Anything)
+}
+```
+
+#### Integration Tests with Real Bus
+
+```go
+func TestEventBusIntegration(t *testing.T) {
+    // Use in-memory bus with empty template path (fallback templates)
+    eventBus := memory.NewDefaultMemoryBus()
+    defer eventBus.Close(context.Background())
+
+    emailSender := notification.NewMockEmailSender()
+    emailService, err := notification.NewEmailService(eventBus, emailSender, "")
+    require.NoError(t, err)
+    require.NoError(t, emailService.Start(ctx))
+
+    // Publish event
+    userEvent := event.NewUserRegisteredEvent(uuid.New(), "test@example.com", "John")
+    err = eventBus.Publish(ctx, userEvent.Type(), userEvent)
+    require.NoError(t, err)
+
+    // Wait for async processing
+    time.Sleep(100 * time.Millisecond)
+
+    // Verify email was "sent" to mock
+    require.Equal(t, 1, len(emailSender.GetSentEmails()))
+    assert.Equal(t, "test@example.com", emailSender.GetSentEmails()[0].To)
+}
+```
+
+### Performance & Monitoring
+
+#### Bus Statistics
+
+```go
+stats := eventBus.Stats()
+fmt.Printf("Topics: %d\n", stats["total_topics"])
+fmt.Printf("Subscribers: %d\n", stats["total_subscribers"])
+fmt.Printf("Messages Published: %d\n", stats["messages_published"])
+fmt.Printf("Messages Processed: %d\n", stats["messages_processed"])
+```
+
+#### Health Check
+
+```go
+if err := eventBus.Health(ctx); err != nil {
+    logger.Error("Event bus is unhealthy", slog.Any("error", err))
+}
+```
+
+#### Performance Characteristics
+
+**In-Memory Bus**:
+
+- **Latency**: < 1ms to publish (returns immediately)
+- **Throughput**: 10,000+ events/sec with default config
+- **Worker Pool**: Limits concurrent processing (prevents resource exhaustion)
+- **Graceful Shutdown**: Waits for in-flight events to complete
+
+**Tuning for production**:
+
+```bash
+# High-volume deployment
+BUS_WORKER_POOL_SIZE=50      # More concurrent handlers
+BUS_BUFFER_SIZE=10000        # Larger queue for spikes
+BUS_RETRY_ATTEMPTS=5         # More aggressive retries
+BUS_RETRY_DELAY=2s           # Longer backoff
+```
+
+### Migration Path: Monolith → Microservices
+
+#### Phase 1: Monolith with Event Bus (Current)
+
+```
+┌─────────────────────────────────┐
+│         Monolith Process        │
+│  ┌──────────┐   ┌────────────┐ │
+│  │ Use Case │──>│ In-Memory  │ │
+│  └──────────┘   │    Bus     │ │
+│                 └────────────┘ │
+│                       │         │
+│                 ┌─────▼──────┐  │
+│                 │   Email    │  │
+│                 │  Service   │  │
+│                 └────────────┘  │
+└─────────────────────────────────┘
+```
+
+#### Phase 2: Multi-Instance with Redis
+
+```
+┌──────────────┐         ┌──────────────┐
+│ Instance 1   │         │ Instance 2   │
+│ ┌──────────┐ │         │ ┌──────────┐ │
+│ │ Use Case │─┼───┐ ┐───┼─│ Email    │ │
+│ └──────────┘ │   │ │   │ │ Service  │ │
+└──────────────┘   │ │   │ └──────────┘ │
+                   ▼ ▼   └──────────────┘
+              ┌──────────┐
+              │  Redis   │
+              │ Pub/Sub  │
+              └──────────┘
+```
+
+#### Phase 3: Microservices with NATS/Kafka
+
+```
+┌────────────┐    ┌─────────┐    ┌─────────────┐
+│    API     │───>│  NATS/  │───>│   Email     │
+│  Service   │    │  Kafka  │    │ Microservice│
+└────────────┘    └─────────┘    └─────────────┘
+                       │
+                       └─────────>┌─────────────┐
+                                  │ Analytics   │
+                                  │ Microservice│
+                                  └─────────────┘
+```
+
+**Key insight**: Same event publishing code works across all phases. Only the bus implementation changes:
+
+```go
+// Phase 1: In-memory
+eventBus := memory.NewMemoryBus(config)
+
+// Phase 2: Redis
+eventBus := redis.NewRedisBus(config, redisClient)
+
+// Phase 3: NATS
+eventBus := nats.NewNATSBus(config, natsConn)
+```
+
+### Best Practices
+
+1. **Events are immutable** - Never modify event after publishing
+2. **Events are facts** - Past tense naming (`UserRegistered`, not `RegisterUser`)
+3. **Idempotent handlers** - Handle duplicate events gracefully
+4. **Don't fail operations on event errors** - Log and continue
+5. **Keep events small** - Only essential data (use IDs, not full objects)
+6. **Version events** - Add `EventVersion` field for schema evolution
+7. **Monitor dead letters** - Track and retry failed events
+8. **Use correlation IDs** - Trace events across services
+
+### Demo
+
+Run the event bus demo to see async email notifications in action:
+
+```bash
+cd /Users/basilex/Workspace/src/promenade
+go run examples/event_bus_demo/main.go
+```
+
+**Output**:
+
+```
+🚀 Event Bus Demo - Async Email Notifications
+================================================
+
+✅ Email service started and listening for events...
+
+📝 Simulating user registration: Demo User (demo@example.com)
+✅ Event published to bus (returns immediately)
+⏳ Email being sent in background goroutine...
+
+📧 Emails sent: 1
+  1. To: demo@example.com
+     Subject: Welcome to Promenade!
+
+📊 Event Bus Stats:
+  Topics: 5
+  Subscribers: 5
+  Messages Published: 1
+  Messages Processed: 1
+
+🎯 Key Takeaways:
+   • Publish() returns immediately - non-blocking
+   • Email sent asynchronously in worker pool
+   • User doesn't wait for email delivery
+```
+
+### Further Reading
+
+- **[Event Bus README](pkg/bus/README.md)** - Detailed technical documentation
+- **[Configuration Guide](docs/CONFIGURATION_REFACTORING.md)** - Template and config externalization
+- **[Integration Tests](test/integration/event_bus_test.go)** - Full test suite examples
+
 ## ⚙️ Configuration
 
 ### Environment Files

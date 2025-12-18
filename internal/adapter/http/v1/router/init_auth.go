@@ -7,6 +7,7 @@ import (
 	"github.com/basilex/promenade/internal/adapter/http/v1/handler"
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/usecase"
+	"github.com/basilex/promenade/pkg/bus"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 )
 
@@ -16,13 +17,14 @@ func InitAuthModule(
 	db *sqlx.DB,
 	jwtManager *jwtpkg.JWTManager,
 	authMiddleware *middleware.AuthMiddleware,
+	eventBus bus.Bus,
 ) *AuthRouter {
 	// Repository layer
 	userRepo := postgres.NewUserRepository(db)
 	sessionRepo := postgres.NewSessionRepository(db)
 
-	// Use case layer
-	authUseCase := usecase.NewAuthUseCase(userRepo, sessionRepo, jwtManager)
+	// Use case layer (теперь с event bus для асинхронных нотификаций)
+	authUseCase := usecase.NewAuthUseCase(userRepo, sessionRepo, jwtManager, eventBus)
 
 	// Handler layer
 	authHandler := handler.NewAuthHandler(authUseCase)

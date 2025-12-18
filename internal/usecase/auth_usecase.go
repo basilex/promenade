@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/internal/domain/event"
 	"github.com/basilex/promenade/internal/domain/repository"
+	"github.com/basilex/promenade/pkg/bus"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -48,17 +50,20 @@ type authUseCase struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
 	jwtManager  *jwtpkg.JWTManager
+	eventBus    bus.Bus
 }
 
 func NewAuthUseCase(
 	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
 	jwtManager *jwtpkg.JWTManager,
+	eventBus bus.Bus,
 ) AuthUseCase {
 	return &authUseCase{
 		userRepo:    userRepo,
 		sessionRepo: sessionRepo,
 		jwtManager:  jwtManager,
+		eventBus:    eventBus,
 	}
 }
 
@@ -92,7 +97,14 @@ func (uc *authUseCase) Register(ctx context.Context, email, name, password strin
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	// TODO: Send verification email
+	// Publish user registered event (асинхронно через event bus)
+	// Email будет отправлен воркером в фоне, не блокируя регистрацию
+	userEvent := event.NewUserRegisteredEvent(user.ID, user.Email, user.Name)
+	if err := uc.eventBus.Publish(ctx, bus.TopicUserRegistered, userEvent); err != nil {
+		// Логируем ошибку, но не фейлим регистрацию из-за event bus
+		// TODO: add proper logging
+		fmt.Printf("Failed to publish user.registered event: %v\n", err)
+	}
 
 	return user, nil
 }
@@ -275,6 +287,12 @@ func (uc *authUseCase) GetUserSessions(ctx context.Context, userID uuidv7.UUID) 
 }
 
 func (uc *authUseCase) SuspendUser(ctx context.Context, userID uuidv7.UUID, reason string, until *time.Time) error {
+	// Get user for email
+	user, err := uc.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed to get user: %w", err)
+	}
+
 	if err := uc.userRepo.Suspend(ctx, userID, reason, until); err != nil {
 		return fmt.Errorf("failed to suspend user: %w", err)
 	}
@@ -284,10 +302,22 @@ func (uc *authUseCase) SuspendUser(ctx context.Context, userID uuidv7.UUID, reas
 		return fmt.Errorf("failed to invalidate user sessions: %w", err)
 	}
 
+	// Publish user suspended event (асинхронная нотификация)
+	suspendedEvent := event.NewUserSuspendedEvent(userID, user.Email, reason, until)
+	if err := uc.eventBus.Publish(ctx, bus.TopicUserSuspended, suspendedEvent); err != nil {
+		fmt.Printf("Failed to publish user.suspended event: %v\n", err)
+	}
+
 	return nil
 }
 
 func (uc *authUseCase) BanUser(ctx context.Context, userID uuidv7.UUID, reason string) error {
+	// Get user for email
+	user, err := uc.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed to get user: %w", err)
+	}
+
 	if err := uc.userRepo.Ban(ctx, userID, reason); err != nil {
 		return fmt.Errorf("failed to ban user: %w", err)
 	}
@@ -295,6 +325,12 @@ func (uc *authUseCase) BanUser(ctx context.Context, userID uuidv7.UUID, reason s
 	// Invalidate all user sessions
 	if err := uc.sessionRepo.DeleteByUserID(ctx, userID); err != nil {
 		return fmt.Errorf("failed to invalidate user sessions: %w", err)
+	}
+
+	// Publish user banned event (асинхронная нотификация)
+	bannedEvent := event.NewUserBannedEvent(userID, user.Email, reason)
+	if err := uc.eventBus.Publish(ctx, bus.TopicUserBanned, bannedEvent); err != nil {
+		fmt.Printf("Failed to publish user.banned event: %v\n", err)
 	}
 
 	return nil

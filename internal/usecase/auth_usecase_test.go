@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/bus/memory"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -24,7 +25,9 @@ func TestAuthUseCase_Register(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		email := "test@example.com"
 		name := "Test User"
@@ -47,7 +50,9 @@ func TestAuthUseCase_Register(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		existingUser := &entity.User{
 			ID:    uuidv7.New(),
@@ -69,7 +74,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		// Create user with hashed password
 		user := &entity.User{
@@ -97,7 +104,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		user := &entity.User{
 			ID:     uuidv7.New(),
@@ -117,7 +126,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockUserRepo.On("GetByEmail", ctx, "notfound@example.com").Return(nil, entity.ErrNotFound)
 
@@ -130,7 +141,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		user := &entity.User{
 			ID:     uuidv7.New(),
@@ -150,7 +163,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		user := &entity.User{
 			ID:     uuidv7.New(),
@@ -170,7 +185,9 @@ func TestAuthUseCase_Login(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		user := &entity.User{
 			ID:     uuidv7.New(),
@@ -194,7 +211,9 @@ func TestAuthUseCase_Logout(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		refreshToken := "valid-refresh-token"
 		session := &entity.Session{
@@ -214,7 +233,9 @@ func TestAuthUseCase_Logout(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockSessionRepo.On("GetByRefreshToken", ctx, mock.AnythingOfType("string")).Return(nil, entity.ErrNotFound)
 
@@ -231,7 +252,9 @@ func TestAuthUseCase_RefreshToken(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		userID := uuidv7.New()
 		user := &entity.User{
@@ -262,7 +285,9 @@ func TestAuthUseCase_RefreshToken(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		session := &entity.Session{
 			ID:        uuidv7.New(),
@@ -281,7 +306,9 @@ func TestAuthUseCase_RefreshToken(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockSessionRepo.On("GetByRefreshToken", ctx, mock.AnythingOfType("string")).Return(nil, entity.ErrNotFound)
 
@@ -294,7 +321,9 @@ func TestAuthUseCase_RefreshToken(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		userID := uuidv7.New()
 		user := &entity.User{
@@ -326,7 +355,9 @@ func TestAuthUseCase_GetMe(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		expectedUser := &entity.User{
 			ID:    userID,
@@ -345,7 +376,9 @@ func TestAuthUseCase_GetMe(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockUserRepo.On("GetByID", ctx, userID).Return(nil, entity.ErrNotFound)
 
@@ -363,7 +396,9 @@ func TestAuthUseCase_GetUserSessions(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		sessions := []*entity.Session{
 			{ID: uuidv7.New(), UserID: userID},
@@ -382,7 +417,9 @@ func TestAuthUseCase_GetUserSessions(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockSessionRepo.On("GetUserSessions", ctx, userID).Return(nil, errors.New("db error"))
 
@@ -401,10 +438,18 @@ func TestAuthUseCase_SuspendUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		until := time.Now().Add(7 * 24 * time.Hour)
 
+		user := &entity.User{
+			ID:    userID,
+			Email: "test@example.com",
+		}
+
+		mockUserRepo.On("GetByID", ctx, userID).Return(user, nil)
 		mockUserRepo.On("Suspend", ctx, userID, reason, ref.Time(until)).Return(nil)
 		mockSessionRepo.On("DeleteByUserID", ctx, userID).Return(nil)
 
@@ -418,8 +463,16 @@ func TestAuthUseCase_SuspendUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
+		user := &entity.User{
+			ID:    userID,
+			Email: "test@example.com",
+		}
+
+		mockUserRepo.On("GetByID", ctx, userID).Return(user, nil)
 		mockUserRepo.On("Suspend", ctx, userID, reason, (*time.Time)(nil)).Return(nil)
 		mockSessionRepo.On("DeleteByUserID", ctx, userID).Return(nil)
 
@@ -439,8 +492,16 @@ func TestAuthUseCase_BanUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
+		user := &entity.User{
+			ID:    userID,
+			Email: "test@example.com",
+		}
+
+		mockUserRepo.On("GetByID", ctx, userID).Return(user, nil)
 		mockUserRepo.On("Ban", ctx, userID, reason).Return(nil)
 		mockSessionRepo.On("DeleteByUserID", ctx, userID).Return(nil)
 
@@ -454,8 +515,16 @@ func TestAuthUseCase_BanUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
+		user := &entity.User{
+			ID:    userID,
+			Email: "test@example.com",
+		}
+
+		mockUserRepo.On("GetByID", ctx, userID).Return(user, nil)
 		mockUserRepo.On("Ban", ctx, userID, reason).Return(errors.New("db error"))
 
 		err := uc.BanUser(ctx, userID, reason)
@@ -472,7 +541,9 @@ func TestAuthUseCase_ReactivateUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockUserRepo.On("Reactivate", ctx, userID).Return(nil)
 
@@ -485,7 +556,9 @@ func TestAuthUseCase_ReactivateUser(t *testing.T) {
 		mockUserRepo := new(mocks.MockUserRepository)
 		mockSessionRepo := new(mocks.MockSessionRepository)
 		jwtManager := jwtpkg.NewJWTManager("test-secret", 15*time.Minute, 7*24*time.Hour)
-		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager)
+		eventBus := memory.NewDefaultMemoryBus()
+		defer eventBus.Close(ctx)
+		uc := NewAuthUseCase(mockUserRepo, mockSessionRepo, jwtManager, eventBus)
 
 		mockUserRepo.On("Reactivate", ctx, userID).Return(errors.New("db error"))
 
