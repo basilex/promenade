@@ -169,3 +169,44 @@ WHERE r.name = 'guest' AND (
     (p.resource = 'comments' AND p.action = 'read') OR
     (p.resource = 'profiles' AND p.action = 'read')
 );
+
+-- ============================================================================
+-- Assign default roles to existing users
+-- ============================================================================
+
+-- Assign superadmin role to system user
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    u.id  -- Self-assigned during initial setup
+FROM users u
+CROSS JOIN roles r
+WHERE u.email = 'system@promenade.com' AND r.name = 'superadmin'
+ON CONFLICT DO NOTHING;
+
+-- Assign admin role to Alexander Vasilenko (project owner)
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM users WHERE email = 'system@promenade.com')  -- Assigned by system user
+FROM users u
+CROSS JOIN roles r
+WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'admin'
+ON CONFLICT DO NOTHING;
+
+-- Assign user role to regular users (default for all other users)
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM users WHERE email = 'system@promenade.com')  -- Assigned by system user
+FROM users u
+CROSS JOIN roles r
+WHERE u.email NOT IN ('system@promenade.com', 'alexander.vasilenko@gmail.com') 
+  AND r.name = 'user'
+ON CONFLICT DO NOTHING;

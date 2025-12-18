@@ -54,6 +54,24 @@ make dev
 
 Server will start on http://localhost:8081
 
+### Default Login Credentials
+
+The system includes pre-configured admin accounts for development:
+
+```bash
+# Superadmin (full access)
+Email:    system@promenade.com
+Password: passw0rd
+
+# Admin (administrative access)
+Email:    alexander.vasilenko@gmail.com
+Password: 03041965
+```
+
+**⚠️ Important:** Change these passwords before deploying to production!
+
+📋 **Full credentials reference:** See [CREDENTIALS.md](CREDENTIALS.md) for complete list with examples.
+
 ### Quick Test
 
 ```bash
@@ -62,6 +80,11 @@ make test
 
 # Or run integration tests only
 make test-integration
+
+# Test authentication with default user
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"system@promenade.com","password":"passw0rd"}'
 ```
 
 ## 📡 API Access
@@ -981,20 +1004,52 @@ See [UUID_V7_MIGRATION.md](docs/UUID_V7_MIGRATION.md) for migration guide and be
 
 ## 🔐 Authentication Flow
 
+### Default Users & Credentials
+
+The system comes with **pre-configured users** for development and testing. These are created automatically via database migrations.
+
+| Email                           | Password   | Role           | Permissions                        | Purpose                              |
+| ------------------------------- | ---------- | -------------- | ---------------------------------- | ------------------------------------ |
+| `system@promenade.com`          | `passw0rd` | **Superadmin** | `*:*` (full access)                | System administration, initial setup |
+| `alexander.vasilenko@gmail.com` | `03041965` | **Admin**      | All resources except system config | Project owner, team lead             |
+| _(registered users)_            | _(as set)_ | **User**       | Own content management             | Regular users                        |
+
+**Quick Login Examples:**
+
+```bash
+# Login as Superadmin (full system access)
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "system@promenade.com",
+    "password": "passw0rd"
+  }'
+
+# Login as Admin (administrative access)
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "alexander.vasilenko@gmail.com",
+    "password": "03041965"
+  }'
+```
+
+**⚠️ Security Note:** Change default passwords in production! These credentials are for **development only**.
+
 ### Register & Login
 
 ```bash
 # Register new user
-curl -X POST http://localhost:8081/api/auth/register \
+curl -X POST http://localhost:8081/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
-    "password": "SecurePass123!",
-    "username": "johndoe"
+    "name": "John Doe",
+    "password": "SecurePass123!"
   }'
 
-# Login
-curl -X POST http://localhost:8081/api/auth/login \
+# Login (returns access + refresh tokens)
+curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -1003,10 +1058,18 @@ curl -X POST http://localhost:8081/api/auth/login \
 
 # Response:
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIs...",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
-  "token_type": "Bearer",
-  "expires_in": 900
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
+    "token_type": "Bearer",
+    "expires_in": 900,
+    "user": {
+      "id": "019b2f90-9c3e-7147-aff6-86deb842e084",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "status": "unverified"
+    }
+  }
 }
 ```
 
@@ -1066,13 +1129,28 @@ router.GET("/superadmin",
 
 **System Roles:**
 
-- `superadmin` - Full access (`*:*`)
-- `admin` - System administration
-- `moderator` - Content moderation
-- `user` - Regular user permissions
-- `guest` - Read-only access
+| Role         | Permissions        | Description                              | Default Users                   |
+| ------------ | ------------------ | ---------------------------------------- | ------------------------------- |
+| `superadmin` | `*:*` (all)        | Full system access, cannot be restricted | `system@promenade.com`          |
+| `admin`      | Most resources     | System administration, user management   | `alexander.vasilenko@gmail.com` |
+| `moderator`  | Content moderation | Can moderate posts, comments, ban users  | _(assign manually)_             |
+| `user`       | Own content        | Create/edit own posts, comments, profile | All registered users            |
+| `guest`      | Read-only          | View public content only                 | _(unauthenticated)_             |
 
 **Permission Format:** `resource:action` (e.g., `posts:create`, `users:ban`, `*:read`)
+
+**Testing Permissions:**
+
+```bash
+# Login as superadmin to test admin endpoints
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -d '{"email":"system@promenade.com","password":"passw0rd"}' \
+  -H "Content-Type: application/json"
+
+# Use returned token for protected endpoints
+curl -X GET http://localhost:8081/api/v1/admin/users \
+  -H "Authorization: Bearer <access_token>"
+```
 
 For detailed usage, wildcard permissions, testing, and best practices, see **[Authorization Guide](docs/AUTHORIZATION.md)**.
 
