@@ -1396,71 +1396,71 @@ Comprehensive manual testing was performed on all critical endpoints to verify p
 
 **Authentication Flow (6/11):**
 
-- [+] `POST /auth/register` - User registration with validation
-- [+] `POST /auth/login` - JWT authentication with access + refresh tokens
-- [+] `POST /auth/refresh` - Token refresh with rotation
-- [+] `POST /auth/logout` - Refresh token invalidation
-- [+] `GET /auth/me` - Current user information
-- [+] `GET /auth/sessions` - Active session listing
+- [+] `POST /api/v1/auth/register` - User registration with validation
+- [+] `POST /api/v1/auth/login` - JWT authentication with access + refresh tokens
+- [+] `POST /api/v1/auth/refresh` - Token refresh with rotation
+- [+] `POST /api/v1/auth/logout` - Refresh token invalidation
+- [+] `GET /api/v1/auth/me` - Current user information
+- [+] `GET /api/v1/auth/sessions` - Active session listing
 
 **User Profiles (4/13):**
 
-- [+] `POST /profiles` - Profile creation with privacy settings
-- [+] `GET /profiles/me` - Current user profile
-- [+] `PUT /profiles/:id` - Profile updates
-- [+] `GET /profiles` - Profile listing with pagination
+- [+] `POST /api/v1/profiles` - Profile creation with privacy settings
+- [+] `GET /api/v1/profiles/me` - Current user profile
+- [+] `PUT /api/v1/profiles/:id` - Profile updates
+- [+] `GET /api/v1/profiles` - Profile listing with pagination
 
 **User Contacts (3/9):**
 
-- [+] `POST /users/contacts` - Contact creation (email, phone, social)
-- [+] `GET /users/contacts` - User contact listing
-- [+] `PUT /users/contacts/:id` - Contact updates
+- [+] `POST /api/v1/users/contacts` - Contact creation (email, phone, social)
+- [+] `GET /api/v1/users/contacts` - User contact listing
+- [+] `PUT /api/v1/users/contacts/:id` - Contact updates
 
 **Blog Posts (5/18):**
 
-- [+] `POST /posts` - Post creation with draft status
-- [+] `POST /posts/:id/publish` - Post publishing
-- [+] `GET /posts/published` - Published posts listing
-- [!] `POST /posts/:id/like` - Post engagement (partially tested)
-- [!] `GET /posts/:id` - Single post retrieval (needs data)
+- [+] `POST /api/v1/posts` - Post creation with draft status
+- [+] `POST /api/v1/posts/:id/publish` - Post publishing
+- [+] `GET /api/v1/posts/published` - Published posts listing
+- [!] `POST /api/v1/posts/:id/like` - Post engagement (partially tested)
+- [!] `GET /api/v1/posts/:id` - Single post retrieval (needs data)
 
 **Comments (7/9):**
 
-- [+] `POST /comments` - Comment creation
-- [+] `PUT /comments/:id` - Comment updates
-- [+] `GET /comments/:id` - Comment retrieval
-- [+] `POST /comments/:id/like` - Comment likes
-- [+] `GET /comments?post_id=xxx` - Post comments (query param based)
--  `POST /comments` (replies) - Thread replies (initiated)
--  `GET /comments/:id/replies` - Reply listing (initiated)
+- [+] `POST /api/v1/comments` - Comment creation
+- [+] `PUT /api/v1/comments/:id` - Comment updates
+- [+] `GET /api/v1/comments/:id` - Comment retrieval
+- [+] `POST /api/v1/comments/:id/like` - Comment likes
+- [+] `GET /api/v1/comments?post_id=xxx` - Post comments (query param based)
+-  `POST /api/v1/comments` (replies) - Thread replies (initiated)
+-  `GET /api/v1/comments/:id/replies` - Reply listing (initiated)
 
 **RBAC (Role-Based Access Control) (18/18):**
 
-- [+] `POST /permissions` - Create permission (requires permissions:create)
-- [+] `GET /permissions` - List all permissions (requires permissions:read)
-- [+] `GET /permissions/:id` - Get permission by ID (requires permissions:read)
-- [+] `PUT /permissions/:id` - Update permission (requires permissions:update)
-- [+] `DELETE /permissions/:id` - Delete permission (requires permissions:delete)
-- [+] `GET /permissions?resource=posts` - Find by resource (requires permissions:read)
-- [+] `POST /roles` - Create role (requires roles:create)
-- [+] `GET /roles` - List all roles (requires roles:read)
-- [+] `GET /roles/:id` - Get role by ID (requires roles:read)
-- [+] `PUT /roles/:id` - Update role (requires roles:update)
-- [+] `DELETE /roles/:id` - Delete role (requires roles:delete, prevents system roles deletion)
-- [+] `POST /roles/:id/permissions` - Add permission to role (requires roles:update)
-- [+] `DELETE /roles/:id/permissions/:permissionId` - Remove permission (requires roles:update)
-- [+] `POST /roles/:id/permissions/sync` - Sync all permissions (requires roles:update)
-- [+] `GET /roles/:id/permissions` - List role permissions (requires roles:read)
-- [+] `POST /roles/:id/users/:userId` - Assign role to user (requires roles:assign)
-- [+] `DELETE /roles/:id/users/:userId` - Remove role from user (requires roles:assign)
-- [+] `GET /users/:id/roles` - Get user roles (requires users:read or own user)
+- [+] `POST /api/v1/permissions` - Create permission (requires permissions:create)
+- [+] `GET /api/v1/permissions` - List all permissions (requires permissions:read)
+- [+] `GET /api/v1/permissions/:id` - Get permission by ID (requires permissions:read)
+- [+] `PUT /api/v1/permissions/:id` - Update permission (requires permissions:update)
+- [+] `DELETE /api/v1/permissions/:id` - Delete permission (requires permissions:delete)
+- [+] `GET /api/v1/permissions?resource=posts` - Find by resource (requires permissions:read)
+- [+] `POST /api/v1/roles` - Create role (requires roles:create)
+- [+] `GET /api/v1/roles` - List all roles (requires roles:read)
+- [+] `GET /api/v1/roles/:id` - Get role by ID (requires roles:read)
+- [+] `PUT /api/v1/roles/:id` - Update role (requires roles:update)
+- [+] `DELETE /api/v1/roles/:id` - Delete role (requires roles:delete, prevents system roles deletion)
+- [+] `POST /api/v1/roles/:id/permissions` - Add permission to role (requires roles:update)
+- [+] `DELETE /api/v1/roles/:id/permissions/:permissionId` - Remove permission (requires roles:update)
+- [+] `POST /api/v1/roles/:id/permissions/sync` - Sync all permissions (requires roles:update)
+- [+] `GET /api/v1/roles/:id/permissions` - List role permissions (requires roles:read)
+- [+] `POST /api/v1/roles/:id/users/:userId` - Assign role to user (requires roles:assign)
+- [+] `DELETE /api/v1/roles/:id/users/:userId` - Remove role from user (requires roles:assign)
+- [+] `GET /api/v1/users/:id/roles` - Get user roles (requires users:read or own user)
 
 ### Known Issues Fixed During Testing
 
 1. **Route Conflict in PostCommentRouter** [+] FIXED
 
    - **Issue**: Path conflict between `/posts/:post_id/comments` and `/posts/:id`
-   - **Solution**: Changed to query parameter `GET /comments?post_id=xxx`
+   - **Solution**: Changed to query parameter `GET /api/v1/comments?post_id=xxx`
    - **Impact**: Prevents Gin router panic on startup
 
 2. **UserContactHandler Type Conversion (9 occurrences)** [+] FIXED
