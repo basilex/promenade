@@ -75,6 +75,7 @@ make test-integration
 
 ### Technical Documentation
 
+- **[Authorization Guide](docs/AUTHORIZATION.md)** - RBAC middleware with permissions, roles, and usage examples
 - **[Logging Guide](docs/LOGGING.md)** - Structured logging with slog (JSON/text format, context fields)
 - [Testing Guide](docs/TESTING_GUIDE.md) - Comprehensive testing setup and best practices
 - [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test infrastructure overview
@@ -962,7 +963,7 @@ make migrate-status
 - **Foreign Key Constraints** - Referential integrity enforced
 - **System Roles Protection** - is_system flag prevents deletion of core roles
 
-See [AUTH_SCHEMA.md](docs/AUTH_SCHEMA.md) for complete schema documentation.
+See [AUTH_SCHEMA.md](docs/AUTH_SCHEMA.md) for complete schema documentation and [AUTHORIZATION.md](docs/AUTHORIZATION.md) for RBAC middleware usage.
 
 ## 🚀 Performance
 
@@ -1026,6 +1027,54 @@ curl -X POST http://localhost:8081/api/auth/refresh \
 curl -X GET http://localhost:8081/api/v1/products \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
+
+### Authorization (RBAC)
+
+The API uses **Role-Based Access Control** with fine-grained permissions. See [AUTHORIZATION.md](docs/AUTHORIZATION.md) for complete guide.
+
+**Quick Examples:**
+
+```go
+// Protect endpoint with specific permission
+router.POST("/posts",
+    authMiddleware.RequireAuth(),
+    authzMiddleware.RequirePermission("posts:create"),
+    handler.CreatePost,
+)
+
+// Require multiple permissions (AND)
+router.POST("/posts/:id/publish",
+    authMiddleware.RequireAuth(),
+    authzMiddleware.RequireAllPermissions("posts:create", "posts:publish"),
+    handler.PublishPost,
+)
+
+// Require any of multiple permissions (OR)
+router.GET("/admin",
+    authMiddleware.RequireAuth(),
+    authzMiddleware.RequireAnyPermission("admin:*", "moderator:*"),
+    handler.AdminDashboard,
+)
+
+// Role-based check
+router.GET("/superadmin",
+    authMiddleware.RequireAuth(),
+    authzMiddleware.RequireRole("superadmin"),
+    handler.SuperAdminPanel,
+)
+```
+
+**System Roles:**
+
+- `superadmin` - Full access (`*:*`)
+- `admin` - System administration
+- `moderator` - Content moderation
+- `user` - Regular user permissions
+- `guest` - Read-only access
+
+**Permission Format:** `resource:action` (e.g., `posts:create`, `users:ban`, `*:read`)
+
+For detailed usage, wildcard permissions, testing, and best practices, see **[Authorization Guide](docs/AUTHORIZATION.md)**.
 
 ## 📚 API Examples
 
