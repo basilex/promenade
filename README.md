@@ -112,7 +112,33 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 
 ## -> API Access
 
-- **API Base URL**: http://localhost:8081/api/v1
+### API Endpoints
+
+- **GET /api** - API information with all available versions
+
+  ```bash
+  curl http://localhost:8081/api
+  # Returns: service info, available versions (v1, v2), links to documentation
+  ```
+
+- **GET /api/v1** - API v1 information
+
+  ```bash
+  curl http://localhost:8081/api/v1
+  # Returns: version info, base path, documentation, health check links
+  ```
+
+- **GET /api/v2** - API v2 information
+  ```bash
+  curl http://localhost:8081/api/v2
+  # Returns: version info, base path, documentation, health check links
+  ```
+
+### Quick Links
+
+- **API Root**: http://localhost:8081/api
+- **API v1 Base**: http://localhost:8081/api/v1
+- **API v2 Base**: http://localhost:8081/api/v2
 - **Swagger v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **Swagger v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 - **Health Check**: http://localhost:8081/api/v1/health
@@ -376,7 +402,7 @@ erDiagram
 - **Cascading deletes** to maintain referential integrity
 - **Unique constraints** to prevent duplicates (email, nickname, slug per user, permission resource:action)
 
-##  Development Commands
+## Development Commands
 
 ### Core Commands
 
@@ -420,7 +446,7 @@ make lint              # Run golangci-lint
 make swagger-all       # Generate Swagger docs (v1 + v2)
 ```
 
-##  Architecture
+## Architecture
 
 This project strictly follows **Clean Architecture** principles with four distinct layers:
 
@@ -503,7 +529,7 @@ promenade/
 └── Makefile                         # Development commands
 ```
 
-### * Working with Nullable Fields (`pkg/ref`)
+### \* Working with Nullable Fields (`pkg/ref`)
 
 When working with database entities that have nullable fields (mapped to SQL `NULL`), Go requires using pointer types (`*string`, `*time.Time`, etc.). The `pkg/ref` package provides convenient helpers to avoid verbose manual pointer creation and prevent common mistakes.
 
@@ -609,9 +635,9 @@ displayName := ref.StringOr(profile.DisplayName, profile.Nickname)
 
 #### Benefits
 
--  **Type-safe** - Compiler catches mismatches
+- **Type-safe** - Compiler catches mismatches
 - -> **Less verbose** - No temporary variables needed
-- * **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
+- - **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
 - [!] **Fewer bugs** - Eliminates "forgot to add `*`" mistakes after long coding sessions
 - - **Test-friendly** - Safe dereferencing in assertions without panic risk
 
@@ -1304,7 +1330,7 @@ func TestUserRepository_Create(t *testing.T) {
 }
 ```
 
-### * Smoke Tests
+### \* Smoke Tests
 
 Production-ready **end-to-end smoke tests** verify critical user flows with real database operations. These tests ensure core functionality works correctly in integration.
 
@@ -1431,8 +1457,8 @@ Comprehensive manual testing was performed on all critical endpoints to verify p
 - [+] `GET /api/v1/comments/:id` - Comment retrieval
 - [+] `POST /api/v1/comments/:id/like` - Comment likes
 - [+] `GET /api/v1/comments?post_id=xxx` - Post comments (query param based)
--  `POST /api/v1/comments` (replies) - Thread replies (initiated)
--  `GET /api/v1/comments/:id/replies` - Reply listing (initiated)
+- `POST /api/v1/comments` (replies) - Thread replies (initiated)
+- `GET /api/v1/comments/:id/replies` - Reply listing (initiated)
 
 **RBAC (Role-Based Access Control) (18/18):**
 
@@ -2031,7 +2057,7 @@ curl http://localhost:8081/api/v1/currencies
 curl http://localhost:8081/api/v1/currencies/code/USD
 ```
 
-##  Best Practices
+## Best Practices
 
 This project follows industry best practices:
 
@@ -2070,7 +2096,7 @@ This project follows industry best practices:
 - [+] **Swagger documentation** - Auto-generated from code
 - [+] **Code generation** - Templates for boilerplate
 
-## * Contributing
+## \* Contributing
 
 We welcome contributions! Please follow these guidelines:
 
@@ -2258,11 +2284,11 @@ Interactive API documentation available at:
 - **v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 
-## * License
+## \* License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## * Acknowledgments
+## \* Acknowledgments
 
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [sqlx](https://github.com/jmoiron/sqlx)
@@ -2272,4 +2298,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-**Built with ** using Clean Architecture and best practices**
+**Built with ** using Clean Architecture and best practices\*\*

@@ -4,8 +4,21 @@ API_URL="http://localhost:8081"
 EMAIL="test@example.com"
 PASSWORD="SecurePass123"
 
-echo "🧪 Testing Promenade API"
+echo "Testing Promenade API"
 echo "========================"
+echo ""
+
+# 0. API Info endpoints
+echo "Testing API Root (GET /api)..."
+curl -s $API_URL/api | jq .
+echo ""
+
+echo "Testing API v1 Info (GET /api/v1)..."
+curl -s $API_URL/api/v1 | jq .
+echo ""
+
+echo "Testing API v2 Info (GET /api/v2)..."
+curl -s $API_URL/api/v2 | jq .
 echo ""
 
 # 1. Health Check

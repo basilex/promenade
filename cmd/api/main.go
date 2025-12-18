@@ -18,9 +18,11 @@ import (
 
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/bus/memory"
+
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
 
+	"github.com/basilex/promenade/internal/adapter/http/shared/handler"
 	"github.com/basilex/promenade/internal/adapter/http/shared/middleware"
 	"github.com/basilex/promenade/internal/adapter/http/v1/router"
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
@@ -192,12 +194,22 @@ func main() {
 	r.Use(middleware.Logger())
 	r.Use(middleware.CORS())
 
+	// Initialize API info handler (for root paths like /api, /api/v1, /api/v2)
+	infoHandler := handler.NewInfoHandler("Promenade API", "1.0.0", cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port)
+
 	// API routes
 	api := r.Group("/api")
+	{
+		// GET /api - shows available API versions and links
+		api.GET("", infoHandler.GetAPIInfo)
+	}
 
 	// API v1
 	v1 := api.Group("/v1")
 	{
+		// GET /api/v1 - shows v1 API information
+		v1.GET("", infoHandler.GetV1Info)
+
 		// Swagger UI for v1
 		v1.GET("/docs/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
 			ginSwagger.InstanceName("v1"),
@@ -211,6 +223,9 @@ func main() {
 	// API v2 (future)
 	v2 := api.Group("/v2")
 	{
+		// GET /api/v2 - shows v2 API information
+		v2.GET("", infoHandler.GetV2Info)
+
 		// Swagger UI for v2
 		v2.GET("/docs/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
 			ginSwagger.InstanceName("v2"),
