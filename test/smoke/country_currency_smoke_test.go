@@ -32,7 +32,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 
 	var countryID uuidv7.UUID
 
-	t.Run("✅ Create_country", func(t *testing.T) {
+	t.Run("[+] Create_country", func(t *testing.T) {
 		country := &entity.Country{
 			ID:     uuidv7.New(),
 			Name:   "Test Country",
@@ -48,7 +48,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 		countryID = country.ID
 	})
 
-	t.Run("✅ Get_country_by_ID", func(t *testing.T) {
+	t.Run("[+] Get_country_by_ID", func(t *testing.T) {
 		country, err := countryUC.GetByID(ctx, countryID, false)
 		require.NoError(t, err)
 		require.NotNil(t, country)
@@ -58,7 +58,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 		assert.Equal(t, "western_europe", country.Region)
 	})
 
-	t.Run("✅ Get_country_by_code", func(t *testing.T) {
+	t.Run("[+] Get_country_by_code", func(t *testing.T) {
 		country, err := countryUC.GetByCode(ctx, "QZ", false)
 		require.NoError(t, err)
 		require.NotNil(t, country)
@@ -67,7 +67,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 		assert.Equal(t, "Test Country", country.Name)
 	})
 
-	t.Run("✅ Update_country", func(t *testing.T) {
+	t.Run("[+] Update_country", func(t *testing.T) {
 		country, err := countryUC.GetByID(ctx, countryID, false)
 		require.NoError(t, err)
 
@@ -81,7 +81,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 		assert.Equal(t, "Updated Test Country", updated.Name)
 	})
 
-	t.Run("✅ List_countries", func(t *testing.T) {
+	t.Run("[+] List_countries", func(t *testing.T) {
 		// Create additional countries
 		country2 := &entity.Country{
 			ID:     uuidv7.New(),
@@ -98,7 +98,7 @@ func TestCountry_SmokeTest(t *testing.T) {
 		assert.GreaterOrEqual(t, len(countries), 2, "should have at least 2 countries")
 	})
 
-	t.Run("✅ Delete_country", func(t *testing.T) {
+	t.Run("[+] Delete_country", func(t *testing.T) {
 		err := countryUC.Delete(ctx, countryID)
 		require.NoError(t, err)
 
@@ -129,7 +129,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 
 	var currencyID uuidv7.UUID
 
-	t.Run("✅ Create_currency", func(t *testing.T) {
+	t.Run("[+] Create_currency", func(t *testing.T) {
 		currency := &entity.Currency{
 			ID:     uuidv7.New(),
 			Name:   "Test Coin",
@@ -144,7 +144,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 		currencyID = currency.ID
 	})
 
-	t.Run("✅ Get_currency_by_ID", func(t *testing.T) {
+	t.Run("[+] Get_currency_by_ID", func(t *testing.T) {
 		currency, err := currencyUC.GetByID(ctx, currencyID, false)
 		require.NoError(t, err)
 		require.NotNil(t, currency)
@@ -154,7 +154,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 		assert.Equal(t, "₮", currency.Symbol)
 	})
 
-	t.Run("✅ Get_currency_by_code", func(t *testing.T) {
+	t.Run("[+] Get_currency_by_code", func(t *testing.T) {
 		currency, err := currencyUC.GetByCode(ctx, "QZC", false)
 		require.NoError(t, err)
 		require.NotNil(t, currency)
@@ -163,7 +163,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 		assert.Equal(t, "Test Coin", currency.Name)
 	})
 
-	t.Run("✅ Update_currency", func(t *testing.T) {
+	t.Run("[+] Update_currency", func(t *testing.T) {
 		currency, err := currencyUC.GetByID(ctx, currencyID, false)
 		require.NoError(t, err)
 
@@ -179,7 +179,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 		assert.Equal(t, "₮₮", updated.Symbol)
 	})
 
-	t.Run("✅ List_currencies", func(t *testing.T) {
+	t.Run("[+] List_currencies", func(t *testing.T) {
 		// Create additional currency
 		currency2 := &entity.Currency{
 			ID:     uuidv7.New(),
@@ -194,7 +194,7 @@ func TestCurrency_SmokeTest(t *testing.T) {
 		assert.GreaterOrEqual(t, len(currencies), 2, "should have at least 2 currencies")
 	})
 
-	t.Run("✅ Delete_currency", func(t *testing.T) {
+	t.Run("[+] Delete_currency", func(t *testing.T) {
 		err := currencyUC.Delete(ctx, currencyID)
 		require.NoError(t, err)
 

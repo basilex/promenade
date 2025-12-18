@@ -6,12 +6,14 @@ Essential knowledge for AI coding agents working in this codebase.
 
 **Clean Architecture with explicit layer separation:**
 
-- **Domain** (`internal/domain`): entities and repository interfaces only
+- **Domain** (`internal/domain`): entities, repository interfaces, domain events only
 - **Use Cases** (`internal/usecase`): business logic, orchestrates repositories
 - **Adapters** (`internal/adapter`): HTTP handlers (v1/v2), repository implementations (Postgres)
-- **Infrastructure** (`internal/infrastructure`): config, database connections, external tools
+- **Infrastructure** (`internal/infrastructure`): config, database, logger, notification services
 
 **Critical rule**: Dependencies flow inward. Use cases depend on domain interfaces, not concrete implementations. Handlers depend on use case interfaces. Never import adapter packages into use cases or domain.
+
+**Event-driven patterns**: Domain events (`internal/domain/event`) use `pkg/bus` for async communication. Events embed `bus.BaseEvent` and follow naming: `User{Action}Event`. EmailService subscribes to events for notifications.
 
 **Module initialization pattern** (see `internal/adapter/http/v1/router/init_*.go`):
 
@@ -97,10 +99,11 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity
 
 ```go
 r.Use(middleware.Recovery())   // Panic recovery
-r.Use(middleware.RequestID())  // X-Request-ID
-r.Use(middleware.Logger())     // Structured logging
+r.Use(middleware.RequestID())  // X-Request-ID for tracing
+r.Use(middleware.Logger())     // Structured logging with slog
 r.Use(middleware.CORS())       // CORS headers
 // Per-route: authMiddleware.RequireAuth() for protected endpoints
+// Per-route: authzMiddleware.RequirePermission("resource:action") for RBAC
 ```
 
 **Handler pattern**:
@@ -170,8 +173,68 @@ response.Success(c, http.StatusCreated, dto.ToUserResponse(user))
 - **validator/v10**: Request validation with custom validators in `pkg/validator/custom_validators.go`
 - **golang-migrate**: Database migrations (install via `make install`)
 - **swaggo/swag**: Swagger generation from comments
+- **slog**: Structured logging with context fields (request_id, user_id) via `pkg/logger`
+- **Event Bus**: In-memory pub/sub (`pkg/bus/memory`) for domain events, configured via `cfg.Bus.*` settings
 
-## 8. Configuration & Validation
+## 8. Event Bus & Async Communication
+
+**Event-driven architecture** using in-memory event bus (`pkg/bus`):
+
+- Events embed `bus.BaseEvent` with `EventType`, `EventID`, `AggregateID`, `OccurredTime`
+- Domain events in `internal/domain/event/` follow naming: `User{Action}Event` (e.g., `UserRegisteredEvent`)
+- Use cases publish events: `eventBus.Publish(ctx, bus.TopicUserRegistered, event)`
+- Services subscribe to events: `emailService.Subscribe()` listens to user events for notifications
+
+**Email notifications** (`internal/infrastructure/notification/email_service.go`):
+
+- Async via event bus subscriptions (non-blocking)
+- Templates in `templates/email/*.html`, fallback templates for tests
+- Mock sender for development, swap for SMTP/SendGrid in production
+- Started in `main.go`: `emailService.Start(ctx)`, graceful shutdown on exit
+
+**Bus configuration** (`cfg.Bus.*`):
+
+- `WorkerPoolSize`: concurrent event handlers (default: 4)
+- `BufferSize`: event queue capacity (default: 100)
+- `RetryAttempts`, `RetryDelay`: automatic retry for failed handlers
+
+## 9. Structured Logging & Context
+
+**Logger patterns** (`pkg/logger`):
+
+- Use `logger.FromContext(ctx)` to get logger with request/user context automatically
+- Context keys: `RequestIDKey`, `UserIDKey`, `TraceIDKey` extracted from context
+- Init in `main.go`: format (json/text), level (debug/info/warn/error), source file trimming
+- Middleware adds `request_id` via `RequestID()`, handlers can add `user_id`
+
+**Logging examples**:
+
+```go
+// In handlers - use package-level logger
+logger.Info("User registered", slog.String("email", user.Email), slog.String("user_id", user.ID.String()))
+
+// With context - automatically includes request_id, user_id if present
+log := logger.FromContext(ctx)
+log.Error("Failed to save", slog.Any("error", err))
+```
+
+## 10. Authorization & RBAC
+
+**Permission-based access control** (`internal/adapter/http/shared/middleware/authorization.go`):
+
+- Format: `resource:action` (e.g., `posts:create`, `users:ban`)
+- Wildcard support: `posts:*` (any action on posts), `*:read` (read any resource), `*:*` (superadmin)
+- Applied per-route after `authMiddleware.RequireAuth()`
+
+**Middleware methods**:
+
+- `RequirePermission("posts:create")` - single permission check
+- `RequireAnyPermission("posts:update", "posts:*")` - at least one permission
+- `RequireAllPermissions("posts:read", "comments:read")` - all permissions required
+
+**5 system roles** (see `migrations/000009_create_rbac_tables.up.sql`): Superadmin, Admin, Moderator, Creator, User
+
+## 11. Configuration & Validation
 
 **Environment loading order** (highest priority first):
 
@@ -188,9 +251,9 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 - Available validators: `uppercase`, `alpha`, `alphanum`, `no_special`
 - Example usage in DTOs: `Code string \`json:"code" binding:"required,uppercase,len=3"\``
 
-## 9. Common Pitfalls
+## 12. Common Pitfalls
 
-❌ **Don't**:
+[X] **Don't**:
 
 - Import adapter packages into use cases or domain (breaks Clean Architecture)
 - Suggest ORM frameworks (GORM, Ent, etc.) — this project uses raw SQL by design
@@ -198,7 +261,7 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 - Forget to run `make swagger-all` after changing handlers/DTOs
 - Skip transactions for multi-step writes
 
-✅ **Do**:
+[+] **Do**:
 
 - Follow constructor naming: `NewXxxHandler`, `NewXxxUseCase`, `NewXxxRepository`
 - Use BaseRepository methods (`Get`, `Select`, `Exec`) for DB operations
@@ -206,7 +269,7 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 - Use module initialization pattern (see `init_auth.go`) when adding new modules
 - Leverage code generators for boilerplate (`make generate-interactive`)
 
-## 10. Key Files Reference
+## 13. Key Files Reference
 
 - `cmd/api/main.go` — Application bootstrap, wiring, server setup
 - `Makefile` + `Makefile.test` — All developer workflows

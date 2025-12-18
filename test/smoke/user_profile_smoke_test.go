@@ -31,7 +31,7 @@ func TestUserProfile_SmokeTest(t *testing.T) {
 	user := helpers.UserFixture()
 	require.NoError(t, userRepo.Create(ctx, user))
 
-	t.Run("✅ Profile_create_and_retrieve", func(t *testing.T) {
+	t.Run("[+] Profile_create_and_retrieve", func(t *testing.T) {
 		// Create
 		bio := "Test bio"
 		profile := &entity.UserProfile{

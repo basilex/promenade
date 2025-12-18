@@ -6,12 +6,12 @@
 
 #### Entity Tests (`internal/domain/entity/user_contact_test.go`)
 
-- ✅ **TestContactType_IsValid** - 13 test cases
+- [+] **TestContactType_IsValid** - 13 test cases
 
   - Valid contact types (10 types: email, phone, telegram, whatsapp, viber, signal, skype, discord, linkedin, other)
   - Invalid contact types (empty, unknown, unsupported)
 
-- ✅ **TestUserContact_Validate** - 7 test cases
+- [+] **TestUserContact_Validate** - 7 test cases
 
   - Valid contact
   - Invalid contact type
@@ -21,7 +21,7 @@
   - Timezone too long (>50 chars)
   - Notes too long (>1000 chars)
 
-- ✅ **TestUserContact_IsAvailable** - 8 test cases
+- [+] **TestUserContact_IsAvailable** - 8 test cases
 
   - Always available (no restrictions)
   - Available during time range
@@ -32,7 +32,7 @@
   - Time validation (before/after range)
   - Day validation (not in available days)
 
-- ✅ **TestContactTypeConstants** - 2 test cases
+- [+] **TestContactTypeConstants** - 2 test cases
   - All contact types defined and valid
   - Contact types are unique
 
@@ -40,60 +40,60 @@
 
 #### Use Case Tests (`internal/usecase/user_contact_usecase_test.go`)
 
-- ✅ **TestUserContactUseCase_CreateContact** - 4 test cases
+- [+] **TestUserContactUseCase_CreateContact** - 4 test cases
 
   - Successful creation
   - Invalid contact type
   - Invalid availability times
   - Empty contact value
 
-- ✅ **TestUserContactUseCase_GetContact** - 4 test cases
+- [+] **TestUserContactUseCase_GetContact** - 4 test cases
 
   - Get own contact
   - Get public contact of other user
   - Unauthorized to view private contact
   - Contact not found
 
-- ✅ **TestUserContactUseCase_GetUserContacts** - 2 test cases
+- [+] **TestUserContactUseCase_GetUserContacts** - 2 test cases
 
   - Get own contacts
   - Get public contacts of other user
 
-- ✅ **TestUserContactUseCase_UpdateContact** - 3 test cases
+- [+] **TestUserContactUseCase_UpdateContact** - 3 test cases
 
   - Successful update
   - Unauthorized update
   - Contact not found
 
-- ✅ **TestUserContactUseCase_DeleteContact** - 2 test cases
+- [+] **TestUserContactUseCase_DeleteContact** - 2 test cases
 
   - Successful deletion
   - Unauthorized deletion
 
-- ✅ **TestUserContactUseCase_SetPrimaryContact** - 2 test cases
+- [+] **TestUserContactUseCase_SetPrimaryContact** - 2 test cases
 
   - Successful set primary
   - Unauthorized set primary
 
-- ✅ **TestUserContactUseCase_ToggleContactActive** - 2 test cases
+- [+] **TestUserContactUseCase_ToggleContactActive** - 2 test cases
 
   - Toggle active to inactive
   - Toggle inactive to active
 
-- ✅ **TestUserContactUseCase_GetContactsByType** - 3 test cases
+- [+] **TestUserContactUseCase_GetContactsByType** - 3 test cases
 
   - Get own contacts by type
   - Filter public contacts for other user
   - Invalid contact type
 
-- ✅ **TestUserContactUseCase_GetPrimaryContact** - 4 test cases
+- [+] **TestUserContactUseCase_GetPrimaryContact** - 4 test cases
 
   - Get own primary contact
   - Get public primary contact of other user
   - Unauthorized access to private primary contact
   - Primary contact not found
 
-- ✅ **TestUserContactUseCase_VerifyContact** - 2 test cases
+- [+] **TestUserContactUseCase_VerifyContact** - 2 test cases
   - Successful verification
   - Verification fails
 
@@ -103,62 +103,62 @@
 
 #### Repository Tests (`internal/adapter/repository/postgres/user_contact_repository_test.go`)
 
-- ✅ **TestUserContactRepository_Create** - 2 test cases
+- [+] **TestUserContactRepository_Create** - 2 test cases
 
   - Successful creation
   - Duplicate contact should fail
 
-- ✅ **TestUserContactRepository_GetByID** - 2 test cases
+- [+] **TestUserContactRepository_GetByID** - 2 test cases
 
   - Existing contact
   - Non-existing contact
 
-- ✅ **TestUserContactRepository_GetUserContacts** - 2 test cases
+- [+] **TestUserContactRepository_GetUserContacts** - 2 test cases
 
   - Get active contacts only
   - Get all contacts including inactive
 
-- ✅ **TestUserContactRepository_GetUserContactsByType** - 3 test cases
+- [+] **TestUserContactRepository_GetUserContactsByType** - 3 test cases
 
   - Get email contacts
   - Get phone contacts
   - Get contacts of non-existing type
 
-- ✅ **TestUserContactRepository_GetPrimaryContact** - 2 test cases
+- [+] **TestUserContactRepository_GetPrimaryContact** - 2 test cases
 
   - Get primary contact
   - No primary contact exists
 
-- ✅ **TestUserContactRepository_GetPublicContacts** - 1 test case
+- [+] **TestUserContactRepository_GetPublicContacts** - 1 test case
 
   - Get only public contacts
 
-- ✅ **TestUserContactRepository_Update** - 1 test case
+- [+] **TestUserContactRepository_Update** - 1 test case
 
   - Successful update
 
-- ✅ **TestUserContactRepository_Delete** - 2 test cases
+- [+] **TestUserContactRepository_Delete** - 2 test cases
 
   - Successful deletion
   - Delete non-existing contact (idempotent)
 
-- ✅ **TestUserContactRepository_SetPrimary** - 2 test cases
+- [+] **TestUserContactRepository_SetPrimary** - 2 test cases
 
   - Set new primary contact
   - Set primary for non-existing contact
 
-- ✅ **TestUserContactRepository_VerifyContact** - 1 test case
+- [+] **TestUserContactRepository_VerifyContact** - 1 test case
 
   - Verify contact
 
-- ✅ **TestUserContactRepository_WithAvailability** - 1 test case
+- [+] **TestUserContactRepository_WithAvailability** - 1 test case
   - Retrieve contact with availability schedule
 
 **Total Integration Tests: 19 test cases**
 
 ## Test Results
 
-### All Tests Passing ✅
+### All Tests Passing [+]
 
 ```
 Entity Tests:        30/30 PASS
@@ -172,40 +172,40 @@ Total:               77/77 PASS (100%)
 
 ### Business Logic Covered
 
-- ✅ Contact CRUD operations
-- ✅ Authorization (own vs other user contacts)
-- ✅ Privacy control (public/private contacts)
-- ✅ Primary contact management
-- ✅ Contact verification
-- ✅ Active/inactive status toggling
-- ✅ Availability scheduling (time ranges and days)
-- ✅ Input validation
-- ✅ Error handling
+- [+] Contact CRUD operations
+- [+] Authorization (own vs other user contacts)
+- [+] Privacy control (public/private contacts)
+- [+] Primary contact management
+- [+] Contact verification
+- [+] Active/inactive status toggling
+- [+] Availability scheduling (time ranges and days)
+- [+] Input validation
+- [+] Error handling
 
 ### Database Operations Covered
 
-- ✅ Create with UUID v7
-- ✅ Read by ID
-- ✅ Read by user ID
-- ✅ Read by type
-- ✅ Read primary contacts
-- ✅ Read public contacts
-- ✅ Update
-- ✅ Delete
-- ✅ Set primary (with transaction)
-- ✅ Verify contact
-- ✅ Availability schedule storage
+- [+] Create with UUID v7
+- [+] Read by ID
+- [+] Read by user ID
+- [+] Read by type
+- [+] Read primary contacts
+- [+] Read public contacts
+- [+] Update
+- [+] Delete
+- [+] Set primary (with transaction)
+- [+] Verify contact
+- [+] Availability schedule storage
 
 ### Edge Cases Covered
 
-- ✅ Duplicate contacts
-- ✅ Non-existing contacts
-- ✅ Unauthorized access
-- ✅ Invalid contact types
-- ✅ Invalid availability times
-- ✅ Field length validations
-- ✅ Case-insensitive day matching
-- ✅ Empty availability schedules
+- [+] Duplicate contacts
+- [+] Non-existing contacts
+- [+] Unauthorized access
+- [+] Invalid contact types
+- [+] Invalid availability times
+- [+] Field length validations
+- [+] Case-insensitive day matching
+- [+] Empty availability schedules
 
 ## Issues Found and Fixed
 
@@ -269,10 +269,10 @@ Total:               77/77 PASS (100%)
 
 ## Conclusion
 
-✅ **All 77 tests passing**
-✅ **Complete coverage of business logic**
-✅ **Integration tests verify database operations**
-✅ **Authorization and privacy logic tested**
-✅ **Input validation thoroughly tested**
+[+] **All 77 tests passing**
+[+] **Complete coverage of business logic**
+[+] **Integration tests verify database operations**
+[+] **Authorization and privacy logic tested**
+[+] **Input validation thoroughly tested**
 
 The user_contacts feature is fully tested and ready for production use.

@@ -6,11 +6,11 @@ Promenade uses **slog** (structured logging from Go 1.21+) for high-performance,
 
 ## Key Benefits
 
-✅ **Structured logging** - JSON format for automation  
-✅ **Context fields** - request_id, user_id, trace_id  
-✅ **Log levels** - Debug, Info, Warn, Error  
-✅ **Performance** - Zero allocation where possible  
-✅ **stdlib** - No external dependencies
+[+] **Structured logging** - JSON format for automation  
+[+] **Context fields** - request_id, user_id, trace_id  
+[+] **Log levels** - Debug, Info, Warn, Error  
+[+] **Performance** - Zero allocation where possible  
+[+] **stdlib** - No external dependencies
 
 ## Configuration
 
@@ -322,7 +322,7 @@ logger.Error("PANIC recovered",
 
 ## Best Practices
 
-### ✅ DO
+### [+] DO
 
 ```go
 // Use structured fields
@@ -344,20 +344,20 @@ slog.Duration("latency", time.Since(start))
 slog.Bool("is_admin", user.IsAdmin)
 ```
 
-### ❌ DON'T
+### [X] DON'T
 
 ```go
 // DON'T use string interpolation
-logger.Info(fmt.Sprintf("User %s logged in", userID)) // ❌
+logger.Info(fmt.Sprintf("User %s logged in", userID)) // [X]
 
 // DON'T log sensitive data
 logger.Info("User authenticated",
-    slog.String("password", password), // ❌ NEVER!
+    slog.String("password", password), // [X] NEVER!
 )
 
 // DON'T log in loops unnecessarily
 for _, item := range items {
-    logger.Debug("Processing item") // ❌ Can create millions of logs
+    logger.Debug("Processing item") // [X] Can create millions of logs
 }
 ```
 

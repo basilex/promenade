@@ -155,7 +155,7 @@ func TestYourFeature(t *testing.T) {
 
 ## Best Practices
 
-✅ **Do**:
+[+] **Do**:
 
 - Setup/teardown per subtest
 - Use fixtures for test data
@@ -164,7 +164,7 @@ func TestYourFeature(t *testing.T) {
 - Clean tables after tests
 - Test edge cases
 
-❌ **Don't**:
+[X] **Don't**:
 
 - Reuse data between tests
 - Forget cleanup
@@ -181,8 +181,8 @@ func TestYourFeature(t *testing.T) {
 ## Current Coverage
 
 ```
-Repository Layer:  45.3% ✅
-UUID Package:      88.9% ✅
+Repository Layer:  45.3% [+]
+UUID Package:      88.9% [+]
 Use Cases:         0.0%  ⏳ (TODO)
 Handlers:          0.0%  ⏳ (TODO)
 ```
@@ -245,6 +245,6 @@ make test-db-start
 
 ---
 
-**Status**: Repository tests complete ✅  
+**Status**: Repository tests complete [+]  
 **Test Count**: 13 integration tests  
 **Success Rate**: 100%

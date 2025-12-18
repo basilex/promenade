@@ -52,13 +52,13 @@ The `pkg/bus` package provides a transport-agnostic event bus that enables async
 
 ## Features
 
-- ✅ **Transport-agnostic** — in-memory, Redis Pub/Sub, NATS, Kafka
-- ✅ **Non-blocking** — publish returns immediately, processing in background
-- ✅ **Multiple subscribers** — many workers can listen to same event
-- ✅ **Worker pool** — configurable concurrent processing
-- ✅ **Graceful shutdown** — waits for in-flight messages
-- ✅ **Type-safe events** — domain events with full type information
-- ✅ **Bounded contexts** — events organized by domain
+- [+] **Transport-agnostic** — in-memory, Redis Pub/Sub, NATS, Kafka
+- [+] **Non-blocking** — publish returns immediately, processing in background
+- [+] **Multiple subscribers** — many workers can listen to same event
+- [+] **Worker pool** — configurable concurrent processing
+- [+] **Graceful shutdown** — waits for in-flight messages
+- [+] **Type-safe events** — domain events with full type information
+- [+] **Bounded contexts** — events organized by domain
 
 ## Quick Start
 
@@ -262,7 +262,7 @@ func TestUserRegistration(t *testing.T) {
 
 ## Best Practices
 
-### ✅ DO
+### [+] DO
 
 1. **Keep handlers idempotent** — events may be delivered more than once
 2. **Use event versioning** — include version in event type: `user.registered.v1`
@@ -270,7 +270,7 @@ func TestUserRegistration(t *testing.T) {
 4. **Use domain events** — not integration events (those come later)
 5. **Fail gracefully** — handle handler errors without crashing
 
-### ❌ DON'T
+### [X] DON'T
 
 1. **Don't put critical logic in events** — events complement, don't replace transactions
 2. **Don't expect immediate processing** — it's async by design
@@ -290,24 +290,24 @@ func TestUserRegistration(t *testing.T) {
 
 ### Phase 1: Current (Monolith + Async Workers)
 
-- ✅ In-memory event bus
-- ✅ Email/notification workers in same binary
-- ✅ Single database, ACID preserved
-- ✅ Fast deployment, simple ops
+- [+] In-memory event bus
+- [+] Email/notification workers in same binary
+- [+] Single database, ACID preserved
+- [+] Fast deployment, simple ops
 
 ### Phase 2: Add Persistence (Still Monolith)
 
-- 🔄 Swap to Redis Pub/Sub
-- 🔄 Events survive restarts
-- 🔄 Still single binary
-- 🔄 Prepare for scale-out
+- [*] Swap to Redis Pub/Sub
+- [*] Events survive restarts
+- [*] Still single binary
+- [*] Prepare for scale-out
 
 ### Phase 3: Extract Services (Microservices)
 
-- 🔄 Move email service to separate binary
-- 🔄 Use NATS/Kafka for cross-service communication
-- 🔄 API Gateway pattern
-- 🔄 Gradual extraction of other services
+- [*] Move email service to separate binary
+- [*] Use NATS/Kafka for cross-service communication
+- [*] API Gateway pattern
+- [*] Gradual extraction of other services
 
 ## FAQ
 

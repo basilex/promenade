@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	fmt.Println("🚀 Event Bus Demo - Async Email Notifications")
+	fmt.Println("* Event Bus Demo - Async Email Notifications")
 	fmt.Println("================================================")
 
 	// Initialize event bus

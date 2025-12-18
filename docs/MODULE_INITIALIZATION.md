@@ -5,7 +5,7 @@
 As the application grows to 10-15+ modules, the `main.go` file becomes unwieldy with hundreds of lines of initialization code:
 
 ```go
-// ❌ BAD: Unscalable approach
+// [X] BAD: Unscalable approach
 userRepo := postgres.NewUserRepository(db)
 sessionRepo := postgres.NewSessionRepository(db)
 roleRepo := postgres.NewRoleRepository(db)
@@ -135,11 +135,11 @@ func main() {
 
 **Benefits:**
 
-- ✅ main.go stays ~100 lines regardless of module count
-- ✅ One line per module initialization
-- ✅ Clear module list
-- ✅ Module changes don't require main.go changes
-- ✅ Easy to see shared dependencies
+- [+] main.go stays ~100 lines regardless of module count
+- [+] One line per module initialization
+- [+] Clear module list
+- [+] Module changes don't require main.go changes
+- [+] Easy to see shared dependencies
 
 ## Example: Adding RBAC Module
 
@@ -296,15 +296,15 @@ func TestInitAuthModule(t *testing.T) {
 
 ## Migration Path
 
-1. ✅ **Done**: Created `init_auth.go` for auth module
+1. [+] **Done**: Created `init_auth.go` for auth module
 2. **Next**: When adding RBAC, create `init_rbac.go`
 3. **Future**: Extract existing modules (if any) to initializers
 4. **Final**: All modules follow consistent pattern
 
 ## File Checklist
 
-- ✅ `internal/adapter/http/v1/router/init_auth.go` - Auth initializer
-- ✅ `cmd/api/main.go` - Cleaned up to use initializer
+- [+] `internal/adapter/http/v1/router/init_auth.go` - Auth initializer
+- [+] `cmd/api/main.go` - Cleaned up to use initializer
 - 📝 `docs/MODULE_INITIALIZATION.md` - This documentation
 
 ## Real-world Example

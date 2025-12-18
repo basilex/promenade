@@ -193,30 +193,30 @@ v1Router := router.NewV1Router(authMiddleware, authHandler)
 
 ## Architecture Compliance
 
-✅ Clean Architecture layers properly separated
-✅ Domain layer has no external dependencies
-✅ Use cases depend only on repository interfaces
-✅ Infrastructure implements domain interfaces
-✅ HTTP layer depends on use case interfaces
+[+] Clean Architecture layers properly separated
+[+] Domain layer has no external dependencies
+[+] Use cases depend only on repository interfaces
+[+] Infrastructure implements domain interfaces
+[+] HTTP layer depends on use case interfaces
 
 ## Security Best Practices
 
-✅ Bcrypt for password hashing
-✅ SHA256 for refresh token storage
-✅ Cryptographically secure token generation
-✅ Session expiration validation
-✅ Status-based access control
-✅ Session invalidation on suspend/ban
-✅ JWT secret from environment config
-✅ Refresh token rotation on renewal
+[+] Bcrypt for password hashing
+[+] SHA256 for refresh token storage
+[+] Cryptographically secure token generation
+[+] Session expiration validation
+[+] Status-based access control
+[+] Session invalidation on suspend/ban
+[+] JWT secret from environment config
+[+] Refresh token rotation on renewal
 
 ## Database Integration
 
-✅ All operations use UUID v7 for IDs
-✅ Uses user_status enum from schema
-✅ Proper NULL handling for optional fields
-✅ Session expiration checked in queries
-✅ Metadata capture (user_agent, ip_address)
+[+] All operations use UUID v7 for IDs
+[+] Uses user_status enum from schema
+[+] Proper NULL handling for optional fields
+[+] Session expiration checked in queries
+[+] Metadata capture (user_agent, ip_address)
 
 ## Testing Readiness
 
@@ -271,22 +271,22 @@ curl -X POST http://localhost:8080/api/auth/logout \
 
 ### Created Files
 
-- ✅ internal/domain/entity/user.go (updated with new fields/methods)
-- ✅ internal/domain/entity/session.go
-- ✅ internal/domain/repository/user_repository.go
-- ✅ internal/domain/repository/session_repository.go
-- ✅ internal/adapter/repository/postgres/user_repository.go
-- ✅ internal/adapter/repository/postgres/session_repository.go
-- ✅ internal/usecase/auth_usecase.go
-- ✅ internal/adapter/http/v1/dto/auth_dto.go
-- ✅ internal/adapter/http/v1/handler/auth_handler.go
+- [+] internal/domain/entity/user.go (updated with new fields/methods)
+- [+] internal/domain/entity/session.go
+- [+] internal/domain/repository/user_repository.go
+- [+] internal/domain/repository/session_repository.go
+- [+] internal/adapter/repository/postgres/user_repository.go
+- [+] internal/adapter/repository/postgres/session_repository.go
+- [+] internal/usecase/auth_usecase.go
+- [+] internal/adapter/http/v1/dto/auth_dto.go
+- [+] internal/adapter/http/v1/handler/auth_handler.go
 
 ### Modified Files
 
-- ✅ internal/domain/entity/errors.go (added ErrNotFound)
-- ✅ internal/adapter/http/v1/router/router.go (added auth routes)
-- ✅ cmd/api/main.go (added auth wiring)
-- ✅ pkg/jwt/jwt.go (added getters)
+- [+] internal/domain/entity/errors.go (added ErrNotFound)
+- [+] internal/adapter/http/v1/router/router.go (added auth routes)
+- [+] cmd/api/main.go (added auth wiring)
+- [+] pkg/jwt/jwt.go (added getters)
 
 ## Next Steps
 

@@ -11,6 +11,9 @@ include Makefile.test
 
 # Variables
 APP_NAME=promenade
+VERSION?=0.1.0
+ENV?=dev
+DOCKER_IMAGE_TAG=$(VERSION)-$(ENV)
 DOCKER_COMPOSE=docker-compose -f docker/docker-compose.yml
 
 # Database connection string (из переменных окружения или defaults)
@@ -25,7 +28,7 @@ DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?s
 MIGRATE=migrate -path migrations -database "$(DB_URL)"
 
 help:  ## Show this help message
-	@echo "🚀 Promenade - Available Commands"
+	@echo "* Promenade - Available Commands"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
@@ -70,8 +73,9 @@ docker-down: ## Stop all Docker services
 docker-logs: ## View Docker logs
 	$(DOCKER_COMPOSE) logs -f
 
-docker-build: ## Build Docker image
-	docker build -f docker/Dockerfile -t $(APP_NAME):latest .
+docker-build: ## Build Docker image (usage: make docker-build VERSION=0.1.0 ENV=dev)
+	docker build -f docker/Dockerfile -t $(APP_NAME):$(DOCKER_IMAGE_TAG) -t $(APP_NAME):latest .
+	@echo "Built image: $(APP_NAME):$(DOCKER_IMAGE_TAG)"
 
 migrate-create: ## Create new migration (usage: make migrate-create NAME=create_users_table)
 	@if [ -z "$(NAME)" ]; then \
@@ -160,5 +164,21 @@ config-show: ## Show current configuration values
 	@echo "DB_SSLMODE:      $(DB_SSLMODE)"
 	@echo "JWT_ACCESS_TTL:  $(JWT_ACCESS_TTL)"
 	@echo "========================================="
+docker-run: docker-build docker-up ## Build and run Docker containers
+	@echo "[+] Promenade is running in Docker!"
+	@echo "-> API Health: http://localhost:8080/api/v1/health"
+	@echo "-> Swagger v1: http://localhost:8080/api/v1/docs/swagger/index.html"
+	@echo "-> Swagger v2: http://localhost:8080/api/v2/docs/swagger/index.html"
+	@echo ""
+	@echo "View logs: make docker-logs"
+	@echo "Stop: make docker-down"
 
+docker-restart: ## Restart Docker containers
+	$(DOCKER_COMPOSE) restart
+
+docker-ps: ## Show running Docker containers
+	docker ps --filter "name=promenade"
+docker-clean: ## Remove containers and volumes (clean slate)
+	$(DOCKER_COMPOSE) down -v
+	@echo "[+] All containers and volumes removed"
 . DEFAULT_GOAL := help

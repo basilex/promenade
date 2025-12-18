@@ -20,17 +20,17 @@
 
 **Pros:**
 
-- ✅ Time-ordered for B-tree indexes
-- ✅ Distributed generation without coordination
-- ✅ Global uniqueness
-- ✅ Extractable timestamp
-- ✅ Compatible with UUID v4
-- ✅ Better performance than v4
+- [+] Time-ordered for B-tree indexes
+- [+] Distributed generation without coordination
+- [+] Global uniqueness
+- [+] Extractable timestamp
+- [+] Compatible with UUID v4
+- [+] Better performance than v4
 
 **Cons:**
 
-- ❌ 16 bytes (vs 8 bytes for BIGINT)
-- ❌ 36 characters in string form
+- [X] 16 bytes (vs 8 bytes for BIGINT)
+- [X] 36 characters in string form
 
 **Use when:**
 
@@ -46,15 +46,15 @@
 
 **Pros:**
 
-- ✅ Global uniqueness
-- ✅ Distributed generation
+- [+] Global uniqueness
+- [+] Distributed generation
 
 **Cons:**
 
-- ❌ Poor index locality
-- ❌ Many page splits in B-tree
-- ❌ Index fragmentation
-- ❌ Slower than v7
+- [X] Poor index locality
+- [X] Many page splits in B-tree
+- [X] Index fragmentation
+- [X] Slower than v7
 
 **Status:** Replaced with v7 in this project
 
@@ -71,17 +71,17 @@ CREATE TABLE simple (
 
 **Pros:**
 
-- ✅ Small size (8 bytes)
-- ✅ Sequential (excellent locality)
-- ✅ Human-readable
-- ✅ Maximum performance for single-node
+- [+] Small size (8 bytes)
+- [+] Sequential (excellent locality)
+- [+] Human-readable
+- [+] Maximum performance for single-node
 
 **Cons:**
 
-- ❌ Single point of failure (PostgreSQL must generate)
-- ❌ Replication issues (ID conflicts)
-- ❌ Sharding complications
-- ❌ Information leakage (can count records)
+- [X] Single point of failure (PostgreSQL must generate)
+- [X] Replication issues (ID conflicts)
+- [X] Sharding complications
+- [X] Information leakage (can count records)
 
 **Use when:**
 
@@ -100,16 +100,16 @@ CREATE TABLE simple (
 
 **Pros:**
 
-- ✅ Time-ordered like UUID v7
-- ✅ Shorter than string UUID (26 vs 36 characters)
-- ✅ Base32 encoding (URL-safe without escaping)
-- ✅ Case-insensitive
+- [+] Time-ordered like UUID v7
+- [+] Shorter than string UUID (26 vs 36 characters)
+- [+] Base32 encoding (URL-safe without escaping)
+- [+] Case-insensitive
 
 **Cons:**
 
-- ❌ No native PostgreSQL support
-- ❌ Fewer library options
-- ❌ Still 16 bytes in DB
+- [X] No native PostgreSQL support
+- [X] Fewer library options
+- [X] Still 16 bytes in DB
 
 **Use when:**
 
@@ -133,17 +133,17 @@ CREATE TABLE simple (
 
 **Pros:**
 
-- ✅ Time-ordered
-- ✅ Compact (8 bytes)
-- ✅ Very fast generation
-- ✅ Extractable timestamp
+- [+] Time-ordered
+- [+] Compact (8 bytes)
+- [+] Very fast generation
+- [+] Extractable timestamp
 
 **Cons:**
 
-- ❌ Requires coordination (machine ID)
-- ❌ Needs central service or configuration
-- ❌ Possible collisions with misconfiguration
-- ❌ Limit: 4096 IDs/ms per machine
+- [X] Requires coordination (machine ID)
+- [X] Needs central service or configuration
+- [X] Possible collisions with misconfiguration
+- [X] Limit: 4096 IDs/ms per machine
 
 **Use when:**
 
@@ -171,16 +171,16 @@ CREATE TABLE user_emails (
 
 **Pros:**
 
-- ✅ Business-meaningful keys
-- ✅ No surrogate key (fewer JOINs)
-- ✅ Self-documenting
+- [+] Business-meaningful keys
+- [+] No surrogate key (fewer JOINs)
+- [+] Self-documenting
 
 **Cons:**
 
-- ❌ Business logic may change
-- ❌ Complications when changing key
-- ❌ Privacy concerns (email as PK)
-- ❌ More data for FK
+- [X] Business logic may change
+- [X] Complications when changing key
+- [X] Privacy concerns (email as PK)
+- [X] More data for FK
 
 **Use when:**
 
@@ -235,11 +235,11 @@ CREATE INDEX idx_user_roles_role_id ON user_roles(role_id);
 
 ### Stay with UUID v7 if:
 
-- ✅ Microservice architecture
-- ✅ Plans for sharding/partitioning
-- ✅ API with client-side ID generation
-- ✅ Multi-regional deployment
-- ✅ Multiple write sources
+- [+] Microservice architecture
+- [+] Plans for sharding/partitioning
+- [+] API with client-side ID generation
+- [+] Multi-regional deployment
+- [+] Multiple write sources
 
 ### Consider SERIAL/BIGSERIAL if:
 
@@ -267,13 +267,13 @@ CREATE INDEX idx_user_roles_role_id ON user_roles(role_id);
 ### 1. Always index foreign keys
 
 ```sql
--- ❌ BAD
+-- [X] BAD
 CREATE TABLE orders (
     id UUID PRIMARY KEY,
     user_id UUID REFERENCES users(id)
 );
 
--- ✅ GOOD
+-- [+] GOOD
 CREATE TABLE orders (
     id UUID PRIMARY KEY,
     user_id UUID REFERENCES users(id)

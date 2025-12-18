@@ -73,13 +73,13 @@ make test-db-logs       # Test DB logs
 
 | Layer      | Component           | Coverage | Status      |
 | ---------- | ------------------- | -------- | ----------- |
-| Config     | ConfigLoader        | 4 tests  | ✅ Complete |
-| Entity     | User, Session, etc  | 19 tests | ✅ Complete |
-| Package    | JWT Manager         | 11 tests | ✅ Complete |
-| Package    | UUID v7             | 7 tests  | ✅ Complete |
-| Handler    | Auth, Country, Curr | 93 tests | ✅ Complete |
-| Repository | User, Session, etc  | 18 tests | ✅ Complete |
-| **Total**  | **All Layers**      | **171**  | ✅ **100%** |
+| Config     | ConfigLoader        | 4 tests  | [+] Complete |
+| Entity     | User, Session, etc  | 19 tests | [+] Complete |
+| Package    | JWT Manager         | 11 tests | [+] Complete |
+| Package    | UUID v7             | 7 tests  | [+] Complete |
+| Handler    | Auth, Country, Curr | 93 tests | [+] Complete |
+| Repository | User, Session, etc  | 18 tests | [+] Complete |
+| **Total**  | **All Layers**      | **171**  | [+] **100%** |
 
 ## Patterns Used
 
@@ -164,19 +164,19 @@ make test-db-stop
 promenade/
 ├── test/
 │   ├── helpers/
-│   │   ├── database.go          # ✅ DB helper
-│   │   └── fixtures.go          # ✅ Test fixtures
+│   │   ├── database.go          # [+] DB helper
+│   │   └── fixtures.go          # [+] Test fixtures
 │   ├── integration/             # TODO
 │   ├── e2e/                     # TODO
 │   └── mocks/                   # TODO
 ├── internal/adapter/repository/postgres/
-│   ├── user_repository_test.go         # ✅ 8 tests
-│   └── session_repository_test.go      # ✅ 5 tests
+│   ├── user_repository_test.go         # [+] 8 tests
+│   └── session_repository_test.go      # [+] 5 tests
 ├── docker/
-│   └── docker-compose.test.yml  # ✅ Test DB
-├── Makefile.test                # ✅ Test commands
+│   └── docker-compose.test.yml  # [+] Test DB
+├── Makefile.test                # [+] Test commands
 └── docs/
-    └── TESTING_GUIDE.md         # ✅ Documentation
+    └── TESTING_GUIDE.md         # [+] Documentation
 ```
 
 ## Metrics
@@ -190,6 +190,6 @@ promenade/
 
 ---
 
-**Status**: Repository layer testing infrastructure **complete** ✅
+**Status**: Repository layer testing infrastructure **complete** [+]
 
 Ready to scale to remaining application layers.

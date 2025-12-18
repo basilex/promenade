@@ -17,15 +17,15 @@ make dev
 
 ### 1. PostgreSQL
 
-- ✅ Added `uuid_generate_v7()` function (migration 000005)
-- ✅ Updated table defaults for `users`, `products`, `roles` (migration 000006)
-- ✅ Existing records kept UUID v4, new ones will get v7
+- [+] Added `uuid_generate_v7()` function (migration 000005)
+- [+] Updated table defaults for `users`, `products`, `roles` (migration 000006)
+- [+] Existing records kept UUID v4, new ones will get v7
 
 ### 2. Go Code
 
-- ✅ Created `pkg/uuidv7` package with full implementation
-- ✅ Updated usecases: `auth_usecase.go`, `product_usecase.go`, `role_usecase.go`
-- ✅ Updated generator template `scripts/templates/usecase.tmpl`
+- [+] Created `pkg/uuidv7` package with full implementation
+- [+] Updated usecases: `auth_usecase.go`, `product_usecase.go`, `role_usecase.go`
+- [+] Updated generator template `scripts/templates/usecase.tmpl`
 
 ### 3. Tests and Performance
 
@@ -98,12 +98,12 @@ make generate-interactive
 ```
 UUID v4 (random):
   ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐
-  │ aef │ │ 1b2 │ │ 9cd │ │ 3de │  ❌ Chaos in B-tree index
+  │ aef │ │ 1b2 │ │ 9cd │ │ 3de │  [X] Chaos in B-tree index
   └─────┘ └─────┘ └─────┘ └─────┘
 
 UUID v7 (time-ordered):
   ┌─────┬─────┬─────┬─────┐
-  │ 1   │ 2   │ 3   │ 4   │        ✅ Sequential writes
+  │ 1   │ 2   │ 3   │ 4   │        [+] Sequential writes
   └─────┴─────┴─────┴─────┘
 ```
 

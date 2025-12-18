@@ -36,7 +36,7 @@ func TestUserPost_SmokeTest(t *testing.T) {
 	})
 	require.NoError(t, userRepo.Create(ctx, user2))
 
-	t.Run("✅ Post_create_and_retrieve", func(t *testing.T) {
+	t.Run("[+] Post_create_and_retrieve", func(t *testing.T) {
 		// Create post
 		post, err := entity.NewUserPost(user1.ID, "Test Post", "test-post", "Test content")
 		require.NoError(t, err)

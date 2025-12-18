@@ -75,8 +75,8 @@ func TestUserRepository_Create(t *testing.T) {
 
 **Coverage:**
 
-- ✅ UserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
-- ✅ SessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
+- [+] UserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
+- [+] SessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
 
 ### 2. Unit Tests (Use Cases)
 
@@ -153,7 +153,7 @@ session := helpers.ExpiredSessionFixture(userID)
 
 ## Best Practices
 
-### ✅ Do
+### [+] Do
 
 - Use `testify/require` for critical checks (stops test)
 - Use `testify/assert` for non-critical checks (continues test)
@@ -161,7 +161,7 @@ session := helpers.ExpiredSessionFixture(userID)
 - Test edge cases: expired sessions, banned users, etc.
 - Use fixtures for consistent test data
 
-### ❌ Don't
+### [X] Don't
 
 - Don't use production DB for tests
 - Don't create dependencies between tests
@@ -192,7 +192,7 @@ Goal: **>80% coverage** for critical modules (usecase, repository).
 
 ## What's Next
 
-1. ✅ Repository integration tests - **DONE**
+1. [+] Repository integration tests - **DONE**
 2. ⏳ Use case unit tests with mocks
 3. ⏳ HTTP handler integration tests
 4. ⏳ E2E tests for complete flows

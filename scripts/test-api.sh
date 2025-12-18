@@ -10,7 +10,7 @@ echo ""
 
 # 1. Health Check
 echo "Testing Health Check..."
-curl -s $API_URL/health | jq .
+curl -s $API_URL/api/v1/health | jq .
 echo ""
 
 # 2. Register

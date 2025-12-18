@@ -19,11 +19,11 @@ Comprehensive guide to using RBAC (Role-Based Access Control) authorization midd
 
 The Authorization Middleware provides **flexible, fine-grained access control** for API endpoints using a permission-based RBAC system. It supports:
 
-- ✅ **Permission-based checks** - Granular control with `resource:action` format
-- ✅ **Role-based checks** - Quick checks for user roles (superadmin, admin, etc.)
-- ✅ **Wildcard permissions** - `*:*`, `posts:*`, `*:read` patterns
-- ✅ **Composite checks** - RequireAny, RequireAll for complex logic
-- ✅ **Clean separation** - Works independently from authentication middleware
+- [+] **Permission-based checks** - Granular control with `resource:action` format
+- [+] **Role-based checks** - Quick checks for user roles (superadmin, admin, etc.)
+- [+] **Wildcard permissions** - `*:*`, `posts:*`, `*:read` patterns
+- [+] **Composite checks** - RequireAny, RequireAll for complex logic
+- [+] **Clean separation** - Works independently from authentication middleware
 
 ## Architecture
 
@@ -84,20 +84,20 @@ Wildcards provide powerful permission inheritance:
 
 ```go
 // User has permission "posts:*"
-HasPermission(userID, "posts:create")  // ✅ TRUE
-HasPermission(userID, "posts:update")  // ✅ TRUE
-HasPermission(userID, "posts:delete")  // ✅ TRUE
-HasPermission(userID, "users:create")  // ❌ FALSE
+HasPermission(userID, "posts:create")  // [+] TRUE
+HasPermission(userID, "posts:update")  // [+] TRUE
+HasPermission(userID, "posts:delete")  // [+] TRUE
+HasPermission(userID, "users:create")  // [X] FALSE
 
 // User has permission "*:read"
-HasPermission(userID, "posts:read")    // ✅ TRUE
-HasPermission(userID, "users:read")    // ✅ TRUE
-HasPermission(userID, "posts:create")  // ❌ FALSE
+HasPermission(userID, "posts:read")    // [+] TRUE
+HasPermission(userID, "users:read")    // [+] TRUE
+HasPermission(userID, "posts:create")  // [X] FALSE
 
 // User has permission "*:*" (superadmin)
-HasPermission(userID, "posts:create")  // ✅ TRUE
-HasPermission(userID, "users:delete")  // ✅ TRUE
-HasPermission(userID, "anything:anything") // ✅ TRUE
+HasPermission(userID, "posts:create")  // [+] TRUE
+HasPermission(userID, "users:delete")  // [+] TRUE
+HasPermission(userID, "anything:anything") // [+] TRUE
 ```
 
 ## Role System
@@ -464,14 +464,14 @@ func setupRouters(
 Authorization middleware requires authentication context:
 
 ```go
-// ✅ CORRECT - Auth before authorization
+// [+] CORRECT - Auth before authorization
 router.POST("/posts",
     authMiddleware.RequireAuth(),           // First: authenticate
     authzMiddleware.RequirePermission(...), // Then: authorize
     handler.CreatePost,
 )
 
-// ❌ WRONG - Authorization without authentication
+// [X] WRONG - Authorization without authentication
 router.POST("/posts",
     authzMiddleware.RequirePermission(...), // Will fail - no user_id
     handler.CreatePost,
@@ -483,14 +483,14 @@ router.POST("/posts",
 Permissions provide better flexibility and maintainability:
 
 ```go
-// ✅ BETTER - Permission-based (flexible)
+// [+] BETTER - Permission-based (flexible)
 router.DELETE("/posts/:id",
     authMiddleware.RequireAuth(),
     authzMiddleware.RequirePermission("posts:delete"),
     handler.DeletePost,
 )
 
-// ⚠️ ACCEPTABLE but less flexible - Role-based
+// [!] ACCEPTABLE but less flexible - Role-based
 router.DELETE("/posts/:id",
     authMiddleware.RequireAuth(),
     authzMiddleware.RequireRole("admin"),
@@ -507,13 +507,13 @@ router.DELETE("/posts/:id",
 ### 3. Use Descriptive Permission Names
 
 ```go
-// ✅ GOOD - Clear intent
+// [+] GOOD - Clear intent
 "posts:create"
 "posts:publish"
 "posts:feature"
 "posts:schedule"
 
-// ❌ BAD - Vague
+// [X] BAD - Vague
 "posts:manage"  // What does "manage" mean?
 "posts:admin"   // Too generic
 ```
@@ -554,7 +554,7 @@ posts.GET("/:id", handler.GetPost)
 Don't use authorization middleware for owner checks:
 
 ```go
-// ✅ CORRECT - Check ownership in handler
+// [+] CORRECT - Check ownership in handler
 func (h *PostHandler) UpdatePost(c *gin.Context) {
     userID := middleware.GetUserIDOrPanic(c)
     postID := c.Param("id")
@@ -577,7 +577,7 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
     // Proceed with update...
 }
 
-// ❌ WRONG - Trying to check ownership in middleware
+// [X] WRONG - Trying to check ownership in middleware
 // Middleware doesn't have access to resource details
 ```
 
@@ -925,12 +925,12 @@ func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuid.UUID, perm
 
 The Authorization Middleware provides powerful, flexible access control for your API:
 
-✅ **Permission-based** - Fine-grained control with `resource:action` format  
-✅ **Wildcard support** - Powerful inheritance with `*` patterns  
-✅ **Composite checks** - AND/OR logic for complex requirements  
-✅ **Role shortcuts** - Quick role-based checks when needed  
-✅ **Clean architecture** - Separates authorization from authentication  
-✅ **Production-ready** - Battle-tested error handling and performance
+[+] **Permission-based** - Fine-grained control with `resource:action` format  
+[+] **Wildcard support** - Powerful inheritance with `*` patterns  
+[+] **Composite checks** - AND/OR logic for complex requirements  
+[+] **Role shortcuts** - Quick role-based checks when needed  
+[+] **Clean architecture** - Separates authorization from authentication  
+[+] **Production-ready** - Battle-tested error handling and performance
 
 **Quick Reference:**
 

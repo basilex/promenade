@@ -53,7 +53,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 	require.NotNil(t, comment)
 	assert.Equal(t, 0, comment.LikeCount, "Initial like count should be 0")
 
-	t.Run("✅ Basic_like_flow", func(t *testing.T) {
+	t.Run("[+] Basic_like_flow", func(t *testing.T) {
 		// User1 likes the comment
 		err := commentUC.LikeComment(ctx, comment.ID, user1.ID)
 		require.NoError(t, err, "First like should succeed")
@@ -73,7 +73,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 		require.NoError(t, err, "Second like should be idempotent")
 	})
 
-	t.Run("✅ Multiple_users_like", func(t *testing.T) {
+	t.Run("[+] Multiple_users_like", func(t *testing.T) {
 		// User2 likes the comment
 		err := commentUC.LikeComment(ctx, comment.ID, user2.ID)
 		require.NoError(t, err, "User2 like should succeed")
@@ -90,7 +90,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 		assert.Len(t, likers, 2, "Should have 2 users who liked")
 	})
 
-	t.Run("✅ Unlike_flow", func(t *testing.T) {
+	t.Run("[+] Unlike_flow", func(t *testing.T) {
 		// User1 unlikes
 		err := commentUC.UnlikeComment(ctx, comment.ID, user1.ID)
 		require.NoError(t, err, "Unlike should succeed")
@@ -111,7 +111,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 		assert.Equal(t, user2.ID, likers[0], "Only user2 should remain")
 	})
 
-	t.Run("✅ Cannot_like_deleted_comment", func(t *testing.T) {
+	t.Run("[+] Cannot_like_deleted_comment", func(t *testing.T) {
 		// Create and delete a comment
 		deletedComment, err := commentUC.CreateComment(ctx, post.ID, user1.ID, "This will be deleted", nil)
 		require.NoError(t, err)
@@ -125,7 +125,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 		assert.ErrorIs(t, err, usecase.ErrCommentDeleted)
 	})
 
-	t.Run("✅ Pagination_of_likers", func(t *testing.T) {
+	t.Run("[+] Pagination_of_likers", func(t *testing.T) {
 		// Create a new comment
 		popularComment, err := commentUC.CreateComment(ctx, post.ID, user1.ID, "Popular comment", nil)
 		require.NoError(t, err)
@@ -183,5 +183,5 @@ func TestCommentLikes_Performance(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	t.Log("⚡ Performance test completed: 100 HasUserLiked queries executed successfully")
+	t.Log("* Performance test completed: 100 HasUserLiked queries executed successfully")
 }

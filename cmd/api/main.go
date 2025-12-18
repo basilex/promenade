@@ -238,7 +238,7 @@ func main() {
 		logger.Info("Server started",
 			slog.String("port", cfg.Server.Port),
 			slog.String("host", cfg.Server.Host),
-			slog.String("health_check", "http://"+host+":"+cfg.Server.Port+"/health"),
+			slog.String("health_check", "http://"+host+":"+cfg.Server.Port+"/api/v1/health"),
 			slog.String("swagger_v1", "http://"+host+":"+cfg.Server.Port+"/api/v1/docs/swagger/index.html"),
 			slog.String("environment", cfg.Server.Environment),
 		)

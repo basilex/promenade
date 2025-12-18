@@ -28,10 +28,10 @@ email := Email{
 
 **Benefits**:
 
-- ✅ Change templates without redeploying service
-- ✅ Professional HTML emails with CSS styling
-- ✅ Easy A/B testing of email variants
-- ✅ Designer-friendly (no Go code needed)
+- [+] Change templates without redeploying service
+- [+] Professional HTML emails with CSS styling
+- [+] Easy A/B testing of email variants
+- [+] Designer-friendly (no Go code needed)
 
 ### 2. Event Bus Configuration from Environment
 
@@ -78,10 +78,10 @@ eventBus := memory.NewMemoryBus(busConfig)
 
 **Benefits**:
 
-- ✅ Different configs per environment (dev/staging/prod)
-- ✅ Tune performance without code changes
-- ✅ Scale worker pool for high-load scenarios
-- ✅ Adjust retry policies dynamically
+- [+] Different configs per environment (dev/staging/prod)
+- [+] Tune performance without code changes
+- [+] Scale worker pool for high-load scenarios
+- [+] Adjust retry policies dynamically
 
 ## Files Modified
 
@@ -116,7 +116,7 @@ eventBus := memory.NewMemoryBus(busConfig)
 All tests pass:
 
 ```bash
-make test  # ✅ PASS (unit + integration)
+make test  # [+] PASS (unit + integration)
 ```
 
 Test strategy:
@@ -189,9 +189,9 @@ BUS_RETRY_DELAY=2s
 
 ### Backward Compatibility
 
-- ✅ Tests work without template files (fallback templates)
-- ✅ `NewDefaultMemoryBus()` still exists (deprecated, for tests)
-- ⚠️ `NewEmailService` signature changed (3rd parameter added)
+- [+] Tests work without template files (fallback templates)
+- [+] `NewDefaultMemoryBus()` still exists (deprecated, for tests)
+- [!] `NewEmailService` signature changed (3rd parameter added)
 
 ## Future Enhancements
 

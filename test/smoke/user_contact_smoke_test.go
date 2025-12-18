@@ -31,7 +31,7 @@ func TestUserContact_SmokeTest(t *testing.T) {
 	user := helpers.UserFixture()
 	require.NoError(t, userRepo.Create(ctx, user))
 
-	t.Run("✅ Contact_create_and_retrieve", func(t *testing.T) {
+	t.Run("[+] Contact_create_and_retrieve", func(t *testing.T) {
 		// Create email contact
 		label := "Work Email"
 		contact := &entity.UserContact{

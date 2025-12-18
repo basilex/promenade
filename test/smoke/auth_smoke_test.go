@@ -37,7 +37,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 	var userID string
 	var accessToken, refreshToken string
 
-	t.Run("✅ User_registration_flow", func(t *testing.T) {
+	t.Run("[+] User_registration_flow", func(t *testing.T) {
 		email := "smoke@test.com"
 		name := "Smoke Test User"
 		password := "SecurePassword123!"
@@ -55,7 +55,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		userID = user.ID.String()
 	})
 
-	t.Run("✅ User_login_flow", func(t *testing.T) {
+	t.Run("[+] User_login_flow", func(t *testing.T) {
 		email := "smoke@test.com"
 		password := "SecurePassword123!"
 		userAgent := "Smoke Test Agent"
@@ -73,7 +73,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		refreshToken = refresh
 	})
 
-	t.Run("✅ GetMe_returns_current_user", func(t *testing.T) {
+	t.Run("[+] GetMe_returns_current_user", func(t *testing.T) {
 		// Parse access token to get user ID
 		claims, err := jwtManager.ValidateToken(accessToken)
 		require.NoError(t, err, "access token should be valid")
@@ -86,7 +86,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		assert.Equal(t, "smoke@test.com", user.Email)
 	})
 
-	t.Run("✅ Refresh_token_flow", func(t *testing.T) {
+	t.Run("[+] Refresh_token_flow", func(t *testing.T) {
 		// Wait a bit to ensure new tokens have different timestamps
 		time.Sleep(100 * time.Millisecond)
 
@@ -108,7 +108,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		refreshToken = newRefresh
 	})
 
-	t.Run("✅ Logout_invalidates_session", func(t *testing.T) {
+	t.Run("[+] Logout_invalidates_session", func(t *testing.T) {
 		err := authUC.Logout(ctx, refreshToken)
 		require.NoError(t, err, "logout should succeed")
 
@@ -117,7 +117,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		assert.Error(t, err, "refresh token should be invalidated after logout")
 	})
 
-	t.Run("✅ Duplicate_email_registration_fails", func(t *testing.T) {
+	t.Run("[+] Duplicate_email_registration_fails", func(t *testing.T) {
 		email := "smoke@test.com" // Same as first registration
 		name := "Another User"
 		password := "AnotherPassword123!"
@@ -126,7 +126,7 @@ func TestAuth_SmokeTest(t *testing.T) {
 		assert.Error(t, err, "duplicate email registration should fail")
 	})
 
-	t.Run("✅ Invalid_credentials_login_fails", func(t *testing.T) {
+	t.Run("[+] Invalid_credentials_login_fails", func(t *testing.T) {
 		email := "smoke@test.com"
 		password := "WrongPassword123!"
 		userAgent := "Smoke Test Agent"
@@ -162,7 +162,7 @@ func TestAuth_SessionManagement_SmokeTest(t *testing.T) {
 	require.NoError(t, user.HashPassword("password"))
 	require.NoError(t, userRepo.Create(ctx, user))
 
-	t.Run("✅ Multiple_sessions_per_user", func(t *testing.T) {
+	t.Run("[+] Multiple_sessions_per_user", func(t *testing.T) {
 		// Login from 3 different devices
 		_, refreshToken1, _, err := authUC.Login(ctx, user.Email, "password", "Device 1", "192.168.1.1")
 		require.NoError(t, err)

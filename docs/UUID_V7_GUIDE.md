@@ -19,9 +19,9 @@ This project has been migrated from UUID v4 to UUID v7 for primary key generatio
 
 | Strategy         | Pros                                          | Cons                                           |
 | ---------------- | --------------------------------------------- | ---------------------------------------------- |
-| **UUID v7**      | ✅ Time-ordered, globally unique, distributed | Slightly larger than BIGINT (16 bytes)         |
-| UUID v4          | Globally unique, distributed                  | ❌ Random = poor index locality                |
-| SERIAL/BIGSERIAL | Small, sequential, fast                       | ❌ Single point of failure, replication issues |
+| **UUID v7**      | [+] Time-ordered, globally unique, distributed | Slightly larger than BIGINT (16 bytes)         |
+| UUID v4          | Globally unique, distributed                  | [X] Random = poor index locality                |
+| SERIAL/BIGSERIAL | Small, sequential, fast                       | [X] Single point of failure, replication issues |
 | ULID             | Similar to v7, base32 encoded                 | Less standard, limited library support         |
 | Snowflake ID     | Fast, time-ordered                            | Requires coordination service                  |
 
@@ -77,7 +77,7 @@ Existing records with UUID v4 will continue to work. The system supports mixed U
 
 ### When to Use UUID v7
 
-✅ **Good fit:**
+[+] **Good fit:**
 
 - Distributed systems where multiple nodes generate IDs
 - Multi-region deployments
@@ -86,7 +86,7 @@ Existing records with UUID v4 will continue to work. The system supports mixed U
 - Tables with high INSERT rates
 - When you need natural time-based ordering
 
-❌ **Reconsider if:**
+[X] **Reconsider if:**
 
 - Single-database system with no distribution needs
 - Storage is extremely constrained (UUID = 16 bytes vs BIGINT = 8 bytes)

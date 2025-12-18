@@ -1,4 +1,4 @@
-# 🔑 Development Credentials
+# # Development Credentials
 
 Quick reference for default users and access credentials.
 
@@ -81,7 +81,7 @@ JOIN users u ON ur.user_id = u.id
 JOIN roles r ON ur.role_id = r.id;
 ```
 
-## ⚠️ Security Warning
+## [!] Security Warning
 
 **These credentials are for DEVELOPMENT ONLY!**
 

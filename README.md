@@ -6,24 +6,24 @@
 
 Production-ready REST API built with **Clean Architecture**, featuring PostgreSQL with UUID v7, comprehensive testing infrastructure, JWT authentication, and API versioning.
 
-## ✨ Key Features
+## Key Features
 
-- 🏗️ **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
-- 🔑 **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
-- � **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
-- 📊 **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- 🧪 **Comprehensive Testing** - 405+ tests total across all layers - 100% passing ✅
+- **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
+- **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
+- **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
+- **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
+- **Comprehensive Testing** - 405+ tests total across all layers - 100% passing
   - Unit: 373+ tests (113+ entity + 260 use case runs)
   - Integration: 119+ tests (46 handler + 73+ repository with real PostgreSQL)
-- 🔐 **JWT Authentication** - Secure token-based auth with refresh tokens
-- 📚 **API Versioning** - v1 and v2 with backward compatibility
-- 🗄️ **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
-- 📖 **Swagger Documentation** - Auto-generated API docs for both versions
-- 🐳 **Docker Ready** - Full Docker Compose setup for development and testing
-- 🔄 **Database Migrations** - golang-migrate for version control
-- ⚡ **High Performance** - Gin framework with graceful shutdown
+- **JWT Authentication** - Secure token-based auth with refresh tokens
+- **API Versioning** - v1 and v2 with backward compatibility
+- **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
+- **Swagger Documentation** - Auto-generated API docs for both versions
+- **Docker Ready** - Full Docker Compose setup for development and testing
+- **Database Migrations** - golang-migrate for version control
+- **High Performance** - Gin framework with graceful shutdown
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -68,9 +68,27 @@ Email:    alexander.vasilenko@gmail.com
 Password: 03041965
 ```
 
-**⚠️ Important:** Change these passwords before deploying to production!
+**[!] Important:** Change these passwords before deploying to production!
 
-📋 **Full credentials reference:** See [CREDENTIALS.md](CREDENTIALS.md) for complete list with examples.
+-> **Full credentials reference:** See [docs/CREDENTIALS.md](docs/CREDENTIALS.md) for complete list with examples.
+
+### Docker Setup (Alternative)
+
+Run everything in Docker containers:
+
+```bash
+# Build and run all services (PostgreSQL, Redis, Migrations, API)
+make docker-run
+
+# Or step by step:
+make docker-build VERSION=0.1.0 ENV=dev
+make docker-up
+
+# Check health
+curl http://localhost:8080/api/v1/health
+```
+
+📘 **Docker details**: See [docker/README.md](docker/README.md) for comprehensive Docker documentation.
 
 ### Quick Test
 
@@ -81,20 +99,25 @@ make test
 # Or run integration tests only
 make test-integration
 
-# Test authentication with default user
+# Test authentication with default user (local dev)
 curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"system@promenade.com","password":"passw0rd"}'
+
+# Test authentication (Docker)
+curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"system@promenade.com","password":"passw0rd"}'
 ```
 
-## 📡 API Access
+## -> API Access
 
 - **API Base URL**: http://localhost:8081/api/v1
 - **Swagger v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **Swagger v2**: http://localhost:8081/api/v2/docs/swagger/index.html
-- **Health Check**: http://localhost:8081/health
+- **Health Check**: http://localhost:8081/api/v1/health
 
-## 📚 Documentation
+## -> Documentation
 
 ### Technical Documentation
 
@@ -111,7 +134,7 @@ curl -X POST http://localhost:8081/api/v1/auth/login \
 
 **Language Policy:** All documentation and code comments are in English. Russian versions (.ru.md) are kept for reference.
 
-### 🗄️ Database Schema
+### Database Schema
 
 Complete database schema with relationships and key constraints:
 
@@ -353,7 +376,7 @@ erDiagram
 - **Cascading deletes** to maintain referential integrity
 - **Unique constraints** to prevent duplicates (email, nickname, slug per user, permission resource:action)
 
-## 🛠️ Development Commands
+##  Development Commands
 
 ### Core Commands
 
@@ -397,7 +420,7 @@ make lint              # Run golangci-lint
 make swagger-all       # Generate Swagger docs (v1 + v2)
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 This project strictly follows **Clean Architecture** principles with four distinct layers:
 
@@ -487,14 +510,14 @@ When working with database entities that have nullable fields (mapped to SQL `NU
 #### Why Reference Helpers?
 
 ```go
-// ❌ Manual approach - verbose and error-prone
+// [X] Manual approach - verbose and error-prone
 reason := "Violation of terms"
 user.SuspendedReason = &reason  // Easy to forget "*" after 8 hours at computer
 
 until := time.Now().Add(7 * 24 * time.Hour)
 user.SuspendedUntil = &until
 
-// ✅ Using ref package - clean and safe
+// [+] Using ref package - clean and safe
 user.SuspendedReason = ref.String("Violation of terms")
 user.SuspendedUntil = ref.Time(time.Now().Add(7 * 24 * time.Hour))
 ```
@@ -559,11 +582,11 @@ profile := &entity.UserProfile{
 **Test assertions**:
 
 ```go
-// ❌ Old way - manual dereferencing
+// [X] Old way - manual dereferencing
 assert.Equal(t, "Violation of terms", *user.SuspendedReason)
 assert.Equal(t, expectedTime, *user.SuspendedUntil)
 
-// ✅ New way - safe getters
+// [+] New way - safe getters
 assert.Equal(t, "Violation of terms", ref.StringValue(user.SuspendedReason))
 assert.Equal(t, expectedTime, ref.TimeValue(user.SuspendedUntil))
 ```
@@ -586,11 +609,11 @@ displayName := ref.StringOr(profile.DisplayName, profile.Nickname)
 
 #### Benefits
 
-- 🛡️ **Type-safe** - Compiler catches mismatches
+-  **Type-safe** - Compiler catches mismatches
 - 📝 **Less verbose** - No temporary variables needed
 - 🎯 **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
-- 🐛 **Fewer bugs** - Eliminates "forgot to add `*`" mistakes after long coding sessions
-- 🧪 **Test-friendly** - Safe dereferencing in assertions without panic risk
+- [!] **Fewer bugs** - Eliminates "forgot to add `*`" mistakes after long coding sessions
+- - **Test-friendly** - Safe dereferencing in assertions without panic risk
 
 #### Nullable Fields Philosophy
 
@@ -674,13 +697,13 @@ defer eventBus.Close(ctx)
 
 **Features**:
 
-- ✅ Zero external dependencies
-- ✅ Configurable worker pool (10 goroutines default)
-- ✅ Buffered message queue (1000 messages default)
-- ✅ Graceful shutdown with proper cleanup
-- ✅ Built-in health checks and statistics
-- ⚠️ No persistence - events lost on restart
-- ⚠️ Single-process only - not suitable for horizontal scaling
+- [+] Zero external dependencies
+- [+] Configurable worker pool (10 goroutines default)
+- [+] Buffered message queue (1000 messages default)
+- [+] Graceful shutdown with proper cleanup
+- [+] Built-in health checks and statistics
+- [!] No persistence - events lost on restart
+- [!] Single-process only - not suitable for horizontal scaling
 
 #### 2. Redis Pub/Sub (Planned)
 
@@ -694,10 +717,10 @@ eventBus := redis.NewRedisBus(busConfig, redisClient)
 
 **Features**:
 
-- ✅ Multi-process support (horizontal scaling)
-- ✅ Pub/Sub pattern for real-time delivery
-- ⚠️ No guaranteed delivery - subscribers must be online
-- ⚠️ No message persistence after delivery
+- [+] Multi-process support (horizontal scaling)
+- [+] Pub/Sub pattern for real-time delivery
+- [!] No guaranteed delivery - subscribers must be online
+- [!] No message persistence after delivery
 
 #### 3. NATS/Kafka (Future)
 
@@ -712,11 +735,11 @@ eventBus := kafka.NewKafkaBus(busConfig, kafkaProducer)
 
 **Features**:
 
-- ✅ Persistent message storage
-- ✅ At-least-once delivery guarantees
-- ✅ Message replay capability
-- ✅ Dead letter queues for failures
-- ⚠️ More complex infrastructure
+- [+] Persistent message storage
+- [+] At-least-once delivery guarantees
+- [+] Message replay capability
+- [+] Dead letter queues for failures
+- [!] More complex infrastructure
 
 ### Configuration
 
@@ -859,11 +882,11 @@ templates/email/
 
 **Benefits of external templates**:
 
-- ✅ Change email design without redeploying service
-- ✅ Professional HTML emails with CSS styling
-- ✅ A/B testing different email variants
-- ✅ Designer-friendly (no Go code required)
-- ✅ Version control for email content
+- [+] Change email design without redeploying service
+- [+] Professional HTML emails with CSS styling
+- [+] A/B testing different email variants
+- [+] Designer-friendly (no Go code required)
+- [+] Version control for email content
 
 **Example template** (`templates/email/welcome.html`):
 
@@ -1094,20 +1117,20 @@ go run examples/event_bus_demo/main.go
 **Output**:
 
 ```
-🚀 Event Bus Demo - Async Email Notifications
+* Event Bus Demo - Async Email Notifications
 ================================================
 
-✅ Email service started and listening for events...
+[+] Email service started and listening for events...
 
 📝 Simulating user registration: Demo User (demo@example.com)
-✅ Event published to bus (returns immediately)
+[+] Event published to bus (returns immediately)
 ⏳ Email being sent in background goroutine...
 
 📧 Emails sent: 1
   1. To: demo@example.com
      Subject: Welcome to Promenade!
 
-📊 Event Bus Stats:
+-> Event Bus Stats:
   Topics: 5
   Subscribers: 5
   Messages Published: 1
@@ -1125,7 +1148,7 @@ go run examples/event_bus_demo/main.go
 - **[Configuration Guide](docs/CONFIGURATION_REFACTORING.md)** - Template and config externalization
 - **[Integration Tests](test/integration/event_bus_test.go)** - Full test suite examples
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Files
 
@@ -1133,10 +1156,10 @@ The project uses a hierarchical environment configuration:
 
 | File               | Purpose              | Committed? | Priority   |
 | ------------------ | -------------------- | ---------- | ---------- |
-| `.env`             | Base defaults        | ✅ Yes     | Lowest     |
-| `.env.development` | Development settings | ✅ Yes     | Medium     |
-| `.env.local`       | Personal overrides   | ❌ No      | Highest    |
-| `.env.production`  | Production secrets   | ❌ No      | Production |
+| `.env`             | Base defaults        | [+] Yes    | Lowest     |
+| `.env.development` | Development settings | [+] Yes    | Medium     |
+| `.env.local`       | Personal overrides   | [X] No     | Highest    |
+| `.env.production`  | Production secrets   | [X] No     | Production |
 
 ### Key Configuration Variables
 
@@ -1186,13 +1209,13 @@ vim .env.local
 .env (base defaults)
 ```
 
-## 🧪 Testing
+## Testing
 
 Promenade features a **comprehensive testing infrastructure** with isolated test database and helper utilities.
 
 ### Test Statistics
 
-- **328+ Total Tests** - 100% passing ✅
+- **328+ Total Tests** - 100% passing [+]
   - **358+ Unit Tests**
     - Entity: 87+ tests (User, UserProfile, UserPost, Country validation)
     - Use Case: 271 test runs (Auth, Country, Currency, PostComment, UserPost business logic)
@@ -1295,7 +1318,7 @@ Production-ready **end-to-end smoke tests** verify critical user flows with real
 | `user_profile_smoke_test.go`     | 1         | Profile CRUD operations, bio updates                                         |
 | `user_post_smoke_test.go`        | 1         | Post creation, publishing, status updates                                    |
 | `user_contact_smoke_test.go`     | 1         | Contact CRUD (email, phone), updates, deletion                               |
-| **Total**                        | **28**    | **All tests passing ✅ (9 test suites)**                                     |
+| **Total**                        | **28**    | **All tests passing [+] (9 test suites)**                                    |
 
 **Running Smoke Tests:**
 
@@ -1326,11 +1349,11 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
     defer testDB.CleanupTables(t)
 
     // Test critical user flows with real database
-    t.Run("✅ Basic_like_flow", func(t *testing.T) {
+    t.Run("[+] Basic_like_flow", func(t *testing.T) {
         // Like comment → verify count → unlike → verify again
     })
 
-    t.Run("⚡ Performance", func(t *testing.T) {
+    t.Run("* Performance", func(t *testing.T) {
         // Execute 100 HasUserLiked queries and measure performance
     })
 }
@@ -1338,115 +1361,115 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 
 **Key Features:**
 
-- ✅ Real database integration (PostgreSQL on port 5433)
-- ✅ Isolated test data with automatic cleanup
-- ✅ Critical path verification (create → retrieve → update → delete)
-- ✅ Performance benchmarks included
-- ✅ Fast execution (~2.5 seconds for all 28 scenarios across 9 test suites)
-- ✅ Idempotent tests with cleanup at start and end (CleanupTables)
+- [+] Real database integration (PostgreSQL on port 5433)
+- [+] Isolated test data with automatic cleanup
+- [+] Critical path verification (create → retrieve → update → delete)
+- [+] Performance benchmarks included
+- [+] Fast execution (~2.5 seconds for all 28 scenarios across 9 test suites)
+- [+] Idempotent tests with cleanup at start and end (CleanupTables)
 
 See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for comprehensive testing documentation.
 
-## 🌐 API Endpoints & Manual Testing
+## API Endpoints & Manual Testing
 
 ### Endpoint Coverage
 
 The API provides **79 REST endpoints** across 8 modules with comprehensive functionality.
 
-| Module         | Endpoints | Tested | Status  | Description                                              |
-| -------------- | --------- | ------ | ------- | -------------------------------------------------------- |
-| **Auth**       | 11        | 6      | ✅ 55%  | Registration, login, logout, refresh, session management |
-| **Profiles**   | 13        | 4      | ✅ 31%  | User profiles with privacy settings and moderation       |
-| **Contacts**   | 9         | 3      | ✅ 33%  | User contact management (email, phone, social)           |
-| **Posts**      | 18        | 5      | ⚠️ 28%  | Blog posts with publishing, scheduling, engagement       |
-| **Comments**   | 9         | 7      | ✅ 56%  | Threaded comments with likes and moderation              |
-| **Countries**  | 9         | 4      | ✅ 44%  | Country management with currency relationships           |
-| **Currencies** | 9         | 7      | ✅ 78%  | Currency management with country relationships           |
-| **Health**     | 1         | 1      | ✅ 100% | Service health check                                     |
-| **TOTAL**      | **79**    | **37** | **47%** | Core functionality fully operational                     |
+| Module         | Endpoints | Tested | Status   | Description                                              |
+| -------------- | --------- | ------ | -------- | -------------------------------------------------------- |
+| **Auth**       | 11        | 6      | [+] 55%  | Registration, login, logout, refresh, session management |
+| **Profiles**   | 13        | 4      | [+] 31%  | User profiles with privacy settings and moderation       |
+| **Contacts**   | 9         | 3      | [+] 33%  | User contact management (email, phone, social)           |
+| **Posts**      | 18        | 5      | [!] 28%  | Blog posts with publishing, scheduling, engagement       |
+| **Comments**   | 9         | 7      | [+] 56%  | Threaded comments with likes and moderation              |
+| **Countries**  | 9         | 4      | [+] 44%  | Country management with currency relationships           |
+| **Currencies** | 9         | 7      | [+] 78%  | Currency management with country relationships           |
+| **Health**     | 1         | 1      | [+] 100% | Service health check                                     |
+| **TOTAL**      | **79**    | **37** | **47%**  | Core functionality fully operational                     |
 
 ### Manual Testing Results (Coffee Tests ☕)
 
 Comprehensive manual testing was performed on all critical endpoints to verify production readiness.
 
-#### ✅ Tested & Verified Endpoints
+#### [+] Tested & Verified Endpoints
 
 **Authentication Flow (6/11):**
 
-- ✅ `POST /auth/register` - User registration with validation
-- ✅ `POST /auth/login` - JWT authentication with access + refresh tokens
-- ✅ `POST /auth/refresh` - Token refresh with rotation
-- ✅ `POST /auth/logout` - Refresh token invalidation
-- ✅ `GET /auth/me` - Current user information
-- ✅ `GET /auth/sessions` - Active session listing
+- [+] `POST /auth/register` - User registration with validation
+- [+] `POST /auth/login` - JWT authentication with access + refresh tokens
+- [+] `POST /auth/refresh` - Token refresh with rotation
+- [+] `POST /auth/logout` - Refresh token invalidation
+- [+] `GET /auth/me` - Current user information
+- [+] `GET /auth/sessions` - Active session listing
 
 **User Profiles (4/13):**
 
-- ✅ `POST /profiles` - Profile creation with privacy settings
-- ✅ `GET /profiles/me` - Current user profile
-- ✅ `PUT /profiles/:id` - Profile updates
-- ✅ `GET /profiles` - Profile listing with pagination
+- [+] `POST /profiles` - Profile creation with privacy settings
+- [+] `GET /profiles/me` - Current user profile
+- [+] `PUT /profiles/:id` - Profile updates
+- [+] `GET /profiles` - Profile listing with pagination
 
 **User Contacts (3/9):**
 
-- ✅ `POST /users/contacts` - Contact creation (email, phone, social)
-- ✅ `GET /users/contacts` - User contact listing
-- ✅ `PUT /users/contacts/:id` - Contact updates
+- [+] `POST /users/contacts` - Contact creation (email, phone, social)
+- [+] `GET /users/contacts` - User contact listing
+- [+] `PUT /users/contacts/:id` - Contact updates
 
 **Blog Posts (5/18):**
 
-- ✅ `POST /posts` - Post creation with draft status
-- ✅ `POST /posts/:id/publish` - Post publishing
-- ✅ `GET /posts/published` - Published posts listing
-- ⚠️ `POST /posts/:id/like` - Post engagement (partially tested)
-- ⚠️ `GET /posts/:id` - Single post retrieval (needs data)
+- [+] `POST /posts` - Post creation with draft status
+- [+] `POST /posts/:id/publish` - Post publishing
+- [+] `GET /posts/published` - Published posts listing
+- [!] `POST /posts/:id/like` - Post engagement (partially tested)
+- [!] `GET /posts/:id` - Single post retrieval (needs data)
 
 **Comments (7/9):**
 
-- ✅ `POST /comments` - Comment creation
-- ✅ `PUT /comments/:id` - Comment updates
-- ✅ `GET /comments/:id` - Comment retrieval
-- ✅ `POST /comments/:id/like` - Comment likes
-- ✅ `GET /comments?post_id=xxx` - Post comments (query param based)
-- ⏸️ `POST /comments` (replies) - Thread replies (initiated)
-- ⏸️ `GET /comments/:id/replies` - Reply listing (initiated)
+- [+] `POST /comments` - Comment creation
+- [+] `PUT /comments/:id` - Comment updates
+- [+] `GET /comments/:id` - Comment retrieval
+- [+] `POST /comments/:id/like` - Comment likes
+- [+] `GET /comments?post_id=xxx` - Post comments (query param based)
+-  `POST /comments` (replies) - Thread replies (initiated)
+-  `GET /comments/:id/replies` - Reply listing (initiated)
 
 **RBAC (Role-Based Access Control) (18/18):**
 
-- ✅ `POST /permissions` - Create permission (requires permissions:create)
-- ✅ `GET /permissions` - List all permissions (requires permissions:read)
-- ✅ `GET /permissions/:id` - Get permission by ID (requires permissions:read)
-- ✅ `PUT /permissions/:id` - Update permission (requires permissions:update)
-- ✅ `DELETE /permissions/:id` - Delete permission (requires permissions:delete)
-- ✅ `GET /permissions?resource=posts` - Find by resource (requires permissions:read)
-- ✅ `POST /roles` - Create role (requires roles:create)
-- ✅ `GET /roles` - List all roles (requires roles:read)
-- ✅ `GET /roles/:id` - Get role by ID (requires roles:read)
-- ✅ `PUT /roles/:id` - Update role (requires roles:update)
-- ✅ `DELETE /roles/:id` - Delete role (requires roles:delete, prevents system roles deletion)
-- ✅ `POST /roles/:id/permissions` - Add permission to role (requires roles:update)
-- ✅ `DELETE /roles/:id/permissions/:permissionId` - Remove permission (requires roles:update)
-- ✅ `POST /roles/:id/permissions/sync` - Sync all permissions (requires roles:update)
-- ✅ `GET /roles/:id/permissions` - List role permissions (requires roles:read)
-- ✅ `POST /roles/:id/users/:userId` - Assign role to user (requires roles:assign)
-- ✅ `DELETE /roles/:id/users/:userId` - Remove role from user (requires roles:assign)
-- ✅ `GET /users/:id/roles` - Get user roles (requires users:read or own user)
+- [+] `POST /permissions` - Create permission (requires permissions:create)
+- [+] `GET /permissions` - List all permissions (requires permissions:read)
+- [+] `GET /permissions/:id` - Get permission by ID (requires permissions:read)
+- [+] `PUT /permissions/:id` - Update permission (requires permissions:update)
+- [+] `DELETE /permissions/:id` - Delete permission (requires permissions:delete)
+- [+] `GET /permissions?resource=posts` - Find by resource (requires permissions:read)
+- [+] `POST /roles` - Create role (requires roles:create)
+- [+] `GET /roles` - List all roles (requires roles:read)
+- [+] `GET /roles/:id` - Get role by ID (requires roles:read)
+- [+] `PUT /roles/:id` - Update role (requires roles:update)
+- [+] `DELETE /roles/:id` - Delete role (requires roles:delete, prevents system roles deletion)
+- [+] `POST /roles/:id/permissions` - Add permission to role (requires roles:update)
+- [+] `DELETE /roles/:id/permissions/:permissionId` - Remove permission (requires roles:update)
+- [+] `POST /roles/:id/permissions/sync` - Sync all permissions (requires roles:update)
+- [+] `GET /roles/:id/permissions` - List role permissions (requires roles:read)
+- [+] `POST /roles/:id/users/:userId` - Assign role to user (requires roles:assign)
+- [+] `DELETE /roles/:id/users/:userId` - Remove role from user (requires roles:assign)
+- [+] `GET /users/:id/roles` - Get user roles (requires users:read or own user)
 
 ### Known Issues Fixed During Testing
 
-1. **Route Conflict in PostCommentRouter** ✅ FIXED
+1. **Route Conflict in PostCommentRouter** [+] FIXED
 
    - **Issue**: Path conflict between `/posts/:post_id/comments` and `/posts/:id`
    - **Solution**: Changed to query parameter `GET /comments?post_id=xxx`
    - **Impact**: Prevents Gin router panic on startup
 
-2. **UserContactHandler Type Conversion (9 occurrences)** ✅ FIXED
+2. **UserContactHandler Type Conversion (9 occurrences)** [+] FIXED
 
    - **Issue**: Incorrect type assertion `userID.(string)` instead of `userID.(uuidv7.UUID)`
    - **Solution**: Fixed all 9 methods in handler
    - **Impact**: Prevents runtime panic on all contact endpoints
 
-3. **ToPostListResponse Nil Pointer** ✅ FIXED
+3. **ToPostListResponse Nil Pointer** [+] FIXED
    - **Issue**: Accessing `meta.Total` when `meta == nil` caused panic
    - **Solution**: Added nil check before accessing pagination metadata
    - **Impact**: Critical - prevented server crash on `/posts/published`
@@ -1472,30 +1495,30 @@ curl http://localhost:8081/api/v1/auth/me \
 - **Refresh Token**: Stored in database, valid for 7 days, can be revoked via logout
 - **Token Rotation**: Each refresh generates new access + refresh token pair
 
-### Production Readiness ✅
+### Production Readiness [+]
 
-- ✅ All core user flows tested and operational
-- ✅ Authentication & authorization working correctly
-- ✅ Request validation functioning properly
-- ✅ Error handling comprehensive and informative
-- ✅ Structured logging capturing all requests
-- ✅ Panic recovery tested and working
-- ✅ 328+ automated tests (100% passing)
-- ✅ 26 endpoints manually verified via HTTP
+- [+] All core user flows tested and operational
+- [+] Authentication & authorization working correctly
+- [+] Request validation functioning properly
+- [+] Error handling comprehensive and informative
+- [+] Structured logging capturing all requests
+- [+] Panic recovery tested and working
+- [+] 328+ automated tests (100% passing)
+- [+] 26 endpoints manually verified via HTTP
 
 **Recommended for production use** with continued monitoring and testing of remaining endpoints.
 
-## � Structured Logging
+## Structured Logging
 
 Promenade uses **slog** (Go 1.21+ structured logging) for production-ready observability.
 
 ### Key Features
 
-- ✅ **Structured Format** - JSON (production) or text (development)
-- ✅ **Context Fields** - Automatic request_id, user_id, trace_id tracking
-- ✅ **Zero Dependencies** - Built-in Go stdlib
-- ✅ **Performance** - Zero allocation for common operations
-- ✅ **Integration Ready** - Works with ELK, Loki, DataDog, New Relic
+- [+] **Structured Format** - JSON (production) or text (development)
+- [+] **Context Fields** - Automatic request_id, user_id, trace_id tracking
+- [+] **Zero Dependencies** - Built-in Go stdlib
+- [+] **Performance** - Zero allocation for common operations
+- [+] **Integration Ready** - Works with ELK, Loki, DataDog, New Relic
 
 ### Log Output Examples
 
@@ -1551,7 +1574,7 @@ logger.Error("Database query failed",
 
 See **[LOGGING.md](docs/LOGGING.md)** for complete guide with examples for all layers.
 
-## �🐳 Docker Deployment
+## Docker Deployment
 
 ### Development
 
@@ -1590,7 +1613,7 @@ The project uses a multi-stage Docker build:
 - **Build stage**: Compiles Go binary
 - **Runtime stage**: Alpine-based minimal image (~20MB)
 
-## 🗄️ Database
+## Database
 
 ### Migrations
 
@@ -1610,17 +1633,17 @@ make migrate-status
 
 ### Current Migrations
 
-| Migration                                   | Description                               | Status     |
-| ------------------------------------------- | ----------------------------------------- | ---------- |
-| `000001_init_schema_deps.up.sql`            | UUID v7 function, extensions              | ✅ Applied |
-| `000002_create_auth_schema.up.sql`          | Users, sessions, tokens                   | ✅ Applied |
-| `000003_create_countries_currencies.up.sql` | Countries & currencies                    | ✅ Applied |
-| `000004_create_user_contacts.up.sql`        | User contact management                   | ✅ Applied |
-| `000005_create_user_profiles.up.sql`        | User profiles & social                    | ✅ Applied |
-| `000006_create_user_posts.up.sql`           | Blog posts system                         | ✅ Applied |
-| `000007_create_post_comments.up.sql`        | Comments & replies                        | ✅ Applied |
-| `000008_create_comment_likes_table.up.sql`  | Comment engagement                        | ✅ Applied |
-| `000009_create_rbac_tables.up.sql`          | **RBAC: permissions, roles, assignments** | ✅ Applied |
+| Migration                                   | Description                               | Status      |
+| ------------------------------------------- | ----------------------------------------- | ----------- |
+| `000001_init_schema_deps.up.sql`            | UUID v7 function, extensions              | [+] Applied |
+| `000002_create_auth_schema.up.sql`          | Users, sessions, tokens                   | [+] Applied |
+| `000003_create_countries_currencies.up.sql` | Countries & currencies                    | [+] Applied |
+| `000004_create_user_contacts.up.sql`        | User contact management                   | [+] Applied |
+| `000005_create_user_profiles.up.sql`        | User profiles & social                    | [+] Applied |
+| `000006_create_user_posts.up.sql`           | Blog posts system                         | [+] Applied |
+| `000007_create_post_comments.up.sql`        | Comments & replies                        | [+] Applied |
+| `000008_create_comment_likes_table.up.sql`  | Comment engagement                        | [+] Applied |
+| `000009_create_rbac_tables.up.sql`          | **RBAC: permissions, roles, assignments** | [+] Applied |
 
 ### Schema Highlights
 
@@ -1634,21 +1657,21 @@ make migrate-status
 
 See [AUTH_SCHEMA.md](docs/AUTH_SCHEMA.md) for complete schema documentation and [AUTHORIZATION.md](docs/AUTHORIZATION.md) for RBAC middleware usage.
 
-## 🚀 Performance
+## Performance
 
 ### UUID v7 Benefits
 
 The project uses **UUID v7** (time-ordered) instead of UUID v4 (random):
 
-- ✅ **20-50% faster INSERTs** - Better B-tree locality
-- ✅ **2x faster generation** - 87ns vs 185ns per ID
-- ✅ **Zero allocations** - Memory efficient
-- ✅ **Extractable timestamp** - Built-in creation time
-- ✅ **Index-friendly** - Reduced page splits
+- [+] **20-50% faster INSERTs** - Better B-tree locality
+- [+] **2x faster generation** - 87ns vs 185ns per ID
+- [+] **Zero allocations** - Memory efficient
+- [+] **Extractable timestamp** - Built-in creation time
+- [+] **Index-friendly** - Reduced page splits
 
 See [UUID_V7_MIGRATION.md](docs/UUID_V7_MIGRATION.md) for migration guide and benchmarks.
 
-## 🔐 Authentication Flow
+## Authentication Flow
 
 ### Default Users & Credentials
 
@@ -1680,7 +1703,7 @@ curl -X POST http://localhost:8081/api/v1/auth/login \
   }'
 ```
 
-**⚠️ Security Note:** Change default passwords in production! These credentials are for **development only**.
+**[!] Security Note:** Change default passwords in production! These credentials are for **development only**.
 
 ### Register & Login
 
@@ -1800,7 +1823,7 @@ curl -X GET http://localhost:8081/api/v1/admin/users \
 
 For detailed usage, wildcard permissions, testing, and best practices, see **[Authorization Guide](docs/AUTHORIZATION.md)**.
 
-## 📚 API Examples
+## -> API Examples
 
 ### User Profiles API
 
@@ -2008,44 +2031,44 @@ curl http://localhost:8081/api/v1/currencies
 curl http://localhost:8081/api/v1/currencies/code/USD
 ```
 
-## 🛡️ Best Practices
+##  Best Practices
 
 This project follows industry best practices:
 
 ### Code Quality
 
-- ✅ **Clean Architecture** - Strict layer separation
-- ✅ **No ORM** - Direct SQL with sqlx for transparency
-- ✅ **Dependency Injection** - Manual DI in main.go
-- ✅ **Interface-based design** - Repository pattern
-- ✅ **Error handling** - Proper error wrapping
-- ✅ **Context propagation** - Request context throughout
+- [+] **Clean Architecture** - Strict layer separation
+- [+] **No ORM** - Direct SQL with sqlx for transparency
+- [+] **Dependency Injection** - Manual DI in main.go
+- [+] **Interface-based design** - Repository pattern
+- [+] **Error handling** - Proper error wrapping
+- [+] **Context propagation** - Request context throughout
 
 ### Security
 
-- ✅ **JWT tokens** - Access + refresh token pattern
-- ✅ **Password hashing** - bcrypt with cost 10
-- ✅ **SQL injection prevention** - Parameterized queries
-- ✅ **RBAC authorization** - 6 middleware functions (RequireAuth, RequirePermission, RequireAnyPermission, RequireAllPermissions, RequireRole, RequireAnyRole)
-- ✅ **CORS middleware** - Configurable origins
-- ✅ **Request ID tracking** - X-Request-ID header
-- ✅ **Graceful shutdown** - Clean connection closure
+- [+] **JWT tokens** - Access + refresh token pattern
+- [+] **Password hashing** - bcrypt with cost 10
+- [+] **SQL injection prevention** - Parameterized queries
+- [+] **RBAC authorization** - 6 middleware functions (RequireAuth, RequirePermission, RequireAnyPermission, RequireAllPermissions, RequireRole, RequireAnyRole)
+- [+] **CORS middleware** - Configurable origins
+- [+] **Request ID tracking** - X-Request-ID header
+- [+] **Graceful shutdown** - Clean connection closure
 
 ### Testing
 
-- ✅ **Isolated test DB** - Separate port (5433)
-- ✅ **Fixtures with overrides** - Flexible test data
-- ✅ **Table-driven tests** - Subtests for clarity
-- ✅ **Cleanup after tests** - No data leakage
-- ✅ **Integration tests** - Real database testing
+- [+] **Isolated test DB** - Separate port (5433)
+- [+] **Fixtures with overrides** - Flexible test data
+- [+] **Table-driven tests** - Subtests for clarity
+- [+] **Cleanup after tests** - No data leakage
+- [+] **Integration tests** - Real database testing
 
 ### Development
 
-- ✅ **Makefile automation** - Consistent commands
-- ✅ **Environment hierarchy** - Dev/prod separation
-- ✅ **Migration versioning** - Reversible schema changes
-- ✅ **Swagger documentation** - Auto-generated from code
-- ✅ **Code generation** - Templates for boilerplate
+- [+] **Makefile automation** - Consistent commands
+- [+] **Environment hierarchy** - Dev/prod separation
+- [+] **Migration versioning** - Reversible schema changes
+- [+] **Swagger documentation** - Auto-generated from code
+- [+] **Code generation** - Templates for boilerplate
 
 ## 🤝 Contributing
 
@@ -2085,7 +2108,7 @@ Use generator scripts for consistency:
 ./scripts/generate.sh repository my_repository
 ```
 
-## � API Quick Reference
+## API Quick Reference
 
 ### Core Endpoints (Most Used)
 
@@ -2235,7 +2258,7 @@ Interactive API documentation available at:
 - **v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 
-## �📄 License
+## 📄 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
@@ -2249,4 +2272,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-**Built with ❤️ using Clean Architecture and best practices**
+**Built with ** using Clean Architecture and best practices**

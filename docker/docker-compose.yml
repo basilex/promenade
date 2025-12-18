@@ -10,6 +10,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - promenade-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U system"]
       interval: 10s
@@ -23,6 +25,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - promenade-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -38,10 +42,46 @@ services:
       - "-path=/migrations"
       - "-database=postgresql://system:passw0rd@postgres:5432/promenade_prod?sslmode=disable"
       - "up"
+    networks:
+      - promenade-network
     depends_on:
       postgres:
         condition: service_healthy
 
+  app:
+    image: promenade:latest
+    container_name: promenade_app
+    environment:
+      - ENVIRONMENT=production
+      - SERVER_PORT=8080
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=system
+      - DB_PASSWORD=passw0rd
+      - DB_NAME=promenade_prod
+      - DB_SSLMODE=disable
+      - JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=
+      - JWT_ACCESS_TTL_MINUTES=15
+      - JWT_REFRESH_TTL_HOURS=168
+      - BUS_WORKER_POOL_SIZE=10
+      - BUS_BUFFER_SIZE=1000
+      - BUS_RETRY_ATTEMPTS=3
+      - BUS_RETRY_DELAY=1s
+    ports:
+      - "8080:8080"
+    networks:
+      - promenade-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  promenade-network:
+    driver: bridge
