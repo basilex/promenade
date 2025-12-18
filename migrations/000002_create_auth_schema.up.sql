@@ -3,7 +3,7 @@
 -- ============================================================================
 -- This migration creates the complete authentication infrastructure:
 -- 1. Users table with email verification
--- 2. Sessions table for refresh tokens (JWT)
+-- 2. User sessions table for refresh tokens (JWT)
 -- 3. Password reset tokens
 -- 4. Email verification tokens
 -- 5. Login attempts tracking (security)
@@ -60,9 +60,9 @@ COMMENT ON COLUMN users.suspended_reason IS 'Reason for suspension/ban (if appli
 COMMENT ON COLUMN users.suspended_until IS 'Auto-reactivation date for temporary suspensions';
 
 -- ----------------------------------------------------------------------------
--- 3. SESSIONS TABLE (for refresh tokens)
+-- 3. USER SESSIONS TABLE (for refresh tokens)
 -- ----------------------------------------------------------------------------
-CREATE TABLE sessions (
+CREATE TABLE user_sessions (
     id            UUID PRIMARY KEY DEFAULT uuid_v7(),
     user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     refresh_token VARCHAR(512) UNIQUE NOT NULL,
@@ -72,14 +72,14 @@ CREATE TABLE sessions (
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Indexes for sessions
-CREATE INDEX idx_sessions_user_id ON sessions(user_id);
-CREATE INDEX idx_sessions_refresh_token ON sessions(refresh_token);
-CREATE INDEX idx_sessions_expires_at ON sessions(expires_at);
+-- Indexes for user_sessions
+CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX idx_user_sessions_refresh_token ON user_sessions(refresh_token);
+CREATE INDEX idx_user_sessions_expires_at ON user_sessions(expires_at);
 
-COMMENT ON TABLE sessions IS 'Active user sessions with refresh tokens';
-COMMENT ON COLUMN sessions.refresh_token IS 'Hashed refresh token for JWT rotation';
-COMMENT ON COLUMN sessions.expires_at IS 'Session expiration (typically 7-30 days)';
+COMMENT ON TABLE user_sessions IS 'Active user sessions with refresh tokens';
+COMMENT ON COLUMN user_sessions.refresh_token IS 'Hashed refresh token for JWT rotation';
+COMMENT ON COLUMN user_sessions.expires_at IS 'Session expiration (typically 7-30 days)';
 
 -- ----------------------------------------------------------------------------
 -- 4. PASSWORD RESET TOKENS
@@ -179,7 +179,7 @@ CREATE OR REPLACE FUNCTION cleanup_expired_tokens()
 RETURNS void AS $$
 BEGIN
     -- Delete expired sessions
-    DELETE FROM sessions WHERE expires_at < NOW();
+    DELETE FROM user_sessions WHERE expires_at < NOW();
     
     -- Delete old used password reset tokens (older than 7 days)
     DELETE FROM password_reset_tokens 

@@ -52,6 +52,9 @@ func (tdb *TestDB) Close() {
 // CleanupTables truncates all tables (except migrations)
 func (tdb *TestDB) CleanupTables(t *testing.T) {
 	tables := []string{
+		"comment_likes",
+		"post_comments",
+		"user_posts",
 		"user_profiles",
 		"user_contacts",
 		"user_sessions",
