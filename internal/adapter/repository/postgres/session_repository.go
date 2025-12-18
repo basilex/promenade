@@ -28,7 +28,8 @@ func (r *sessionRepository) Create(ctx context.Context, session *entity.Session)
 		INSERT INTO user_sessions (id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
-	_, err := r.db.ExecContext(ctx, query,
+	executor := r.getExecutor(ctx)
+	_, err := executor.ExecContext(ctx, query,
 		session.ID,
 		session.UserID,
 		session.RefreshToken,
@@ -50,7 +51,7 @@ func (r *sessionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entit
 		WHERE id = $1
 	`
 	var session entity.Session
-	err := r.db.GetContext(ctx, &session, query, id)
+	err := r.Get(ctx, &session, query, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, entity.ErrNotFound
@@ -67,7 +68,7 @@ func (r *sessionRepository) GetByRefreshToken(ctx context.Context, hashedToken s
 		WHERE refresh_token = $1 AND expires_at > NOW()
 	`
 	var session entity.Session
-	err := r.db.GetContext(ctx, &session, query, hashedToken)
+	err := r.Get(ctx, &session, query, hashedToken)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, entity.ErrNotFound
@@ -77,9 +78,33 @@ func (r *sessionRepository) GetByRefreshToken(ctx context.Context, hashedToken s
 	return &session, nil
 }
 
+func (r *sessionRepository) Update(ctx context.Context, session *entity.Session) error {
+	query := `
+		UPDATE user_sessions
+		SET refresh_token = $2, expires_at = $3
+		WHERE id = $1
+	`
+	executor := r.getExecutor(ctx)
+	result, err := executor.ExecContext(ctx, query, session.ID, session.RefreshToken, session.ExpiresAt)
+	if err != nil {
+		return fmt.Errorf("failed to update session: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return entity.ErrNotFound
+	}
+
+	return nil
+}
+
 func (r *sessionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `DELETE FROM user_sessions WHERE id = $1`
-	result, err := r.db.ExecContext(ctx, query, id)
+	executor := r.getExecutor(ctx)
+	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
@@ -103,16 +128,46 @@ func (r *sessionRepository) GetUserSessions(ctx context.Context, userID uuidv7.U
 		ORDER BY created_at DESC
 	`
 	var sessions []*entity.Session
-	err := r.db.SelectContext(ctx, &sessions, query, userID)
+	err := r.Select(ctx, &sessions, query, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user sessions: %w", err)
 	}
 	return sessions, nil
 }
 
+func (r *sessionRepository) CountUserSessions(ctx context.Context, userID uuidv7.UUID) (int, error) {
+	query := `SELECT COUNT(*) FROM user_sessions WHERE user_id = $1 AND expires_at > NOW()`
+	var count int
+	err := r.Get(ctx, &count, query, userID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to count user sessions: %w", err)
+	}
+	return count, nil
+}
+
+// GetOldestSession retrieves the oldest active session for a user (by created_at)
+func (r *sessionRepository) GetOldestSession(ctx context.Context, userID uuidv7.UUID) (*entity.Session, error) {
+	query := `
+		SELECT id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at
+		FROM user_sessions
+		WHERE user_id = $1 AND expires_at > NOW()
+		ORDER BY created_at ASC
+		LIMIT 1
+	`
+	var session entity.Session
+	err := r.Get(ctx, &session, query, userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, entity.ErrNotFound
+		}
+		return nil, fmt.Errorf("failed to get oldest session: %w", err)
+	}
+	return &session, nil
+}
+
 func (r *sessionRepository) DeleteByUserID(ctx context.Context, userID uuidv7.UUID) error {
 	query := `DELETE FROM user_sessions WHERE user_id = $1`
-	_, err := r.db.ExecContext(ctx, query, userID)
+	err := r.Exec(ctx, query, userID)
 	if err != nil {
 		return fmt.Errorf("failed to delete user sessions: %w", err)
 	}
@@ -121,7 +176,7 @@ func (r *sessionRepository) DeleteByUserID(ctx context.Context, userID uuidv7.UU
 
 func (r *sessionRepository) DeleteExpired(ctx context.Context) error {
 	query := `DELETE FROM user_sessions WHERE expires_at <= NOW()`
-	_, err := r.db.ExecContext(ctx, query)
+	err := r.Exec(ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed to delete expired sessions: %w", err)
 	}

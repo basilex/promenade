@@ -79,6 +79,7 @@ func TestAuthUseCase_Login(t *testing.T) {
 		_ = user.HashPassword("password123")
 
 		mockUserRepo.On("GetByEmail", ctx, "test@example.com").Return(user, nil)
+		mockSessionRepo.On("CountUserSessions", ctx, user.ID).Return(0, nil)
 		mockSessionRepo.On("Create", ctx, mock.AnythingOfType("*entity.Session")).Return(nil)
 		mockUserRepo.On("UpdateLastLogin", ctx, user.ID, mock.AnythingOfType("time.Time")).Return(nil)
 
@@ -246,8 +247,7 @@ func TestAuthUseCase_RefreshToken(t *testing.T) {
 
 		mockSessionRepo.On("GetByRefreshToken", ctx, mock.AnythingOfType("string")).Return(session, nil)
 		mockUserRepo.On("GetByID", ctx, userID).Return(user, nil)
-		mockSessionRepo.On("Delete", ctx, session.ID).Return(nil)
-		mockSessionRepo.On("Create", ctx, mock.AnythingOfType("*entity.Session")).Return(nil)
+		mockSessionRepo.On("Update", ctx, mock.AnythingOfType("*entity.Session")).Return(nil)
 
 		newAccessToken, newRefreshToken, err := uc.RefreshToken(ctx, "old-refresh-token")
 		require.NoError(t, err)

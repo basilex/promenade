@@ -15,6 +15,11 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
+const (
+	// MaxConcurrentSessions defines the maximum number of concurrent sessions per user
+	MaxConcurrentSessions = 5
+)
+
 var (
 	ErrInvalidCredentials = errors.New("invalid email or password")
 	ErrEmailAlreadyExists = errors.New("email already exists")
@@ -135,6 +140,25 @@ func (uc *authUseCase) Login(ctx context.Context, email, password, userAgent, ip
 	// Hash refresh token for storage
 	hashedToken := uc.hashToken(refreshToken)
 
+	// Check session limit and remove oldest if exceeded
+	sessionCount, err := uc.sessionRepo.CountUserSessions(ctx, user.ID)
+	if err != nil {
+		return "", "", nil, fmt.Errorf("failed to count user sessions: %w", err)
+	}
+
+	if sessionCount >= MaxConcurrentSessions {
+		// Remove the oldest session to make room for the new one
+		oldestSession, err := uc.sessionRepo.GetOldestSession(ctx, user.ID)
+		if err != nil && !errors.Is(err, entity.ErrNotFound) {
+			return "", "", nil, fmt.Errorf("failed to get oldest session: %w", err)
+		}
+		if oldestSession != nil {
+			if err := uc.sessionRepo.Delete(ctx, oldestSession.ID); err != nil {
+				return "", "", nil, fmt.Errorf("failed to delete oldest session: %w", err)
+			}
+		}
+	}
+
 	// Create session
 	session := &entity.Session{
 		ID:           uuidv7.New(),
@@ -221,20 +245,14 @@ func (uc *authUseCase) RefreshToken(ctx context.Context, refreshToken string) (s
 		return "", "", fmt.Errorf("failed to generate refresh token: %w", err)
 	}
 
-	// Update session with new refresh token
+	// Update session with new refresh token (rotation pattern)
 	newHashedToken := uc.hashToken(newRefreshToken)
 	session.RefreshToken = newHashedToken
 	session.ExpiresAt = time.Now().Add(uc.jwtManager.GetRefreshTokenTTL())
 
-	// Delete old session and create new one
-	if err := uc.sessionRepo.Delete(ctx, session.ID); err != nil {
-		return "", "", fmt.Errorf("failed to delete old session: %w", err)
-	}
-
-	session.ID = uuidv7.New()
-	session.CreatedAt = time.Now()
-	if err := uc.sessionRepo.Create(ctx, session); err != nil {
-		return "", "", fmt.Errorf("failed to create new session: %w", err)
+	// Update existing session instead of delete+create for better performance
+	if err := uc.sessionRepo.Update(ctx, session); err != nil {
+		return "", "", fmt.Errorf("failed to update session: %w", err)
 	}
 
 	return newAccessToken, newRefreshToken, nil

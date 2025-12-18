@@ -58,6 +58,19 @@ func (m *MockSessionRepository) DeleteByUserID(ctx context.Context, userID uuidv
 	return args.Error(0)
 }
 
+func (m *MockSessionRepository) CountUserSessions(ctx context.Context, userID uuidv7.UUID) (int, error) {
+	args := m.Called(ctx, userID)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockSessionRepository) GetOldestSession(ctx context.Context, userID uuidv7.UUID) (*entity.Session, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entity.Session), args.Error(1)
+}
+
 func (m *MockSessionRepository) DeleteExpired(ctx context.Context) error {
 	args := m.Called(ctx)
 	return args.Error(0)

@@ -76,10 +76,16 @@ CREATE TABLE user_sessions (
 CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
 CREATE INDEX idx_user_sessions_refresh_token ON user_sessions(refresh_token);
 CREATE INDEX idx_user_sessions_expires_at ON user_sessions(expires_at);
+CREATE INDEX idx_user_sessions_user_created ON user_sessions(user_id, created_at DESC);
 
-COMMENT ON TABLE user_sessions IS 'Active user sessions with refresh tokens';
-COMMENT ON COLUMN user_sessions.refresh_token IS 'Hashed refresh token for JWT rotation';
+COMMENT ON TABLE user_sessions IS 'Active user sessions with refresh tokens (JWT rotation pattern)';
+COMMENT ON COLUMN user_sessions.id IS 'Session ID (UUID v7, time-ordered)';
+COMMENT ON COLUMN user_sessions.user_id IS 'User who owns this session';
+COMMENT ON COLUMN user_sessions.refresh_token IS 'Hashed refresh token (SHA256) for JWT rotation';
+COMMENT ON COLUMN user_sessions.user_agent IS 'Client user agent for device tracking';
+COMMENT ON COLUMN user_sessions.ip_address IS 'Client IP address for security audit';
 COMMENT ON COLUMN user_sessions.expires_at IS 'Session expiration (typically 7-30 days)';
+COMMENT ON COLUMN user_sessions.created_at IS 'Session creation timestamp';
 
 -- ----------------------------------------------------------------------------
 -- 4. PASSWORD RESET TOKENS

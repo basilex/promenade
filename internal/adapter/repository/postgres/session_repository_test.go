@@ -3,12 +3,14 @@ package postgres_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/helpers"
 )
 
@@ -150,6 +152,88 @@ func TestSessionRepository_DeleteByUserID(t *testing.T) {
 	})
 }
 
+func TestSessionRepository_Update(t *testing.T) {
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	repo := postgres.NewSessionRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	ctx := context.Background()
+
+	t.Run("updates session successfully", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		session := helpers.SessionFixture(user.ID)
+		err = repo.Create(ctx, session)
+		require.NoError(t, err)
+
+		// Update refresh token and expiration
+		session.RefreshToken = "new-hashed-token"
+		session.ExpiresAt = session.ExpiresAt.Add(24 * time.Hour)
+
+		err = repo.Update(ctx, session)
+		require.NoError(t, err)
+
+		// Verify update
+		updated, err := repo.GetByID(ctx, session.ID)
+		require.NoError(t, err)
+		assert.Equal(t, "new-hashed-token", updated.RefreshToken)
+		assert.Equal(t, session.ExpiresAt.Unix(), updated.ExpiresAt.Unix())
+	})
+
+	t.Run("returns error for non-existent session", func(t *testing.T) {
+		session := helpers.SessionFixture(uuidv7.New())
+		err := repo.Update(ctx, session)
+		assert.ErrorIs(t, err, entity.ErrNotFound)
+	})
+}
+
+func TestSessionRepository_CountUserSessions(t *testing.T) {
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	repo := postgres.NewSessionRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	ctx := context.Background()
+
+	t.Run("counts active sessions correctly", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		// Create 3 active sessions
+		for i := 0; i < 3; i++ {
+			session := helpers.SessionFixture(user.ID)
+			err = repo.Create(ctx, session)
+			require.NoError(t, err)
+		}
+
+		// Create 1 expired session
+		expiredSession := helpers.ExpiredSessionFixture(user.ID)
+		err = repo.Create(ctx, expiredSession)
+		require.NoError(t, err)
+
+		// Count should only return active sessions
+		count, err := repo.CountUserSessions(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, 3, count)
+	})
+
+	t.Run("returns zero for user with no sessions", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		count, err := repo.CountUserSessions(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, 0, count)
+	})
+}
+
 func TestSessionRepository_DeleteExpired(t *testing.T) {
 	testDB := helpers.SetupTestDB(t)
 	defer testDB.Close()
@@ -184,5 +268,69 @@ func TestSessionRepository_DeleteExpired(t *testing.T) {
 		// Verify expired session is gone
 		_, err = repo.GetByID(ctx, expiredSession.ID)
 		assert.ErrorIs(t, err, entity.ErrNotFound)
+	})
+}
+
+func TestSessionRepository_GetOldestSession(t *testing.T) {
+	testDB := helpers.SetupTestDB(t)
+	defer testDB.Close()
+	defer testDB.CleanupTables(t)
+
+	repo := postgres.NewSessionRepository(testDB.DB)
+	userRepo := postgres.NewUserRepository(testDB.DB)
+	ctx := context.Background()
+
+	t.Run("returns oldest active session", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		// Create sessions at different times
+		var sessions []*entity.Session
+		for i := 0; i < 3; i++ {
+			session := helpers.SessionFixture(user.ID)
+			session.CreatedAt = time.Now().Add(time.Duration(i) * time.Hour)
+			err = repo.Create(ctx, session)
+			require.NoError(t, err)
+			sessions = append(sessions, session)
+			time.Sleep(10 * time.Millisecond) // Ensure different timestamps
+		}
+
+		// Get oldest session
+		oldest, err := repo.GetOldestSession(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, sessions[0].ID, oldest.ID)
+	})
+
+	t.Run("returns ErrNotFound when no sessions exist", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		_, err = repo.GetOldestSession(ctx, user.ID)
+		assert.ErrorIs(t, err, entity.ErrNotFound)
+	})
+
+	t.Run("ignores expired sessions", func(t *testing.T) {
+		user := helpers.UserFixture()
+		err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		// Create expired session (oldest)
+		expiredSession := helpers.ExpiredSessionFixture(user.ID)
+		expiredSession.CreatedAt = time.Now().Add(-10 * time.Hour)
+		err = repo.Create(ctx, expiredSession)
+		require.NoError(t, err)
+
+		// Create active session (newer)
+		activeSession := helpers.SessionFixture(user.ID)
+		activeSession.CreatedAt = time.Now()
+		err = repo.Create(ctx, activeSession)
+		require.NoError(t, err)
+
+		// Should return active session, not expired one
+		oldest, err := repo.GetOldestSession(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, activeSession.ID, oldest.ID)
 	})
 }
