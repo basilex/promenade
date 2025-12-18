@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -63,69 +64,69 @@ func IsValidContactType(ct string) bool {
 
 // UserContact represents a user's contact method
 type UserContact struct {
-	ID           uuidv7.UUID `db:"id"`
-	UserID       uuidv7.UUID `db:"user_id"`
-	ContactType  ContactType `db:"contact_type"`
-	ContactValue string      `db:"contact_value"`
-	Label        *string     `db:"label"` // Optional label like "Work", "Personal"
+	ID           uuidv7.UUID `db:"id" validate:"required"`
+	UserID       uuidv7.UUID `db:"user_id" validate:"required"`
+	ContactType  ContactType `db:"contact_type" validate:"required,oneof=email phone telegram whatsapp viber signal skype discord linkedin other"`
+	ContactValue string      `db:"contact_value" validate:"required,max=255"`
+	Label        *string     `db:"label" validate:"omitempty,max=100"` // Optional label like "Work", "Personal"
 
 	// Status flags
-	IsVerified bool `db:"is_verified"`
-	IsPrimary  bool `db:"is_primary"`
-	IsActive   bool `db:"is_active"`
-	IsPublic   bool `db:"is_public"`
+	IsVerified bool `db:"is_verified" validate:"-"`
+	IsPrimary  bool `db:"is_primary" validate:"-"`
+	IsActive   bool `db:"is_active" validate:"-"`
+	IsPublic   bool `db:"is_public" validate:"-"`
 
 	// Availability schedule (optional)
-	AvailableFrom *time.Time     `db:"available_from"` // Start time of day
-	AvailableTo   *time.Time     `db:"available_to"`   // End time of day
-	AvailableDays pq.StringArray `db:"available_days"` // Days of week: monday, tuesday, etc.
-	Timezone      *string        `db:"timezone"`
+	AvailableFrom *time.Time     `db:"available_from" validate:"omitempty"`                      // Start time of day
+	AvailableTo   *time.Time     `db:"available_to" validate:"omitempty,gtefield=AvailableFrom"` // End time of day
+	AvailableDays pq.StringArray `db:"available_days" validate:"omitempty"`                      // Days of week: monday, tuesday, etc.
+	Timezone      *string        `db:"timezone" validate:"omitempty,max=50"`
 
 	// Additional metadata
-	Notes *string `db:"notes"`
+	Notes *string `db:"notes" validate:"omitempty,max=1000"`
 
 	// Timestamps
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	CreatedAt time.Time `db:"created_at" validate:"required"`
+	UpdatedAt time.Time `db:"updated_at" validate:"required"`
 }
 
 // Validate performs validation on the UserContact
 func (c *UserContact) Validate() error {
 	if c.UserID == uuidv7.Nil {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: user_id is required", ErrInvalidInput)
 	}
 
 	if !c.ContactType.IsValid() {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: invalid contact_type", ErrInvalidInput)
 	}
 
 	if c.ContactValue == "" {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: contact_value is required", ErrInvalidInput)
 	}
 
 	// Validate contact value length
 	if len(c.ContactValue) > 255 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: contact_value must not exceed 255 characters", ErrInvalidInput)
 	}
 
 	// Validate availability schedule if set
 	if c.AvailableFrom != nil && c.AvailableTo != nil {
 		if c.AvailableFrom.After(*c.AvailableTo) || c.AvailableFrom.Equal(*c.AvailableTo) {
-			return ErrInvalidInput
+			return fmt.Errorf("%w: available_from must be before available_to", ErrInvalidInput)
 		}
 	}
 
 	// Validate optional string fields length
 	if c.Label != nil && len(*c.Label) > 100 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: label must not exceed 100 characters", ErrInvalidInput)
 	}
 
 	if c.Timezone != nil && len(*c.Timezone) > 50 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: timezone must not exceed 50 characters", ErrInvalidInput)
 	}
 
 	if c.Notes != nil && len(*c.Notes) > 1000 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: notes must not exceed 1000 characters", ErrInvalidInput)
 	}
 
 	return nil

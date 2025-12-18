@@ -3,6 +3,7 @@ package entity
 import (
 	"testing"
 
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 )
@@ -45,40 +46,55 @@ func TestUserProfile_Validate(t *testing.T) {
 		{
 			name: "valid profile",
 			profile: &UserProfile{
+				UserID:      uuidv7.New(),
 				DisplayName: &validDisplayName,
 				Nickname:    &validNickname,
 				Gender:      &validGender,
+				Timezone:    "UTC",
+				Locale:      "en-US",
 			},
 			wantErr: false,
 		},
 		{
-			name: "nil display name",
+			name: "missing timezone",
 			profile: &UserProfile{
-				DisplayName: nil,
+				UserID:      uuidv7.New(),
+				DisplayName: &validDisplayName,
+				Timezone:    "", // Required field
+				Locale:      "en-US",
 			},
 			wantErr: true,
 		},
 		{
 			name: "short nickname",
 			profile: &UserProfile{
+				UserID:      uuidv7.New(),
 				DisplayName: &validDisplayName,
 				Nickname:    &shortNickname,
+				Timezone:    "UTC",
+				Locale:      "en-US",
 			},
 			wantErr: true,
 		},
 		{
 			name: "long bio",
 			profile: &UserProfile{
+				UserID:      uuidv7.New(),
 				DisplayName: &validDisplayName,
 				Bio:         &longBio,
+				Timezone:    "UTC",
+				Locale:      "en-US",
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid gender",
 			profile: &UserProfile{
+				UserID:      uuidv7.New(),
 				DisplayName: &validDisplayName,
 				Gender:      &invalidGender,
+				Timezone:    "UTC",
+				Locale:      "en-US",
 			},
 			wantErr: true,
 		},
@@ -184,20 +200,17 @@ func TestUserProfile_Ban(t *testing.T) {
 
 	assert.True(t, profile.IsBanned)
 	assert.NotNil(t, profile.BanReason)
-	assert.Equal(t, reason, *profile.BanReason)
+	assert.Equal(t, reason, ref.StringValue(profile.BanReason))
 	assert.NotNil(t, profile.BannedAt)
 	assert.NotNil(t, profile.BannedBy)
-	assert.Equal(t, adminID, *profile.BannedBy)
+	assert.Equal(t, adminID, ref.UUIDValue(profile.BannedBy))
 }
 
 func TestUserProfile_Unban(t *testing.T) {
-	reason := "Violation of terms"
-	adminID := uuidv7.New()
-
 	profile := &UserProfile{
 		IsBanned:  true,
-		BanReason: &reason,
-		BannedBy:  &adminID,
+		BanReason: ref.String("Violation of terms"),
+		BannedBy:  ref.UUID(uuidv7.New()),
 	}
 
 	profile.Unban()

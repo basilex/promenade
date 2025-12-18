@@ -4,29 +4,30 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Role represents a collection of permissions
 type Role struct {
-	ID          uuidv7.UUID   `db:"id" json:"id"`
-	Name        string        `db:"name" json:"name"`                 // Unique name (e.g., "admin", "moderator")
-	DisplayName string        `db:"display_name" json:"display_name"` // Human-readable name
-	Description *string       `db:"description" json:"description"`   // Role description
-	IsSystem    bool          `db:"is_system" json:"is_system"`       // Cannot be deleted if true
-	Permissions []*Permission `db:"-" json:"permissions,omitempty"`   // Loaded separately
-	CreatedAt   time.Time     `db:"created_at" json:"created_at"`
-	UpdatedAt   time.Time     `db:"updated_at" json:"updated_at"`
+	ID          uuidv7.UUID   `db:"id" json:"id" validate:"required"`
+	Name        string        `db:"name" json:"name" validate:"required,min=2,max=50"`            // Unique name (e.g., "admin", "moderator")
+	DisplayName string        `db:"display_name" json:"display_name" validate:"required,max=100"` // Human-readable name
+	Description *string       `db:"description" json:"description" validate:"omitempty"`          // Role description
+	IsSystem    bool          `db:"is_system" json:"is_system" validate:"-"`                      // Cannot be deleted if true
+	Permissions []*Permission `db:"-" json:"permissions,omitempty" validate:"omitempty,dive"`     // Loaded separately
+	CreatedAt   time.Time     `db:"created_at" json:"created_at" validate:"required"`
+	UpdatedAt   time.Time     `db:"updated_at" json:"updated_at" validate:"required"`
 }
 
 // UserRole represents the assignment of a role to a user
 type UserRole struct {
-	UserID     uuidv7.UUID  `db:"user_id" json:"user_id"`
-	RoleID     uuidv7.UUID  `db:"role_id" json:"role_id"`
-	Role       *Role        `db:"-" json:"role,omitempty"` // Loaded separately
-	AssignedAt time.Time    `db:"assigned_at" json:"assigned_at"`
-	AssignedBy *uuidv7.UUID `db:"assigned_by" json:"assigned_by"` // Who assigned this role
-	ExpiresAt  *time.Time   `db:"expires_at" json:"expires_at"`   // Optional expiration
+	UserID     uuidv7.UUID  `db:"user_id" json:"user_id" validate:"required"`
+	RoleID     uuidv7.UUID  `db:"role_id" json:"role_id" validate:"required"`
+	Role       *Role        `db:"-" json:"role,omitempty" validate:"omitempty"` // Loaded separately
+	AssignedAt time.Time    `db:"assigned_at" json:"assigned_at" validate:"required"`
+	AssignedBy *uuidv7.UUID `db:"assigned_by" json:"assigned_by" validate:"omitempty"` // Who assigned this role
+	ExpiresAt  *time.Time   `db:"expires_at" json:"expires_at" validate:"omitempty"`   // Optional expiration
 }
 
 // IsExpired checks if the role assignment has expired
@@ -44,20 +45,37 @@ func (ur *UserRole) IsActive() bool {
 
 // Validate validates role fields
 func (r *Role) Validate() error {
+	if r.ID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: role id is required", ErrInvalidInput)
+	}
 	if r.Name == "" {
-		return fmt.Errorf("role name is required")
+		return fmt.Errorf("%w: role name is required", ErrInvalidInput)
 	}
 	if len(r.Name) < 2 {
-		return fmt.Errorf("role name must be at least 2 characters")
+		return fmt.Errorf("%w: role name must be at least 2 characters", ErrInvalidInput)
 	}
 	if len(r.Name) > 50 {
-		return fmt.Errorf("role name must be 50 characters or less")
+		return fmt.Errorf("%w: role name must be 50 characters or less", ErrInvalidInput)
 	}
 	if r.DisplayName == "" {
-		return fmt.Errorf("display name is required")
+		return fmt.Errorf("%w: display name is required", ErrInvalidInput)
 	}
 	if len(r.DisplayName) > 100 {
-		return fmt.Errorf("display name must be 100 characters or less")
+		return fmt.Errorf("%w: display name must be 100 characters or less", ErrInvalidInput)
+	}
+	return nil
+}
+
+// Validate validates user role assignment
+func (ur *UserRole) Validate() error {
+	if ur.UserID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: user_id is required", ErrInvalidInput)
+	}
+	if ur.RoleID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: role_id is required", ErrInvalidInput)
+	}
+	if ur.ExpiresAt != nil && ur.ExpiresAt.Before(ur.AssignedAt) {
+		return fmt.Errorf("%w: expires_at must be after assigned_at", ErrInvalidInput)
 	}
 	return nil
 }
@@ -90,7 +108,7 @@ func GetSystemRoles() []*Role {
 			ID:          uuidv7.New(),
 			Name:        RoleSuperAdmin,
 			DisplayName: "Super Administrator",
-			Description: strPtr("Full system access with all permissions"),
+			Description: ref.String("Full system access with all permissions"),
 			IsSystem:    true,
 			Permissions: []*Permission{
 				MustNewPermission(PermissionAll),
@@ -102,7 +120,7 @@ func GetSystemRoles() []*Role {
 			ID:          uuidv7.New(),
 			Name:        RoleAdmin,
 			DisplayName: "Administrator",
-			Description: strPtr("Administrative access to manage users and content"),
+			Description: ref.String("Administrative access to manage users and content"),
 			IsSystem:    true,
 			Permissions: []*Permission{
 				MustNewPermission(PermissionUsersAll),
@@ -120,7 +138,7 @@ func GetSystemRoles() []*Role {
 			ID:          uuidv7.New(),
 			Name:        RoleModerator,
 			DisplayName: "Moderator",
-			Description: strPtr("Can moderate user content and comments"),
+			Description: ref.String("Can moderate user content and comments"),
 			IsSystem:    true,
 			Permissions: []*Permission{
 				MustNewPermission(PermissionUsersRead),
@@ -140,7 +158,7 @@ func GetSystemRoles() []*Role {
 			ID:          uuidv7.New(),
 			Name:        RoleUser,
 			DisplayName: "User",
-			Description: strPtr("Regular user with basic permissions"),
+			Description: ref.String("Regular user with basic permissions"),
 			IsSystem:    true,
 			Permissions: []*Permission{
 				MustNewPermission(PermissionPostsCreate),
@@ -157,7 +175,7 @@ func GetSystemRoles() []*Role {
 			ID:          uuidv7.New(),
 			Name:        RoleGuest,
 			DisplayName: "Guest",
-			Description: strPtr("Limited read-only access"),
+			Description: ref.String("Limited read-only access"),
 			IsSystem:    true,
 			Permissions: []*Permission{
 				MustNewPermission(PermissionPostsRead),
@@ -168,8 +186,4 @@ func GetSystemRoles() []*Role {
 			UpdatedAt: now,
 		},
 	}
-}
-
-func strPtr(s string) *string {
-	return &s
 }

@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -21,16 +22,16 @@ const (
 // User represents a user account in the system
 type User struct {
 	ID              uuidv7.UUID `db:"id" json:"id"`
-	Email           string      `db:"email" json:"email"`
-	Name            string      `db:"name" json:"name"`
-	Password        string      `db:"password" json:"-"` // Never expose in JSON
-	Status          UserStatus  `db:"status" json:"status"`
+	Email           string      `db:"email" json:"email" validate:"required,email,max=255"`
+	Name            string      `db:"name" json:"name" validate:"required,min=2,max=255"`
+	Password        string      `db:"password" json:"-" validate:"required,min=8,max=255"` // Never expose in JSON
+	Status          UserStatus  `db:"status" json:"status" validate:"required,oneof=unverified active suspended banned inactive"`
 	EmailVerifiedAt *time.Time  `db:"email_verified_at" json:"email_verified_at"`
-	SuspendedReason *string     `db:"suspended_reason" json:"suspended_reason,omitempty"`
-	SuspendedUntil  *time.Time  `db:"suspended_until" json:"suspended_until,omitempty"`
+	SuspendedReason *string     `db:"suspended_reason" json:"suspended_reason,omitempty" validate:"omitempty,max=500"`
+	SuspendedUntil  *time.Time  `db:"suspended_until" json:"suspended_until,omitempty" validate:"omitempty,gtefield=CreatedAt"`
 	LastLoginAt     *time.Time  `db:"last_login_at" json:"last_login_at,omitempty"`
 	CreatedAt       time.Time   `db:"created_at" json:"created_at"`
-	UpdatedAt       time.Time   `db:"updated_at" json:"updated_at"`
+	UpdatedAt       time.Time   `db:"updated_at" json:"updated_at" validate:"gtefield=CreatedAt"`
 }
 
 // HashPassword hashes the user's password using bcrypt
@@ -94,6 +95,26 @@ func (u *User) Reactivate() {
 	u.Status = UserStatusActive
 	u.SuspendedReason = nil
 	u.SuspendedUntil = nil
+}
+
+// Validate validates the user entity
+func (u *User) Validate() error {
+	if u.Email == "" {
+		return fmt.Errorf("%w: email is required", ErrInvalidInput)
+	}
+	if u.Name == "" {
+		return fmt.Errorf("%w: name is required", ErrInvalidInput)
+	}
+	if len(u.Name) < 2 || len(u.Name) > 255 {
+		return fmt.Errorf("%w: name must be between 2 and 255 characters", ErrInvalidInput)
+	}
+	if u.Password == "" {
+		return fmt.Errorf("%w: password is required", ErrInvalidInput)
+	}
+	if u.UpdatedAt.Before(u.CreatedAt) {
+		return fmt.Errorf("%w: updated_at cannot be before created_at", ErrInvalidInput)
+	}
+	return nil
 }
 
 // UpdateLastLogin updates the last login timestamp

@@ -2,6 +2,7 @@ package entity
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -36,89 +37,109 @@ type Preferences map[string]any
 
 // UserProfile represents a user profile with personal information
 type UserProfile struct {
-	ID     uuidv7.UUID `db:"id"`
-	UserID uuidv7.UUID `db:"user_id"`
+	ID     uuidv7.UUID `db:"id" validate:"required"`
+	UserID uuidv7.UUID `db:"user_id" validate:"required"`
 
 	// Personal Information
-	FirstName   *string `db:"first_name"`
-	LastName    *string `db:"last_name"`
-	MiddleName  *string `db:"middle_name"`
-	DisplayName *string `db:"display_name"`
-	Nickname    *string `db:"nickname"`
+	FirstName   *string `db:"first_name" validate:"omitempty,max=100"`
+	LastName    *string `db:"last_name" validate:"omitempty,max=100"`
+	MiddleName  *string `db:"middle_name" validate:"omitempty,max=100"`
+	DisplayName *string `db:"display_name" validate:"omitempty,max=100"`
+	Nickname    *string `db:"nickname" validate:"omitempty,min=3,max=50,alphanum"`
 
 	// Biographical
-	Bio         *string    `db:"bio"`
-	DateOfBirth *time.Time `db:"date_of_birth"`
-	Gender      *string    `db:"gender"`
+	Bio         *string    `db:"bio" validate:"omitempty,max=1000"`
+	DateOfBirth *time.Time `db:"date_of_birth" validate:"omitempty"`
+	Gender      *string    `db:"gender" validate:"omitempty,oneof=male female non-binary other prefer-not-to-say"`
 
 	// Location & Localization
-	CountryID *uuidv7.UUID `db:"country_id"`
-	City      *string      `db:"city"`
-	Timezone  string       `db:"timezone"`
-	Locale    string       `db:"locale"`
+	CountryID *uuidv7.UUID `db:"country_id" validate:"omitempty"`
+	City      *string      `db:"city" validate:"omitempty,max=100"`
+	Timezone  string       `db:"timezone" validate:"required,max=50"`
+	Locale    string       `db:"locale" validate:"required,max=10"`
 
 	// Visual Identity
-	AvatarURL *string `db:"avatar_url"`
-	CoverURL  *string `db:"cover_url"`
+	AvatarURL *string `db:"avatar_url" validate:"omitempty,url,max=500"`
+	CoverURL  *string `db:"cover_url" validate:"omitempty,url,max=500"`
 
 	// Social & Web
-	SocialLinksJSON []byte      `db:"social_links"`
-	SocialLinks     SocialLinks `db:"-"`
-	WebsiteURL      *string     `db:"website_url"`
-	Company         *string     `db:"company"`
-	JobTitle        *string     `db:"job_title"`
+	SocialLinksJSON []byte      `db:"social_links" validate:"omitempty"`
+	SocialLinks     SocialLinks `db:"-" validate:"omitempty"`
+	WebsiteURL      *string     `db:"website_url" validate:"omitempty,url,max=500"`
+	Company         *string     `db:"company" validate:"omitempty,max=100"`
+	JobTitle        *string     `db:"job_title" validate:"omitempty,max=100"`
 
 	// Privacy & Verification
-	IsPublic     bool `db:"is_public"`
-	IsVerified   bool `db:"is_verified"`
-	ShowEmail    bool `db:"show_email"`
-	ShowLocation bool `db:"show_location"`
-	ShowBirthday bool `db:"show_birthday"`
+	IsPublic     bool `db:"is_public" validate:"-"`
+	IsVerified   bool `db:"is_verified" validate:"-"`
+	ShowEmail    bool `db:"show_email" validate:"-"`
+	ShowLocation bool `db:"show_location" validate:"-"`
+	ShowBirthday bool `db:"show_birthday" validate:"-"`
 
 	// Preferences
-	PreferencesJSON []byte      `db:"preferences"`
-	Preferences     Preferences `db:"-"`
+	PreferencesJSON []byte      `db:"preferences" validate:"omitempty"`
+	Preferences     Preferences `db:"-" validate:"omitempty"`
 
 	// Statistics
-	ProfileViewsCount int `db:"profile_views_count"`
-	FollowersCount    int `db:"followers_count"`
-	FollowingCount    int `db:"following_count"`
+	ProfileViewsCount int `db:"profile_views_count" validate:"min=0"`
+	FollowersCount    int `db:"followers_count" validate:"min=0"`
+	FollowingCount    int `db:"following_count" validate:"min=0"`
 
 	// Moderation
-	IsBanned  bool         `db:"is_banned"`
-	BanReason *string      `db:"ban_reason"`
-	BannedAt  *time.Time   `db:"banned_at"`
-	BannedBy  *uuidv7.UUID `db:"banned_by"`
+	IsBanned  bool         `db:"is_banned" validate:"-"`
+	BanReason *string      `db:"ban_reason" validate:"omitempty"`
+	BannedAt  *time.Time   `db:"banned_at" validate:"omitempty"`
+	BannedBy  *uuidv7.UUID `db:"banned_by" validate:"omitempty"`
 
 	// Timestamps
-	CreatedAt  time.Time  `db:"created_at"`
-	UpdatedAt  time.Time  `db:"updated_at"`
-	LastSeenAt *time.Time `db:"last_seen_at"`
+	CreatedAt  time.Time  `db:"created_at" validate:"required"`
+	UpdatedAt  time.Time  `db:"updated_at" validate:"required"`
+	LastSeenAt *time.Time `db:"last_seen_at" validate:"omitempty"`
 }
 
 // Validate validates user profile data
 func (p *UserProfile) Validate() error {
+	// UserID is required
+	if p.UserID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: user_id is required", ErrInvalidInput)
+	}
+
 	// Nickname validation
-	if p.Nickname != nil && len(*p.Nickname) < 3 {
-		return ErrInvalidInput
+	if p.Nickname != nil {
+		if len(*p.Nickname) < 3 {
+			return fmt.Errorf("%w: nickname must be at least 3 characters", ErrInvalidInput)
+		}
+		if len(*p.Nickname) > 50 {
+			return fmt.Errorf("%w: nickname must not exceed 50 characters", ErrInvalidInput)
+		}
 	}
 
 	// Bio length validation
 	if p.Bio != nil && len(*p.Bio) > 1000 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: bio must not exceed 1000 characters", ErrInvalidInput)
 	}
 
 	// Gender validation
 	if p.Gender != nil {
 		gender := Gender(*p.Gender)
 		if !gender.IsValid() {
-			return ErrInvalidInput
+			return fmt.Errorf("%w: invalid gender value", ErrInvalidInput)
 		}
 	}
 
-	// Display name validation
-	if p.DisplayName == nil || len(*p.DisplayName) == 0 {
-		return ErrInvalidInput
+	// Timezone is required
+	if p.Timezone == "" {
+		return fmt.Errorf("%w: timezone is required", ErrInvalidInput)
+	}
+
+	// Locale is required
+	if p.Locale == "" {
+		return fmt.Errorf("%w: locale is required", ErrInvalidInput)
+	}
+
+	// Statistics must be non-negative
+	if p.ProfileViewsCount < 0 || p.FollowersCount < 0 || p.FollowingCount < 0 {
+		return fmt.Errorf("%w: statistics counts cannot be negative", ErrInvalidInput)
 	}
 
 	return nil

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/helpers"
 	"github.com/stretchr/testify/assert"
@@ -212,7 +213,7 @@ func TestUserProfileRepository_Ban(t *testing.T) {
 	retrieved, err := repo.GetByID(ctx, profile.ID)
 	require.NoError(t, err)
 	assert.True(t, retrieved.IsBanned)
-	assert.Equal(t, reason, *retrieved.BanReason)
+	assert.Equal(t, reason, ref.StringValue(retrieved.BanReason))
 }
 
 func TestUserProfileRepository_Unban(t *testing.T) {

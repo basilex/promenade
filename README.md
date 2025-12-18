@@ -459,6 +459,7 @@ promenade/
 │       └── logger/                    # Structured logging
 ├── pkg/
 │   ├── jwt/                          # JWT token manager
+│   ├── ptr/                          # Reference helpers for nullable fields
 │   ├── uuidv7/                       # UUID v7 generator
 │   ├── pagination/                   # Pagination helpers
 │   └── validator/                    # Request validation
@@ -478,6 +479,138 @@ promenade/
 ├── scripts/                         # Helper scripts & generators
 └── Makefile                         # Development commands
 ```
+
+### 🎯 Working with Nullable Fields (`pkg/ref`)
+
+When working with database entities that have nullable fields (mapped to SQL `NULL`), Go requires using pointer types (`*string`, `*time.Time`, etc.). The `pkg/ref` package provides convenient helpers to avoid verbose manual pointer creation and prevent common mistakes.
+
+#### Why Reference Helpers?
+
+```go
+// ❌ Manual approach - verbose and error-prone
+reason := "Violation of terms"
+user.SuspendedReason = &reason  // Easy to forget "*" after 8 hours at computer
+
+until := time.Now().Add(7 * 24 * time.Hour)
+user.SuspendedUntil = &until
+
+// ✅ Using ref package - clean and safe
+user.SuspendedReason = ref.String("Violation of terms")
+user.SuspendedUntil = ref.Time(time.Now().Add(7 * 24 * time.Hour))
+```
+
+#### Available Helpers
+
+**Constructor functions** (value → pointer):
+
+```go
+ref.String(s string) *string                     // "hello" → *"hello"
+ref.Time(t time.Time) *time.Time                // time.Now() → *time.Now()
+ref.UUID(u uuidv7.UUID) *uuidv7.UUID            // uuid → *uuid
+ref.Int(i int) *int                             // 42 → *42
+ref.Bool(b bool) *bool                          // true → *true
+```
+
+**Safe getters** (pointer → value with defaults):
+
+```go
+ref.StringValue(s *string) string               // nil → "", *"hello" → "hello"
+ref.TimeValue(t *time.Time) time.Time          // nil → time.Time{}, *now → now
+ref.UUIDValue(u *uuidv7.UUID) uuidv7.UUID      // nil → uuid.UUID{}, *id → id
+ref.IntValue(i *int) int                       // nil → 0, *42 → 42
+ref.BoolValue(b *bool) bool                    // nil → false, *true → true
+```
+
+**Getters with custom defaults**:
+
+```go
+ref.StringOr(s *string, default string) string
+ref.TimeOr(t *time.Time, default time.Time) time.Time
+ref.IntOr(i *int, default int) int
+ref.BoolOr(b *bool, default bool) bool
+```
+
+**Utility functions**:
+
+```go
+ref.IsNil[T any](p *T) bool                    // Check if pointer is nil
+ref.IsSet(s *string) bool                      // Check if string pointer is not nil AND not empty
+```
+
+#### Real-World Examples
+
+**Creating entities with nullable fields**:
+
+```go
+// User suspension
+user.Suspend(reason, ref.Time(time.Now().Add(7*24*time.Hour)))
+
+// User profile with optional fields
+profile := &entity.UserProfile{
+    UserID:      userID,
+    Nickname:    "john_doe",
+    Bio:         ref.String("Software engineer"),
+    DateOfBirth: ref.Time(time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)),
+    CountryID:   ref.UUID(countryUUID),
+    Timezone:    "America/New_York",
+}
+```
+
+**Test assertions**:
+
+```go
+// ❌ Old way - manual dereferencing
+assert.Equal(t, "Violation of terms", *user.SuspendedReason)
+assert.Equal(t, expectedTime, *user.SuspendedUntil)
+
+// ✅ New way - safe getters
+assert.Equal(t, "Violation of terms", ref.StringValue(user.SuspendedReason))
+assert.Equal(t, expectedTime, ref.TimeValue(user.SuspendedUntil))
+```
+
+**Conditional logic**:
+
+```go
+// Check if bio is set and not empty
+if ref.IsSet(profile.Bio) {
+    // Display bio
+    fmt.Println("Bio:", ref.StringValue(profile.Bio))
+} else {
+    // Show default message
+    fmt.Println("Bio: Not provided")
+}
+
+// Get value with fallback
+displayName := ref.StringOr(profile.DisplayName, profile.Nickname)
+```
+
+#### Benefits
+
+- 🛡️ **Type-safe** - Compiler catches mismatches
+- 📝 **Less verbose** - No temporary variables needed
+- 🎯 **Intention-clear** - `ref.String("value")` explicitly shows nullable intent
+- 🐛 **Fewer bugs** - Eliminates "forgot to add `*`" mistakes after long coding sessions
+- 🧪 **Test-friendly** - Safe dereferencing in assertions without panic risk
+
+#### Nullable Fields Philosophy
+
+```go
+// Use regular types for required fields (NOT NULL in database)
+Email    string       // Always has value, minimum ""
+Name     string       // Required
+CreatedAt time.Time   // NOT NULL DEFAULT NOW()
+
+// Use pointers for optional fields (NULL in database)
+MiddleName     *string     // nil = not set, &"" = empty, &"John" = value
+LastLoginAt    *time.Time  // nil = never logged in, &time = last login time
+SuspendedUntil *time.Time  // nil = not suspended, &time = suspended until
+```
+
+This approach allows distinguishing between three states:
+
+1. **Not set** (nil) - field was never provided
+2. **Empty** (&"") - field was explicitly cleared
+3. **Value** (&"text") - field has actual data
 
 ## ⚙️ Configuration
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/helpers"
 )
@@ -119,13 +120,13 @@ func TestUserRepository_Suspend(t *testing.T) {
 		reason := "Test violation"
 		until := time.Now().Add(24 * time.Hour)
 
-		err = repo.Suspend(ctx, user.ID, reason, &until)
+		err = repo.Suspend(ctx, user.ID, reason, ref.Time(until))
 		require.NoError(t, err)
 
 		retrieved, err := repo.GetByID(ctx, user.ID)
 		require.NoError(t, err)
 		assert.Equal(t, entity.UserStatusSuspended, retrieved.Status)
-		assert.Equal(t, reason, *retrieved.SuspendedReason)
+		assert.Equal(t, reason, ref.StringValue(retrieved.SuspendedReason))
 		assert.NotNil(t, retrieved.SuspendedUntil)
 	})
 }
@@ -150,7 +151,7 @@ func TestUserRepository_Ban(t *testing.T) {
 		retrieved, err := repo.GetByID(ctx, user.ID)
 		require.NoError(t, err)
 		assert.Equal(t, entity.UserStatusBanned, retrieved.Status)
-		assert.Equal(t, reason, *retrieved.SuspendedReason)
+		assert.Equal(t, reason, ref.StringValue(retrieved.SuspendedReason))
 	})
 }
 

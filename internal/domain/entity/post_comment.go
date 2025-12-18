@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -8,27 +9,27 @@ import (
 
 // PostComment represents a user comment on a blog post
 type PostComment struct {
-	ID       uuidv7.UUID  `json:"id" db:"id"`
-	PostID   uuidv7.UUID  `json:"post_id" db:"post_id"`
-	UserID   uuidv7.UUID  `json:"user_id" db:"user_id"`
-	ParentID *uuidv7.UUID `json:"parent_id,omitempty" db:"parent_id"`
+	ID       uuidv7.UUID  `json:"id" db:"id" validate:"required"`
+	PostID   uuidv7.UUID  `json:"post_id" db:"post_id" validate:"required"`
+	UserID   uuidv7.UUID  `json:"user_id" db:"user_id" validate:"required"`
+	ParentID *uuidv7.UUID `json:"parent_id,omitempty" db:"parent_id" validate:"omitempty"`
 
-	Content string `json:"content" db:"content"`
+	Content string `json:"content" db:"content" validate:"required,min=1,max=5000"`
 
 	// Edit tracking
-	IsEdited bool       `json:"is_edited" db:"is_edited"`
-	EditedAt *time.Time `json:"edited_at,omitempty" db:"edited_at"`
+	IsEdited bool       `json:"is_edited" db:"is_edited" validate:"-"`
+	EditedAt *time.Time `json:"edited_at,omitempty" db:"edited_at" validate:"omitempty"`
 
 	// Engagement metrics
-	LikeCount  int `json:"like_count" db:"like_count"`
-	ReplyCount int `json:"reply_count" db:"reply_count"`
+	LikeCount  int `json:"like_count" db:"like_count" validate:"min=0"`
+	ReplyCount int `json:"reply_count" db:"reply_count" validate:"min=0"`
 
 	// Soft delete
-	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at" validate:"omitempty"`
 
 	// Timestamps
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	CreatedAt time.Time `json:"created_at" db:"created_at" validate:"required"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at" validate:"required"`
 }
 
 // NewPostComment creates a new comment
@@ -54,10 +55,10 @@ func NewPostComment(postID, userID uuidv7.UUID, content string, parentID *uuidv7
 // ValidateCommentContent validates comment content
 func ValidateCommentContent(content string) error {
 	if len(content) < 1 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: content must be at least 1 character", ErrInvalidInput)
 	}
 	if len(content) > 5000 {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: content must not exceed 5000 characters", ErrInvalidInput)
 	}
 	return nil
 }
@@ -134,29 +135,24 @@ func (c *PostComment) IsTopLevel() bool {
 
 // Validate validates the comment
 func (c *PostComment) Validate() error {
-	if c.ID == (uuidv7.UUID{}) {
-		return ErrInvalidInput
-	}
 	if c.PostID == (uuidv7.UUID{}) {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: post_id is required", ErrInvalidInput)
 	}
 	if c.UserID == (uuidv7.UUID{}) {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: user_id is required", ErrInvalidInput)
 	}
 	if err := ValidateCommentContent(c.Content); err != nil {
 		return err
 	}
-	if c.LikeCount < 0 {
-		return ErrInvalidInput
+	if c.LikeCount < 0 || c.ReplyCount < 0 {
+		return fmt.Errorf("%w: counts cannot be negative", ErrInvalidInput)
 	}
-	if c.ReplyCount < 0 {
-		return ErrInvalidInput
-	}
+	// Ensure edited timestamp logic is correct
 	if c.IsEdited && c.EditedAt == nil {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: edited_at must be set when is_edited is true", ErrInvalidInput)
 	}
 	if !c.IsEdited && c.EditedAt != nil {
-		return ErrInvalidInput
+		return fmt.Errorf("%w: edited_at should be null when is_edited is false", ErrInvalidInput)
 	}
 	return nil
 }

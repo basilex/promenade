@@ -49,48 +49,48 @@ type FeaturedImage struct {
 
 // UserPost represents a blog post or article created by a user
 type UserPost struct {
-	ID     uuidv7.UUID `db:"id"`
-	UserID uuidv7.UUID `db:"user_id"`
+	ID     uuidv7.UUID `db:"id" validate:"required"`
+	UserID uuidv7.UUID `db:"user_id" validate:"required"`
 
 	// Content
-	Title   string  `db:"title"`
-	Slug    string  `db:"slug"`
-	Excerpt *string `db:"excerpt"` // nullable
-	Content string  `db:"content"`
+	Title   string  `db:"title" validate:"required,min=3,max=255"`
+	Slug    string  `db:"slug" validate:"required,max=255"`
+	Excerpt *string `db:"excerpt" validate:"omitempty,max=500"` // nullable
+	Content string  `db:"content" validate:"required,min=10"`
 
 	// Media (stored as JSONB in database)
-	FeaturedImage *FeaturedImage `db:"featured_image"`
+	FeaturedImage *FeaturedImage `db:"featured_image" validate:"omitempty"`
 
 	// Status & Visibility
-	Status            PostStatus `db:"status"`
-	IsPublic          bool       `db:"is_public"`
-	IsFeatured        bool       `db:"is_featured"`
-	IsCommentsEnabled bool       `db:"is_comments_enabled"`
+	Status            PostStatus `db:"status" validate:"required,oneof=draft published archived scheduled"`
+	IsPublic          bool       `db:"is_public" validate:"-"`
+	IsFeatured        bool       `db:"is_featured" validate:"-"`
+	IsCommentsEnabled bool       `db:"is_comments_enabled" validate:"-"`
 
 	// Publishing
-	PublishedAt *time.Time `db:"published_at"`
-	ScheduledAt *time.Time `db:"scheduled_at"`
+	PublishedAt *time.Time `db:"published_at" validate:"omitempty"`
+	ScheduledAt *time.Time `db:"scheduled_at" validate:"omitempty"`
 
 	// SEO & Organization (JSONB/arrays in database)
-	Tags            []string `db:"tags"`
-	Categories      []string `db:"categories"`
-	MetaTitle       *string  `db:"meta_title"`
-	MetaDescription *string  `db:"meta_description"`
-	MetaKeywords    []string `db:"meta_keywords"`
+	Tags            []string `db:"tags" validate:"omitempty,dive,min=2,max=50"`
+	Categories      []string `db:"categories" validate:"omitempty,dive,min=2,max=50"`
+	MetaTitle       *string  `db:"meta_title" validate:"omitempty,max=70"`
+	MetaDescription *string  `db:"meta_description" validate:"omitempty,max=160"`
+	MetaKeywords    []string `db:"meta_keywords" validate:"omitempty,dive,min=2,max=50"`
 
 	// Engagement Metrics
-	ViewCount          int `db:"view_count"`
-	LikeCount          int `db:"like_count"`
-	CommentCount       int `db:"comment_count"`
-	ShareCount         int `db:"share_count"`
-	ReadingTimeMinutes int `db:"reading_time_minutes"`
+	ViewCount          int `db:"view_count" validate:"min=0"`
+	LikeCount          int `db:"like_count" validate:"min=0"`
+	CommentCount       int `db:"comment_count" validate:"min=0"`
+	ShareCount         int `db:"share_count" validate:"min=0"`
+	ReadingTimeMinutes int `db:"reading_time_minutes" validate:"min=0"`
 
 	// Soft delete
-	DeletedAt *time.Time `db:"deleted_at"`
+	DeletedAt *time.Time `db:"deleted_at" validate:"omitempty"`
 
 	// Timestamps
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	CreatedAt time.Time `db:"created_at" validate:"required"`
+	UpdatedAt time.Time `db:"updated_at" validate:"required"`
 }
 
 // NewUserPost creates a new post with required fields

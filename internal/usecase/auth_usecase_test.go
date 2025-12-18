@@ -12,6 +12,7 @@ import (
 
 	"github.com/basilex/promenade/internal/domain/entity"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/mocks"
 )
@@ -404,10 +405,10 @@ func TestAuthUseCase_SuspendUser(t *testing.T) {
 
 		until := time.Now().Add(7 * 24 * time.Hour)
 
-		mockUserRepo.On("Suspend", ctx, userID, reason, &until).Return(nil)
+		mockUserRepo.On("Suspend", ctx, userID, reason, ref.Time(until)).Return(nil)
 		mockSessionRepo.On("DeleteByUserID", ctx, userID).Return(nil)
 
-		err := uc.SuspendUser(ctx, userID, reason, &until)
+		err := uc.SuspendUser(ctx, userID, reason, ref.Time(until))
 		require.NoError(t, err)
 		mockUserRepo.AssertExpectations(t)
 		mockSessionRepo.AssertExpectations(t)

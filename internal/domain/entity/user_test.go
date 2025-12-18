@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/basilex/promenade/pkg/ref"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -222,13 +223,13 @@ func TestUser_Suspend(t *testing.T) {
 	reason := "Violation of terms"
 	until := time.Now().Add(7 * 24 * time.Hour)
 
-	user.Suspend(reason, &until)
+	user.Suspend(reason, ref.Time(until))
 
 	assert.Equal(t, UserStatusSuspended, user.Status)
 	assert.NotNil(t, user.SuspendedReason)
-	assert.Equal(t, reason, *user.SuspendedReason)
+	assert.Equal(t, reason, ref.StringValue(user.SuspendedReason))
 	assert.NotNil(t, user.SuspendedUntil)
-	assert.Equal(t, until, *user.SuspendedUntil)
+	assert.Equal(t, until, ref.TimeValue(user.SuspendedUntil))
 }
 
 func TestUser_Suspend_Permanent(t *testing.T) {
@@ -243,7 +244,7 @@ func TestUser_Suspend_Permanent(t *testing.T) {
 
 	assert.Equal(t, UserStatusSuspended, user.Status)
 	assert.NotNil(t, user.SuspendedReason)
-	assert.Equal(t, reason, *user.SuspendedReason)
+	assert.Equal(t, reason, ref.StringValue(user.SuspendedReason))
 	assert.Nil(t, user.SuspendedUntil)
 }
 
@@ -259,7 +260,7 @@ func TestUser_Ban(t *testing.T) {
 
 	assert.Equal(t, UserStatusBanned, user.Status)
 	assert.NotNil(t, user.SuspendedReason)
-	assert.Equal(t, reason, *user.SuspendedReason)
+	assert.Equal(t, reason, ref.StringValue(user.SuspendedReason))
 }
 
 func TestUser_Deactivate(t *testing.T) {
@@ -274,14 +275,11 @@ func TestUser_Deactivate(t *testing.T) {
 }
 
 func TestUser_Reactivate(t *testing.T) {
-	reason := "Previously suspended"
-	until := time.Now().Add(7 * 24 * time.Hour)
-
 	user := &User{
 		ID:              uuidv7.New(),
 		Status:          UserStatusSuspended,
-		SuspendedReason: &reason,
-		SuspendedUntil:  &until,
+		SuspendedReason: ref.String("Previously suspended"),
+		SuspendedUntil:  ref.Time(time.Now().Add(7 * 24 * time.Hour)),
 	}
 
 	user.Reactivate()

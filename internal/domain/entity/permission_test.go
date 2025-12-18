@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/domain/entity"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 func TestNewPermission(t *testing.T) {
@@ -112,6 +113,7 @@ func TestPermission_Matches(t *testing.T) {
 func TestPermission_Validate(t *testing.T) {
 	t.Run("valid permission", func(t *testing.T) {
 		perm := &entity.Permission{
+			ID:       uuidv7.New(),
 			Resource: "posts",
 			Action:   "create",
 		}
@@ -120,6 +122,7 @@ func TestPermission_Validate(t *testing.T) {
 
 	t.Run("valid wildcard permission", func(t *testing.T) {
 		perm := &entity.Permission{
+			ID:       uuidv7.New(),
 			Resource: "*",
 			Action:   "*",
 		}

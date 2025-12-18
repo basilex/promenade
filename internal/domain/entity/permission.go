@@ -10,11 +10,11 @@ import (
 
 // Permission represents a specific action that can be performed on a resource
 type Permission struct {
-	ID          uuidv7.UUID `db:"id" json:"id"`
-	Resource    string      `db:"resource" json:"resource"`       // e.g., "posts", "users", "comments"
-	Action      string      `db:"action" json:"action"`           // e.g., "create", "read", "update", "delete"
-	Description *string     `db:"description" json:"description"` // Human-readable description
-	CreatedAt   time.Time   `db:"created_at" json:"created_at"`
+	ID          uuidv7.UUID `db:"id" json:"id" validate:"required"`
+	Resource    string      `db:"resource" json:"resource" validate:"required,max=50"` // e.g., "posts", "users", "comments"
+	Action      string      `db:"action" json:"action" validate:"required,max=50"`     // e.g., "create", "read", "update", "delete"
+	Description *string     `db:"description" json:"description" validate:"omitempty"` // Human-readable description
+	CreatedAt   time.Time   `db:"created_at" json:"created_at" validate:"required"`
 }
 
 // String returns permission in format "resource:action"
@@ -81,17 +81,20 @@ func MustNewPermission(permissionString string) *Permission {
 
 // Validate validates permission fields
 func (p *Permission) Validate() error {
+	if p.ID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: permission id is required", ErrInvalidInput)
+	}
 	if p.Resource == "" {
-		return fmt.Errorf("resource is required")
+		return fmt.Errorf("%w: resource is required", ErrInvalidInput)
 	}
 	if p.Action == "" {
-		return fmt.Errorf("action is required")
+		return fmt.Errorf("%w: action is required", ErrInvalidInput)
 	}
 	if len(p.Resource) > 50 {
-		return fmt.Errorf("resource must be 50 characters or less")
+		return fmt.Errorf("%w: resource must be 50 characters or less", ErrInvalidInput)
 	}
 	if len(p.Action) > 50 {
-		return fmt.Errorf("action must be 50 characters or less")
+		return fmt.Errorf("%w: action must be 50 characters or less", ErrInvalidInput)
 	}
 	return nil
 }

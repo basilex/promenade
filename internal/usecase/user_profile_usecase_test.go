@@ -85,9 +85,9 @@ func TestUserProfileUseCase_CreateProfile(t *testing.T) {
 	})
 
 	t.Run("invalid profile data", func(t *testing.T) {
-		// DisplayName is nil, which will fail validation
+		// Missing required timezone, which will fail validation
 		profile := &entity.UserProfile{
-			Timezone: "UTC",
+			Timezone: "", // Required field is empty
 			Locale:   "en",
 		}
 
