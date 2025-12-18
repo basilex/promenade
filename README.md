@@ -86,6 +86,207 @@ make test-integration
 
 **Language Policy:** All documentation and code comments are in English. Russian versions (.ru.md) are kept for reference.
 
+### 🗄️ Database Schema
+
+Complete database schema with relationships and key constraints:
+
+```mermaid
+erDiagram
+    users ||--o{ user_sessions : "has many"
+    users ||--o| user_profiles : "has one"
+    users ||--o{ user_contacts : "has many"
+    users ||--o{ user_posts : "creates"
+    users ||--o{ post_comments : "writes"
+    users ||--o{ comment_likes : "likes"
+    users ||--o{ password_reset_tokens : "requests"
+    users ||--o{ email_verification_tokens : "receives"
+    users ||--o{ login_attempts : "attempts"
+
+    user_profiles }o--|| countries : "located in"
+
+    user_posts ||--o{ post_comments : "has comments"
+    post_comments ||--o{ post_comments : "has replies"
+    post_comments ||--o{ comment_likes : "receives likes"
+
+    countries ||--o{ country_currencies : "uses"
+    currencies ||--o{ country_currencies : "used by"
+
+    users {
+        uuid id PK "UUID v7"
+        varchar email UK "unique email"
+        varchar name
+        varchar password "bcrypt hash"
+        user_status status "enum"
+        timestamptz email_verified_at
+        text suspended_reason
+        timestamptz suspended_until
+        timestamptz last_login_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    user_sessions {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        varchar refresh_token UK "hashed JWT"
+        text user_agent
+        inet ip_address
+        timestamptz expires_at
+        timestamptz created_at
+    }
+
+    user_profiles {
+        uuid id PK "UUID v7"
+        uuid user_id FK,UK "one-to-one"
+        varchar first_name
+        varchar last_name
+        varchar nickname UK "@username"
+        text bio
+        date date_of_birth
+        varchar gender
+        uuid country_id FK
+        varchar city
+        varchar timezone "IANA format"
+        jsonb social_links
+        varchar avatar_url
+        boolean is_public
+        boolean is_verified
+        integer profile_views_count
+        integer followers_count
+        timestamptz last_seen_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    user_contacts {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        varchar contact_type "email|phone|telegram..."
+        varchar contact_value
+        varchar label "Work|Personal|Emergency"
+        boolean is_verified
+        boolean is_primary
+        boolean is_public
+        time available_from
+        time available_to
+        varchar[] available_days
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    user_posts {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        varchar title
+        varchar slug UK "per user"
+        text excerpt
+        text content
+        jsonb featured_image
+        post_status status "draft|published|archived|scheduled"
+        boolean is_public
+        boolean is_featured
+        timestamptz published_at
+        timestamptz scheduled_at
+        jsonb tags
+        integer view_count
+        integer like_count
+        integer comment_count
+        integer reading_time_minutes
+        timestamptz deleted_at "soft delete"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    post_comments {
+        uuid id PK "UUID v7"
+        uuid post_id FK
+        uuid user_id FK
+        uuid parent_id FK "self-reference for replies"
+        text content "1-5000 chars"
+        boolean is_edited
+        timestamptz edited_at
+        integer like_count
+        integer reply_count
+        timestamptz deleted_at "soft delete"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    comment_likes {
+        uuid comment_id PK,FK
+        uuid user_id PK,FK
+        timestamptz created_at
+    }
+
+    countries {
+        uuid id PK "UUID v7"
+        varchar name
+        varchar code
+        char iso2 UK "2-letter code"
+        char iso3 UK "3-letter code"
+        country_region region "enum"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    currencies {
+        uuid id PK "UUID v7"
+        varchar name
+        varchar code UK "USD|EUR|GBP..."
+        varchar symbol "$|€|£..."
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    country_currencies {
+        uuid country_id PK,FK
+        uuid currency_id PK,FK
+        boolean is_primary
+        timestamptz created_at
+    }
+
+    password_reset_tokens {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        varchar token UK
+        boolean used
+        timestamptz used_at
+        timestamptz expires_at
+        timestamptz created_at
+    }
+
+    email_verification_tokens {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        varchar token UK
+        boolean used
+        timestamptz used_at
+        timestamptz expires_at
+        timestamptz created_at
+    }
+
+    login_attempts {
+        uuid id PK "UUID v7"
+        uuid user_id FK
+        inet ip_address
+        text user_agent
+        boolean successful
+        text failure_reason
+        timestamptz attempted_at
+    }
+```
+
+**Key Features:**
+
+- **UUID v7** for all primary keys (time-ordered, better performance than UUID v4)
+- **Soft deletes** on user posts and comments (`deleted_at`)
+- **Nested comments** via self-referencing `parent_id` in `post_comments`
+- **JSONB** for flexible data (social links, preferences, tags, featured images)
+- **Enums** for type safety (`user_status`, `post_status`, `country_region`)
+- **Composite primary keys** for junction tables (`comment_likes`, `country_currencies`)
+- **Cascading deletes** to maintain referential integrity
+- **Unique constraints** to prevent duplicates (email, nickname, slug per user)
+
 ## 🛠️ Development Commands
 
 ### Core Commands
