@@ -19,6 +19,10 @@ type EmailService struct {
 	sender        EmailSender
 	templates     *template.Template
 	templatesPath string
+	fromAddress   string
+	fromName      string
+	appURL        string
+	appName       string
 }
 
 // EmailSender is an interface for actual email sending implementation.
@@ -38,7 +42,7 @@ type Email struct {
 // NewEmailService creates a new email notification service.
 // templatesPath should point to the directory containing email templates.
 // If templatesPath is empty, uses fallback templates (useful for testing).
-func NewEmailService(eventBus bus.Bus, sender EmailSender, templatesPath string) (*EmailService, error) {
+func NewEmailService(eventBus bus.Bus, sender EmailSender, templatesPath, fromAddress, fromName, appURL, appName string) (*EmailService, error) {
 	var templates *template.Template
 
 	// Load templates if path provided
@@ -56,11 +60,15 @@ func NewEmailService(eventBus bus.Bus, sender EmailSender, templatesPath string)
 		sender:        sender,
 		templates:     templates,
 		templatesPath: templatesPath,
+		fromAddress:   fromAddress,
+		fromName:      fromName,
+		appURL:        appURL,
+		appName:       appName,
 	}, nil
 }
 
 // renderTemplate renders an email template with the given data.
-func (s *EmailService) renderTemplate(templateName string, data interface{}) (string, error) {
+func (s *EmailService) renderTemplate(templateName string, data any) (string, error) {
 	// If templates not loaded (e.g., in tests), return simple fallback
 	if s.templates == nil {
 		return s.renderFallbackTemplate(templateName, data), nil
@@ -74,7 +82,7 @@ func (s *EmailService) renderTemplate(templateName string, data interface{}) (st
 }
 
 // renderFallbackTemplate provides simple HTML for tests when templates aren't loaded.
-func (s *EmailService) renderFallbackTemplate(templateName string, data interface{}) string {
+func (s *EmailService) renderFallbackTemplate(templateName string, data any) string {
 	d, _ := data.(map[string]interface{})
 
 	switch templateName {
@@ -131,11 +139,12 @@ func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) er
 		return fmt.Errorf("unexpected event type: %T", e)
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Name":     evt.Name,
 		"Email":    evt.Email,
 		"UserID":   evt.UserID.String(),
-		"LoginURL": "https://promenade.app/login", // TODO: make configurable
+		"LoginURL": s.appURL + "/api/v1/auth/login",
+		"AppName":  s.appName,
 		"Year":     time.Now().Year(),
 	}
 
@@ -146,7 +155,7 @@ func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) er
 
 	email := Email{
 		To:      evt.Email,
-		Subject: "Welcome to Promenade!",
+		Subject: fmt.Sprintf("Welcome to %s!", s.appName),
 		HTML:    html,
 	}
 
@@ -160,10 +169,12 @@ func (s *EmailService) handleUserEmailVerified(ctx context.Context, e bus.Event)
 		return fmt.Errorf("unexpected event type: %T", e)
 	}
 
-	data := map[string]interface{}{
-		"Email":  evt.Email,
-		"UserID": evt.UserID.String(),
-		"Year":   time.Now().Year(),
+	data := map[string]any{
+		"Email":   evt.Email,
+		"UserID":  evt.UserID.String(),
+		"AppName": s.appName,
+		"AppURL":  s.appURL,
+		"Year":    time.Now().Year(),
 	}
 
 	html, err := s.renderTemplate("email_verified.html", data)
@@ -173,7 +184,7 @@ func (s *EmailService) handleUserEmailVerified(ctx context.Context, e bus.Event)
 
 	email := Email{
 		To:      evt.Email,
-		Subject: "Email Verified Successfully",
+		Subject: fmt.Sprintf("%s - Email Verified Successfully", s.appName),
 		HTML:    html,
 	}
 
@@ -187,10 +198,12 @@ func (s *EmailService) handleUserPasswordChanged(ctx context.Context, e bus.Even
 		return fmt.Errorf("unexpected event type: %T", e)
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Email":     evt.Email,
 		"UserID":    evt.UserID.String(),
 		"Timestamp": time.Now().Format("January 2, 2006 at 3:04 PM MST"),
+		"AppName":   s.appName,
+		"AppURL":    s.appURL,
 		"Year":      time.Now().Year(),
 	}
 
@@ -201,7 +214,7 @@ func (s *EmailService) handleUserPasswordChanged(ctx context.Context, e bus.Even
 
 	email := Email{
 		To:      evt.Email,
-		Subject: "Password Changed - Security Alert",
+		Subject: fmt.Sprintf("%s - Password Changed - Security Alert", s.appName),
 		HTML:    html,
 	}
 
@@ -220,11 +233,13 @@ func (s *EmailService) handleUserSuspended(ctx context.Context, e bus.Event) err
 		expiresAt = evt.ExpiresAt.Format("January 2, 2006 at 3:04 PM MST")
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Email":     evt.Email,
 		"UserID":    evt.UserID.String(),
 		"Reason":    evt.Reason,
 		"ExpiresAt": expiresAt,
+		"AppName":   s.appName,
+		"AppURL":    s.appURL,
 		"Year":      time.Now().Year(),
 	}
 
@@ -235,7 +250,7 @@ func (s *EmailService) handleUserSuspended(ctx context.Context, e bus.Event) err
 
 	email := Email{
 		To:      evt.Email,
-		Subject: "Account Suspended - Action Required",
+		Subject: fmt.Sprintf("%s - Account Suspended - Action Required", s.appName),
 		HTML:    html,
 	}
 
@@ -249,11 +264,13 @@ func (s *EmailService) handleUserBanned(ctx context.Context, e bus.Event) error 
 		return fmt.Errorf("unexpected event type: %T", e)
 	}
 
-	data := map[string]interface{}{
-		"Email":  evt.Email,
-		"UserID": evt.UserID.String(),
-		"Reason": evt.Reason,
-		"Year":   time.Now().Year(),
+	data := map[string]any{
+		"Email":   evt.Email,
+		"UserID":  evt.UserID.String(),
+		"Reason":  evt.Reason,
+		"AppName": s.appName,
+		"AppURL":  s.appURL,
+		"Year":    time.Now().Year(),
 	}
 
 	html, err := s.renderTemplate("account_banned.html", data)
@@ -263,7 +280,7 @@ func (s *EmailService) handleUserBanned(ctx context.Context, e bus.Event) error 
 
 	email := Email{
 		To:      evt.Email,
-		Subject: "Account Permanently Banned",
+		Subject: fmt.Sprintf("%s - Account Permanently Banned", s.appName),
 		HTML:    html,
 	}
 

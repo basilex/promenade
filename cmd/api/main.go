@@ -86,7 +86,7 @@ func main() {
 
 	logger.Info("Starting Promenade API",
 		slog.String("environment", cfg.Server.Environment),
-		slog.String("version", "1.0.0"),
+		slog.String("version", "0.1.0"),
 	)
 
 	// Connect to database
@@ -127,14 +127,22 @@ func main() {
 		}
 	}()
 	logger.Info("Event bus initialized",
-		slog.Int("worker_pool_size", cfg.Bus.WorkerPoolSize),
 		slog.Int("buffer_size", cfg.Bus.BufferSize),
+		slog.Int("worker_pool_size", cfg.Bus.WorkerPoolSize),
 		slog.Int("retry_attempts", cfg.Bus.RetryAttempts))
 
 	// Initialize Notification Service (асинхронная отправка email через event bus)
 	emailSender := notification.NewMockEmailSender() // TODO: replace with real SMTP sender in production
 	templatesPath := "templates/email"
-	emailService, err := notification.NewEmailService(eventBus, emailSender, templatesPath)
+	emailService, err := notification.NewEmailService(
+		eventBus,
+		emailSender,
+		templatesPath,
+		cfg.Email.FromAddress,
+		cfg.Email.FromName,
+		cfg.Email.AppURL,
+		cfg.Email.AppName,
+	)
 	if err != nil {
 		logger.Fatal("Failed to create email service", slog.Any("error", err))
 	}
@@ -142,7 +150,9 @@ func main() {
 		logger.Fatal("Failed to start email service", slog.Any("error", err))
 	}
 	logger.Info("Email notification service started (async via event bus)",
-		slog.String("templates_path", templatesPath))
+		slog.String("templates_path", templatesPath),
+		slog.String("from_address", cfg.Email.FromAddress),
+		slog.String("app_url", cfg.Email.AppURL))
 
 	// Initialize shared middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -194,8 +204,15 @@ func main() {
 	r.Use(middleware.Logger())
 	r.Use(middleware.CORS())
 
-	// Initialize API info handler (for root paths like /api, /api/v1, /api/v2)
-	infoHandler := handler.NewInfoHandler("Promenade API", "1.0.0", cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port)
+	// Initialize shared handlers
+	infoHandler := handler.NewInfoHandler(
+		"Promenade API", "0.1.0", cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port,
+	)
+	errorHandler := handler.NewErrorHandler()
+
+	// Handle HTTP errors (404, 405)
+	r.NoRoute(errorHandler.HandleNotFound)
+	r.NoMethod(errorHandler.HandleMethodNotAllowed)
 
 	// API routes
 	api := r.Group("/api")

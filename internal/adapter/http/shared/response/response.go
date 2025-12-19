@@ -2,42 +2,48 @@ package response
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Response struct {
-	Success bool   `json:"success"`
-	Message string `json:"message,omitempty"`
-	Data    any    `json:"data,omitempty"`
-	Error   string `json:"error,omitempty"`
+	Success   bool   `json:"success"`
+	Message   string `json:"message,omitempty"`
+	Data      any    `json:"data,omitempty"`
+	Error     string `json:"error,omitempty"`
+	Timestamp int64  `json:"timestamp"` // Unix timestamp in seconds
 }
 
 type PaginatedResponse struct {
-	Items      any `json:"items"`
-	Page       int `json:"page"`
-	PageSize   int `json:"page_size"`
-	Total      int `json:"total"`
-	TotalPages int `json:"total_pages"`
+	Items      any   `json:"items"`
+	Page       int   `json:"page"`
+	PageSize   int   `json:"page_size"`
+	Total      int   `json:"total"`
+	TotalPages int   `json:"total_pages"`
+	Timestamp  int64 `json:"timestamp"` // Unix timestamp in seconds
 }
 
 func Success(c *gin.Context, code int, data any) {
 	c.JSON(code, Response{
-		Success: true,
-		Data:    data,
+		Success:   true,
+		Data:      data,
+		Timestamp: time.Now().Unix(),
 	})
 }
 
 type ErrorResponse struct {
-	Success bool   `json:"success" example:"false"`
-	Message string `json:"message" example:"Error message"`
-	Error   string `json:"error" example:"Detailed error"`
+	Success   bool   `json:"success" example:"false"`
+	Message   string `json:"message" example:"Error message"`
+	Error     string `json:"error" example:"Detailed error"`
+	Timestamp int64  `json:"timestamp" example:"1766124866"`
 }
 
 type SuccessResponse struct {
-	Success bool   `json:"success" example:"true"`
-	Message string `json:"message" example:"Operation completed successfully"`
-	Data    any    `json:"data,omitempty"`
+	Success   bool   `json:"success" example:"true"`
+	Message   string `json:"message" example:"Operation completed successfully"`
+	Data      any    `json:"data,omitempty"`
+	Timestamp int64  `json:"timestamp" example:"1766124866"`
 }
 
 func Error(c *gin.Context, code int, message string, err error) {
@@ -47,9 +53,10 @@ func Error(c *gin.Context, code int, message string, err error) {
 	}
 
 	c.JSON(code, Response{
-		Success: false,
-		Message: message,
-		Error:   errMsg,
+		Success:   false,
+		Message:   message,
+		Error:     errMsg,
+		Timestamp: time.Now().Unix(),
 	})
 }
 
@@ -87,5 +94,6 @@ func NewPaginatedResponse(items any, page, pageSize, total int) PaginatedRespons
 		PageSize:   pageSize,
 		Total:      total,
 		TotalPages: totalPages,
+		Timestamp:  time.Now().Unix(),
 	}
 }

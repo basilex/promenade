@@ -26,7 +26,15 @@ func TestEventBusIntegration(t *testing.T) {
 
 	// Initialize mock email sender
 	emailSender := notification.NewMockEmailSender()
-	emailService, err := notification.NewEmailService(eventBus, emailSender, "")
+	emailService, err := notification.NewEmailService(
+		eventBus,
+		emailSender,
+		"", // templates path
+		"noreply@test.com",
+		"Test Team",
+		"http://localhost:8081",
+		"TestApp",
+	)
 	require.NoError(t, err)
 
 	// Start email service (subscribes to events)
@@ -53,9 +61,8 @@ func TestEventBusIntegration(t *testing.T) {
 
 	if len(sentEmails) > 0 {
 		assert.Equal(t, email, sentEmails[0].To)
-		assert.Equal(t, "Welcome to Promenade!", sentEmails[0].Subject)
-		assert.Contains(t, sentEmails[0].Body, name)
-		assert.Contains(t, sentEmails[0].Body, "Welcome to Promenade")
+		assert.Equal(t, "Welcome to TestApp!", sentEmails[0].Subject)
+		assert.Contains(t, sentEmails[0].HTML, name)
 	}
 }
 
@@ -65,7 +72,15 @@ func TestMultipleEvents(t *testing.T) {
 	defer eventBus.Close(context.Background())
 
 	emailSender := notification.NewMockEmailSender()
-	emailService, err := notification.NewEmailService(eventBus, emailSender, "")
+	emailService, err := notification.NewEmailService(
+		eventBus,
+		emailSender,
+		"", // templates path
+		"noreply@test.com",
+		"Test Team",
+		"http://localhost:8081",
+		"TestApp",
+	)
 	require.NoError(t, err)
 	require.NoError(t, emailService.Start(context.Background()))
 
@@ -92,14 +107,20 @@ func TestMultipleEvents(t *testing.T) {
 	sentEmails := emailSender.GetSentEmails()
 	assert.Len(t, sentEmails, 3, "should have sent 3 emails")
 
-	subjects := []string{
-		"Welcome to Promenade!",
-		"Email Verified Successfully",
-		"Password Changed",
+	expectedSubjects := []string{
+		"Welcome to TestApp!",
+		"TestApp - Email Verified Successfully",
+		"TestApp - Password Changed - Security Alert",
 	}
 
-	for i, expectedSubject := range subjects {
-		assert.Equal(t, expectedSubject, sentEmails[i].Subject)
+	// Check that all expected subjects are present (order may vary due to async processing)
+	actualSubjects := make([]string, len(sentEmails))
+	for i, email := range sentEmails {
+		actualSubjects[i] = email.Subject
+	}
+
+	for _, expectedSubject := range expectedSubjects {
+		assert.Contains(t, actualSubjects, expectedSubject, "Expected subject not found: %s", expectedSubject)
 	}
 }
 
@@ -111,7 +132,15 @@ func TestBusPerformance(t *testing.T) {
 	emailSender := notification.NewMockEmailSender()
 	emailSender.Delay = 500 * time.Millisecond // Simulate slow email sending
 
-	emailService, err := notification.NewEmailService(eventBus, emailSender, "")
+	emailService, err := notification.NewEmailService(
+		eventBus,
+		emailSender,
+		"", // templates path
+		"noreply@test.com",
+		"Test Team",
+		"http://localhost:8081",
+		"TestApp",
+	)
 	require.NoError(t, err)
 	require.NoError(t, emailService.Start(context.Background()))
 

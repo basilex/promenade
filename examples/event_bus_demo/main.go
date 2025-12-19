@@ -22,7 +22,15 @@ func main() {
 
 	// Initialize email service
 	emailSender := notification.NewMockEmailSender()
-	emailService, err := notification.NewEmailService(eventBus, emailSender, "templates/email")
+	emailService, err := notification.NewEmailService(
+		eventBus,
+		emailSender,
+		"templates/email",
+		"noreply@promenade.com",
+		"Promenade Demo",
+		"http://localhost:8081",
+		"Promenade Demo App",
+	)
 	if err != nil {
 		log.Fatalf("Failed to create email service: %v", err)
 	}

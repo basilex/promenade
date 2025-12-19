@@ -14,6 +14,7 @@ type Config struct {
 	Database DatabaseConfig
 	JWT      JWTConfig
 	Bus      BusConfig
+	Email    EmailConfig
 }
 
 type ServerConfig struct {
@@ -47,6 +48,13 @@ type BusConfig struct {
 	BufferSize     int
 	RetryAttempts  int
 	RetryDelay     time.Duration
+}
+
+type EmailConfig struct {
+	FromAddress string
+	FromName    string
+	AppURL      string
+	AppName     string
 }
 
 // Load loads configuration from .env file and environment variables
@@ -104,6 +112,12 @@ func Load() (*Config, error) {
 			BufferSize:     getEnvAsInt("BUS_BUFFER_SIZE", 1000),
 			RetryAttempts:  getEnvAsInt("BUS_RETRY_ATTEMPTS", 3),
 			RetryDelay:     getDurationEnv("BUS_RETRY_DELAY", 1*time.Second),
+		},
+		Email: EmailConfig{
+			FromAddress: getEnv("EMAIL_FROM_ADDRESS", "noreply@promenade.com"),
+			FromName:    getEnv("EMAIL_FROM_NAME", "Promenade Team"),
+			AppURL:      getEnv("APP_URL", "http://localhost:8081"),
+			AppName:     getEnv("APP_NAME", "Promenade"),
 		},
 	}, nil
 }

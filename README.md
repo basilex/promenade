@@ -151,6 +151,40 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 - **Swagger v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 - **Health Check**: http://localhost:8081/api/v1/health
 
+### Error Handling
+
+All errors return structured JSON responses via `ErrorHandler` in shared layer:
+
+- **404 Not Found** - Route doesn't exist:
+
+  ```json
+  {
+    "success": false,
+    "message": "route not found",
+    "error": "The requested endpoint does not exist",
+    "timestamp": 1766125580
+  }
+  ```
+
+- **405 Method Not Allowed** - HTTP method not supported:
+  ```json
+  {
+    "success": false,
+    "message": "method not allowed",
+    "error": "The HTTP method is not supported for this endpoint",
+    "timestamp": 1766125580
+  }
+  ```
+
+**Server Timestamp:** All responses include `timestamp` field (Unix seconds) for:
+
+- Client-server time synchronization
+- Latency measurement (client_time - server_timestamp)
+- Debugging and log correlation across timezones
+- Cache freshness detection
+
+**Implementation:** See `internal/adapter/http/shared/handler/error_handler.go` - centralized HTTP error handling with unit test coverage.
+
 ## -> Documentation
 
 ### Technical Documentation
