@@ -12,9 +12,9 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
 - **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- **Comprehensive Testing** - 405+ tests total across all layers - 100% passing
-  - Unit: 373+ tests (113+ entity + 260 use case runs)
-  - Integration: 119+ tests (46 handler + 73+ repository with real PostgreSQL)
+- **Comprehensive Testing** - 274 tests total across all layers - 100% passing
+  - Unit: 183 tests (entity validation + domain logic)
+  - Integration: 91 tests (repository operations with real PostgreSQL)
 - **JWT Authentication** - Secure token-based auth with refresh tokens
 - **API Versioning** - v1 and v2 with backward compatibility
 - **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -1345,27 +1345,47 @@ The project uses a hierarchical environment configuration:
 ### Key Configuration Variables
 
 ```bash
-# Server
-SERVER_PORT=8081
-SERVER_HOST=0.0.0.0
-GIN_MODE=debug                    # debug, release
+# Application
+APP_NAME=Promenade
+APP_URL=http://localhost:8081
 
-# Database
+# Server Configuration
+SERVER_PORT=8081
+ENVIRONMENT=development           # development, production
+
+# Database Configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=promenade
-DB_PASSWORD=promenade
-DB_NAME=promenade
+DB_USER=system
+DB_PASSWORD=password
+DB_NAME=promenade_dev
 DB_SSLMODE=disable
+DB_MAX_OPEN_CONNS=25
+DB_MAX_IDLE_CONNS=5
 
-# JWT
-JWT_SECRET=your-secret-key-here
-JWT_ACCESS_EXPIRY=15m            # 15 minutes
-JWT_REFRESH_EXPIRY=168h          # 7 days
+# JWT Configuration
+# Generate with: openssl rand -base64 32
+JWT_SECRET=your-super-secret-key-change-in-production
+JWT_ACCESS_TTL_MINUTES=15        # 15 minutes
+JWT_REFRESH_TTL_HOURS=168        # 7 days (168 hours)
 
-# Test Database (separate from dev)
-TEST_DB_PORT=5433
-TEST_DB_NAME=promenade_test
+# Swagger Configuration
+SWAGGER_ENABLED=true
+SWAGGER_HOST=localhost:8081
+
+# Rate Limiting
+RATE_LIMIT_RPS=100               # Requests per second
+RATE_LIMIT_BURST=200             # Burst capacity
+
+# Event Bus Configuration
+BUS_WORKER_POOL_SIZE=10          # Concurrent workers
+BUS_BUFFER_SIZE=1000             # Message buffer capacity
+BUS_RETRY_ATTEMPTS=3             # Max retry attempts on failure
+BUS_RETRY_DELAY=1s               # Delay between retries
+
+# Email Configuration
+EMAIL_FROM_NAME=Promenade Team
+EMAIL_FROM_ADDRESS=noreply@promenade.com
 ```
 
 ### Setup Local Environment
@@ -1396,33 +1416,36 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **328+ Total Tests** - 100% passing [+]
-  - **358+ Unit Tests**
-    - Entity: 87+ tests (User, UserProfile, UserPost, Country validation)
-    - Use Case: 271 test runs (Auth, Country, Currency, PostComment, UserPost business logic)
-  - **79+ Integration Tests**
-    - Handler: 57 tests (PostComment, UserContact, UserPost, UserProfile, Country, Currency endpoints)
-    - Repository: 22+ tests (Base operations, PostComment, UserPost with real PostgreSQL)
+- **274 Total Tests** - 100% passing [+]
+  - **183 Unit Tests** (entity validation, domain logic)
+    - Country, Currency, Session, UserContact, UserPost, UserProfile, User entities
+    - Permission, Role, RBAC system validation
+    - Business logic, status transitions, timestamps
+  - **91 Integration Tests** (with real PostgreSQL)
+    - BaseRepository: 7 tests (transactions, executor pattern)
+    - Auth: 10 tests (sessions, token management)
+    - Countries & Currencies: 4 tests (CRUD operations)
+    - User Management: 33 tests (users, profiles, contacts)
+    - Content: 37 tests (posts, comments, likes, replies)
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
-- **Test Execution** - ~12 seconds for full suite (unit + integration)
-- **Coverage** - All layers tested (entity validation, business logic, repository operations, HTTP handlers)
+- **Test Execution** - ~41 seconds for full suite (5s unit + 36s integration)
+- | **Coverage** - A     | Unit Tests | Integration Tests | Total   |
+  | -------------------- | ---------- | ----------------- | ------- |
+  | **Country/Currency** | 18         | 4                 | 22      |
+  | **Session/Auth**     | 9          | 10                | 19      |
+  | **UserContact**      | 14         | 13                | 27      |
+  | **UserPost**         | 42         | 30                | 72      |
+  | **PostComment**      | 0          | 22                | 22      |
+  | **UserProfile**      | 31         | 13                | 44      |
+  | **User/RBAC**        | 64         | 9                 | 73      |
+  | **Permission/Role**  | 31         | 16                | 47      |
+  | **CommentLikes**     | 0          | 1                 | 1       |
+  | **BaseRepository**   | 0          | 7                 | 7       |
+  | **Total**            | **183**    | **91**            | **274** |
 
-#### Module Test Breakdown
-
-| Module          | Entity Tests | UseCase Tests | Handler Tests | Repository Tests | Total   |
-| --------------- | ------------ | ------------- | ------------- | ---------------- | ------- |
-| **User**        | 0            | 0             | 0             | 7                | 7       |
-| **UserProfile** | 29           | 32            | 11            | 11               | 83      |
-| **UserContact** | 0            | 0             | 11            | 3                | 14      |
-| **UserPost**    | 28           | 26            | 12            | 21               | 87      |
-| **PostComment** | 0            | 12            | 12            | 15               | 39      |
-| **Auth**        | 0            | 10            | 0             | 0                | 10      |
-| **Country**     | 30           | 12            | 4             | 2                | 48      |
-| **Currency**    | 0            | 12            | 7             | 2                | 21      |
-| **Session**     | 0            | 0             | 0             | 5                | 5       |
-| **Base Repo**   | 0            | 0             | 0             | 7                | 7       |
-| **Other**       | 0            | 28            | 0             | 0                | 28      |
-| **Total**       | **87**       | **132**       | **57**        | **73**           | **349** |
+\_Note: Tests include comprehensive scenarios with table-driven tests, validation checks, and edge case
+| **Other** | 0 | 28 | 0 | 0 | 28 |
+| **Total** | **87** | **132** | **57** | **73** | **349** |
 
 _Note: UseCase tests include table-driven tests with multiple scenarios per function, resulting in 260+ actual test runs_
 

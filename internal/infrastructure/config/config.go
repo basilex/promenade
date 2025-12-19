@@ -104,8 +104,8 @@ func Load() (*Config, error) {
 		},
 		JWT: JWTConfig{
 			Secret:          getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
-			AccessTokenTTL:  getDurationEnv("JWT_ACCESS_TTL", 15*time.Minute),
-			RefreshTokenTTL: getDurationEnv("JWT_REFRESH_TTL", 168*time.Hour), // 7 days
+			AccessTokenTTL:  time.Duration(getEnvAsInt("JWT_ACCESS_TTL_MINUTES", 15)) * time.Minute,
+			RefreshTokenTTL: time.Duration(getEnvAsInt("JWT_REFRESH_TTL_HOURS", 168)) * time.Hour, // 7 days
 		},
 		Bus: BusConfig{
 			WorkerPoolSize: getEnvAsInt("BUS_WORKER_POOL_SIZE", 10),
