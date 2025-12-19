@@ -1,70 +1,159 @@
-# # Development Credentials
+# Development Credentials
 
-Quick reference for default users and access credentials.
+Quick reference for default users and access credentials with RBAC roles.
 
 ## Default Users
 
-### Superadmin (Full System Access)
+### 1. System Administrator (Bootstrap User)
 
 ```
 Email:    system@promenade.com
 Password: passw0rd
 Role:     superadmin
-Access:   *:* (all permissions)
+Access:   *:* (full system access)
 ```
 
 **Use for:**
 
-- System administration
+- System initialization and bootstrap
 - RBAC management (roles, permissions)
 - User management (ban, suspend, assign roles)
-- Testing admin-only endpoints
+- Testing superadmin-only endpoints
 
-### Admin (Administrative Access)
+### 2. Super Administrator (Testing)
+
+```
+Email:    superadmin@promenade.com
+Password: passw0rd
+Role:     superadmin
+Access:   *:* (full system access)
+```
+
+**Use for:**
+
+- Testing superadmin workflows
+- RBAC system testing
+- Full access testing scenarios
+
+### 3. Administrator
+
+```
+Email:    admin@promenade.com
+Password: passw0rd
+Role:     admin
+Access:   users:*, posts:*, comments:*, profiles:*, roles:read|list|assign
+```
+
+**Use for:**
+
+- User management (create, update, delete, ban)
+- Content management (posts, comments)
+- Role assignment to users
+- Testing admin-level permissions
+
+### 4. Moderator
+
+```
+Email:    moderator@promenade.com
+Password: passw0rd
+Role:     moderator
+Access:   posts:read|update|delete|list, comments:*, profiles:read|list
+```
+
+**Use for:**
+
+- Content moderation (posts, comments)
+- Comment management (approve, delete)
+- Testing moderation workflows
+- Limited user visibility (read only)
+
+### 5. Regular User
 
 ```
 Email:    alexander.vasilenko@gmail.com
 Password: 03041965
-Role:     admin
-Access:   Most resources (users, posts, comments, profiles)
+Role:     user
+Access:   posts:create|read, comments:create|read, profiles:create|read
 ```
 
 **Use for:**
 
-- Content moderation
-- User management (except role assignment)
-- Testing moderator workflows
+- Testing regular user workflows
+- Own content creation (posts, comments)
+- Profile management
+- Basic user operations
 
-### Regular User (Own Content)
+### Guest Access (Unauthenticated)
 
-Any registered user automatically gets the `user` role:
+No login required:
 
 ```
-Role:     user
-Access:   posts:*, comments:*, profiles:* (own content)
+Role:     guest (implicit)
+Access:   posts:read, comments:read, profiles:read
 ```
 
-## Quick Login
+**Use for:**
+
+- Public content browsing
+- Testing unauthenticated access
+- Read-only operations
+
+## Quick Login Examples
 
 ```bash
-# Login as Superadmin
+# Login as System Administrator (superadmin)
 curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"system@promenade.com","password":"passw0rd"}' | jq
 
-# Login as Admin
+# Login as Super Administrator (superadmin)
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"superadmin@promenade.com","password":"passw0rd"}' | jq
+
+# Login as Administrator (admin)
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@promenade.com","password":"passw0rd"}' | jq
+
+# Login as Moderator (moderator)
+curl -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"moderator@promenade.com","password":"passw0rd"}' | jq
+
+# Login as Regular User (user)
 curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alexander.vasilenko@gmail.com","password":"03041965"}' | jq
 
-# Save token for reuse
+# Save token for reuse (superadmin)
 export TOKEN=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"system@promenade.com","password":"passw0rd"}' | jq -r '.data.access_token')
+  -d '{"email":"superadmin@promenade.com","password":"passw0rd"}' | jq -r '.data.access_token')
 
-# Use token
+# Use token in requests
+curl -X GET http://localhost:8081/api/v1/auth/me \
+  -H "Authorization: Bearer $TOKEN" | jq
+```
+
+## Testing RBAC Permissions
+
+```bash
+# Test superadmin access (should work - full access)
 curl -X GET http://localhost:8081/api/v1/admin/users \
-  -H "Authorization: Bearer $TOKEN"
+  -H "Authorization: Bearer $SUPERADMIN_TOKEN" | jq
+
+# Test admin access (should work - has users:*)
+curl -X GET http://localhost:8081/api/v1/admin/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" | jq
+
+# Test moderator access (should fail - no users:list permission)
+curl -X GET http://localhost:8081/api/v1/admin/users \
+  -H "Authorization: Bearer $MODERATOR_TOKEN" | jq
+
+# Test user access (should fail - no admin permissions)
+curl -X GET http://localhost:8081/api/v1/admin/users \
+  -H "Authorization: Bearer $USER_TOKEN" | jq
 ```
 
 ## Database Access
@@ -74,11 +163,27 @@ curl -X GET http://localhost:8081/api/v1/admin/users \
 psql -h localhost -p 5432 -U system -d promenade_dev
 # Password: passw0rd
 
-# View users and roles
-SELECT u.email, u.name, r.name as role
-FROM user_roles ur
-JOIN users u ON ur.user_id = u.id
-JOIN roles r ON ur.role_id = r.id;
+# View all users with their roles
+SELECT
+    u.email,
+    u.name,
+    r.name as role,
+    r.description
+FROM users u
+LEFT JOIN user_roles ur ON u.id = ur.user_id
+LEFT JOIN roles r ON ur.role_id = r.id
+ORDER BY u.email;
+
+# View role permissions
+SELECT
+    r.name as role,
+    p.resource,
+    p.action,
+    p.description
+FROM roles r
+JOIN role_permissions rp ON r.id = rp.role_id
+JOIN permissions p ON rp.permission_id = p.id
+ORDER BY r.name, p.resource, p.action;
 ```
 
 ## [!] Security Warning

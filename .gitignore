@@ -7,7 +7,7 @@ bin/
 *.so
 *.dylib
 
-# Test binary
+# Test binaries (Go test executables)
 *.test
 *.out
 test_output.txt

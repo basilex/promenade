@@ -1,4 +1,14 @@
-.PHONY: help install dev build test clean docker swagger migrate
+.PHONY: help
+
+# ============================================================================
+# Promenade - Modular Makefile System
+# ============================================================================
+# Main Makefile - Common variables and environment configuration
+# Targets are organized in separate modules:
+#   - Makefile.dev.mk   → Development workflow (install, build, lint, generate)
+#   - Makefile.test.mk  → Testing infrastructure (unit, integration, smoke)
+#   - Makefile.prod.mk  → Production/DevOps (docker, migrations, swagger)
+# ============================================================================
 
 # Load environment variables from .env.development if exists
 ifneq (,$(wildcard ./.env.development))
@@ -6,19 +16,16 @@ ifneq (,$(wildcard ./.env.development))
     export
 endif
 
-# Include test targets
-include Makefile.test
-
-# Variables
+# Common variables
 APP_NAME=promenade
 VERSION?=0.1.0
 ENV?=dev
 DOCKER_IMAGE_TAG=$(VERSION)-$(ENV)
 DOCKER_COMPOSE=docker-compose -f docker/docker-compose.yml
 
-# Database connection string (из переменных окружения или defaults)
+# Database connection string (from environment or defaults)
 DB_USER ?= postgres
-DB_PASSWORD ? = postgres
+DB_PASSWORD ?= postgres
 DB_HOST ?= localhost
 DB_PORT ?= 5432
 DB_NAME ?= promenade
@@ -27,161 +34,30 @@ DB_SSLMODE ?= disable
 DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)
 MIGRATE=migrate -path migrations -database "$(DB_URL)"
 
+# Include modular makefiles
+include Makefile.dev.mk
+include Makefile.test.mk
+include Makefile.prod.mk
+
+# Default target
+.DEFAULT_GOAL := help
+
 help:  ## Show this help message
-	@echo "* Promenade - Available Commands"
+	@echo "╔════════════════════════════════════════════════════════════════╗"
+	@echo "║          Promenade - Available Commands                        ║"
+	@echo "╚════════════════════════════════════════════════════════════════╝"
 	@echo ""
-	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo "📦 DEVELOPMENT (Makefile.dev.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
 	@echo ""
-
-install: ## Install dependencies and tools
-	go mod download
-	go mod tidy
-	go install github.com/swaggo/swag/cmd/swag@latest
-	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-
-dev: ## Run in development mode
-	@echo "Starting development environment..."
-	$(DOCKER_COMPOSE) up -d postgres
-	@echo "Waiting for database..."
-	@sleep 3
-	@echo "Creating database if not exists..."
-	@docker exec promenade_postgres psql -U system -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$(DB_NAME)'" | grep -q 1 || \
-		docker exec promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);"
-	@make migrate-up
-	@echo "Starting application..."
-	go run cmd/api/*.go
-
-build: swagger-all ## Build application binary
-	@echo "Building..."
-	go build -o bin/$(APP_NAME) cmd/api/*.go
-	@echo "Build complete:  bin/$(APP_NAME)"
-
-run: ## Run compiled binary
-	./bin/$(APP_NAME)
-
-# Testing targets are in Makefile.test
-
-clean: ## Clean build artifacts and containers
-	rm -rf bin/
-	rm -rf docs/v1/ docs/v2/
-	rm -f coverage.out coverage.html
-	$(DOCKER_COMPOSE) down -v
-
-docker-up: ## Start all Docker services
-	$(DOCKER_COMPOSE) up -d
-
-docker-down: ## Stop all Docker services
-	$(DOCKER_COMPOSE) down
-
-docker-logs: ## View Docker logs
-	$(DOCKER_COMPOSE) logs -f
-
-docker-build: ## Build Docker image (usage: make docker-build VERSION=0.1.0 ENV=dev)
-	docker build -f docker/Dockerfile -t $(APP_NAME):$(DOCKER_IMAGE_TAG) -t $(APP_NAME):latest .
-	@echo "Built image: $(APP_NAME):$(DOCKER_IMAGE_TAG)"
-
-migrate-create: ## Create new migration (usage: make migrate-create NAME=create_users_table)
-	@if [ -z "$(NAME)" ]; then \
-		echo "Error: NAME is required.  Usage: make migrate-create NAME=create_users"; \
-		exit 1; \
-	fi
-	migrate create -ext sql -dir migrations -seq $(NAME)
-
-migrate-up: ## Run database migrations
-	@echo "Running migrations..."
-	@echo "Database:  $(DB_USER)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
-	$(MIGRATE) up
-
-migrate-down: ## Rollback last migration
-	@echo "Rolling back last migration..."
-	$(MIGRATE) down 1
-
-migrate-force: ## Force migration version (usage: make migrate-force VERSION=1)
-	@if [ -z "$(VERSION)" ]; then \
-		echo "Error:  VERSION is required"; \
-		exit 1; \
-	fi
-	$(MIGRATE) force $(VERSION)
-
-migrate-version: ## Show current migration version
-	$(MIGRATE) version
-
-migrate-status: ## Show detailed migration status
-	@echo "Current migration status:"
-	@$(MIGRATE) version
-
-swagger-v1: ## Generate Swagger docs for API v1
-	swag init -g cmd/api/main.go \
-		--dir . \
-		--parseInternal \
-		--parseDependency \
-		--instanceName v1 \
-		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker" \
-		-o docs/v1
-
-swagger-v2: ## Generate Swagger docs for API v2
-	swag init -g cmd/api/main.go \
-		--dir . \
-		--parseInternal \
-		--parseDependency \
-		--instanceName v2 \
-		--exclude "*_test.go,test,scripts,docs,bin,migrations,docker,internal/adapter/http/v1" \
-		-o docs/v2
-
-swagger-all: swagger-v1 swagger-v2 ## Generate all Swagger documentation
-	@echo "Swagger documentation generated"
-
-lint: ## Run Go linter
-	golangci-lint run
-
-fmt: ## Format Go code
-	go fmt ./... 
-	gofmt -s -w . 
-
-deps-update: ## Update Go dependencies
-	go get -u ./... 
-	go mod tidy
-
-generate: ## Generate entity (usage: make generate ENTITY=Product)
-	@if [ -z "$(ENTITY)" ]; then \
-		echo "Error:  ENTITY is required.  Usage: make generate ENTITY=Product"; \
-		exit 1; \
-	fi
-	./scripts/generate.sh entity $(ENTITY)
-
-generate-interactive: ## Interactive entity generator
-	./scripts/generate-interactive.sh
-
-gen: generate ## Alias for generate command
-
-config-show: ## Show current configuration values
-	@echo "========================================="
-	@echo "Current Configuration"
-	@echo "========================================="
-	@echo "ENVIRONMENT:     $(ENVIRONMENT)"
-	@echo "SERVER_PORT:     $(SERVER_PORT)"
-	@echo "DB_HOST:         $(DB_HOST)"
-	@echo "DB_PORT:         $(DB_PORT)"
-	@echo "DB_NAME:         $(DB_NAME)"
-	@echo "DB_USER:         $(DB_USER)"
-	@echo "DB_SSLMODE:      $(DB_SSLMODE)"
-	@echo "JWT_ACCESS_TTL:  $(JWT_ACCESS_TTL)"
-	@echo "========================================="
-docker-run: docker-build docker-up ## Build and run Docker containers
-	@echo "[+] Promenade is running in Docker!"
-	@echo "-> API Health: http://localhost:8080/api/v1/health"
-	@echo "-> Swagger v1: http://localhost:8080/api/v1/docs/swagger/index.html"
-	@echo "-> Swagger v2: http://localhost:8080/api/v2/docs/swagger/index.html"
+	@echo "🧪 TESTING (Makefile.test.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.test.mk
 	@echo ""
-	@echo "View logs: make docker-logs"
-	@echo "Stop: make docker-down"
-
-docker-restart: ## Restart Docker containers
-	$(DOCKER_COMPOSE) restart
-
-docker-ps: ## Show running Docker containers
-	docker ps --filter "name=promenade"
-docker-clean: ## Remove containers and volumes (clean slate)
-	$(DOCKER_COMPOSE) down -v
-	@echo "[+] All containers and volumes removed"
-. DEFAULT_GOAL := help
+	@echo "🚀 PRODUCTION (Makefile.prod.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
+	@echo ""
+	@echo "💡 Usage examples:"
+	@echo "  make dev              # Start development server"
+	@echo "  make test             # Run all tests"
+	@echo "  make docker-run       # Build and run in Docker"
+	@echo ""

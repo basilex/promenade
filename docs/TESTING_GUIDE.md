@@ -325,4 +325,4 @@ make test-db-start
 
 ---
 
-**Questions?** Check `Makefile.test` for all available commands.
+**Questions?** Check `Makefile.test.mk` for all available commands.

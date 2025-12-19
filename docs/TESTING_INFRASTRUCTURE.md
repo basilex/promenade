@@ -56,7 +56,7 @@
 - Volume: `postgres_test_data`
 - Healthcheck built-in
 
-**`Makefile.test`** - Test commands:
+**`Makefile.test.mk`** - Test commands:
 
 ```make
 make test               # All tests (unit + integration)
@@ -71,8 +71,8 @@ make test-db-logs       # Test DB logs
 
 ## Test Coverage Matrix
 
-| Layer      | Component           | Coverage | Status      |
-| ---------- | ------------------- | -------- | ----------- |
+| Layer      | Component           | Coverage | Status       |
+| ---------- | ------------------- | -------- | ------------ |
 | Config     | ConfigLoader        | 4 tests  | [+] Complete |
 | Entity     | User, Session, etc  | 19 tests | [+] Complete |
 | Package    | JWT Manager         | 11 tests | [+] Complete |
@@ -116,10 +116,10 @@ defer testDB.CleanupTables(t)
 
 ## Integration with Main Makefile
 
-`Makefile` includes `Makefile.test`:
+`Makefile` includes `Makefile.test.mk`:
 
 ```make
-include Makefile.test
+include Makefile.test.mk
 ```
 
 All test commands are available from the project root.
@@ -174,7 +174,7 @@ promenade/
 │   └── session_repository_test.go      # [+] 5 tests
 ├── docker/
 │   └── docker-compose.test.yml  # [+] Test DB
-├── Makefile.test                # [+] Test commands
+├── Makefile.test.mk             # [+] Test commands
 └── docs/
     └── TESTING_GUIDE.md         # [+] Documentation
 ```

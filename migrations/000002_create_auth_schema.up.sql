@@ -153,10 +153,16 @@ COMMENT ON TABLE login_attempts IS 'Login attempts log for security monitoring a
 COMMENT ON COLUMN login_attempts.success IS 'True if login succeeded, false if failed';
 
 -- ----------------------------------------------------------------------------
--- DEFAULT USERS
+-- DEFAULT USERS FOR RBAC TESTING
+-- ----------------------------------------------------------------------------
+-- These users are created for development, testing, and RBAC demonstration.
+-- Each user will be assigned appropriate roles in migration 9 (RBAC tables).
+--
+-- IMPORTANT: Change passwords before production deployment!
+-- All users have password 'passw0rd' except alexander.vasilenko@gmail.com
 -- ----------------------------------------------------------------------------
 
--- Insert default system administrator
+-- System administrator (will get superadmin role via migration 9)
 INSERT INTO users (email, name, password, status, email_verified_at)
 VALUES (
     'system@promenade.com',
@@ -166,7 +172,37 @@ VALUES (
     NOW()
 );
 
--- Insert default user
+-- Superadmin user for testing (will get superadmin role via migration 9)
+INSERT INTO users (email, name, password, status, email_verified_at)
+VALUES (
+    'superadmin@promenade.com',
+    'Super Administrator',
+    crypt('passw0rd', gen_salt('bf', 10)),
+    'active',
+    NOW()
+);
+
+-- Admin user for testing (will get admin role via migration 9)
+INSERT INTO users (email, name, password, status, email_verified_at)
+VALUES (
+    'admin@promenade.com',
+    'Administrator',
+    crypt('passw0rd', gen_salt('bf', 10)),
+    'active',
+    NOW()
+);
+
+-- Moderator user for testing (will get moderator role via migration 9)
+INSERT INTO users (email, name, password, status, email_verified_at)
+VALUES (
+    'moderator@promenade.com',
+    'Content Moderator',
+    crypt('passw0rd', gen_salt('bf', 10)),
+    'active',
+    NOW()
+);
+
+-- Regular user (project owner) - will get user role via migration 9
 INSERT INTO users (email, name, password, status, email_verified_at)
 VALUES (
     'alexander.vasilenko@gmail.com',

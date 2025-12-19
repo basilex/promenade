@@ -173,8 +173,11 @@ WHERE r.name = 'guest' AND (
 -- ============================================================================
 -- Assign default roles to existing users
 -- ============================================================================
+-- Maps users created in migration 2 to their appropriate roles.
+-- This enables RBAC testing and demonstration with realistic permission sets.
+-- ============================================================================
 
--- Assign superadmin role to system user
+-- 1. Assign superadmin role to system@promenade.com (bootstrap user)
 INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
@@ -186,27 +189,68 @@ CROSS JOIN roles r
 WHERE u.email = 'system@promenade.com' AND r.name = 'superadmin'
 ON CONFLICT DO NOTHING;
 
--- Assign admin role to Alexander Vasilenko (project owner)
+-- 2. Assign superadmin role to superadmin@promenade.com
 INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
     r.id,
     NOW(),
-    (SELECT id FROM users WHERE email = 'system@promenade.com')  -- Assigned by system user
+    (SELECT id FROM users WHERE email = 'system@promenade.com')
 FROM users u
 CROSS JOIN roles r
-WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'admin'
+WHERE u.email = 'superadmin@promenade.com' AND r.name = 'superadmin'
 ON CONFLICT DO NOTHING;
 
--- Assign user role to regular users (default for all other users)
+-- 3. Assign admin role to admin@promenade.com
 INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
     r.id,
     NOW(),
-    (SELECT id FROM users WHERE email = 'system@promenade.com')  -- Assigned by system user
+    (SELECT id FROM users WHERE email = 'system@promenade.com')
 FROM users u
 CROSS JOIN roles r
-WHERE u.email NOT IN ('system@promenade.com', 'alexander.vasilenko@gmail.com') 
-  AND r.name = 'user'
+WHERE u.email = 'admin@promenade.com' AND r.name = 'admin'
+ON CONFLICT DO NOTHING;
+
+-- 4. Assign moderator role to moderator@promenade.com
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM users WHERE email = 'system@promenade.com')
+FROM users u
+CROSS JOIN roles r
+WHERE u.email = 'moderator@promenade.com' AND r.name = 'moderator'
+ON CONFLICT DO NOTHING;
+
+-- 5. Assign user role to alexander.vasilenko@gmail.com (regular user)
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM users WHERE email = 'system@promenade.com')
+FROM users u
+CROSS JOIN roles r
+WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'user'
+ON CONFLICT DO NOTHING;
+
+-- 6. Assign user role to any other existing users (default fallback)
+INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM users WHERE email = 'system@promenade.com')
+FROM users u
+CROSS JOIN roles r
+WHERE u.email NOT IN (
+    'system@promenade.com',
+    'superadmin@promenade.com', 
+    'admin@promenade.com',
+    'moderator@promenade.com',
+    'alexander.vasilenko@gmail.com'
+) AND r.name = 'user'
 ON CONFLICT DO NOTHING;

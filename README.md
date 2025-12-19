@@ -57,21 +57,38 @@ Server will start on http://localhost:8081
 
 ### Default Login Credentials
 
-The system includes pre-configured admin accounts for development:
+The system includes pre-configured users with different RBAC roles for development and testing:
 
 ```bash
-# Superadmin (full access)
+# System Administrator (superadmin role - bootstrap user)
 Email:    system@promenade.com
 Password: passw0rd
+Role:     Full system access (*)
 
-# Admin (administrative access)
+# Super Administrator (superadmin role - testing)
+Email:    superadmin@promenade.com
+Password: passw0rd
+Role:     Full system access (*)
+
+# Administrator (admin role)
+Email:    admin@promenade.com
+Password: passw0rd
+Role:     User/content management
+
+# Moderator (moderator role)
+Email:    moderator@promenade.com
+Password: passw0rd
+Role:     Content moderation
+
+# Regular User (user role)
 Email:    alexander.vasilenko@gmail.com
 Password: 03041965
+Role:     Basic user operations
 ```
 
 **[!] Important:** Change these passwords before deploying to production!
 
--> **Full credentials reference:** See [docs/CREDENTIALS.md](docs/CREDENTIALS.md) for complete list with examples.
+-> **Full credentials reference:** See [docs/CREDENTIALS.md](docs/CREDENTIALS.md) for complete list with API examples.
 
 ### Docker Setup (Alternative)
 
@@ -499,46 +516,63 @@ erDiagram
 
 ## Development Commands
 
-### Core Commands
+**Modular Makefile System** - Commands organized by context (see [MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md))
+
+### Quick Reference
 
 ```bash
-make help              # Show all available commands
-make install           # Install development tools (migrate, swag, golangci-lint)
-make dev               # Start development server (starts DB, runs migrations)
-make build             # Build production binary to bin/promenade
-make clean             # Clean build artifacts
+make help              # Show all available commands (grouped by module)
+make dev               # Start development server (most common workflow)
+make test              # Run all tests (unit + integration + smoke)
+make docker-run        # Build and run in Docker
 ```
 
-### Database Commands
+### Development Workflow (Makefile.dev.mk)
 
 ```bash
-make docker-up         # Start PostgreSQL (dev) via Docker Compose
-make docker-down       # Stop and remove containers
-make docker-logs       # Show PostgreSQL logs
-make migrate-up        # Run all pending migrations
-make migrate-down      # Rollback last migration
-make migrate-create NAME=create_example_table  # Create new migration
+make install           # Install tools (swag, migrate, golangci-lint)
+make dev               # Start server (postgres + migrations + app)
+make build             # Build binary to bin/promenade
+make run               # Run compiled binary
+make lint              # Run golangci-lint
+make fmt               # Format code (go fmt + gofmt -s)
+make generate          # Generate entity boilerplate
+make config-show       # Show current configuration
 ```
 
-### Testing Commands
+### Testing (Makefile.test.mk)
 
 ```bash
 make test              # Run all tests (unit + integration)
-make test-unit         # Run unit tests only
-make test-integration  # Run integration tests (auto-starts test DB)
-make test-smoke        # Run smoke tests (end-to-end critical flows)
+make test-unit         # Unit tests only (~5s)
+make test-integration  # Integration tests (~35s, auto-starts DB)
+make test-smoke        # Smoke tests (~4.5s, critical flows)
 make test-coverage     # Generate HTML coverage report
-make test-watch        # Watch mode with gotestsum
-make test-db-start     # Start test database (port 5433)
-make test-db-stop      # Stop test database
+make test-db-start     # Start test DB (port 5433)
+make test-db-stop      # Stop test DB
 ```
 
-### Code Quality
+### Production/DevOps (Makefile.prod.mk)
 
 ```bash
-make fmt               # Format code with gofmt
-make lint              # Run golangci-lint
-make swagger-all       # Generate Swagger docs (v1 + v2)
+# Docker
+make docker-build      # Build image (VERSION=0.1.0 ENV=dev)
+make docker-run        # Build + start containers
+make docker-up         # Start services
+make docker-down       # Stop services
+make docker-logs       # View logs
+make docker-clean      # Remove containers + volumes
+
+# Migrations
+make migrate-up        # Apply migrations
+make migrate-down      # Rollback last migration
+make migrate-create    # Create migration (NAME=xxx)
+
+# Documentation
+make swagger-all       # Generate v1 + v2 Swagger docs
+
+# Cleanup
+make clean             # Remove artifacts
 ```
 
 ## Architecture

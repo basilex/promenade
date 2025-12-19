@@ -188,8 +188,8 @@ All critical paths tested
 
 All migrations successfully applied (version 5):
 
-| Migration | Status     | Tables Created                                                                    |
-| --------- | ---------- | --------------------------------------------------------------------------------- |
+| Migration | Status      | Tables Created                                                                    |
+| --------- | ----------- | --------------------------------------------------------------------------------- |
 | 000001    | [+] Applied | schema functions, uuid_v7()                                                       |
 | 000002    | [+] Applied | users, sessions, email_verification_tokens, password_reset_tokens, login_attempts |
 | 000003    | [+] Applied | countries, currencies, country_currencies                                         |
@@ -239,7 +239,7 @@ All migrations successfully applied (version 5):
 
 ```
 [+] docker/docker-compose.test.yml     (25 lines)
-[+] Makefile.test                       (70 lines)
+[+] Makefile.test.mk                    (70 lines)
 [+] scripts/run-tests.sh               (80 lines)
 ```
 
@@ -265,8 +265,8 @@ All migrations successfully applied (version 5):
 
 ### Test Statistics by Module
 
-| Module      | Code Lines | Test Lines | Test/Code Ratio | Tests   | Status |
-| ----------- | ---------- | ---------- | --------------- | ------- | ------ |
+| Module      | Code Lines | Test Lines | Test/Code Ratio | Tests   | Status  |
+| ----------- | ---------- | ---------- | --------------- | ------- | ------- |
 | UserProfile | 550        | 1,034      | 1.88            | 72      | [+]     |
 | Country     | 180        | 200        | 1.11            | 32      | [+]     |
 | UserContact | 300        | 150        | 0.50            | 3       | [+]     |
@@ -333,7 +333,7 @@ All migrations successfully applied (version 5):
 [+] internal/adapter/repository/postgres/user_repository_test.go      (210 lines)
 [+] internal/adapter/repository/postgres/session_repository_test.go   (198 lines)
 [+] docker/docker-compose.test.yml     (20 lines)
-[+] Makefile.test                       (50 lines)
+[+] Makefile.test.mk                    (50 lines)
 [+] scripts/run-tests.sh               (60 lines)
 [+] docs/TESTING_GUIDE.md              (200+ lines)
 [+] docs/TESTING_INFRASTRUCTURE.md     (180+ lines)
