@@ -112,31 +112,58 @@ All services run in a single Docker network `promenade-network`:
 The application uses the following environment variables (see `docker-compose.yml`):
 
 ```yaml
-# Server
-ENVIRONMENT=production
-SERVER_PORT=8080
+# Server Configuration
+SERVER_HOST=0.0.0.0              # Default: 0.0.0.0 (all interfaces)
+SERVER_PORT=8080                 # API port
+ENVIRONMENT=production           # development|production
+SERVER_READ_TIMEOUT=15s          # Optional: request read timeout
+SERVER_WRITE_TIMEOUT=15s         # Optional: response write timeout
 
-# Database
-DB_HOST=postgres          # Service name in Docker network!
-DB_PORT=5432
-DB_USER=system
-DB_PASSWORD=passw0rd
-DB_NAME=promenade_prod
-DB_SSLMODE=disable
+# Database Configuration
+DB_HOST=postgres                 # Service name in Docker network!
+DB_PORT=5432                     # PostgreSQL port
+DB_USER=system                   # Database user
+DB_PASSWORD=passw0rd             # Database password
+DB_NAME=promenade_prod           # Database name
+DB_SSLMODE=disable               # SSL mode (require in production)
+DB_MAX_OPEN_CONNS=25             # Optional: max open connections
+DB_MAX_IDLE_CONNS=5              # Optional: max idle connections
+DB_CONN_MAX_LIFETIME=5m          # Optional: connection lifetime
 
-# JWT
-JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=
-JWT_ACCESS_TTL_MINUTES=15
-JWT_REFRESH_TTL_HOURS=168
+# JWT Configuration
+JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=  # Secret key (change in production!)
+JWT_ACCESS_TTL_MINUTES=15        # Access token TTL (15 minutes)
+JWT_REFRESH_TTL_HOURS=168        # Refresh token TTL (7 days)
 
-# Event Bus
-BUS_WORKER_POOL_SIZE=10
-BUS_BUFFER_SIZE=1000
-BUS_RETRY_ATTEMPTS=3
-BUS_RETRY_DELAY=1s
+# Event Bus Configuration
+BUS_WORKER_POOL_SIZE=10          # Worker goroutines for event processing
+BUS_BUFFER_SIZE=1000             # Event queue buffer size
+BUS_RETRY_ATTEMPTS=3             # Retry failed event handlers
+BUS_RETRY_DELAY=1s               # Delay between retries
+
+# Email Configuration (for notifications)
+EMAIL_FROM_ADDRESS=noreply@promenade.com    # Sender email
+EMAIL_FROM_NAME=Promenade Team              # Sender name
+APP_URL=http://localhost:8080               # Base URL for email links
+APP_NAME=Promenade                          # Application name
 ```
 
-[!] **Important**: Change `JWT_SECRET` and DB passwords in production!
+**[!] Security Notes:**
+
+- Change `JWT_SECRET` to strong random value: `openssl rand -base64 32`
+- Change `DB_PASSWORD` to strong password
+- Set `DB_SSLMODE=require` in production
+- Never commit production secrets to git
+
+**Configuration Priority** (highest to lowest):
+
+1. Environment variables (docker-compose.yml)
+2. `.env.{environment}.local` (e.g., `.env.production.local`)
+3. `.env.{environment}` (e.g., `.env.production`)
+4. `.env.local` (gitignored)
+5. `.env` (default values)
+
+See [config.go](../internal/infrastructure/config/config.go) for all available options and defaults.
 
 ## Database Initialization
 

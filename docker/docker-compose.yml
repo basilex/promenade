@@ -53,21 +53,30 @@ services:
     image: promenade:latest
     container_name: promenade_app
     environment:
+      # Server
       - ENVIRONMENT=production
       - SERVER_PORT=8080
+      # Database
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=system
       - DB_PASSWORD=passw0rd
       - DB_NAME=promenade_prod
       - DB_SSLMODE=disable
+      # JWT
       - JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=
       - JWT_ACCESS_TTL_MINUTES=15
       - JWT_REFRESH_TTL_HOURS=168
+      # Event Bus
       - BUS_WORKER_POOL_SIZE=10
       - BUS_BUFFER_SIZE=1000
       - BUS_RETRY_ATTEMPTS=3
       - BUS_RETRY_DELAY=1s
+      # Email
+      - EMAIL_FROM_ADDRESS=noreply@promenade.com
+      - EMAIL_FROM_NAME=Promenade Team
+      - APP_URL=http://localhost:8080
+      - APP_NAME=Promenade
     ports:
       - "8080:8080"
     networks:
