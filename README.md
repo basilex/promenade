@@ -159,6 +159,50 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 - **Swagger v1**: http://localhost:8080/api/v1/docs/swagger/index.html
 - **Health Check**: http://localhost:8080/api/v1/health
 
+### Swagger UI Authentication
+
+**How to authenticate in Swagger UI (browser):**
+
+1. **Login** via `/api/v1/auth/login` endpoint:
+
+   ```json
+   {
+     "email": "system@promenade.com",
+     "password": "passw0rd"
+   }
+   ```
+
+2. **Copy the `access_token`** from response (e.g., `eyJhbGciOiJIUzI1NiIs...`)
+
+3. **Click the "Authorize" button** 🔓 (green lock icon at the top right)
+
+4. **In the "Value" field, enter**:
+
+   ```
+   Bearer eyJhbGciOiJIUzI1NiIs...
+   ```
+
+   **⚠️ IMPORTANT:** You must type the word `Bearer`, then a space, then your token
+
+5. **Click "Authorize"** and close the dialog
+
+6. **All protected endpoints** (with 🔒 icon) will now work automatically
+
+**Common mistake:** Entering just the token without `Bearer` prefix results in `401 Unauthorized`.
+
+**cURL equivalent** (for comparison):
+
+```bash
+# Get token
+TOKEN=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"system@promenade.com","password":"passw0rd"}' | jq -r '.data.access_token')
+
+# Use token (notice "Bearer " prefix)
+curl http://localhost:8081/api/v1/roles \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ### Error Handling
 
 All errors return structured JSON responses via `ErrorHandler` in shared layer:
