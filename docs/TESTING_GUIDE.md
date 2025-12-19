@@ -2,29 +2,27 @@
 
 ## Overview
 
-A comprehensive testing system covering all application layers:
+A comprehensive testing system covering all application layers with **388 tests (100% passing)**:
 
-- **Unit Tests** - isolated business logic tests
-- **Integration Tests** - tests with real database
-- **E2E Tests** - end-to-end tests via HTTP API
+- **Unit Tests** (183) - isolated business logic and entity validation
+- **Integration Tests** (91) - repository operations with real PostgreSQL
+- **Smoke Tests** (114) - end-to-end critical flows with real database
+- **E2E Tests** - HTTP API tests (TODO)
 
 ## Quick Start
 
 ```bash
-# Run all tests
-make test
+# Run all tests (unit + integration)
+make test                  # 274 tests in ~41s
 
-# Unit tests only
-make test-unit
+# Individual test suites
+make test-unit            # 183 unit tests (~5s)
+make test-integration     # 91 integration tests (~36s)
+make test-smoke           # 114 smoke tests (~4s)
 
-# Integration tests only (with test DB)
-make test-integration
-
-# Coverage report
-make test-coverage
-
-# Watch mode (installs gotestsum if needed)
-make test-watch
+# Coverage and monitoring
+make test-coverage        # HTML coverage report
+make test-watch           # Watch mode (gotestsum)
 ```
 
 ## Test Database
@@ -93,9 +91,83 @@ Will test business logic with mocked repositories:
 - ReactivateUser
 - ChangePassword
 
-### 3. HTTP Integration Tests (Handlers)
+### 3. Smoke Tests (End-to-End Critical Flows)
 
-_TODO: After unit tests_
+Located in: `test/smoke/*_smoke_test.go`
+
+**114 smoke tests** verify critical user flows with real database operations.
+
+Example:
+
+```go
+func TestAuth_SmokeTest(t *testing.T) {
+    if testing.Short() {
+        t.Skip("Skipping smoke test in short mode")
+    }
+
+    testDB := helpers.SetupTestDB(t)
+    defer testDB.Close()
+    defer testDB.CleanupTables(t)
+
+    ctx := context.Background()
+
+    t.Run("[+] Complete_auth_flow", func(t *testing.T) {
+        // Register → Login → GetMe → Refresh → Logout
+        user, err := authUC.Register(ctx, "test@example.com", "John", "password123")
+        require.NoError(t, err)
+
+        tokens, err := authUC.Login(ctx, "test@example.com", "password123", "test-device")
+        require.NoError(t, err)
+        assert.NotEmpty(t, tokens.AccessToken)
+        assert.NotEmpty(t, tokens.RefreshToken)
+
+        // Continue testing full flow...
+    })
+
+    t.Logf("🎉 All auth smoke tests passed!")
+}
+```
+
+**Running Smoke Tests:**
+
+```bash
+# All smoke tests
+make test-smoke
+
+# Specific smoke test
+go test -v ./test/smoke -run TestRBAC_SmokeTest
+go test -v ./test/smoke -run TestUserPost_SmokeTest
+
+# Skip in short mode
+go test -short ./test/smoke  # Smoke tests are skipped
+```
+
+**Coverage by Module:**
+
+| Module           | Scenarios | Coverage                                                 |
+| ---------------- | --------- | -------------------------------------------------------- |
+| Auth             | 8         | Register, login, sessions, refresh, logout               |
+| Country/Currency | 12        | Complete CRUD operations                                 |
+| UserContact      | 11        | Email, phone, telegram, primary, verification            |
+| UserPost         | 12        | Draft, publish, featured, schedule, views, search        |
+| UserProfile      | 12        | Privacy, verification, ban/unban, views, search          |
+| PostComment      | 13        | Threading, replies, nested replies, soft delete          |
+| CommentLikes     | 5         | Like/unlike, pagination, performance (100 checks)        |
+| RBAC             | 28        | Permissions, roles, wildcards, expiration                |
+| RBAC Integration | 13        | Real-world permission scenarios (moderator, admin, etc.) |
+| **Total**        | **114**   | **All tests passing [+]**                                |
+
+**Key Features:**
+
+- [+] Real PostgreSQL integration (port 5433)
+- [+] Critical path verification (CRUD flows)
+- [+] Performance benchmarks included
+- [+] Fast execution (~4 seconds for 114 tests)
+- [+] 100% passing rate
+
+### 4. HTTP Integration Tests (Handlers)
+
+_TODO: After smoke tests expansion_
 
 Test all HTTP endpoints via real Gin router:
 

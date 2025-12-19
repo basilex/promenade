@@ -12,9 +12,10 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
 - **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- **Comprehensive Testing** - 274 tests total across all layers - 100% passing
+- **Comprehensive Testing** - 388 tests total across all layers - 100% passing
   - Unit: 183 tests (entity validation + domain logic)
   - Integration: 91 tests (repository operations with real PostgreSQL)
+  - Smoke: 114 tests (end-to-end critical flows with real database)
 - **JWT Authentication** - Secure token-based auth with refresh tokens
 - **API Versioning** - v1 and v2 with backward compatibility
 - **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
@@ -1416,7 +1417,7 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **274 Total Tests** - 100% passing [+]
+- **388 Total Tests** - 100% passing [+]
   - **183 Unit Tests** (entity validation, domain logic)
     - Country, Currency, Session, UserContact, UserPost, UserProfile, User entities
     - Permission, Role, RBAC system validation
@@ -1427,45 +1428,48 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
     - Countries & Currencies: 4 tests (CRUD operations)
     - User Management: 33 tests (users, profiles, contacts)
     - Content: 37 tests (posts, comments, likes, replies)
+  - **114 Smoke Tests** (end-to-end critical flows)
+    - Auth: 8 scenarios (registration → login → sessions → logout)
+    - Country/Currency: 12 scenarios (complete CRUD operations)
+    - User Management: 35 scenarios (profiles, contacts, posts)
+    - Content: 31 scenarios (posts, comments, likes)
+    - RBAC: 41 scenarios (permissions, roles, assignments, wildcards)
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
-- **Test Execution** - ~41 seconds for full suite (5s unit + 36s integration)
-- | **Coverage** - A     | Unit Tests | Integration Tests | Total   |
-  | -------------------- | ---------- | ----------------- | ------- |
-  | **Country/Currency** | 18         | 4                 | 22      |
-  | **Session/Auth**     | 9          | 10                | 19      |
-  | **UserContact**      | 14         | 13                | 27      |
-  | **UserPost**         | 42         | 30                | 72      |
-  | **PostComment**      | 0          | 22                | 22      |
-  | **UserProfile**      | 31         | 13                | 44      |
-  | **User/RBAC**        | 64         | 9                 | 73      |
-  | **Permission/Role**  | 31         | 16                | 47      |
-  | **CommentLikes**     | 0          | 1                 | 1       |
-  | **BaseRepository**   | 0          | 7                 | 7       |
-  | **Total**            | **183**    | **91**            | **274** |
+- **Test Execution** - ~45 seconds for full suite (5s unit + 36s integration + 4s smoke)
+- | **Coverage**         | Unit Tests | Integration Tests | Smoke Tests | Total   |
+  | -------------------- | ---------- | ----------------- | ----------- | ------- |
+  | **Country/Currency** | 18         | 4                 | 12          | 34      |
+  | **Session/Auth**     | 9          | 10                | 8           | 27      |
+  | **UserContact**      | 14         | 13                | 11          | 38      |
+  | **UserPost**         | 42         | 30                | 12          | 84      |
+  | **PostComment**      | 0          | 22                | 13          | 35      |
+  | **UserProfile**      | 31         | 13                | 12          | 56      |
+  | **User/RBAC**        | 64         | 9                 | 0           | 73      |
+  | **Permission/Role**  | 31         | 16                | 41          | 88      |
+  | **CommentLikes**     | 0          | 1                 | 5           | 6       |
+  | **BaseRepository**   | 0          | 7                 | 0           | 7       |
+  | **Total**            | **183**    | **91**            | **114**     | **388** |
 
-\_Note: Tests include comprehensive scenarios with table-driven tests, validation checks, and edge case
-| **Other** | 0 | 28 | 0 | 0 | 28 |
-| **Total** | **87** | **132** | **57** | **73** | **349** |
-
-_Note: UseCase tests include table-driven tests with multiple scenarios per function, resulting in 260+ actual test runs_
+_Note: Smoke tests provide end-to-end verification of critical user flows with real database operations. Tests include table-driven tests with multiple scenarios per function._
 
 ### Running Tests
 
 ```bash
 # Quick test - all tests with auto DB setup
-make test
+make test                  # Run unit + integration tests (274 tests)
 
-# Integration tests only (with isolated test DB)
-make test-integration
+# Individual test suites
+make test-unit            # Unit tests only (no database, 183 tests)
+make test-integration     # Integration tests (real PostgreSQL, 91 tests)
+make test-smoke           # Smoke tests (end-to-end flows, 114 tests)
 
-# Unit tests (no database required)
-make test-unit
+# Coverage and monitoring
+make test-coverage        # Generate HTML coverage report
+make test-watch           # Watch mode (re-run on file changes)
 
-# Coverage report (opens in browser)
-make test-coverage
-
-# Watch mode (re-run on file changes)
-make test-watch
+# Test database management
+make test-db-start        # Start test PostgreSQL (port 5433)
+make test-db-stop         # Stop test database
 ```
 
 ### Test Infrastructure
@@ -1514,15 +1518,18 @@ Production-ready **end-to-end smoke tests** verify critical user flows with real
 
 **Test Suite** (`test/smoke/`):
 
-| Test File                        | Scenarios | Coverage                                                                     |
-| -------------------------------- | --------- | ---------------------------------------------------------------------------- |
-| `auth_smoke_test.go`             | 8         | Registration, login, GetMe, refresh, logout, sessions, duplicate validation  |
-| `country_currency_smoke_test.go` | 12        | Country & Currency CRUD (create, read, update, delete, list, code lookup)    |
-| `comment_likes_smoke_test.go`    | 6         | Like/unlike comments, pagination, deleted comments, performance (100 checks) |
-| `user_profile_smoke_test.go`     | 1         | Profile CRUD operations, bio updates                                         |
-| `user_post_smoke_test.go`        | 1         | Post creation, publishing, status updates                                    |
-| `user_contact_smoke_test.go`     | 1         | Contact CRUD (email, phone), updates, deletion                               |
-| **Total**                        | **28**    | **All tests passing [+] (9 test suites)**                                    |
+| Test File                        | Scenarios | Coverage                                                                          |
+| -------------------------------- | --------- | --------------------------------------------------------------------------------- |
+| `auth_smoke_test.go`             | 8         | Registration, login, GetMe, refresh, logout, sessions, duplicate validation       |
+| `country_currency_smoke_test.go` | 12        | Country & Currency CRUD (create, read, update, delete, list, code lookup)         |
+| `comment_likes_smoke_test.go`    | 5         | Like/unlike comments, pagination, deleted comments, performance (100 checks)      |
+| `rbac_smoke_test.go`             | 28        | Permissions, roles, user assignments, wildcards, expiration, RBAC checks          |
+| `rbac_integration_smoke_test.go` | 13        | Real-world RBAC: moderator ban, admin feature, creator restrictions, cross-checks |
+| `post_comment_smoke_test.go`     | 13        | Comment CRUD, threading, replies, nested replies, pagination, soft delete, auth   |
+| `user_profile_smoke_test.go`     | 12        | Profile CRUD, privacy, verification, ban/unban, views, last seen, list, search    |
+| `user_post_smoke_test.go`        | 12        | Post CRUD, draft/publish, featured, schedule, views, soft delete, list, search    |
+| `user_contact_smoke_test.go`     | 11        | Contact CRUD (email, phone, telegram), primary, verification, visibility, delete  |
+| **Total**                        | **114**   | **All tests passing [+] (9 test files, production-grade coverage)**               |
 
 **Running Smoke Tests:**
 
@@ -1540,19 +1547,30 @@ go test -v ./test/smoke -run TestCommentLikes_SmokeTest
 go test -short ./test/smoke  # Smoke tests are skipped
 ```
 
-**Example Smoke Test:**
+**Example Smoke Tests:**
 
 ```go
+// RBAC Smoke Test - comprehensive permission and role management
+func TestRBAC_SmokeTest(t *testing.T) {
+    // Tests: permissions, roles, user assignments, wildcards, expiration
+    t.Run("[+] Create_custom_permissions", func(t *testing.T) {
+        perm, err := permUC.CreatePermission(ctx, "invoices", "read", "Can read invoices")
+        require.NoError(t, err)
+    })
+
+    t.Run("[+] Assign_permissions_to_role", func(t *testing.T) {
+        err := roleUC.SyncRolePermissions(ctx, roleID, permIDs)
+        require.NoError(t, err)
+    })
+
+    t.Run("[+] Check_wildcard_permission", func(t *testing.T) {
+        hasPerm, err := roleUC.HasPermission(ctx, userID, "reports:create")
+        assert.True(t, hasPerm, "via wildcard reports:*")
+    })
+}
+
+// Comment Likes Smoke Test - like/unlike flow with performance check
 func TestCommentLikes_SmokeTest(t *testing.T) {
-    if testing.Short() {
-        t.Skip("Skipping smoke test in short mode")
-    }
-
-    testDB := helpers.SetupTestDB(t)
-    defer testDB.Close()
-    defer testDB.CleanupTables(t)
-
-    // Test critical user flows with real database
     t.Run("[+] Basic_like_flow", func(t *testing.T) {
         // Like comment → verify count → unlike → verify again
     })
@@ -1568,8 +1586,9 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 - [+] Real database integration (PostgreSQL on port 5433)
 - [+] Isolated test data with automatic cleanup
 - [+] Critical path verification (create → retrieve → update → delete)
-- [+] Performance benchmarks included
-- [+] Fast execution (~2.5 seconds for all 28 scenarios across 9 test suites)
+- [+] Performance benchmarks included (100 permission checks in <500ms)
+- [+] Fast execution (~4 seconds for all 114 scenarios across 9 test files)
+- [+] 100% passing rate with comprehensive coverage
 - [+] Idempotent tests with cleanup at start and end (CleanupTables)
 
 See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for comprehensive testing documentation.
