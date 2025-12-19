@@ -229,26 +229,26 @@ v1Router := router.NewV1Router(authMiddleware, authHandler)
 
 ```bash
 # 1. Register
-curl -X POST http://localhost:8080/api/auth/register \
+curl -X POST http://localhost:8081/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","name":"Test User","password":"password123"}'
 
 # 2. Login
-curl -X POST http://localhost:8080/api/auth/login \
+curl -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"system@promenade.com","password":"passw0rd"}'
 
 # 3. Get Profile (use access_token from login)
-curl -X GET http://localhost:8080/api/auth/me \
+curl -X GET http://localhost:8081/api/auth/me \
   -H "Authorization: Bearer <access_token>"
 
 # 4. Refresh Token
-curl -X POST http://localhost:8080/api/auth/refresh \
+curl -X POST http://localhost:8081/api/auth/refresh \
   -H "Content-Type: application/json" \
   -d '{"refresh_token":"<refresh_token>"}'
 
 # 5. Logout
-curl -X POST http://localhost:8080/api/auth/logout \
+curl -X POST http://localhost:8081/api/auth/logout \
   -H "Content-Type: application/json" \
   -d '{"refresh_token":"<refresh_token>"}'
 ```
