@@ -966,7 +966,8 @@ func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) er
         "Name":     evt.Name,
         "Email":    evt.Email,
         "UserID":   evt.UserID.String(),
-        "LoginURL": "https://promenade.app/login",
+        "LoginURL": s.appURL + "/api/v1/auth/login",  // From config (APP_URL)
+        "AppName":  s.appName,                        // From config (APP_NAME)
         "Year":     time.Now().Year(),
     }
 
@@ -984,6 +985,57 @@ func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) er
 
     return s.sender.Send(ctx, email)
 }
+```
+
+**Production initialization** (`cmd/api/main.go`):
+
+```go
+// Initialize Event Bus
+busConfig := bus.NewBusConfig(
+    cfg.Bus.WorkerPoolSize,  // From .env: BUS_WORKER_POOL_SIZE=10
+    cfg.Bus.BufferSize,      // From .env: BUS_BUFFER_SIZE=1000
+    cfg.Bus.RetryAttempts,   // From .env: BUS_RETRY_ATTEMPTS=3
+    cfg.Bus.RetryDelay,      // From .env: BUS_RETRY_DELAY=1s
+)
+eventBus := memory.NewMemoryBus(busConfig)
+defer eventBus.Close(context.Background())
+
+// Initialize Email Service with config
+emailSender := notification.NewMockEmailSender() // TODO: replace with real SMTP in production
+emailService, err := notification.NewEmailService(
+    eventBus,
+    emailSender,
+    "templates/email",          // Template directory
+    cfg.Email.FromAddress,      // From .env: EMAIL_FROM_ADDRESS
+    cfg.Email.FromName,         // From .env: EMAIL_FROM_NAME
+    cfg.Email.AppURL,           // From .env: APP_URL
+    cfg.Email.AppName,          // From .env: APP_NAME
+)
+if err != nil {
+    logger.Fatal("Failed to create email service", slog.Any("error", err))
+}
+
+// Start service (subscribes to events)
+if err := emailService.Start(context.Background()); err != nil {
+    logger.Fatal("Failed to start email service", slog.Any("error", err))
+}
+
+logger.Info("Email notification service started (async via event bus)",
+    slog.String("templates_path", "templates/email"),
+    slog.String("from_address", cfg.Email.FromAddress),
+    slog.String("app_url", cfg.Email.AppURL))
+```
+
+**Environment configuration** (`.env.development`):
+
+```bash
+# Email Configuration
+EMAIL_FROM_ADDRESS=noreply@promenade.com
+EMAIL_FROM_NAME=Promenade Team
+
+# Application
+APP_NAME=Promenade
+APP_URL=http://localhost:8081
 ```
 
 ### Email Templates
@@ -1095,7 +1147,16 @@ func TestEventBusIntegration(t *testing.T) {
     defer eventBus.Close(context.Background())
 
     emailSender := notification.NewMockEmailSender()
-    emailService, err := notification.NewEmailService(eventBus, emailSender, "")
+    // Parameters: eventBus, sender, templatesPath, fromAddress, fromName, appURL, appName
+    emailService, err := notification.NewEmailService(
+        eventBus,
+        emailSender,
+        "",                          // empty = use fallback templates
+        "noreply@promenade.com",     // from config: EMAIL_FROM_ADDRESS
+        "Promenade Team",            // from config: EMAIL_FROM_NAME
+        "http://localhost:8081",     // from config: APP_URL
+        "Promenade",                 // from config: APP_NAME
+    )
     require.NoError(t, err)
     require.NoError(t, emailService.Start(ctx))
 

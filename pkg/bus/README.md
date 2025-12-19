@@ -126,13 +126,30 @@ func (s *EmailService) handleUserRegistered(ctx context.Context, e bus.Event) er
 ```go
 // cmd/api/main.go
 func main() {
-    // Initialize event bus (in-memory для начала)
-    eventBus := memory.NewDefaultMemoryBus()
+    // Load config
+    cfg, _ := config.Load()
+
+    // Initialize event bus with configuration
+    busConfig := bus.NewBusConfig(
+        cfg.Bus.WorkerPoolSize,  // BUS_WORKER_POOL_SIZE=10
+        cfg.Bus.BufferSize,      // BUS_BUFFER_SIZE=1000
+        cfg.Bus.RetryAttempts,   // BUS_RETRY_ATTEMPTS=3
+        cfg.Bus.RetryDelay,      // BUS_RETRY_DELAY=1s
+    )
+    eventBus := memory.NewMemoryBus(busConfig)
     defer eventBus.Close(context.Background())
 
-    // Start notification service
+    // Start notification service with config
     emailSender := notification.NewMockEmailSender()
-    emailService := notification.NewEmailService(eventBus, emailSender)
+    emailService, _ := notification.NewEmailService(
+        eventBus,
+        emailSender,
+        "templates/email",        // Template path
+        cfg.Email.FromAddress,    // EMAIL_FROM_ADDRESS
+        cfg.Email.FromName,       // EMAIL_FROM_NAME
+        cfg.Email.AppURL,         // APP_URL
+        cfg.Email.AppName,        // APP_NAME
+    )
     emailService.Start(context.Background())
 
     // Pass event bus to use cases
