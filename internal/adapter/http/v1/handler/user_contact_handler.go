@@ -35,7 +35,7 @@ func NewUserContactHandler(contactUC usecase.UserContactUseCase) *UserContactHan
 // @Failure      401 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts [post]
+// @Router       /users/contacts [post]
 func (h *UserContactHandler) CreateContact(c *gin.Context) {
 	var req dto.CreateUserContactRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -98,7 +98,7 @@ func (h *UserContactHandler) CreateContact(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/{id} [get]
+// @Router       /users/contacts/{id} [get]
 func (h *UserContactHandler) GetContact(c *gin.Context) {
 	contactID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
@@ -142,7 +142,7 @@ func (h *UserContactHandler) GetContact(c *gin.Context) {
 // @Failure      401 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts [get]
+// @Router       /users/contacts [get]
 func (h *UserContactHandler) GetUserContacts(c *gin.Context) {
 	userID, exists := c.Get("user_id")
 	if !exists {
@@ -175,7 +175,7 @@ func (h *UserContactHandler) GetUserContacts(c *gin.Context) {
 // @Failure      401 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/type/{type} [get]
+// @Router       /users/contacts/type/{type} [get]
 func (h *UserContactHandler) GetContactsByType(c *gin.Context) {
 	contactType := entity.ContactType(c.Param("type"))
 	if !contactType.IsValid() {
@@ -213,7 +213,7 @@ func (h *UserContactHandler) GetContactsByType(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/primary/{type} [get]
+// @Router       /users/contacts/primary/{type} [get]
 func (h *UserContactHandler) GetPrimaryContact(c *gin.Context) {
 	contactType := entity.ContactType(c.Param("type"))
 	if !contactType.IsValid() {
@@ -257,7 +257,7 @@ func (h *UserContactHandler) GetPrimaryContact(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/{id} [put]
+// @Router       /users/contacts/{id} [put]
 func (h *UserContactHandler) UpdateContact(c *gin.Context) {
 	contactID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
@@ -333,7 +333,7 @@ func (h *UserContactHandler) UpdateContact(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/{id} [delete]
+// @Router       /users/contacts/{id} [delete]
 func (h *UserContactHandler) DeleteContact(c *gin.Context) {
 	contactID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
@@ -379,7 +379,7 @@ func (h *UserContactHandler) DeleteContact(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/{id}/primary [post]
+// @Router       /users/contacts/{id}/primary [post]
 func (h *UserContactHandler) SetPrimaryContact(c *gin.Context) {
 	contactID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
@@ -425,7 +425,7 @@ func (h *UserContactHandler) SetPrimaryContact(c *gin.Context) {
 // @Failure      404 {object} response.Response
 // @Failure      500 {object} response.Response
 // @Security     BearerAuth
-// @Router       /v1/users/contacts/{id}/toggle [post]
+// @Router       /users/contacts/{id}/toggle [post]
 func (h *UserContactHandler) ToggleContactActive(c *gin.Context) {
 	contactID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {

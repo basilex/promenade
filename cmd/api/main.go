@@ -57,7 +57,7 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+// @description Enter JWT token in format: Bearer {token}
 
 func main() {
 	// Load config first (before logger init)
