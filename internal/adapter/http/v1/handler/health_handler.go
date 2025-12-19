@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/basilex/promenade/internal/adapter/http/shared/response"
+	"github.com/basilex/promenade/pkg/version"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,7 +26,7 @@ func NewHealthHandler() *HealthHandler {
 func (h *HealthHandler) HealthCheck(c *gin.Context) {
 	response.Success(c, http.StatusOK, gin.H{
 		"status":  "ok",
-		"service": "promenade",
+		"service": version.ServiceID,
 		"time":    time.Now().Unix(),
 	})
 }

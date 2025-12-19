@@ -144,12 +144,20 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 
 ### Quick Links
 
+**Local Development** (port 8081):
+
 - **API Root**: http://localhost:8081/api
 - **API v1 Base**: http://localhost:8081/api/v1
 - **API v2 Base**: http://localhost:8081/api/v2
 - **Swagger v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **Swagger v2**: http://localhost:8081/api/v2/docs/swagger/index.html
 - **Health Check**: http://localhost:8081/api/v1/health
+
+**Docker** (port 8080):
+
+- **API Root**: http://localhost:8080/api
+- **Swagger v1**: http://localhost:8080/api/v1/docs/swagger/index.html
+- **Health Check**: http://localhost:8080/api/v1/health
 
 ### Error Handling
 

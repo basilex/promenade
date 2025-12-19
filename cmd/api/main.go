@@ -31,6 +31,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/notification"
 	"github.com/basilex/promenade/internal/usecase"
 	"github.com/basilex/promenade/pkg/logger"
+	"github.com/basilex/promenade/pkg/version"
 
 	// Import swagger docs
 	_ "github.com/basilex/promenade/docs/v1"
@@ -49,7 +50,7 @@ import (
 // @license.name MIT
 // @license.url https://opensource.org/licenses/MIT
 
-// @host localhost:8081
+// @host
 // @BasePath /api/v1
 // @schemes http https
 
@@ -84,9 +85,9 @@ func main() {
 		TimeFormat: time.RFC3339,
 	})
 
-	logger.Info("Starting Promenade API",
+	logger.Info("Starting "+version.ServiceName,
 		slog.String("environment", cfg.Server.Environment),
-		slog.String("version", "0.1.0"),
+		slog.String("version", version.ServiceVersion),
 	)
 
 	// Connect to database
@@ -206,7 +207,7 @@ func main() {
 
 	// Initialize shared handlers
 	infoHandler := handler.NewInfoHandler(
-		"Promenade API", "0.1.0", cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port,
+		version.ServiceName, version.ServiceVersion, cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port,
 	)
 	errorHandler := handler.NewErrorHandler()
 

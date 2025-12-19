@@ -19,7 +19,6 @@ go.work
 .env
 .env.local
 .env.*.local
-.env.production
 
 # IDE
 .vscode/
