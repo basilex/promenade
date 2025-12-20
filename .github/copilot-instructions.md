@@ -272,7 +272,7 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 ## 13. Key Files Reference
 
 - `cmd/api/main.go` — Application bootstrap, wiring, server setup
-- `Makefile` + `Makefile.test` — All developer workflows
+- `Makefile` + `Makefile.test` + `Makefile.prod` — All developer workflows
 - `internal/adapter/http/v1/router/init_*.go` — Module dependency wiring examples
 - `internal/infrastructure/database/transaction.go` — Transaction management
 - `internal/adapter/repository/postgres/base_repository.go` — Common DB operations
