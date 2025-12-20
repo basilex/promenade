@@ -17,6 +17,7 @@ func InitAuthModule(
 	db *sqlx.DB,
 	jwtManager *jwtpkg.JWTManager,
 	authMiddleware *middleware.AuthMiddleware,
+	authzMiddleware *middleware.AuthorizationMiddleware,
 	eventBus bus.Bus,
 ) *AuthRouter {
 	// Repository layer
@@ -30,5 +31,5 @@ func InitAuthModule(
 	authHandler := handler.NewAuthHandler(authUseCase)
 
 	// Router layer
-	return NewAuthRouter(authHandler, authMiddleware)
+	return NewAuthRouter(authHandler, authMiddleware, authzMiddleware)
 }

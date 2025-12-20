@@ -9,12 +9,18 @@ import (
 type UserProfileRouter struct {
 	handler *handler.UserProfileHandler
 	authMw  *middleware.AuthMiddleware
+	authzMw *middleware.AuthorizationMiddleware
 }
 
-func NewUserProfileRouter(handler *handler.UserProfileHandler, authMw *middleware.AuthMiddleware) *UserProfileRouter {
+func NewUserProfileRouter(
+	handler *handler.UserProfileHandler,
+	authMw *middleware.AuthMiddleware,
+	authzMw *middleware.AuthorizationMiddleware,
+) *UserProfileRouter {
 	return &UserProfileRouter{
 		handler: handler,
 		authMw:  authMw,
+		authzMw: authzMw,
 	}
 }
 
@@ -33,10 +39,10 @@ func (r *UserProfileRouter) Setup(rg *gin.RouterGroup) {
 		profiles.PUT("/:id", r.authMw.RequireAuth(), r.handler.UpdateProfile)    // PUT /v1/profiles/:id
 		profiles.DELETE("/:id", r.authMw.RequireAuth(), r.handler.DeleteProfile) // DELETE /v1/profiles/:id
 
-		// Admin routes (TODO: add admin middleware)
-		profiles.POST("/:id/ban", r.authMw.RequireAuth(), r.handler.BanProfile)           // POST /v1/profiles/:id/ban
-		profiles.POST("/:id/unban", r.authMw.RequireAuth(), r.handler.UnbanProfile)       // POST /v1/profiles/:id/unban
-		profiles.POST("/:id/verify", r.authMw.RequireAuth(), r.handler.VerifyProfile)     // POST /v1/profiles/:id/verify
-		profiles.POST("/:id/unverify", r.authMw.RequireAuth(), r.handler.UnverifyProfile) // POST /v1/profiles/:id/unverify
+		// Admin routes (require profiles:moderate permission)
+		profiles.POST("/:id/ban", r.authMw.RequireAuth(), r.authzMw.RequirePermission("profiles:moderate"), r.handler.BanProfile)           // POST /v1/profiles/:id/ban
+		profiles.POST("/:id/unban", r.authMw.RequireAuth(), r.authzMw.RequirePermission("profiles:moderate"), r.handler.UnbanProfile)       // POST /v1/profiles/:id/unban
+		profiles.POST("/:id/verify", r.authMw.RequireAuth(), r.authzMw.RequirePermission("profiles:moderate"), r.handler.VerifyProfile)     // POST /v1/profiles/:id/verify
+		profiles.POST("/:id/unverify", r.authMw.RequireAuth(), r.authzMw.RequirePermission("profiles:moderate"), r.handler.UnverifyProfile) // POST /v1/profiles/:id/unverify
 	}
 }

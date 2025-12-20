@@ -166,11 +166,11 @@ func main() {
 
 	// Initialize modules (each module encapsulates its own dependencies)
 	healthRouter := router.InitHealthModule()
-	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware, eventBus)
+	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware, authzMiddleware, eventBus)
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
 	userContactRouter := router.InitUserContactModule(db, authMiddleware)
-	userProfileRouter := router.InitUserProfileModule(db, authMiddleware)
+	userProfileRouter := router.InitUserProfileModule(db, authMiddleware, authzMiddleware)
 	userPostRouter := router.InitUserPostModule(db, authMiddleware)
 
 	// Post comments module requires userPostRepo for counter updates

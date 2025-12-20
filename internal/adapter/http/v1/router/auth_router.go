@@ -9,18 +9,21 @@ import (
 
 // AuthRouter handles all authentication and user management routes
 type AuthRouter struct {
-	authHandler    *handler.AuthHandler
-	authMiddleware *middleware.AuthMiddleware
+	authHandler     *handler.AuthHandler
+	authMiddleware  *middleware.AuthMiddleware
+	authzMiddleware *middleware.AuthorizationMiddleware
 }
 
 // NewAuthRouter creates a new auth router instance
 func NewAuthRouter(
 	authHandler *handler.AuthHandler,
 	authMiddleware *middleware.AuthMiddleware,
+	authzMiddleware *middleware.AuthorizationMiddleware,
 ) *AuthRouter {
 	return &AuthRouter{
-		authHandler:    authHandler,
-		authMiddleware: authMiddleware,
+		authHandler:     authHandler,
+		authMiddleware:  authMiddleware,
+		authzMiddleware: authzMiddleware,
 	}
 }
 
@@ -41,11 +44,11 @@ func (r *AuthRouter) Setup(rg *gin.RouterGroup) {
 	r.setupProtectedRoutes(protected)
 
 	// ============================================
-	// ADMIN ROUTES (require authentication + admin role)
+	// ADMIN ROUTES (require authentication + admin permissions)
 	// ============================================
 	admin := auth.Group("/users")
 	admin.Use(r.authMiddleware.RequireAuth())
-	// TODO: add admin role check middleware
+	admin.Use(r.authzMiddleware.RequirePermission("users:manage"))
 	r.setupAdminRoutes(admin)
 }
 

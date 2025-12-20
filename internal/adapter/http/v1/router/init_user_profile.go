@@ -8,7 +8,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func InitUserProfileModule(db *sqlx.DB, authMw *middleware.AuthMiddleware) *UserProfileRouter {
+func InitUserProfileModule(
+	db *sqlx.DB,
+	authMw *middleware.AuthMiddleware,
+	authzMw *middleware.AuthorizationMiddleware,
+) *UserProfileRouter {
 	// Initialize repository
 	profileRepo := postgres.NewUserProfileRepository(db)
 
@@ -19,5 +23,5 @@ func InitUserProfileModule(db *sqlx.DB, authMw *middleware.AuthMiddleware) *User
 	profileHandler := handler.NewUserProfileHandler(profileUC)
 
 	// Return router
-	return NewUserProfileRouter(profileHandler, authMw)
+	return NewUserProfileRouter(profileHandler, authMw, authzMw)
 }
