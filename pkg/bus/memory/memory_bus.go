@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math"
 	"sync"
+	"time"
 
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/logger"
@@ -92,8 +94,7 @@ func (mb *MemoryBus) Publish(ctx context.Context, topic string, event bus.Event)
 	return nil
 }
 
-// dispatch processes a single message with a handler.
-// Handles worker pool limiting and error recovery.
+// dispatch processes a single , error recovery, and retry logic with exponential backoff.
 func (mb *MemoryBus) dispatch(ctx context.Context, handler bus.Handler, message bus.Message) {
 	defer mb.wg.Done()
 
@@ -107,17 +108,89 @@ func (mb *MemoryBus) dispatch(ctx context.Context, handler bus.Handler, message 
 			// Log panic but don't crash the bus
 			mb.logger.Error("PANIC in event handler",
 				slog.String("topic", message.Topic),
+				slog.String("message_id", message.ID),
 				slog.Any("panic", r))
 		}
 	}()
 
-	// Call handler
-	if err := handler(ctx, message.Event); err != nil {
-		// Log handler errors (retry logic will be implemented later)
-		mb.logger.Error("Handler error",
-			slog.String("topic", message.Topic),
-			slog.Any("error", err))
+	// Execute handler with retry logic
+	var lastErr error
+	maxAttempts := 1 // Default: no retries
+	if mb.config.RetryPolicy != nil && mb.config.RetryPolicy.MaxAttempts > 0 {
+		maxAttempts = mb.config.RetryPolicy.MaxAttempts
 	}
+
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		// Call handler
+		err := handler(ctx, message.Event)
+		if err == nil {
+			// Success - log only if there were previous failures
+			if attempt > 1 {
+				mb.logger.Info("Handler succeeded after retry",
+					slog.String("topic", message.Topic),
+					slog.String("message_id", message.ID),
+					slog.Int("attempt", attempt),
+					slog.Int("total_attempts", maxAttempts))
+			}
+			return
+		}
+
+		lastErr = err
+
+		// If this is the last attempt, don't wait
+		if attempt == maxAttempts {
+			break
+		}
+
+		// Calculate exponential backoff delay using RetryPolicy
+		var backoffDelay time.Duration
+		if mb.config.RetryPolicy != nil {
+			initialDelay := mb.config.RetryPolicy.InitialDelay
+			multiplier := mb.config.RetryPolicy.Multiplier
+			if multiplier <= 0 {
+				multiplier = 2.0 // Default exponential backoff
+			}
+
+			// Calculate: initialDelay * multiplier^(attempt-1)
+			backoffDelay = time.Duration(float64(initialDelay) * math.Pow(multiplier, float64(attempt-1)))
+
+			// Cap at MaxDelay if configured
+			if mb.config.RetryPolicy.MaxDelay > 0 && backoffDelay > mb.config.RetryPolicy.MaxDelay {
+				backoffDelay = mb.config.RetryPolicy.MaxDelay
+			}
+		} else {
+			// Fallback: simple exponential backoff with 1s base
+			backoffDelay = time.Second * time.Duration(1<<uint(attempt-1))
+		}
+
+		mb.logger.Warn("Handler failed, retrying",
+			slog.String("topic", message.Topic),
+			slog.String("message_id", message.ID),
+			slog.Int("attempt", attempt),
+			slog.Int("max_attempts", maxAttempts),
+			slog.Duration("backoff", backoffDelay),
+			slog.Any("error", err))
+
+		// Wait before retry with context cancellation support
+		select {
+		case <-time.After(backoffDelay):
+			// Continue to next attempt
+		case <-ctx.Done():
+			mb.logger.Error("Handler retry cancelled by context",
+				slog.String("topic", message.Topic),
+				slog.String("message_id", message.ID),
+				slog.Int("attempt", attempt),
+				slog.Any("error", ctx.Err()))
+			return
+		}
+	}
+
+	// All retry attempts exhausted
+	mb.logger.Error("Handler failed after all retry attempts",
+		slog.String("topic", message.Topic),
+		slog.String("message_id", message.ID),
+		slog.Int("total_attempts", maxAttempts),
+		slog.Any("error", lastErr))
 }
 
 // Subscribe registers a handler for the given topic.

@@ -434,7 +434,7 @@ func MarshalFeaturedImage(img *FeaturedImage) ([]byte, error) {
 
 // UnmarshalFeaturedImage unmarshals JSONB to FeaturedImage
 func UnmarshalFeaturedImage(data []byte) (*FeaturedImage, error) {
-	if data == nil || len(data) == 0 {
+	if len(data) == 0 {
 		return nil, nil
 	}
 
