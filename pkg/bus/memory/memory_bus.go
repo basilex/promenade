@@ -3,9 +3,11 @@ package memory
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/basilex/promenade/pkg/bus"
+	"github.com/basilex/promenade/pkg/logger"
 	"github.com/google/uuid"
 )
 
@@ -20,6 +22,7 @@ type MemoryBus struct {
 	wg           sync.WaitGroup
 	closed       bool
 	eventCounter int64 // For statistics
+	logger       *slog.Logger
 }
 
 // NewMemoryBus creates a new in-memory message bus.
@@ -35,6 +38,7 @@ func NewMemoryBus(config bus.BusConfig) *MemoryBus {
 		subscribers: make(map[string][]bus.Handler),
 		config:      config,
 		workerPool:  make(chan struct{}, config.WorkerPoolSize),
+		logger:      logger.Default().Logger,
 	}
 }
 
@@ -101,16 +105,18 @@ func (mb *MemoryBus) dispatch(ctx context.Context, handler bus.Handler, message 
 	defer func() {
 		if r := recover(); r != nil {
 			// Log panic but don't crash the bus
-			// TODO: add proper logging when logger is integrated
-			fmt.Printf("PANIC in event handler: %v\n", r)
+			mb.logger.Error("PANIC in event handler",
+				slog.String("topic", message.Topic),
+				slog.Any("panic", r))
 		}
 	}()
 
 	// Call handler
 	if err := handler(ctx, message.Event); err != nil {
-		// TODO: implement retry logic based on config.RetryPolicy
-		// For now, just log the error
-		fmt.Printf("Handler error for topic %s: %v\n", message.Topic, err)
+		// Log handler errors (retry logic will be implemented later)
+		mb.logger.Error("Handler error",
+			slog.String("topic", message.Topic),
+			slog.Any("error", err))
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/basilex/promenade/internal/domain/entity"
@@ -14,6 +15,7 @@ import (
 	"github.com/basilex/promenade/internal/domain/repository"
 	"github.com/basilex/promenade/pkg/bus"
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
+	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -51,6 +53,7 @@ type authUseCase struct {
 	sessionRepo repository.SessionRepository
 	jwtManager  *jwtpkg.JWTManager
 	eventBus    bus.Bus
+	logger      *slog.Logger
 }
 
 func NewAuthUseCase(
@@ -64,6 +67,7 @@ func NewAuthUseCase(
 		sessionRepo: sessionRepo,
 		jwtManager:  jwtManager,
 		eventBus:    eventBus,
+		logger:      logger.Default().Logger,
 	}
 }
 
@@ -102,8 +106,10 @@ func (uc *authUseCase) Register(ctx context.Context, email, name, password strin
 	userEvent := event.NewUserRegisteredEvent(user.ID, user.Email, user.Name)
 	if err := uc.eventBus.Publish(ctx, bus.TopicUserRegistered, userEvent); err != nil {
 		// Логируем ошибку, но не фейлим регистрацию из-за event bus
-		// TODO: add proper logging
-		fmt.Printf("Failed to publish user.registered event: %v\n", err)
+		uc.logger.Error("Failed to publish user.registered event",
+			slog.String("user_id", user.ID.String()),
+			slog.String("email", user.Email),
+			slog.Any("error", err))
 	}
 
 	return user, nil
