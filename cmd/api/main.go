@@ -182,6 +182,22 @@ func main() {
 	// RBAC module
 	rbacRouter := router.InitRBACModule(db, authMiddleware, authzMiddleware)
 
+	// Initialize purge system (includes scheduler that auto-starts)
+	purgeUseCase, purgeScheduler, err := router.InitPurgeModule(db, cfg.Purge, eventBus)
+	if err != nil {
+		logger.Fatal("Failed to initialize purge module", slog.Any("error", err))
+	}
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := purgeScheduler.Stop(ctx); err != nil {
+			logger.Error("Failed to stop purge scheduler", slog.Any("error", err))
+		}
+	}()
+
+	// Admin module (includes purge operations)
+	adminRouter := router.InitAdminModule(purgeUseCase, purgeScheduler, authMiddleware, authzMiddleware)
+
 	// Future modules:
 	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
 
@@ -236,7 +252,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter, rbacRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter, rbacRouter, adminRouter)
 		v1Router.Setup(v1)
 	}
 

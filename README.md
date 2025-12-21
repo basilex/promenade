@@ -12,9 +12,10 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
 - **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
 - **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
-- **Comprehensive Testing** - 388 tests total across all layers - 100% passing
+- **Automated Purge System** - Configurable data retention with cron scheduler for soft-deleted records
+- **Comprehensive Testing** - 394 tests total across all layers - 100% passing
   - Unit: 183 tests (entity validation + domain logic)
-  - Integration: 91 tests (repository operations with real PostgreSQL)
+  - Integration: 97 tests (repository operations with real PostgreSQL)
   - Smoke: 114 tests (end-to-end critical flows with real database)
 - **JWT Authentication** - Secure token-based auth with refresh tokens
 - **API Versioning** - v1 and v2 with backward compatibility
@@ -1182,6 +1183,158 @@ const (
 
 **Naming convention**: `{domain}.{entity}.{action}` for clarity and consistency.
 
+## 🗑️ Automated Purge System
+
+Promenade includes a **production-ready automated purge system** for permanently deleting soft-deleted records after configurable retention periods. This ensures compliance with data retention policies and maintains database performance.
+
+### Overview
+
+The purge system automatically removes soft-deleted records (`deleted_at IS NOT NULL`) that exceed their retention period:
+
+- **User Posts** - Default 90 days retention
+- **Post Comments** - Default 30 days retention
+
+**Architecture**: Event-driven design with cron scheduler, configurable retention policies, dry-run mode, batch processing, and admin HTTP API.
+
+### Configuration
+
+Configure via environment variables in `.env` files:
+
+```bash
+# Enable/disable automated purge
+PURGE_ENABLED=true
+
+# Cron schedule (default: 2 AM daily)
+PURGE_SCHEDULE="0 2 * * *"
+
+# Dry-run mode (log what would be deleted without actual deletion)
+PURGE_DRY_RUN=false
+
+# Batch size for deletion operations (prevents long-running transactions)
+PURGE_BATCH_SIZE=1000
+
+# Retention periods (days)
+PURGE_RETENTION_USER_POSTS=90      # 90 days for soft-deleted posts
+PURGE_RETENTION_POST_COMMENTS=30   # 30 days for soft-deleted comments
+```
+
+**Cron Schedule Examples**:
+
+- `"0 2 * * *"` - Daily at 2:00 AM (default)
+- `"0 3 * * 0"` - Weekly on Sunday at 3:00 AM
+- `"0 4 1 * *"` - Monthly on 1st day at 4:00 AM
+- `"0 */6 * * *"` - Every 6 hours
+
+### Admin API Endpoints
+
+All endpoints require `admin:purge` permission:
+
+```bash
+# 1. Trigger manual purge (bypasses schedule)
+curl -X POST http://localhost:8081/api/v1/admin/purge/trigger \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"entity":"user_posts","dry_run":false}'
+# Response: {"deleted": 42, "entity": "user_posts", "dry_run": false}
+
+# 2. Get retention policies
+curl http://localhost:8081/api/v1/admin/purge/policies \
+  -H "Authorization: Bearer <admin_token>"
+# Response: [{"entity":"user_posts","retention_days":90}, ...]
+
+# 3. Preview purge (count deletable records)
+curl http://localhost:8081/api/v1/admin/purge/preview \
+  -H "Authorization: Bearer <admin_token>"
+# Response: [{"entity":"user_posts","count":127}, ...]
+
+# 4. Get purge status
+curl http://localhost:8081/api/v1/admin/purge/status \
+  -H "Authorization: Bearer <admin_token>"
+# Response: {"enabled":true,"schedule":"0 2 * * *","next_run":"2025-01-20T02:00:00Z"}
+```
+
+### Key Features
+
+- **Automated Scheduling** - Runs on cron schedule (default 2 AM daily)
+- **Retention Policies** - Configurable per entity (posts: 90d, comments: 30d)
+- **Batch Processing** - Deletes 1000 records per batch with 100ms delays
+- **Dry-Run Mode** - Test purge logic without actual deletion
+- **Event Bus Integration** - Publishes `purge.completed` and `purge.failed` events
+- **Admin API** - Manual trigger, preview, policy management
+- **Graceful Shutdown** - Waits for in-progress purge operations
+- **Performance Optimized** - Batch deletion prevents long-running transactions
+
+### Example Workflow
+
+```go
+// 1. User soft-deletes a post
+post.SoftDelete()  // Sets deleted_at = NOW()
+
+// 2. Post remains soft-deleted for 90 days (retention period)
+// During this time:
+//   - Post is hidden from normal queries (WHERE deleted_at IS NULL)
+//   - Post can be restored by admins/moderators
+//   - Data is still in database for audit/recovery
+
+// 3. After 90 days, purge system runs (scheduled or manual)
+// Criteria: deleted_at < NOW() - INTERVAL '90 days'
+purgeUseCase.PurgeEntity(ctx, "user_posts", false)
+
+// 4. Post is PERMANENTLY deleted from database
+// Event published: purge.completed
+```
+
+### Safety Features
+
+- **Grace Period**: Only deletes records exceeding retention period
+- **Batch Limits**: Prevents overwhelming database (default 1000 records/batch)
+- **Transaction Safety**: Each batch is atomic (all or nothing)
+- **Dry-Run Testing**: Verify purge logic before production execution
+- **Event Logging**: All purge operations emit events for monitoring
+- **Configurable Delays**: 100ms between batches to reduce DB load
+
+### Monitoring & Events
+
+Purge operations emit events for integration with monitoring systems:
+
+```go
+// Success event
+type PurgeCompletedEvent struct {
+    Entity      string    `json:"entity"`       // "user_posts"
+    Deleted     int       `json:"deleted"`      // 127
+    DryRun      bool      `json:"dry_run"`      // false
+    CompletedAt time.Time `json:"completed_at"` // 2025-01-20T02:00:15Z
+}
+
+// Failure event
+type PurgeFailedEvent struct {
+    Entity string `json:"entity"` // "post_comments"
+    Error  string `json:"error"`  // "database connection lost"
+}
+```
+
+**Topics**: `purge.completed`, `purge.failed` (see `pkg/bus/topics.go`)
+
+### Testing
+
+The purge system includes **6 comprehensive integration tests**:
+
+```bash
+make test-integration
+
+# Tests:
+# ✓ TestPurgeRepository_PurgeUserPosts          - Delete posts exceeding retention
+# ✓ TestPurgeRepository_PurgeUserPosts_DryRun   - Dry-run mode (no deletion)
+# ✓ TestPurgeRepository_PurgePostComments       - Delete comments exceeding retention
+# ✓ TestPurgeRepository_CountDeletableUserPosts - Count deletable posts
+# ✓ TestPurgeRepository_CountDeletablePostComments - Count deletable comments
+# ✓ TestPurgeRepository_BatchProcessing         - Batch deletion (25 records → 3 batches)
+```
+
+**Test Helpers**: `insertPostWithDeletedAt`, `insertCommentWithDeletedAt` create soft-deleted test data.
+
+See [test/helpers/fixtures.go](test/helpers/fixtures.go) and [internal/adapter/repository/postgres/purge_repository_test.go](internal/adapter/repository/postgres/purge_repository_test.go).
+
 ### Testing
 
 #### Unit Tests with Mock Bus
@@ -1481,17 +1634,18 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
 
 ### Test Statistics
 
-- **388 Total Tests** - 100% passing [+]
+- **394 Total Tests** - 100% passing [+]
   - **183 Unit Tests** (entity validation, domain logic)
     - Country, Currency, Session, UserContact, UserPost, UserProfile, User entities
     - Permission, Role, RBAC system validation
     - Business logic, status transitions, timestamps
-  - **91 Integration Tests** (with real PostgreSQL)
+  - **97 Integration Tests** (with real PostgreSQL)
     - BaseRepository: 7 tests (transactions, executor pattern)
     - Auth: 10 tests (sessions, token management)
     - Countries & Currencies: 4 tests (CRUD operations)
     - User Management: 33 tests (users, profiles, contacts)
     - Content: 37 tests (posts, comments, likes, replies)
+    - **Purge System: 6 tests** (batch deletion, dry-run, retention policies)
   - **114 Smoke Tests** (end-to-end critical flows)
     - Auth: 8 scenarios (registration → login → sessions → logout)
     - Country/Currency: 12 scenarios (complete CRUD operations)
@@ -1499,7 +1653,7 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
     - Content: 31 scenarios (posts, comments, likes)
     - RBAC: 41 scenarios (permissions, roles, assignments, wildcards)
 - **Test Database** - PostgreSQL 16 on port 5433 (isolated from dev DB)
-- **Test Execution** - ~45 seconds for full suite (5s unit + 36s integration + 4s smoke)
+- **Test Execution** - ~37 seconds for full suite (5s unit + 28s integration + 4s smoke)
 - | **Coverage**         | Unit Tests | Integration Tests | Smoke Tests | Total   |
   | -------------------- | ---------- | ----------------- | ----------- | ------- |
   | **Country/Currency** | 18         | 4                 | 12          | 34      |
@@ -1512,7 +1666,8 @@ Promenade features a **comprehensive testing infrastructure** with isolated test
   | **Permission/Role**  | 31         | 16                | 41          | 88      |
   | **CommentLikes**     | 0          | 1                 | 5           | 6       |
   | **BaseRepository**   | 0          | 7                 | 0           | 7       |
-  | **Total**            | **183**    | **91**            | **114**     | **388** |
+  | **Purge System**     | 0          | **6**             | 0           | **6**   |
+  | **Total**            | **183**    | **97**            | **114**     | **394** |
 
 _Note: Smoke tests provide end-to-end verification of critical user flows with real database operations. Tests include table-driven tests with multiple scenarios per function._
 
@@ -1520,11 +1675,11 @@ _Note: Smoke tests provide end-to-end verification of critical user flows with r
 
 ```bash
 # Quick test - all tests with auto DB setup
-make test                  # Run unit + integration tests (274 tests)
+make test                  # Run unit + integration tests (280 tests)
 
 # Individual test suites
 make test-unit            # Unit tests only (no database, 183 tests)
-make test-integration     # Integration tests (real PostgreSQL, 91 tests)
+make test-integration     # Integration tests (real PostgreSQL, 97 tests)
 make test-smoke           # Smoke tests (~4.5s, critical flows)
 make test-coverage        # Generate HTML coverage report
 make test-watch           # Watch mode (re-run on file changes)

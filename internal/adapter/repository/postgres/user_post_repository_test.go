@@ -13,32 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// createTestPost creates a basic test post with required fields
-func createTestPost(userID uuidv7.UUID, overrides ...func(*entity.UserPost)) *entity.UserPost {
-	post := &entity.UserPost{
-		ID:                 uuidv7.New(),
-		UserID:             userID,
-		Title:              "Test Post",
-		Slug:               "test-post",
-		Content:            "Test content",
-		Status:             entity.PostStatusDraft,
-		Tags:               []string{},
-		Categories:         []string{},
-		MetaKeywords:       []string{},
-		IsPublic:           true,
-		IsCommentsEnabled:  true,
-		ReadingTimeMinutes: 5,
-		CreatedAt:          time.Now(),
-		UpdatedAt:          time.Now(),
-	}
-
-	for _, override := range overrides {
-		override(post)
-	}
-
-	return post
-}
-
 func TestUserPostRepository_Create(t *testing.T) {
 	testDB := helpers.SetupTestDB(t)
 	defer testDB.Close()

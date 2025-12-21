@@ -15,6 +15,7 @@ type Config struct {
 	JWT      JWTConfig
 	Bus      BusConfig
 	Email    EmailConfig
+	Purge    PurgeConfig
 }
 
 type ServerConfig struct {
@@ -57,6 +58,15 @@ type EmailConfig struct {
 	FromName    string
 	AppURL      string
 	AppName     string
+}
+
+type PurgeConfig struct {
+	Enabled                   bool
+	Schedule                  string
+	DryRun                    bool
+	BatchSize                 int
+	RetentionDaysUserPosts    int
+	RetentionDaysPostComments int
 }
 
 // Load loads configuration from .env file and environment variables
@@ -123,6 +133,14 @@ func Load() (*Config, error) {
 			AppURL:      getEnv("APP_URL", "http://localhost:8081"),
 			AppName:     getEnv("APP_NAME", "Promenade"),
 		},
+		Purge: PurgeConfig{
+			Enabled:                   getEnvAsBool("PURGE_ENABLED", true),
+			Schedule:                  getEnv("PURGE_SCHEDULE", "0 2 * * *"), // 2 AM daily
+			DryRun:                    getEnvAsBool("PURGE_DRY_RUN", false),
+			BatchSize:                 getEnvAsInt("PURGE_BATCH_SIZE", 1000),
+			RetentionDaysUserPosts:    getEnvAsInt("PURGE_RETENTION_USER_POSTS", 90),
+			RetentionDaysPostComments: getEnvAsInt("PURGE_RETENTION_POST_COMMENTS", 30),
+		},
 	}, nil
 }
 
@@ -152,6 +170,16 @@ func getEnv(key, defaultValue string) string {
 	}
 	return defaultValue
 }
+
+func getEnvAsBool(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		if boolVal, err := strconv.ParseBool(value); err == nil {
+			return boolVal
+		}
+	}
+	return defaultValue
+}
+
 
 func getEnvAsInt(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {

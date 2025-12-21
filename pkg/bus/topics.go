@@ -32,6 +32,10 @@ const (
 	TopicRoleAssigned = "role.assigned"
 	TopicRoleRevoked  = "role.revoked"
 
+	// Purge Topics (data cleanup)
+	TopicPurgeCompleted = "purge.completed"
+	TopicPurgeFailed    = "purge.failed"
+
 	// Notification Topics (for consuming events and triggering notifications)
 	TopicNotificationEmail = "notification.email"
 	TopicNotificationSMS   = "notification.sms"
@@ -46,6 +50,7 @@ const (
 	ContextProfileManagement BoundedContext = "profile_management"
 	ContextContentManagement BoundedContext = "content_management"
 	ContextRBAC              BoundedContext = "rbac"
+	ContextPurge             BoundedContext = "purge"
 	ContextNotification      BoundedContext = "notification"
 	ContextReferenceData     BoundedContext = "reference_data"
 )
@@ -61,6 +66,8 @@ func GetContext(topic string) BoundedContext {
 		return ContextContentManagement
 	case topic[:5] == "role.":
 		return ContextRBAC
+	case topic[:6] == "purge.":
+		return ContextPurge
 	case topic[:13] == "notification.":
 		return ContextNotification
 	default:
