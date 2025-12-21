@@ -1,5 +1,12 @@
 # Development targets
 
+clean: ## Clean all build artifacts and temporary files
+	@echo "Cleaning build artifacts..."
+	rm -rf bin/
+	rm -rf tmp/*
+	rm -f coverage.out coverage.html
+	@echo "✓ Cleanup complete"
+
 install: ## Install dependencies and tools
 	go mod download
 	go mod tidy

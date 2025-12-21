@@ -1,10 +1,8 @@
 # Production/DevOps targets
 
-clean: ## Clean build artifacts and containers
-	rm -rf bin/
-	rm -rf docs/v1/ docs/v2/
-	rm -f coverage.out coverage.html
+clean-docker: ## Clean Docker containers and volumes
 	$(DOCKER_COMPOSE) down -v
+	@echo "✓ Docker cleanup complete"
 
 docker-up: ## Start all Docker services
 	$(DOCKER_COMPOSE) up -d

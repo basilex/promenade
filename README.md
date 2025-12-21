@@ -604,7 +604,8 @@ make migrate-create    # Create migration (NAME=xxx)
 make swagger-all       # Generate v1 + v2 Swagger docs
 
 # Cleanup
-make clean             # Remove artifacts
+make clean             # Remove build artifacts (bin/, tmp/*, coverage.*)
+make clean-docker      # Remove Docker containers and volumes
 ```
 
 ## Architecture

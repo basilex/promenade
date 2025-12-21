@@ -1,12 +1,15 @@
 # Binaries
 api
 bin/
-*_demo
-*. exe
+*.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+
+# Demo binaries (exclude demo source directories)
+*_demo
+!examples/*_demo/
 
 # Test binaries (Go test executables)
 *.test
