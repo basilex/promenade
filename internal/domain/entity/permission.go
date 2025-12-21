@@ -8,97 +8,6 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Permission represents a specific action that can be performed on a resource
-type Permission struct {
-	ID          uuidv7.UUID `db:"id" json:"id" validate:"required"`
-	Resource    string      `db:"resource" json:"resource" validate:"required,max=50"` // e.g., "posts", "users", "comments"
-	Action      string      `db:"action" json:"action" validate:"required,max=50"`     // e.g., "create", "read", "update", "delete"
-	Description *string     `db:"description" json:"description" validate:"omitempty"` // Human-readable description
-	CreatedAt   time.Time   `db:"created_at" json:"created_at" validate:"required"`
-}
-
-// String returns permission in format "resource:action"
-func (p *Permission) String() string {
-	return fmt.Sprintf("%s:%s", p.Resource, p.Action)
-}
-
-// Matches checks if this permission matches the required permission
-// Supports wildcards: "posts:*" matches "posts:read", "posts:write", etc.
-// "*:read" matches "posts:read", "users:read", etc.
-// "*:*" or "*" matches everything
-func (p *Permission) Matches(required string) bool {
-	parts := strings.Split(required, ":")
-	if len(parts) != 2 {
-		return false
-	}
-
-	reqResource, reqAction := parts[0], parts[1]
-
-	// Check for full wildcard
-	if p.Resource == "*" && (p.Action == "*" || p.Action == "") {
-		return true
-	}
-
-	// Check resource match (with wildcard support)
-	resourceMatch := p.Resource == "*" || p.Resource == reqResource
-
-	// Check action match (with wildcard support)
-	actionMatch := p.Action == "*" || p.Action == reqAction
-
-	return resourceMatch && actionMatch
-}
-
-// NewPermission creates a new Permission from "resource:action" format
-func NewPermission(permissionString string) (*Permission, error) {
-	parts := strings.Split(permissionString, ":")
-	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid permission format: %s (expected resource:action)", permissionString)
-	}
-
-	resource := strings.TrimSpace(parts[0])
-	action := strings.TrimSpace(parts[1])
-
-	if resource == "" || action == "" {
-		return nil, fmt.Errorf("resource and action cannot be empty")
-	}
-
-	return &Permission{
-		ID:        uuidv7.New(),
-		Resource:  resource,
-		Action:    action,
-		CreatedAt: time.Now(),
-	}, nil
-}
-
-// MustNewPermission creates a new Permission or panics
-func MustNewPermission(permissionString string) *Permission {
-	p, err := NewPermission(permissionString)
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-// Validate validates permission fields
-func (p *Permission) Validate() error {
-	if p.ID == (uuidv7.UUID{}) {
-		return fmt.Errorf("%w: permission id is required", ErrInvalidInput)
-	}
-	if p.Resource == "" {
-		return fmt.Errorf("%w: resource is required", ErrInvalidInput)
-	}
-	if p.Action == "" {
-		return fmt.Errorf("%w: action is required", ErrInvalidInput)
-	}
-	if len(p.Resource) > 50 {
-		return fmt.Errorf("%w: resource must be 50 characters or less", ErrInvalidInput)
-	}
-	if len(p.Action) > 50 {
-		return fmt.Errorf("%w: action must be 50 characters or less", ErrInvalidInput)
-	}
-	return nil
-}
-
 // Common permission constants for convenience
 const (
 	// Wildcard permissions
@@ -146,3 +55,97 @@ const (
 	PermissionRolesAssign = "roles:assign"
 	PermissionRolesAll    = "roles:*"
 )
+
+// Permission represents a specific action that can be performed on a resource
+type Permission struct {
+	ID          uuidv7.UUID `db:"id" json:"id" validate:"required"`
+	Resource    string      `db:"resource" json:"resource" validate:"required,max=50"` // e.g., "posts", "users", "comments"
+	Action      string      `db:"action" json:"action" validate:"required,max=50"`     // e.g., "create", "read", "update", "delete"
+	Description *string     `db:"description" json:"description" validate:"omitempty"` // Human-readable description
+	CreatedAt   time.Time   `db:"created_at" json:"created_at" validate:"required"`
+}
+
+// NewPermission creates a new Permission from "resource:action" format
+func NewPermission(permissionString string) (*Permission, error) {
+	parts := strings.Split(permissionString, ":")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf(
+			"invalid permission format: %s (expected resource:action)", permissionString,
+		)
+	}
+
+	resource := strings.TrimSpace(parts[0])
+	action := strings.TrimSpace(parts[1])
+
+	if resource == "" || action == "" {
+		return nil, fmt.Errorf("resource and action cannot be empty")
+	}
+
+	return &Permission{
+		ID:        uuidv7.New(),
+		Resource:  resource,
+		Action:    action,
+		CreatedAt: time.Now(),
+	}, nil
+}
+
+// MustNewPermission creates a new Permission or panics
+func MustNewPermission(permissionString string) *Permission {
+	p, err := NewPermission(permissionString)
+	if err != nil {
+		panic(err)
+	}
+
+	return p
+}
+
+// Matches checks if this permission matches the required permission
+// Supports wildcards: "posts:*" matches "posts:read", "posts:write", etc.
+// "*:read" matches "posts:read", "users:read", etc.
+// "*:*" or "*" matches everything
+func (p *Permission) Matches(required string) bool {
+	parts := strings.Split(required, ":")
+	if len(parts) != 2 {
+		return false
+	}
+
+	reqResource, reqAction := parts[0], parts[1]
+
+	// Check for full wildcard
+	if p.Resource == "*" && (p.Action == "*" || p.Action == "") {
+		return true
+	}
+
+	// Check resource match (with wildcard support)
+	resourceMatch := p.Resource == "*" || p.Resource == reqResource
+
+	// Check action match (with wildcard support)
+	actionMatch := p.Action == "*" || p.Action == reqAction
+
+	return resourceMatch && actionMatch
+}
+
+// Validate validates permission fields
+func (p *Permission) Validate() error {
+	if p.ID == (uuidv7.UUID{}) {
+		return fmt.Errorf("%w: permission id is required", ErrInvalidInput)
+	}
+	if p.Resource == "" {
+		return fmt.Errorf("%w: resource is required", ErrInvalidInput)
+	}
+	if p.Action == "" {
+		return fmt.Errorf("%w: action is required", ErrInvalidInput)
+	}
+	if len(p.Resource) > 50 {
+		return fmt.Errorf("%w: resource must be 50 characters or less", ErrInvalidInput)
+	}
+	if len(p.Action) > 50 {
+		return fmt.Errorf("%w: action must be 50 characters or less", ErrInvalidInput)
+	}
+	return nil
+}
+
+// String returns permission in format "resource:action"
+func (p *Permission) String() string {
+	return fmt.Sprintf("%s:%s", p.Resource, p.Action)
+}

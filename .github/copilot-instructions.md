@@ -1,83 +1,120 @@
 # Copilot Instructions for Promenade
 
-Essential knowledge for AI coding agents working in this codebase.
+## Promenade AI Agent Guide
 
-## 1. Architecture Overview
+This guide enables AI coding agents to work productively in Promenade. It summarizes architecture, workflows, and conventions unique to this project. For details, see referenced files and docs.
 
-**Clean Architecture with explicit layer separation:**
+---
 
-- **Domain** (`internal/domain`): entities, repository interfaces, domain events only
-- **Use Cases** (`internal/usecase`): business logic, orchestrates repositories
-- **Adapters** (`internal/adapter`): HTTP handlers (v1/v2), repository implementations (Postgres)
-- **Infrastructure** (`internal/infrastructure`): config, database, logger, notification services
+## 1. Architecture & Layering
 
-**Critical rule**: Dependencies flow inward. Use cases depend on domain interfaces, not concrete implementations. Handlers depend on use case interfaces. Never import adapter packages into use cases or domain.
+- **Clean Architecture**: Four layers—Domain (`internal/domain`), Use Case (`internal/usecase`), Adapter (`internal/adapter`), Infrastructure (`internal/infrastructure`).
+- **Dependency Rule**: Dependencies flow inward. Use cases depend only on domain interfaces. Never import adapter code into use case/domain.
+- **Event-Driven**: Domain events (`internal/domain/event`) use `pkg/bus` for async communication. Events embed `bus.BaseEvent` and follow `User{Action}Event` naming. See [pkg/bus/README.md](pkg/bus/README.md).
+- **Module Initialization**: Each module wires repo → usecase → handler → router. See [internal/adapter/http/v1/router/init\_\*.go](internal/adapter/http/v1/router/init_auth.go) for examples.
 
-**Event-driven patterns**: Domain events (`internal/domain/event`) use `pkg/bus` for async communication. Events embed `bus.BaseEvent` and follow naming: `User{Action}Event`. EmailService subscribes to events for notifications.
+---
 
-**Module initialization pattern** (see `internal/adapter/http/v1/router/init_*.go`):
+## 2. Developer Workflows
 
-```go
-// Each module wires its dependencies: repo → usecase → handler → router
-func InitAuthModule(db *sqlx.DB, jwt *jwt.Manager, authMw *middleware.AuthMiddleware) *AuthRouter {
-    repo := postgres.NewUserRepository(db)
-    sessionRepo := postgres.NewSessionRepository(db)
-    usecase := usecase.NewAuthUseCase(repo, sessionRepo, jwt)
-    handler := handler.NewAuthHandler(usecase)
-    return NewAuthRouter(handler, authMw)
-}
-```
+- **Primary commands** (see Makefile):
+  - `make dev` — Start Postgres, migrate, run app
+  - `make test` — Run all tests (unit + integration)
+  - `make test-integration` — Integration tests (uses test DB on port 5433)
+  - `make test-unit` — Unit tests only
+  - `make build` — Build binary (runs swagger-all first)
+  - `make migrate-up` / `make migrate-down` — DB migrations
+  - `make generate ENTITY=X` — Generate CRUD boilerplate
+  - `make swagger-all` — Generate API docs
+  - `make lint` / `make fmt` — Lint and format code
+- **Testing**: Integration tests use Docker Compose (`docker/docker-compose.test.yml`). See [test/README.md](test/README.md) for helpers and structure.
+- **Docker**: Use `make docker-up`, `make docker-build`, `make docker-run` for container workflows. See [docker/README.md](docker/README.md).
 
-## 2. Essential Commands
+---
 
-```bash
-make dev                    # Start postgres, migrate, run app (primary workflow)
-make build                  # Build to bin/promenade (runs swagger-all first)
-make test                   # Unit + integration tests
-make test-integration       # Integration tests (spins up test DB on port 5433)
-make test-unit              # Unit tests only
-make migrate-up             # Apply migrations
-make migrate-down           # Rollback last migration
-make migrate-create NAME=x  # Create new migration pair
-make swagger-all            # Generate v1 and v2 Swagger docs
-make generate ENTITY=X      # Generate full CRUD boilerplate using templates
-make generate-interactive   # Interactive entity generator with prompts
-make fmt                    # Format code (go fmt + gofmt -s)
-make lint                   # Run golangci-lint
-```
+## 3. Data & Repository Patterns
 
-**Test infrastructure details**: Integration tests use separate Docker Compose config (`docker/docker-compose.test.yml`) with dedicated test DB on port 5433. Tests run with `make test-integration` which starts DB, runs migrations, executes tests, tears down DB.
+- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for common ops (`Get`, `Select`, `Exec`).
+- **Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`; `getExecutor(ctx)` auto-selects transaction or DB.
+- **UUID v7**: All primary keys use time-ordered UUIDs via `pkg/uuidv7.New()`. Never use UUID v4 or auto-increment.
 
-## 3. Database & Repository Patterns
+---
 
-**No ORM. Use raw SQL with sqlx.**
+## 4. HTTP & API Conventions
 
-All repositories:
+- **Versioning**: v1 and v2 APIs are isolated (handlers, DTOs, routers).
+- **Router Structure**: Each module has its own router, registered in [internal/adapter/http/v1/router/router.go](internal/adapter/http/v1/router/router.go).
+- **Middleware**: Stack includes recovery, request ID, logger, CORS. Per-route: auth and RBAC via `RequireAuth()` and `RequirePermission()`.
+- **Handlers**: Accept use case in constructor. Bind request DTO, call use case, handle errors with domain-specific checks (`errors.Is`). Use `response.Success()`/`response.Error()`.
+- **Swagger**: Add comments for API docs. Run `make swagger-all` after handler/DTO changes.
 
-1. Embed `*BaseRepository` for common operations (`Get`, `Select`, `Exec`, `NamedExec`)
-2. Use `getExecutor(ctx)` to support transactions transparently
+---
 
-Example from `internal/adapter/repository/postgres/user_repository.go`:
+## 5. Adding Features
 
-```go
-type UserRepository struct {
-    *BaseRepository
-}
+- **Preferred**: Use code generators (`make generate ENTITY=X` or `make generate-interactive`).
+- **Manual steps**: Add entity, repo interface/impl, usecase, handler, DTO, router, migration. Register in router and main. See [README.md](README.md) and [scripts/templates/].
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
-    var user entity.User
-    query := `SELECT id, email, name, ... FROM users WHERE email = $1`
-    if err := r.Get(ctx, &user, query, email); err != nil {
-        return nil, err
-    }
-    return &user, nil
-}
-```
+---
 
-**Transaction pattern** (see `internal/infrastructure/database/transaction.go`):
+## 6. Testing
 
-- `TransactionManager.WithTransaction(ctx, func(ctx) error)` injects `*sqlx.Tx` into context
-- `BaseRepository.getExecutor(ctx)` automatically uses transaction if present, else regular DB connection
+- **Integration**: Real Postgres, helpers in [test/helpers/database.go](test/helpers/database.go), [test/helpers/fixtures.go](test/helpers/fixtures.go).
+- **Unit**: Mock repos, test business logic only.
+- **Smoke**: End-to-end flows in [test/smoke/](test/smoke/).
+
+---
+
+## 7. Event Bus & Async
+
+- **Event Bus**: In-memory pub/sub (`pkg/bus/memory`), configurable worker pool, buffer, retries. See [pkg/bus/README.md](pkg/bus/README.md).
+- **Email Notifications**: Async via event bus. Templates in [templates/email/].
+
+---
+
+## 8. Logging & Context
+
+- **Logger**: Use `logger.FromContext(ctx)` for structured logs with request/user context. See [pkg/logger/].
+
+---
+
+## 9. Authorization & RBAC
+
+- **Permissions**: Format `resource:action` (e.g., `posts:create`). Wildcards supported. Five system roles. See [migrations/000009_create_rbac_tables.up.sql](migrations/000009_create_rbac_tables.up.sql).
+
+---
+
+## 10. Configuration & Validation
+
+- **Env Loading**: Priority order—`.env.{env}.local`, `.env.{env}`, `.env.local`, `.env`.
+- **Custom Validators**: See [pkg/validator/custom_validators.go](pkg/validator/custom_validators.go).
+
+---
+
+## 11. Key Files & References
+
+- [cmd/api/main.go](cmd/api/main.go) — App bootstrap, wiring
+- [Makefile] — All workflows
+- [internal/adapter/http/v1/router/init_*.go] — Module wiring
+- [internal/infrastructure/database/transaction.go] — Transactions
+- [internal/adapter/repository/postgres/base_repository.go] — DB ops
+- [pkg/uuidv7/uuidv7.go] — UUID v7
+- [scripts/generate.sh] — Code generation
+
+---
+
+## 12. Common Pitfalls
+
+- Never import adapter code into usecase/domain
+- Never use ORM (GORM, Ent, etc.)
+- Never use UUID v4 or auto-increment
+- Always run `make swagger-all` after handler/DTO changes
+- Always use transactions for multi-step writes
+
+---
+
+For deep-dives, see [docs/](docs/) for guides on testing, UUID v7, validation, and more.
+
 - `database.GetTx(ctx)` retrieves transaction from context if needed
 
 **UUID v7 for all primary keys**: Use `pkg/uuidv7.New()` for ID generation. Never use UUID v4 or auto-increment. UUIDs are time-ordered for optimal B-tree performance (2x faster inserts than v4).
