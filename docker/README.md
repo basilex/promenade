@@ -112,40 +112,60 @@ All services run in a single Docker network `promenade-network`:
 The application uses the following environment variables (see `docker-compose.yml`):
 
 ```yaml
+# Application Configuration
+APP_NAME=Promenade                          # Application display name
+APP_URL=http://localhost:8080               # Base URL for links and callbacks
+
 # Server Configuration
-SERVER_HOST=0.0.0.0              # Default: 0.0.0.0 (all interfaces)
-SERVER_PORT=8080                 # API port
-ENVIRONMENT=production           # development|production
-SERVER_READ_TIMEOUT=15s          # Optional: request read timeout
-SERVER_WRITE_TIMEOUT=15s         # Optional: response write timeout
+SERVER_HOST=0.0.0.0                         # Default: 0.0.0.0 (all interfaces)
+SERVER_PORT=8080                            # API port
+ENVIRONMENT=production                      # development|staging|production
+SERVER_READ_TIMEOUT=15s                     # Optional: request read timeout
+SERVER_WRITE_TIMEOUT=15s                    # Optional: response write timeout
 
 # Database Configuration
-DB_HOST=postgres                 # Service name in Docker network!
-DB_PORT=5432                     # PostgreSQL port
-DB_USER=system                   # Database user
-DB_PASSWORD=passw0rd             # Database password
-DB_NAME=promenade_prod           # Database name
-DB_SSLMODE=disable               # SSL mode (require in production)
-DB_MAX_OPEN_CONNS=25             # Optional: max open connections
-DB_MAX_IDLE_CONNS=5              # Optional: max idle connections
-DB_CONN_MAX_LIFETIME=5m          # Optional: connection lifetime
+DB_HOST=postgres                            # Service name in Docker network!
+DB_PORT=5432                                # PostgreSQL port
+DB_USER=system                              # Database user
+DB_PASSWORD=passw0rd                        # Database password
+DB_NAME=promenade_prod                      # Database name
+DB_SSLMODE=disable                          # SSL mode (require in production)
+DB_MAX_OPEN_CONNS=25                        # Optional: max open connections
+DB_MAX_IDLE_CONNS=5                         # Optional: max idle connections
+DB_CONN_MAX_LIFETIME=5m                     # Optional: connection lifetime
 
 # JWT Configuration
-JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=  # Secret key (change in production!)
-JWT_ACCESS_TTL_MINUTES=15        # Access token TTL (15 minutes)
-JWT_REFRESH_TTL_HOURS=168        # Refresh token TTL (7 days)
+JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=  # Secret key (change!)
+JWT_ACCESS_TTL_MINUTES=15                   # Access token TTL (15 minutes)
+JWT_REFRESH_TTL_HOURS=168                   # Refresh token TTL (7 days)
 
 # Event Bus Configuration
-BUS_WORKER_POOL_SIZE=10          # Worker goroutines for event processing
-BUS_BUFFER_SIZE=1000             # Event queue buffer size
-BUS_RETRY_ATTEMPTS=3             # Retry failed event handlers
-BUS_RETRY_DELAY=1s               # Delay between retries
+BUS_ADAPTER=memory                          # Adapter: "memory" or "redis"
+BUS_WORKER_POOL_SIZE=10                     # Worker goroutines for event processing
+BUS_BUFFER_SIZE=1000                        # Event queue buffer size
+BUS_RETRY_ATTEMPTS=3                        # Retry failed event handlers
+BUS_RETRY_DELAY=1s                          # Delay between retries
+BUS_RETRY_MAX_DELAY=5s                      # Max retry delay (exponential backoff cap)
+BUS_RETRY_MULTIPLIER=2.0                    # Exponential backoff multiplier
+
+# Redis Configuration (when BUS_ADAPTER=redis)
+REDIS_HOST=redis                            # Redis service name in Docker network
+REDIS_PORT=6379                             # Redis port
+REDIS_PASSWORD=                             # Redis password (empty if no auth)
+REDIS_DB=0                                  # Redis database number (0-15)
+REDIS_POOL_SIZE=10                          # Connection pool size
 
 # Email Configuration (for notifications)
-EMAIL_FROM_ADDRESS=noreply@promenade.com    # Sender email
 EMAIL_FROM_NAME=Promenade Team              # Sender name
-APP_URL=http://localhost:8080               # Base URL for email links
-APP_NAME=Promenade                          # Application name
+EMAIL_FROM_ADDRESS=noreply@promenade.com    # Sender email
+
+# Purge Configuration (Soft Delete Cleanup)
+PURGE_ENABLED=true                          # Enable automatic purge
+PURGE_SCHEDULE=0 2 * * *                    # Cron: daily at 2 AM
+PURGE_DRY_RUN=false                         # Dry run mode (logs only)
+PURGE_BATCH_SIZE=1000                       # Records per batch
+PURGE_RETENTION_USER_POSTS=90               # Days to retain deleted posts
+PURGE_RETENTION_POST_COMMENTS=30            # Days to retain deleted comments
 ```
 
 **[!] Security Notes:**
@@ -153,6 +173,7 @@ APP_NAME=Promenade                          # Application name
 - Change `JWT_SECRET` to strong random value: `openssl rand -base64 32`
 - Change `DB_PASSWORD` to strong password
 - Set `DB_SSLMODE=require` in production
+- Set `BUS_ADAPTER=redis` for multi-instance deployments
 - Never commit production secrets to git
 
 **Configuration Priority** (highest to lowest):
