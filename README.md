@@ -261,6 +261,7 @@ All errors return structured JSON responses via `ErrorHandler` in shared layer:
 
 - **[Authorization Guide](docs/AUTHORIZATION.md)** - RBAC middleware with permissions, roles, and usage examples
 - **[Logging Guide](docs/LOGGING.md)** - Structured logging with slog (JSON/text format, context fields)
+- **[Soft Delete Guide](docs/SOFT_DELETE.md)** - Soft delete implementation for posts and comments, patterns, and best practices
 - [Testing Guide](docs/TESTING_GUIDE.md) - Comprehensive testing setup and best practices
 - [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test infrastructure overview
 - [Validation](docs/VALIDATION.md) - Multi-layer validation strategy and best practices
@@ -845,6 +846,8 @@ busConfig := bus.NewBusConfig(
     cfg.Bus.BufferSize,      // From .env: BUS_BUFFER_SIZE
     cfg.Bus.RetryAttempts,   // From .env: BUS_RETRY_ATTEMPTS
     cfg.Bus.RetryDelay,      // From .env: BUS_RETRY_DELAY
+    cfg.Bus.RetryMaxDelay,   // From .env: BUS_RETRY_MAX_DELAY
+    cfg.Bus.RetryMultiplier, // From .env: BUS_RETRY_MULTIPLIER
 )
 eventBus := memory.NewMemoryBus(busConfig)
 defer eventBus.Close(ctx)
@@ -905,17 +908,21 @@ Event bus is configured via environment variables in `.env` files:
 BUS_WORKER_POOL_SIZE=10     # Concurrent workers processing events
 BUS_BUFFER_SIZE=1000        # Internal message queue size
 BUS_RETRY_ATTEMPTS=3        # Retry failed handlers
-BUS_RETRY_DELAY=1s          # Delay between retries
+BUS_RETRY_DELAY=1s          # Initial delay between retries
+BUS_RETRY_MAX_DELAY=5s      # Maximum delay between retries
+BUS_RETRY_MULTIPLIER=2.0    # Backoff multiplier (exponential growth)
 ```
 
 **Config struct** (`internal/infrastructure/config/config.go`):
 
 ```go
 type BusConfig struct {
-    WorkerPoolSize int           // Number of concurrent workers
-    BufferSize     int           // Message buffer capacity
-    RetryAttempts  int           // Max retry attempts on failure
-    RetryDelay     time.Duration // Delay between retries
+    WorkerPoolSize  int           // Number of concurrent workers
+    BufferSize      int           // Message buffer capacity
+    RetryAttempts   int           // Max retry attempts on failure
+    RetryDelay      time.Duration // Initial delay between retries
+    RetryMaxDelay   time.Duration // Maximum delay between retries
+    RetryMultiplier float64       // Exponential backoff multiplier
 }
 ```
 
@@ -923,16 +930,17 @@ type BusConfig struct {
 
 The event bus includes built-in retry logic for all event handlers. If a handler returns an error, the bus will automatically retry processing the event up to the configured number of attempts (`BUS_RETRY_ATTEMPTS`).
 
-- **Exponential Backoff:** Each retry is delayed using exponential backoff, starting from `BUS_RETRY_DELAY` and increasing by a multiplier (default 2x) for each subsequent attempt, up to a maximum delay.
+- **Exponential Backoff:** Each retry is delayed using exponential backoff, starting from `BUS_RETRY_DELAY` (initial delay) and multiplying by `BUS_RETRY_MULTIPLIER` for each subsequent attempt, capped at `BUS_RETRY_MAX_DELAY`.
 - **Configurable:** All retry parameters are set via environment variables and config struct.
 - **Structured Logging:** All handler errors, retry attempts, and final failures are logged with structured context (topic, message ID, attempt, error).
 - **Non-blocking:** Event publishing is always non-blocking; main business logic is never interrupted by handler failures.
 
-Example retry sequence (with BUS_RETRY_ATTEMPTS=3, BUS_RETRY_DELAY=1s):
+Example retry sequence (with BUS_RETRY_ATTEMPTS=3, BUS_RETRY_DELAY=1s, BUS_RETRY_MULTIPLIER=2.0, BUS_RETRY_MAX_DELAY=5s):
 
 - 1st attempt: immediate
-- 2nd attempt: after 1s
-- 3rd attempt: after 2s
+- 2nd attempt: after 1s (1s \* 2^0)
+- 3rd attempt: after 2s (1s \* 2^1)
+- 4th attempt: after 4s (1s \* 2^2)
 
 If all attempts fail, the error is logged and the event is dropped (in-memory bus).
 
@@ -1048,6 +1056,8 @@ busConfig := bus.NewBusConfig(
     cfg.Bus.BufferSize,      // From .env: BUS_BUFFER_SIZE=1000
     cfg.Bus.RetryAttempts,   // From .env: BUS_RETRY_ATTEMPTS=3
     cfg.Bus.RetryDelay,      // From .env: BUS_RETRY_DELAY=1s
+    cfg.Bus.RetryMaxDelay,   // From .env: BUS_RETRY_MAX_DELAY=5s
+    cfg.Bus.RetryMultiplier, // From .env: BUS_RETRY_MULTIPLIER=2.0
 )
 eventBus := memory.NewMemoryBus(busConfig)
 defer eventBus.Close(context.Background())

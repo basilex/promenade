@@ -135,6 +135,8 @@ func main() {
         cfg.Bus.BufferSize,      // BUS_BUFFER_SIZE=1000
         cfg.Bus.RetryAttempts,   // BUS_RETRY_ATTEMPTS=3
         cfg.Bus.RetryDelay,      // BUS_RETRY_DELAY=1s
+        cfg.Bus.RetryMaxDelay,   // BUS_RETRY_MAX_DELAY=5s
+        cfg.Bus.RetryMultiplier, // BUS_RETRY_MULTIPLIER=2.0
     )
     eventBus := memory.NewMemoryBus(busConfig)
     defer eventBus.Close(context.Background())

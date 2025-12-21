@@ -46,7 +46,7 @@ func (r *postCommentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*e
 			is_edited, edited_at, like_count, reply_count,
 			deleted_at, created_at, updated_at
 		FROM post_comments
-		WHERE id = $1
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	var comment entity.PostComment

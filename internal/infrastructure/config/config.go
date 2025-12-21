@@ -44,10 +44,12 @@ type JWTConfig struct {
 }
 
 type BusConfig struct {
-	WorkerPoolSize int
-	BufferSize     int
-	RetryAttempts  int
-	RetryDelay     time.Duration
+	WorkerPoolSize  int
+	BufferSize      int
+	RetryAttempts   int
+	RetryDelay      time.Duration
+	RetryMaxDelay   time.Duration
+	RetryMultiplier float64
 }
 
 type EmailConfig struct {
@@ -108,10 +110,12 @@ func Load() (*Config, error) {
 			RefreshTokenTTL: time.Duration(getEnvAsInt("JWT_REFRESH_TTL_HOURS", 168)) * time.Hour, // 7 days
 		},
 		Bus: BusConfig{
-			WorkerPoolSize: getEnvAsInt("BUS_WORKER_POOL_SIZE", 10),
-			BufferSize:     getEnvAsInt("BUS_BUFFER_SIZE", 1000),
-			RetryAttempts:  getEnvAsInt("BUS_RETRY_ATTEMPTS", 3),
-			RetryDelay:     getDurationEnv("BUS_RETRY_DELAY", 1*time.Second),
+			WorkerPoolSize:  getEnvAsInt("BUS_WORKER_POOL_SIZE", 10),
+			BufferSize:      getEnvAsInt("BUS_BUFFER_SIZE", 1000),
+			RetryAttempts:   getEnvAsInt("BUS_RETRY_ATTEMPTS", 3),
+			RetryDelay:      getDurationEnv("BUS_RETRY_DELAY", 1*time.Second),
+			RetryMaxDelay:   getDurationEnv("BUS_RETRY_MAX_DELAY", 5*time.Second),
+			RetryMultiplier: getEnvAsFloat("BUS_RETRY_MULTIPLIER", 2.0),
 		},
 		Email: EmailConfig{
 			FromAddress: getEnv("EMAIL_FROM_ADDRESS", "noreply@promenade.com"),
@@ -157,7 +161,14 @@ func getEnvAsInt(key string, defaultValue int) int {
 	}
 	return defaultValue
 }
-
+func getEnvAsFloat(key string, defaultValue float64) float64 {
+	if value := os.Getenv(key); value != "" {
+		if floatValue, err := strconv.ParseFloat(value, 64); err == nil {
+			return floatValue
+		}
+	}
+	return defaultValue
+}
 func getDurationEnv(key string, defaultValue time.Duration) time.Duration {
 	if value := os.Getenv(key); value != "" {
 		if duration, err := time.ParseDuration(value); err == nil {

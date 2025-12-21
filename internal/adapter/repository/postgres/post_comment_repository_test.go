@@ -209,10 +209,9 @@ func TestPostCommentRepository_SoftDelete(t *testing.T) {
 	err = repo.SoftDelete(ctx, comment.ID)
 	require.NoError(t, err)
 
-	// Comment still exists in DB but has deleted_at
-	retrieved, err := repo.GetByID(ctx, comment.ID)
-	require.NoError(t, err)
-	assert.NotNil(t, retrieved.DeletedAt)
+	// Comment should not be found after soft delete
+	_, err = repo.GetByID(ctx, comment.ID)
+	assert.ErrorIs(t, err, entity.ErrNotFound)
 }
 
 func TestPostCommentRepository_Restore(t *testing.T) {

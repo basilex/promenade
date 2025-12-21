@@ -1,52 +1,53 @@
-# Copilot Instructions for Promenade
-
-## Promenade AI Agent Guide
+# Promenade AI Agent Instructions
 
 This guide enables AI coding agents to work productively in Promenade. It summarizes architecture, workflows, and conventions unique to this project. For details, see referenced files and docs.
 
 ---
 
-## 1. Architecture & Layering
+## 1. Architecture Overview
 
 - **Clean Architecture**: Four layers—Domain (`internal/domain`), Use Case (`internal/usecase`), Adapter (`internal/adapter`), Infrastructure (`internal/infrastructure`).
-- **Dependency Rule**: Dependencies flow inward. Use cases depend only on domain interfaces. Never import adapter code into use case/domain.
+- **Dependency Rule**: Inner layers never depend on outer layers. Use cases depend only on domain interfaces. Never import adapter code into use case/domain.
 - **Event-Driven**: Domain events (`internal/domain/event`) use `pkg/bus` for async communication. Events embed `bus.BaseEvent` and follow `User{Action}Event` naming. See [pkg/bus/README.md](pkg/bus/README.md).
-- **Module Initialization**: Each module wires repo → usecase → handler → router. See [internal/adapter/http/v1/router/init\_\*.go](internal/adapter/http/v1/router/init_auth.go) for examples.
+- **Module Wiring**: Each module wires repo → usecase → handler → router. See [internal/adapter/http/v1/router/init\_\*.go](internal/adapter/http/v1/router/init_auth.go).
+- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for common ops. All primary keys are UUID v7 (`pkg/uuidv7.New()`), never v4 or auto-increment.
 
 ---
 
 ## 2. Developer Workflows
 
-- **Primary commands** (see Makefile):
+- **Makefile System**: Modular—see [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md). Use `make help` for all commands.
+- **Common commands**:
   - `make dev` — Start Postgres, migrate, run app
-  - `make test` — Run all tests (unit + integration)
-  - `make test-integration` — Integration tests (uses test DB on port 5433)
+  - `make test` — Run all tests (unit, integration, smoke)
+  - `make test-integration` — Integration tests (test DB on 5433)
   - `make test-unit` — Unit tests only
   - `make build` — Build binary (runs swagger-all first)
   - `make migrate-up` / `make migrate-down` — DB migrations
   - `make generate ENTITY=X` — Generate CRUD boilerplate
   - `make swagger-all` — Generate API docs
   - `make lint` / `make fmt` — Lint and format code
-- **Testing**: Integration tests use Docker Compose (`docker/docker-compose.test.yml`). See [test/README.md](test/README.md) for helpers and structure.
+- **Testing**: Integration tests use Docker Compose (`docker/docker-compose.test.yml`). See [test/README.md](test/README.md).
 - **Docker**: Use `make docker-up`, `make docker-build`, `make docker-run` for container workflows. See [docker/README.md](docker/README.md).
 
 ---
 
-## 3. Data & Repository Patterns
-
-- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for common ops (`Get`, `Select`, `Exec`).
-- **Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`; `getExecutor(ctx)` auto-selects transaction or DB.
-- **UUID v7**: All primary keys use time-ordered UUIDs via `pkg/uuidv7.New()`. Never use UUID v4 or auto-increment.
-
----
-
-## 4. HTTP & API Conventions
+## 3. API & HTTP Conventions
 
 - **Versioning**: v1 and v2 APIs are isolated (handlers, DTOs, routers).
 - **Router Structure**: Each module has its own router, registered in [internal/adapter/http/v1/router/router.go](internal/adapter/http/v1/router/router.go).
 - **Middleware**: Stack includes recovery, request ID, logger, CORS. Per-route: auth and RBAC via `RequireAuth()` and `RequirePermission()`.
 - **Handlers**: Accept use case in constructor. Bind request DTO, call use case, handle errors with domain-specific checks (`errors.Is`). Use `response.Success()`/`response.Error()`.
 - **Swagger**: Add comments for API docs. Run `make swagger-all` after handler/DTO changes.
+
+---
+
+## 4. Data, Transactions, and Patterns
+
+- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`.
+- **Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`; `getExecutor(ctx)` auto-selects transaction or DB.
+- **UUID v7**: All primary keys use time-ordered UUIDs via `pkg/uuidv7.New()`.
+- **Soft Delete**: `user_posts` and `post_comments` use `deleted_at` timestamp. **CRITICAL**: Always filter `deleted_at IS NULL` in SELECT queries. See [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md).
 
 ---
 
@@ -62,6 +63,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 - **Integration**: Real Postgres, helpers in [test/helpers/database.go](test/helpers/database.go), [test/helpers/fixtures.go](test/helpers/fixtures.go).
 - **Unit**: Mock repos, test business logic only.
 - **Smoke**: End-to-end flows in [test/smoke/](test/smoke/).
+- **Test DB**: Runs on port 5433, managed by `docker-compose.test.yml`.
 
 ---
 
@@ -86,7 +88,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 
 ## 10. Configuration & Validation
 
-- **Env Loading**: Priority order—`.env.{env}.local`, `.env.{env}`, `.env.local`, `.env`.
+- **Env Loading**: Priority—`.env.{env}.local`, `.env.{env}`, `.env.local`, `.env`.
 - **Custom Validators**: See [pkg/validator/custom_validators.go](pkg/validator/custom_validators.go).
 
 ---
@@ -98,6 +100,15 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 - [internal/adapter/http/v1/router/init_*.go] — Module wiring
 - [internal/infrastructure/database/transaction.go] — Transactions
 - [internal/adapter/repository/postgres/base_repository.go] — DB ops
+- [test/README.md](test/README.md) — Test structure & helpers
+- [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md) — Makefile system
+
+---
+
+**For more, see:**
+
+- [README.md](README.md)
+- [docs/](docs/) for guides on testing, UUID v7, validation, and more.
 - [pkg/uuidv7/uuidv7.go] — UUID v7
 - [scripts/generate.sh] — Code generation
 
@@ -297,6 +308,7 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 - Use UUID v4 or auto-increment IDs — always use `uuidv7.New()`
 - Forget to run `make swagger-all` after changing handlers/DTOs
 - Skip transactions for multi-step writes
+- **FORGET `deleted_at IS NULL` in SELECT queries** — soft-deleted records must be filtered (see [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md))
 
 [+] **Do**:
 
@@ -305,6 +317,7 @@ Config struct: `internal/infrastructure/config/config.go` with defaults and env 
 - Check error types with `errors.Is()` for known domain errors (e.g., `usecase.ErrEmailAlreadyExists`)
 - Use module initialization pattern (see `init_auth.go`) when adding new modules
 - Leverage code generators for boilerplate (`make generate-interactive`)
+- **Always add `WHERE deleted_at IS NULL`** for entities with soft delete support
 
 ## 13. Key Files Reference
 

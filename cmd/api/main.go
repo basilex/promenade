@@ -118,6 +118,8 @@ func main() {
 		cfg.Bus.BufferSize,
 		cfg.Bus.RetryAttempts,
 		cfg.Bus.RetryDelay,
+		cfg.Bus.RetryMaxDelay,
+		cfg.Bus.RetryMultiplier,
 	)
 	eventBus := memory.NewMemoryBus(busConfig)
 	defer func() {

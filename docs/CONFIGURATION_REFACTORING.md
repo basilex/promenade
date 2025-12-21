@@ -72,6 +72,8 @@ busConfig := bus.NewBusConfig(
     cfg.Bus.BufferSize,
     cfg.Bus.RetryAttempts,
     cfg.Bus.RetryDelay,
+    cfg.Bus.RetryMaxDelay,
+    cfg.Bus.RetryMultiplier,
 )
 eventBus := memory.NewMemoryBus(busConfig)
 ```

@@ -90,7 +90,7 @@ type RetryPolicy struct {
 
 // NewBusConfig creates a bus configuration from environment variables.
 // Parameters should be loaded from config package.
-func NewBusConfig(workerPoolSize, bufferSize, retryAttempts int, retryDelay time.Duration) BusConfig {
+func NewBusConfig(workerPoolSize, bufferSize, retryAttempts int, retryDelay, retryMaxDelay time.Duration, retryMultiplier float64) BusConfig {
 	return BusConfig{
 		WorkerPoolSize: workerPoolSize,
 		BufferSize:     bufferSize,
@@ -98,8 +98,8 @@ func NewBusConfig(workerPoolSize, bufferSize, retryAttempts int, retryDelay time
 		RetryPolicy: &RetryPolicy{
 			MaxAttempts:  retryAttempts,
 			InitialDelay: retryDelay,
-			MaxDelay:     5 * time.Second,
-			Multiplier:   2.0,
+			MaxDelay:     retryMaxDelay,
+			Multiplier:   retryMultiplier,
 		},
 	}
 }
