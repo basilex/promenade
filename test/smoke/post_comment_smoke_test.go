@@ -161,10 +161,10 @@ func TestPostComment_SmokeTest(t *testing.T) {
 		err := commentUC.DeleteComment(ctx, replyCommentID, user2.ID)
 		require.NoError(t, err)
 
-		// Comment should still exist but marked as deleted
-		comment, err := commentRepo.GetByID(ctx, replyCommentID)
-		require.NoError(t, err)
-		assert.NotNil(t, comment.DeletedAt, "comment should be soft deleted")
+		// Soft deleted comments are hidden from GetByID (filtered by deleted_at IS NULL)
+		// This is expected behavior - see docs/SOFT_DELETE.md
+		_, err = commentRepo.GetByID(ctx, replyCommentID)
+		assert.Error(t, err, "soft deleted comment should not be returned by GetByID")
 	})
 
 	t.Run("[+] Cannot_reply_to_deleted_comment", func(t *testing.T) {
