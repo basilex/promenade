@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/basilex/promenade/internal/domain/event"
@@ -291,13 +292,14 @@ func (s *EmailService) handleUserBanned(ctx context.Context, e bus.Event) error 
 type MockEmailSender struct {
 	SentEmails []Email
 	Delay      time.Duration // Simulate network delay
+	mu         sync.Mutex    // Thread-safe access to SentEmails
 }
 
 // NewMockEmailSender creates a mock email sender.
 func NewMockEmailSender() *MockEmailSender {
 	return &MockEmailSender{
 		SentEmails: make([]Email, 0),
-		Delay:      100 * time.Millisecond,
+		Delay:      10 * time.Millisecond, // Reduce delay for faster tests
 	}
 }
 
@@ -306,17 +308,27 @@ func (m *MockEmailSender) Send(ctx context.Context, email Email) error {
 	// Simulate network delay
 	time.Sleep(m.Delay)
 
+	m.mu.Lock()
 	m.SentEmails = append(m.SentEmails, email)
+	m.mu.Unlock()
+	
 	fmt.Printf("[MOCK EMAIL] To: %s, Subject: %s\n", email.To, email.Subject)
 	return nil
 }
 
 // GetSentEmails returns all sent emails (for testing).
 func (m *MockEmailSender) GetSentEmails() []Email {
-	return m.SentEmails
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	// Return a copy to avoid race conditions
+	result := make([]Email, len(m.SentEmails))
+	copy(result, m.SentEmails)
+	return result
 }
 
 // Clear clears the sent emails list.
 func (m *MockEmailSender) Clear() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.SentEmails = make([]Email, 0)
 }

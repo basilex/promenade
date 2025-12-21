@@ -10,8 +10,15 @@ import (
 
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/logger"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
+
+// init registers the memory bus factory with the bus package to avoid circular imports
+func init() {
+	bus.MemoryBusFactory = func(config bus.BusConfig) bus.Bus {
+		return NewMemoryBus(config)
+	}
+}
 
 // MemoryBus is an in-memory implementation of bus.Bus.
 // Useful for development, testing, and simple deployments.
@@ -79,7 +86,7 @@ func (mb *MemoryBus) Publish(ctx context.Context, topic string, event bus.Event)
 
 	// Dispatch to all handlers asynchronously
 	message := bus.Message{
-		ID:          uuid.New().String(),
+		ID:          uuidv7.New().String(),
 		Topic:       topic,
 		Event:       event,
 		PublishedAt: event.OccurredAt(),

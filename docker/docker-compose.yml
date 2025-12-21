@@ -68,10 +68,17 @@ services:
       - JWT_ACCESS_TTL_MINUTES=15
       - JWT_REFRESH_TTL_HOURS=168
       # Event Bus
+      - BUS_ADAPTER=redis
       - BUS_WORKER_POOL_SIZE=10
       - BUS_BUFFER_SIZE=1000
       - BUS_RETRY_ATTEMPTS=3
       - BUS_RETRY_DELAY=1s
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - REDIS_DB=0
+      - REDIS_POOL_SIZE=20
       # Email
       - EMAIL_FROM_ADDRESS=noreply@promenade.com
       - EMAIL_FROM_NAME=Promenade Team
@@ -83,6 +90,8 @@ services:
       - promenade-network
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully

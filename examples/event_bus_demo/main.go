@@ -8,16 +8,20 @@ import (
 
 	"github.com/basilex/promenade/internal/domain/event"
 	"github.com/basilex/promenade/internal/infrastructure/notification"
+	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/bus/memory"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 func main() {
 	fmt.Println("* Event Bus Demo - Async Email Notifications")
 	fmt.Println("================================================")
 
-	// Initialize event bus
-	eventBus := memory.NewDefaultMemoryBus()
+	// Create memory bus with config
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(context.Background())
 
 	// Initialize email service
@@ -44,7 +48,7 @@ func main() {
 	fmt.Println("\nEmail service started and listening for events...")
 
 	// Simulate user registration
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "demo@example.com"
 	name := "Demo User"
 

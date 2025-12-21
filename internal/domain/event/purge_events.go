@@ -3,12 +3,12 @@ package event
 import (
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/pkg/bus"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // PurgeCompletedEvent is published when a purge operation completes successfully
 type PurgeCompletedEvent struct {
-	bus.BaseEvent
+	*bus.BaseEvent
 	Summary entity.PurgeSummary `json:"summary"`
 }
 
@@ -16,14 +16,14 @@ type PurgeCompletedEvent struct {
 func NewPurgeCompletedEvent(summary entity.PurgeSummary) *PurgeCompletedEvent {
 	// Use a zero UUID for system-level events
 	return &PurgeCompletedEvent{
-		BaseEvent: bus.NewBaseEvent(bus.TopicPurgeCompleted, uuid.Nil),
+		BaseEvent: bus.NewBaseEvent(bus.TopicPurgeCompleted, uuidv7.Nil),
 		Summary:   summary,
 	}
 }
 
 // PurgeFailedEvent is published when a purge operation fails
 type PurgeFailedEvent struct {
-	bus.BaseEvent
+	*bus.BaseEvent
 	EntityName string `json:"entity_name"`
 	Error      string `json:"error"`
 }
@@ -32,7 +32,7 @@ type PurgeFailedEvent struct {
 func NewPurgeFailedEvent(entityName string, err error) *PurgeFailedEvent {
 	// Use a zero UUID for system-level events
 	return &PurgeFailedEvent{
-		BaseEvent:  bus.NewBaseEvent(bus.TopicPurgeFailed, uuid.Nil),
+		BaseEvent:  bus.NewBaseEvent(bus.TopicPurgeFailed, uuidv7.Nil),
 		EntityName: entityName,
 		Error:      err.Error(),
 	}

@@ -1,10 +1,15 @@
 # Event Bus Package
 
-Universal message bus implementation for event-driven architecture in Promenade.
+Universal message bus implementation with dual adapters (Memory + Redis) for event-driven architecture in Promenade.
 
 ## Overview
 
-The `pkg/bus` package provides a transport-agnostic event bus that enables asynchronous, decoupled communication between different parts of the application. This is the foundation for evolving from a monolith to microservices without changing business logic.
+The `pkg/bus` package provides a **transport-agnostic event bus** with pluggable adapters for different deployment scenarios:
+
+- **Memory Adapter** - In-memory Pub/Sub for development, testing, and single-instance deployments
+- **Redis Adapter** - Distributed Pub/Sub for multi-instance production deployments with horizontal scaling
+
+This enables asynchronous, decoupled communication between components with a clear evolution path from monolith to microservices.
 
 ## Architecture Benefits
 
@@ -161,41 +166,122 @@ func main() {
 
 ## Available Implementations
 
-### In-Memory Bus (Development/Simple Deployments)
+### 1. In-Memory Bus (Default - Development/Testing)
+
+**Use case:** Development, testing, single-instance deployments
 
 ```go
-import "github.com/basilex/promenade/pkg/bus/memory"
+import (
+    "github.com/basilex/promenade/pkg/bus"
+    "github.com/basilex/promenade/internal/infrastructure/config"
+)
 
-bus := memory.NewDefaultMemoryBus()
-// или с кастомной конфигурацией
-bus := memory.NewMemoryBus(bus.BusConfig{
-    WorkerPoolSize: 20,
-    BufferSize:     5000,
-})
+// Via factory (recommended)
+busConfig := config.BusConfig{
+    Adapter:         "memory",
+    WorkerPoolSize:  4,
+    BufferSize:      100,
+    RetryAttempts:   3,
+    RetryDelay:      1 * time.Second,
+    RetryMaxDelay:   30 * time.Second,
+    RetryMultiplier: 2.0,
+}
+eventBus, err := bus.NewBus(busConfig)
+defer eventBus.Close(ctx)
 ```
 
-**Pros:**
+**Features:**
 
-- Zero dependencies
-- Perfect for development
-- Simple single-instance deployments
-- Fast tests
+- ✅ Zero external dependencies
+- ✅ Perfect for development and testing
+- ✅ Thread-safe with mutex protection
+- ✅ Configurable worker pool and buffer
+- ✅ Health checks and graceful shutdown
+- ⚠️ Events lost on restart (no persistence)
+- ⚠️ Single-process only (no horizontal scaling)
 
-**Cons:**
+### 2. Redis Pub/Sub (Production-Ready)
 
-- Events lost on restart
-- No cross-process communication
-
-### Redis Pub/Sub (TODO)
+**Use case:** Multi-instance deployments, horizontal scaling, distributed systems
 
 ```go
-import "github.com/basilex/promenade/pkg/bus/redis"
+import (
+    "github.com/basilex/promenade/pkg/bus"
+    "github.com/basilex/promenade/internal/infrastructure/config"
+)
 
-bus := redis.NewRedisBus(redis.Config{
-    Address: "localhost:6379",
+// Via factory with Redis config
+busConfig := config.BusConfig{
+    Adapter:         "redis",
+    WorkerPoolSize:  4,
+    BufferSize:      100,
+    RetryAttempts:   3,
+    RetryDelay:      1 * time.Second,
+    RetryMaxDelay:   30 * time.Second,
+    RetryMultiplier: 2.0,
+    Redis: config.RedisConfig{
+        Host:     "localhost",  // or redis service name in Docker
+        Port:     6379,
+        Password: "",           // optional
+        DB:       0,
+        PoolSize: 10,
+    },
+}
+eventBus, err := bus.NewBus(busConfig) // Auto-falls back to memory on failure
+defer eventBus.Close(ctx)
+```
+
+**Features:**
+
+- ✅ Multi-process support (horizontal scaling)
+- ✅ Distributed Pub/Sub pattern
+- ✅ JSON serialization for cross-service compatibility
+- ✅ Production-ready timeouts (5s dial, 3s read/write, 10s ping)
+- ✅ Automatic fallback to memory adapter on connection failure
+- ✅ Health checks via Redis PING
+- ⚠️ No guaranteed delivery (subscribers must be online)
+- ⚠️ At-most-once semantics (no persistence after delivery)
+
+**Redis Architecture:**
+
+```
+┌───────────────────────────────────────────────────┐
+│              Redis Server (Port 6379)             │
+│                                                   │
+│  Channels (Topics):                               │
+│   - user.registered                               │
+│   - user.email_verified                           │
+│   - user.password_changed                         │
+│   - post.created                                  │
+│   - ...                                           │
+└───────────────┬───────────────────────────────────┘
+                │
+     ┌──────────┴──────────┐
+     │                     │
+┌────▼─────┐         ┌────▼─────┐
+│ Instance │         │ Instance │
+│    #1    │         │    #2    │
+│          │         │          │
+│ Bus.Publish()     Bus.Subscribe()
+│          │         │          │
+│ AuthUC   │         │ Email    │
+│ PostUC   │         │ Service  │
+└──────────┘         └──────────┘
+
+Flow:
+1. Instance #1 publishes UserRegisteredEvent to Redis channel
+2. Redis broadcasts to all subscribers
+3. Instance #2's EmailService receives event and sends welcome email
+4. Both instances can publish/subscribe simultaneously
+```
+
+### 3. NATS/Kafka (Future - Microservices)
+
     // ... redis config
+
 })
-```
+
+````
 
 **Pros:**
 
@@ -218,7 +304,7 @@ bus := nats.NewNATSBus(nats.Config{
     URL: "nats://localhost:4222",
     // ... nats config
 })
-```
+````
 
 **Pros:**
 

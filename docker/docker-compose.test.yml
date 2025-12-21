@@ -16,5 +16,19 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: promenade_test_redis
+    ports:
+      - "6380:6379" # Use different port to avoid conflicts with dev Redis
+    volumes:
+      - redis_test_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_test_data:
+  redis_test_data:

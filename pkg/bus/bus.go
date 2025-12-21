@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Bus represents a message bus for publishing and subscribing to events.
@@ -45,7 +45,7 @@ type Event interface {
 	OccurredAt() time.Time
 
 	// AggregateID returns the ID of the aggregate that generated this event
-	AggregateID() uuid.UUID
+	AggregateID() uuidv7.UUID
 
 	// Metadata returns additional event metadata (optional)
 	Metadata() map[string]string

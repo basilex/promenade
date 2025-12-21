@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/usecase"
+	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/bus/memory"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/test/helpers"
@@ -30,8 +31,14 @@ func TestAuth_SmokeTest(t *testing.T) {
 	userRepo := postgres.NewUserRepository(testDB.DB)
 	sessionRepo := postgres.NewSessionRepository(testDB.DB)
 	jwtManager := jwt.NewJWTManager("test-secret-key", time.Hour, 24*time.Hour)
-	eventBus := memory.NewDefaultMemoryBus()
+
+	// Use memory bus with proper config
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(ctx)
+
 	authUC := usecase.NewAuthUseCase(userRepo, sessionRepo, jwtManager, eventBus)
 
 	var userID string
@@ -152,8 +159,14 @@ func TestAuth_SessionManagement_SmokeTest(t *testing.T) {
 	userRepo := postgres.NewUserRepository(testDB.DB)
 	sessionRepo := postgres.NewSessionRepository(testDB.DB)
 	jwtManager := jwt.NewJWTManager("test-secret-key", time.Hour, 24*time.Hour)
-	eventBus := memory.NewDefaultMemoryBus()
+
+	// Use memory bus with proper config
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(ctx)
+
 	authUC := usecase.NewAuthUseCase(userRepo, sessionRepo, jwtManager, eventBus)
 
 	// Create user and multiple sessions

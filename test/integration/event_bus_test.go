@@ -1,4 +1,4 @@
-package bus_test
+package integration
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/notification"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/bus/memory"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,8 +20,11 @@ import (
 // 3. Email service picks up the event
 // 4. Welcome email is sent asynchronously
 func TestEventBusIntegration(t *testing.T) {
-	// Initialize in-memory event bus
-	eventBus := memory.NewDefaultMemoryBus()
+	// Create memory bus with config
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(context.Background())
 
 	// Initialize mock email sender
@@ -42,7 +45,7 @@ func TestEventBusIntegration(t *testing.T) {
 	require.NoError(t, err)
 
 	// Simulate user registration event
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "john.doe@example.com"
 	name := "John Doe"
 
@@ -52,8 +55,8 @@ func TestEventBusIntegration(t *testing.T) {
 	err = eventBus.Publish(context.Background(), bus.TopicUserRegistered, userRegisteredEvent)
 	require.NoError(t, err)
 
-	// Wait for async processing (in real app, this happens in background)
-	time.Sleep(200 * time.Millisecond)
+	// Wait for async processing (mock delay 10ms + processing)
+	time.Sleep(100 * time.Millisecond)
 
 	// Verify email was sent
 	sentEmails := emailSender.GetSentEmails()
@@ -68,7 +71,10 @@ func TestEventBusIntegration(t *testing.T) {
 
 // TestMultipleEvents demonstrates handling multiple user events
 func TestMultipleEvents(t *testing.T) {
-	eventBus := memory.NewDefaultMemoryBus()
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(context.Background())
 
 	emailSender := notification.NewMockEmailSender()
@@ -84,7 +90,7 @@ func TestMultipleEvents(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, emailService.Start(context.Background()))
 
-	userID := uuid.New()
+	userID := uuidv7.New()
 	email := "test@example.com"
 
 	// Simulate multiple events
@@ -100,8 +106,8 @@ func TestMultipleEvents(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	// Wait for async processing
-	time.Sleep(300 * time.Millisecond)
+	// Wait for async processing (3 events * 10ms delay + processing)
+	time.Sleep(200 * time.Millisecond)
 
 	// Verify all emails were sent
 	sentEmails := emailSender.GetSentEmails()
@@ -126,11 +132,14 @@ func TestMultipleEvents(t *testing.T) {
 
 // TestBusPerformance demonstrates that event publishing doesn't block
 func TestBusPerformance(t *testing.T) {
-	eventBus := memory.NewDefaultMemoryBus()
+	eventBus := memory.NewMemoryBus(bus.BusConfig{
+		WorkerPoolSize: 4,
+		BufferSize:     100,
+	})
 	defer eventBus.Close(context.Background())
 
 	emailSender := notification.NewMockEmailSender()
-	emailSender.Delay = 500 * time.Millisecond // Simulate slow email sending
+	emailSender.Delay = 200 * time.Millisecond // Simulate slow email sending
 
 	emailService, err := notification.NewEmailService(
 		eventBus,
@@ -147,17 +156,17 @@ func TestBusPerformance(t *testing.T) {
 	// Measure time to publish event
 	start := time.Now()
 
-	userEvent := event.NewUserRegisteredEvent(uuid.New(), "fast@example.com", "Fast User")
+	userEvent := event.NewUserRegisteredEvent(uuidv7.New(), "fast@example.com", "Fast User")
 	err = eventBus.Publish(context.Background(), bus.TopicUserRegistered, userEvent)
 	require.NoError(t, err)
 
 	elapsed := time.Since(start)
 
-	// Publishing should be fast (< 50ms), even though email sending takes 500ms
+	// Publishing should be fast (< 50ms), even though email sending takes 200ms
 	assert.Less(t, elapsed, 50*time.Millisecond, "event publishing should not block")
 
 	// Wait for email to be sent
-	time.Sleep(600 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 
 	// Verify email was eventually sent
 	assert.Len(t, emailSender.GetSentEmails(), 1)

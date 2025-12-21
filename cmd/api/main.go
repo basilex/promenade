@@ -17,7 +17,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/basilex/promenade/pkg/bus"
-	"github.com/basilex/promenade/pkg/bus/memory"
+	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory bus adapter
+	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis bus adapter
 
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 	validatorpkg "github.com/basilex/promenade/pkg/validator"
@@ -112,16 +113,11 @@ func main() {
 	txManager := database.NewTransactionManager(db)
 	_ = txManager // Reserved for future use
 
-	// Initialize Event Bus (config from environment variables)
-	busConfig := bus.NewBusConfig(
-		cfg.Bus.WorkerPoolSize,
-		cfg.Bus.BufferSize,
-		cfg.Bus.RetryAttempts,
-		cfg.Bus.RetryDelay,
-		cfg.Bus.RetryMaxDelay,
-		cfg.Bus.RetryMultiplier,
-	)
-	eventBus := memory.NewMemoryBus(busConfig)
+	// Initialize Event Bus from configuration (supports memory/redis adapters)
+	eventBus, err := bus.NewBus(cfg.Bus)
+	if err != nil {
+		logger.Fatal("Failed to initialize event bus", slog.Any("error", err))
+	}
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -129,10 +125,6 @@ func main() {
 			logger.Error("Failed to close event bus", slog.Any("error", err))
 		}
 	}()
-	logger.Info("Event bus initialized",
-		slog.Int("buffer_size", cfg.Bus.BufferSize),
-		slog.Int("worker_pool_size", cfg.Bus.WorkerPoolSize),
-		slog.Int("retry_attempts", cfg.Bus.RetryAttempts))
 
 	// Initialize Notification Service (асинхронная отправка email через event bus)
 	emailSender := notification.NewMockEmailSender() // TODO: replace with real SMTP sender in production

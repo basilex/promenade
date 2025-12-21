@@ -4,19 +4,19 @@ import (
 	"time"
 
 	"github.com/basilex/promenade/pkg/bus"
-	"github.com/google/uuid"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // UserRegisteredEvent is published when a new user registers.
 type UserRegisteredEvent struct {
-	bus.BaseEvent
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
-	Name   string    `json:"name"`
+	*bus.BaseEvent
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
+	Name   string      `json:"name"`
 }
 
 // NewUserRegisteredEvent creates a user registration event.
-func NewUserRegisteredEvent(userID uuid.UUID, email, name string) *UserRegisteredEvent {
+func NewUserRegisteredEvent(userID uuidv7.UUID, email, name string) *UserRegisteredEvent {
 	return &UserRegisteredEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserRegistered, userID),
 		UserID:    userID,
@@ -27,13 +27,13 @@ func NewUserRegisteredEvent(userID uuid.UUID, email, name string) *UserRegistere
 
 // UserActivatedEvent is published when a user account is activated.
 type UserActivatedEvent struct {
-	bus.BaseEvent
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
+	*bus.BaseEvent
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
 }
 
 // NewUserActivatedEvent creates a user activation event.
-func NewUserActivatedEvent(userID uuid.UUID, email string) *UserActivatedEvent {
+func NewUserActivatedEvent(userID uuidv7.UUID, email string) *UserActivatedEvent {
 	return &UserActivatedEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserActivated, userID),
 		UserID:    userID,
@@ -43,15 +43,15 @@ func NewUserActivatedEvent(userID uuid.UUID, email string) *UserActivatedEvent {
 
 // UserSuspendedEvent is published when a user is suspended.
 type UserSuspendedEvent struct {
-	bus.BaseEvent
-	UserID    uuid.UUID  `json:"user_id"`
-	Email     string     `json:"email"`
-	Reason    string     `json:"reason"`
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+	*bus.BaseEvent
+	UserID    uuidv7.UUID `json:"user_id"`
+	Email     string      `json:"email"`
+	Reason    string      `json:"reason"`
+	ExpiresAt *time.Time  `json:"expires_at,omitempty"`
 }
 
 // NewUserSuspendedEvent creates a user suspension event.
-func NewUserSuspendedEvent(userID uuid.UUID, email, reason string, expiresAt *time.Time) *UserSuspendedEvent {
+func NewUserSuspendedEvent(userID uuidv7.UUID, email, reason string, expiresAt *time.Time) *UserSuspendedEvent {
 	return &UserSuspendedEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserSuspended, userID),
 		UserID:    userID,
@@ -63,14 +63,14 @@ func NewUserSuspendedEvent(userID uuid.UUID, email, reason string, expiresAt *ti
 
 // UserBannedEvent is published when a user is permanently banned.
 type UserBannedEvent struct {
-	bus.BaseEvent
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
-	Reason string    `json:"reason"`
+	*bus.BaseEvent
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
+	Reason string      `json:"reason"`
 }
 
 // NewUserBannedEvent creates a user ban event.
-func NewUserBannedEvent(userID uuid.UUID, email, reason string) *UserBannedEvent {
+func NewUserBannedEvent(userID uuidv7.UUID, email, reason string) *UserBannedEvent {
 	return &UserBannedEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserBanned, userID),
 		UserID:    userID,
@@ -81,13 +81,13 @@ func NewUserBannedEvent(userID uuid.UUID, email, reason string) *UserBannedEvent
 
 // UserEmailVerifiedEvent is published when a user verifies their email.
 type UserEmailVerifiedEvent struct {
-	bus.BaseEvent
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
+	*bus.BaseEvent
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
 }
 
 // NewUserEmailVerifiedEvent creates an email verification event.
-func NewUserEmailVerifiedEvent(userID uuid.UUID, email string) *UserEmailVerifiedEvent {
+func NewUserEmailVerifiedEvent(userID uuidv7.UUID, email string) *UserEmailVerifiedEvent {
 	return &UserEmailVerifiedEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserEmailVerified, userID),
 		UserID:    userID,
@@ -97,13 +97,13 @@ func NewUserEmailVerifiedEvent(userID uuid.UUID, email string) *UserEmailVerifie
 
 // UserPasswordChangedEvent is published when a user changes password.
 type UserPasswordChangedEvent struct {
-	bus.BaseEvent
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
+	*bus.BaseEvent
+	UserID uuidv7.UUID `json:"user_id"`
+	Email  string      `json:"email"`
 }
 
 // NewUserPasswordChangedEvent creates a password change event.
-func NewUserPasswordChangedEvent(userID uuid.UUID, email string) *UserPasswordChangedEvent {
+func NewUserPasswordChangedEvent(userID uuidv7.UUID, email string) *UserPasswordChangedEvent {
 	return &UserPasswordChangedEvent{
 		BaseEvent: bus.NewBaseEvent(bus.TopicUserPasswordChanged, userID),
 		UserID:    userID,

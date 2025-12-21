@@ -23,6 +23,28 @@ build: swagger-all ## Build application binary
 	go build -o bin/$(APP_NAME) cmd/api/*.go
 	@echo "Build complete: bin/$(APP_NAME)"
 
+build-demos: ## Build all demo applications
+	@echo "Building demo applications..."
+	@mkdir -p bin
+	@for demo in examples/*/; do \
+		if [ -f "$$demo/main.go" ]; then \
+			demo_name=$$(basename $$demo); \
+			echo "  Building $$demo_name..."; \
+			go build -o bin/$${demo_name} $$demo/*.go; \
+		fi \
+	done
+	@echo "Demo builds complete in bin/ directory"
+
+run-event-bus-demo: ## Run event bus demo (memory adapter)
+	@mkdir -p bin
+	@go build -o bin/event_bus_demo examples/event_bus_demo/*.go
+	@./bin/event_bus_demo
+
+run-redis-bus-demo: ## Run Redis bus demo (requires Redis running)
+	@mkdir -p bin
+	@go build -o bin/redis_bus_demo examples/redis_bus_demo/*.go
+	@./bin/redis_bus_demo
+
 run: ## Run compiled binary
 	./bin/$(APP_NAME)
 

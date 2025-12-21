@@ -45,12 +45,22 @@ type JWTConfig struct {
 }
 
 type BusConfig struct {
+	Adapter         string // "memory" | "redis"
 	WorkerPoolSize  int
 	BufferSize      int
 	RetryAttempts   int
 	RetryDelay      time.Duration
 	RetryMaxDelay   time.Duration
 	RetryMultiplier float64
+	Redis           RedisConfig
+}
+
+type RedisConfig struct {
+	Host     string
+	Port     int
+	Password string
+	DB       int
+	PoolSize int
 }
 
 type EmailConfig struct {
@@ -100,8 +110,8 @@ func Load() (*Config, error) {
 			Host:         getEnv("SERVER_HOST", "0.0.0.0"),
 			Port:         getEnv("SERVER_PORT", "8080"),
 			Environment:  getEnv("ENVIRONMENT", "development"),
-			ReadTimeout:  getDurationEnv("SERVER_READ_TIMEOUT", 15*time.Second),
-			WriteTimeout: getDurationEnv("SERVER_WRITE_TIMEOUT", 15*time.Second),
+			ReadTimeout:  getEnvAsDuration("SERVER_READ_TIMEOUT", 15*time.Second),
+			WriteTimeout: getEnvAsDuration("SERVER_WRITE_TIMEOUT", 15*time.Second),
 		},
 		Database: DatabaseConfig{
 			Host:            getEnv("DB_HOST", "localhost"),
@@ -112,7 +122,7 @@ func Load() (*Config, error) {
 			SSLMode:         getEnv("DB_SSLMODE", "disable"),
 			MaxOpenConns:    getEnvAsInt("DB_MAX_OPEN_CONNS", 25),
 			MaxIdleConns:    getEnvAsInt("DB_MAX_IDLE_CONNS", 5),
-			ConnMaxLifetime: getDurationEnv("DB_CONN_MAX_LIFETIME", 5*time.Minute),
+			ConnMaxLifetime: getEnvAsDuration("DB_CONN_MAX_LIFETIME", 5*time.Minute),
 		},
 		JWT: JWTConfig{
 			Secret:          getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
@@ -120,12 +130,20 @@ func Load() (*Config, error) {
 			RefreshTokenTTL: time.Duration(getEnvAsInt("JWT_REFRESH_TTL_HOURS", 168)) * time.Hour, // 7 days
 		},
 		Bus: BusConfig{
-			WorkerPoolSize:  getEnvAsInt("BUS_WORKER_POOL_SIZE", 10),
-			BufferSize:      getEnvAsInt("BUS_BUFFER_SIZE", 1000),
+			Adapter:         getEnv("BUS_ADAPTER", "memory"),
+			WorkerPoolSize:  getEnvAsInt("BUS_WORKER_POOL_SIZE", 4),
+			BufferSize:      getEnvAsInt("BUS_BUFFER_SIZE", 100),
 			RetryAttempts:   getEnvAsInt("BUS_RETRY_ATTEMPTS", 3),
-			RetryDelay:      getDurationEnv("BUS_RETRY_DELAY", 1*time.Second),
-			RetryMaxDelay:   getDurationEnv("BUS_RETRY_MAX_DELAY", 5*time.Second),
+			RetryDelay:      getEnvAsDuration("BUS_RETRY_DELAY", 1*time.Second),
+			RetryMaxDelay:   getEnvAsDuration("BUS_RETRY_MAX_DELAY", 30*time.Second),
 			RetryMultiplier: getEnvAsFloat("BUS_RETRY_MULTIPLIER", 2.0),
+			Redis: RedisConfig{
+				Host:     getEnv("REDIS_HOST", "localhost"),
+				Port:     getEnvAsInt("REDIS_PORT", 6379),
+				Password: getEnv("REDIS_PASSWORD", ""),
+				DB:       getEnvAsInt("REDIS_DB", 0),
+				PoolSize: getEnvAsInt("REDIS_POOL_SIZE", 10),
+			},
 		},
 		Email: EmailConfig{
 			FromAddress: getEnv("EMAIL_FROM_ADDRESS", "noreply@promenade.com"),
@@ -180,7 +198,6 @@ func getEnvAsBool(key string, defaultValue bool) bool {
 	return defaultValue
 }
 
-
 func getEnvAsInt(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {
 		if intVal, err := strconv.Atoi(value); err == nil {
@@ -189,6 +206,7 @@ func getEnvAsInt(key string, defaultValue int) int {
 	}
 	return defaultValue
 }
+
 func getEnvAsFloat(key string, defaultValue float64) float64 {
 	if value := os.Getenv(key); value != "" {
 		if floatValue, err := strconv.ParseFloat(value, 64); err == nil {
@@ -197,7 +215,8 @@ func getEnvAsFloat(key string, defaultValue float64) float64 {
 	}
 	return defaultValue
 }
-func getDurationEnv(key string, defaultValue time.Duration) time.Duration {
+
+func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
 	if value := os.Getenv(key); value != "" {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration

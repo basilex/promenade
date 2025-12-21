@@ -1,6 +1,7 @@
 # Binaries
 api
 bin/
+*_demo
 *. exe
 *.exe~
 *.dll

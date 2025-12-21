@@ -9,21 +9,25 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 ## Key Features
 
 - **Clean Architecture** - Clear separation of concerns (Domain, Use Case, Adapter, Infrastructure)
-- **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal performance (2x faster than v4)
+- **UUID v7 Primary Keys** - Time-ordered UUIDs for optimal database performance (2x faster inserts than v4)
+- **Event-Driven Architecture** - Async event bus with dual adapters:
+  - **Memory Adapter** - In-memory Pub/Sub for development/testing (fast, zero dependencies)
+  - **Redis Adapter** - Distributed Pub/Sub for production (persistent, scalable)
+  - Factory pattern with graceful fallback and health checks
 - **RBAC System** - Role-Based Access Control with wildcard permissions and 5 system roles
 - **Structured Logging** - slog with JSON/text format, context fields (request_id, user_id)
 - **Automated Purge System** - Configurable data retention with cron scheduler for soft-deleted records
-- **Comprehensive Testing** - 394 tests total across all layers - 100% passing
-  - Unit: 183 tests (entity validation + domain logic)
-  - Integration: 97 tests (repository operations with real PostgreSQL)
-  - Smoke: 114 tests (end-to-end critical flows with real database)
+- **Comprehensive Testing** - 120+ tests total across all layers - 100% passing (< 1 minute)
+  - Unit: Domain entities, business logic, password validation
+  - Integration: 109 DB tests + 7 event bus tests (memory + Redis)
+  - Smoke: End-to-end critical authentication flows
 - **JWT Authentication** - Secure token-based auth with refresh tokens
-- **API Versioning** - v1 and v2 with backward compatibility
-- **PostgreSQL + sqlx** - No ORM, pure SQL with transaction support
+- **API Versioning** - v1 and v2 with isolated handlers, DTOs, and routers
+- **PostgreSQL + sqlx** - No ORM, raw SQL with transaction support and BaseRepository pattern
 - **Swagger Documentation** - Auto-generated API docs for both versions
-- **Docker Ready** - Full Docker Compose setup for development and testing
+- **Docker Ready** - Full Docker Compose setup for development, testing, and production
 - **Database Migrations** - golang-migrate for version control
-- **High Performance** - Gin framework with graceful shutdown
+- **High Performance** - Gin framework with graceful shutdown and production-ready timeouts
 
 ## Quick Start
 
@@ -32,6 +36,8 @@ Production-ready REST API built with **Clean Architecture**, featuring PostgreSQ
 - **Go 1.21+**
 - **Docker & Docker Compose**
 - **Make**
+- **PostgreSQL 16** (via Docker or local)
+- **Redis 7** (optional, for distributed event bus)
 - **golang-migrate** (optional, installed via `make install`)
 
 ### Installation
@@ -112,6 +118,13 @@ curl http://localhost:8080/api/v1/health
 - `promenade_prod` - Production database (with migrations applied via migrate service)
 - `promenade_dev` - Development database (requires manual `make migrate-up` for local dev)
 - `promenade_test` - Test database (used by integration tests)
+
+**Redis Setup:** Redis container runs on:
+
+- Port `6379` - Development/Production
+- Port `6380` - Testing (isolated from dev/prod)
+
+**Event Bus Configuration:** Set `BUS_ADAPTER=redis` in `.env` files to use Redis Pub/Sub (defaults to in-memory for development).
 
 **Clean Slate:** Use `make docker-clean` to remove all containers and volumes, then `make docker-up` to recreate with fresh databases.
 
@@ -260,19 +273,31 @@ All errors return structured JSON responses via `ErrorHandler` in shared layer:
 
 ### Technical Documentation
 
-- **[Authorization Guide](docs/AUTHORIZATION.md)** - RBAC middleware with permissions, roles, and usage examples
-- **[Logging Guide](docs/LOGGING.md)** - Structured logging with slog (JSON/text format, context fields)
-- **[Soft Delete Guide](docs/SOFT_DELETE.md)** - Soft delete implementation for posts and comments, patterns, and best practices
-- [Testing Guide](docs/TESTING_GUIDE.md) - Comprehensive testing setup and best practices
-- [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test infrastructure overview
-- [Validation](docs/VALIDATION.md) - Multi-layer validation strategy and best practices
-- [UUID v7 Migration](docs/UUID_V7_MIGRATION.md) - Migrating from UUID v4 to v7
-- [ID Strategies](docs/ID_STRATEGIES.md) - Primary key strategy recommendations
-- [Auth Schema](docs/AUTH_SCHEMA.md) - Database schema for authentication system
-- [Test Results](docs/TEST_RESULTS.md) - Current test coverage and results
-- [User Profiles Test Results](docs/USER_PROFILES_TEST_RESULTS.md) - User profiles module test coverage (72 tests)
+**Core Architecture:**
 
-**Language Policy:** All documentation and code comments are in English. Russian versions (.ru.md) are kept for reference.
+- **[Event Bus Architecture](pkg/bus/README.md)** - Dual adapter event bus (memory + Redis), factory pattern, retry logic
+- **[Authorization & RBAC](docs/AUTHORIZATION.md)** - Role-based access control, permissions, wildcards, middleware
+- **[Logging](docs/LOGGING.md)** - Structured logging with slog (JSON/text format, context fields)
+- **[Validation](docs/VALIDATION.md)** - Multi-layer validation strategy (DTOs, entities, custom validators)
+
+**Database & Storage:**
+
+- **[Soft Delete](docs/SOFT_DELETE.md)** - Soft delete implementation for posts and comments
+- **[UUID v7 Guide](docs/UUID_V7_GUIDE.md)** - Time-ordered UUIDs for optimal database performance
+- **[Auth Schema](docs/AUTH_SCHEMA.md)** - Complete authentication system database schema
+
+**Testing:**
+
+- **[Testing Guide](docs/TESTING_GUIDE.md)** - Comprehensive testing setup and best practices
+- **[Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md)** - Test infrastructure, fixtures, helpers
+- **[Redis Bus Testing](docs/REDIS_BUS_TESTING.md)** - Integration testing Redis Pub/Sub adapter
+
+**Development:**
+
+- **[Makefile Architecture](docs/MAKEFILE_ARCHITECTURE.md)** - Modular build system organization
+- **[Credentials](docs/CREDENTIALS.md)** - Default users, roles, and API examples
+
+**Language Policy:** All documentation and code comments are in English.
 
 ### Database Schema
 
@@ -532,26 +557,31 @@ make docker-run        # Build and run in Docker
 ### Development Workflow (Makefile.dev.mk)
 
 ```bash
-make install           # Install tools (swag, migrate, golangci-lint)
-make dev               # Start server (postgres + migrations + app)
-make build             # Build binary to bin/promenade
-make run               # Run compiled binary
-make lint              # Run golangci-lint
-make fmt               # Format code (go fmt + gofmt -s)
-make generate          # Generate entity boilerplate
-make config-show       # Show current configuration
+make install               # Install tools (swag, migrate, golangci-lint)
+make dev                   # Start server (postgres + migrations + app)
+make build                 # Build binary to bin/promenade
+make build-demos           # Build all demo applications to bin/
+make run-event-bus-demo    # Run memory event bus demo
+make run-redis-bus-demo    # Run Redis event bus demo (requires Redis)
+make run                   # Run compiled binary
+make lint                  # Run golangci-lint
+make fmt                   # Format code (go fmt + gofmt -s)
+make generate              # Generate entity boilerplate
+make config-show           # Show current configuration
 ```
 
 ### Testing (Makefile.test.mk)
 
 ```bash
-make test              # Run all tests (unit + integration)
-make test-unit         # Unit tests only (~5s)
-make test-integration  # Integration tests (~35s, auto-starts DB)
-make test-smoke        # Smoke tests (~4.5s, critical flows)
-make test-coverage     # Generate HTML coverage report
-make test-db-start     # Start test DB (port 5433)
-make test-db-stop      # Stop test DB
+make test                   # Run all tests (unit + integration-all + smoke)
+make test-unit              # Unit tests only (~5s)
+make test-integration       # Integration DB tests (~38s, auto-starts DB)
+make test-integration-bus   # Event bus tests (memory + redis ~5s)
+make test-integration-all   # All integration tests (DB + bus ~43s)
+make test-smoke             # Smoke tests (~4.5s, critical flows)
+make test-coverage          # Generate HTML coverage report
+make test-db-start          # Start test DB + Redis (ports 5433, 6380)
+make test-db-stop           # Stop test DB + Redis
 ```
 
 ### Production/DevOps (Makefile.prod.mk)
@@ -836,50 +866,69 @@ Flow:
 
 ### Available Implementations
 
-#### 1. In-Memory Bus (Current)
+#### 1. In-Memory Bus (Default - Development)
 
-**Use case**: Development, testing, and simple monolith deployments
+**Use case**: Development, testing, and single-instance deployments
 
 ```go
-// Production code (cmd/api/main.go)
-busConfig := bus.NewBusConfig(
-    cfg.Bus.WorkerPoolSize,  // From .env: BUS_WORKER_POOL_SIZE
-    cfg.Bus.BufferSize,      // From .env: BUS_BUFFER_SIZE
-    cfg.Bus.RetryAttempts,   // From .env: BUS_RETRY_ATTEMPTS
-    cfg.Bus.RetryDelay,      // From .env: BUS_RETRY_DELAY
-    cfg.Bus.RetryMaxDelay,   // From .env: BUS_RETRY_MAX_DELAY
-    cfg.Bus.RetryMultiplier, // From .env: BUS_RETRY_MULTIPLIER
-)
-eventBus := memory.NewMemoryBus(busConfig)
+// Production code (cmd/api/main.go) - via factory
+busConfig := config.BusConfig{
+    Adapter:         "memory",           // BUS_ADAPTER=memory
+    WorkerPoolSize:  cfg.Bus.WorkerPoolSize,
+    BufferSize:      cfg.Bus.BufferSize,
+    RetryAttempts:   cfg.Bus.RetryAttempts,
+    RetryDelay:      cfg.Bus.RetryDelay,
+    RetryMaxDelay:   cfg.Bus.RetryMaxDelay,
+    RetryMultiplier: cfg.Bus.RetryMultiplier,
+}
+eventBus, err := bus.NewBus(busConfig) // Factory pattern
 defer eventBus.Close(ctx)
 ```
 
 **Features**:
 
-- [+] Zero external dependencies
-- [+] Configurable worker pool (10 goroutines default)
-- [+] Buffered message queue (1000 messages default)
-- [+] Graceful shutdown with proper cleanup
-- [+] Built-in health checks and statistics
-- [!] No persistence - events lost on restart
-- [!] Single-process only - not suitable for horizontal scaling
+- ✅ Zero external dependencies
+- ✅ Configurable worker pool (4 workers default)
+- ✅ Buffered message queue (100 messages default)
+- ✅ Graceful shutdown with proper cleanup
+- ✅ Built-in health checks and metrics
+- ✅ Thread-safe with mutex protection
+- ⚠️ No persistence - events lost on restart
+- ⚠️ Single-process only - not suitable for horizontal scaling
 
-#### 2. Redis Pub/Sub (Planned)
+#### 2. Redis Pub/Sub (Production-Ready)
 
-**Use case**: Multi-instance deployments with shared state
+**Use case**: Multi-instance deployments, distributed systems, microservices
 
 ```go
-// Future implementation
-busConfig := bus.NewBusConfig(...)
-eventBus := redis.NewRedisBus(busConfig, redisClient)
+// Production code (cmd/api/main.go) - via factory
+busConfig := config.BusConfig{
+    Adapter:         "redis",            // BUS_ADAPTER=redis
+    WorkerPoolSize:  cfg.Bus.WorkerPoolSize,
+    BufferSize:      cfg.Bus.BufferSize,
+    Redis: config.RedisConfig{
+        Host:     "localhost",           // BUS_REDIS_HOST
+        Port:     6379,                  // BUS_REDIS_PORT
+        Password: "",                    // BUS_REDIS_PASSWORD
+        DB:       0,                     // BUS_REDIS_DB
+        PoolSize: 10,                    // BUS_REDIS_POOL_SIZE
+    },
+}
+eventBus, err := bus.NewBus(busConfig) // Factory with fallback to memory
+defer eventBus.Close(ctx)
 ```
 
 **Features**:
 
-- [+] Multi-process support (horizontal scaling)
-- [+] Pub/Sub pattern for real-time delivery
-- [!] No guaranteed delivery - subscribers must be online
-- [!] No message persistence after delivery
+- ✅ Multi-process support (horizontal scaling)
+- ✅ Distributed Pub/Sub for real-time delivery
+- ✅ Production-ready timeouts (5s dial, 3s read/write)
+- ✅ Health checks (ping with 10s timeout)
+- ✅ Automatic fallback to memory adapter on connection failure
+- ✅ JSON serialization for cross-service compatibility
+- ✅ Graceful shutdown with worker cleanup
+- ⚠️ No guaranteed delivery - subscribers must be online
+- ⚠️ At-most-once semantics - no persistence after delivery
 
 #### 3. NATS/Kafka (Future)
 
@@ -906,24 +955,66 @@ Event bus is configured via environment variables in `.env` files:
 
 ```bash
 # .env.development / .env.production
-BUS_WORKER_POOL_SIZE=10     # Concurrent workers processing events
-BUS_BUFFER_SIZE=1000        # Internal message queue size
-BUS_RETRY_ATTEMPTS=3        # Retry failed handlers
-BUS_RETRY_DELAY=1s          # Initial delay between retries
-BUS_RETRY_MAX_DELAY=5s      # Maximum delay between retries
-BUS_RETRY_MULTIPLIER=2.0    # Backoff multiplier (exponential growth)
+
+# Bus Adapter Selection
+BUS_ADAPTER=memory                # memory|redis (default: memory)
+
+# Worker Configuration (both adapters)
+BUS_WORKER_POOL_SIZE=4           # Concurrent workers processing events
+BUS_BUFFER_SIZE=100              # Internal message queue size
+
+# Retry & Backoff (both adapters)
+BUS_RETRY_ATTEMPTS=3             # Max retry attempts on handler failure
+BUS_RETRY_DELAY=1s               # Initial delay between retries
+BUS_RETRY_MAX_DELAY=30s          # Maximum delay between retries
+BUS_RETRY_MULTIPLIER=2.0         # Backoff multiplier (exponential)
+
+# Redis Configuration (only when BUS_ADAPTER=redis)
+BUS_REDIS_HOST=localhost         # Redis server hostname
+BUS_REDIS_PORT=6379              # Redis server port (6379=prod, 6380=test)
+BUS_REDIS_PASSWORD=              # Redis password (empty for no auth)
+BUS_REDIS_DB=0                   # Redis database number (0-15)
+BUS_REDIS_POOL_SIZE=10           # Connection pool size
 ```
 
 **Config struct** (`internal/infrastructure/config/config.go`):
 
 ```go
 type BusConfig struct {
+    Adapter         string        // "memory" or "redis"
     WorkerPoolSize  int           // Number of concurrent workers
     BufferSize      int           // Message buffer capacity
     RetryAttempts   int           // Max retry attempts on failure
     RetryDelay      time.Duration // Initial delay between retries
     RetryMaxDelay   time.Duration // Maximum delay between retries
     RetryMultiplier float64       // Exponential backoff multiplier
+    Redis           RedisConfig   // Redis-specific configuration
+}
+
+type RedisConfig struct {
+    Host     string // Redis hostname
+    Port     int    // Redis port
+    Password string // Redis password (optional)
+    DB       int    // Redis database number
+    PoolSize int    // Connection pool size
+}
+```
+
+**Factory Pattern with Fallback:**
+
+The `bus.NewBus()` factory automatically handles adapter selection and graceful degradation:
+
+```go
+// 1. Try Redis if BUS_ADAPTER=redis
+eventBus, err := bus.NewBus(busConfig)
+if err != nil {
+    // Redis failed - automatically falls back to memory adapter
+    logger.Warn("Failed to initialize Redis, using memory adapter")
+}
+
+// 2. Health check
+if err := eventBus.Health(ctx); err != nil {
+    logger.Error("Event bus health check failed", err)
 }
 ```
 
@@ -1543,9 +1634,8 @@ go run examples/event_bus_demo/main.go
 
 ### Further Reading
 
-- **[Event Bus README](pkg/bus/README.md)** - Detailed technical documentation
-- **[Configuration Guide](docs/CONFIGURATION_REFACTORING.md)** - Template and config externalization
-- **[Integration Tests](test/integration/event_bus_test.go)** - Full test suite examples
+- **[Event Bus README](pkg/bus/README.md)** - Complete technical documentation with examples
+- **[Integration Tests](test/integration/event_bus_test.go)** - Test suite with both adapters
 
 ## Configuration
 
@@ -1902,3 +1992,71 @@ Interactive API documentation available at:
 
 - **v1**: http://localhost:8081/api/v1/docs/swagger/index.html
 - **v2**: http://localhost:8081/api/v2/docs/swagger/index.html
+
+## 🎮 Demo Applications
+
+The project includes interactive demo applications showcasing event bus functionality with both adapters.
+
+### Available Demos
+
+#### 1. Event Bus Demo (Memory Adapter)
+
+Demonstrates in-memory event bus with user registration flow.
+
+```bash
+# Build and run
+make run-event-bus-demo
+
+# Or manually
+go run examples/event_bus_demo/main.go
+```
+
+**What it does:**
+
+- Initializes memory bus with worker pool
+- Simulates user registration
+- Publishes `UserRegisteredEvent`
+- Sends welcome email asynchronously
+- Displays event processing logs
+- Graceful shutdown with cleanup
+
+#### 2. Redis Bus Demo (Redis Adapter)
+
+Demonstrates Redis Pub/Sub with distributed event processing.
+
+```bash
+# Ensure Redis is running
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Build and run
+make run-redis-bus-demo
+
+# Or manually
+go run examples/redis_bus_demo/main.go
+```
+
+**What it does:**
+
+- Connects to Redis on localhost:6379
+- Creates multiple subscribers
+- Publishes events across processes
+- Demonstrates Pub/Sub pattern
+- Shows JSON serialization
+- Health checks and metrics
+
+### Building All Demos
+
+```bash
+# Build all demos to bin/ directory
+make build-demos
+
+# Binaries created:
+# - bin/event_bus_demo
+# - bin/redis_bus_demo
+
+# Run compiled binaries
+./bin/event_bus_demo
+./bin/redis_bus_demo
+```
+
+**Note:** Demo binaries are automatically excluded from git (`.gitignore` includes `*_demo` pattern).

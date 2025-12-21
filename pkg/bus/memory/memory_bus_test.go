@@ -5,21 +5,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/pkg/bus"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 type testEvent struct {
-	bus.BaseEvent
+	*bus.BaseEvent
 	Message string
 }
 
 func newTestEvent(message string) *testEvent {
 	return &testEvent{
-		BaseEvent: bus.NewBaseEvent("test.event", uuid.New()),
+		BaseEvent: bus.NewBaseEvent("test.event", uuidv7.New()),
 		Message:   message,
 	}
 }
