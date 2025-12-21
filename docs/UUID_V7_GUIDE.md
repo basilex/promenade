@@ -17,13 +17,13 @@ This project has been migrated from UUID v4 to UUID v7 for primary key generatio
 
 ### Comparison with other strategies
 
-| Strategy         | Pros                                          | Cons                                           |
-| ---------------- | --------------------------------------------- | ---------------------------------------------- |
-| **UUID v7**      | [+] Time-ordered, globally unique, distributed | Slightly larger than BIGINT (16 bytes)         |
-| UUID v4          | Globally unique, distributed                  | [X] Random = poor index locality                |
-| SERIAL/BIGSERIAL | Small, sequential, fast                       | [X] Single point of failure, replication issues |
-| ULID             | Similar to v7, base32 encoded                 | Less standard, limited library support         |
-| Snowflake ID     | Fast, time-ordered                            | Requires coordination service                  |
+| Strategy         | Pros                                           | Cons                                            |
+| ---------------- | ---------------------------------------------- | ----------------------------------------------- |
+| **UUID v7**      | [+] Time-ordered, globally unique, distributed | Slightly larger than BIGINT (16 bytes)          |
+| UUID v4          | Globally unique, distributed                   | [X] Random = poor index locality                |
+| SERIAL/BIGSERIAL | Small, sequential, fast                        | [X] Single point of failure, replication issues |
+| ULID             | Similar to v7, base32 encoded                  | Less standard, limited library support          |
+| Snowflake ID     | Fast, time-ordered                             | Requires coordination service                   |
 
 ## Implementation
 
@@ -135,10 +135,10 @@ VALUES ('test@example.com', 'Test', 'hash');
 
 ```go
 type Product struct {
-    ID        uuid.UUID `db:"id"`        // UUID v7 primary key
-    UserID    uuid.UUID `db:"user_id"`   // UUID v7 foreign key
-    Name      string    `db:"name"`
-    CreatedAt time.Time `db:"created_at"`
+    ID        uuidv7.UUID `db:"id"`        // UUID v7 primary key
+    UserID    uuidv7.UUID `db:"user_id"`   // UUID v7 foreign key
+    Name      string      `db:"name"`
+    CreatedAt time.Time   `db:"created_at"`
 }
 ```
 

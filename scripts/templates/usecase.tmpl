@@ -42,7 +42,7 @@ func (uc *__ENTITY__UseCase) Create__ENTITY__(ctx context.Context, name string) 
     return __entity__, nil
 }
 
-func (uc *__ENTITY__UseCase) Get__ENTITY__(ctx context.Context, id uuid.UUID) (*entity.__ENTITY__, error) {
+func (uc *__ENTITY__UseCase) Get__ENTITY__(ctx context.Context, id uuidv7.UUID) (*entity.__ENTITY__, error) {
     return uc.__entity__Repo.GetByID(ctx, id)
 }
 
@@ -59,7 +59,7 @@ func (uc *__ENTITY__UseCase) Update__ENTITY__(ctx context.Context, __entity__ *e
     return uc.__entity__Repo.Update(ctx, __entity__)
 }
 
-func (uc *__ENTITY__UseCase) Delete__ENTITY__(ctx context.Context, id uuid.UUID) error {
+func (uc *__ENTITY__UseCase) Delete__ENTITY__(ctx context.Context, id uuidv7.UUID) error {
     return uc.__entity__Repo.Delete(ctx, id)
 }
 

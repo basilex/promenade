@@ -1149,13 +1149,13 @@ If all attempts fail, the error is logged and the event is dropped (in-memory bu
 
 ```go
 type UserRegisteredEvent struct {
-    bus.BaseEvent
-    UserID uuid.UUID `json:"user_id"`
-    Email  string    `json:"email"`
-    Name   string    `json:"name"`
+    *bus.BaseEvent
+    UserID uuidv7.UUID `json:"user_id"`
+    Email  string      `json:"email"`
+    Name   string      `json:"name"`
 }
 
-func NewUserRegisteredEvent(userID uuid.UUID, email, name string) *UserRegisteredEvent {
+func NewUserRegisteredEvent(userID uuidv7.UUID, email, name string) *UserRegisteredEvent {
     return &UserRegisteredEvent{
         BaseEvent: bus.NewBaseEvent(bus.TopicUserRegistered, userID),
         UserID:    userID,
@@ -1574,7 +1574,7 @@ func TestEventBusIntegration(t *testing.T) {
     require.NoError(t, emailService.Start(ctx))
 
     // Publish event
-    userEvent := event.NewUserRegisteredEvent(uuid.New(), "test@example.com", "John")
+    userEvent := event.NewUserRegisteredEvent(uuidv7.New(), "test@example.com", "John")
     err = eventBus.Publish(ctx, userEvent.Type(), userEvent)
     require.NoError(t, err)
 

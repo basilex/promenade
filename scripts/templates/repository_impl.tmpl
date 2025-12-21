@@ -57,7 +57,7 @@ func (r *__entity__Repository) Update(ctx context.Context, __entity__ *entity.__
     return r.NamedExec(ctx, query, __entity__)
 }
 
-func (r *__entity__Repository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *__entity__Repository) Delete(ctx context.Context, id uuidv7.UUID) error {
     query := `DELETE FROM __entity_snake__s WHERE id = $1`
     return r.Exec(ctx, query, id)
 }

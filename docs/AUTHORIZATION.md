@@ -901,7 +901,7 @@ Implement caching in RoleUseCase:
 
 ```go
 // Use Redis/in-memory cache for permission checks
-func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuid.UUID, permission string) (bool, error) {
+func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
     // Check cache first
     cacheKey := fmt.Sprintf("user:%s:permission:%s", userID, permission)
     if cached, found := uc.cache.Get(cacheKey); found {

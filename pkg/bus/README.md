@@ -72,13 +72,13 @@ This enables asynchronous, decoupled communication between components with a cle
 ```go
 // internal/domain/event/user_events.go
 type UserRegisteredEvent struct {
-    bus.BaseEvent
-    UserID uuid.UUID `json:"user_id"`
-    Email  string    `json:"email"`
-    Name   string    `json:"name"`
+    *bus.BaseEvent
+    UserID uuidv7.UUID `json:"user_id"`
+    Email  string      `json:"email"`
+    Name   string      `json:"name"`
 }
 
-func NewUserRegisteredEvent(userID uuid.UUID, email, name string) *UserRegisteredEvent {
+func NewUserRegisteredEvent(userID uuidv7.UUID, email, name string) *UserRegisteredEvent {
     return &UserRegisteredEvent{
         BaseEvent: bus.NewBaseEvent(bus.TopicUserRegistered, userID),
         UserID:    userID,
