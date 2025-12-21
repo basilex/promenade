@@ -907,12 +907,16 @@ busConfig := config.BusConfig{
     Adapter:         "redis",            // BUS_ADAPTER=redis
     WorkerPoolSize:  cfg.Bus.WorkerPoolSize,
     BufferSize:      cfg.Bus.BufferSize,
+    RetryAttempts:   cfg.Bus.RetryAttempts,
+    RetryDelay:      cfg.Bus.RetryDelay,
+    RetryMaxDelay:   cfg.Bus.RetryMaxDelay,
+    RetryMultiplier: cfg.Bus.RetryMultiplier,
     Redis: config.RedisConfig{
-        Host:     "localhost",           // BUS_REDIS_HOST
-        Port:     6379,                  // BUS_REDIS_PORT
-        Password: "",                    // BUS_REDIS_PASSWORD
-        DB:       0,                     // BUS_REDIS_DB
-        PoolSize: 10,                    // BUS_REDIS_POOL_SIZE
+        Host:     "localhost",           // REDIS_HOST
+        Port:     6379,                  // REDIS_PORT
+        Password: "",                    // REDIS_PASSWORD
+        DB:       0,                     // REDIS_DB
+        PoolSize: 10,                    // REDIS_POOL_SIZE
     },
 }
 eventBus, err := bus.NewBus(busConfig) // Factory with fallback to memory
@@ -1654,56 +1658,93 @@ The project uses a hierarchical environment configuration:
 ### Key Configuration Variables
 
 ```bash
-# Application
-APP_NAME=Promenade
-APP_URL=http://localhost:8081
+# ============================================================================
+# Application Configuration
+# ============================================================================
+APP_NAME=Promenade                          # Application display name
+APP_URL=http://localhost:8081               # Base URL for links and callbacks
 
+# ============================================================================
 # Server Configuration
-SERVER_PORT=8081
-ENVIRONMENT=development           # development, production
+# ============================================================================
+SERVER_PORT=8081                            # HTTP server port
+ENVIRONMENT=development                     # development, staging, production
 
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=system
-DB_PASSWORD=password
-DB_NAME=promenade_dev
-DB_SSLMODE=disable
-DB_MAX_OPEN_CONNS=25
-DB_MAX_IDLE_CONNS=5
+# ============================================================================
+# Database Configuration (PostgreSQL)
+# ============================================================================
+DB_HOST=localhost                           # Database hostname
+DB_PORT=5432                                # PostgreSQL port
+DB_USER=system                              # Database username
+DB_PASSWORD=password                        # Database password
+DB_NAME=promenade_dev                       # Database name
+DB_SSLMODE=disable                          # SSL mode (disable, require, verify-ca, verify-full)
+DB_MAX_OPEN_CONNS=25                        # Max open connections
+DB_MAX_IDLE_CONNS=5                         # Max idle connections
 
+# ============================================================================
 # JWT Configuration
-# Generate with: openssl rand -base64 32
-JWT_SECRET=your-super-secret-key-change-in-production
-JWT_ACCESS_TTL_MINUTES=15        # 15 minutes
-JWT_REFRESH_TTL_HOURS=168        # 7 days (168 hours)
+# ============================================================================
+JWT_SECRET=your-secret-key-change-in-production   # Generate: openssl rand -base64 32
+JWT_ACCESS_TTL_MINUTES=15                   # Access token lifetime (minutes)
+JWT_REFRESH_TTL_HOURS=168                   # Refresh token lifetime (hours, 7 days)
 
+# ============================================================================
 # Swagger Configuration
-SWAGGER_ENABLED=true
-SWAGGER_HOST=localhost:8081
+# ============================================================================
+SWAGGER_ENABLED=true                        # Enable Swagger UI (disable in production)
+SWAGGER_HOST=localhost:8081                 # Swagger host address
 
+# ============================================================================
 # Rate Limiting
-RATE_LIMIT_RPS=100               # Requests per second
-RATE_LIMIT_BURST=200             # Burst capacity
+# ============================================================================
+RATE_LIMIT_RPS=100                          # Requests per second per IP
+RATE_LIMIT_BURST=200                        # Burst capacity
 
+# ============================================================================
 # Event Bus Configuration
-BUS_WORKER_POOL_SIZE=10          # Concurrent workers
-BUS_BUFFER_SIZE=1000             # Message buffer capacity
-BUS_RETRY_ATTEMPTS=3             # Max retry attempts on failure
-BUS_RETRY_DELAY=1s               # Delay between retries
+# ============================================================================
+BUS_ADAPTER=memory                          # Adapter: "memory" or "redis"
+BUS_WORKER_POOL_SIZE=10                     # Concurrent workers
+BUS_BUFFER_SIZE=1000                        # Event queue buffer size
+BUS_RETRY_ATTEMPTS=3                        # Max retry attempts
+BUS_RETRY_DELAY=1s                          # Initial retry delay
+BUS_RETRY_MAX_DELAY=5s                      # Max retry delay (exponential backoff cap)
+BUS_RETRY_MULTIPLIER=2.0                    # Exponential backoff multiplier
 
+# ============================================================================
+# Redis Configuration (when BUS_ADAPTER=redis)
+# ============================================================================
+REDIS_HOST=localhost                        # Redis hostname
+REDIS_PORT=6379                             # Redis port
+REDIS_PASSWORD=                             # Redis password (empty if no auth)
+REDIS_DB=0                                  # Redis database number (0-15)
+REDIS_POOL_SIZE=10                          # Connection pool size
+
+# ============================================================================
 # Email Configuration
-EMAIL_FROM_NAME=Promenade Team
-EMAIL_FROM_ADDRESS=noreply@promenade.com
+# ============================================================================
+EMAIL_FROM_NAME=Promenade Team              # Sender name in emails
+EMAIL_FROM_ADDRESS=noreply@promenade.com    # Sender email address
+
+# ============================================================================
+# Purge Configuration (Soft Delete Cleanup)
+# ============================================================================
+PURGE_ENABLED=true                          # Enable automatic purge
+PURGE_SCHEDULE=0 2 * * *                    # Cron: daily at 2 AM
+PURGE_DRY_RUN=false                         # Dry run mode (logs only)
+PURGE_BATCH_SIZE=1000                       # Records per batch
+PURGE_RETENTION_USER_POSTS=90               # Days to retain deleted posts
+PURGE_RETENTION_POST_COMMENTS=30            # Days to retain deleted comments
 ```
 
 ### Setup Local Environment
 
 ```bash
-# Copy example file
-cp .env.local.example .env.local
+# Copy example file for local overrides
+cp .env.example .env.local
 
-# Edit with your settings
+# Edit with your local settings
 vim .env.local
 
 # Values in .env.local override all other env files
