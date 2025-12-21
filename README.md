@@ -643,11 +643,13 @@ This project strictly follows **Clean Architecture** principles with four distin
 
 ```
 promenade/
-├── cmd/api/                           # Application entry point
-│   └── main.go                        # Bootstrap, DI, server setup
+├── cmd/
+│   └── api/
+│       └── main.go                    # Application entry point, DI, server setup
 ├── internal/
 │   ├── domain/
-│   │   ├── entity/                    # Business entities (User, Permission, Role, UserProfile, UserContact, UserPost, Country, Currency, Session)
+│   │   ├── entity/                    # Business entities (User, Permission, Role, UserProfile, UserContact, UserPost, PostComment, Country, Currency, Session)
+│   │   ├── event/                     # Domain events (UserRegisteredEvent, UserSuspendedEvent, etc.)
 │   │   └── repository/                # Repository interfaces (ports)
 │   ├── usecase/                       # Business logic orchestration
 │   │   ├── auth_usecase.go           # Login, register, refresh, logout
@@ -656,39 +658,139 @@ promenade/
 │   │   ├── user_contact_usecase.go   # User contacts management
 │   │   ├── user_profile_usecase.go   # User profiles, privacy, moderation
 │   │   ├── user_post_usecase.go      # Blog posts, publishing, engagement
+│   │   ├── post_comment_usecase.go   # Comments management
 │   │   ├── country_usecase.go        # Countries CRUD
-│   │   └── currency_usecase.go       # Currencies CRUD
+│   │   ├── currency_usecase.go       # Currencies CRUD
+│   │   └── purge_usecase.go          # Soft delete cleanup
 │   ├── adapter/
 │   │   ├── http/
-│   │   │   ├── shared/middleware/    # Auth, RBAC authorization, CORS, logging, recovery
-│   │   │   ├── v1/                   # API v1 (handlers, DTOs, routes)
-│   │   │   └── v2/                   # API v2 (handlers, DTOs, routes)
-│   │   └── repository/postgres/      # Repository implementations (sqlx)
+│   │   │   ├── shared/
+│   │   │   │   ├── middleware/       # Auth, RBAC, CORS, logging, recovery, request ID
+│   │   │   │   ├── handler/          # Info, error handlers
+│   │   │   │   └── response/         # Response helpers
+│   │   │   ├── v1/                   # API v1
+│   │   │   │   ├── handler/          # v1 HTTP handlers
+│   │   │   │   ├── dto/              # v1 request/response DTOs
+│   │   │   │   └── router/           # v1 route definitions, module initialization
+│   │   │   └── v2/                   # API v2 (future)
+│   │   │       ├── handler/
+│   │   │       ├── dto/
+│   │   │       ├── mapper/
+│   │   │       └── router/
+│   │   └── repository/
+│   │       └── postgres/              # PostgreSQL implementations (sqlx)
 │   └── infrastructure/
-│       ├── config/                    # Configuration loader
-│       ├── database/                  # PostgreSQL connection & transactions
-│       └── logger/                    # Structured logging
+│       ├── config/                    # Environment configuration loader
+│       ├── database/                  # PostgreSQL connection, transactions
+│       ├── logger/                    # Structured logging setup
+│       ├── notification/              # Email service (async via event bus)
+│       └── scheduler/                 # Cron scheduler for purge system
 ├── pkg/
+│   ├── bus/                          # Event bus system
+│   │   ├── memory/                   # In-memory bus adapter
+│   │   ├── redis/                    # Redis Pub/Sub adapter
+│   │   ├── bus.go                    # Bus interface
+│   │   ├── event.go                  # Event interface
+│   │   ├── factory.go                # Factory with fallback
+│   │   ├── topics.go                 # Topic constants
+│   │   └── README.md                 # Event bus documentation
 │   ├── jwt/                          # JWT token manager
-│   ├── ptr/                          # Reference helpers for nullable fields
-│   ├── uuidv7/                       # UUID v7 generator
+│   ├── logger/                       # Logger initialization
 │   ├── pagination/                   # Pagination helpers
-│   └── validator/                    # Request validation
+│   ├── ref/                          # Reference helpers for nullable fields
+│   ├── uuidv7/                       # UUID v7 generator (time-ordered)
+│   ├── validator/                    # Custom request validators
+│   └── version/                      # Application version info
 ├── test/
-│   ├── helpers/                      # Test database setup & fixtures
-│   │   ├── database.go              # TestDB with cleanup
-│   │   └── fixtures.go              # User & session fixtures
-│   ├── integration/                  # Integration tests (planned)
-│   ├── e2e/                         # End-to-end tests (planned)
-│   └── mocks/                       # Mock repositories (UserProfile, etc.)
+│   ├── helpers/                      # Test utilities
+│   │   ├── database.go              # Test DB setup & cleanup
+│   │   └── fixtures.go              # Test data generators
+│   ├── integration/                  # Integration tests
+│   │   ├── event_bus_test.go        # Memory bus tests
+│   │   └── redis_bus_test.go        # Redis bus tests
+│   ├── smoke/                        # End-to-end smoke tests (114 tests)
+│   │   ├── auth_smoke_test.go
+│   │   ├── country_currency_smoke_test.go
+│   │   ├── user_contact_smoke_test.go
+│   │   ├── user_profile_smoke_test.go
+│   │   ├── user_post_smoke_test.go
+│   │   ├── post_comment_smoke_test.go
+│   │   ├── comment_likes_smoke_test.go
+│   │   ├── rbac_smoke_test.go
+│   │   └── rbac_integration_smoke_test.go
+│   ├── mocks/                       # Mock implementations for testing
+│   │   ├── *_repository_mock.go
+│   │   └── auth_usecase_mock.go
+│   ├── e2e/                         # End-to-end tests (future)
+│   └── README.md                    # Testing guide
+├── examples/                         # Demo applications
+│   ├── event_bus_demo/              # Memory bus demo
+│   │   └── main.go
+│   └── redis_bus_demo/              # Redis bus demo
+│       └── main.go
 ├── migrations/                       # Database migrations (golang-migrate)
+│   ├── 000001_init_schema_deps.up.sql
+│   ├── 000002_create_auth_schema.up.sql
+│   ├── 000003_create_countries_currencies.up.sql
+│   ├── 000004_create_user_contacts.up.sql
+│   ├── 000005_create_user_profiles.up.sql
+│   ├── 000006_create_user_posts.up.sql
+│   ├── 000007_create_post_comments.up.sql
+│   ├── 000008_create_comment_likes_table.up.sql
+│   ├── 000009_create_rbac_tables.up.sql
+│   └── *.down.sql                   # Rollback migrations
 ├── docker/
-│   ├── docker-compose.yml           # Dev database (port 5432)
-│   ├── docker-compose.test.yml      # Test database (port 5433)
-│   └── Dockerfile                   # Production image
+│   ├── docker-compose.yml           # Dev: Postgres (5432), Redis (6379)
+│   ├── docker-compose.test.yml      # Test: Postgres (5433), Redis (6380)
+│   ├── Dockerfile                   # Production image
+│   ├── init-db.sh                   # Auto-create databases
+│   └── README.md                    # Docker documentation
 ├── docs/                            # Technical documentation
+│   ├── v1/                          # Swagger v1 (auto-generated)
+│   ├── v2/                          # Swagger v2 (auto-generated)
+│   ├── AUTH_SCHEMA.md               # Authentication schema
+│   ├── AUTHORIZATION.md             # RBAC system
+│   ├── CREDENTIALS.md               # Default credentials
+│   ├── LOGGING.md                   # Logging conventions
+│   ├── MAKEFILE_ARCHITECTURE.md     # Makefile system
+│   ├── REDIS_BUS_TESTING.md         # Redis adapter testing
+│   ├── SOFT_DELETE.md               # Soft delete implementation
+│   ├── TESTING_GUIDE.md             # Testing patterns
+│   ├── TESTING_INFRASTRUCTURE.md    # Test setup
+│   ├── UUID_V7_GUIDE.md             # UUID v7 usage
+│   └── VALIDATION.md                # Validation rules
 ├── scripts/                         # Helper scripts & generators
-└── Makefile                         # Development commands
+│   ├── templates/                   # Code generation templates
+│   │   ├── entity.tmpl
+│   │   ├── usecase.tmpl
+│   │   ├── handler_v1.tmpl
+│   │   ├── dto_v1.tmpl
+│   │   ├── repository_*.tmpl
+│   │   └── migration_*.tmpl
+│   ├── lib/
+│   │   └── helpers.sh               # Shared shell functions
+│   ├── generate.sh                  # Entity generator
+│   ├── generate-interactive.sh      # Interactive generator
+│   ├── add-routes.sh                # Route helper
+│   ├── run-tests.sh                 # Test runner
+│   └── *.sh                         # Other utilities
+├── templates/
+│   └── email/                       # Email templates
+│       ├── welcome.html
+│       ├── email_verified.html
+│       ├── password_changed.html
+│       ├── account_suspended.html
+│       └── account_banned.html
+├── .github/
+│   └── copilot-instructions.md      # AI agent guidelines
+├── Makefile                         # Main makefile (imports modules)
+├── Makefile.dev.mk                  # Development targets
+├── Makefile.test.mk                 # Testing targets
+├── Makefile.prod.mk                 # Production/Docker targets
+├── go.mod                           # Go dependencies
+├── go.sum                           # Dependency checksums
+├── LICENSE                          # MIT License
+└── README.md                        # This file
 ```
 
 ### \* Working with Nullable Fields (`pkg/ref`)
