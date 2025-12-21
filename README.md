@@ -206,7 +206,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 
 2. **Copy the `access_token`** from response (e.g., `eyJhbGciOiJIUzI1NiIs...`)
 
-3. **Click the "Authorize" button** 🔓 (green lock icon at the top right)
+3. **Click the "Authorize" button** (lock icon at the top right)
 
 4. **In the "Value" field, enter**:
 
@@ -214,11 +214,11 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
    Bearer eyJhbGciOiJIUzI1NiIs...
    ```
 
-   **⚠️ IMPORTANT:** You must type the word `Bearer`, then a space, then your token
+   **[!] IMPORTANT:** You must type the word `Bearer`, then a space, then your token
 
 5. **Click "Authorize"** and close the dialog
 
-6. **All protected endpoints** (with 🔒 icon) will now work automatically
+6. **All protected endpoints** (with lock icon) will now work automatically
 
 **Common mistake:** Entering just the token without `Bearer` prefix results in `401 Unauthorized`.
 
@@ -823,7 +823,7 @@ This approach allows distinguishing between three states:
 2. **Empty** (&"") - field was explicitly cleared
 3. **Value** (&"text") - field has actual data
 
-## 📨 Event Bus System
+## Event Bus System
 
 The project implements a **transport-agnostic event bus** for asynchronous communication between components. This enables scalable, loosely-coupled architecture within the monolith, with a clear path to microservices when needed.
 
@@ -888,14 +888,14 @@ defer eventBus.Close(ctx)
 
 **Features**:
 
-- ✅ Zero external dependencies
-- ✅ Configurable worker pool (4 workers default)
-- ✅ Buffered message queue (100 messages default)
-- ✅ Graceful shutdown with proper cleanup
-- ✅ Built-in health checks and metrics
-- ✅ Thread-safe with mutex protection
-- ⚠️ No persistence - events lost on restart
-- ⚠️ Single-process only - not suitable for horizontal scaling
+- [+] Zero external dependencies
+- [+] Configurable worker pool (4 workers default)
+- [+] Buffered message queue (100 messages default)
+- [+] Graceful shutdown with proper cleanup
+- [+] Built-in health checks and metrics
+- [+] Thread-safe with mutex protection
+- [!] No persistence - events lost on restart
+- [!] Single-process only - not suitable for horizontal scaling
 
 #### 2. Redis Pub/Sub (Production-Ready)
 
@@ -925,15 +925,15 @@ defer eventBus.Close(ctx)
 
 **Features**:
 
-- ✅ Multi-process support (horizontal scaling)
-- ✅ Distributed Pub/Sub for real-time delivery
-- ✅ Production-ready timeouts (5s dial, 3s read/write)
-- ✅ Health checks (ping with 10s timeout)
-- ✅ Automatic fallback to memory adapter on connection failure
-- ✅ JSON serialization for cross-service compatibility
-- ✅ Graceful shutdown with worker cleanup
-- ⚠️ No guaranteed delivery - subscribers must be online
-- ⚠️ At-most-once semantics - no persistence after delivery
+- [+] Multi-process support (horizontal scaling)
+- [+] Distributed Pub/Sub for real-time delivery
+- [+] Production-ready timeouts (5s dial, 3s read/write)
+- [+] Health checks (ping with 10s timeout)
+- [+] Automatic fallback to memory adapter on connection failure
+- [+] JSON serialization for cross-service compatibility
+- [+] Graceful shutdown with worker cleanup
+- [!] No guaranteed delivery - subscribers must be online
+- [!] At-most-once semantics - no persistence after delivery
 
 #### 3. NATS/Kafka (Future)
 
@@ -1241,7 +1241,7 @@ templates/email/
   </head>
   <body>
     <div class="header">
-      <h1>🎉 Welcome to Promenade!</h1>
+      <h1>Welcome to Promenade!</h1>
     </div>
     <div class="content">
       <p>Hi <strong>{{.Name}}</strong>,</p>

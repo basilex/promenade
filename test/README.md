@@ -210,7 +210,7 @@ func TestFeature_SmokeTest(t *testing.T) {
         // Test critical user flow end-to-end
     })
 
-    t.Logf("🎉 All feature smoke tests passed!")
+    t.Logf("[SUCCESS] All feature smoke tests passed!")
 }
 ```
 

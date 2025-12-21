@@ -124,7 +124,7 @@ func TestAuth_SmokeTest(t *testing.T) {
         // Continue testing full flow...
     })
 
-    t.Logf("🎉 All auth smoke tests passed!")
+    t.Logf("[SUCCESS] All auth smoke tests passed!")
 }
 ```
 

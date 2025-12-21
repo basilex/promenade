@@ -147,7 +147,7 @@ func TestCommentLikes_SmokeTest(t *testing.T) {
 		assert.Len(t, page2, 1, "Second page should have 1 liker")
 	})
 
-	t.Log("🎉 All comment_likes smoke tests passed!")
+	t.Log("[SUCCESS] All comment_likes smoke tests passed!")
 }
 
 // TestCommentLikes_Performance - quick performance check

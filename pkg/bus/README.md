@@ -192,13 +192,13 @@ defer eventBus.Close(ctx)
 
 **Features:**
 
-- ✅ Zero external dependencies
-- ✅ Perfect for development and testing
-- ✅ Thread-safe with mutex protection
-- ✅ Configurable worker pool and buffer
-- ✅ Health checks and graceful shutdown
-- ⚠️ Events lost on restart (no persistence)
-- ⚠️ Single-process only (no horizontal scaling)
+- [+] Zero external dependencies
+- [+] Perfect for development and testing
+- [+] Thread-safe with mutex protection
+- [+] Configurable worker pool and buffer
+- [+] Health checks and graceful shutdown
+- [!] Events lost on restart (no persistence)
+- [!] Single-process only (no horizontal scaling)
 
 ### 2. Redis Pub/Sub (Production-Ready)
 
@@ -233,14 +233,14 @@ defer eventBus.Close(ctx)
 
 **Features:**
 
-- ✅ Multi-process support (horizontal scaling)
-- ✅ Distributed Pub/Sub pattern
-- ✅ JSON serialization for cross-service compatibility
-- ✅ Production-ready timeouts (5s dial, 3s read/write, 10s ping)
-- ✅ Automatic fallback to memory adapter on connection failure
-- ✅ Health checks via Redis PING
-- ⚠️ No guaranteed delivery (subscribers must be online)
-- ⚠️ At-most-once semantics (no persistence after delivery)
+- [+] Multi-process support (horizontal scaling)
+- [+] Distributed Pub/Sub pattern
+- [+] JSON serialization for cross-service compatibility
+- [+] Production-ready timeouts (5s dial, 3s read/write, 10s ping)
+- [+] Automatic fallback to memory adapter on connection failure
+- [+] Health checks via Redis PING
+- [!] No guaranteed delivery (subscribers must be online)
+- [!] At-most-once semantics (no persistence after delivery)
 
 **Redis Architecture:**
 

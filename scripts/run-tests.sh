@@ -14,7 +14,7 @@ echo ""
 
 # Check if test DB is running
 if ! docker ps | grep -q promenade_test_db; then
-    echo -e "${YELLOW}⚠️  Test database not running, starting...${NC}"
+    echo -e "${YELLOW}[WARNING] Test database not running, starting...${NC}"
     make test-db-start
     echo -e "${GREEN}✓ Test database started${NC}"
     echo ""
@@ -53,4 +53,4 @@ case $TEST_TYPE in
 esac
 
 echo ""
-echo -e "${GREEN}✅ Tests completed${NC}"
+echo -e "${GREEN}[OK] Tests completed${NC}"

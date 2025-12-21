@@ -54,13 +54,13 @@ func main() {
 		log.Error("Bus health check failed", slog.Any("error", err))
 		os.Exit(1)
 	}
-	log.Info("✅ Bus health check passed")
+	log.Info("[OK] Bus health check passed")
 
 	// Subscribe to test topic
 	messagesReceived := 0
 	handler := func(ctx context.Context, event bus.Event) error {
 		messagesReceived++
-		log.Info("📨 Received event",
+		log.Info("[<<] Received event",
 			slog.String("type", event.Type()),
 			slog.Int("count", messagesReceived))
 		return nil
@@ -71,14 +71,14 @@ func main() {
 		log.Error("Failed to subscribe", slog.Any("error", err))
 		os.Exit(1)
 	}
-	log.Info("✅ Subscribed to topic", slog.String("topic", topic))
+	log.Info("[OK] Subscribed to topic", slog.String("topic", topic))
 
 	// Give subscriber time to register (important for Redis Pub/Sub)
 	time.Sleep(500 * time.Millisecond)
 
 	// Publish test events
 	numMessages := 5
-	log.Info("📤 Publishing test events", slog.Int("count", numMessages))
+	log.Info("[>>] Publishing test events", slog.Int("count", numMessages))
 
 	for i := 1; i <= numMessages; i++ {
 		aggregateID := uuidv7.New()
@@ -94,7 +94,7 @@ func main() {
 			continue
 		}
 
-		log.Info("✅ Published event", slog.Int("num", i))
+		log.Info("[OK] Published event", slog.Int("num", i))
 		time.Sleep(100 * time.Millisecond)
 	}
 
@@ -103,14 +103,14 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	// Results
-	log.Info("📊 Test Results",
+	log.Info("[RESULTS] Test Results",
 		slog.Int("published", numMessages),
 		slog.Int("received", messagesReceived))
 
 	if messagesReceived == numMessages {
-		log.Info("✅ SUCCESS: All messages received!")
+		log.Info("[SUCCESS] All messages received!")
 	} else {
-		log.Warn("⚠️  WARNING: Message count mismatch",
+		log.Warn("[WARNING] Message count mismatch",
 			slog.Int("expected", numMessages),
 			slog.Int("actual", messagesReceived))
 	}
@@ -123,6 +123,6 @@ func main() {
 	if err := eventBus.Close(shutdownCtx); err != nil {
 		log.Error("Failed to close bus", slog.Any("error", err))
 	} else {
-		log.Info("✅ Bus closed gracefully")
+		log.Info("[OK] Bus closed gracefully")
 	}
 }

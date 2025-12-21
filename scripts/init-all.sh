@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🚀 Initializing project..."
+echo "[INIT] Initializing project..."
 
 # Check if Go is installed
 if ! command -v go &> /dev/null; then
@@ -16,7 +16,7 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-echo "✅ Go and Docker are installed"
+echo "[OK] Go and Docker are installed"
 
 # Install tools
 echo "Installing tools..."

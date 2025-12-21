@@ -315,5 +315,5 @@ func TestRBAC_SmokeTest(t *testing.T) {
 		assert.Error(t, err, "deleted role should not be found")
 	})
 
-	t.Logf("🎉 All RBAC smoke tests passed!")
+	t.Logf("[SUCCESS] All RBAC smoke tests passed!")
 }

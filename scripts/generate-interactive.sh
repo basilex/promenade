@@ -76,4 +76,4 @@ if [ ${#FIELDS[@]} -gt 0 ]; then
 fi
 
 echo ""
-success "Done! 🎉"
+success "Done!"

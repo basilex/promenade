@@ -12,10 +12,10 @@ if [ ! -f "$ROUTER_FILE" ]; then
     exit 1
 fi
 
-echo "📝 Adding routes for $ENTITY to $ROUTER_FILE"
+echo "[INFO] Adding routes for $ENTITY to $ROUTER_FILE"
 
 # TODO: добавить автоматическую вставку routes
-echo "✅ Routes template generated.  Add manually for now:"
+echo "[OK] Routes template generated.  Add manually for now:"
 cat << ROUTES
 
     ${ENTITY_PLURAL} := v1.Group("/${ENTITY_PLURAL}")

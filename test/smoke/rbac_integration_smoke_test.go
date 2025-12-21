@@ -294,5 +294,5 @@ func TestRBACIntegration_SmokeTest(t *testing.T) {
 		}
 	})
 
-	t.Logf("🎉 All RBAC integration smoke tests passed!")
+	t.Logf("[SUCCESS] All RBAC integration smoke tests passed!")
 }

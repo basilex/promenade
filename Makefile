@@ -47,16 +47,16 @@ help:  ## Show this help message
 	@echo "║          Promenade - Available Commands                        ║"
 	@echo "╚════════════════════════════════════════════════════════════════╝"
 	@echo ""
-	@echo "📦 DEVELOPMENT (Makefile.dev.mk)"
+	@echo "[DEV] DEVELOPMENT (Makefile.dev.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
 	@echo ""
 	@echo "🧪 TESTING (Makefile.test.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.test.mk
 	@echo ""
-	@echo "🚀 PRODUCTION (Makefile.prod.mk)"
+	@echo "[PROD] PRODUCTION (Makefile.prod.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
 	@echo ""
-	@echo "💡 Usage examples:"
+	@echo "[INFO] Usage examples:"
 	@echo "  make dev              # Start API development server"
 	@echo "  make test             # Run all tests"
 	@echo "  make docker-run       # Build and run in Docker"

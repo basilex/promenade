@@ -368,7 +368,7 @@ func (r *userPostRepository) GetByIDIncludingDeleted(ctx context.Context, id uui
 
 ## Best Practices
 
-### DO ✅
+### DO [+]
 
 - Always filter `deleted_at IS NULL` in SELECT queries
 - Use partial indexes: `WHERE deleted_at IS NULL` on frequently queried columns
@@ -377,7 +377,7 @@ func (r *userPostRepository) GetByIDIncludingDeleted(ctx context.Context, id uui
 - Test both soft delete and restore operations
 - Document which entities support soft delete
 
-### DON'T ❌
+### DON'T [-]
 
 - Don't forget `deleted_at IS NULL` in queries (common bug!)
 - Don't use hard delete (`DELETE FROM`) for soft-deletable entities

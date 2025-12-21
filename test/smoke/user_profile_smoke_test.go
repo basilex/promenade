@@ -218,5 +218,5 @@ func TestUserProfile_SmokeTest(t *testing.T) {
 		assert.Error(t, err, "deleted profile should not be found")
 	})
 
-	t.Logf("🎉 All user profile smoke tests passed!")
+	t.Logf("[SUCCESS] All user profile smoke tests passed!")
 }

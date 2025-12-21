@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔧 Converting templates to __VAR__ syntax..."
+echo "[CONVERT] Converting templates to __VAR__ syntax..."
 
 # Конвертируем {{VAR}} в __VAR__
 # Конвертируем @VAR@ в __VAR__ (если уже были конвертированы)
@@ -27,12 +27,12 @@ for template in scripts/templates/*.tmpl; do
             > "$template"
         
         rm "${template}.bak"
-        echo "  ✅ Converted"
+        echo "  [OK] Converted"
     fi
 done
 
 echo ""
-echo "✅ All templates converted to __VAR__ syntax!"
+echo "[OK] All templates converted to __VAR__ syntax!"
 echo ""
 echo "Example:"
 echo "  {{ENTITY}} or @ENTITY@ -> __ENTITY__"

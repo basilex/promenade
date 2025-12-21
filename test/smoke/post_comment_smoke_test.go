@@ -184,5 +184,5 @@ func TestPostComment_SmokeTest(t *testing.T) {
 		assert.Error(t, err, "should not be able to delete other user's comment")
 	})
 
-	t.Logf("🎉 All post comment smoke tests passed!")
+	t.Logf("[SUCCESS] All post comment smoke tests passed!")
 }

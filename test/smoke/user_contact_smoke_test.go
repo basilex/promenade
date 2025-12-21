@@ -196,5 +196,5 @@ func TestUserContact_SmokeTest(t *testing.T) {
 		assert.GreaterOrEqual(t, len(contacts), 2, "should have remaining contacts")
 	})
 
-	t.Logf("🎉 All user contact smoke tests passed!")
+	t.Logf("[SUCCESS] All user contact smoke tests passed!")
 }

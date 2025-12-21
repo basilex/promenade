@@ -45,15 +45,15 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 **Ожидаемый результат:**
 
 ```
-✅ Bus health check passed
-✅ Subscribed to topic
-📤 Publishing test events count=5
-✅ Published event num=1
-📨 Received event type=test.message count=1
+[OK] Bus health check passed
+[OK] Subscribed to topic
+[>>] Publishing test events count=5
+[OK] Published event num=1
+[<<] Received event type=test.message count=1
 ...
-📊 Test Results published=5 received=5
-✅ SUCCESS: All messages received!
-✅ Bus closed gracefully
+[RESULTS] Test Results published=5 received=5
+[SUCCESS] All messages received!
+[OK] Bus closed gracefully
 ```
 
 ## Переключение адаптеров в production
@@ -114,15 +114,15 @@ PUBSUB NUMSUB test.messages
 
 **Memory адаптер:**
 
-- ⚡ Быстрее (нет network overhead)
-- 🔒 Изолирован в одном процессе
-- ❌ Не переживает рестарты
+- [+] Быстрее (нет network overhead)
+- [+] Изолирован в одном процессе
+- [-] Не переживает рестарты
 
 **Redis адаптер:**
 
-- 🌐 Распределенный (несколько инстансов могут слушать)
-- 💾 Возможность persistence (если настроить Redis)
-- 🔄 Переживает рестарты приложения
+- [+] Распределенный (несколько инстансов могут слушать)
+- [+] Возможность persistence (если настроить Redis)
+- [+] Переживает рестарты приложения
 
 ### Рекомендации
 

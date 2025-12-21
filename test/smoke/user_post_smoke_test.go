@@ -217,5 +217,5 @@ func TestUserPost_SmokeTest(t *testing.T) {
 		assert.True(t, foundMatch, "should find 'Published Post'")
 	})
 
-	t.Logf("🎉 All user post smoke tests passed!")
+	t.Logf("[SUCCESS] All user post smoke tests passed!")
 }
