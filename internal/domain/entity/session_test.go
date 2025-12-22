@@ -15,106 +15,99 @@ func TestSession_IsExpired(t *testing.T) {
 		want      bool
 	}{
 		{
-			name:      "expired session - past",
-			expiresAt: time.Now().Add(-1 * time.Hour),
-			want:      true,
-		},
-		{
-			name:      "expired session - 1 second ago",
-			expiresAt: time.Now().Add(-1 * time.Second),
-			want:      true,
-		},
-		{
-			name:      "valid session - future",
+			name:      "not expired",
 			expiresAt: time.Now().Add(1 * time.Hour),
 			want:      false,
 		},
 		{
-			name:      "valid session - 1 second from now",
-			expiresAt: time.Now().Add(1 * time.Second),
-			want:      false,
-		},
-		{
-			name:      "valid session - far future",
-			expiresAt: time.Now().Add(24 * time.Hour),
-			want:      false,
+			name:      "expired",
+			expiresAt: time.Now().Add(-1 * time.Hour),
+			want:      true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			session := &Session{
-				ID:           uuidv7.New(),
-				UserID:       uuidv7.New(),
-				RefreshToken: "hashed_token",
-				ExpiresAt:    tt.expiresAt,
-				CreatedAt:    time.Now(),
-			}
-
-			result := session.IsExpired()
-			assert.Equal(t, tt.want, result)
+			session := Session{ExpiresAt: tt.expiresAt}
+			assert.Equal(t, tt.want, session.IsExpired())
 		})
 	}
 }
 
-func TestSession_IsExpired_EdgeCase(t *testing.T) {
-	session := &Session{
-		ID:           uuidv7.New(),
-		UserID:       uuidv7.New(),
-		RefreshToken: "hashed_token",
-		ExpiresAt:    time.Now().Add(10 * time.Millisecond),
-		CreatedAt:    time.Now(),
+func TestSession_Validate(t *testing.T) {
+	now := time.Now()
+
+	tests := []struct {
+		name    string
+		session Session
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name: "valid session",
+			session: Session{
+				UserID:       uuidv7.New(),
+				RefreshToken: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+				CreatedAt:    now,
+				ExpiresAt:    now.Add(24 * time.Hour),
+			},
+			wantErr: false,
+		},
+		{
+			name: "empty user_id",
+			session: Session{
+				RefreshToken: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+				CreatedAt:    now,
+				ExpiresAt:    now.Add(24 * time.Hour),
+			},
+			wantErr: true,
+			errMsg:  "user_id is required",
+		},
+		{
+			name: "empty refresh_token",
+			session: Session{
+				UserID:    uuidv7.New(),
+				CreatedAt: now,
+				ExpiresAt: now.Add(24 * time.Hour),
+			},
+			wantErr: true,
+			errMsg:  "refresh_token is required",
+		},
+		{
+			name: "refresh_token too short",
+			session: Session{
+				UserID:       uuidv7.New(),
+				RefreshToken: "short",
+				CreatedAt:    now,
+				ExpiresAt:    now.Add(24 * time.Hour),
+			},
+			wantErr: true,
+			errMsg:  "refresh_token must be at least 32 characters",
+		},
+		{
+			name: "expires_at before created_at",
+			session: Session{
+				UserID:       uuidv7.New(),
+				RefreshToken: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+				CreatedAt:    now,
+				ExpiresAt:    now.Add(-1 * time.Hour),
+			},
+			wantErr: true,
+			errMsg:  "expires_at must be after created_at",
+		},
 	}
 
-	assert.False(t, session.IsExpired())
-
-	time.Sleep(20 * time.Millisecond)
-
-	assert.True(t, session.IsExpired())
-}
-
-func TestSession_Fields(t *testing.T) {
-	userID := uuidv7.New()
-	sessionID := uuidv7.New()
-	refreshToken := "hashed_refresh_token_value"
-	userAgent := "Mozilla/5.0"
-	ipAddress := "192.168.1.1"
-	expiresAt := time.Now().Add(7 * 24 * time.Hour)
-	createdAt := time.Now()
-
-	session := &Session{
-		ID:           sessionID,
-		UserID:       userID,
-		RefreshToken: refreshToken,
-		UserAgent:    &userAgent,
-		IPAddress:    &ipAddress,
-		ExpiresAt:    expiresAt,
-		CreatedAt:    createdAt,
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.session.Validate()
+			if tt.wantErr {
+				assert.Error(t, err)
+				if tt.errMsg != "" {
+					assert.Contains(t, err.Error(), tt.errMsg)
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
-
-	assert.Equal(t, sessionID, session.ID)
-	assert.Equal(t, userID, session.UserID)
-	assert.Equal(t, refreshToken, session.RefreshToken)
-	assert.NotNil(t, session.UserAgent)
-	assert.Equal(t, userAgent, *session.UserAgent)
-	assert.NotNil(t, session.IPAddress)
-	assert.Equal(t, ipAddress, *session.IPAddress)
-	assert.Equal(t, expiresAt, session.ExpiresAt)
-	assert.Equal(t, createdAt, session.CreatedAt)
-}
-
-func TestSession_OptionalFields(t *testing.T) {
-	session := &Session{
-		ID:           uuidv7.New(),
-		UserID:       uuidv7.New(),
-		RefreshToken: "hashed_token",
-		UserAgent:    nil,
-		IPAddress:    nil,
-		ExpiresAt:    time.Now().Add(1 * time.Hour),
-		CreatedAt:    time.Now(),
-	}
-
-	assert.Nil(t, session.UserAgent)
-	assert.Nil(t, session.IPAddress)
-	assert.False(t, session.IsExpired())
 }

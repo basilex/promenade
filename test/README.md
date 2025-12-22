@@ -1,346 +1,333 @@
-# Test Directory
+# Testing Guide
 
-Testing infrastructure for Promenade project.
-
-## Quick Start
-
-```bash
-# Run all tests (auto-manages test DB)
-make test              # Unit + Integration (274 tests)
-
-# Individual test suites
-make test-unit         # Unit tests only (183 tests)
-make test-integration  # Integration tests (91 tests)
-make test-smoke        # Smoke tests (114 tests, end-to-end flows)
-
-# Coverage and monitoring
-make test-coverage     # Generate HTML coverage report
-make test-watch        # Watch mode
-
-# Manual DB management
-make test-db-start     # Start test database (port 5433)
-make test-db-stop      # Stop test database
-```
-
-## Structure
-
-```
-test/
-├── helpers/
-│   ├── database.go   # Test DB management (SetupTestDB, CleanupTables)
-│   └── fixtures.go   # Test data generators (UserFixture, SessionFixture, etc.)
-├── smoke/           # End-to-end smoke tests [+] (114 tests, 9 files)
-│   ├── auth_smoke_test.go                 # Auth flow (8 scenarios)
-│   ├── country_currency_smoke_test.go     # Country/Currency (12 scenarios)
-│   ├── user_contact_smoke_test.go         # Contacts (11 scenarios)
-│   ├── user_post_smoke_test.go            # Posts (12 scenarios)
-│   ├── user_profile_smoke_test.go         # Profiles (12 scenarios)
-│   ├── post_comment_smoke_test.go         # Comments (13 scenarios)
-│   ├── comment_likes_smoke_test.go        # Likes (5 scenarios)
-│   ├── rbac_smoke_test.go                 # RBAC (28 scenarios)
-│   └── rbac_integration_smoke_test.go     # RBAC Integration (13 scenarios)
-├── integration/      # Integration tests (TODO - future expansion)
-├── e2e/             # E2E tests (TODO - future expansion)
-└── mocks/           # Mock implementations (TODO)
-```
-
-## Helpers
-
-### `database.go`
-
-```go
-// Setup test database connection
-testDB := helpers.SetupTestDB(t)
-defer testDB.Close()
-
-// Clean all tables
-testDB.CleanupTables(t)
-
-// Run in transaction (auto-rollback)
-testDB.RunInTransaction(t, func(tx *sqlx.Tx) {
-    // Your test code
-})
-```
-
-### `fixtures.go`
-
-```go
-// Create test users
-user := helpers.UserFixture()
-unverified := helpers.UnverifiedUserFixture()
-suspended := helpers.SuspendedUserFixture()
-banned := helpers.BannedUserFixture()
-
-// Custom user
-user := helpers.UserFixture(func(u *entity.User) {
-    u.Email = "custom@test.com"
-    u.Status = entity.UserStatusInactive
-})
-
-// Create test sessions
-session := helpers.SessionFixture(userID)
-expired := helpers.ExpiredSessionFixture(userID)
-```
-
-## Test Database
-
-- **Host**: localhost
-- **Port**: 5433 (not 5432!)
-- **Database**: promenade_test
-- **User**: system
-- **Password**: passw0rd
-
-Isolated from development database.
-
-## Running Tests
-
-### Via Make (Recommended)
-
-```bash
-make test               # Unit + Integration (274 tests)
-make test-unit          # Unit tests only (183 tests)
-make test-integration   # Integration tests only (91 tests)
-make test-smoke         # Smoke tests (114 tests, end-to-end flows)
-make test-coverage      # Generate HTML coverage report
-make test-watch         # Watch mode (gotestsum)
-```
-
-### Via Script
-
-```bash
-./scripts/run-tests.sh all          # All tests
-./scripts/run-tests.sh unit         # Unit only
-./scripts/run-tests.sh integration  # Integration only
-./scripts/run-tests.sh smoke        # Smoke tests only
-./scripts/run-tests.sh coverage     # With coverage
-```
-
-### Direct Go Test
-
-```bash
-# Single package
-go test -v ./internal/adapter/repository/postgres
-
-# With race detector
-go test -race ./...
-
-# Specific test
-go test -v ./internal/adapter/repository/postgres -run TestUserRepository_Create
-```
-
-## Writing Tests
-
-### Integration Test Template
-
-```go
-package postgres_test
-
-import (
-    "context"
-    "testing"
-
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-
-    "github.com/basilex/promenade/internal/adapter/repository/postgres"
-    "github.com/basilex/promenade/test/helpers"
-)
-
-func TestYourFeature(t *testing.T) {
-    ctx := context.Background()
-
-    t.Run("test case 1", func(t *testing.T) {
-        testDB := helpers.SetupTestDB(t)
-        defer testDB.Close()
-        defer testDB.CleanupTables(t)
-
-        repo := postgres.NewYourRepository(testDB.DB)
-
-        // Your test code
-        entity := helpers.YourFixture()
-        err := repo.Create(ctx, entity)
-        require.NoError(t, err)
-
-        // Assertions
-        retrieved, err := repo.GetByID(ctx, entity.ID)
-        require.NoError(t, err)
-        assert.Equal(t, entity.Field, retrieved.Field)
-    })
-}
-```
-
-## Smoke Tests
-
-**End-to-end critical flow testing** with real database operations.
-
-```bash
-# Run all smoke tests
-make test-smoke
-
-# Run specific smoke test
-go test -v ./test/smoke -run TestAuth_SmokeTest
-go test -v ./test/smoke -run TestRBAC_SmokeTest
-```
-
-**Smoke Test Template:**
-
-```go
-package smoke
-
-import (
-    "context"
-    "testing"
-    "github.com/basilex/promenade/test/helpers"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-)
-
-func TestFeature_SmokeTest(t *testing.T) {
-    if testing.Short() {
-        t.Skip("Skipping smoke test in short mode")
-    }
-
-    testDB := helpers.SetupTestDB(t)
-    defer testDB.Close()
-    defer testDB.CleanupTables(t)
-
-    ctx := context.Background()
-
-    t.Run("[+] Critical_flow", func(t *testing.T) {
-        // Test critical user flow end-to-end
-    })
-
-    t.Logf("[SUCCESS] All feature smoke tests passed!")
-}
-```
-
-**Key Features:**
-
-- [+] Real database integration (PostgreSQL on port 5433)
-- [+] Critical path verification (create → read → update → delete)
-- [+] Performance benchmarks (100 permission checks in <500ms)
-- [+] 100% passing rate, ~4 seconds execution
-- [+] Automatic cleanup between tests
-
-## Best Practices
-
-[+] **Do**:
-
-- Setup/teardown per subtest
-- Use fixtures for test data
-- Use `require` for critical checks
-- Use `assert` for non-critical checks
-- Clean tables after tests
-- Test edge cases
-- Write smoke tests for critical flows
-
-[X] **Don't**:
-
-- Reuse data between tests
-- Forget cleanup
-- Use production database
-- Hardcode test data
-- Create test dependencies
-- Skip smoke tests before deployment
-
-## Documentation
-
-- [TESTING_GUIDE.md](../docs/TESTING_GUIDE.md) - Complete guide
-- [TESTING_INFRASTRUCTURE.md](../docs/TESTING_INFRASTRUCTURE.md) - Architecture
-- [TEST_RESULTS.md](../docs/TEST_RESULTS.md) - Latest results
-
-## Test Statistics
-
-**Total: 388 tests - 100% passing [+]**
-
-```
-Unit Tests:        183 tests [+] (entity validation, domain logic)
-Integration Tests:  91 tests [+] (repository operations with PostgreSQL)
-Smoke Tests:       114 tests [+] (end-to-end critical flows)
-```
-
-**Test Execution Time:**
-
-- Unit: ~5 seconds
-- Integration: ~36 seconds
-- Smoke: ~4 seconds
-- **Total: ~45 seconds**
-
-**Coverage by Module:**
-
-| Module           | Unit    | Integration | Smoke   | Total   |
-| ---------------- | ------- | ----------- | ------- | ------- |
-| Country/Currency | 18      | 4           | 12      | 34      |
-| Auth/Session     | 9       | 10          | 8       | 27      |
-| UserContact      | 14      | 13          | 11      | 38      |
-| UserPost         | 42      | 30          | 12      | 84      |
-| PostComment      | 0       | 22          | 13      | 35      |
-| UserProfile      | 31      | 13          | 12      | 56      |
-| User/RBAC        | 64      | 9           | 0       | 73      |
-| Permission/Role  | 31      | 16          | 41      | 88      |
-| CommentLikes     | 0       | 1           | 5       | 6       |
-| BaseRepository   | 0       | 7           | 0       | 7       |
-| **Total**        | **183** | **91**      | **114** | **388** |
-
-## CI/CD Integration
-
-```yaml
-# .github/workflows/test.yml
-steps:
-  - name: Start test database
-    run: make test-db-start
-
-  - name: Run tests
-    run: make test-coverage
-
-  - name: Upload coverage
-    uses: codecov/codecov-action@v3
-    with:
-      files: ./coverage.out
-
-  - name: Cleanup
-    if: always()
-    run: make test-db-stop
-```
-
-## Troubleshooting
-
-### Connection refused
-
-```bash
-# Ensure test DB is running
-docker ps | grep promenade_test_db
-
-# Or start it
-make test-db-start
-```
-
-### Table doesn't exist
-
-```bash
-# Run migrations
-make migrate-test-up
-```
-
-### Too many connections
-
-```bash
-# Restart test DB
-make test-db-stop
-make test-db-start
-```
-
-## Next Steps
-
-1. ⏳ Add use case unit tests with mocks
-2. ⏳ Add handler integration tests
-3. ⏳ Add E2E tests
-4. ⏳ Add benchmark tests
-5. ⏳ Integrate with CI/CD
+Unit tests for Promenade project - tests are located alongside the code they test.
 
 ---
 
-**Status**: All test layers complete [+]  
-**Test Count**: 388 tests (183 unit + 91 integration + 114 smoke)  
-**Success Rate**: 100%  
-**Execution Time**: ~45 seconds for full suite
+##  Test Structure
+
+Tests are organized **per component** - each module and core component has its own tests in the same directory:
+
+### Core Tests
+
+```
+internal/
+└── domain/
+    └── entity/              # Core entity tests
+        ├── user.go
+        ├── user_test.go     # ← Tests here
+        ├── session.go
+        ├── session_test.go  # ← Tests here
+        ├── role.go
+        ├── role_test.go
+        ├── permission.go
+        └── permission_test.go
+```
+
+### Module Tests
+
+```
+internal/modules/
+├── posts/
+│   └── domain/
+│       └── entity/
+│           ├── post.go
+│           ├── post_test.go      # ← Tests here
+│           ├── comment.go
+│           └── comment_test.go
+└── profiles/
+    └── entity/
+        ├── user_profile.go
+        ├── user_profile_test.go  # ← Tests here
+        ├── user_contact.go
+        └── user_contact_test.go
+```
+
+---
+
+##  Running Tests
+
+### All Tests
+
+```bash
+make test                    # Run all tests (core + modules)
+```
+
+### Core Tests
+
+```bash
+make test-core               # Run core domain tests
+```
+
+### Module Tests
+
+```bash
+make test-modules            # Run all module tests
+make test-module-posts       # Run posts module tests only
+make test-module-profiles    # Run profiles module tests only
+```
+
+### Quick Tests
+
+```bash
+make test-quick              # Fast run without race detector
+make test-verbose            # Verbose output
+make test-watch              # Watch mode (requires gotestsum)
+```
+
+### Coverage
+
+```bash
+make test-coverage           # Generate coverage report (HTML)
+# Opens coverage.html in browser
+```
+
+---
+
+##  Test Categories
+
+### 1. **Core Entity Tests** (`internal/domain/entity/*_test.go`)
+
+Test core domain entities and business logic:
+
+- **User**: Password hashing, status management
+- **Session**: Expiration, validation, refresh tokens
+- **Role**: RBAC roles, validation
+- **Permission**: Permission constants, format validation
+
+**Example**:
+
+```bash
+go test -v ./internal/domain/entity/
+```
+
+**Tests**:
+
+- `TestUser_HashPassword` - Password hashing
+- `TestUser_CheckPassword` - Password verification
+- `TestSession_IsExpired` - Session expiration
+- `TestSession_Validate` - Session validation
+- `TestRole_Validate` - Role validation
+- `TestPermission_Constants` - Permission constants
+
+---
+
+### 2. **Posts Module Tests** (`internal/modules/posts/domain/entity/*_test.go`)
+
+Test posts module entities:
+
+- **UserPost**: Post status, creation, validation
+- **Comment**: Threading, validation, soft delete
+
+**Example**:
+
+```bash
+go test -v ./internal/modules/posts/domain/entity/
+```
+
+**Tests**:
+
+- `TestPostStatus_IsValid` - Post status validation
+- `TestUserPost_Creation` - Post creation
+- `TestComment_Validate` - Comment validation
+- `TestComment_IsTopLevel` - Comment threading
+- `TestNewComment` - Comment factory
+
+---
+
+### 3. **Profiles Module Tests** (`internal/modules/profiles/entity/*_test.go`)
+
+Test profiles module entities:
+
+- **UserProfile**: Profile fields, privacy settings, gender validation
+- **UserContact**: Contact types, verification flags
+
+**Example**:
+
+```bash
+go test -v ./internal/modules/profiles/entity/
+```
+
+**Tests**:
+
+- `TestUserProfile_Fields` - Profile field validation
+- `TestGender_IsValid` - Gender enum validation
+- `TestUserProfile_Privacy` - Privacy flags
+- `TestContactType_IsValid` - Contact type validation
+- `TestUserContact_Creation` - Contact creation
+- `TestUserContact_Flags` - Contact flags (verified, primary, active)
+
+---
+
+##  Test Conventions
+
+### Naming
+
+- **Test files**: `{entity}_test.go` (e.g., `user_test.go`)
+- **Test functions**: `Test{Entity}_{Method}` (e.g., `TestUser_HashPassword`)
+- **Subtests**: Use `t.Run(name, func(t))` for table-driven tests
+
+### Structure
+
+```go
+func TestEntity_Method(t *testing.T) {
+    tests := []struct {
+        name    string
+        input   Type
+        want    Type
+        wantErr bool
+    }{
+        {"valid case", input1, want1, false},
+        {"invalid case", input2, want2, true},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got, err := Method(tt.input)
+            if tt.wantErr {
+                assert.Error(t, err)
+            } else {
+                assert.NoError(t, err)
+                assert.Equal(t, tt.want, got)
+            }
+        })
+    }
+}
+```
+
+### Dependencies
+
+- **testify/assert**: `github.com/stretchr/testify/assert`
+- **UUID v7**: `github.com/basilex/promenade/pkg/uuidv7`
+
+---
+
+##  Test Coverage
+
+**Current Status**: All tests passing 
+
+### Core Domain
+
+| Entity     | Tests            | Coverage               |
+| ---------- | ---------------- | ---------------------- |
+| User       | 3 test functions | Password, status       |
+| Session    | 2 test functions | Expiration, validation |
+| Role       | 1 test function  | Validation             |
+| Permission | 2 test functions | Constants, format      |
+
+### Modules
+
+| Module   | Entity      | Tests       | Coverage                         |
+| -------- | ----------- | ----------- | -------------------------------- |
+| Posts    | UserPost    | 2 functions | Status, creation                 |
+| Posts    | Comment     | 3 functions | Validation, threading, factory   |
+| Profiles | UserProfile | 3 functions | Fields, gender, privacy          |
+| Profiles | UserContact | 3 functions | Type validation, creation, flags |
+
+---
+
+##  Test Helpers
+
+Located in `test/helpers/`:
+
+- `database.go` - Database test utilities (for future integration tests)
+- `fixtures.go` - Test data fixtures (for future integration tests)
+
+**Note**: Current tests are unit tests and don't require database helpers.
+
+---
+
+## 📖 Writing New Tests
+
+### 1. Create Test File
+
+Place test file next to the entity:
+
+```bash
+# Example: internal/domain/entity/country.go
+touch internal/domain/entity/country_test.go
+```
+
+### 2. Write Test
+
+```go
+package entity
+
+import (
+    "testing"
+    "github.com/stretchr/testify/assert"
+)
+
+func TestCountry_Validate(t *testing.T) {
+    tests := []struct {
+        name    string
+        country Country
+        wantErr bool
+    }{
+        {"valid country", Country{Code: "US", Name: "United States"}, false},
+        {"empty code", Country{Code: "", Name: "Test"}, true},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            err := tt.country.Validate()
+            if tt.wantErr {
+                assert.Error(t, err)
+            } else {
+                assert.NoError(t, err)
+            }
+        })
+    }
+}
+```
+
+### 3. Run Test
+
+```bash
+go test -v ./internal/domain/entity/
+```
+
+---
+
+## 🔄 Continuous Testing
+
+### Watch Mode
+
+```bash
+make test-watch
+# Automatically re-runs tests on file changes
+```
+
+### Pre-commit
+
+Add to `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/bash
+make test-quick || exit 1
+```
+
+---
+
+## 🚫 What We Don't Test (Yet)
+
+- **Integration tests**: Database operations, external services
+- **E2E tests**: Full application workflows
+- **Handler tests**: HTTP handlers (adapter layer)
+- **Repository tests**: Database queries
+- **Use case tests**: Business logic orchestration
+
+**Future**: Add integration and E2E tests as the application grows.
+
+---
+
+## 📚 Resources
+
+- [Go Testing Package](https://pkg.go.dev/testing)
+- [Testify Documentation](https://github.com/stretchr/testify)
+- [Table-Driven Tests in Go](https://dave.cheney.net/2019/05/07/prefer-table-driven-tests)
+- [Effective Go - Testing](https://go.dev/doc/effective_go#testing)
+
+---
+
+**Test Status**:  All tests passing |  Unit tests only |  Fast execution

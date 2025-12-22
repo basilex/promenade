@@ -7,9 +7,9 @@ import (
 
 	"github.com/basilex/promenade/internal/domain/entity"
 	"github.com/basilex/promenade/internal/domain/event"
-	"github.com/basilex/promenade/internal/domain/repository"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/logger"
+	"github.com/basilex/promenade/pkg/purge"
 )
 
 var (
@@ -39,7 +39,7 @@ type PurgeUseCase interface {
 }
 
 type purgeUseCase struct {
-	purgeRepo repository.PurgeRepository
+	registry  *purge.Registry
 	policies  map[string]entity.RetentionPolicy
 	batchSize int
 	eventBus  bus.Bus
@@ -47,7 +47,7 @@ type purgeUseCase struct {
 
 // NewPurgeUseCase creates a new purge use case
 func NewPurgeUseCase(
-	purgeRepo repository.PurgeRepository,
+	registry *purge.Registry,
 	policies []entity.RetentionPolicy,
 	batchSize int,
 	eventBus bus.Bus,
@@ -58,7 +58,7 @@ func NewPurgeUseCase(
 	}
 
 	return &purgeUseCase{
-		purgeRepo: purgeRepo,
+		registry:  registry,
 		policies:  policyMap,
 		batchSize: batchSize,
 		eventBus:  eventBus,
@@ -97,15 +97,15 @@ func (uc *purgeUseCase) PurgeEntity(ctx context.Context, entityName string, dryR
 	var recordsPurged int64
 	var err error
 
-	switch entityName {
-	case "user_posts":
-		recordsPurged, err = uc.purgeRepo.PurgeUserPosts(ctx, cutoffDate, uc.batchSize, dryRun)
-	case "post_comments":
-		recordsPurged, err = uc.purgeRepo.PurgePostComments(ctx, cutoffDate, uc.batchSize, dryRun)
-	default:
-		log.Error("Unknown entity name", "entity", entityName)
+	// Get purge handler from registry
+	handler, exists := uc.registry.Get(entityName)
+	if !exists {
+		log.Error("No purge handler registered for entity", "entity", entityName)
 		return nil, ErrPolicyNotFound
 	}
+
+	// Execute purge via handler
+	recordsPurged, err = handler.Purge(ctx, cutoffDate, uc.batchSize, dryRun)
 
 	duration := time.Since(startTime)
 
@@ -222,20 +222,17 @@ func (uc *purgeUseCase) PreviewPurge(ctx context.Context, entityName string) (in
 		return 0, ErrPolicyNotFound
 	}
 
-	cutoffDate := policy.GetCutoffDate()
-
-	var count int64
-	var err error
-
-	switch entityName {
-	case "user_posts":
-		count, err = uc.purgeRepo.CountDeletableUserPosts(ctx, cutoffDate)
-	case "post_comments":
-		count, err = uc.purgeRepo.CountDeletablePostComments(ctx, cutoffDate)
-	default:
+	// Get purge handler from registry
+	handler, exists := uc.registry.Get(entityName)
+	if !exists {
+		log.Error("No purge handler registered for entity", "entity", entityName)
 		return 0, ErrPolicyNotFound
 	}
 
+	cutoffDate := policy.GetCutoffDate()
+
+	// Preview: dry run with actual handler
+	count, err := handler.Purge(ctx, cutoffDate, uc.batchSize, true)
 	if err != nil {
 		log.Error("Failed to preview purge", "entity", entityName, "error", err)
 		return 0, err

@@ -9,14 +9,14 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🧪 Promenade Test Runner${NC}"
+echo -e "${GREEN} Promenade Test Runner${NC}"
 echo ""
 
 # Check if test DB is running
 if ! docker ps | grep -q promenade_test_db; then
     echo -e "${YELLOW}[WARNING] Test database not running, starting...${NC}"
     make test-db-start
-    echo -e "${GREEN}✓ Test database started${NC}"
+    echo -e "${GREEN} Test database started${NC}"
     echo ""
 fi
 
@@ -36,7 +36,7 @@ case $TEST_TYPE in
         echo -e "${GREEN}Running tests with coverage...${NC}"
         go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
         go tool cover -html=coverage.out -o coverage.html
-        echo -e "${GREEN}✓ Coverage report: coverage.html${NC}"
+        echo -e "${GREEN} Coverage report: coverage.html${NC}"
         ;;
     all|*)
         echo -e "${GREEN}Running all tests...${NC}"

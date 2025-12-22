@@ -23,7 +23,7 @@ const (
 var MemoryBusFactory func(BusConfig) Bus
 
 // RedisBusFactory is a function type for creating Redis bus instances
-var RedisBusFactory func(config.BusConfig, BusConfig) (Bus, error)
+var RedisBusFactory func(config.BusSection, BusConfig) (Bus, error)
 
 // init initializes the factory functions using late binding to avoid circular imports
 func init() {
@@ -35,7 +35,7 @@ func init() {
 // It implements graceful degradation:
 // - Development/Test: Returns error if adapter initialization fails
 // - Production: Falls back to in-memory adapter with warning log
-func NewBus(cfg config.BusConfig) (Bus, error) {
+func NewBus(cfg config.BusSection) (Bus, error) {
 	adapterType := AdapterType(strings.ToLower(cfg.Adapter))
 
 	// Validate adapter type
@@ -123,7 +123,7 @@ func shouldFailFast() bool {
 
 // MustNewBus creates a new bus or panics on error.
 // Use this only when bus initialization failure should be fatal.
-func MustNewBus(cfg config.BusConfig) Bus {
+func MustNewBus(cfg config.BusSection) Bus {
 	bus, err := NewBus(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("failed to initialize event bus: %v", err))

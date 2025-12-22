@@ -1,0 +1,18 @@
+# Warehouse module configuration (production)
+module:
+  enabled: false # Must be explicitly enabled with valid license
+  name: "warehouse"
+  version: "1.2.0"
+  license_key: "" # REQUIRED: Set your commercial license key here
+
+settings:
+  max_items: 100000
+  enable_barcode_scanner: true
+
+purge:
+  enabled: true
+  schedule: "0 2 * * *" # 2 AM daily
+  settings:
+    warehouse_items:
+      retention_days: 2555 # 7 years for audit compliance
+      batch_size: 100

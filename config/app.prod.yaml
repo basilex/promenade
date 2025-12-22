@@ -1,0 +1,116 @@
+# Production Environment Configuration
+# CRITICAL: Review and update all settings before deploying!
+
+app:
+  name: "Promenade"
+  environment: "production"
+  debug: false
+  version: "1.0.0"
+  url: "https://api.promenade.com" # UPDATE THIS!
+
+server:
+  host: "0.0.0.0" # Listen on all interfaces
+  port: 8080
+  read_timeout: 60s
+  write_timeout: 60s
+  shutdown_timeout: 30s
+
+database:
+  host: "db.internal.promenade.com" # UPDATE: Use internal hostname
+  port: 5432
+  user: "promenade_app" # UPDATE: Use dedicated app user
+  password: "" # SET VIA ENVIRONMENT VARIABLE!
+  database: "promenade_prod"
+  sslmode: "require" # MUST use SSL in production!
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: 30m
+  conn_max_idle_time: 10m
+
+jwt:
+  secret: "" # REQUIRED: SET VIA ENVIRONMENT VARIABLE!
+  access_token_duration: 15m
+  refresh_token_duration: 168h # 7 days
+  issuer: "promenade-api"
+
+logging:
+  level: "info" # warn/error for production
+  format: "json" # Structured logs for log aggregation
+  output: "stdout" # Send to container logs → log aggregator
+  file_path: "/var/log/promenade/app.log"
+
+cors:
+  allowed_origins:
+    - "https://promenade.com" # UPDATE: Your production domain
+    - "https://www.promenade.com"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+  allowed_headers:
+    - "Origin"
+    - "Content-Type"
+    - "Accept"
+    - "Authorization"
+  allow_credentials: true
+  max_age: 24h
+
+# Event Bus - Redis for distributed event processing
+bus:
+  adapter: "redis" # MUST use redis for multi-instance deployments
+  worker_pool_size: 20
+  buffer_size: 2000
+  retry_attempts: 5
+  retry_delay: 1s
+
+  redis:
+    host: "redis.internal.promenade.com" # UPDATE: Use internal Redis hostname
+    port: 6379
+    password: "" # SET VIA ENVIRONMENT VARIABLE!
+    db: 0
+    max_retries: 5
+    pool_size: 50
+
+rate_limit:
+  enabled: true
+  requests_per_second: 1000
+  burst: 2000
+
+swagger:
+  enabled: false # MUST be disabled in production!
+
+email:
+  enabled: true
+  smtp_host: "smtp.sendgrid.net" # UPDATE: Your SMTP provider
+  smtp_port: 587
+  username: "" # SET VIA ENVIRONMENT VARIABLE
+  password: "" # SET VIA ENVIRONMENT VARIABLE
+  from_address: "noreply@promenade.com"
+  from_name: "Promenade"
+
+# Automated purge system - Core infrastructure only
+# Retention policies are defined in each module's config
+purge:
+  enabled: true
+  schedule: "0 2 * * *" # 2 AM daily
+  dry_run: false
+  batch_size: 1000
+
+# Production-specific settings
+security:
+  tls_enabled: true
+  hsts_enabled: true
+  csp_enabled: true
+
+monitoring:
+  metrics_enabled: true
+  tracing_enabled: true
+  profiling_enabled: false # Enable only for debugging
+
+# Health checks
+health:
+  enabled: true
+  port: 8081 # Separate port for health checks

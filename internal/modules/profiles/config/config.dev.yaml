@@ -1,0 +1,50 @@
+# Profiles Module - Development Configuration
+
+module:
+  name: "profiles"
+  enabled: true
+  version: "1.0.0"
+
+profiles:
+  max_bio_length: 500
+  max_display_name_length: 100
+  allow_custom_urls: true
+  avatar_upload_enabled: true
+  max_avatar_size_mb: 5
+
+  social_links:
+    max_count: 10
+    max_social_links: 10 # For module.go compatibility
+    allowed_platforms:
+      - "twitter"
+      - "linkedin"
+      - "github"
+      - "facebook"
+      - "instagram"
+      - "youtube"
+      - "tiktok"
+
+contacts:
+  max_per_user: 5
+  verification_required: false
+  allowed_types:
+    - "email"
+    - "phone"
+    - "telegram"
+    - "whatsapp"
+    - "skype"
+
+permissions:
+  - resource: "profiles"
+    actions: ["read", "update", "manage"]
+
+features:
+  public_profiles: true
+  profile_search: true
+  profile_verification: false # Disabled in dev
+  custom_themes: true
+  profile_analytics: false
+
+dev:
+  mock_avatar_upload: true
+  seed_profiles: true

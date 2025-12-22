@@ -1,0 +1,94 @@
+# Test Environment Configuration
+# For integration and E2E testing
+
+app:
+  name: "Promenade Test"
+  environment: "test"
+  debug: true
+  version: "1.0.0"
+  url: "http://localhost:8082"
+
+server:
+  host: "localhost"
+  port: 8082
+  read_timeout: 10s
+  write_timeout: 10s
+  shutdown_timeout: 5s
+
+database:
+  host: "localhost"
+  port: 5433 # Test DB on different port
+  user: "postgres"
+  password: "postgres"
+  database: "promenade_test"
+  sslmode: "disable"
+  max_open_conns: 10
+  max_idle_conns: 2
+  conn_max_lifetime: 1m
+  conn_max_idle_time: 2m
+
+jwt:
+  secret: "test-secret-key-for-testing-only"
+  access_token_duration: 15m
+  refresh_token_duration: 24h
+  issuer: "promenade-api-test"
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+  file_path: "logs/test.log"
+
+cors:
+  allowed_origins:
+    - "*" # Permissive in test
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+  allowed_headers:
+    - "*"
+  allow_credentials: true
+  max_age: 1h
+
+# Event Bus - Memory adapter for deterministic testing
+bus:
+  adapter: "memory"
+  worker_pool_size: 2
+  buffer_size: 50
+  retry_attempts: 2
+  retry_delay: 100ms
+
+  redis:
+    host: "localhost"
+    port: 6379
+    password: ""
+    db: 1 # Use different DB for tests
+    max_retries: 2
+    pool_size: 5
+
+rate_limit:
+  enabled: false # Disabled for tests
+
+swagger:
+  enabled: false
+
+email:
+  enabled: false # Mock in tests
+  smtp_host: ""
+  smtp_port: 0
+  username: ""
+  password: ""
+  from_address: "test@promenade.test"
+  from_name: "Promenade Test"
+
+# Automated purge system - disabled in tests by default
+# Retention policies are defined in each module's config
+purge:
+  enabled: false
+  schedule: "0 3 * * *"
+  dry_run: true
+  batch_size: 50

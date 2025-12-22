@@ -19,7 +19,7 @@ import (
 
 // init registers the Redis bus factory
 func init() {
-	bus.RedisBusFactory = func(cfg config.BusConfig, busConfig bus.BusConfig) (bus.Bus, error) {
+	bus.RedisBusFactory = func(cfg config.BusSection, busConfig bus.BusConfig) (bus.Bus, error) {
 		return NewRedisBus(
 			cfg.Redis.Host,
 			cfg.Redis.Port,

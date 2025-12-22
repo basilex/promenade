@@ -1,0 +1,13 @@
+# Warehouse module configuration (test)
+module:
+  enabled: false # Disabled in tests
+  name: "warehouse"
+  version: "1.2.0"
+  license_key: "test-license-key"
+
+settings:
+  max_items: 100
+  enable_barcode_scanner: false
+
+purge:
+  enabled: false # Disabled in tests

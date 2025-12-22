@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -32,11 +33,18 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/notification"
 	"github.com/basilex/promenade/internal/usecase"
 	"github.com/basilex/promenade/pkg/logger"
+	"github.com/basilex/promenade/pkg/migration"
+	"github.com/basilex/promenade/pkg/module"
 	"github.com/basilex/promenade/pkg/version"
 
 	// Import swagger docs
 	_ "github.com/basilex/promenade/docs/v1"
 	_ "github.com/basilex/promenade/docs/v2"
+
+	// Import modules for auto-registration
+	_ "github.com/basilex/promenade/internal/modules/posts"
+	_ "github.com/basilex/promenade/internal/modules/profiles"
+	// _ "github.com/basilex/promenade/internal/modules/warehouse" // Commercial module (requires license)
 )
 
 // @title Promenade API
@@ -61,33 +69,38 @@ import (
 // @description Enter JWT token in format: Bearer {token}
 
 func main() {
-	// Load config first (before logger init)
+	// Load config from YAML (with env overrides)
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("Failed to load config", slog.Any("error", err))
 		os.Exit(1)
 	}
 
+	// Log configuration
+	slog.Info("Configuration loaded", 
+		slog.String("environment", cfg.App.Environment),
+		slog.String("version", cfg.App.Version))
+
 	// Initialize structured logger
 	logFormat := "text"
-	if cfg.Server.Environment == "production" {
+	if cfg.App.Environment == "production" {
 		logFormat = "json"
 	}
 
 	logLevel := "info"
-	if cfg.Server.Environment == "development" {
+	if cfg.App.Environment == "development" {
 		logLevel = "debug"
 	}
 
 	logger.Init(logger.Config{
 		Level:      logLevel,
 		Format:     logFormat,
-		AddSource:  cfg.Server.Environment == "development",
+		AddSource:  cfg.App.Environment == "development",
 		TimeFormat: time.RFC3339,
 	})
 
 	logger.Info("Starting "+version.ServiceName,
-		slog.String("environment", cfg.Server.Environment),
+		slog.String("environment", cfg.App.Environment),
 		slog.String("version", version.ServiceVersion),
 	)
 
@@ -102,11 +115,23 @@ func main() {
 		}
 	}()
 
+	// Run migrations automatically on startup
+	logger.Info("Running database migrations...")
+	migrationManager := migration.NewManager(db, "migrations")
+	migrationsCtx := context.Background()
+	
+	// Get enabled modules for migration
+	enabledMigrationModules := cfg.Modules.Enabled
+	if err := migrationManager.MigrateAll(migrationsCtx, enabledMigrationModules); err != nil {
+		logger.Fatal("Failed to run migrations", slog.Any("error", err))
+	}
+	logger.Info("Database migrations completed successfully")
+
 	// Initialize JWT Manager
 	jwtManager := jwtpkg.NewJWTManager(
 		cfg.JWT.Secret,
-		cfg.JWT.AccessTokenTTL,
-		cfg.JWT.RefreshTokenTTL,
+		cfg.JWT.AccessTokenDuration,
+		cfg.JWT.RefreshTokenDuration,
 	)
 
 	// Initialize infrastructure
@@ -158,24 +183,19 @@ func main() {
 	roleUseCase := usecase.NewRoleUseCase(roleRepo, permissionRepo)
 	authzMiddleware := middleware.NewAuthorizationMiddleware(roleUseCase)
 
-	// Initialize modules (each module encapsulates its own dependencies)
+	// Initialize core modules (minimal infrastructure only)
 	healthRouter := router.InitHealthModule()
 	authRouter := router.InitAuthModule(db, jwtManager, authMiddleware, authzMiddleware, eventBus)
 	countryRouter := router.InitCountryModule(db)
 	currencyRouter := router.InitCurrencyModule(db)
-	userContactRouter := router.InitUserContactModule(db, authMiddleware)
-	userProfileRouter := router.InitUserProfileModule(db, authMiddleware, authzMiddleware)
-	userPostRouter := router.InitUserPostModule(db, authMiddleware)
-
-	// Post comments module requires userPostRepo for counter updates
-	userPostRepo := postgres.NewUserPostRepository(db)
-	postCommentRouter := router.InitPostCommentModule(db, authMiddleware, userPostRepo)
+	languageRouter := router.InitLanguageModule(db, authMiddleware, authzMiddleware)
+	timezoneRouter := router.InitTimezoneModule(db, authMiddleware, authzMiddleware)
 
 	// RBAC module
 	rbacRouter := router.InitRBACModule(db, authMiddleware, authzMiddleware)
 
 	// Initialize purge system (includes scheduler that auto-starts)
-	purgeUseCase, purgeScheduler, err := router.InitPurgeModule(db, cfg.Purge, eventBus)
+	purgeUseCase, purgeScheduler, err := router.InitPurgeModule(cfg.Purge, eventBus)
 	if err != nil {
 		logger.Fatal("Failed to initialize purge module", slog.Any("error", err))
 	}
@@ -190,11 +210,61 @@ func main() {
 	// Admin module (includes purge operations)
 	adminRouter := router.InitAdminModule(purgeUseCase, purgeScheduler, authMiddleware, authzMiddleware)
 
-	// Future modules:
-	// notificationRouter := router.InitNotificationModule(db, authMiddleware, messageQueue)
+	// ============================================================================
+	// MODULE SYSTEM - Dynamic module loading
+	// ============================================================================
+
+	logger.Info("Initializing module system...")
+
+	// Create core infrastructure for modules
+	moduleCore := &module.Core{
+		DB:       db,
+		EventBus: eventBus,
+		JWT:      jwtManager,
+		Config:   cfg,
+		Logger:   slog.Default(),
+		Registry: module.DefaultRegistry,
+	}
+
+	// Get module registry
+	registry := module.DefaultRegistry
+
+	// List all registered modules
+	allModules := registry.ListModules()
+	logger.Info("Registered modules",
+		slog.Int("count", len(allModules)),
+		slog.Any("modules", allModules))
+
+	// Get enabled modules from configuration
+	enabledModules := cfg.Modules.Enabled
+	if len(enabledModules) == 0 {
+		logger.Warn("No modules enabled in configuration")
+	} else {
+		logger.Info("Enabled modules", slog.Any("modules", enabledModules))
+	}
+
+	// Initialize all enabled modules
+	ctx := context.Background()
+	if err := registry.InitializeAll(ctx, moduleCore, enabledModules); err != nil {
+		logger.Fatal("Failed to initialize modules", slog.Any("error", err))
+	}
+
+	// Start all enabled modules (background workers, etc.)
+	if err := registry.StartAll(ctx, enabledModules); err != nil {
+		logger.Fatal("Failed to start modules", slog.Any("error", err))
+	}
+
+	// Defer module shutdown
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := registry.StopAll(shutdownCtx, enabledModules); err != nil {
+			logger.Error("Failed to stop modules gracefully", slog.Any("error", err))
+		}
+	}()
 
 	// Setup HTTP server
-	if cfg.Server.Environment == "production" {
+	if cfg.App.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -210,14 +280,16 @@ func main() {
 	logger.Debug("Custom validators registered successfully")
 
 	// Global middleware
-	r.Use(middleware.Recovery())
-	r.Use(middleware.RequestID())
-	r.Use(middleware.Logger())
-	r.Use(middleware.CORS())
+	r.Use(
+		middleware.Recovery(),
+		middleware.RequestID(),
+		middleware.Logger(),
+		middleware.CORS(),
+	)
 
 	// Initialize shared handlers
 	infoHandler := handler.NewInfoHandler(
-		version.ServiceName, version.ServiceVersion, cfg.Server.Environment, cfg.Server.Host, cfg.Server.Port,
+		version.ServiceName, version.ServiceVersion, cfg.App.Environment, cfg.Server.Host, fmt.Sprintf("%d", cfg.Server.Port),
 	)
 	errorHandler := handler.NewErrorHandler()
 
@@ -243,9 +315,18 @@ func main() {
 			ginSwagger.InstanceName("v1"),
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
-		// V1 API endpoints
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, userContactRouter, userProfileRouter, userPostRouter, postCommentRouter, rbacRouter, adminRouter)
+		// V1 API endpoints (core routes only - profiles/contacts moved to module)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, languageRouter, timezoneRouter, rbacRouter, adminRouter)
 		v1Router.Setup(v1)
+
+		// Register module routes dynamically
+		for _, moduleName := range enabledModules {
+			mod := registry.Get(moduleName)
+			if mod != nil {
+				logger.Info("Registering routes for module", slog.String("module", moduleName))
+				mod.RegisterRoutes(v1)
+			}
+		}
 	}
 
 	// API v2 (future)
@@ -265,8 +346,9 @@ func main() {
 	}
 
 	// Start server
+	// Setup HTTP server
 	srv := &http.Server{
-		Addr:         ":" + cfg.Server.Port,
+		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		Handler:      r,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,
@@ -279,11 +361,11 @@ func main() {
 		}
 
 		logger.Info("Server started",
-			slog.String("port", cfg.Server.Port),
+			slog.Int("port", cfg.Server.Port),
 			slog.String("host", cfg.Server.Host),
-			slog.String("health_check", "http://"+host+":"+cfg.Server.Port+"/api/v1/health"),
-			slog.String("swagger_v1", "http://"+host+":"+cfg.Server.Port+"/api/v1/docs/swagger/index.html"),
-			slog.String("environment", cfg.Server.Environment),
+			slog.String("health_check", fmt.Sprintf("http://%s:%d/api/v1/health", host, cfg.Server.Port)),
+			slog.String("swagger_v1", fmt.Sprintf("http://%s:%d/api/v1/docs/swagger/index.html", host, cfg.Server.Port)),
+			slog.String("environment", cfg.App.Environment),
 		)
 
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

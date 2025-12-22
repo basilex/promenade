@@ -2,7 +2,7 @@
 
 clean-docker: ## Clean Docker containers and volumes
 	$(DOCKER_COMPOSE) down -v
-	@echo "✓ Docker cleanup complete"
+	@echo " Docker cleanup complete"
 
 docker-up: ## Start all Docker services
 	$(DOCKER_COMPOSE) up -d
@@ -36,35 +36,73 @@ docker-clean: ## Remove containers and volumes (clean slate)
 	$(DOCKER_COMPOSE) down -v
 	@echo "[+] All containers and volumes removed"
 
-migrate-create: ## Create new migration (usage: make migrate-create NAME=create_users_table)
-	@if [ -z "$(NAME)" ]; then \
-		echo "Error: NAME is required. Usage: make migrate-create NAME=create_users"; \
-		exit 1; \
-	fi
-	migrate create -ext sql -dir migrations -seq $(NAME)
+# ============================================================================
+# LEGACY MIGRATIONS (deprecated - use namespace-based migrations below)
+# ============================================================================
 
-migrate-up: ## Run database migrations
-	@echo "Running migrations..."
+migrate-legacy-up: ## [DEPRECATED] Run database migrations (legacy)
+	@echo "  WARNING: Using legacy migration system"
 	@echo "Database: $(DB_USER)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
 	$(MIGRATE) up
 
-migrate-down: ## Rollback last migration
-	@echo "Rolling back last migration..."
+migrate-legacy-down: ## [DEPRECATED] Rollback last migration (legacy)
+	@echo "  WARNING: Using legacy migration system"
 	$(MIGRATE) down 1
 
-migrate-force: ## Force migration version (usage: make migrate-force VERSION=1)
-	@if [ -z "$(VERSION)" ]; then \
-		echo "Error: VERSION is required"; \
+# ============================================================================
+# NAMESPACE-BASED MIGRATIONS (current system)
+# ============================================================================
+
+migrate: ## Run all migrations (core + enabled modules)
+	@echo "Running namespace-based migrations..."
+	@go run cmd/migrate/main.go -cmd=up -all
+
+migrate-core: ## Run core migrations only
+	@echo "Migrating core..."
+	@go run cmd/migrate/main.go -cmd=up -namespace=core
+
+migrate-module: ## Run migrations for specific module (usage: make migrate-module MODULE=posts)
+	@if [ -z "$(MODULE)" ]; then \
+		echo "Error: MODULE is required. Usage: make migrate-module MODULE=posts"; \
 		exit 1; \
 	fi
-	$(MIGRATE) force $(VERSION)
+	@echo "Migrating module: $(MODULE)"
+	@go run cmd/migrate/main.go -cmd=up -namespace=$(MODULE)
 
-migrate-version: ## Show current migration version
-	$(MIGRATE) version
+migrate-rollback: ## Rollback migrations for module (usage: make migrate-rollback MODULE=posts STEPS=1)
+	@if [ -z "$(MODULE)" ]; then \
+		echo "Error: MODULE is required"; \
+		exit 1; \
+	fi
+	@STEPS_VAL=$${STEPS:-1}; \
+	echo "Rolling back $(MODULE) by $$STEPS_VAL steps..."; \
+	go run cmd/migrate/main.go -cmd=down -namespace=$(MODULE) -steps=$$STEPS_VAL
 
-migrate-status: ## Show detailed migration status
-	@echo "Current migration status:"
-	@$(MIGRATE) version
+migrate-status: ## Show migration status for all namespaces
+	@go run cmd/migrate/main.go -cmd=status
+
+migrate-version: ## Show current version for namespace (usage: make migrate-version MODULE=posts)
+	@if [ -z "$(MODULE)" ]; then \
+		echo "Error: MODULE is required"; \
+		exit 1; \
+	fi
+	@go run cmd/migrate/main.go -cmd=version -namespace=$(MODULE)
+
+migrate-create: ## Create new migration (usage: make migrate-create MODULE=posts NAME=add_views)
+	@if [ -z "$(MODULE)" ] || [ -z "$(NAME)" ]; then \
+		echo "Error: MODULE and NAME are required."; \
+		echo "Usage: make migrate-create MODULE=posts NAME=add_views"; \
+		exit 1; \
+	fi
+	@./scripts/create-migration.sh $(MODULE) $(NAME)
+
+migrate-create-core: ## Create core migration (usage: make migrate-create-core NAME=add_audit)
+	@if [ -z "$(NAME)" ]; then \
+		echo "Error: NAME is required."; \
+		echo "Usage: make migrate-create-core NAME=add_audit"; \
+		exit 1; \
+	fi
+	@./scripts/create-migration.sh core $(NAME)
 
 swagger-v1: ## Generate Swagger docs for API v1
 	swag init -g cmd/api/main.go \

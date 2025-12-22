@@ -1,0 +1,61 @@
+# Posts Module - Development Configuration
+
+module:
+  name: "posts"
+  enabled: true
+  version: "1.0.0"
+
+# Development settings - relaxed limits for testing
+posts:
+  max_title_length: 255
+  max_content_length: 50000
+  max_excerpt_length: 500
+  slug_max_length: 255
+  auto_publish: false
+
+  comments:
+    enabled: true
+    max_content_length: 2000
+    max_depth: 10
+    moderation_enabled: false # No moderation in dev
+    allow_anonymous: false
+
+  likes:
+    enabled: true
+    allow_multiple: false
+
+# Development purge - shorter retention for testing
+purge:
+  enabled: true
+
+  posts:
+    retention_days: 7 # Keep only 7 days in dev
+    batch_size: 50
+
+  comments:
+    retention_days: 3 # Keep only 3 days in dev
+    batch_size: 50
+
+permissions:
+  - resource: "posts"
+    actions: ["create", "read", "update", "delete", "manage"]
+  - resource: "comments"
+    actions: ["create", "read", "update", "delete", "manage"]
+  - resource: "likes"
+    actions: ["create", "delete"]
+
+# Development feature flags - all features enabled
+features:
+  rich_text_editor: true
+  image_upload: true
+  video_embed: true
+  mention_users: true
+  hashtags: true
+  drafts: true
+  scheduling: true
+  analytics: false # Disabled in dev
+
+# Development-specific
+dev:
+  seed_data: true # Auto-seed sample posts
+  mock_notifications: true

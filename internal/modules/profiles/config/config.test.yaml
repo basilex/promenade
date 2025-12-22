@@ -1,0 +1,33 @@
+# Profiles Module - Test Configuration
+
+module:
+  name: "profiles"
+  enabled: true
+  version: "1.0.0"
+
+profiles:
+  max_bio_length: 200 # Smaller for tests
+  max_display_name_length: 50
+  allow_custom_urls: false
+  avatar_upload_enabled: false # Disabled in tests
+  max_avatar_size_mb: 1
+
+  social_links:
+    max_count: 5
+    allowed_platforms:
+      - "twitter"
+      - "github"
+
+permissions:
+  - resource: "profiles"
+    actions: ["read", "update", "manage"]
+
+features:
+  public_profiles: true
+  profile_search: false
+  profile_verification: false
+  custom_themes: false
+  profile_analytics: false
+
+test:
+  auto_cleanup: true

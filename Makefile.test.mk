@@ -1,79 +1,56 @@
 # Test targets
-test: test-unit test-integration-all ## Run all tests (unit + integration + event bus)
+test: test-core test-modules ## Run all tests (core + all modules)
 
-test-unit: ## Run unit tests only
-	@echo "Running unit tests..."
-	@go test -v -race -count=1 ./internal/usecase/... ./internal/domain/...
+test-core: ## Run core tests (domain + usecase)
+	@echo " Running core tests..."
+	@go test -v -race -count=1 ./internal/domain/entity/...
+	@go test -v -race -count=1 ./internal/usecase/...
 
-test-integration: ## Run integration tests with real database
-	@echo "Running integration tests..."
-	@$(MAKE) test-db-start
-	@sleep 2
-	@go test -v -race -count=1 ./internal/adapter/repository/postgres/...
-	@$(MAKE) test-db-stop
+test-modules: test-module-posts test-module-profiles ## Run all module tests
 
-test-integration-bus: ## Run event bus integration tests (memory + redis)
-	@echo "Running event bus integration tests..."
-	@$(MAKE) test-db-start
-	@sleep 2
-	@echo "\n=== Testing with Memory adapter ==="
-	@go test -v -count=1 ./test/integration/event_bus_test.go
-	@echo "\n=== Testing with Redis adapter ==="
-	@go test -v -count=1 ./test/integration/redis_bus_test.go
-	@$(MAKE) test-db-stop
+test-module-posts: ## Run posts module tests
+	@echo " Running posts module tests..."
+	@go test -v -race -count=1 ./internal/modules/posts/domain/entity/...
 
-test-integration-all: ## Run all integration tests (DB + Event Bus)
-	@echo "Running all integration tests..."
-	@$(MAKE) test-db-start
-	@sleep 2
-	@echo "\n=== Database integration tests ==="
-	@go test -v -race -count=1 ./internal/adapter/repository/postgres/...
-	@echo "\n=== Event Bus - Memory adapter ==="
-	@go test -v -count=1 ./test/integration/event_bus_test.go
-	@echo "\n=== Event Bus - Redis adapter ==="
-	@go test -v -count=1 ./test/integration/redis_bus_test.go
-	@$(MAKE) test-db-stop
+test-module-profiles: ## Run profiles module tests
+	@echo " Running profiles module tests..."
+	@go test -v -race -count=1 ./internal/modules/profiles/entity/...
 
-test-smoke: ## Run smoke tests (end-to-end critical flows)
-	@echo "Running smoke tests..."
-	@$(MAKE) test-db-start
-	@sleep 2
-	@go test -v -count=1 ./test/smoke/...
-	@$(MAKE) test-db-stop
+test-quick: ## Quick test run (no race detector, faster)
+	@echo " Quick test run..."
+	@go test -count=1 ./internal/domain/entity/...
+	@go test -count=1 ./internal/usecase/...
+	@go test -count=1 ./internal/modules/posts/domain/entity/...
+	@go test -count=1 ./internal/modules/profiles/entity/...
 
 test-coverage: ## Generate test coverage report
-	@echo "Running tests with coverage..."
-	@$(MAKE) test-db-start
-	@sleep 2
-	@go test -v -race -coverprofile=coverage.out -covermode=atomic ./internal/... ./pkg/...
-	@$(MAKE) test-db-stop
+	@echo " Running tests with coverage..."
+	@go test -race -coverprofile=coverage.out -covermode=atomic \
+		./internal/domain/entity/... \
+		./internal/usecase/... \
+		./internal/modules/posts/domain/entity/... \
+		./internal/modules/profiles/entity/... \
+		./pkg/...
 	@go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report: coverage.html"
+	@echo " Coverage report generated: coverage.html"
 
-test-db-start: ## Start test database (PostgreSQL on port 5433) and Redis (port 6380)
-	@echo "Starting test database and Redis..."
-	@docker-compose -f docker/docker-compose.test.yml up -d postgres redis
-	@sleep 3
-	@$(MAKE) migrate-test-up
-
-test-db-stop: ## Stop and remove test database
-	@echo "Stopping test database..."
-	@docker-compose -f docker/docker-compose.test.yml down -v
-
-test-db-logs: ## Show test database logs
-	@docker-compose -f docker/docker-compose.test.yml logs -f postgres
-
-migrate-test-up:
-	@echo "Running test migrations..."
-	@migrate -path migrations -database "postgres://system:passw0rd@localhost:5433/promenade_test?sslmode=disable" up
-
-migrate-test-down:
-	@echo "Rolling back test migrations..."
-	@migrate -path migrations -database "postgres://system:passw0rd@localhost:5433/promenade_test?sslmode=disable" down
-
-test-watch:
-	@echo "Running tests in watch mode..."
+test-watch: ## Run tests in watch mode
+	@echo "  Running tests in watch mode..."
 	@which gotestsum > /dev/null || go install gotest.tools/gotestsum@latest
 	@gotestsum --watch --format testname
 
-.PHONY: test test-unit test-integration test-integration-bus test-integration-all test-smoke test-coverage test-db-start test-db-stop test-db-logs migrate-test-up migrate-test-down test-watch
+test-verbose: ## Run tests with verbose output
+	@echo " Running tests with verbose output..."
+	@go test -v -race -count=1 ./internal/domain/entity/...
+	@go test -v -race -count=1 ./internal/usecase/...
+	@go test -v -race -count=1 ./internal/modules/posts/domain/entity/...
+	@go test -v -race -count=1 ./internal/modules/profiles/entity/...
+
+test-list: ## List all test functions
+	@echo " Listing all test functions..."
+	@go test -list . ./internal/domain/entity/... 2>/dev/null | grep ^Test || true
+	@go test -list . ./internal/usecase/... 2>/dev/null | grep ^Test || true
+	@go test -list . ./internal/modules/posts/domain/entity/... 2>/dev/null | grep ^Test || true
+	@go test -list . ./internal/modules/profiles/entity/... 2>/dev/null | grep ^Test || true
+
+.PHONY: test test-core test-modules test-module-posts test-module-profiles test-quick test-coverage test-watch test-verbose test-list

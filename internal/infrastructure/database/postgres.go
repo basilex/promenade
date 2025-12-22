@@ -11,16 +11,16 @@ import (
 	"github.com/basilex/promenade/pkg/logger"
 )
 
-func NewPostgresConnection(cfg *config.DatabaseConfig) (*sqlx.DB, error) {
+func NewPostgresConnection(cfg *config.DatabaseSection) (*sqlx.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
+		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode,
 	)
 
 	logger.Info("Connecting to database",
 		slog.String("host", cfg.Host),
 		slog.Int("port", cfg.Port),
-		slog.String("database", cfg.DBName),
+		slog.String("database", cfg.Database),
 		slog.String("user", cfg.User),
 		slog.String("sslmode", cfg.SSLMode),
 	)

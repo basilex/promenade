@@ -1,0 +1,61 @@
+# Posts Module - Test Configuration
+
+module:
+  name: "posts"
+  enabled: true
+  version: "1.0.0"
+
+# Test settings - strict limits for validation
+posts:
+  max_title_length: 255
+  max_content_length: 10000 # Smaller for faster tests
+  max_excerpt_length: 200
+  slug_max_length: 255
+  auto_publish: false
+
+  comments:
+    enabled: true
+    max_content_length: 1000 # Smaller for tests
+    max_depth: 5 # Lower depth for faster tests
+    moderation_enabled: false
+    allow_anonymous: false
+
+  likes:
+    enabled: true
+    allow_multiple: false
+
+# Test purge - immediate cleanup
+purge:
+  enabled: true
+
+  posts:
+    retention_days: 1 # Clean up quickly in tests
+    batch_size: 10
+
+  comments:
+    retention_days: 1
+    batch_size: 10
+
+permissions:
+  - resource: "posts"
+    actions: ["create", "read", "update", "delete", "manage"]
+  - resource: "comments"
+    actions: ["create", "read", "update", "delete", "manage"]
+  - resource: "likes"
+    actions: ["create", "delete"]
+
+# Test feature flags - minimal features
+features:
+  rich_text_editor: false # Plain text for tests
+  image_upload: false
+  video_embed: false
+  mention_users: false
+  hashtags: false
+  drafts: true
+  scheduling: false
+  analytics: false
+
+# Test-specific
+test:
+  auto_cleanup: true
+  mock_external_services: true

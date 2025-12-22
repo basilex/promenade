@@ -1,0 +1,46 @@
+# Promenade Module Configuration
+# This file controls which modules are enabled and their settings
+
+modules:
+  # List of enabled modules (in load order)
+  enabled:
+    - posts # User-generated content: posts + comments + likes
+    - profiles # User profiles + contacts (merged into one module)
+
+  # Per-module configuration
+  config:
+    posts:
+      version: "1.0.0"
+      description: "User-generated content management (posts, comments, likes)"
+      settings:
+        max_post_length: 10000
+        max_comment_length: 2000
+        max_comment_depth: 10
+        allow_media: true
+
+    profiles:
+      version: "1.0.0"
+      settings:
+        allow_public_profiles: true
+
+    contacts:
+      version: "1.0.0"
+      settings:
+        max_contacts: 1000
+# Future commercial modules (example):
+#
+#   warehouse:
+#     version: "1.2.0"
+#     license_key: "WH-ABC-123-XYZ"
+#     settings:
+#       max_items: 10000
+#       enable_barcode_scanner: true
+#
+#   fleet:
+#     version: "1.0.5"
+#     license_key: "FL-DEF-456-ABC"
+#     dependencies:
+#       - warehouse  # Fleet depends on warehouse (for spare parts)
+#     settings:
+#       max_vehicles: 500
+#       gps_tracking: true

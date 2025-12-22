@@ -5,63 +5,57 @@ import (
 )
 
 // V1Router is the main router for API v1
-// It aggregates all module-specific routers (health, auth, etc.)
+// It aggregates all core module routers (health, auth, etc.)
+// Business logic modules (posts, profiles, contacts) are registered dynamically
 type V1Router struct {
-	healthRouter      *HealthRouter
-	authRouter        *AuthRouter
-	countryRouter     *CountryRouter
-	currencyRouter    *CurrencyRouter
-	userContactRouter *UserContactRouter
-	userProfileRouter *UserProfileRouter
-	userPostRouter    *UserPostRouter
-	postCommentRouter *PostCommentRouter
-	rbacRouter        *RBACRouter
-	adminRouter       *AdminRouter
-	// notificationRouter *NotificationRouter  // Future: notifications
+	healthRouter   *HealthRouter
+	authRouter     *AuthRouter
+	countryRouter  *CountryRouter
+	currencyRouter *CurrencyRouter
+	languageRouter *LanguageRouter
+	timezoneRouter *TimezoneRouter
+	rbacRouter     *RBACRouter
+	adminRouter    *AdminRouter
 }
 
-// NewV1Router creates a new V1Router with all sub-routers
+// NewV1Router creates a new V1Router with all core routers
 func NewV1Router(
 	healthRouter *HealthRouter,
 	authRouter *AuthRouter,
 	countryRouter *CountryRouter,
 	currencyRouter *CurrencyRouter,
-	userContactRouter *UserContactRouter,
-	userProfileRouter *UserProfileRouter,
-	userPostRouter *UserPostRouter,
-	postCommentRouter *PostCommentRouter,
+	languageRouter *LanguageRouter,
+	timezoneRouter *TimezoneRouter,
 	rbacRouter *RBACRouter,
 	adminRouter *AdminRouter,
-	// Add other routers here as needed
 ) *V1Router {
 	return &V1Router{
-		healthRouter:      healthRouter,
-		authRouter:        authRouter,
-		countryRouter:     countryRouter,
-		currencyRouter:    currencyRouter,
-		userContactRouter: userContactRouter,
-		userProfileRouter: userProfileRouter,
-		userPostRouter:    userPostRouter,
-		postCommentRouter: postCommentRouter,
-		rbacRouter:        rbacRouter,
-		adminRouter:       adminRouter,
+		healthRouter:   healthRouter,
+		authRouter:     authRouter,
+		countryRouter:  countryRouter,
+		currencyRouter: currencyRouter,
+		languageRouter: languageRouter,
+		timezoneRouter: timezoneRouter,
+		rbacRouter:     rbacRouter,
+		adminRouter:    adminRouter,
 	}
 }
 
-// Setup registers all v1 routes by delegating to module-specific routers
+// Setup registers all v1 core routes
+// Business modules (posts, profiles, contacts, etc.) register their routes dynamically
 func (r *V1Router) Setup(rg *gin.RouterGroup) {
-	// Each module router handles its own routes under its prefix
+	// Core infrastructure routes only
 	r.healthRouter.Setup(rg)
 	r.authRouter.Setup(rg)
-	r.userPostRouter.Setup(rg)
-	r.postCommentRouter.Setup(rg)
-	r.userContactRouter.Setup(rg)
-	r.userProfileRouter.Setup(rg)
 	r.countryRouter.Setup(rg)
-	r.adminRouter.Setup(rg)
 	r.currencyRouter.Setup(rg)
+	r.languageRouter.Setup(rg)
+	r.timezoneRouter.Setup(rg)
 	r.rbacRouter.Setup(rg)
+	r.adminRouter.Setup(rg)
 
-	// Future modules:
-	// r.notificationRouter.Setup(rg)  // Will handle /notifications/*
+	// Business modules register routes dynamically via module system:
+	// - posts module: /posts/*, /comments/*
+	// - profiles module: /profiles/*, /contacts/*
+	// - warehouse module: /warehouse/* (commercial, requires license)
 }

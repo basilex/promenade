@@ -5,7 +5,7 @@ clean: ## Clean all build artifacts and temporary files
 	rm -rf bin/
 	rm -rf tmp/*
 	rm -f coverage.out coverage.html
-	@echo "✓ Cleanup complete"
+	@echo " Cleanup complete"
 
 install: ## Install dependencies and tools
 	go mod download
