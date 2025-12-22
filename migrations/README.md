@@ -312,4 +312,3 @@ make migrate-module MODULE=warehouse
 - **Migration Manager**: [pkg/migration/manager.go](../pkg/migration/manager.go)
 - **CLI Tool**: [cmd/migrate/main.go](../cmd/migrate/main.go)
 - **Helper Script**: [scripts/create-migration.sh](../scripts/create-migration.sh)
-- **Reorganization Script**: [scripts/reorganize-migrations.sh](../scripts/reorganize-migrations.sh)
