@@ -66,16 +66,26 @@ deps-update: ## Update Go dependencies
 	go get -u ./...
 	go mod tidy
 
-config-show: ## Show current configuration values
+config-show: ## Show current YAML configuration
 	@echo "========================================="
-	@echo "Current Configuration"
+	@echo "Configuration Files (YAML)"
 	@echo "========================================="
-	@echo "ENVIRONMENT:     $(ENVIRONMENT)"
-	@echo "SERVER_PORT:     $(SERVER_PORT)"
-	@echo "DB_HOST:         $(DB_HOST)"
-	@echo "DB_PORT:         $(DB_PORT)"
-	@echo "DB_NAME:         $(DB_NAME)"
-	@echo "DB_USER:         $(DB_USER)"
-	@echo "DB_SSLMODE:      $(DB_SSLMODE)"
-	@echo "JWT_ACCESS_TTL:  $(JWT_ACCESS_TTL)"
+	@echo "Environment: $(ENV) (set ENV=dev|test|prod)"
+	@echo ""
+	@echo "Active config file: config/app.$(ENV).yaml"
+	@echo ""
+	@if [ -f "config/app.$(ENV).yaml" ]; then \
+		echo "--- App Configuration ---"; \
+		grep -E "^[a-z_]+:|^  [a-z_]+:" config/app.$(ENV).yaml | head -20; \
+	else \
+		echo "Config file not found: config/app.$(ENV).yaml"; \
+	fi
+	@echo ""
+	@echo "--- Database (from YAML) ---"
+	@grep -A 8 "^database:" config/app.$(ENV).yaml || echo "Not configured"
+	@echo ""
+	@echo "--- Server (from YAML) ---"
+	@grep -A 5 "^server:" config/app.$(ENV).yaml || echo "Not configured"
+	@echo ""
+	@echo "To view full config: cat config/app.$(ENV).yaml"
 	@echo "========================================="
