@@ -413,26 +413,30 @@ make build              # Build production binary
 make run                # Run built binary
 make lint               # Run linter (golangci-lint)
 make fmt                # Format code
+make config-show        # Show YAML configuration (use ENV=dev|test|prod)
 ```
 
 ### Testing
 
 ```bash
-make test               # All tests
-make test-unit          # Unit tests only
-make test-integration   # Integration tests only
-make test-smoke         # Smoke tests only
-make test-coverage      # Coverage report (HTML)
+make test                      # All tests (core + modules)
+make test-core                 # Core tests only (domain + usecase)
+make test-modules              # All module tests
+make test-module-posts         # Posts module tests
+make test-module-profiles      # Profiles module tests
+make test-coverage             # Generate HTML coverage report
 ```
 
 ### Database
 
 ```bash
-make migrate            # Run all migrations
-make migrate-status     # Show migration status
-make migrate-core       # Migrate core only
-make migrate-module MODULE=posts  # Migrate specific module
+make migrate                   # Run all migrations (core + enabled modules)
+make migrate-status            # Show migration status
+make migrate-core              # Migrate core only
+make migrate-module MODULE=posts          # Migrate specific module
 make migrate-rollback MODULE=posts STEPS=1  # Rollback
+make migrate-create MODULE=posts NAME=xxx  # Create module migration
+make migrate-create-core NAME=xxx          # Create core migration
 ```
 
 ### Docker
