@@ -5,8 +5,8 @@
 # ============================================================================
 # Main Makefile - Common variables and environment configuration
 # Targets are organized in separate modules:
-#   - Makefile.dev.mk   → Development workflow (install, build, lint, generate)
-#   - Makefile.test.mk  → Testing infrastructure (unit, integration, smoke)
+#   - Makefile.dev.mk   → Development workflow (install, build, lint)
+#   - Makefile.test.mk  → Testing infrastructure (unit, integration, coverage)
 #   - Makefile.prod.mk  → Production/DevOps (docker, migrations, swagger)
 # ============================================================================
 

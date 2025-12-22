@@ -66,18 +66,6 @@ deps-update: ## Update Go dependencies
 	go get -u ./...
 	go mod tidy
 
-generate: ## Generate entity (usage: make generate ENTITY=Product)
-	@if [ -z "$(ENTITY)" ]; then \
-		echo "Error: ENTITY is required. Usage: make generate ENTITY=Product"; \
-		exit 1; \
-	fi
-	./scripts/generate.sh entity $(ENTITY)
-
-generate-interactive: ## Interactive entity generator
-	./scripts/generate-interactive.sh
-
-gen: generate ## Alias for generate command
-
 config-show: ## Show current configuration values
 	@echo "========================================="
 	@echo "Current Configuration"

@@ -43,8 +43,6 @@ This guide enables AI coding agents to work productively in Promenade. It summar
   - `make migrate-up` / `make migrate-down` — DB migrations
   - `make migrate-create MODULE=posts NAME=xxx` — Create module migration
   - `make migrate-create-core NAME=xxx` — Create core migration
-  - `make generate ENTITY=X` — Generate full CRUD boilerplate (entity, repo, usecase, handler, DTOs, migrations)
-  - `make generate-interactive` — Interactive generator with prompts
   - `make swagger-all` — Generate API docs for v1 and v2
   - `make lint` / `make fmt` — Lint and format code
   - `make docker-up` / `make docker-down` — Manage Docker Compose services
@@ -97,9 +95,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 
 ## 5. Adding Features
 
-- **Preferred**: Use code generators (`make generate ENTITY=X` or `make generate-interactive`).
-- **Templates**: Located in `scripts/templates/` - entity, repository, usecase, handler, DTO, migrations.
-- **Manual steps**: Add entity, repo interface/impl, usecase, handler, DTO, router, migration. Register in router and main. See [README.md](README.md) and [scripts/templates/].
+- **Manual steps**: Add entity, repo interface/impl, usecase, handler, DTO, router, migration. Register in router and main. See [README.md](README.md).
 - **New Module Pattern**:
 
   1. Create `internal/modules/{name}/` with structure: `domain/entity/`, `domain/repository/`, `usecase/`, `adapter/http/handler/`, `adapter/repository/postgres/`
@@ -224,4 +220,4 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 - [README.md](README.md)
 - [docs/](docs/) for guides on testing, UUID v7, validation, and more.
 - [pkg/uuidv7/uuidv7.go] — UUID v7 implementation
-- [scripts/generate.sh] — Code generation system
+- [scripts/create-migration.sh] — Migration creation helper

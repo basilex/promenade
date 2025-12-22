@@ -32,8 +32,6 @@ make run                 # Run compiled binary
 make lint                # Run golangci-lint
 make fmt                 # Format code (go fmt + gofmt -s)
 make deps-update         # Update dependencies
-make generate            # Generate entity boilerplate
-make generate-interactive # Interactive generator with prompts
 make config-show         # Show current env configuration
 ```
 

@@ -256,7 +256,6 @@ BenchmarkNewV4-8    2800000    480 ns/op    (UUID v4)
 - [ ] Run migrations: `make migrate-up`
 - [ ] Test UUID generation: `go test ./pkg/uuidv7/`
 - [ ] Monitor production metrics after deployment
-- [ ] Update templates in `scripts/templates/` to use UUID v7 by default
 
 ## Further Reading
 
