@@ -61,7 +61,6 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 | Document                                           | Description                              | When to Read                    |
 | -------------------------------------------------- | ---------------------------------------- | ------------------------------- |
-| [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication schema and flows          | Understanding auth              |
 | [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                   | Implementing authorization      |
 | [CREDENTIALS.md](CREDENTIALS.md)                   | Credential management                    | Handling user credentials       |
 | [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | Module licensing system with HMAC-SHA256 | Implementing commercial modules |
