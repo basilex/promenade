@@ -7,12 +7,24 @@ import (
 
 type CountryRouter struct {
 	countryHandler *handler.CountryHandler
+	regionHandler  *handler.RegionHandler
+	cityHandler    *handler.CityHandler
 }
 
 func NewCountryRouter(countryHandler *handler.CountryHandler) *CountryRouter {
 	return &CountryRouter{
 		countryHandler: countryHandler,
 	}
+}
+
+// SetRegionHandler sets the region handler for country-related region routes
+func (r *CountryRouter) SetRegionHandler(regionHandler *handler.RegionHandler) {
+	r.regionHandler = regionHandler
+}
+
+// SetCityHandler sets the city handler for country-related city routes
+func (r *CountryRouter) SetCityHandler(cityHandler *handler.CityHandler) {
+	r.cityHandler = cityHandler
 }
 
 func (r *CountryRouter) Setup(rg *gin.RouterGroup) {
@@ -29,5 +41,15 @@ func (r *CountryRouter) Setup(rg *gin.RouterGroup) {
 		countries.GET("/:id/currencies", r.countryHandler.GetCurrencies)
 		countries.POST("/:id/currencies", r.countryHandler.AddCurrency)
 		countries.DELETE("/:id/currencies/:currency_id", r.countryHandler.RemoveCurrency)
+
+		// Region relationships (if handler is set)
+		if r.regionHandler != nil {
+			countries.GET("/:id/regions", r.regionHandler.ListByCountry)
+		}
+
+		// City relationships (if handler is set)
+		if r.cityHandler != nil {
+			countries.GET("/:id/cities", r.cityHandler.ListByCountry)
+		}
 	}
 }

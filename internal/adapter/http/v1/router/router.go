@@ -14,6 +14,8 @@ type V1Router struct {
 	currencyRouter *CurrencyRouter
 	languageRouter *LanguageRouter
 	timezoneRouter *TimezoneRouter
+	regionRouter   *RegionRouter
+	cityRouter     *CityRouter
 	rbacRouter     *RBACRouter
 	adminRouter    *AdminRouter
 }
@@ -26,6 +28,8 @@ func NewV1Router(
 	currencyRouter *CurrencyRouter,
 	languageRouter *LanguageRouter,
 	timezoneRouter *TimezoneRouter,
+	regionRouter *RegionRouter,
+	cityRouter *CityRouter,
 	rbacRouter *RBACRouter,
 	adminRouter *AdminRouter,
 ) *V1Router {
@@ -36,6 +40,8 @@ func NewV1Router(
 		currencyRouter: currencyRouter,
 		languageRouter: languageRouter,
 		timezoneRouter: timezoneRouter,
+		regionRouter:   regionRouter,
+		cityRouter:     cityRouter,
 		rbacRouter:     rbacRouter,
 		adminRouter:    adminRouter,
 	}
@@ -51,6 +57,8 @@ func (r *V1Router) Setup(rg *gin.RouterGroup) {
 	r.currencyRouter.Setup(rg)
 	r.languageRouter.Setup(rg)
 	r.timezoneRouter.Setup(rg)
+	r.regionRouter.RegisterRoutes(rg)
+	r.cityRouter.RegisterRoutes(rg)
 	r.rbacRouter.Setup(rg)
 	r.adminRouter.Setup(rg)
 

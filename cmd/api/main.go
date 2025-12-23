@@ -192,6 +192,9 @@ func main() {
 	languageRouter := router.InitLanguageModule(db, authMiddleware, authzMiddleware)
 	timezoneRouter := router.InitTimezoneModule(db, authMiddleware, authzMiddleware)
 
+	// Reference data modules (wired with country router for nested routes)
+	regionRouter, cityRouter := router.InitRegionCityModules(db, countryRouter)
+
 	// RBAC module
 	rbacRouter := router.InitRBACModule(db, authMiddleware, authzMiddleware)
 
@@ -317,7 +320,7 @@ func main() {
 			ginSwagger.URL("/api/v1/docs/swagger/doc.json")))
 
 		// V1 API endpoints (core routes only - profiles/contacts moved to module)
-		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, languageRouter, timezoneRouter, rbacRouter, adminRouter)
+		v1Router := router.NewV1Router(healthRouter, authRouter, countryRouter, currencyRouter, languageRouter, timezoneRouter, regionRouter, cityRouter, rbacRouter, adminRouter)
 		v1Router.Setup(v1)
 
 		// Register module routes dynamically
