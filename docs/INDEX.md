@@ -59,12 +59,12 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ### Security & Authentication
 
-| Document                                           | Description                                       | When to Read                     |
-| -------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
-| [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication system (registration, login, JWT)  | Understanding auth flow          |
-| [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                            | Implementing authorization       |
-| [CREDENTIALS.md](CREDENTIALS.md)                   | Default users and roles for dev/test              | Testing with predefined users    |
-| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | Module licensing system with HMAC-SHA256          | Implementing commercial modules  |
+| Document                                           | Description                                      | When to Read                    |
+| -------------------------------------------------- | ------------------------------------------------ | ------------------------------- |
+| [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication system (registration, login, JWT) | Understanding auth flow         |
+| [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                           | Implementing authorization      |
+| [CREDENTIALS.md](CREDENTIALS.md)                   | Default users and roles for dev/test             | Testing with predefined users   |
+| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | Module licensing system with HMAC-SHA256         | Implementing commercial modules |
 
 ---
 

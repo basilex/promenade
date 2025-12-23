@@ -6,7 +6,7 @@ test-core: ## Run core tests (domain + usecase)
 	@go test -v -race -count=1 ./internal/domain/entity/...
 	@go test -v -race -count=1 ./internal/usecase/...
 
-test-modules: test-module-posts test-module-profiles ## Run all module tests
+test-modules: test-module-posts test-module-profiles test-module-analytics ## Run all module tests
 
 test-module-posts: ## Run posts module tests
 	@echo " Running posts module tests..."
@@ -15,6 +15,12 @@ test-module-posts: ## Run posts module tests
 test-module-profiles: ## Run profiles module tests
 	@echo " Running profiles module tests..."
 	@go test -v -race -count=1 ./internal/modules/profiles/entity/...
+
+test-module-analytics: ## Run analytics module tests
+	@echo " Running analytics module tests..."
+	@go test -v -race -count=1 ./internal/modules/analytics/domain/entity/...
+	@go test -v -race -count=1 ./internal/modules/analytics/usecase/...
+	@go test -v -race -count=1 ./internal/modules/analytics/license/...
 
 test-quick: ## Quick test run (no race detector, faster)
 	@echo " Quick test run..."
@@ -53,4 +59,4 @@ test-list: ## List all test functions
 	@go test -list . ./internal/modules/posts/domain/entity/... 2>/dev/null | grep ^Test || true
 	@go test -list . ./internal/modules/profiles/entity/... 2>/dev/null | grep ^Test || true
 
-.PHONY: test test-core test-modules test-module-posts test-module-profiles test-quick test-coverage test-watch test-verbose test-list
+.PHONY: test test-core test-modules test-module-posts test-module-profiles test-module-analytics test-quick test-coverage test-watch test-verbose test-list
