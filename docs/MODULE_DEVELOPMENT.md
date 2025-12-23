@@ -18,11 +18,11 @@ This guide explains how to develop custom modules for Promenade using the Plugin
 
 Promenade uses a **Plugin Architecture** that allows you to:
 
--  Package business logic as independent, reusable modules
--  Share core infrastructure (DB, Event Bus, Auth, RBAC)
--  Enable/disable modules via configuration
--  Sell modules commercially with licensing
--  Combine multiple modules (e.g., Warehouse + Fleet)
+- Package business logic as independent, reusable modules
+- Share core infrastructure (DB, Event Bus, Auth, RBAC)
+- Enable/disable modules via configuration
+- Sell modules commercially with licensing
+- Combine multiple modules (e.g., Warehouse + Fleet)
 
 ### Core vs Modules
 
@@ -251,79 +251,56 @@ modules:
 
 ## Module Lifecycle
 
-```
-┌─────────────────────────────────────────────────┐
-│ Application Startup                             │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 1. Load config/modules.yaml                     │
-│    - Read enabled modules                       │
-│    - Load per-module settings                   │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 2. Initialize Core                              │
-│    - Database connection                        │
-│    - Event bus                                  │
-│    - JWT manager                                │
-│    - Logger                                     │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 3. Module.Initialize() (dependency order)       │
-│    - Resolve dependencies                       │
-│    - Initialize repositories                    │
-│    - Initialize use cases                       │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 4. Module.RegisterRoutes()                      │
-│    - Register HTTP endpoints                    │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 5. Module.RegisterMigrations()                  │
-│    - Apply database migrations                  │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 6. Module.RegisterEventHandlers()               │
-│    - Subscribe to events                        │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 7. Module.RegisterPermissions()                 │
-│    - Insert RBAC permissions                    │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ 8. Module.Start()                               │
-│    - Start background workers                   │
-│    - Initialize external connections            │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼
-┌─────────────────────────────────────────────────┐
-│ Server Running                                  │
-└─────────────────────────────────────────────────┘
-                    │
-                    ▼ (on shutdown)
-┌─────────────────────────────────────────────────┐
-│ 9. Module.Stop() (reverse order)                │
-│    - Stop workers                               │
-│    - Close connections                          │
-│    - Cleanup resources                          │
-└─────────────────────────────────────────────────┘
-```
+**Startup Sequence:**
+
+1. **Application Startup**
+
+   - Read `config/modules.yaml`
+   - Load enabled modules
+   - Load per-module settings
+
+2. **Initialize Core**
+
+   - Database connection
+   - Event bus
+   - JWT manager
+   - Logger
+
+3. **Module.Initialize()** (in dependency order)
+
+   - Resolve dependencies
+   - Initialize repositories
+   - Initialize use cases
+
+4. **Module.RegisterRoutes()**
+
+   - Register HTTP endpoints
+
+5. **Module.RegisterMigrations()**
+
+   - Apply database migrations
+
+6. **Module.RegisterEventHandlers()**
+
+   - Subscribe to events
+
+7. **Module.RegisterPermissions()**
+
+   - Insert RBAC permissions
+
+8. **Module.Start()**
+
+   - Start background workers
+   - Initialize external connections
+
+9. **Server Running**
+
+**Shutdown Sequence:**
+
+10. **Module.Stop()** (in reverse order)
+    - Stop workers
+    - Close connections
+    - Cleanup resources
 
 ---
 
@@ -375,7 +352,7 @@ func (m *FleetModule) handleItemCreated(ctx context.Context, event bus.Event) er
 
 ## Best Practices
 
-###  DO
+### DO
 
 1. **Use BaseModule** - Embed `module.BaseModule` to avoid implementing every method
 2. **Clean Architecture** - Follow domain/usecase/adapter structure
@@ -386,7 +363,7 @@ func (m *FleetModule) handleItemCreated(ctx context.Context, event bus.Event) er
 7. **Health Checks** - Implement `HealthCheck()` for monitoring
 8. **Graceful Shutdown** - Cleanup resources in `Stop()`
 
-###  DON'T
+### DON'T
 
 1. **Direct Dependencies** - Never import other module's code directly
 2. **Shared Tables** - Each module owns its tables

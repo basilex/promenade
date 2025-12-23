@@ -66,12 +66,10 @@ if uuidv7.IsV7(id) {
 
 Existing records with UUID v4 will continue to work. The system supports mixed UUIDs:
 
-```
-┌─────────────────────────────────────┬──────────────┐
-│ Old records: UUID v4 (random)       │ Pre-migration│
-│ New records: UUID v7 (time-ordered) │ Post-migration│
-└─────────────────────────────────────┴──────────────┘
-```
+| Record Type | UUID Version | Notes          |
+| ----------- | ------------ | -------------- |
+| Old records | UUID v4      | Pre-migration  |
+| New records | UUID v7      | Post-migration |
 
 ## Performance Considerations
 

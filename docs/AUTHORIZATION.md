@@ -27,31 +27,21 @@ The Authorization Middleware provides **flexible, fine-grained access control** 
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      HTTP Request                           │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│              RequireAuth Middleware                         │
-│          (Validates JWT, sets user_id)                      │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│         RequirePermission Middleware                        │
-│    1. Get user_id from context                              │
-│    2. Query user's roles                                    │
-│    3. Check role permissions (with wildcard support)        │
-│    4. Allow/Deny request                                    │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Handler Function                          │
-└─────────────────────────────────────────────────────────────┘
-```
+**Request Flow:**
+
+1. **HTTP Request** arrives
+   ↓
+2. **RequireAuth Middleware**
+   - Validates JWT token
+   - Sets user_id in context
+     ↓
+3. **RequirePermission Middleware**
+   - Get user_id from context
+   - Query user's roles
+   - Check role permissions (with wildcard support)
+   - Allow/Deny request
+     ↓
+4. **Handler Function** executes
 
 ## Permission System
 

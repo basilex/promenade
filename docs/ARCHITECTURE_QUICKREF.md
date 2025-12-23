@@ -2,15 +2,13 @@
 
 ## Core vs Modules: Simple Rule
 
-```
-┌───────────────────────────────────────────────────┐
-│  CORE = Infrastructure + Reference Data + Auth    │
-│  └─> Always enabled, provides services            │
-│                                                    │
-│  MODULES = Business Logic                         │
-│  └─> Optional, licensable, independent            │
-└───────────────────────────────────────────────────┘
-```
+**CORE** = Infrastructure + Reference Data + Auth
+
+- Always enabled, provides services
+
+**MODULES** = Business Logic
+
+- Optional, licensable, independent
 
 ---
 
