@@ -208,14 +208,26 @@ User profile and contact management:
 
 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
-#### **Warehouse Module** (`internal/modules/warehouse`) - _Commercial_
+#### **Analytics Module** (`internal/modules/analytics`) - ✅ _Commercial (Active)_
 
-Inventory and product management:
+Business analytics, metrics, and reporting:
 
-- **Status**: Requires license key
-- **Use Case**: E-commerce, inventory systems
+- **Status**: ✅ Enabled - Requires license key (BASIC/PRO/ENTERPRISE)
+- **Entities**: Metrics, Reports, Dashboards
+- **Features**: Metrics collection, custom reports, visual dashboards
+- **Migrations**: 1 migration (namespace: `analytics`)
+- **Use Case**: Business intelligence, performance monitoring, data insights
 
-**Full documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
+**Full documentation**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
+
+#### **Warehouse Module** (`internal/modules/warehouse`) - 🔮 _Future Module_
+
+Inventory and product management (planned):
+
+- **Status**: 🔮 Planned - Structure exists as placeholder, not yet implemented
+- **Use Case**: E-commerce, inventory systems, retail
+
+**Planned documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
 
 ### Module Structure
 
@@ -271,9 +283,11 @@ migrations/
 │   ├── 000001_posts_posts.up.sql
 │   ├── 000002_posts_comments.up.sql
 │   └── 000003_posts_comment_likes.up.sql
-└── profiles/           # Profiles module migrations
-    ├── 000001_profiles_contacts.up.sql
-    └── 000002_profiles_profiles.up.sql
+├── profiles/           # Profiles module migrations
+│   ├── 000001_profiles_contacts.up.sql
+│   └── 000002_profiles_profiles.up.sql
+└── analytics/          # Analytics module migrations (commercial)
+    └── 000001_analytics_tables.up.sql
 ```
 
 ### Migration Commands
@@ -328,17 +342,16 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**200+ tests** across all layers (100% passing, < 15 seconds):
+**388 tests** across all layers (100% passing, ~41 seconds):
 
 ```bash
-# Run all tests (core + modules)
-make test
+# Run all tests (unit + integration + smoke)
+make test               # All tests (~41s)
 
-# Run by category
-make test-core          # Core domain + use case tests
-make test-modules       # All module tests
-make test-module-posts  # Posts module only
-make test-module-profiles # Profiles module only
+# Run by type
+make test-unit          # Unit tests only (183 tests, ~5s)
+make test-integration   # Integration tests (91 tests, ~36s)
+make test-smoke         # Smoke tests (114 tests, ~4s)
 
 # Coverage report
 make test-coverage
@@ -348,10 +361,9 @@ make test-coverage
 
 - **Core Tests**: Domain entities (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
 - **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge operations
-- **Module Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender)
-- **Test Helpers**: `test/helpers/` for fixtures, database setup, transaction management
-
-Test helpers in `test/helpers/` for fixtures, database setup, and transaction management.
+- **Module Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, License validation)
+- **Integration Tests**: Repository operations with real PostgreSQL on port 5433
+- **Test Helpers**: `test/helpers/` and `test/integration/` for fixtures, database setup, transaction management
 
 **Testing guides**:
 
