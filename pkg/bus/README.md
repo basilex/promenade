@@ -15,43 +15,35 @@ This enables asynchronous, decoupled communication between components with a cle
 
 ### Current (Monolith + Async)
 
-```
-┌─────────────────────────────────────────┐
-│         Single Binary                    │
-│                                          │
-│  ┌──────────┐                            │
-│  │ UseCase  │──publish──┐                │
-│  └──────────┘           │                │
-│                         ▼                │
-│                    ┌─────────┐           │
-│                    │Event Bus│           │
-│                    └────┬────┘           │
-│                         │                │
-│       ┌─────────────────┼────────────┐   │
-│       │                 │            │   │
-│  ┌────▼─────┐   ┌───────▼──┐  ┌─────▼┐  │
-│  │  Email   │   │Analytics │  │ Logs │  │
-│  │ Worker   │   │  Worker  │  │Worker│  │
-│  └──────────┘   └──────────┘  └──────┘  │
-│                                          │
-│  Single Database (ACID preserved)       │
-└─────────────────────────────────────────┘
-```
+**Architecture:**
+
+- Single binary with embedded workers
+- Event bus coordinates async communication
+- Workers: Email, Analytics, Logs
+- Single Database (ACID preserved)
+
+**Flow:**
+
+1. UseCase publishes event to Event Bus
+2. Event Bus dispatches to multiple workers concurrently
+3. Workers (Email, Analytics, Logs) process independently
+4. All within single process boundary
 
 ### Future (Microservices)
 
-```
-┌─────────────┐    ┌──────────────┐
-│   Gateway   │───▶│  NATS/Kafka  │
-└─────────────┘    └──────┬───────┘
-                          │
-        ┌─────────────────┼──────────────┐
-        │                 │              │
-   ┌────▼────┐      ┌─────▼──────┐  ┌───▼───┐
-   │ Email   │      │ Analytics  │  │ User  │
-   │ Service │      │  Service   │  │Service│
-   └─────────┘      └────────────┘  └───────┘
-```
+**Architecture:**
+
+- Gateway routes requests
+- Distributed message broker (NATS/Kafka)
+- Independent services: Email, Analytics, User
+- Each service has own database
+
+**Flow:**
+
+1. Gateway receives request
+2. Publishes event to distributed broker (NATS/Kafka)
+3. Services subscribe to relevant topics
+4. Services process independently and scale horizontally
 
 **Same code, different transport!** Just swap `memory.Bus` → `redis.Bus` or `nats.Bus`
 
@@ -244,36 +236,20 @@ defer eventBus.Close(ctx)
 
 **Redis Architecture:**
 
-```
-┌───────────────────────────────────────────────────┐
-│              Redis Server (Port 6379)             │
-│                                                   │
-│  Channels (Topics):                               │
-│   - user.registered                               │
-│   - user.email_verified                           │
-│   - user.password_changed                         │
-│   - post.created                                  │
-│   - ...                                           │
-└───────────────┬───────────────────────────────────┘
-                │
-     ┌──────────┴──────────┐
-     │                     │
-┌────▼─────┐         ┌────▼─────┐
-│ Instance │         │ Instance │
-│    #1    │         │    #2    │
-│          │         │          │
-│ Bus.Publish()     Bus.Subscribe()
-│          │         │          │
-│ AuthUC   │         │ Email    │
-│ PostUC   │         │ Service  │
-└──────────┘         └──────────┘
+| Component             | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| **Redis Server**      | Central message broker on port 6379                                             |
+| **Channels (Topics)** | user.registered, user.email_verified, user.password_changed, post.created, etc. |
+| **Instance #1**       | Publisher: AuthUC, PostUC publish events                                        |
+| **Instance #2**       | Subscriber: EmailService processes events                                       |
 
-Flow:
+**Message Flow:**
+
 1. Instance #1 publishes UserRegisteredEvent to Redis channel
 2. Redis broadcasts to all subscribers
 3. Instance #2's EmailService receives event and sends welcome email
 4. Both instances can publish/subscribe simultaneously
-```
+5. Horizontal scaling: Add more instances, all participate in pub/sub
 
 ### 3. NATS/Kafka (Future - Microservices)
 
