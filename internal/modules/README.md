@@ -34,7 +34,7 @@
 
 ---
 
-##  Available Modules
+## Available Modules
 
 ### **Posts** (`internal/modules/posts/`)
 
@@ -107,13 +107,46 @@ profiles:
 
 ---
 
-### **Warehouse** (`internal/modules/warehouse/`) - _Commercial_
+---
+
+### **Analytics** (`internal/modules/analytics/`) - _✅ Commercial (Active)_
+
+**Domain**: Business analytics, metrics, reports, and dashboards
+
+**Status**: ✅ Enabled - Requires license key (BASIC/PRO/ENTERPRISE tiers)
+
+**Entities**:
+
+- `Metric` - Performance metrics and KPIs
+- `Report` - Custom reports and analytics
+- `Dashboard` - Visual dashboards
+
+**Features**:
+
+- Metrics collection and aggregation
+- Custom report generation
+- Interactive dashboards
+- Data retention policies (tier-based)
+
+**Use Case**: Business intelligence, performance monitoring, data-driven insights
+
+**License Tiers**:
+
+- BASIC: 30-day retention, 5 reports, 2 dashboards
+- PRO: 90-day retention, 10 reports, 5 dashboards
+- ENTERPRISE: 365-day retention, unlimited
+
+See [analytics/README.md](analytics/README.md) for full details.
+
+---
+
+### **Warehouse** (`internal/modules/warehouse/`) - _🔮 Future Module_
 
 **Domain**: Inventory and product management
 
-**Status**: Requires license key (commercial module)
+**Status**: 🔮 Planned - Not yet implemented (commercial module)
 
-**Entities**:
+**Planned Entities**:
 
 - `Product` - Product catalog
 - `Inventory` - Stock levels
@@ -121,11 +154,11 @@ profiles:
 
 **Use Case**: E-commerce, inventory systems, retail
 
-See [warehouse/README.md](warehouse/README.md) for details and licensing.
+_This module is in design phase. Structure exists as placeholder._
 
 ---
 
-##  Module Structure
+## Module Structure
 
 Every module follows this structure:
 
@@ -286,7 +319,7 @@ func (m *Module) Stop(ctx context.Context) error {
 
 ---
 
-##  Creating a New Module
+## Creating a New Module
 
 ### Step 1: Create Directory Structure
 
@@ -435,7 +468,7 @@ make dev
 
 ---
 
-##  Module Conventions
+## Module Conventions
 
 ### Naming
 
@@ -474,9 +507,9 @@ import "github.com/basilex/promenade/internal/domain"           // Core domain
 
 ---
 
-##  Module Independence Rules
+## Module Independence Rules
 
-###  Modules CAN
+### Modules CAN
 
 - Import packages from `pkg/*`
 - Use services provided by Core (`module.Core` interface)
@@ -486,7 +519,7 @@ import "github.com/basilex/promenade/internal/domain"           // Core domain
 - Have their own migrations (namespace-based)
 - Have their own configuration in `config/modules.yaml`
 
-###  Modules CANNOT
+### Modules CANNOT
 
 - Import other modules (`internal/modules/*`)
 - Import core domain entities (`internal/domain/entity`)
@@ -546,7 +579,7 @@ See [posts/README.md](posts/README.md) for an example.
 
 ---
 
-##  Testing Modules
+## Testing Modules
 
 ### Unit Tests
 

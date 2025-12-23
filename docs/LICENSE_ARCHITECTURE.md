@@ -413,22 +413,23 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Current State
 
-| Module        | Status         | Tier               | Reason                            |
-| ------------- | -------------- | ------------------ | --------------------------------- |
-| posts         | Free           | N/A                | Core social features              |
-| profiles      | Free           | N/A                | Core user features                |
-| **analytics** | **Commercial** | **PRO/ENTERPRISE** | **Phase 1: Analytics as premium** |
-| warehouse     | Placeholder    | TBD                | Commercial inventory management   |
+| Module        | Status            | Tier               | Reason                           |
+| ------------- | ----------------- | ------------------ | -------------------------------- |
+| posts         | ✅ Free           | N/A                | Core social features             |
+| profiles      | ✅ Free           | N/A                | Core user features               |
+| **analytics** | **✅ Commercial** | **PRO/ENTERPRISE** | **Active: Analytics as premium** |
+| warehouse     | 🔮 Planned        | TBD                | Future: Inventory management     |
 
 ### Roadmap
 
-**Phase 1 (Current)**:
+**Phase 1 (Current - Active)**:
 
 - Analytics module is **commercial** (PRO/ENTERPRISE tiers)
 - Focus on business metrics, reports, dashboards
 - Target: SMBs, enterprises needing data insights
+- Status: ✅ Implemented and enabled
 
-**Phase 2 (Q2 2025)**:
+**Phase 2 (Q2 2026 - Planned)**:
 
 - Release **Audit Log module** (commercial)
 - Features: Compliance, GDPR, detailed audit trails
@@ -442,7 +443,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Rationale
 
-1. **Analytics First**: Works with existing data, immediate value
+1. **Analytics First**: ✅ Works with existing data, immediate value
 2. **Audit Log Premium**: Compliance is enterprise requirement
 3. **Free Analytics**: Broader adoption, upsell to Audit Log
 

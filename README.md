@@ -23,12 +23,12 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module        | Entities                         | Description                       | Status         |
-| ------------- | -------------------------------- | --------------------------------- | -------------- |
-| Posts         | posts, comments, likes           | User-generated content            | Free           |
-| Profiles      | contacts, profiles               | User profiles                     | Free           |
-| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | **Commercial** |
-| Warehouse     | products, inventory              | Commercial inventory management   | Commercial     |
+| Module        | Entities                         | Description                       | Status            |
+| ------------- | -------------------------------- | --------------------------------- | ----------------- |
+| Posts         | posts, comments, likes           | User-generated content            | ✅ Free           |
+| Profiles      | contacts, profiles               | User profiles                     | ✅ Free           |
+| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | ✅ **Commercial** |
+| Warehouse     | products, inventory              | Inventory management (future)     | 🔮 Planned        |
 
 Each module is self-contained with:
 
@@ -240,9 +240,10 @@ Edit `config/modules.yaml`:
 ```yaml
 modules:
   enabled:
-    - posts # Enable posts module
-    - profiles # Enable profiles module
-    # - warehouse  # Disabled (requires license)
+    - posts # User-generated content
+    - profiles # User profiles + contacts
+    - analytics # Business analytics (requires license)
+    # - warehouse  # Future: Inventory management
 ```
 
 Modules load automatically on application startup.
@@ -605,7 +606,8 @@ promenade/
 │   └── modules/                # Business modules (plugins)
 │       ├── posts/              # Posts + comments + likes
 │       ├── profiles/           # User profiles + contacts
-│       └── warehouse/          # Commercial module (inventory)
+│       ├── analytics/          # ✅ Analytics + reports (Commercial, active)
+│       └── warehouse/          # 🔮 Inventory management (future)
 ├── pkg/                        # Shared packages (reusable)
 │   ├── bus/                    # Event bus (memory/redis)
 │   ├── jwt/                    # JWT manager
@@ -689,7 +691,8 @@ modules:
   enabled:
     - posts
     - profiles
-    # - warehouse  # Requires license
+    - analytics # Commercial module (requires license)
+    # - warehouse  # Future: Inventory management
 
   config:
     posts:
@@ -697,6 +700,12 @@ modules:
       settings:
         max_post_length: 10000
         max_comment_depth: 10
+
+    analytics:
+      version: "1.0.0"
+      license_key: "" # Set via ANALYTICS_LICENSE_KEY env var
+      settings:
+        metrics_retention_days: 90
 ```
 
 **Config guide**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)

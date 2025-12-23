@@ -16,7 +16,8 @@ This guide enables AI coding agents to work productively in Promenade. It summar
   - Modules implement `pkg/module.Module` interface with lifecycle hooks (Initialize, Start, Stop, HealthCheck)
   - Examples:
     - **Free**: `posts` (posts+comments+likes), `profiles` (profiles+contacts)
-    - **Commercial**: `analytics` (metrics+reports+dashboards), `warehouse` (inventory+products)
+    - **Commercial (Active)**: `analytics` (metrics+reports+dashboards, requires license)
+    - **Future**: `warehouse` (inventory+products, planned)
   - See [internal/modules/README.md](internal/modules/README.md) and [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md).
 - **Core as Orchestrator**: Core provides registry systems (purge, modules, permissions) and delegates to modules via interfaces. Core never knows HOW modules work, only WHEN to call them.
 - **Event-Driven**: Domain events (`internal/domain/event`) use `pkg/bus` with **dual adapters**:
@@ -185,7 +186,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 
 ## 11. Commercial Modules & Licensing
 
-- **License System**: Signature-based licensing for commercial modules (`analytics`, `warehouse`). See [docs/LICENSE_ARCHITECTURE.md](docs/LICENSE_ARCHITECTURE.md).
+- **License System**: Signature-based licensing for commercial modules (currently `analytics`). See [docs/LICENSE_ARCHITECTURE.md](docs/LICENSE_ARCHITECTURE.md).
 - **License Format**: `PROMENADE-{MODULE}-{TIER}-{EXPIRY}-{SIGNATURE}` (e.g., `PROMENADE-ANALYTICS-PRO-20261231-AbC...`)
 - **Tiers**: BASIC, PRO, ENTERPRISE with different feature sets and retention periods
 - **Validation**: HMAC-SHA256 signature verification, expiry checks, grace periods (3 days default)
