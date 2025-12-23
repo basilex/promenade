@@ -3,7 +3,9 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -20,9 +22,51 @@ func NewMetricRepository(db *sqlx.DB) repository.MetricRepository {
 	return &MetricRepository{db: db}
 }
 
+// metricDB is an internal type for scanning from database
+type metricDB struct {
+	ID        string          `db:"id"`
+	Module    string          `db:"module"`
+	Scope     string          `db:"scope"`
+	ScopeID   string          `db:"scope_id"`
+	Name      string          `db:"name"`
+	Type      string          `db:"type"`
+	Value     float64         `db:"value"`
+	Metadata  json.RawMessage `db:"metadata"`
+	CreatedAt time.Time       `db:"created_at"`
+}
+
+func (m *metricDB) toEntity() (*entity.Metric, error) {
+	var metadata map[string]interface{}
+	if len(m.Metadata) > 0 {
+		if err := json.Unmarshal(m.Metadata, &metadata); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal metadata: %w", err)
+		}
+	} else {
+		metadata = make(map[string]interface{})
+	}
+
+	return &entity.Metric{
+		ID:        m.ID,
+		Module:    m.Module,
+		Scope:     entity.MetricScope(m.Scope),
+		ScopeID:   m.ScopeID,
+		Name:      m.Name,
+		Type:      entity.MetricType(m.Type),
+		Value:     m.Value,
+		Metadata:  metadata,
+		CreatedAt: m.CreatedAt,
+	}, nil
+}
+
 func (r *MetricRepository) Store(ctx context.Context, metric *entity.Metric) error {
 	if metric.ID == "" {
 		metric.ID = uuidv7.New().String()
+	}
+
+	// Convert metadata map to JSON
+	metadataJSON, err := json.Marshal(metric.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
 	}
 
 	query := `
@@ -32,9 +76,9 @@ func (r *MetricRepository) Store(ctx context.Context, metric *entity.Metric) err
 			$1, $2, $3, $4, $5, $6, $7, $8, $9
 		)`
 
-	_, err := r.db.ExecContext(ctx, query,
+	_, err = r.db.ExecContext(ctx, query,
 		metric.ID, metric.Module, metric.Scope, metric.ScopeID,
-		metric.Name, metric.Type, metric.Value, metric.Metadata, metric.CreatedAt)
+		metric.Name, metric.Type, metric.Value, metadataJSON, metric.CreatedAt)
 
 	return err
 }
@@ -43,12 +87,16 @@ func (r *MetricRepository) GetByID(ctx context.Context, id string) (*entity.Metr
 	query := `SELECT id, module, scope, scope_id, name, type, value, metadata, created_at
 		FROM analytics_metrics WHERE id = $1`
 
-	var metric entity.Metric
-	err := r.db.GetContext(ctx, &metric, query, id)
+	var metricDB metricDB
+	err := r.db.GetContext(ctx, &metricDB, query, id)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("metric not found: %s", id)
 	}
-	return &metric, err
+	if err != nil {
+		return nil, err
+	}
+
+	return metricDB.toEntity()
 }
 
 func (r *MetricRepository) ListByScope(ctx context.Context, scope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error) {
@@ -61,9 +109,18 @@ func (r *MetricRepository) ListByScope(ctx context.Context, scope, scopeID strin
 		FROM analytics_metrics WHERE scope = $1 AND scope_id = $2
 		ORDER BY created_at DESC LIMIT $3 OFFSET $4`
 
-	var metrics []*entity.Metric
-	if err := r.db.SelectContext(ctx, &metrics, query, scope, scopeID, limit, offset); err != nil {
+	var metricsDB []metricDB
+	if err := r.db.SelectContext(ctx, &metricsDB, query, scope, scopeID, limit, offset); err != nil {
 		return nil, 0, err
+	}
+
+	metrics := make([]*entity.Metric, 0, len(metricsDB))
+	for _, mdb := range metricsDB {
+		m, err := mdb.toEntity()
+		if err != nil {
+			return nil, 0, err
+		}
+		metrics = append(metrics, m)
 	}
 
 	return metrics, total, nil
@@ -79,9 +136,18 @@ func (r *MetricRepository) ListByModule(ctx context.Context, module string, limi
 		FROM analytics_metrics WHERE module = $1
 		ORDER BY created_at DESC LIMIT $2 OFFSET $3`
 
-	var metrics []*entity.Metric
-	if err := r.db.SelectContext(ctx, &metrics, query, module, limit, offset); err != nil {
+	var metricsDB []metricDB
+	if err := r.db.SelectContext(ctx, &metricsDB, query, module, limit, offset); err != nil {
 		return nil, 0, err
+	}
+
+	metrics := make([]*entity.Metric, 0, len(metricsDB))
+	for _, mdb := range metricsDB {
+		m, err := mdb.toEntity()
+		if err != nil {
+			return nil, 0, err
+		}
+		metrics = append(metrics, m)
 	}
 
 	return metrics, total, nil
@@ -102,10 +168,14 @@ func (r *MetricRepository) GetLatestByName(ctx context.Context, module, scope, s
 		WHERE module = $1 AND scope = $2 AND scope_id = $3 AND name = $4
 		ORDER BY created_at DESC LIMIT 1`
 
-	var metric entity.Metric
-	err := r.db.GetContext(ctx, &metric, query, module, scope, scopeID, name)
+	var metricDB metricDB
+	err := r.db.GetContext(ctx, &metricDB, query, module, scope, scopeID, name)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("metric not found")
 	}
-	return &metric, err
+	if err != nil {
+		return nil, err
+	}
+
+	return metricDB.toEntity()
 }

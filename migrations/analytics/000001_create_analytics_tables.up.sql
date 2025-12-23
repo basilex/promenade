@@ -1,22 +1,23 @@
 -- Create analytics_metrics table
 CREATE TABLE IF NOT EXISTS analytics_metrics (
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    module VARCHAR(255) NOT NULL,
+    scope VARCHAR(50) NOT NULL CHECK (scope IN ('user', 'post', 'comment', 'system')),
+    scope_id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL CHECK (type IN ('counter', 'gauge', 'histogram')),
-    scope VARCHAR(50) NOT NULL CHECK (scope IN ('user', 'post', 'comment', 'system')),
     value DOUBLE PRECISION NOT NULL,
-    entity_id UUID,
-    tags JSONB DEFAULT '{}',
-    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Create indexes for metrics
+CREATE INDEX idx_analytics_metrics_module ON analytics_metrics(module);
 CREATE INDEX idx_analytics_metrics_name ON analytics_metrics(name);
 CREATE INDEX idx_analytics_metrics_scope ON analytics_metrics(scope);
-CREATE INDEX idx_analytics_metrics_entity_id ON analytics_metrics(entity_id);
-CREATE INDEX idx_analytics_metrics_timestamp ON analytics_metrics(timestamp DESC);
-CREATE INDEX idx_analytics_metrics_tags ON analytics_metrics USING GIN(tags);
+CREATE INDEX idx_analytics_metrics_scope_id ON analytics_metrics(scope_id);
+CREATE INDEX idx_analytics_metrics_created_at ON analytics_metrics(created_at DESC);
+CREATE INDEX idx_analytics_metrics_metadata ON analytics_metrics USING GIN(metadata);
 
 -- Create analytics_metric_aggregates table
 CREATE TABLE IF NOT EXISTS analytics_metric_aggregates (
@@ -44,7 +45,7 @@ CREATE UNIQUE INDEX idx_analytics_aggregates_unique ON analytics_metric_aggregat
 -- Create analytics_reports table
 CREATE TABLE IF NOT EXISTS analytics_reports (
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES core_users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     type VARCHAR(100) NOT NULL,
@@ -69,7 +70,7 @@ CREATE INDEX idx_analytics_reports_created_at ON analytics_reports(created_at DE
 -- Create analytics_report_schedules table
 CREATE TABLE IF NOT EXISTS analytics_report_schedules (
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES core_users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     report_type VARCHAR(100) NOT NULL,
     format VARCHAR(20) NOT NULL CHECK (format IN ('json', 'csv', 'pdf', 'xlsx')),
@@ -91,7 +92,7 @@ CREATE INDEX idx_analytics_schedules_next_run ON analytics_report_schedules(next
 -- Create analytics_dashboards table
 CREATE TABLE IF NOT EXISTS analytics_dashboards (
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES core_users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     layout JSONB NOT NULL DEFAULT '{}',

@@ -18,8 +18,8 @@ server:
 database:
   host: "localhost"
   port: 5433 # Test DB on different port
-  user: "postgres"
-  password: "postgres"
+  user: "promenade"
+  password: "promenade"
   database: "promenade_test"
   sslmode: "disable"
   max_open_conns: 10

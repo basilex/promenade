@@ -13,13 +13,17 @@ CREATE TABLE IF NOT EXISTS posts_comments (
     -- Content
     content TEXT NOT NULL CHECK (char_length(content) >= 1 AND char_length(content) <= 5000),
     
+    -- Tree structure for nested comments
+    depth INTEGER NOT NULL DEFAULT 0 CHECK (depth >= 0 AND depth <= 10), -- Max nesting level
+    path TEXT, -- Materialized path for tree traversal (e.g., "parent_id1.parent_id2.id")
+    
     -- Edit tracking
     is_edited BOOLEAN NOT NULL DEFAULT FALSE,
     edited_at TIMESTAMP WITH TIME ZONE,
     
     -- Engagement metrics
-    like_count INTEGER NOT NULL DEFAULT 0 CHECK (like_count >= 0),
-    reply_count INTEGER NOT NULL DEFAULT 0 CHECK (reply_count >= 0),
+    likes_count INTEGER NOT NULL DEFAULT 0 CHECK (likes_count >= 0),
+    replies_count INTEGER NOT NULL DEFAULT 0 CHECK (replies_count >= 0),
     
     -- Soft delete support
     deleted_at TIMESTAMP WITH TIME ZONE,
@@ -69,6 +73,6 @@ COMMENT ON COLUMN posts_comments.parent_id IS 'Reference to parent comment (NULL
 COMMENT ON COLUMN posts_comments.content IS 'Comment text content (1-5000 characters)';
 COMMENT ON COLUMN posts_comments.is_edited IS 'Whether the comment has been edited';
 COMMENT ON COLUMN posts_comments.edited_at IS 'Timestamp of last edit (NULL if never edited)';
-COMMENT ON COLUMN posts_comments.like_count IS 'Number of likes on this comment';
-COMMENT ON COLUMN posts_comments.reply_count IS 'Number of direct replies to this comment';
+COMMENT ON COLUMN posts_comments.likes_count IS 'Number of likes on this comment';
+COMMENT ON COLUMN posts_comments.replies_count IS 'Number of direct replies to this comment';
 COMMENT ON COLUMN posts_comments.deleted_at IS 'Soft delete timestamp (NULL if not deleted)';
