@@ -25,7 +25,7 @@ func NewSessionRepository(db *sqlx.DB) repository.SessionRepository {
 
 func (r *sessionRepository) Create(ctx context.Context, session *entity.Session) error {
 	query := `
-		INSERT INTO user_sessions (id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at)
+		INSERT INTO core_user_sessions (id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	executor := r.getExecutor(ctx)
@@ -47,7 +47,7 @@ func (r *sessionRepository) Create(ctx context.Context, session *entity.Session)
 func (r *sessionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Session, error) {
 	query := `
 		SELECT id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at
-		FROM user_sessions
+		FROM core_user_sessions
 		WHERE id = $1
 	`
 	var session entity.Session
@@ -64,7 +64,7 @@ func (r *sessionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entit
 func (r *sessionRepository) GetByRefreshToken(ctx context.Context, hashedToken string) (*entity.Session, error) {
 	query := `
 		SELECT id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at
-		FROM user_sessions
+		FROM core_user_sessions
 		WHERE refresh_token = $1 AND expires_at > NOW()
 	`
 	var session entity.Session
@@ -80,7 +80,7 @@ func (r *sessionRepository) GetByRefreshToken(ctx context.Context, hashedToken s
 
 func (r *sessionRepository) Update(ctx context.Context, session *entity.Session) error {
 	query := `
-		UPDATE user_sessions
+		UPDATE core_user_sessions
 		SET refresh_token = $2, expires_at = $3
 		WHERE id = $1
 	`
@@ -102,7 +102,7 @@ func (r *sessionRepository) Update(ctx context.Context, session *entity.Session)
 }
 
 func (r *sessionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM user_sessions WHERE id = $1`
+	query := `DELETE FROM core_user_sessions WHERE id = $1`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -123,7 +123,7 @@ func (r *sessionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 func (r *sessionRepository) GetUserSessions(ctx context.Context, userID uuidv7.UUID) ([]*entity.Session, error) {
 	query := `
 		SELECT id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at
-		FROM user_sessions
+		FROM core_user_sessions
 		WHERE user_id = $1 AND expires_at > NOW()
 		ORDER BY created_at DESC
 	`
@@ -136,7 +136,7 @@ func (r *sessionRepository) GetUserSessions(ctx context.Context, userID uuidv7.U
 }
 
 func (r *sessionRepository) CountUserSessions(ctx context.Context, userID uuidv7.UUID) (int, error) {
-	query := `SELECT COUNT(*) FROM user_sessions WHERE user_id = $1 AND expires_at > NOW()`
+	query := `SELECT COUNT(*) FROM core_user_sessions WHERE user_id = $1 AND expires_at > NOW()`
 	var count int
 	err := r.Get(ctx, &count, query, userID)
 	if err != nil {
@@ -149,7 +149,7 @@ func (r *sessionRepository) CountUserSessions(ctx context.Context, userID uuidv7
 func (r *sessionRepository) GetOldestSession(ctx context.Context, userID uuidv7.UUID) (*entity.Session, error) {
 	query := `
 		SELECT id, user_id, refresh_token, user_agent, ip_address, expires_at, created_at
-		FROM user_sessions
+		FROM core_user_sessions
 		WHERE user_id = $1 AND expires_at > NOW()
 		ORDER BY created_at ASC
 		LIMIT 1
@@ -166,7 +166,7 @@ func (r *sessionRepository) GetOldestSession(ctx context.Context, userID uuidv7.
 }
 
 func (r *sessionRepository) DeleteByUserID(ctx context.Context, userID uuidv7.UUID) error {
-	query := `DELETE FROM user_sessions WHERE user_id = $1`
+	query := `DELETE FROM core_user_sessions WHERE user_id = $1`
 	err := r.Exec(ctx, query, userID)
 	if err != nil {
 		return fmt.Errorf("failed to delete user sessions: %w", err)
@@ -175,7 +175,7 @@ func (r *sessionRepository) DeleteByUserID(ctx context.Context, userID uuidv7.UU
 }
 
 func (r *sessionRepository) DeleteExpired(ctx context.Context) error {
-	query := `DELETE FROM user_sessions WHERE expires_at <= NOW()`
+	query := `DELETE FROM core_user_sessions WHERE expires_at <= NOW()`
 	err := r.Exec(ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed to delete expired sessions: %w", err)

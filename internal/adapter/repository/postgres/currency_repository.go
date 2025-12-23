@@ -25,7 +25,7 @@ func NewCurrencyRepository(db *sqlx.DB) repository.CurrencyRepository {
 // Create creates a new currency
 func (r *currencyRepository) Create(ctx context.Context, currency *entity.Currency) error {
 	query := `
-		INSERT INTO currencies (name, code, symbol)
+		INSERT INTO core_currencies (name, code, symbol)
 		VALUES ($1, $2, $3)
 		RETURNING id, created_at, updated_at
 	`
@@ -41,7 +41,7 @@ func (r *currencyRepository) Create(ctx context.Context, currency *entity.Curren
 func (r *currencyRepository) GetByID(ctx context.Context, id uuidv7.UUID, withCountries bool) (*entity.Currency, error) {
 	query := `
 		SELECT id, name, code, symbol, created_at, updated_at
-		FROM currencies
+		FROM core_currencies
 		WHERE id = $1
 	`
 
@@ -68,7 +68,7 @@ func (r *currencyRepository) GetByID(ctx context.Context, id uuidv7.UUID, withCo
 func (r *currencyRepository) GetByCode(ctx context.Context, code string, withCountries bool) (*entity.Currency, error) {
 	query := `
 		SELECT id, name, code, symbol, created_at, updated_at
-		FROM currencies
+		FROM core_currencies
 		WHERE code = $1
 	`
 
@@ -95,7 +95,7 @@ func (r *currencyRepository) GetByCode(ctx context.Context, code string, withCou
 func (r *currencyRepository) List(ctx context.Context, offset, limit int, withCountries bool) ([]entity.Currency, int, error) {
 	// Get total count
 	var total int
-	countQuery := `SELECT COUNT(*) FROM currencies`
+	countQuery := `SELECT COUNT(*) FROM core_currencies`
 	if err := r.db.GetContext(ctx, &total, countQuery); err != nil {
 		return nil, 0, err
 	}
@@ -103,7 +103,7 @@ func (r *currencyRepository) List(ctx context.Context, offset, limit int, withCo
 	// Get currencies
 	query := `
 		SELECT id, name, code, symbol, created_at, updated_at
-		FROM currencies
+		FROM core_currencies
 		ORDER BY name ASC
 		LIMIT $1 OFFSET $2
 	`
@@ -129,7 +129,7 @@ func (r *currencyRepository) List(ctx context.Context, offset, limit int, withCo
 // Update updates a currency
 func (r *currencyRepository) Update(ctx context.Context, currency *entity.Currency) error {
 	query := `
-		UPDATE currencies
+		UPDATE core_currencies
 		SET name = $1, code = $2, symbol = $3, updated_at = NOW()
 		WHERE id = $4
 		RETURNING updated_at
@@ -151,7 +151,7 @@ func (r *currencyRepository) Update(ctx context.Context, currency *entity.Curren
 
 // Delete deletes a currency
 func (r *currencyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM currencies WHERE id = $1`
+	query := `DELETE FROM core_currencies WHERE id = $1`
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
@@ -172,7 +172,7 @@ func (r *currencyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 // AddCountry adds a country to a currency
 func (r *currencyRepository) AddCountry(ctx context.Context, currencyID, countryID uuidv7.UUID, isPrimary bool) error {
 	query := `
-		INSERT INTO country_currencies (country_id, currency_id, is_primary)
+		INSERT INTO core_country_currencies (country_id, currency_id, is_primary)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (country_id, currency_id) DO UPDATE
 		SET is_primary = EXCLUDED.is_primary
@@ -184,7 +184,7 @@ func (r *currencyRepository) AddCountry(ctx context.Context, currencyID, country
 
 // RemoveCountry removes a country from a currency
 func (r *currencyRepository) RemoveCountry(ctx context.Context, currencyID, countryID uuidv7.UUID) error {
-	query := `DELETE FROM country_currencies WHERE currency_id = $1 AND country_id = $2`
+	query := `DELETE FROM core_country_currencies WHERE currency_id = $1 AND country_id = $2`
 	result, err := r.db.ExecContext(ctx, query, currencyID, countryID)
 	if err != nil {
 		return err
@@ -206,8 +206,8 @@ func (r *currencyRepository) RemoveCountry(ctx context.Context, currencyID, coun
 func (r *currencyRepository) GetCountries(ctx context.Context, currencyID uuidv7.UUID) ([]entity.Country, error) {
 	query := `
 		SELECT c.id, c.name, c.code, c.iso2, c.iso3, c.created_at, c.updated_at
-		FROM countries c
-		INNER JOIN country_currencies cc ON c.id = cc.country_id
+		FROM core_countries c
+		INNER JOIN core_country_currencies cc ON c.id = cc.country_id
 		WHERE cc.currency_id = $1
 		ORDER BY cc.is_primary DESC, c.name ASC
 	`

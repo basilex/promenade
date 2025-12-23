@@ -98,6 +98,6 @@ email:
 # Retention policies are defined in each module's config
 purge:
   enabled: true
-  schedule: "0 3 * * *" # 3 AM daily
+  schedule: "0 0 3 * * *" # 3 AM daily (seconds minutes hours day month weekday)
   dry_run: false
   batch_size: 100

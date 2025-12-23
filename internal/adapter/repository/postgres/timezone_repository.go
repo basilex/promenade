@@ -26,7 +26,7 @@ func NewTimezoneRepository(db *sqlx.DB) repository.TimezoneRepository {
 // Create creates a new timezone
 func (r *timezoneRepository) Create(ctx context.Context, timezone *entity.Timezone) error {
 	query := `
-		INSERT INTO timezones (id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active)
+		INSERT INTO core_timezones (id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING created_at, updated_at
 	`
@@ -47,7 +47,7 @@ func (r *timezoneRepository) Create(ctx context.Context, timezone *entity.Timezo
 func (r *timezoneRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Timezone, error) {
 	query := `
 		SELECT id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active, created_at, updated_at
-		FROM timezones
+		FROM core_timezones
 		WHERE id = $1
 	`
 
@@ -67,7 +67,7 @@ func (r *timezoneRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*enti
 func (r *timezoneRepository) GetByName(ctx context.Context, name string) (*entity.Timezone, error) {
 	query := `
 		SELECT id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active, created_at, updated_at
-		FROM timezones
+		FROM core_timezones
 		WHERE name = $1
 	`
 
@@ -87,7 +87,7 @@ func (r *timezoneRepository) GetByName(ctx context.Context, name string) (*entit
 func (r *timezoneRepository) List(ctx context.Context, params pagination.Params) ([]*entity.Timezone, *pagination.Metadata, error) {
 	// Get total count
 	var total int
-	countQuery := `SELECT COUNT(*) FROM timezones`
+	countQuery := `SELECT COUNT(*) FROM core_timezones`
 	executor := r.getExecutor(ctx)
 	if err := sqlx.GetContext(ctx, executor, &total, countQuery); err != nil {
 		return nil, nil, err
@@ -96,7 +96,7 @@ func (r *timezoneRepository) List(ctx context.Context, params pagination.Params)
 	// Get paginated timezones
 	query := `
 		SELECT id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active, created_at, updated_at
-		FROM timezones
+		FROM core_timezones
 		ORDER BY name ASC
 		LIMIT $1 OFFSET $2
 	`
@@ -116,7 +116,7 @@ func (r *timezoneRepository) List(ctx context.Context, params pagination.Params)
 func (r *timezoneRepository) ListActive(ctx context.Context) ([]*entity.Timezone, error) {
 	query := `
 		SELECT id, name, abbreviation, utc_offset, utc_dst_offset, description, is_active, created_at, updated_at
-		FROM timezones
+		FROM core_timezones
 		WHERE is_active = true
 		ORDER BY name ASC
 	`
@@ -133,7 +133,7 @@ func (r *timezoneRepository) ListActive(ctx context.Context) ([]*entity.Timezone
 // Update updates an existing timezone
 func (r *timezoneRepository) Update(ctx context.Context, timezone *entity.Timezone) error {
 	query := `
-		UPDATE timezones
+		UPDATE core_timezones
 		SET name = $2, abbreviation = $3, utc_offset = $4, utc_dst_offset = $5, description = $6, is_active = $7, updated_at = NOW()
 		WHERE id = $1
 		RETURNING updated_at
@@ -162,7 +162,7 @@ func (r *timezoneRepository) Update(ctx context.Context, timezone *entity.Timezo
 
 // Delete deletes a timezone by ID
 func (r *timezoneRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM timezones WHERE id = $1`
+	query := `DELETE FROM core_timezones WHERE id = $1`
 
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
@@ -184,7 +184,7 @@ func (r *timezoneRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 // Exists checks if a timezone exists by name
 func (r *timezoneRepository) Exists(ctx context.Context, name string) (bool, error) {
-	query := `SELECT EXISTS(SELECT 1 FROM timezones WHERE name = $1)`
+	query := `SELECT EXISTS(SELECT 1 FROM core_timezones WHERE name = $1)`
 
 	var exists bool
 	executor := r.getExecutor(ctx)

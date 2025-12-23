@@ -1,0 +1,30 @@
+module:
+  name: "analytics"
+  enabled: true
+  version: "1.0.0"
+  description: "Advanced analytics and reporting module"
+  license_required: false # Disabled for tests
+
+analytics:
+  metrics:
+    enabled: true
+    aggregation_interval: "5m"
+    retention_days: 7
+
+  reports:
+    max_per_user: 5
+    max_export_rows: 1000
+    allowed_formats:
+      - "json"
+      - "csv"
+
+  dashboards:
+    max_per_user: 3
+    max_widgets: 10
+
+license:
+  key: "TEST-LICENSE-KEY"
+  validation:
+    check_on_startup: false
+    check_on_request: false
+  grace_period_days: 0

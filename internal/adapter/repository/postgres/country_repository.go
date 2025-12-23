@@ -25,7 +25,7 @@ func NewCountryRepository(db *sqlx.DB) repository.CountryRepository {
 // Create creates a new country
 func (r *countryRepository) Create(ctx context.Context, country *entity.Country) error {
 	query := `
-		INSERT INTO countries (name, code, iso2, iso3, region)
+		INSERT INTO core_countries (name, code, iso2, iso3, region)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, created_at, updated_at
 	`
@@ -43,7 +43,7 @@ func (r *countryRepository) Create(ctx context.Context, country *entity.Country)
 func (r *countryRepository) GetByID(ctx context.Context, id uuidv7.UUID, withCurrencies bool) (*entity.Country, error) {
 	query := `
 		SELECT id, name, code, iso2, iso3, region, created_at, updated_at
-		FROM countries
+		FROM core_countries
 		WHERE id = $1
 	`
 
@@ -70,7 +70,7 @@ func (r *countryRepository) GetByID(ctx context.Context, id uuidv7.UUID, withCur
 func (r *countryRepository) GetByCode(ctx context.Context, code string, withCurrencies bool) (*entity.Country, error) {
 	query := `
 		SELECT id, name, code, iso2, iso3, region, created_at, updated_at
-		FROM countries
+		FROM core_countries
 		WHERE code = $1 OR iso2 = $1 OR iso3 = $1
 	`
 
@@ -97,7 +97,7 @@ func (r *countryRepository) GetByCode(ctx context.Context, code string, withCurr
 func (r *countryRepository) List(ctx context.Context, offset, limit int, withCurrencies bool) ([]entity.Country, int, error) {
 	// Get total count
 	var total int
-	countQuery := `SELECT COUNT(*) FROM countries`
+	countQuery := `SELECT COUNT(*) FROM core_countries`
 	if err := r.db.GetContext(ctx, &total, countQuery); err != nil {
 		return nil, 0, err
 	}
@@ -105,7 +105,7 @@ func (r *countryRepository) List(ctx context.Context, offset, limit int, withCur
 	// Get countries
 	query := `
 		SELECT id, name, code, iso2, iso3, region, created_at, updated_at
-		FROM countries
+		FROM core_countries
 		ORDER BY name ASC
 		LIMIT $1 OFFSET $2
 	`
@@ -132,7 +132,7 @@ func (r *countryRepository) List(ctx context.Context, offset, limit int, withCur
 func (r *countryRepository) ListByRegion(ctx context.Context, region string, offset, limit int, withCurrencies bool) ([]entity.Country, int, error) {
 	// Get total count for region
 	var total int
-	countQuery := `SELECT COUNT(*) FROM countries WHERE region = $1`
+	countQuery := `SELECT COUNT(*) FROM core_countries WHERE region = $1`
 	if err := r.db.GetContext(ctx, &total, countQuery, region); err != nil {
 		return nil, 0, err
 	}
@@ -140,7 +140,7 @@ func (r *countryRepository) ListByRegion(ctx context.Context, region string, off
 	// Get countries by region
 	query := `
 		SELECT id, name, code, iso2, iso3, region, created_at, updated_at
-		FROM countries
+		FROM core_countries
 		WHERE region = $1
 		ORDER BY name ASC
 		LIMIT $2 OFFSET $3
@@ -167,7 +167,7 @@ func (r *countryRepository) ListByRegion(ctx context.Context, region string, off
 // Update updates a country
 func (r *countryRepository) Update(ctx context.Context, country *entity.Country) error {
 	query := `
-		UPDATE countries
+		UPDATE core_countries
 		SET name = $1, code = $2, iso2 = $3, iso3 = $4, region = $5, updated_at = NOW()
 		WHERE id = $6
 		RETURNING updated_at
@@ -191,7 +191,7 @@ func (r *countryRepository) Update(ctx context.Context, country *entity.Country)
 
 // Delete deletes a country
 func (r *countryRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM countries WHERE id = $1`
+	query := `DELETE FROM core_countries WHERE id = $1`
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func (r *countryRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 // AddCurrency adds a currency to a country
 func (r *countryRepository) AddCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID, isPrimary bool) error {
 	query := `
-		INSERT INTO country_currencies (country_id, currency_id, is_primary)
+		INSERT INTO core_country_currencies (country_id, currency_id, is_primary)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (country_id, currency_id) DO UPDATE
 		SET is_primary = EXCLUDED.is_primary
@@ -224,7 +224,7 @@ func (r *countryRepository) AddCurrency(ctx context.Context, countryID, currency
 
 // RemoveCurrency removes a currency from a country
 func (r *countryRepository) RemoveCurrency(ctx context.Context, countryID, currencyID uuidv7.UUID) error {
-	query := `DELETE FROM country_currencies WHERE country_id = $1 AND currency_id = $2`
+	query := `DELETE FROM core_country_currencies WHERE country_id = $1 AND currency_id = $2`
 	result, err := r.db.ExecContext(ctx, query, countryID, currencyID)
 	if err != nil {
 		return err
@@ -246,8 +246,8 @@ func (r *countryRepository) RemoveCurrency(ctx context.Context, countryID, curre
 func (r *countryRepository) GetCurrencies(ctx context.Context, countryID uuidv7.UUID) ([]entity.Currency, error) {
 	query := `
 		SELECT c.id, c.name, c.code, c.symbol, c.created_at, c.updated_at
-		FROM currencies c
-		INNER JOIN country_currencies cc ON c.id = cc.currency_id
+		FROM core_currencies c
+		INNER JOIN core_country_currencies cc ON c.id = cc.currency_id
 		WHERE cc.country_id = $1
 		ORDER BY cc.is_primary DESC, c.name ASC
 	`

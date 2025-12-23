@@ -428,7 +428,7 @@ func TestRoleUseCase_DeleteRole_SystemRole(t *testing.T) {
 	uc, roleRepo, _ := setupRoleUseCase(t)
 	ctx := context.Background()
 
-	systemRole := createTestRole("superadmin", "Superadmin", true)
+	systemRole := createTestRole("admin", "Administrator", true)
 	roleRepo.On("GetByID", ctx, systemRole.ID).Return(systemRole, nil)
 
 	err := uc.DeleteRole(ctx, systemRole.ID)

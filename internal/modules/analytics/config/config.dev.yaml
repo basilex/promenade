@@ -1,0 +1,35 @@
+module:
+  name: "analytics"
+  enabled: true
+  version: "1.0.0"
+  description: "Advanced analytics and reporting module"
+  license_required: true
+
+analytics:
+  # Metrics collection
+  metrics:
+    enabled: true
+    aggregation_interval: "1h" # Aggregate metrics every hour
+    retention_days: 90 # Keep raw metrics for 90 days
+
+  # Reports
+  reports:
+    max_per_user: 10
+    max_export_rows: 10000
+    allowed_formats:
+      - "json"
+      - "csv"
+      - "pdf"
+
+  # Dashboards
+  dashboards:
+    max_per_user: 5
+    max_widgets: 20
+
+# License configuration
+license:
+  key: "" # Set via environment variable: ANALYTICS_LICENSE_KEY
+  validation:
+    check_on_startup: true
+    check_on_request: false # Set to true for per-request validation
+  grace_period_days: 7 # Allow 7 days after expiration

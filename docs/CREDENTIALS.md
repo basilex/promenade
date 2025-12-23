@@ -4,12 +4,12 @@ Quick reference for default users and access credentials with RBAC roles.
 
 ## Default Users
 
-### 1. System Administrator (Bootstrap User)
+### 1. System Administrator (Main Admin - Oracle Style)
 
 ```
 Email:    system@promenade.com
 Password: passw0rd
-Role:     superadmin
+Role:     admin
 Access:   *:* (full system access)
 ```
 
@@ -18,24 +18,9 @@ Access:   *:* (full system access)
 - System initialization and bootstrap
 - RBAC management (roles, permissions)
 - User management (ban, suspend, assign roles)
-- Testing superadmin-only endpoints
+- All administrative operations
 
-### 2. Super Administrator (Testing)
-
-```
-Email:    superadmin@promenade.com
-Password: passw0rd
-Role:     superadmin
-Access:   *:* (full system access)
-```
-
-**Use for:**
-
-- Testing superadmin workflows
-- RBAC system testing
-- Full access testing scenarios
-
-### 3. Administrator
+### 2. Administrator
 
 ```
 Email:    admin@promenade.com
@@ -101,15 +86,10 @@ Access:   posts:read, comments:read, profiles:read
 ## Quick Login Examples
 
 ```bash
-# Login as System Administrator (superadmin)
+# Login as System Administrator (admin with full access)
 curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"system@promenade.com","password":"passw0rd"}' | jq
-
-# Login as Super Administrator (superadmin)
-curl -X POST http://localhost:8081/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"superadmin@promenade.com","password":"passw0rd"}' | jq
 
 # Login as Administrator (admin)
 curl -X POST http://localhost:8081/api/v1/auth/login \
@@ -126,10 +106,10 @@ curl -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alexander.vasilenko@gmail.com","password":"03041965"}' | jq
 
-# Save token for reuse (superadmin)
+# Save token for reuse (system admin)
 export TOKEN=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"superadmin@promenade.com","password":"passw0rd"}' | jq -r '.data.access_token')
+  -d '{"email":"system@promenade.com","password":"passw0rd"}' | jq -r '.data.access_token')
 
 # Use token in requests
 curl -X GET http://localhost:8081/api/v1/auth/me \
@@ -139,9 +119,9 @@ curl -X GET http://localhost:8081/api/v1/auth/me \
 ## Testing RBAC Permissions
 
 ```bash
-# Test superadmin access (should work - full access)
+# Test system admin access (should work - full access)
 curl -X GET http://localhost:8081/api/v1/admin/users \
-  -H "Authorization: Bearer $SUPERADMIN_TOKEN" | jq
+  -H "Authorization: Bearer $SYSTEM_TOKEN" | jq
 
 # Test admin access (should work - has users:*)
 curl -X GET http://localhost:8081/api/v1/admin/users \

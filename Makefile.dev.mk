@@ -21,7 +21,7 @@ dev: ## Run in development mode
 	@echo "Creating database if not exists..."
 	@docker exec promenade_postgres psql -U system -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$(DB_NAME)'" | grep -q 1 || \
 		docker exec promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);"
-	@make migrate-up
+	@make migrate
 	@echo "Starting application..."
 	go run cmd/api/*.go
 

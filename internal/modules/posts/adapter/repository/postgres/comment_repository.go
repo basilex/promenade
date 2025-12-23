@@ -24,7 +24,7 @@ func NewCommentRepository(db *sqlx.DB) repository.CommentRepository {
 
 func (r *commentRepository) Create(ctx context.Context, comment *entity.Comment) error {
 	query := `
-		INSERT INTO post_comments (
+		INSERT INTO posts_comments (
 			id, post_id, user_id, parent_id, content, depth, path,
 			created_at, updated_at, likes_count, replies_count
 		) VALUES (
@@ -54,7 +54,7 @@ func (r *commentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entit
 		SELECT 
 			id, post_id, user_id, parent_id, content, depth, path,
 			created_at, updated_at, deleted_at, likes_count, replies_count
-		FROM post_comments
+		FROM posts_comments
 		WHERE id = $1 AND deleted_at IS NULL
 	`
 
@@ -72,7 +72,7 @@ func (r *commentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entit
 
 func (r *commentRepository) Update(ctx context.Context, comment *entity.Comment) error {
 	query := `
-		UPDATE post_comments
+		UPDATE posts_comments
 		SET content = $1, updated_at = $2
 		WHERE id = $3 AND deleted_at IS NULL
 	`
@@ -99,7 +99,7 @@ func (r *commentRepository) Update(ctx context.Context, comment *entity.Comment)
 
 func (r *commentRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE post_comments
+		UPDATE posts_comments
 		SET deleted_at = NOW(), updated_at = NOW()
 		WHERE id = $1 AND deleted_at IS NULL
 	`
@@ -123,7 +123,7 @@ func (r *commentRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 func (r *commentRepository) GetPostComments(ctx context.Context, postID uuidv7.UUID, limit, offset int) ([]*entity.Comment, *pagination.Metadata, error) {
 	// Count total
 	var total int64
-	countQuery := `SELECT COUNT(*) FROM post_comments WHERE post_id = $1 AND deleted_at IS NULL AND parent_id IS NULL`
+	countQuery := `SELECT COUNT(*) FROM posts_comments WHERE post_id = $1 AND deleted_at IS NULL AND parent_id IS NULL`
 	if err := r.db.GetContext(ctx, &total, countQuery, postID); err != nil {
 		return nil, nil, err
 	}
@@ -133,7 +133,7 @@ func (r *commentRepository) GetPostComments(ctx context.Context, postID uuidv7.U
 		SELECT 
 			id, post_id, user_id, parent_id, content, depth, path,
 			created_at, updated_at, deleted_at, likes_count, replies_count
-		FROM post_comments
+		FROM posts_comments
 		WHERE post_id = $1 AND deleted_at IS NULL AND parent_id IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3
@@ -151,7 +151,7 @@ func (r *commentRepository) GetPostComments(ctx context.Context, postID uuidv7.U
 func (r *commentRepository) GetReplies(ctx context.Context, parentID uuidv7.UUID, limit, offset int) ([]*entity.Comment, *pagination.Metadata, error) {
 	// Count total
 	var total int64
-	countQuery := `SELECT COUNT(*) FROM post_comments WHERE parent_id = $1 AND deleted_at IS NULL`
+	countQuery := `SELECT COUNT(*) FROM posts_comments WHERE parent_id = $1 AND deleted_at IS NULL`
 	if err := r.db.GetContext(ctx, &total, countQuery, parentID); err != nil {
 		return nil, nil, err
 	}
@@ -161,7 +161,7 @@ func (r *commentRepository) GetReplies(ctx context.Context, parentID uuidv7.UUID
 		SELECT 
 			id, post_id, user_id, parent_id, content, depth, path,
 			created_at, updated_at, deleted_at, likes_count, replies_count
-		FROM post_comments
+		FROM posts_comments
 		WHERE parent_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at ASC
 		LIMIT $2 OFFSET $3
@@ -179,7 +179,7 @@ func (r *commentRepository) GetReplies(ctx context.Context, parentID uuidv7.UUID
 func (r *commentRepository) GetUserComments(ctx context.Context, userID uuidv7.UUID, limit, offset int) ([]*entity.Comment, *pagination.Metadata, error) {
 	// Count total
 	var total int64
-	countQuery := `SELECT COUNT(*) FROM post_comments WHERE user_id = $1 AND deleted_at IS NULL`
+	countQuery := `SELECT COUNT(*) FROM posts_comments WHERE user_id = $1 AND deleted_at IS NULL`
 	if err := r.db.GetContext(ctx, &total, countQuery, userID); err != nil {
 		return nil, nil, err
 	}
@@ -189,7 +189,7 @@ func (r *commentRepository) GetUserComments(ctx context.Context, userID uuidv7.U
 		SELECT 
 			id, post_id, user_id, parent_id, content, depth, path,
 			created_at, updated_at, deleted_at, likes_count, replies_count
-		FROM post_comments
+		FROM posts_comments
 		WHERE user_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3
@@ -206,19 +206,19 @@ func (r *commentRepository) GetUserComments(ctx context.Context, userID uuidv7.U
 
 func (r *commentRepository) CountPostComments(ctx context.Context, postID uuidv7.UUID) (int, error) {
 	var count int
-	query := `SELECT COUNT(*) FROM post_comments WHERE post_id = $1 AND deleted_at IS NULL`
+	query := `SELECT COUNT(*) FROM posts_comments WHERE post_id = $1 AND deleted_at IS NULL`
 	err := r.db.GetContext(ctx, &count, query, postID)
 	return count, err
 }
 
 func (r *commentRepository) IncrementRepliesCount(ctx context.Context, parentID uuidv7.UUID) error {
-	query := `UPDATE post_comments SET replies_count = replies_count + 1 WHERE id = $1`
+	query := `UPDATE posts_comments SET replies_count = replies_count + 1 WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, parentID)
 	return err
 }
 
 func (r *commentRepository) DecrementRepliesCount(ctx context.Context, parentID uuidv7.UUID) error {
-	query := `UPDATE post_comments SET replies_count = GREATEST(replies_count - 1, 0) WHERE id = $1`
+	query := `UPDATE posts_comments SET replies_count = GREATEST(replies_count - 1, 0) WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, parentID)
 	return err
 }

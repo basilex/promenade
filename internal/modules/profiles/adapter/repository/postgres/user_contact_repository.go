@@ -28,7 +28,7 @@ func (r *UserContactRepository) Create(ctx context.Context, contact *entity.User
 	contact.ID = uuidv7.New()
 
 	query := `
-		INSERT INTO user_contacts (
+		INSERT INTO profiles_contacts (
 			id, user_id, contact_type, contact_value, label,
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes
@@ -66,7 +66,7 @@ func (r *UserContactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*e
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes,
 			created_at, updated_at
-		FROM user_contacts
+		FROM profiles_contacts
 		WHERE id = $1`
 
 	err := r.Get(ctx, &contact, query, id)
@@ -88,7 +88,7 @@ func (r *UserContactRepository) GetUserContacts(ctx context.Context, userID uuid
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes,
 			created_at, updated_at
-		FROM user_contacts
+		FROM profiles_contacts
 		WHERE user_id = $1`
 
 	if !includeInactive {
@@ -113,7 +113,7 @@ func (r *UserContactRepository) GetUserContactsByType(ctx context.Context, userI
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes,
 			created_at, updated_at
-		FROM user_contacts
+		FROM profiles_contacts
 		WHERE user_id = $1 AND contact_type = $2 AND is_active = true
 		ORDER BY is_primary DESC, created_at DESC`
 
@@ -133,7 +133,7 @@ func (r *UserContactRepository) GetPrimaryContact(ctx context.Context, userID uu
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes,
 			created_at, updated_at
-		FROM user_contacts
+		FROM profiles_contacts
 		WHERE user_id = $1 AND contact_type = $2 AND is_primary = true AND is_active = true
 		LIMIT 1`
 
@@ -156,7 +156,7 @@ func (r *UserContactRepository) GetPublicContacts(ctx context.Context, userID uu
 			is_verified, is_primary, is_active, is_public,
 			available_from, available_to, available_days, timezone, notes,
 			created_at, updated_at
-		FROM user_contacts
+		FROM profiles_contacts
 		WHERE user_id = $1 AND is_public = true AND is_active = true
 		ORDER BY is_primary DESC, contact_type, created_at DESC`
 
@@ -171,7 +171,7 @@ func (r *UserContactRepository) GetPublicContacts(ctx context.Context, userID uu
 // Update updates an existing contact
 func (r *UserContactRepository) Update(ctx context.Context, contact *entity.UserContact) error {
 	query := `
-		UPDATE user_contacts SET
+		UPDATE profiles_contacts SET
 			contact_type = $2,
 			contact_value = $3,
 			label = $4,
@@ -208,7 +208,7 @@ func (r *UserContactRepository) Update(ctx context.Context, contact *entity.User
 
 // Delete deletes a contact
 func (r *UserContactRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM user_contacts WHERE id = $1`
+	query := `DELETE FROM profiles_contacts WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
@@ -229,7 +229,7 @@ func (r *UserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UU
 
 	// Unset all primary flags for this user and contact type
 	query := `
-		UPDATE user_contacts 
+		UPDATE profiles_contacts 
 		SET is_primary = false 
 		WHERE user_id = $1 AND contact_type = $2`
 
@@ -240,7 +240,7 @@ func (r *UserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UU
 
 	// Set the specified contact as primary
 	query = `
-		UPDATE user_contacts 
+		UPDATE profiles_contacts 
 		SET is_primary = true, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1`
 
@@ -264,7 +264,7 @@ func (r *UserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UU
 // VerifyContact marks a contact as verified
 func (r *UserContactRepository) VerifyContact(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE user_contacts 
+		UPDATE profiles_contacts 
 		SET is_verified = true, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1`
 

@@ -253,7 +253,7 @@ migrate-status:
 
 ### 7. Migration Reorganization
 
-**Current (flat):**
+**Current (flat - OUTDATED, use namespaced instead):**
 
 ```
 migrations/
@@ -270,29 +270,29 @@ migrations/
 └── 000015_create_languages_table.up.sql   # core
 ```
 
-**New (namespaced):**
+**New (namespaced with descriptive names):**
 
 ```
 migrations/
 ├── core/
-│   ├── 000001_init_schema_deps.up.sql
-│   ├── 000001_init_schema_deps.down.sql
-│   ├── 000002_create_auth_schema.up.sql
-│   ├── 000002_create_auth_schema.down.sql
-│   ├── 000003_create_countries_currencies.up.sql
-│   ├── 000003_create_countries_currencies.down.sql
-│   ├── 000004_create_rbac_tables.up.sql      # was 000009
-│   ├── 000004_create_rbac_tables.down.sql
-│   ├── 000005_create_timezones_table.up.sql  # was 000014
-│   ├── 000005_create_timezones_table.down.sql
-│   ├── 000006_create_languages_table.up.sql  # was 000015
-│   └── 000006_create_languages_table.down.sql
+│   ├── 000001_core_init_uuid_v7.up.sql
+│   ├── 000001_core_init_uuid_v7.down.sql
+│   ├── 000002_core_auth_full.up.sql
+│   ├── 000002_core_auth_full.down.sql
+│   ├── 000003_core_rbac_full.up.sql            # was 000009
+│   ├── 000003_core_rbac_full.down.sql
+│   ├── 000004_core_ref_timezones.up.sql        # was 000014
+│   ├── 000004_core_ref_timezones.down.sql
+│   ├── 000005_core_ref_languages.up.sql        # was 000015
+│   ├── 000005_core_ref_languages.down.sql
+│   ├── 000006_core_ref_countries_currencies.up.sql  # was 000003
+│   └── 000006_core_ref_countries_currencies.down.sql
 │
 ├── posts/
-│   ├── 000001_create_user_posts.up.sql       # was 000006
-│   ├── 000001_create_user_posts.down.sql
-│   ├── 000002_create_post_comments.up.sql    # was 000007
-│   ├── 000002_create_post_comments.down.sql
+│   ├── 000001_posts_posts.up.sql               # was 000006_create_user_posts
+│   ├── 000001_posts_posts.down.sql
+│   ├── 000002_posts_comments.up.sql            # was 000007_create_post_comments
+│   ├── 000002_posts_comments.down.sql
 │   ├── 000003_create_comment_likes.up.sql    # was 000008
 │   └── 000003_create_comment_likes.down.sql
 │
@@ -307,25 +307,25 @@ migrations/
 
 ### 8. Benefits
 
- **Module Independence**
+**Module Independence**
 
 - Each module owns its migrations
 - Enable/disable modules without migration conflicts
 - Clear ownership boundaries
 
- **Version Control**
+  **Version Control**
 
 - Each namespace has independent versioning
 - No global numbering conflicts
 - Easy to understand what version a module is at
 
- **Flexible Deployment**
+  **Flexible Deployment**
 
 - Deploy with only needed modules
 - Add new modules without touching existing migrations
 - Roll back module migrations independently
 
- **Developer Experience**
+  **Developer Experience**
 
 - Clear where to put new migrations
 - No guessing next global number

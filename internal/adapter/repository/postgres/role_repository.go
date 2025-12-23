@@ -25,7 +25,7 @@ func NewRoleRepository(db *sqlx.DB) *roleRepository {
 
 func (r *roleRepository) Create(ctx context.Context, role *entity.Role) error {
 	query := `
-		INSERT INTO roles (id, name, display_name, description, is_system, created_at, updated_at)
+		INSERT INTO core_roles (id, name, display_name, description, is_system, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	executor := r.getExecutor(ctx)
@@ -47,7 +47,7 @@ func (r *roleRepository) Create(ctx context.Context, role *entity.Role) error {
 func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Role, error) {
 	query := `
 		SELECT id, name, display_name, description, is_system, created_at, updated_at
-		FROM roles
+		FROM core_roles
 		WHERE id = $1
 	`
 	var role entity.Role
@@ -64,7 +64,7 @@ func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.R
 func (r *roleRepository) GetByName(ctx context.Context, name string) (*entity.Role, error) {
 	query := `
 		SELECT id, name, display_name, description, is_system, created_at, updated_at
-		FROM roles
+		FROM core_roles
 		WHERE name = $1
 	`
 	var role entity.Role
@@ -81,7 +81,7 @@ func (r *roleRepository) GetByName(ctx context.Context, name string) (*entity.Ro
 func (r *roleRepository) List(ctx context.Context) ([]*entity.Role, error) {
 	query := `
 		SELECT id, name, display_name, description, is_system, created_at, updated_at
-		FROM roles
+		FROM core_roles
 		ORDER BY name
 	`
 	var roles []*entity.Role
@@ -94,7 +94,7 @@ func (r *roleRepository) List(ctx context.Context) ([]*entity.Role, error) {
 
 func (r *roleRepository) Update(ctx context.Context, role *entity.Role) error {
 	query := `
-		UPDATE roles
+		UPDATE core_roles
 		SET name = $2, display_name = $3, description = $4, updated_at = $5
 		WHERE id = $1
 	`
@@ -122,7 +122,7 @@ func (r *roleRepository) Update(ctx context.Context, role *entity.Role) error {
 }
 
 func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM roles WHERE id = $1 AND is_system = FALSE`
+	query := `DELETE FROM core_roles WHERE id = $1 AND is_system = FALSE`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -142,7 +142,7 @@ func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 func (r *roleRepository) AddPermission(ctx context.Context, roleID, permissionID uuidv7.UUID) error {
 	query := `
-		INSERT INTO role_permissions (role_id, permission_id)
+		INSERT INTO core_role_permissions (role_id, permission_id)
 		VALUES ($1, $2)
 		ON CONFLICT (role_id, permission_id) DO NOTHING
 	`
@@ -154,7 +154,7 @@ func (r *roleRepository) AddPermission(ctx context.Context, roleID, permissionID
 }
 
 func (r *roleRepository) RemovePermission(ctx context.Context, roleID, permissionID uuidv7.UUID) error {
-	query := `DELETE FROM role_permissions WHERE role_id = $1 AND permission_id = $2`
+	query := `DELETE FROM core_role_permissions WHERE role_id = $1 AND permission_id = $2`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, roleID, permissionID)
 	if err != nil {
@@ -175,8 +175,8 @@ func (r *roleRepository) RemovePermission(ctx context.Context, roleID, permissio
 func (r *roleRepository) GetPermissions(ctx context.Context, roleID uuidv7.UUID) ([]*entity.Permission, error) {
 	query := `
 		SELECT p.id, p.resource, p.action, p.description, p.created_at
-		FROM permissions p
-		INNER JOIN role_permissions rp ON p.id = rp.permission_id
+		FROM core_permissions p
+		INNER JOIN core_role_permissions rp ON p.id = rp.permission_id
 		WHERE rp.role_id = $1
 		ORDER BY p.resource, p.action
 	`
@@ -190,7 +190,7 @@ func (r *roleRepository) GetPermissions(ctx context.Context, roleID uuidv7.UUID)
 
 func (r *roleRepository) SyncPermissions(ctx context.Context, roleID uuidv7.UUID, permissionIDs []uuidv7.UUID) error {
 	// Delete all existing permissions
-	deleteQuery := `DELETE FROM role_permissions WHERE role_id = $1`
+	deleteQuery := `DELETE FROM core_role_permissions WHERE role_id = $1`
 	err := r.Exec(ctx, deleteQuery, roleID)
 	if err != nil {
 		return fmt.Errorf("failed to delete existing permissions: %w", err)
@@ -199,7 +199,7 @@ func (r *roleRepository) SyncPermissions(ctx context.Context, roleID uuidv7.UUID
 	// Insert new permissions
 	if len(permissionIDs) > 0 {
 		insertQuery := `
-			INSERT INTO role_permissions (role_id, permission_id)
+			INSERT INTO core_role_permissions (role_id, permission_id)
 			VALUES ($1, unnest($2::uuid[]))
 		`
 		err = r.Exec(ctx, insertQuery, roleID, pq.Array(permissionIDs))
@@ -213,7 +213,7 @@ func (r *roleRepository) SyncPermissions(ctx context.Context, roleID uuidv7.UUID
 
 func (r *roleRepository) AssignToUser(ctx context.Context, userRole *entity.UserRole) error {
 	query := `
-		INSERT INTO user_roles (user_id, role_id, assigned_at, assigned_by, expires_at)
+		INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by, expires_at)
 		VALUES ($1, $2, $3, $4, $5)
 		ON CONFLICT (user_id, role_id) DO UPDATE
 		SET assigned_at = EXCLUDED.assigned_at,
@@ -235,7 +235,7 @@ func (r *roleRepository) AssignToUser(ctx context.Context, userRole *entity.User
 }
 
 func (r *roleRepository) RemoveFromUser(ctx context.Context, userID, roleID uuidv7.UUID) error {
-	query := `DELETE FROM user_roles WHERE user_id = $1 AND role_id = $2`
+	query := `DELETE FROM core_user_roles WHERE user_id = $1 AND role_id = $2`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, userID, roleID)
 	if err != nil {
@@ -256,8 +256,8 @@ func (r *roleRepository) RemoveFromUser(ctx context.Context, userID, roleID uuid
 func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*entity.Role, error) {
 	query := `
 		SELECT r.id, r.name, r.display_name, r.description, r.is_system, r.created_at, r.updated_at
-		FROM roles r
-		INNER JOIN user_roles ur ON r.id = ur.role_id
+		FROM core_roles r
+		INNER JOIN core_user_roles ur ON r.id = ur.role_id
 		WHERE ur.user_id = $1
 		ORDER BY r.name
 	`
@@ -272,8 +272,8 @@ func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) (
 func (r *roleRepository) GetUserActiveRoles(ctx context.Context, userID uuidv7.UUID) ([]*entity.Role, error) {
 	query := `
 		SELECT r.id, r.name, r.display_name, r.description, r.is_system, r.created_at, r.updated_at
-		FROM roles r
-		INNER JOIN user_roles ur ON r.id = ur.role_id
+		FROM core_roles r
+		INNER JOIN core_user_roles ur ON r.id = ur.role_id
 		WHERE ur.user_id = $1
 		  AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
 		ORDER BY r.name
@@ -289,7 +289,7 @@ func (r *roleRepository) GetUserActiveRoles(ctx context.Context, userID uuidv7.U
 func (r *roleRepository) GetUsersWithRole(ctx context.Context, roleID uuidv7.UUID) ([]uuidv7.UUID, error) {
 	query := `
 		SELECT user_id
-		FROM user_roles
+		FROM core_user_roles
 		WHERE role_id = $1
 		ORDER BY assigned_at DESC
 	`
@@ -307,7 +307,7 @@ func (r *roleRepository) CreateMany(ctx context.Context, roles []*entity.Role) e
 	}
 
 	query := `
-		INSERT INTO roles (id, name, display_name, description, is_system, created_at, updated_at)
+		INSERT INTO core_roles (id, name, display_name, description, is_system, created_at, updated_at)
 		VALUES (:id, :name, :display_name, :description, :is_system, :created_at, :updated_at)
 	`
 	err := r.NamedExec(ctx, query, roles)

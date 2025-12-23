@@ -1,6 +1,6 @@
 # Migration System Summary
 
-## Problem Solved 
+## Problem Solved
 
 **Old System:**
 
@@ -183,25 +183,25 @@ func (m *PostsModule) RegisterMigrations() []Migration {
 
 ## Benefits
 
- **Module Independence**
+**Module Independence**
 
 - Each module owns its migrations
 - Enable/disable modules without conflicts
 - Clear ownership boundaries
 
- **Version Control**
+  **Version Control**
 
 - Independent versioning per namespace
 - No global numbering conflicts
 - Easy version tracking
 
- **Flexible Deployment**
+  **Flexible Deployment**
 
 - Deploy with only needed modules
 - Add new modules without touching existing migrations
 - Roll back module migrations independently
 
- **Developer Experience**
+  **Developer Experience**
 
 - Clear where to put migrations
 - Auto-incrementing version numbers
@@ -219,20 +219,21 @@ func (m *PostsModule) RegisterMigrations() []Migration {
    mkdir -p migrations/{core,posts,profiles}
    ```
 
-2. Move existing migrations to namespaces:
+2. Move existing migrations to namespaces and rename with descriptive names:
 
    ```bash
-   # Core migrations
-   mv migrations/000001_init_schema_deps.* migrations/core/
-   mv migrations/000002_create_auth_schema.* migrations/core/
+   # Core migrations (with new descriptive names)
+   mv migrations/000001_init_schema_deps.* migrations/core/000001_core_init_uuid_v7.*
+   mv migrations/000002_create_auth_schema.* migrations/core/000002_core_auth_full.*
+   mv migrations/000009_create_rbac_tables.* migrations/core/000003_core_rbac_full.*
    # etc.
 
-   # Posts module migrations
-   mv migrations/000006_create_user_posts.* migrations/posts/000001_create_user_posts.*
-   mv migrations/000007_create_post_comments.* migrations/posts/000002_create_post_comments.*
+   # Posts module migrations (with module prefix)
+   mv migrations/000006_create_user_posts.* migrations/posts/000001_posts_posts.*
+   mv migrations/000007_create_post_comments.* migrations/posts/000002_posts_comments.*
    # etc.
 
-   # Profiles module migrations
+   # Profiles module migrations (with module prefix)
    mv migrations/000004_create_user_contacts.* migrations/profiles/000001_create_user_contacts.*
    # etc.
    ```
@@ -376,7 +377,7 @@ A: Move that table to core, or use events for inter-module communication.
 
 ---
 
-**Status:**  Implemented and ready for use
+**Status:** Implemented and ready for use
 
 **Documentation:**
 

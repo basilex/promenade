@@ -23,11 +23,12 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module    | Entities                         | Description            |
-| --------- | -------------------------------- | ---------------------- |
-| Posts     | posts, comments, likes           | User-generated content |
-| Profiles  | contacts, profiles               | User profiles          |
-| Warehouse | products, inventory (commercial) | Commercial module      |
+| Module        | Entities                         | Description                       | Status         |
+| ------------- | -------------------------------- | --------------------------------- | -------------- |
+| Posts         | posts, comments, likes           | User-generated content            | Free           |
+| Profiles      | contacts, profiles               | User profiles                     | Free           |
+| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | **Commercial** |
+| Warehouse     | products, inventory              | Commercial inventory management   | Commercial     |
 
 Each module is self-contained with:
 
@@ -163,7 +164,7 @@ Server starts on **http://localhost:8081**
 | Document                                                             | Description                                |
 | -------------------------------------------------------------------- | ------------------------------------------ |
 | **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**   | Makefile system (dev, test, prod commands) |
-| **[test/README.md](test/README.md)**                                 | Testing infrastructure (120+ tests)        |
+| **[test/README.md](test/README.md)**                                 | Testing infrastructure (200+ tests)        |
 | **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**                   | Testing best practices, patterns           |
 | **[docs/TESTING_INFRASTRUCTURE.md](docs/TESTING_INFRASTRUCTURE.md)** | Test infrastructure setup                  |
 
@@ -173,7 +174,7 @@ Server starts on **http://localhost:8081**
 | -------------------------------------------------- | ------------------------------------------------ |
 | **[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)** | UUID v7 implementation and benefits              |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**     | Soft delete pattern for user content             |
-| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | RBAC system (5 roles, wildcard permissions)      |
+| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | RBAC system (4 roles, wildcard permissions)      |
 | **[docs/LOGGING.md](docs/LOGGING.md)**             | Structured logging with slog                     |
 | **[docs/VALIDATION.md](docs/VALIDATION.md)**       | Request validation patterns                      |
 | **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**     | Default test users and credentials               |
@@ -257,19 +258,19 @@ Each namespace maintains **independent version history**:
 ```
 migrations/
 ├── core/               # Core infrastructure (always runs first)
-│   ├── 000001_init_schema_deps.up.sql
-│   ├── 000002_create_auth_schema.up.sql
-│   ├── 000003_create_rbac_tables.up.sql
-│   ├── 000004_create_timezones_table.up.sql
-│   ├── 000005_create_languages_table.up.sql
-│   └── 000006_create_countries_currencies.up.sql
+│   ├── 000001_core_init_uuid_v7.up.sql
+│   ├── 000002_core_auth_full.up.sql
+│   ├── 000003_core_rbac_full.up.sql
+│   ├── 000004_core_ref_timezones.up.sql
+│   ├── 000005_core_ref_languages.up.sql
+│   └── 000006_core_ref_countries_currencies.up.sql
 ├── posts/              # Posts module migrations
-│   ├── 000001_create_user_posts.up.sql
-│   ├── 000002_create_post_comments.up.sql
-│   └── 000003_create_comment_likes_table.up.sql
+│   ├── 000001_posts_posts.up.sql
+│   ├── 000002_posts_comments.up.sql
+│   └── 000003_posts_comment_likes.up.sql
 └── profiles/           # Profiles module migrations
-    ├── 000001_create_user_contacts.up.sql
-    └── 000002_create_user_profiles.up.sql
+    ├── 000001_profiles_contacts.up.sql
+    └── 000002_profiles_profiles.up.sql
 ```
 
 ### Migration Commands
@@ -303,18 +304,18 @@ make migrate-create-core NAME=add_audit_log
 
 ### Default Test Users
 
-| Email                           | Password   | Role       | Permissions             |
-| ------------------------------- | ---------- | ---------- | ----------------------- |
-| `system@promenade.com`          | `passw0rd` | Superadmin | Full access (`*`)       |
-| `admin@promenade.com`           | `passw0rd` | Admin      | User/content management |
-| `moderator@promenade.com`       | `passw0rd` | Moderator  | Content moderation      |
-| `alexander.vasilenko@gmail.com` | `03041965` | User       | Basic operations        |
+| Email                           | Password   | Role      | Permissions             |
+| ------------------------------- | ---------- | --------- | ----------------------- |
+| `system@promenade.com`          | `passw0rd` | Admin     | Full access (`*`)       |
+| `admin@promenade.com`           | `passw0rd` | Admin     | User/content management |
+| `moderator@promenade.com`       | `passw0rd` | Moderator | Content moderation      |
+| `alexander.vasilenko@gmail.com` | `03041965` | User      | Basic operations        |
 
 **Change passwords before production deployment!**
 
 ### RBAC System
 
-- **5 System Roles**: Superadmin, Admin, Moderator, Content Creator, User
+- **4 System Roles**: Admin, Moderator, User, Guest
 - **Wildcard Permissions**: `posts:*` (all post actions), `*` (full access)
 - **Resource-Action Format**: `posts:create`, `users:delete`, `comments:moderate`
 
@@ -324,16 +325,17 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**120+ tests** across all layers (100% passing, < 1 minute):
+**200+ tests** across all layers (100% passing, < 15 seconds):
 
 ```bash
-# Run all tests (unit + integration)
+# Run all tests (core + modules)
 make test
 
 # Run by category
-make test-unit          # Domain + use case tests
-make test-integration   # Database integration tests
-make test-smoke         # End-to-end critical flows
+make test-core          # Core domain + use case tests
+make test-modules       # All module tests
+make test-module-posts  # Posts module only
+make test-module-profiles # Profiles module only
 
 # Coverage report
 make test-coverage
@@ -341,9 +343,10 @@ make test-coverage
 
 ### Test Structure
 
-- **Unit**: Domain entities, business logic, validation
-- **Integration**: 109 DB tests + 7 event bus tests (Memory + Redis)
-- **Smoke**: End-to-end authentication flows
+- **Core Tests**: Domain entities (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
+- **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge operations
+- **Module Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender)
+- **Test Helpers**: `test/helpers/` for fixtures, database setup, transaction management
 
 Test helpers in `test/helpers/` for fixtures, database setup, and transaction management.
 

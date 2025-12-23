@@ -6,6 +6,7 @@ modules:
   enabled:
     - posts # User-generated content: posts + comments + likes
     - profiles # User profiles + contacts (merged into one module)
+    - analytics # Advanced analytics & reporting (Commercial - requires license)
 
   # Per-module configuration
   config:
@@ -23,10 +24,14 @@ modules:
       settings:
         allow_public_profiles: true
 
-    contacts:
+    analytics:
       version: "1.0.0"
+      description: "Advanced analytics, metrics, reports, and dashboards"
+      license_key: "" # Set via ANALYTICS_LICENSE_KEY environment variable
       settings:
-        max_contacts: 1000
+        metrics_retention_days: 90
+        max_reports_per_user: 10
+        max_dashboards_per_user: 5
 # Future commercial modules (example):
 #
 #   warehouse:

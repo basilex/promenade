@@ -50,7 +50,7 @@ func (r *userPostRepository) Create(ctx context.Context, post *entity.UserPost) 
 	metaKeywords := pq.Array(post.MetaKeywords)
 
 	query := `
-		INSERT INTO user_posts (
+		INSERT INTO posts_posts (
 			id, user_id, title, slug, excerpt, content,
 			featured_image, status, is_public, is_featured, is_comments_enabled,
 			published_at, scheduled_at, tags, categories,
@@ -99,7 +99,7 @@ func (r *userPostRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*enti
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE id = $1 AND deleted_at IS NULL
 	`
 
@@ -115,7 +115,7 @@ func (r *userPostRepository) GetBySlug(ctx context.Context, userID uuidv7.UUID, 
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE user_id = $1 AND slug = $2 AND deleted_at IS NULL
 	`
 
@@ -152,7 +152,7 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 	}
 
 	query := `
-		UPDATE user_posts SET
+		UPDATE posts_posts SET
 			title = $1, slug = $2, excerpt = $3, content = $4,
 			featured_image = $5, status = $6, is_public = $7, is_featured = $8, is_comments_enabled = $9,
 			published_at = $10, scheduled_at = $11, tags = $12, categories = $13,
@@ -182,7 +182,7 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 }
 
 func (r *userPostRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM user_posts WHERE id = $1`
+	query := `DELETE FROM posts_posts WHERE id = $1`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -198,7 +198,7 @@ func (r *userPostRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 func (r *userPostRepository) SoftDelete(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL`
+	query := `UPDATE posts_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -214,7 +214,7 @@ func (r *userPostRepository) SoftDelete(ctx context.Context, id uuidv7.UUID) err
 }
 
 func (r *userPostRepository) Restore(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET deleted_at = NULL, updated_at = NOW() WHERE id = $1 AND deleted_at IS NOT NULL`
+	query := `UPDATE posts_posts SET deleted_at = NULL, updated_at = NOW() WHERE id = $1 AND deleted_at IS NOT NULL`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -238,7 +238,7 @@ func (r *userPostRepository) GetUserPosts(ctx context.Context, userID uuidv7.UUI
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE user_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3
@@ -256,7 +256,7 @@ func (r *userPostRepository) GetPublishedPosts(ctx context.Context, limit, offse
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE status = 'published' AND is_public = true AND deleted_at IS NULL
 		ORDER BY published_at DESC
 		LIMIT $1 OFFSET $2
@@ -274,7 +274,7 @@ func (r *userPostRepository) GetFeaturedPosts(ctx context.Context, limit int) ([
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE is_featured = true AND status = 'published' AND is_public = true AND deleted_at IS NULL
 		ORDER BY published_at DESC
 		LIMIT $1
@@ -292,7 +292,7 @@ func (r *userPostRepository) Search(ctx context.Context, query string, limit, of
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE (
 			title ILIKE $1 OR 
 			content ILIKE $1 OR 
@@ -315,7 +315,7 @@ func (r *userPostRepository) GetByTag(ctx context.Context, tag string, limit, of
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE tags @> $1::jsonb AND status = 'published' AND is_public = true AND deleted_at IS NULL
 		ORDER BY published_at DESC
 		LIMIT $2 OFFSET $3
@@ -334,7 +334,7 @@ func (r *userPostRepository) GetScheduledPosts(ctx context.Context) ([]*entity.U
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		WHERE status = 'scheduled' AND scheduled_at <= NOW() AND deleted_at IS NULL
 		ORDER BY scheduled_at ASC
 	`
@@ -343,43 +343,43 @@ func (r *userPostRepository) GetScheduledPosts(ctx context.Context) ([]*entity.U
 }
 
 func (r *userPostRepository) IncrementViews(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET view_count = view_count + 1 WHERE id = $1`
+	query := `UPDATE posts_posts SET view_count = view_count + 1 WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) IncrementLikes(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET like_count = like_count + 1, updated_at = NOW() WHERE id = $1`
+	query := `UPDATE posts_posts SET like_count = like_count + 1, updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) DecrementLikes(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET like_count = GREATEST(like_count - 1, 0), updated_at = NOW() WHERE id = $1`
+	query := `UPDATE posts_posts SET like_count = GREATEST(like_count - 1, 0), updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) IncrementComments(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET comment_count = comment_count + 1, updated_at = NOW() WHERE id = $1`
+	query := `UPDATE posts_posts SET comment_count = comment_count + 1, updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) DecrementComments(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET comment_count = GREATEST(comment_count - 1, 0), updated_at = NOW() WHERE id = $1`
+	query := `UPDATE posts_posts SET comment_count = GREATEST(comment_count - 1, 0), updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) IncrementShares(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE user_posts SET share_count = share_count + 1, updated_at = NOW() WHERE id = $1`
+	query := `UPDATE posts_posts SET share_count = share_count + 1, updated_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 func (r *userPostRepository) UpdateStatus(ctx context.Context, id uuidv7.UUID, status entity.PostStatus) error {
-	query := `UPDATE user_posts SET status = $1, updated_at = NOW() WHERE id = $2`
+	query := `UPDATE posts_posts SET status = $1, updated_at = NOW() WHERE id = $2`
 	return r.Exec(ctx, query, status, id)
 }
 
 func (r *userPostRepository) PublishScheduledPost(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE user_posts 
+		UPDATE posts_posts 
 		SET status = 'published', published_at = NOW(), scheduled_at = NULL, updated_at = NOW()
 		WHERE id = $1 AND status = 'scheduled'
 	`
@@ -430,7 +430,7 @@ func (r *userPostRepository) List(ctx context.Context, params repository.ListPos
 	whereClause := "WHERE " + strings.Join(conditions, " AND ")
 
 	// Count total
-	countQuery := "SELECT COUNT(*) FROM user_posts " + whereClause
+	countQuery := "SELECT COUNT(*) FROM posts_posts " + whereClause
 	var total int
 	err := r.Get(ctx, &total, countQuery, args...)
 	if err != nil {
@@ -455,7 +455,7 @@ func (r *userPostRepository) List(ctx context.Context, params repository.ListPos
 			meta_title, meta_description, meta_keywords,
 			view_count, like_count, comment_count, share_count, reading_time_minutes,
 			deleted_at, created_at, updated_at
-		FROM user_posts
+		FROM posts_posts
 		%s
 		ORDER BY %s %s
 		LIMIT $%d OFFSET $%d

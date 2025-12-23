@@ -210,7 +210,7 @@ func (m *ProfilesModule) HealthCheck(ctx context.Context) error {
 	}
 
 	var count int
-	err := m.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM user_profiles").Scan(&count)
+	err := m.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM profiles_profiles").Scan(&count)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}

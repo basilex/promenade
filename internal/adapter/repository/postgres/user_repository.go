@@ -26,7 +26,7 @@ func NewUserRepository(db *sqlx.DB) repository.UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, user *entity.User) error {
 	query := `
-		INSERT INTO users (id, email, name, password, status, created_at, updated_at)
+		INSERT INTO core_users (id, email, name, password, status, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	_, err := r.db.ExecContext(ctx, query,
@@ -48,7 +48,7 @@ func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.U
 	query := `
 		SELECT id, email, name, password, status, email_verified_at, 
 		       suspended_reason, suspended_until, last_login_at, created_at, updated_at
-		FROM users
+		FROM core_users
 		WHERE id = $1
 	`
 	var user entity.User
@@ -66,7 +66,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.
 	query := `
 		SELECT id, email, name, password, status, email_verified_at, 
 		       suspended_reason, suspended_until, last_login_at, created_at, updated_at
-		FROM users
+		FROM core_users
 		WHERE email = $1
 	`
 	var user entity.User
@@ -82,7 +82,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.
 
 func (r *userRepository) Update(ctx context.Context, user *entity.User) error {
 	query := `
-		UPDATE users
+		UPDATE core_users
 		SET email = $1, name = $2, status = $3, email_verified_at = $4,
 		    suspended_reason = $5, suspended_until = $6, last_login_at = $7, updated_at = $8
 		WHERE id = $9
@@ -114,7 +114,7 @@ func (r *userRepository) Update(ctx context.Context, user *entity.User) error {
 }
 
 func (r *userRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM users WHERE id = $1`
+	query := `DELETE FROM core_users WHERE id = $1`
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
@@ -135,7 +135,7 @@ func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*entity
 	query := `
 		SELECT id, email, name, password, status, email_verified_at, 
 		       suspended_reason, suspended_until, last_login_at, created_at, updated_at
-		FROM users
+		FROM core_users
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2
 	`
@@ -148,7 +148,7 @@ func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*entity
 }
 
 func (r *userRepository) UpdateStatus(ctx context.Context, id uuidv7.UUID, status entity.UserStatus) error {
-	query := `UPDATE users SET status = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE core_users SET status = $1, updated_at = $2 WHERE id = $3`
 	result, err := r.db.ExecContext(ctx, query, status, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("failed to update user status: %w", err)
@@ -166,7 +166,7 @@ func (r *userRepository) UpdateStatus(ctx context.Context, id uuidv7.UUID, statu
 }
 
 func (r *userRepository) UpdateLastLogin(ctx context.Context, id uuidv7.UUID, loginTime time.Time) error {
-	query := `UPDATE users SET last_login_at = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE core_users SET last_login_at = $1, updated_at = $2 WHERE id = $3`
 	result, err := r.db.ExecContext(ctx, query, loginTime, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("failed to update last login: %w", err)
@@ -184,7 +184,7 @@ func (r *userRepository) UpdateLastLogin(ctx context.Context, id uuidv7.UUID, lo
 }
 
 func (r *userRepository) UpdatePassword(ctx context.Context, id uuidv7.UUID, hashedPassword string) error {
-	query := `UPDATE users SET password = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE core_users SET password = $1, updated_at = $2 WHERE id = $3`
 	result, err := r.db.ExecContext(ctx, query, hashedPassword, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("failed to update password: %w", err)
@@ -203,7 +203,7 @@ func (r *userRepository) UpdatePassword(ctx context.Context, id uuidv7.UUID, has
 
 func (r *userRepository) VerifyEmail(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE users 
+		UPDATE core_users 
 		SET status = $1, email_verified_at = $2, updated_at = $3 
 		WHERE id = $4
 	`
@@ -225,7 +225,7 @@ func (r *userRepository) VerifyEmail(ctx context.Context, id uuidv7.UUID) error 
 
 func (r *userRepository) Suspend(ctx context.Context, id uuidv7.UUID, reason string, until *time.Time) error {
 	query := `
-		UPDATE users 
+		UPDATE core_users 
 		SET status = $1, suspended_reason = $2, suspended_until = $3, updated_at = $4 
 		WHERE id = $5
 	`
@@ -247,7 +247,7 @@ func (r *userRepository) Suspend(ctx context.Context, id uuidv7.UUID, reason str
 
 func (r *userRepository) Ban(ctx context.Context, id uuidv7.UUID, reason string) error {
 	query := `
-		UPDATE users 
+		UPDATE core_users 
 		SET status = $1, suspended_reason = $2, updated_at = $3 
 		WHERE id = $4
 	`
@@ -269,7 +269,7 @@ func (r *userRepository) Ban(ctx context.Context, id uuidv7.UUID, reason string)
 
 func (r *userRepository) Reactivate(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE users 
+		UPDATE core_users 
 		SET status = $1, suspended_reason = NULL, suspended_until = NULL, updated_at = $2 
 		WHERE id = $3
 	`
@@ -290,7 +290,7 @@ func (r *userRepository) Reactivate(ctx context.Context, id uuidv7.UUID) error {
 }
 
 func (r *userRepository) Deactivate(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE users SET status = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE core_users SET status = $1, updated_at = $2 WHERE id = $3`
 	result, err := r.db.ExecContext(ctx, query, entity.UserStatusInactive, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("failed to deactivate user: %w", err)

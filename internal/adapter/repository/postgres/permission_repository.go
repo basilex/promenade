@@ -25,7 +25,7 @@ func NewPermissionRepository(db *sqlx.DB) *permissionRepository {
 
 func (r *permissionRepository) Create(ctx context.Context, permission *entity.Permission) error {
 	query := `
-		INSERT INTO permissions (id, resource, action, description, created_at)
+		INSERT INTO core_permissions (id, resource, action, description, created_at)
 		VALUES ($1, $2, $3, $4, $5)
 	`
 	executor := r.getExecutor(ctx)
@@ -45,7 +45,7 @@ func (r *permissionRepository) Create(ctx context.Context, permission *entity.Pe
 func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Permission, error) {
 	query := `
 		SELECT id, resource, action, description, created_at
-		FROM permissions
+		FROM core_permissions
 		WHERE id = $1
 	`
 	var permission entity.Permission
@@ -62,7 +62,7 @@ func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*en
 func (r *permissionRepository) GetByResourceAction(ctx context.Context, resource, action string) (*entity.Permission, error) {
 	query := `
 		SELECT id, resource, action, description, created_at
-		FROM permissions
+		FROM core_permissions
 		WHERE resource = $1 AND action = $2
 	`
 	var permission entity.Permission
@@ -79,7 +79,7 @@ func (r *permissionRepository) GetByResourceAction(ctx context.Context, resource
 func (r *permissionRepository) List(ctx context.Context) ([]*entity.Permission, error) {
 	query := `
 		SELECT id, resource, action, description, created_at
-		FROM permissions
+		FROM core_permissions
 		ORDER BY resource, action
 	`
 	var permissions []*entity.Permission
@@ -92,7 +92,7 @@ func (r *permissionRepository) List(ctx context.Context) ([]*entity.Permission, 
 
 func (r *permissionRepository) Update(ctx context.Context, permission *entity.Permission) error {
 	query := `
-		UPDATE permissions
+		UPDATE core_permissions
 		SET resource = $2, action = $3, description = $4
 		WHERE id = $1
 	`
@@ -119,7 +119,7 @@ func (r *permissionRepository) Update(ctx context.Context, permission *entity.Pe
 }
 
 func (r *permissionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM permissions WHERE id = $1`
+	query := `DELETE FROM core_permissions WHERE id = $1`
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
 	if err != nil {
@@ -143,7 +143,7 @@ func (r *permissionRepository) CreateMany(ctx context.Context, permissions []*en
 	}
 
 	query := `
-		INSERT INTO permissions (id, resource, action, description, created_at)
+		INSERT INTO core_permissions (id, resource, action, description, created_at)
 		VALUES (:id, :resource, :action, :description, :created_at)
 	`
 	err := r.NamedExec(ctx, query, permissions)
@@ -160,7 +160,7 @@ func (r *permissionRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) 
 
 	query := `
 		SELECT id, resource, action, description, created_at
-		FROM permissions
+		FROM core_permissions
 		WHERE id = ANY($1)
 		ORDER BY resource, action
 	`
@@ -175,7 +175,7 @@ func (r *permissionRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) 
 func (r *permissionRepository) FindByResource(ctx context.Context, resource string) ([]*entity.Permission, error) {
 	query := `
 		SELECT id, resource, action, description, created_at
-		FROM permissions
+		FROM core_permissions
 		WHERE resource = $1
 		ORDER BY action
 	`

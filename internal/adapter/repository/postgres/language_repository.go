@@ -26,7 +26,7 @@ func NewLanguageRepository(db *sqlx.DB) repository.LanguageRepository {
 // Create creates a new language
 func (r *languageRepository) Create(ctx context.Context, language *entity.Language) error {
 	query := `
-		INSERT INTO languages (id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order)
+		INSERT INTO core_languages (id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING created_at, updated_at
 	`
@@ -48,7 +48,7 @@ func (r *languageRepository) Create(ctx context.Context, language *entity.Langua
 func (r *languageRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Language, error) {
 	query := `
 		SELECT id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order, created_at, updated_at
-		FROM languages
+		FROM core_languages
 		WHERE id = $1
 	`
 
@@ -68,7 +68,7 @@ func (r *languageRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*enti
 func (r *languageRepository) GetByCode(ctx context.Context, code string) (*entity.Language, error) {
 	query := `
 		SELECT id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order, created_at, updated_at
-		FROM languages
+		FROM core_languages
 		WHERE code = $1
 	`
 
@@ -88,7 +88,7 @@ func (r *languageRepository) GetByCode(ctx context.Context, code string) (*entit
 func (r *languageRepository) List(ctx context.Context, params pagination.Params) ([]*entity.Language, *pagination.Metadata, error) {
 	// Get total count
 	var total int
-	countQuery := `SELECT COUNT(*) FROM languages`
+	countQuery := `SELECT COUNT(*) FROM core_languages`
 	executor := r.getExecutor(ctx)
 	if err := sqlx.GetContext(ctx, executor, &total, countQuery); err != nil {
 		return nil, nil, err
@@ -97,7 +97,7 @@ func (r *languageRepository) List(ctx context.Context, params pagination.Params)
 	// Get paginated languages
 	query := `
 		SELECT id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order, created_at, updated_at
-		FROM languages
+		FROM core_languages
 		ORDER BY sort_order ASC, name ASC
 		LIMIT $1 OFFSET $2
 	`
@@ -117,7 +117,7 @@ func (r *languageRepository) List(ctx context.Context, params pagination.Params)
 func (r *languageRepository) ListActive(ctx context.Context) ([]*entity.Language, error) {
 	query := `
 		SELECT id, name, native_name, code, iso639_2, is_rtl, is_active, sort_order, created_at, updated_at
-		FROM languages
+		FROM core_languages
 		WHERE is_active = true
 		ORDER BY sort_order ASC, name ASC
 	`
@@ -134,7 +134,7 @@ func (r *languageRepository) ListActive(ctx context.Context) ([]*entity.Language
 // Update updates an existing language
 func (r *languageRepository) Update(ctx context.Context, language *entity.Language) error {
 	query := `
-		UPDATE languages
+		UPDATE core_languages
 		SET name = $2, native_name = $3, code = $4, iso639_2 = $5, is_rtl = $6, is_active = $7, sort_order = $8, updated_at = NOW()
 		WHERE id = $1
 		RETURNING updated_at
@@ -164,7 +164,7 @@ func (r *languageRepository) Update(ctx context.Context, language *entity.Langua
 
 // Delete deletes a language by ID
 func (r *languageRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `DELETE FROM languages WHERE id = $1`
+	query := `DELETE FROM core_languages WHERE id = $1`
 
 	executor := r.getExecutor(ctx)
 	result, err := executor.ExecContext(ctx, query, id)
@@ -186,7 +186,7 @@ func (r *languageRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 // Exists checks if a language exists by code
 func (r *languageRepository) Exists(ctx context.Context, code string) (bool, error) {
-	query := `SELECT EXISTS(SELECT 1 FROM languages WHERE code = $1)`
+	query := `SELECT EXISTS(SELECT 1 FROM core_languages WHERE code = $1)`
 
 	var exists bool
 	executor := r.getExecutor(ctx)

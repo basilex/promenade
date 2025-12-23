@@ -458,25 +458,29 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 
 ### Migration System
 
-**Core migrations:**
+**Core migrations (namespace-based with descriptive names):**
 
 ```
-migrations/
-├── 000001_init_schema_deps.up.sql       Core dependencies
-├── 000002_create_auth_schema.up.sql     Auth tables
-├── 000003_create_countries_currencies.up.sql  Reference data
-├── 000009_create_rbac_tables.up.sql     RBAC
-├── 000014_create_timezones_table.up.sql  Reference data
-└── 000015_create_languages_table.up.sql  Reference data
+migrations/core/
+├── 000001_core_init_uuid_v7.up.sql            UUID v7 + triggers
+├── 000002_core_auth_full.up.sql               Auth tables (users, sessions, tokens)
+├── 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
+├── 000004_core_ref_timezones.up.sql           Reference data
+├── 000005_core_ref_languages.up.sql           Reference data
+└── 000006_core_ref_countries_currencies.up.sql Reference data
 ```
 
-**Module migrations:**
+**Module migrations (namespace-based with module prefixes):**
 
 ```
-migrations/
-├── 000006_create_user_posts.up.sql      Posts module
-├── 000007_create_post_comments.up.sql   Posts module
-└── 000008_create_comment_likes_table.up.sql  Posts module
+migrations/posts/
+├── 000001_posts_posts.up.sql                  Posts table
+├── 000002_posts_comments.up.sql               Comments table
+└── 000003_posts_comment_likes.up.sql          Comment likes
+
+migrations/profiles/
+├── 000001_profiles_contacts.up.sql            User contacts
+└── 000002_profiles_profiles.up.sql            User profiles
 ```
 
 **Future:** Modules can register migrations programmatically:

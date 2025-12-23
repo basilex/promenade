@@ -20,7 +20,7 @@ Comprehensive guide to using RBAC (Role-Based Access Control) authorization midd
 The Authorization Middleware provides **flexible, fine-grained access control** for API endpoints using a permission-based RBAC system. It supports:
 
 - [+] **Permission-based checks** - Granular control with `resource:action` format
-- [+] **Role-based checks** - Quick checks for user roles (superadmin, admin, etc.)
+- [+] **Role-based checks** - Quick checks for user roles (admin, moderator, etc.)
 - [+] **Wildcard permissions** - `*:*`, `posts:*`, `*:read` patterns
 - [+] **Composite checks** - RequireAny, RequireAll for complex logic
 - [+] **Clean separation** - Works independently from authentication middleware
@@ -84,7 +84,7 @@ HasPermission(userID, "posts:read")    // [+] TRUE
 HasPermission(userID, "users:read")    // [+] TRUE
 HasPermission(userID, "posts:create")  // [X] FALSE
 
-// User has permission "*:*" (superadmin)
+// User has permission "*:*" (admin with full access)
 HasPermission(userID, "posts:create")  // [+] TRUE
 HasPermission(userID, "users:delete")  // [+] TRUE
 HasPermission(userID, "anything:anything") // [+] TRUE
@@ -94,19 +94,18 @@ HasPermission(userID, "anything:anything") // [+] TRUE
 
 ### System Roles
 
-5 predefined system roles with different permission levels:
+4 predefined system roles with different permission levels:
 
-| Role         | Display Name        | Permissions            | Use Case                      |
-| ------------ | ------------------- | ---------------------- | ----------------------------- |
-| `superadmin` | Super Administrator | `*:*` (all)            | Full system access            |
-| `admin`      | Administrator       | Most resources         | System administration         |
-| `moderator`  | Moderator           | Content moderation     | Content review & moderation   |
-| `user`       | User                | Own content management | Regular users                 |
-| `guest`      | Guest               | Read-only access       | Unauthenticated/limited users |
+| Role        | Display Name  | Permissions            | Use Case                      |
+| ----------- | ------------- | ---------------------- | ----------------------------- |
+| `admin`     | Administrator | `*:*` (all)            | Full system access            |
+| `moderator` | Moderator     | Content moderation     | Content review & moderation   |
+| `user`      | User          | Own content management | Regular users                 |
+| `guest`     | Guest         | Read-only access       | Unauthenticated/limited users |
 
 ### Role Permissions Breakdown
 
-**Superadmin** (`*:*`):
+**Admin** (`*:*`):
 
 - Full access to everything
 - Cannot be deleted (system role)
@@ -370,7 +369,7 @@ func (r *DashboardRouter) Setup(api *gin.RouterGroup) {
 
     // Moderator dashboard - moderators and admins
     dashboards.GET("/moderator",
-        r.authzMiddleware.RequireAnyRole("moderator", "admin", "superadmin"),
+        r.authzMiddleware.RequireAnyRole("moderator", "admin"),
         handler.GetModeratorDashboard,
     )
 
@@ -513,7 +512,7 @@ router.DELETE("/posts/:id",
 ```go
 // In your migration/seeding
 INSERT INTO permissions (resource, action) VALUES
-    ('*', '*'),           -- Superadmin: everything
+    ('*', '*'),           -- Admin: everything
     ('posts', '*'),       -- Content admin: all post operations
     ('*', 'read');        -- Viewer: read everything
 ```
@@ -580,7 +579,7 @@ router.POST("/posts/:id/feature",
     authzMiddleware.RequireAnyPermission(
         "posts:feature",  // Specific permission
         "posts:*",        // Full post access
-        "*:*",            // Superadmin
+        "*:*",            // Admin
     ),
     handler.FeaturePost,
 )
@@ -597,7 +596,7 @@ Allow admins to bypass ownership checks:
 authzMiddleware.RequireAnyPermission(
     "posts:update",  // Regular user permission
     "posts:*",       // Post admin
-    "*:*",           // Superadmin
+    "*:*",           // Admin
 )
 ```
 
@@ -850,10 +849,10 @@ router.POST("/posts",
 )
 ```
 
-### Issue: 403 Forbidden for Superadmin
+### Issue: 403 Forbidden for Admin
 
 **Symptoms:**
-Superadmin user gets 403 on endpoints they should access.
+Admin user gets 403 on endpoints they should access.
 
 **Causes:**
 
@@ -864,16 +863,16 @@ Superadmin user gets 403 on endpoints they should access.
 **Solution:**
 
 ```sql
--- Verify superadmin has wildcard permission
+-- Verify admin has wildcard permission
 SELECT r.name, p.resource, p.action
 FROM roles r
 JOIN role_permissions rp ON rp.role_id = r.id
 JOIN permissions p ON p.id = rp.permission_id
-WHERE r.name = 'superadmin';
+WHERE r.name = 'admin';
 
--- Should return: name='superadmin', resource='*', action='*'
+-- Should return: name='admin', resource='*', action='*'
 
--- Verify user has superadmin role
+-- Verify user has admin role
 SELECT u.email, r.name
 FROM users u
 JOIN user_roles ur ON ur.user_id = u.id
