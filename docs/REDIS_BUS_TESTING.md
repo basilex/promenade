@@ -1,48 +1,48 @@
 # Redis Bus Testing Guide
 
-Этот guide описывает как протестировать Redis адаптер для event bus.
+This guide describes how to test the Redis adapter for the event bus.
 
-## Быстрый старт
+## Quick Start
 
-### 1. Запуск Redis
+### 1. Launch Redis
 
 ```bash
-# Запустить Redis через docker-compose
+# Start Redis via docker-compose
 docker-compose -f docker/docker-compose.yml up -d redis
 
-# Проверить что Redis запущен
+# Verify Redis is running
 docker ps | grep redis
 ```
 
-### 2. Integration тесты
+### 2. Integration Tests
 
 ```bash
-# Запустить все Redis bus тесты
+# Run all Redis bus tests
 go test -v ./test/integration/redis_bus_test.go -count=1
 
-# Запустить конкретный тест
+# Run specific test
 go test -v ./test/integration/redis_bus_test.go -run TestRedisBus_PublishSubscribe
 ```
 
-**Доступные тесты:**
+**Available tests:**
 
-- `TestRedisBus_PublishSubscribe` - базовый pub/sub
-- `TestRedisBus_MultipleSubscribers` - несколько подписчиков на один топик
+- `TestRedisBus_PublishSubscribe` - basic pub/sub
+- `TestRedisBus_MultipleSubscribers` - multiple subscribers to one topic
 - `TestRedisBus_GracefulShutdown` - graceful shutdown
-- `TestBusFallback_RedisToMemory` - fallback на memory при недоступности Redis
+- `TestBusFallback_RedisToMemory` - fallback to memory when Redis unavailable
 
-### 3. Demo приложение
+### 3. Demo Application
 
 ```bash
-# Тест с memory адаптером
+# Test with memory adapter
 BUS_ADAPTER=memory go run examples/redis_bus_demo/main.go
 
-# Тест с Redis адаптером
+# Test with Redis adapter
 BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
   go run examples/redis_bus_demo/main.go
 ```
 
-**Ожидаемый результат:**
+**Expected result:**
 
 ```
 [OK] Bus health check passed
@@ -56,7 +56,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 [OK] Bus closed gracefully
 ```
 
-## Переключение адаптеров в production
+## Switching Adapters in Production
 
 ### Environment Variables
 
@@ -77,15 +77,15 @@ REDIS_POOL_SIZE=10
 
 ### Graceful Degradation
 
-В **production** режиме, если Redis недоступен, система автоматически переключится на memory adapter с предупреждением в логах:
+In **production** mode, if Redis is unavailable, the system will automatically switch to memory adapter with a warning in logs:
 
 ```
 level=WARN msg="Failed to initialize Redis event bus, falling back to in-memory adapter"
 ```
 
-В **test/development** режиме, система вернет ошибку (fail fast).
+In **test/development** mode, the system will return an error (fail fast).
 
-## Мониторинг
+## Monitoring
 
 ### Health Check
 
@@ -100,31 +100,31 @@ if err != nil {
 ### Redis CLI
 
 ```bash
-# Подключиться к Redis
+# Connect to Redis
 docker exec -it promenade_redis redis-cli
 
-# Мониторинг Pub/Sub
+# Monitor Pub/Sub
 PUBSUB CHANNELS test.*
 PUBSUB NUMSUB test.messages
 ```
 
-## Производительность
+## Performance
 
 ### Memory vs Redis
 
-**Memory адаптер:**
+**Memory adapter:**
 
-- [+] Быстрее (нет network overhead)
-- [+] Изолирован в одном процессе
-- [-] Не переживает рестарты
+- [+] Faster (no network overhead)
+- [+] Isolated in single process
+- [-] Does not survive restarts
 
-**Redis адаптер:**
+**Redis adapter:**
 
-- [+] Распределенный (несколько инстансов могут слушать)
-- [+] Возможность persistence (если настроить Redis)
-- [+] Переживает рестарты приложения
+- [+] Distributed (multiple instances can listen)
+- [+] Persistence possible (if Redis is configured)
+- [+] Survives application restarts
 
-### Рекомендации
+### Recommendations
 
 - **Development**: `BUS_ADAPTER=memory`
 - **Production (single instance)**: `BUS_ADAPTER=memory`
@@ -136,22 +136,22 @@ PUBSUB NUMSUB test.messages
 ### Redis connection refused
 
 ```bash
-# Проверить что Redis запущен
+# Check if Redis is running
 docker ps | grep redis
 
-# Перезапустить Redis
+# Restart Redis
 docker-compose -f docker/docker-compose.yml restart redis
 ```
 
 ### Messages not received
 
-1. Проверить что subscriber зарегистрирован **до** публикации события
-2. Добавить `time.Sleep(500 * time.Millisecond)` после Subscribe для Redis Pub/Sub
-3. Проверить что топик правильный в Publish и Subscribe
+1. Verify subscriber is registered **before** publishing event
+2. Add `time.Sleep(500 * time.Millisecond)` after Subscribe for Redis Pub/Sub
+3. Check that topic name is correct in both Publish and Subscribe
 
 ### Graceful shutdown timeout
 
-Увеличить таймаут при Close:
+Increase timeout when closing:
 
 ```go
 ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

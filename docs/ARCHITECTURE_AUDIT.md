@@ -1,7 +1,7 @@
 # Architecture Audit - Core vs Modules
 
 **Date:** December 22, 2025  
-**Status:**  Architecture Compliant
+**Status:** Architecture Compliant
 
 ## Executive Summary
 
@@ -14,7 +14,7 @@ This audit confirms the architecture is **correctly implemented** with proper se
 
 ---
 
-## Core Responsibilities 
+## Core Responsibilities
 
 ### 1. Infrastructure Management
 
@@ -30,7 +30,7 @@ internal/infrastructure/
 
 ---
 
-### 2. Reference Data (Справочники)
+### 2. Reference Data
 
 ```
 internal/domain/entity/
@@ -42,7 +42,7 @@ internal/domain/entity/
 
 **Purpose:** Stable, rarely-changing data shared across modules.
 
-**Status:**  Correct - These are true reference data, not business entities.
+**Status:** Correct - These are true reference data, not business entities.
 
 **Use Case Implementations:**
 
@@ -66,7 +66,7 @@ internal/domain/entity/
 
 **Purpose:** Security and access control - fundamental to all modules.
 
-**Status:**  Correct - Auth/RBAC must be in core (all modules depend on it).
+**Status:** Correct - Auth/RBAC must be in core (all modules depend on it).
 
 **Use Case Implementations:**
 
@@ -91,7 +91,7 @@ pkg/module/
 
 **Purpose:** Orchestration - discover, initialize, start/stop modules.
 
-**Status:**  Correct - Core is the orchestrator, modules are workers.
+**Status:** Correct - Core is the orchestrator, modules are workers.
 
 **Key Features:**
 
@@ -114,7 +114,7 @@ pkg/bus/
 
 **Purpose:** Inter-module communication infrastructure.
 
-**Status:**  Correct - Core provides the bus, modules use it.
+**Status:** Correct - Core provides the bus, modules use it.
 
 ---
 
@@ -133,11 +133,11 @@ internal/usecase/
 
 **Purpose:** Scheduler infrastructure - modules define what/when to purge.
 
-**Status:**  FIXED (recent refactoring) - Core orchestrates, modules implement.
+**Status:** FIXED (recent refactoring) - Core orchestrates, modules implement.
 
 ---
 
-## Module Responsibilities 
+## Module Responsibilities
 
 ### Current Modules
 
@@ -165,7 +165,7 @@ posts/
 - Likes (posts + comments)
 - Purge handlers with retention policies (90 days posts, 30 days comments)
 
-**Status:**  Fully independent - No imports from internal/domain or internal/usecase
+**Status:** Fully independent - No imports from internal/domain or internal/usecase
 
 ---
 
@@ -191,19 +191,19 @@ profiles/
 - Contact verification
 - Primary contact management
 
-**Status:**  Fully independent - Merged profiles+contacts into one cohesive module
+**Status:** Fully independent - Merged profiles+contacts into one cohesive module
 
 ---
 
-#### 3. Warehouse Module (`internal/modules/warehouse/`) 
+#### 3. Warehouse Module (`internal/modules/warehouse/`)
 
-**Status:**  Commented out (commercial module, license required)
+**Status:** Commented out (commercial module, license required)
 
 **Purpose:** Inventory management for commercial deployments.
 
 ---
 
-## Configuration Management 
+## Configuration Management
 
 ### Core Configuration
 
@@ -235,9 +235,9 @@ purge:
 
 **What's NOT in core config:**
 
--  Entity-specific retention policies → Moved to modules
--  Module-specific settings → Moved to modules
--  Business logic configuration → Moved to modules
+- Entity-specific retention policies → Moved to modules
+- Module-specific settings → Moved to modules
+- Business logic configuration → Moved to modules
 
 ---
 
@@ -267,10 +267,10 @@ purge:
 
 **Each module:**
 
--  Loads own config via `pkg/module/config.Load()`
--  Defines own retention policies
--  Registers handlers + policies via global registries
--  Full autonomy
+- Loads own config via `pkg/module/config.Load()`
+- Defines own retention policies
+- Registers handlers + policies via global registries
+- Full autonomy
 
 ---
 
@@ -289,7 +289,7 @@ modules:
 
 ---
 
-## Licensing Support 
+## Licensing Support
 
 ### Architecture Ready for Licensing
 
@@ -324,11 +324,11 @@ func (m *WarehouseModule) Initialize(ctx context.Context, core *Core) error {
 }
 ```
 
-**Status:**  Architecture supports licensing - implementation ready when needed.
+**Status:** Architecture supports licensing - implementation ready when needed.
 
 ---
 
-## Dependency Management 
+## Dependency Management
 
 ### Module Dependencies
 
@@ -353,11 +353,11 @@ modules:
     - fleet # Depends on warehouse
 ```
 
-**Status:**  Dependency system implemented in `pkg/module/registry.go`
+**Status:** Dependency system implemented in `pkg/module/registry.go`
 
 ---
 
-## Communication Patterns 
+## Communication Patterns
 
 ### 1. Inter-Module Events (Async)
 
@@ -374,9 +374,9 @@ eventBus.Subscribe("post.created", func(e bus.Event) {
 
 **Benefits:**
 
--  No direct module-to-module imports
--  Loose coupling
--  Async processing
+- No direct module-to-module imports
+- Loose coupling
+- Async processing
 
 ---
 
@@ -392,13 +392,13 @@ stats := postsModule.(PostsModuleAPI).GetUserStats(userID)
 
 **Benefits:**
 
--  Direct communication when needed
--  Type-safe interfaces
--  Use sparingly - prefer events
+- Direct communication when needed
+- Type-safe interfaces
+- Use sparingly - prefer events
 
 ---
 
-## Router Architecture 
+## Router Architecture
 
 ### Core Routes
 
@@ -417,10 +417,10 @@ type V1Router struct {
 
 **What's NOT in core router:**
 
--  Posts routes → Moved to posts module
--  Comments routes → Moved to posts module
--  Profile routes → Moved to profiles module
--  Contact routes → Moved to profiles module
+- Posts routes → Moved to posts module
+- Comments routes → Moved to posts module
+- Profile routes → Moved to profiles module
+- Contact routes → Moved to profiles module
 
 ---
 
@@ -450,11 +450,11 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 - Posts Module: `/api/v1/posts/*`, `/api/v1/comments/*`
 - Profiles Module: `/api/v1/profiles/*`, `/api/v1/contacts/*`
 
-**Status:**  Clean separation - each module owns its routes
+**Status:** Clean separation - each module owns its routes
 
 ---
 
-## Database Management 
+## Database Management
 
 ### Migration System
 
@@ -489,11 +489,11 @@ func (m *MyModule) RegisterMigrations() []module.Migration {
 }
 ```
 
-**Status:**  Currently file-based, programmatic system ready in `pkg/module/module.go`
+**Status:** Currently file-based, programmatic system ready in `pkg/module/module.go`
 
 ---
 
-## Testing Strategy 
+## Testing Strategy
 
 ### Core Tests
 
@@ -517,7 +517,7 @@ internal/modules/posts/
 └── module_test.go                  Module integration tests
 ```
 
-**Status:**  Each module tests its own logic independently
+**Status:** Each module tests its own logic independently
 
 ---
 
@@ -531,13 +531,13 @@ test/smoke/
 └── user_profile_smoke_test.go      Profiles module (needs update)
 ```
 
-**Status:**  Smoke tests need import path updates after module migration
+**Status:** Smoke tests need import path updates after module migration
 
 ---
 
 ## Violations Check →
 
-###  FIXED: Core had entity-specific purge policies
+### FIXED: Core had entity-specific purge policies
 
 **Before:**
 
@@ -564,7 +564,7 @@ type PurgeConfig struct {
 
 ---
 
-###  FIXED: Posts/Comments were in core
+### FIXED: Posts/Comments were in core
 
 **Before:** Posts and comments had entities, use cases, handlers in `internal/`
 
@@ -574,7 +574,7 @@ type PurgeConfig struct {
 
 ---
 
-###  FIXED: Profiles/Contacts were in core
+### FIXED: Profiles/Contacts were in core
 
 **Before:** Profiles and contacts scattered across `internal/domain`, `internal/usecase`, `internal/adapter`
 
@@ -586,44 +586,44 @@ type PurgeConfig struct {
 
 ## Summary: Core vs Modules
 
-| Component           | Location | Purpose             | Status         |
-| ------------------- | -------- | ------------------- | -------------- |
-| **Authentication**  | Core     | Security foundation |  Correct     |
-| **RBAC**            | Core     | Access control      |  Correct     |
-| **Countries**       | Core     | Reference data      |  Correct     |
-| **Currencies**      | Core     | Reference data      |  Correct     |
-| **Timezones**       | Core     | Reference data      |  Correct     |
-| **Languages**       | Core     | Reference data      |  Correct     |
-| **Database**        | Core     | Infrastructure      |  Correct     |
-| **Event Bus**       | Core     | Infrastructure      |  Correct     |
-| **Purge Scheduler** | Core     | Infrastructure      |  Correct     |
-| **Module Registry** | Core     | Orchestration       |  Correct     |
+| Component           | Location | Purpose             | Status      |
+| ------------------- | -------- | ------------------- | ----------- |
+| **Authentication**  | Core     | Security foundation | Correct     |
+| **RBAC**            | Core     | Access control      | Correct     |
+| **Countries**       | Core     | Reference data      | Correct     |
+| **Currencies**      | Core     | Reference data      | Correct     |
+| **Timezones**       | Core     | Reference data      | Correct     |
+| **Languages**       | Core     | Reference data      | Correct     |
+| **Database**        | Core     | Infrastructure      | Correct     |
+| **Event Bus**       | Core     | Infrastructure      | Correct     |
+| **Purge Scheduler** | Core     | Infrastructure      | Correct     |
+| **Module Registry** | Core     | Orchestration       | Correct     |
 |                     |          |                     |
-| **Posts**           | Module   | Business logic      |  Independent |
-| **Comments**        | Module   | Business logic      |  Independent |
-| **Likes**           | Module   | Business logic      |  Independent |
-| **Profiles**        | Module   | Business logic      |  Independent |
-| **Contacts**        | Module   | Business logic      |  Independent |
-| **Warehouse**       | Module   | Business logic      |  Licensable  |
+| **Posts**           | Module   | Business logic      | Independent |
+| **Comments**        | Module   | Business logic      | Independent |
+| **Likes**           | Module   | Business logic      | Independent |
+| **Profiles**        | Module   | Business logic      | Independent |
+| **Contacts**        | Module   | Business logic      | Independent |
+| **Warehouse**       | Module   | Business logic      | Licensable  |
 
 ---
 
-## Recommendations 
+## Recommendations
 
-### 1. Core is Clean 
+### 1. Core is Clean
 
 Current core contains only:
 
 - Infrastructure services
-- Reference data (справочники)
+- Reference data
 - Security (auth + RBAC)
 - Management interfaces (registries)
 
-**Action:**  No changes needed - architecture is correct.
+**Action:** No changes needed - architecture is correct.
 
 ---
 
-### 2. Modules are Independent 
+### 2. Modules are Independent
 
 Each module:
 
@@ -632,11 +632,11 @@ Each module:
 - Registers handlers/policies/permissions
 - Can be enabled/disabled via config
 
-**Action:**  No changes needed - modules are properly isolated.
+**Action:** No changes needed - modules are properly isolated.
 
 ---
 
-### 3. Licensing Ready 
+### 3. Licensing Ready
 
 Architecture supports:
 
@@ -657,23 +657,23 @@ Architecture supports:
 
 ---
 
-## Conclusion 
+## Conclusion
 
 **Architecture Assessment: COMPLIANT**
 
 Promenade successfully implements a **plugin architecture** with:
 
--  Clean separation between Core (infrastructure) and Modules (business logic)
--  Module independence (no core dependencies)
--  Dynamic module loading with dependency resolution
--  Configuration autonomy (each module owns its config)
--  Licensing support (ready for commercial modules)
--  Event-driven communication (loose coupling)
+- Clean separation between Core (infrastructure) and Modules (business logic)
+- Module independence (no core dependencies)
+- Dynamic module loading with dependency resolution
+- Configuration autonomy (each module owns its config)
+- Licensing support (ready for commercial modules)
+- Event-driven communication (loose coupling)
 
 **Core is truly minimal:**
 
 - Infrastructure managers
-- Reference data (справочники)
+- Reference data
 - Security foundation (auth + RBAC)
 
 **Modules are self-contained:**
@@ -693,4 +693,4 @@ Promenade successfully implements a **plugin architecture** with:
 
 **Audit Date:** December 22, 2025  
 **Auditor:** AI Assistant (GitHub Copilot)  
-**Status:**  PASSED - Architecture is sound and correctly implemented
+**Status:** PASSED - Architecture is sound and correctly implemented

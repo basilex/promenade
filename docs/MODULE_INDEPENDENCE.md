@@ -20,13 +20,13 @@ internal/modules/posts/
 
 ## Independence Analysis
 
-###  No Core Dependencies
+### No Core Dependencies
 
 Verified by search: `grep -r "github.com/basilex/promenade/internal/(domain|usecase|adapter)" internal/modules/posts/`
 
 **Result**: ZERO matches - module does not import any core internal packages.
 
-###  Shared Dependencies Only
+### Shared Dependencies Only
 
 The module only imports:
 
@@ -35,7 +35,7 @@ The module only imports:
 - `github.com/jmoiron/sqlx` - Database library
 - Standard library packages
 
-###  Complete Vertical Slice
+### Complete Vertical Slice
 
 Each layer implemented within module:
 
@@ -48,7 +48,7 @@ Each layer implemented within module:
 | **HTTP Handler**      | `adapter/http/handler/`                | Use case, DTO, pkg/response |
 | **DTOs**              | `adapter/http/dto/`                    | Domain entity               |
 
-###  Module Isolation Benefits
+### Module Isolation Benefits
 
 1. **Independent Development**: Can be developed/tested in isolation
 2. **Reusability**: Can be copied to another project with pkg/
@@ -91,9 +91,9 @@ grep -r "github.com/basilex/promenade/internal/\(domain\|usecase\|adapter\)" \
 
 ## Current Status
 
--  **posts**: Fully independent, complete Clean Architecture
-- 🚧 **comments**: Needs refactoring (currently wrapper)
-- 🚧 **warehouse**: Needs refactoring (currently wrapper)
+- **posts**: Fully independent, complete Clean Architecture
+- **comments**: Needs refactoring (currently wrapper)
+- **warehouse**: Needs refactoring (currently wrapper)
 
 ## Next Steps
 

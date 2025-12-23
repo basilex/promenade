@@ -16,7 +16,7 @@
 
 ## What Goes in Core?
 
-###  BELONGS in Core:
+### BELONGS in Core:
 
 1. **Infrastructure Services**
 
@@ -34,7 +34,7 @@
    - RBAC (roles, permissions, access control)
    - Sessions (JWT tokens)
 
-3. **Reference Data (Справочники)**
+3. **Reference Data**
 
    - Countries (ISO codes, regions)
    - Currencies (ISO 4217)
@@ -48,14 +48,14 @@
    - Purge policy registry
    - Event bus interface
 
-###  DOES NOT Belong in Core:
+### DOES NOT Belong in Core:
 
--  Business entities (Post, Comment, Profile, etc.)
--  Business use cases
--  Business HTTP handlers
--  Business routes
--  Business configuration
--  Entity-specific logic
+- Business entities (Post, Comment, Profile, etc.)
+- Business use cases
+- Business HTTP handlers
+- Business routes
+- Business configuration
+- Entity-specific logic
 
 **Rule of thumb:** If it's a business concept that could be sold separately, it's a MODULE.
 
@@ -63,7 +63,7 @@
 
 ## What Goes in Modules?
 
-###  Module Structure
+### Module Structure
 
 ```
 internal/modules/mymodule/
@@ -81,7 +81,7 @@ internal/modules/mymodule/
     └── purge/             # Purge handlers (if needed)
 ```
 
-###  Module Checklist
+### Module Checklist
 
 - [ ] Has own entity/usecase/adapter structure
 - [ ] Loads own config from `config/config.*.yaml`
@@ -250,7 +250,7 @@ import (
 
 ## Purge System Rules
 
-###  OLD WAY (Core knows entities)
+### OLD WAY (Core knows entities)
 
 ```go
 //  WRONG - Core has entity-specific config
@@ -260,7 +260,7 @@ type PurgeConfig struct {
 }
 ```
 
-###  NEW WAY (Core orchestrates only)
+### NEW WAY (Core orchestrates only)
 
 **Core Config:**
 
@@ -320,7 +320,7 @@ scheduler.Start(ctx)
 
 ## Communication Patterns
 
-###  Event-Driven (Preferred)
+### Event-Driven (Preferred)
 
 ```go
 // Module A publishes
@@ -335,7 +335,7 @@ eventBus.Subscribe("post.created", func(e bus.Event) {
 
 **Benefits:** Loose coupling, async processing
 
-###  Direct Registry (Use Sparingly)
+### Direct Registry (Use Sparingly)
 
 ```go
 // Get another module
@@ -353,7 +353,7 @@ if api, ok := postsModule.(PostsAPI); ok {
 
 ## Common Mistakes to Avoid
 
-###  Importing Core Packages in Modules
+### Importing Core Packages in Modules
 
 ```go
 //  WRONG
@@ -363,7 +363,7 @@ import "github.com/basilex/promenade/internal/usecase"
 
 **Fix:** Define entities in module's own `entity/` package.
 
-###  Hardcoding Business Values in Code
+### Hardcoding Business Values in Code
 
 ```go
 //  WRONG
@@ -372,7 +372,7 @@ const maxCommentLength = 2000
 
 **Fix:** Load from module config.
 
-###  Putting Business Logic in Core
+### Putting Business Logic in Core
 
 ```go
 //  WRONG - PostUseCase in internal/usecase/
@@ -380,7 +380,7 @@ const maxCommentLength = 2000
 
 **Fix:** Move to module's `usecase/` package.
 
-###  Core Knowing About Module Entities
+### Core Knowing About Module Entities
 
 ```go
 //  WRONG - Core has retention days for posts

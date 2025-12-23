@@ -12,38 +12,31 @@
 
 Promenade follows a **strict layered architecture** where the **Core orchestrates** and **Modules execute** business logic:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         CORE LAYER                          │
-│  Orchestrator + Infrastructure + Shared Services            │
-│  • Authentication & Authorization (RBAC)                    │
-│  • Event Bus (Memory/Redis)                                 │
-│  • Database & Transactions                                  │
-│  • Logging & Configuration                                  │
-│  • Module Registry & Lifecycle                              │
-│  • Reference Data (countries, currencies, timezones)        │
-└─────────────────────────────────────────────────────────────┘
-                              ↓↑
-┌─────────────────────────────────────────────────────────────┐
-│                      MODULE LAYER                           │
-│  Independent Vertical Slices (Domain Areas)                 │
-│                                                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │    Posts     │  │   Profiles   │  │  Warehouse   │     │
-│  │ posts        │  │ contacts     │  │ products     │     │
-│  │ comments     │  │ profiles     │  │ inventory    │     │
-│  │ likes        │  │              │  │ (commercial) │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-│                                                              │
-│  Each module is self-contained with:                        │
-│  • Own domain entities & business logic                     │
-│  • Own database migrations (namespace-based)                │
-│  • Own repositories & use cases                             │
-│  • Own HTTP handlers & routes                               │
-│  • Own configuration & lifecycle                            │
-│  • Optional: Purge policies, permissions, events            │
-└─────────────────────────────────────────────────────────────┘
-```
+**Core Layer** - Orchestrator + Infrastructure + Shared Services
+
+- Authentication & Authorization (RBAC)
+- Event Bus (Memory/Redis)
+- Database & Transactions
+- Logging & Configuration
+- Module Registry & Lifecycle
+- Reference Data (countries, currencies, timezones)
+
+**Module Layer** - Independent Vertical Slices (Domain Areas)
+
+| Module    | Entities                         | Description            |
+| --------- | -------------------------------- | ---------------------- |
+| Posts     | posts, comments, likes           | User-generated content |
+| Profiles  | contacts, profiles               | User profiles          |
+| Warehouse | products, inventory (commercial) | Commercial module      |
+
+Each module is self-contained with:
+
+- Own domain entities & business logic
+- Own database migrations (namespace-based)
+- Own repositories & use cases
+- Own HTTP handlers & routes
+- Own configuration & lifecycle
+- Optional: Purge policies, permissions, events
 
 ### Core Principles
 
@@ -135,7 +128,7 @@ Server starts on **http://localhost:8081**
 
 ---
 
-## 📚 Documentation Structure
+## Documentation Structure
 
 ### Core Documentation
 
@@ -188,7 +181,7 @@ Server starts on **http://localhost:8081**
 
 ---
 
-## 🧩 Module System
+## Module System
 
 ### Available Modules
 
@@ -201,7 +194,7 @@ User-generated content management:
 - **Migrations**: 3 migrations (namespace: `posts`)
 - **Config**: `config/modules.yaml` → `posts`
 
-📖 **Full documentation**: [internal/modules/posts/README.md](internal/modules/posts/README.md)
+**Full documentation**: [internal/modules/posts/README.md](internal/modules/posts/README.md)
 
 #### **Profiles Module** (`internal/modules/profiles`)
 
@@ -212,7 +205,7 @@ User profile and contact management:
 - **Migrations**: 2 migrations (namespace: `profiles`)
 - **Config**: `config/modules.yaml` → `profiles`
 
-📖 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
+**Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
 #### **Warehouse Module** (`internal/modules/warehouse`) - _Commercial_
 
@@ -221,7 +214,7 @@ Inventory and product management:
 - **Status**: Requires license key
 - **Use Case**: E-commerce, inventory systems
 
-📖 **Full documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
+**Full documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
 
 ### Module Structure
 
@@ -302,7 +295,7 @@ make migrate-create-core NAME=add_audit_log
 
 **Auto-migrations**: Migrations run automatically on app startup (core first, then enabled modules).
 
-📖 **Full guide**: [migrations/README.md](migrations/README.md)
+**Full guide**: [migrations/README.md](migrations/README.md)
 
 ---
 
@@ -325,7 +318,7 @@ make migrate-create-core NAME=add_audit_log
 - **Wildcard Permissions**: `posts:*` (all post actions), `*` (full access)
 - **Resource-Action Format**: `posts:create`, `users:delete`, `comments:moderate`
 
-📖 **Full RBAC guide**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
+**Full RBAC guide**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
 
 ---
 
@@ -354,7 +347,7 @@ make test-coverage
 
 Test helpers in `test/helpers/` for fixtures, database setup, and transaction management.
 
-📖 **Testing guides**:
+**Testing guides**:
 
 - [test/README.md](test/README.md) - Test infrastructure
 - [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Best practices
@@ -399,7 +392,7 @@ eventBus.Subscribe(ctx, bus.TopicUserRegistered, func(ctx context.Context, e bus
 })
 ```
 
-📖 **Full guide**: [pkg/bus/README.md](pkg/bus/README.md)
+**Full guide**: [pkg/bus/README.md](pkg/bus/README.md)
 
 ---
 
@@ -456,11 +449,11 @@ make swagger-v1         # Generate v1 docs only
 make swagger-v2         # Generate v2 docs only
 ```
 
-📖 **Full Makefile guide**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+**Full Makefile guide**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
 
 ---
 
-## 🐳 Docker
+## Docker
 
 ### Development Setup
 
@@ -483,7 +476,7 @@ make docker-clean
 - **PostgreSQL 16**: Port 5432, user `system`, database `promenade_dev`
 - **Redis 7**: Port 6379 (for distributed event bus)
 
-📖 **Docker guide**: [docker/README.md](docker/README.md)
+**Docker guide**: [docker/README.md](docker/README.md)
 
 ---
 
@@ -500,7 +493,7 @@ CREATE TABLE users (
 );
 ```
 
-📖 [docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
+[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
 
 ### Soft Delete Pattern
 
@@ -511,7 +504,7 @@ User-generated content (posts, comments) uses `deleted_at` timestamp for safe de
 WHERE deleted_at IS NULL
 ```
 
-📖 [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
+[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
 
 ### Automated Purge System
 
@@ -527,7 +520,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 Core scheduler runs purge jobs via cron. Core doesn't know about specific entities.
 
-📖 [docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
+[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
 
 ### Structured Logging
 
@@ -538,7 +531,7 @@ log := logger.FromContext(ctx)  // Includes request_id, user_id
 log.Info("User registered", "email", user.Email)
 ```
 
-📖 [docs/LOGGING.md](docs/LOGGING.md)
+[docs/LOGGING.md](docs/LOGGING.md)
 
 ---
 
@@ -701,11 +694,11 @@ modules:
         max_comment_depth: 10
 ```
 
-📖 **Config guide**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+**Config guide**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
 
 ---
 
-## 🚧 Creating New Modules
+## Creating New Modules
 
 ### Step 1: Create Module Structure
 
@@ -761,11 +754,11 @@ modules:
     - mymodule
 ```
 
-📖 **Full guide**: [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+**Full guide**: [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
 
 ---
 
-## 📖 Learning Paths
+## Learning Paths
 
 ### For New Developers
 
@@ -788,11 +781,11 @@ modules:
 3. **Module Independence**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
 4. **Migration System**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
-📖 **Complete index**: [docs/INDEX.md](docs/INDEX.md)
+**Complete index**: [docs/INDEX.md](docs/INDEX.md)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -810,7 +803,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🙋 Support
+## Support
 
 - **Documentation**: [docs/INDEX.md](docs/INDEX.md)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
@@ -818,4 +811,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with using Clean Architecture and Go**
+**Built with Clean Architecture and Go**
