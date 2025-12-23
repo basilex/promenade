@@ -11,7 +11,7 @@ import (
 // Config represents a module's configuration
 type Config struct {
 	Module   ModuleSection          `yaml:"module"`
-	Settings map[string]interface{} `yaml:"settings"`
+	Settings map[string]any `yaml:"settings"`
 	Purge    PurgeSection           `yaml:"purge"`
 }
 
@@ -26,7 +26,7 @@ type ModuleSection struct {
 type PurgeSection struct {
 	Enabled  bool                          `yaml:"enabled"`
 	Schedule string                        `yaml:"schedule"`
-	Settings map[string]map[string]interface{} `yaml:"settings"`
+	Settings map[string]map[string]any `yaml:"settings"`
 }
 
 // Load loads module configuration from the specified directory
@@ -120,7 +120,7 @@ func (c *Config) GetFeature(featureName string, defaultValue bool) bool {
 		return defaultValue
 	}
 
-	features, ok := c.Settings["features"].(map[string]interface{})
+	features, ok := c.Settings["features"].(map[string]any)
 	if !ok {
 		return defaultValue
 	}
@@ -134,15 +134,15 @@ func (c *Config) GetFeature(featureName string, defaultValue bool) bool {
 
 // GetNestedSetting retrieves a nested setting from the config
 // Returns nil if not found
-func (c *Config) GetNestedSetting(keys ...string) interface{} {
+func (c *Config) GetNestedSetting(keys ...string) any {
 	if len(keys) == 0 {
 		return nil
 	}
 
-	var current interface{} = c.Settings
+	var current any = c.Settings
 
 	for _, key := range keys {
-		m, ok := current.(map[string]interface{})
+		m, ok := current.(map[string]any)
 		if !ok {
 			return nil
 		}

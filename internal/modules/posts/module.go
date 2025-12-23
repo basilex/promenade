@@ -80,8 +80,8 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 
 	if m.config != nil {
 		// Read comment settings from posts.comments section
-		if posts, ok := m.config.Settings["posts"].(map[string]interface{}); ok {
-			if comments, ok := posts["comments"].(map[string]interface{}); ok {
+		if posts, ok := m.config.Settings["posts"].(map[string]any); ok {
+			if comments, ok := posts["comments"].(map[string]any); ok {
 				if v, ok := comments["max_content_length"].(int); ok {
 					maxCommentLength = v
 				}

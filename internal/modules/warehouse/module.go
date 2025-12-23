@@ -94,7 +94,7 @@ func (m *WarehouseModule) verifyLicense() error {
 		return fmt.Errorf("warehouse module configuration not loaded")
 	}
 
-	licenseKey, ok := m.config.Settings["module"].(map[string]interface{})["license_key"].(string)
+	licenseKey, ok := m.config.Settings["module"].(map[string]any)["license_key"].(string)
 	if !ok || licenseKey == "" {
 		return fmt.Errorf("warehouse module requires license key (set in internal/modules/warehouse/config/config.*.yaml)")
 	}

@@ -69,12 +69,12 @@ func TestCommentHandler_CreateComment(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusCreated, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 
 		assert.Equal(t, true, response["success"])
-		data, ok := response["data"].(map[string]interface{})
+		data, ok := response["data"].(map[string]any)
 		require.True(t, ok)
 		assert.Equal(t, createReq.Content, data["content"])
 
@@ -246,12 +246,12 @@ func TestCommentHandler_GetComment(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 
 		assert.Equal(t, true, response["success"])
-		data, ok := response["data"].(map[string]interface{})
+		data, ok := response["data"].(map[string]any)
 		require.True(t, ok)
 		assert.Equal(t, expectedComment.Content, data["content"])
 
@@ -348,7 +348,7 @@ func TestCommentHandler_UpdateComment(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 

@@ -67,8 +67,8 @@ func (r *userPostRepository) Create(ctx context.Context, post *entity.UserPost) 
 		)
 	`
 
-	// Convert featuredImage to interface{} to ensure NULL is sent for nil
-	var featuredImageParam interface{}
+	// Convert featuredImage to any to ensure NULL is sent for nil
+	var featuredImageParam any
 	if len(featuredImage) > 0 {
 		featuredImageParam = featuredImage
 	} else {
@@ -143,8 +143,8 @@ func (r *userPostRepository) Update(ctx context.Context, post *entity.UserPost) 
 	categoriesJSON, _ := json.Marshal(post.Categories)
 	metaKeywords := pq.Array(post.MetaKeywords)
 
-	// Convert featuredImage to interface{} to ensure NULL is sent for nil
-	var featuredImageParam interface{}
+	// Convert featuredImage to any to ensure NULL is sent for nil
+	var featuredImageParam any
 	if len(featuredImage) > 0 {
 		featuredImageParam = featuredImage
 	} else {
@@ -400,7 +400,7 @@ func (r *userPostRepository) PublishScheduledPost(ctx context.Context, id uuidv7
 func (r *userPostRepository) List(ctx context.Context, params repository.ListPostsParams) ([]*entity.UserPost, *pagination.Metadata, error) {
 	// Build dynamic query based on filters
 	conditions := []string{"deleted_at IS NULL"}
-	args := []interface{}{}
+	args := []any{}
 	argCount := 1
 
 	if params.UserID != nil {
@@ -477,7 +477,7 @@ func (r *userPostRepository) List(ctx context.Context, params repository.ListPos
 
 // Helper methods
 
-func (r *userPostRepository) scanPost(ctx context.Context, query string, args ...interface{}) (*entity.UserPost, error) {
+func (r *userPostRepository) scanPost(ctx context.Context, query string, args ...any) (*entity.UserPost, error) {
 	var post entity.UserPost
 	var featuredImageJSON []byte
 	var tagsJSON, categoriesJSON []byte
@@ -513,7 +513,7 @@ func (r *userPostRepository) scanPost(ctx context.Context, query string, args ..
 	return &post, nil
 }
 
-func (r *userPostRepository) scanPosts(ctx context.Context, query string, args ...interface{}) ([]*entity.UserPost, error) {
+func (r *userPostRepository) scanPosts(ctx context.Context, query string, args ...any) ([]*entity.UserPost, error) {
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query posts: %w", err)

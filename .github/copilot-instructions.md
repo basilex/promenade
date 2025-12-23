@@ -143,7 +143,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 - **Dual Bus Adapters**: Factory pattern with graceful fallback
   - **Memory** (`pkg/bus/memory`): In-memory Pub/Sub for dev/test, zero dependencies, fast
   - **Redis** (`pkg/bus/redis`): Distributed Pub/Sub for production multi-instance, persistent, scalable
-  - Config: Set `BUS_ADAPTER=memory` or `redis` in `.env`, Redis auto-falls back to memory if unavailable
+  - Config: Set `bus.adapter: memory` or `redis` in `config/app.{env}.yaml`, Redis auto-falls back to memory if unavailable
   - Health checks and reconnection logic built-in for Redis adapter
 - **Bus configuration** (`cfg.Bus.*`): WorkerPoolSize (default: 4), BufferSize (default: 100), RetryAttempts/RetryDelay
 - **Event patterns**: Events embed `bus.BaseEvent`, published via `eventBus.Publish(ctx, bus.TopicUserRegistered, event)`
@@ -168,16 +168,24 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 
 ## 10. Configuration & Validation
 
-- **Env Loading**: Priority—`.env.{env}.local`, `.env.{env}`, `.env.local`, `.env`.
+- **YAML-Based Config**: Primary configuration via `config/app.{env}.yaml` (dev/test/prod). Core loads `app.{env}.yaml` based on `ENVIRONMENT` variable (defaults to "development").
+- **Environment Variable Overrides**: Sensitive values (DB_PASSWORD, JWT_SECRET) can override YAML settings via `applyEnvOverrides()`.
+- **Module Config**: Modules load their own config from `internal/modules/{name}/config/config.{env}.yaml`. Core does NOT load module configs - modules are autonomous.
+- **Config Loading**: `config.Load()` → auto-detects environment → loads `config/app.{env}.yaml` → applies env overrides.
 - **Custom Validators**: See [pkg/validator/custom_validators.go](pkg/validator/custom_validators.go).
 
 ---
 
-## 11. Key Files & References
+, module loading
 
-- [cmd/api/main.go](cmd/api/main.go) — App bootstrap, wiring, event bus init
 - [Makefile] + [Makefile.dev.mk] + [Makefile.test.mk] + [Makefile.prod.mk] — All workflows
-- [internal/adapter/http/v1/router/init_*.go] — Module wiring examples
+- [internal/adapter/http/v1/router/init_*.go] — Core module wiring examples (auth, users, RBAC)
+- [internal/infrastructure/config/yaml_config.go] — YAML config loader with env overrides
+- [internal/infrastructure/database/transaction.go] — Transaction management
+- [internal/adapter/repository/postgres/base_repository.go] — Base repo with Get/Select/Exec
+- [internal/infrastructure/scheduler/scheduler.go] — Automated purge scheduler (cron-based)
+- [pkg/module/module.go] — Module interface and registry
+- [pkg/purge/registry.go] — Purge policy registry
 - [internal/infrastructure/database/transaction.go] — Transactions
 - [internal/adapter/repository/postgres/base_repository.go] — DB ops
 - [internal/infrastructure/scheduler/scheduler.go] — Automated purge scheduler (cron-based)
@@ -196,12 +204,14 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 4. **Transaction Context**: Always pass `ctx` through call chain. `getExecutor(ctx)` in repos will fail without it.
 5. **Logger Context**: Use `logger.FromContext(ctx)`, never global logger, to preserve request/user context.
 6. **Migration Namespaces**: Core migrations (`migrations/core/`) MUST run before module migrations. Wrong namespace breaks history.
+   Verify `config/app.dev.yaml` database settings.
 
-### Quick Debugging
-
-- **DB Connection Issues**: Check port 5432 (dev). Use `make docker-logs` to see Postgres logs.
 - **Test Failures**: Run `make test-core` first (fast), then `make test-modules`. Tests are isolated - check `*_test.go` files in same directory as failing code.
 - **Migration Errors**: Check `schema_migrations` table for dirty flag. Use `make migrate-down` then `make migrate-up`. Verify namespace is correct (`core/`, `posts/`, `profiles/`).
+- **Module Not Loading**: Verify import in `cmd/api/main.go` and enabled in `config/modules.yaml`. Check `init()` registration in module's `register.go`.
+- **Event Bus Issues**: Memory adapter is default. For Redis, set `bus.adapter: redis` in `config/app.{env}.yaml` and verify Redis is running on port 6379.
+- **API 404s**: Run `make swagger-all` to regenerate routes. Check handler registration in module's router setup.
+- **Config Issues**: Check `ENVIRONMENT` variable (development/test/production). Use `make config-show ENV=dev` to view loaded configte-up`. Verify namespace is correct (`core/`, `posts/`, `profiles/`).
 - **Module Not Loading**: Verify import in `cmd/api/main.go` and enabled in `config/modules.yaml`. Check `init()` registration in module's `register.go`.
 - **Event Bus Issues**: Memory adapter is default. For Redis, set `BUS_ADAPTER=redis` in `.env` and verify Redis is running on port 6379.
 - **API 404s**: Run `make swagger-all` to regenerate routes. Check handler registration in module's router setup.

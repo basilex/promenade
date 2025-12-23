@@ -66,7 +66,7 @@ func TestCreateContact(t *testing.T) {
 		handler.CreateContact(ctx)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)
@@ -191,7 +191,7 @@ func TestGetContact(t *testing.T) {
 		handler.GetContact(ctx)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)
@@ -301,7 +301,7 @@ func TestUpdateContact(t *testing.T) {
 		handler.UpdateContact(ctx)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)

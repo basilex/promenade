@@ -30,15 +30,15 @@ func main() {
 	ctx := context.Background()
 
 	// Load configuration
-	cfg, appConfig, err := config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
 	// Initialize logger
 	logger.Init(logger.Config{
-		Level:  appConfig.Logging.Level,
-		Format: appConfig.Logging.Format,
+		Level:  cfg.Logging.Level,
+		Format: cfg.Logging.Format,
 	})
 
 	// Initialize database connection
@@ -89,7 +89,7 @@ func main() {
 	}
 }
 
-func runMigrateUp(ctx context.Context, mgr migration.Manager, namespace string, all bool, cfg *config.Config) error {
+func runMigrateUp(ctx context.Context, mgr migration.Manager, namespace string, all bool, cfg *config.AppConfig) error {
 	if all {
 		// Get enabled modules from config
 		enabledModules := getEnabledModules(cfg)
@@ -148,6 +148,6 @@ func runVersion(ctx context.Context, mgr migration.Manager, namespace string) er
 	return nil
 }
 
-func getEnabledModules(cfg *config.Config) []string {
+func getEnabledModules(cfg *config.AppConfig) []string {
 	return cfg.Modules.Enabled
 }

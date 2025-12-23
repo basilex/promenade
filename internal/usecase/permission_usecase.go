@@ -14,6 +14,7 @@ import (
 var (
 	ErrPermissionAlreadyExists = errors.New("permission with this resource:action already exists")
 	ErrInvalidPermissionFormat = errors.New("invalid permission format (expected resource:action)")
+	ErrPermissionNotFound      = errors.New("permission not found")
 )
 
 type PermissionUseCase interface {

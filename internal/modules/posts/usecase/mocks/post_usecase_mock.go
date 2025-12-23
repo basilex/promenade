@@ -46,7 +46,7 @@ func (m *MockUserPostUseCase) GetPostBySlug(ctx context.Context, userID uuidv7.U
 	return args.Get(0).(*entity.UserPost), args.Error(1)
 }
 
-func (m *MockUserPostUseCase) UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]interface{}) (*entity.UserPost, error) {
+func (m *MockUserPostUseCase) UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]any) (*entity.UserPost, error) {
 	args := m.Called(ctx, userID, postID, updates)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

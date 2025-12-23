@@ -277,7 +277,7 @@ func (mb *MemoryBus) Health(ctx context.Context) error {
 }
 
 // Stats returns current bus statistics (for monitoring).
-func (mb *MemoryBus) Stats() map[string]interface{} {
+func (mb *MemoryBus) Stats() map[string]any {
 	mb.mu.RLock()
 	defer mb.mu.RUnlock()
 
@@ -286,7 +286,7 @@ func (mb *MemoryBus) Stats() map[string]interface{} {
 		topicCounts[topic] = len(handlers)
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"total_topics":      len(mb.subscribers),
 		"total_subscribers": mb.countTotalSubscribers(),
 		"worker_pool_size":  mb.config.WorkerPoolSize,

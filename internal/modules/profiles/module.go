@@ -74,13 +74,13 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 	maxContactsPerUser := 5
 
 	if m.config != nil {
-		if profiles, ok := m.config.Settings["profiles"].(map[string]interface{}); ok {
+		if profiles, ok := m.config.Settings["profiles"].(map[string]any); ok {
 			if v, ok := profiles["max_social_links"].(int); ok {
 				maxSocialLinks = v
 			}
 		}
 
-		if contacts, ok := m.config.Settings["contacts"].(map[string]interface{}); ok {
+		if contacts, ok := m.config.Settings["contacts"].(map[string]any); ok {
 			if v, ok := contacts["max_per_user"].(int); ok {
 				maxContactsPerUser = v
 			}

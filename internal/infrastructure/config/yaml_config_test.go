@@ -310,13 +310,13 @@ func TestModuleConfig_Structure(t *testing.T) {
 			Enabled: true,
 			Version: "2.0.0",
 		},
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			"max_post_length": 5000,
 			"allow_comments":  true,
 		},
 		Purge: &ModulePurgeSection{
 			Enabled: true,
-			Settings: map[string]interface{}{
+			Settings: map[string]any{
 				"retention_days": 90,
 			},
 		},

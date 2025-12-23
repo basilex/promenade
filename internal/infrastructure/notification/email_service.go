@@ -84,7 +84,7 @@ func (s *EmailService) renderTemplate(templateName string, data any) (string, er
 
 // renderFallbackTemplate provides simple HTML for tests when templates aren't loaded.
 func (s *EmailService) renderFallbackTemplate(templateName string, data any) string {
-	d, _ := data.(map[string]interface{})
+	d, _ := data.(map[string]any)
 
 	switch templateName {
 	case "welcome.html":

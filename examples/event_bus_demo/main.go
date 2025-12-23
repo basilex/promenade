@@ -82,8 +82,7 @@ func main() {
 	fmt.Printf("\nEvent Bus Stats:\n")
 	fmt.Printf("  Topics: %d\n", stats["total_topics"])
 	fmt.Printf("  Subscribers: %d\n", stats["total_subscribers"])
-	fmt.Printf("  Messages Published: %d\n", stats["messages_published"])
-	fmt.Printf("  Messages Processed: %d\n", stats["messages_processed"])
+	fmt.Printf("  Worker Pool Size: %d\n", stats["worker_pool_size"])
 
 	fmt.Println("\nKey Takeaways:")
 	fmt.Println("   • Publish() returns immediately - non-blocking")

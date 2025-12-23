@@ -82,7 +82,7 @@ type PostResponse struct {
 // PostListResponse represents paginated posts response
 type PostListResponse struct {
 	Posts      []PostResponse         `json:"posts"`
-	Pagination map[string]interface{} `json:"pagination"`
+	Pagination map[string]any `json:"pagination"`
 }
 
 // ToPostResponse converts entity to response DTO
@@ -138,9 +138,9 @@ func ToPostResponses(posts []*entity.UserPost) []PostResponse {
 
 // ToPostListResponse converts posts with pagination metadata to response
 func ToPostListResponse(posts []*entity.UserPost, meta *pagination.Metadata) *PostListResponse {
-	var paginationData map[string]interface{}
+	var paginationData map[string]any
 	if meta != nil {
-		paginationData = map[string]interface{}{
+		paginationData = map[string]any{
 			"total":        meta.Total,
 			"limit":        meta.Limit,
 			"offset":       meta.Offset,
@@ -172,8 +172,8 @@ func (dto *FeaturedImageDTO) ToFeaturedImage() *entity.FeaturedImage {
 }
 
 // ToUpdateMap converts update request to map for usecase
-func (req *UpdatePostRequest) ToUpdateMap() map[string]interface{} {
-	updates := make(map[string]interface{})
+func (req *UpdatePostRequest) ToUpdateMap() map[string]any {
+	updates := make(map[string]any)
 
 	if req.Title != nil {
 		updates["title"] = *req.Title

@@ -17,7 +17,7 @@ type UserPostUseCase interface {
 	CreatePost(ctx context.Context, userID uuidv7.UUID, title, content, excerpt string, tags, categories []string) (*entity.UserPost, error)
 	GetPost(ctx context.Context, id uuidv7.UUID) (*entity.UserPost, error)
 	GetPostBySlug(ctx context.Context, userID uuidv7.UUID, slug string) (*entity.UserPost, error)
-	UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]interface{}) (*entity.UserPost, error)
+	UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]any) (*entity.UserPost, error)
 	DeletePost(ctx context.Context, userID, postID uuidv7.UUID) error
 	SoftDeletePost(ctx context.Context, userID, postID uuidv7.UUID) error
 	RestorePost(ctx context.Context, userID, postID uuidv7.UUID) error
@@ -114,7 +114,7 @@ func (uc *userPostUseCase) GetPostBySlug(ctx context.Context, userID uuidv7.UUID
 	return post, nil
 }
 
-func (uc *userPostUseCase) UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]interface{}) (*entity.UserPost, error) {
+func (uc *userPostUseCase) UpdatePost(ctx context.Context, userID, postID uuidv7.UUID, updates map[string]any) (*entity.UserPost, error) {
 	// Get existing post
 	post, err := uc.postRepo.GetByID(ctx, postID)
 	if err != nil {

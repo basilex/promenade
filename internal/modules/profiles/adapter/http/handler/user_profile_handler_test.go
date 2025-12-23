@@ -68,7 +68,7 @@ func TestCreateProfile(t *testing.T) {
 		handler.CreateProfile(ctx)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)
@@ -184,7 +184,7 @@ func TestGetProfile(t *testing.T) {
 		handler.GetProfile(ctx)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)
@@ -273,7 +273,7 @@ func TestUpdateProfile(t *testing.T) {
 		handler.UpdateProfile(ctx)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		var response map[string]interface{}
+		var response map[string]any
 		json.Unmarshal(w.Body.Bytes(), &response)
 		assert.Equal(t, true, response["success"])
 		mockUC.AssertExpectations(t)

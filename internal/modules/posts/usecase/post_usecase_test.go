@@ -163,7 +163,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 			Status:  entity.PostStatusDraft,
 		}
 
-		updates := map[string]interface{}{
+		updates := map[string]any{
 			"title":   "New Title",
 			"content": "New content with more details",
 		}
@@ -194,7 +194,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 			Title:  "Old Title",
 		}
 
-		updates := map[string]interface{}{
+		updates := map[string]any{
 			"title": "New Title",
 		}
 
@@ -216,7 +216,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 		mockRepo := new(mocks.MockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
-		updates := map[string]interface{}{
+		updates := map[string]any{
 			"title": "New Title",
 		}
 

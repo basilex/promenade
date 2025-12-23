@@ -73,12 +73,12 @@ func TestUserPostHandler_CreatePost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusCreated, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 
 		assert.Equal(t, true, response["success"])
-		data, ok := response["data"].(map[string]interface{})
+		data, ok := response["data"].(map[string]any)
 		require.True(t, ok)
 		assert.Equal(t, createReq.Title, data["title"])
 
@@ -110,7 +110,7 @@ func TestUserPostHandler_CreatePost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Equal(t, false, response["success"])
@@ -179,7 +179,7 @@ func TestUserPostHandler_CreatePost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusConflict, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Equal(t, false, response["success"])
@@ -221,12 +221,12 @@ func TestUserPostHandler_GetPost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 
 		assert.Equal(t, true, response["success"])
-		data, ok := response["data"].(map[string]interface{})
+		data, ok := response["data"].(map[string]any)
 		require.True(t, ok)
 		assert.Equal(t, expectedPost.Title, data["title"])
 
@@ -274,7 +274,7 @@ func TestUserPostHandler_GetPost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusNotFound, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Equal(t, false, response["success"])
@@ -380,7 +380,7 @@ func TestUserPostHandler_PublishPost(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var response map[string]interface{}
+		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
 		assert.Equal(t, true, response["success"])

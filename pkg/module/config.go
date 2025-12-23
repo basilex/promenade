@@ -22,7 +22,7 @@ type ModulesConfig struct {
 type ModuleParam struct {
 	Version    string                 `yaml:"version"`     // Required module version
 	LicenseKey string                 `yaml:"license_key"` // License key (for commercial modules)
-	Settings   map[string]interface{} `yaml:"settings"`    // Module-specific settings
+	Settings   map[string]any `yaml:"settings"`    // Module-specific settings
 }
 
 // LoadConfig loads module configuration from YAML file

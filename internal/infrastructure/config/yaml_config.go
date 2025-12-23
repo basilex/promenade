@@ -128,7 +128,7 @@ type ModulesSection struct {
 // ModuleConfig represents a module's configuration
 type ModuleConfig struct {
 	Module      ModuleSection          `yaml:"module"`
-	Settings    map[string]interface{} `yaml:",inline"` // Module-specific settings
+	Settings    map[string]any `yaml:",inline"` // Module-specific settings
 	Purge       *ModulePurgeSection    `yaml:"purge,omitempty"`
 	Permissions []PermissionSection    `yaml:"permissions,omitempty"`
 	Features    map[string]bool        `yaml:"features,omitempty"`
@@ -142,7 +142,7 @@ type ModuleSection struct {
 
 type ModulePurgeSection struct {
 	Enabled  bool                   `yaml:"enabled"`
-	Settings map[string]interface{} `yaml:",inline"` // Entity-specific purge settings
+	Settings map[string]any `yaml:",inline"` // Entity-specific purge settings
 }
 
 type PermissionSection struct {

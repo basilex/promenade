@@ -15,7 +15,6 @@ var (
 	ErrRoleAlreadyExists      = errors.New("role with this name already exists")
 	ErrCannotDeleteSystemRole = errors.New("cannot delete system role")
 	ErrRoleNotFound           = errors.New("role not found")
-	ErrPermissionNotFound     = errors.New("permission not found")
 )
 
 type RoleUseCase interface {
