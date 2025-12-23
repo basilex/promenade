@@ -34,10 +34,13 @@
 
 3. **Reference Data**
 
-   - Countries (ISO codes, regions)
-   - Currencies (ISO 4217)
-   - Timezones (IANA)
-   - Languages (ISO 639)
+   - Countries (145 countries, ISO 3166-1 codes, regions)
+   - Currencies (124 currencies, ISO 4217, symbols)
+   - Regions (30 admin regions: states, oblasts, provinces, Länder)
+   - Cities (17 major cities with coordinates, population, capitals)
+   - Payment Methods (40+ methods: cards, wallets, crypto, BNPL)
+   - Timezones (IANA timezone database)
+   - Languages (ISO 639 codes)
    - _Stable, rarely-changing data shared across modules_
 
 4. **Management Interfaces**
@@ -449,7 +452,7 @@ Is it infrastructure (DB, logger, event bus)?
 Is it security (auth, RBAC)?
 └─> YES → CORE
 
-Is it reference data (countries, currencies)?
+Is it reference data (countries, currencies, regions, cities, payment methods)?
 └─> YES → CORE
 
 Is it stable and used by multiple modules?

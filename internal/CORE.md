@@ -4,7 +4,7 @@
 
 ---
 
-##  Core Responsibilities
+## Core Responsibilities
 
 ### 1. **Orchestration** (not Implementation)
 
@@ -138,7 +138,7 @@ for _, moduleName := range enabledModules {
 - Schema dependencies (UUID v7 function, extensions)
 - Authentication & authorization tables
 - RBAC tables (roles, permissions, user_roles)
-- Reference data (timezones, languages, countries, currencies)
+- Reference data (timezones, languages, countries, currencies, regions, cities, payment methods)
 
 **Module migrations** (`migrations/{module}/`):
 
@@ -153,29 +153,61 @@ for _, moduleName := range enabledModules {
 
 Core provides **shared reference tables** used by multiple modules:
 
-#### **Countries** (`countries` table)
+#### **Countries** (`core_countries` table)
 
-- ISO codes, regions, phone codes
-- Used by: profiles (user location), warehouse (shipping), etc.
+- 145 countries worldwide
+- ISO 3166-1 codes (alpha-2, alpha-3), phone codes, regions
+- Used by: profiles (user location), warehouse (shipping), regions/cities
+- **Endpoint**: GET /api/v1/countries
 
-#### **Currencies** (`currencies` table)
+#### **Currencies** (`core_currencies` table)
 
-- ISO 4217 codes, symbols, decimal places
-- Used by: warehouse (pricing), payments, etc.
+- 124 currencies with ISO 4217 codes, symbols
+- 146 country-currency relationships (including Eurozone, dual-currency countries)
+- Used by: warehouse (pricing), payments, international transactions
+- **Endpoint**: GET /api/v1/currencies
 
-#### **Timezones** (`timezones` table)
+#### **Regions** (`core_regions` table)
+
+- 30 administrative regions (states, oblasts, provinces, Länder)
+- USA states, Russia oblasts, Ukraine oblasts, UK countries, German Länder, etc.
+- Foreign key: region → country
+- **Endpoints**: GET /api/v1/regions, GET /api/v1/countries/:id/regions
+
+#### **Cities** (`core_cities` table)
+
+- 17 major cities with coordinates, population, capital flags
+- Foreign keys: city → region (nullable), city → country
+- Special queries: capitals, search by name
+- **Endpoints**: GET /api/v1/cities, GET /api/v1/cities/capitals, GET /api/v1/cities/search
+
+#### **Payment Methods** (`core_payment_methods` table)
+
+- 40+ payment methods: cards, digital wallets, crypto, BNPL
+- Used by: warehouse (checkout), payments, e-commerce
+- **Endpoint**: GET /api/v1/payment-methods
+
+#### **Timezones** (`core_timezones` table)
 
 - IANA timezone names, UTC offsets
-- Used by: profiles (user timezone), scheduling, etc.
+- Used by: profiles (user timezone), scheduling, events
+- **Endpoint**: GET /api/v1/timezones
 
-#### **Languages** (`languages` table)
+#### **Languages** (`core_languages` table)
 
 - ISO 639 codes, native names, RTL flag
-- Used by: profiles (user language), i18n, etc.
+- Used by: profiles (user language), i18n, localization
+- **Endpoint**: GET /api/v1/languages
 
-**Migration**: `migrations/core/000006_create_countries_currencies.up.sql`
+**Migrations**:
 
-**Location**: `internal/domain/entity/` (entity definitions)
+- `migrations/core/000004_core_ref_timezones.up.sql`
+- `migrations/core/000005_core_ref_languages.up.sql`
+- `migrations/core/000006_core_ref_countries_currencies.up.sql` (145 countries, 124 currencies)
+- `migrations/core/000007_core_ref_regions_cities.up.sql` (30 regions, 17 cities)
+- `migrations/core/000008_core_ref_payment_methods.up.sql` (40+ methods)
+
+**Location**: `internal/domain/entity/` (entity definitions), `internal/usecase/` (business logic)
 
 ---
 
@@ -212,7 +244,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 ## 🚫 Core Does NOT Do
 
-###  Business Logic
+### Business Logic
 
 Core does not implement domain-specific business rules:
 
@@ -228,7 +260,7 @@ func (c *Core) DB() *sqlx.DB {
 }
 ```
 
-###  Module-Specific Entities
+### Module-Specific Entities
 
 Core does not define entities like `Post`, `Comment`, `Product`:
 
@@ -246,7 +278,7 @@ package entity
 type Post struct { ... }
 ```
 
-###  Import Module Code
+### Import Module Code
 
 Core **never** imports from `internal/modules/*`:
 
@@ -260,7 +292,7 @@ import "github.com/basilex/promenade/pkg/module"  // Interface only
 
 ---
 
-##  Core Structure
+## Core Structure
 
 ```
 internal/
@@ -330,7 +362,7 @@ internal/
 
 ---
 
-##  Core Checklist
+## Core Checklist
 
 When working on core, ensure:
 

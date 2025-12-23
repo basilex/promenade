@@ -19,7 +19,7 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 - Database & Transactions
 - Logging & Configuration
 - Module Registry & Lifecycle
-- Reference Data (countries, currencies, timezones)
+- Reference Data (countries, currencies, regions, cities, timezones, languages, payment methods)
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
@@ -263,7 +263,9 @@ migrations/
 │   ├── 000003_core_rbac_full.up.sql
 │   ├── 000004_core_ref_timezones.up.sql
 │   ├── 000005_core_ref_languages.up.sql
-│   └── 000006_core_ref_countries_currencies.up.sql
+│   ├── 000006_core_ref_countries_currencies.up.sql    # 145 countries, 124 currencies
+│   ├── 000007_core_ref_regions_cities.up.sql          # 30 regions, 17 cities
+│   └── 000008_core_ref_payment_methods.up.sql         # 40+ payment methods
 ├── posts/              # Posts module migrations
 │   ├── 000001_posts_posts.up.sql
 │   ├── 000002_posts_comments.up.sql

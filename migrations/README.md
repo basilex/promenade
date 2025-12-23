@@ -16,6 +16,8 @@ migrations/
 │   ├── 000004_create_timezones_table.up.sql
 │   ├── 000005_create_languages_table.up.sql
 │   ├── 000006_create_countries_currencies.up.sql
+│   ├── 000007_create_regions_cities.up.sql
+│   ├── 000008_create_payment_methods.up.sql
 │   └── ...
 ├── posts/          # Posts module (posts + comments + likes)
 │   ├── 000001_create_user_posts.up.sql
@@ -33,7 +35,7 @@ migrations/
 
 Each namespace maintains its own version sequence starting from 000001:
 
-- **core**: v1-v6 (schema deps, auth, RBAC, timezones, languages, countries/currencies)
+- **core**: v1-v8 (schema deps, auth, RBAC, timezones, languages, countries/currencies, regions/cities, payment methods)
 - **posts**: v1-v3 (user_posts, post_comments, comment_likes)
 - **profiles**: v1-v2 (user_contacts, user_profiles)
 

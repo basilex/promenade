@@ -21,7 +21,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
   - **Redis Adapter** (`pkg/bus/redis`): Distributed Pub/Sub for production multi-instance deployments (persistent, scalable)
   - Factory pattern with graceful fallback (Redis → Memory if Redis unavailable)
   - Events embed `bus.BaseEvent` and follow `User{Action}Event` naming. See [pkg/bus/README.md](pkg/bus/README.md).
-- **Core vs Modules**: Core (`internal/domain`, `internal/usecase`) provides auth, RBAC, events, audit (always enabled). Modules add optional business features. See [internal/CORE.md](internal/CORE.md).
+- **Core vs Modules**: Core (`internal/domain`, `internal/usecase`) provides auth, RBAC, events, audit, reference data (countries, currencies, regions, cities, payment methods, timezones, languages) - always enabled. Modules add optional business features. See [internal/CORE.md](internal/CORE.md).
 - **Module Wiring**: Core modules wire repo → usecase → handler → router in `init_*.go` files (e.g., [internal/adapter/http/v1/router/init_auth.go](internal/adapter/http/v1/router/init_auth.go)). Business modules self-wire in their `Initialize()` method.
 - **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`. All primary keys are UUID v7 (`pkg/uuidv7.New()`), never v4 or auto-increment.
 - **Namespace-Based Migrations**: Each module has independent migration history (`migrations/{namespace}/NNNNNN_*.sql`). Core migrations run first, then enabled modules. See [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md).
