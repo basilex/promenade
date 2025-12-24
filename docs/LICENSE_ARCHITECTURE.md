@@ -40,44 +40,20 @@ Components:
 
 ### System Components
 
-```
-─────────────────────────────────────────────────────────────
-│                      Application Startup                     │
-└────────────────────────────────────────────────────────────
-                       │
-                       ▼
-         ─────────────────────────
-         │  Module Registry        │
-         │  (pkg/module)           │
-         └────────────────────────
-                  │
-                  │ For each enabled module
-                  ▼
-         ─────────────────────────
-         │  Module.Initialize()    │
-         └────────────────────────
-                  │
-                  ▼
-         ─────────────────────────
-         │  License Validator      │
-         │  (module/license/)      │
-         └────────────────────────
-                  │
-    ──────────────────────────
-    │             │             │
-    ▼             ▼             ▼
-Parse()       Validate()    HealthCheck()
-    │             │             │
-    └──────────────────────────
-                  │
-                  ▼
-         ─────────────────────────
-         │  License Status         │
-         │  - Valid                │
-         │  - Expired (grace)      │
-         │  - Invalid              │
-         └─────────────────────────
-```
+**License Validation Flow:**
+
+1. **Application Startup**
+   - Module Registry (`pkg/module`) initializes
+2. **For Each Enabled Module**
+   - `Module.Initialize()` is called
+3. **License Validator** (`module/license/`)
+   - `Parse()` - Extract license components
+   - `Validate()` - Verify signature and expiry
+   - `HealthCheck()` - Ongoing validation
+4. **License Status** (result)
+   - Valid - Module operates normally
+   - Expired (grace) - Warning issued
+   - Invalid - Module disabled
 
 ### Validation Flow
 
@@ -111,49 +87,49 @@ Each commercial module implements license validation in its `Initialize()` metho
 
 ```go
 func (m *AnalyticsModule) Initialize(cfg interface{}) error {
-    // Load module config
-    config, ok := cfg.(*Config)
-    if !ok {
-        return ErrInvalidConfig
-    }
+ // Load module config
+ config, ok := cfg.(*Config)
+ if !ok {
+ return ErrInvalidConfig
+ }
 
-    // Validate license if required
-    if config.LicenseRequired {
-        if err := m.validateLicense(config); err != nil {
-            return fmt.Errorf("license validation failed: %w", err)
-        }
-    }
+ // Validate license if required
+ if config.LicenseRequired {
+ if err := m.validateLicense(config); err != nil {
+ return fmt.Errorf("license validation failed: %w", err)
+ }
+ }
 
-    return nil
+ return nil
 }
 
 func (m *AnalyticsModule) validateLicense(config *Config) error {
-    licenseKey := config.LicenseKey
-    if licenseKey == "" {
-        licenseKey = os.Getenv("ANALYTICS_LICENSE_KEY")
-    }
+ licenseKey := config.LicenseKey
+ if licenseKey == "" {
+ licenseKey = os.Getenv("ANALYTICS_LICENSE_KEY")
+ }
 
-    if licenseKey == "" {
-        return ErrLicenseRequired
-    }
+ if licenseKey == "" {
+ return ErrLicenseRequired
+ }
 
-    secret := os.Getenv("LICENSE_SECRET")
-    if secret == "" {
-        secret = "default-dev-secret"
-    }
+ secret := os.Getenv("LICENSE_SECRET")
+ if secret == "" {
+ secret = "default-dev-secret"
+ }
 
-    license, err := ParseLicense(licenseKey)
-    if err != nil {
-        return err
-    }
+ license, err := ParseLicense(licenseKey)
+ if err != nil {
+ return err
+ }
 
-    validationOptions := ValidationOptions{
-        ValidateExpiry:    config.ValidateExpiry,
-        ValidateSignature: config.ValidateSignature,
-        GracePeriodDays:   config.GracePeriodDays,
-    }
+ validationOptions := ValidationOptions{
+ ValidateExpiry: config.ValidateExpiry,
+ ValidateSignature: config.ValidateSignature,
+ GracePeriodDays: config.GracePeriodDays,
+ }
 
-    return license.Validate("ANALYTICS", secret, validationOptions)
+ return license.Validate("ANALYTICS", secret, validationOptions)
 }
 ```
 
@@ -167,14 +143,14 @@ func ParseLicense(licenseKey string) (*License, error)
 
 // Validate checks license validity
 func (l *License) Validate(
-    expectedModule string,
-    secret string,
-    options ValidationOptions,
+ expectedModule string,
+ secret string,
+ options ValidationOptions,
 ) error
 
 // Generate creates new license (for testing/tooling)
 func GenerateLicense(
-    module, tier, expiry, secret string,
+ module, tier, expiry, secret string,
 ) (string, error)
 ```
 
@@ -184,12 +160,12 @@ Each module's health check includes license status:
 
 ```go
 func (m *AnalyticsModule) HealthCheck(ctx context.Context) error {
-    if m.license != nil {
-        if m.license.IsExpired() && !m.license.InGracePeriod(7) {
-            return ErrLicenseExpired
-        }
-    }
-    return nil
+ if m.license != nil {
+ if m.license.IsExpired() && !m.license.InGracePeriod(7) {
+ return ErrLicenseExpired
+ }
+ }
+ return nil
 }
 ```
 
@@ -234,14 +210,14 @@ In `config/modules.yaml`:
 ```yaml
 modules:
   analytics:
-    enabled: true
-    version: "1.0.0"
-    description: "Advanced analytics and reporting"
-    license_key: "" # Set via environment variable
-    settings:
-      metrics_retention_days: 90
-      max_reports_per_user: 10
-      max_dashboards_per_user: 5
+  enabled: true
+  version: "1.0.0"
+  description: "Advanced analytics and reporting"
+  license_key: "" # Set via environment variable
+  settings:
+  metrics_retention_days: 90
+  max_reports_per_user: 10
+  max_dashboards_per_user: 5
 ```
 
 ---
@@ -330,10 +306,10 @@ Generate license programmatically:
 
 ```bash
 ./bin/license-generator \
-  -module=ANALYTICS \
-  -tier=PRO \
-  -expiry=20261231 \
-  -secret="your-secret-key"
+ -module=ANALYTICS \
+ -tier=PRO \
+ -expiry=20261231 \
+ -secret="your-secret-key"
 ```
 
 ---
@@ -381,12 +357,12 @@ openssl rand -base64 32
 
 ```go
 var (
-    ErrLicenseRequired   = errors.New("license key is required")
-    ErrInvalidFormat     = errors.New("invalid license format")
-    ErrInvalidSignature  = errors.New("invalid license signature")
-    ErrLicenseExpired    = errors.New("license has expired")
-    ErrModuleMismatch    = errors.New("license module mismatch")
-    ErrInvalidTier       = errors.New("invalid license tier")
+ ErrLicenseRequired = errors.New("license key is required")
+ ErrInvalidFormat = errors.New("invalid license format")
+ ErrInvalidSignature = errors.New("invalid license signature")
+ ErrLicenseExpired = errors.New("license has expired")
+ ErrModuleMismatch = errors.New("license module mismatch")
+ ErrInvalidTier = errors.New("invalid license tier")
 )
 ```
 
@@ -404,7 +380,7 @@ return fmt.Errorf("analytics module requires valid license: %w", err)
 
 // Development warning (permissive)
 logger.Warn("Analytics license validation failed, continuing in dev mode",
-    "error", err)
+ "error", err)
 ```
 
 ---
@@ -413,12 +389,12 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Current State
 
-| Module        | Status            | Tier               | Reason                           |
-| ------------- | ----------------- | ------------------ | -------------------------------- |
-| posts         |  Free           | N/A                | Core social features             |
-| profiles      |  Free           | N/A                | Core user features               |
+| Module        | Status          | Tier               | Reason                           |
+| ------------- | --------------- | ------------------ | -------------------------------- |
+| posts         | Free            | N/A                | Core social features             |
+| profiles      | Free            | N/A                | Core user features               |
 | **analytics** | ** Commercial** | **PRO/ENTERPRISE** | **Active: Analytics as premium** |
-| warehouse     | 🔮 Planned        | TBD                | Future: Inventory management     |
+| warehouse     | 🔮 Planned      | TBD                | Future: Inventory management     |
 
 ### Roadmap
 
@@ -427,7 +403,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 - Analytics module is **commercial** (PRO/ENTERPRISE tiers)
 - Focus on business metrics, reports, dashboards
 - Target: SMBs, enterprises needing data insights
-- Status:  Implemented and enabled
+- Status: Implemented and enabled
 
 **Phase 2 (Q2 2026 - Planned)**:
 
@@ -443,7 +419,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Rationale
 
-1. **Analytics First**:  Works with existing data, immediate value
+1. **Analytics First**: Works with existing data, immediate value
 2. **Audit Log Premium**: Compliance is enterprise requirement
 3. **Free Analytics**: Broader adoption, upsell to Audit Log
 
@@ -457,10 +433,10 @@ Track license usage via logs:
 
 ```go
 logger.Info("License validated",
-    "module", "analytics",
-    "tier", license.Tier,
-    "expiry", license.ExpiryDate,
-    "days_remaining", daysRemaining)
+ "module", "analytics",
+ "tier", license.Tier,
+ "expiry", license.ExpiryDate,
+ "days_remaining", daysRemaining)
 ```
 
 ### Health Endpoint
@@ -472,13 +448,13 @@ curl http://localhost:8080/api/v1/analytics/health
 
 # Response:
 {
-  "status": "healthy",
-  "license": {
-    "tier": "PRO",
-    "expiry": "2026-12-31",
-    "days_remaining": 365,
-    "in_grace_period": false
-  }
+ "status": "healthy",
+ "license": {
+ "tier": "PRO",
+ "expiry": "2026-12-31",
+ "days_remaining": 365,
+ "in_grace_period": false
+ }
 }
 ```
 
@@ -508,13 +484,13 @@ go test ./internal/modules/analytics/license/... -v
 
 Test coverage:
 
--  Valid license parsing
--  Invalid format detection
--  Signature verification
--  Expiration handling
--  Grace period logic
--  Module mismatch
--  Tier validation
+- Valid license parsing
+- Invalid format detection
+- Signature verification
+- Expiration handling
+- Grace period logic
+- Module mismatch
+- Tier validation
 
 ### Integration Tests
 
@@ -522,17 +498,17 @@ Test module initialization with various license states:
 
 ```go
 func TestModuleInitialization(t *testing.T) {
-    tests := []struct {
-        name        string
-        licenseKey  string
-        expectError bool
-    }{
-        {"valid license", validLicense, false},
-        {"expired license", expiredLicense, true},
-        {"invalid signature", tamperedLicense, true},
-        {"missing license", "", true},
-    }
-    // ...
+ tests := []struct {
+ name string
+ licenseKey string
+ expectError bool
+ }{
+ {"valid license", validLicense, false},
+ {"expired license", expiredLicense, true},
+ {"invalid signature", tamperedLicense, true},
+ {"missing license", "", true},
+ }
+ // ...
 }
 ```
 
@@ -595,8 +571,8 @@ log:
 
 modules:
   analytics:
-    settings:
-      debug_license: true # Log all validation steps
+  settings:
+  debug_license: true # Log all validation steps
 ```
 
 ### License Validation Tool
@@ -606,12 +582,12 @@ Test license validity manually:
 ```bash
 # Validate license
 go run ./cmd/license-generator/main.go \
-  -validate \
-  -key="PROMENADE-ANALYTICS-PRO-20261231-..." \
-  -secret="your-secret-key"
+ -validate \
+ -key="PROMENADE-ANALYTICS-PRO-20261231-..." \
+ -secret="your-secret-key"
 
 # Output:
-#  License valid
+# License valid
 # Module: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
@@ -678,15 +654,15 @@ Min length: 50 characters
 
 ```go
 func generateSignature(data, secret string) string {
-    h := hmac.New(sha256.New, []byte(secret))
-    h.Write([]byte(data))
-    signature := base64.URLEncoding.EncodeToString(h.Sum(nil))
-    return strings.TrimRight(signature, "=")  // Remove padding
+ h := hmac.New(sha256.New, []byte(secret))
+ h.Write([]byte(data))
+ signature := base64.URLEncoding.EncodeToString(h.Sum(nil))
+ return strings.TrimRight(signature, "=") // Remove padding
 }
 
 func verifySignature(data, signature, secret string) bool {
-    expected := generateSignature(data, secret)
-    return hmac.Equal([]byte(expected), []byte(signature))
+ expected := generateSignature(data, secret)
+ return hmac.Equal([]byte(expected), []byte(signature))
 }
 ```
 

@@ -40,44 +40,20 @@ PROMENADE-ANALYTICS-PRO-20261231-K8mF3pL9qT2xN7vR4zW6yH1jC5eS8bD0aG3hM6nP9
 
 ### Системні Компоненти
 
-```
-─────────────────────────────────────────────────────────────
-│                  Запуск Додатку                             │
-└────────────────────────────────────────────────────────────
-                       │
-                       ▼
-         ─────────────────────────
-         │  Реєстр Модулів         │
-         │  (pkg/module)           │
-         └────────────────────────
-                  │
-                  │ Для кожного увімкненого модуля
-                  ▼
-         ─────────────────────────
-         │  Module.Initialize()    │
-         └────────────────────────
-                  │
-                  ▼
-         ─────────────────────────
-         │  Валідатор Ліцензій     │
-         │  (module/license/)      │
-         └────────────────────────
-                  │
-    ──────────────────────────
-    │             │             │
-    ▼             ▼             ▼
-Parse()       Validate()    HealthCheck()
-    │             │             │
-    └──────────────────────────
-                  │
-                  ▼
-         ─────────────────────────
-         │  Статус Ліцензії        │
-         │  - Дійсна               │
-         │  - Прострочена (пільга) │
-         │  - Недійсна             │
-         └─────────────────────────
-```
+**Потік Валідації Ліцензій:**
+
+1. **Запуск Додатку**
+   - Реєстр Модулів (`pkg/module`) ініціалізується
+2. **Для Кожного Увімкненого Модуля**
+   - Викликається `Module.Initialize()`
+3. **Валідатор Ліцензій** (`module/license/`)
+   - `Parse()` - Вилучення компонентів ліцензії
+   - `Validate()` - Перевірка підпису та терміну
+   - `HealthCheck()` - Постійна валідація
+4. **Статус Ліцензії** (результат)
+   - Дійсна - Модуль працює нормально
+   - Прострочена (пільга) - Видано попередження
+   - Недійсна - Модуль вимкнено
 
 ### Потік Валідації
 
@@ -111,49 +87,49 @@ export LICENSE_SECRET="your-production-secret-key"
 
 ```go
 func (m *AnalyticsModule) Initialize(cfg interface{}) error {
-    // Завантажити конфігурацію модуля
-    config, ok := cfg.(*Config)
-    if !ok {
-        return ErrInvalidConfig
-    }
+ // Завантажити конфігурацію модуля
+ config, ok := cfg.(*Config)
+ if !ok {
+ return ErrInvalidConfig
+ }
 
-    // Валідувати ліцензію, якщо потрібно
-    if config.LicenseRequired {
-        if err := m.validateLicense(config); err != nil {
-            return fmt.Errorf("license validation failed: %w", err)
-        }
-    }
+ // Валідувати ліцензію, якщо потрібно
+ if config.LicenseRequired {
+ if err := m.validateLicense(config); err != nil {
+ return fmt.Errorf("license validation failed: %w", err)
+ }
+ }
 
-    return nil
+ return nil
 }
 
 func (m *AnalyticsModule) validateLicense(config *Config) error {
-    licenseKey := config.LicenseKey
-    if licenseKey == "" {
-        licenseKey = os.Getenv("ANALYTICS_LICENSE_KEY")
-    }
+ licenseKey := config.LicenseKey
+ if licenseKey == "" {
+ licenseKey = os.Getenv("ANALYTICS_LICENSE_KEY")
+ }
 
-    if licenseKey == "" {
-        return ErrLicenseRequired
-    }
+ if licenseKey == "" {
+ return ErrLicenseRequired
+ }
 
-    secret := os.Getenv("LICENSE_SECRET")
-    if secret == "" {
-        secret = "default-dev-secret"
-    }
+ secret := os.Getenv("LICENSE_SECRET")
+ if secret == "" {
+ secret = "default-dev-secret"
+ }
 
-    license, err := ParseLicense(licenseKey)
-    if err != nil {
-        return err
-    }
+ license, err := ParseLicense(licenseKey)
+ if err != nil {
+ return err
+ }
 
-    validationOptions := ValidationOptions{
-        ValidateExpiry:    config.ValidateExpiry,
-        ValidateSignature: config.ValidateSignature,
-        GracePeriodDays:   config.GracePeriodDays,
-    }
+ validationOptions := ValidationOptions{
+ ValidateExpiry: config.ValidateExpiry,
+ ValidateSignature: config.ValidateSignature,
+ GracePeriodDays: config.GracePeriodDays,
+ }
 
-    return license.Validate("ANALYTICS", secret, validationOptions)
+ return license.Validate("ANALYTICS", secret, validationOptions)
 }
 ```
 
@@ -167,14 +143,14 @@ func ParseLicense(licenseKey string) (*License, error)
 
 // Validate перевіряє валідність ліцензії
 func (l *License) Validate(
-    expectedModule string,
-    secret string,
-    options ValidationOptions,
+ expectedModule string,
+ secret string,
+ options ValidationOptions,
 ) error
 
 // Generate створює нову ліцензію (для тестування/інструментів)
 func GenerateLicense(
-    module, tier, expiry, secret string,
+ module, tier, expiry, secret string,
 ) (string, error)
 ```
 
@@ -184,12 +160,12 @@ func GenerateLicense(
 
 ```go
 func (m *AnalyticsModule) HealthCheck(ctx context.Context) error {
-    if m.license != nil {
-        if m.license.IsExpired() && !m.license.InGracePeriod(7) {
-            return ErrLicenseExpired
-        }
-    }
-    return nil
+ if m.license != nil {
+ if m.license.IsExpired() && !m.license.InGracePeriod(7) {
+ return ErrLicenseExpired
+ }
+ }
+ return nil
 }
 ```
 
@@ -234,14 +210,14 @@ validate_on_request: true # Опціональна валідація на за�
 ```yaml
 modules:
   analytics:
-    enabled: true
-    version: "1.0.0"
-    description: "Advanced analytics and reporting"
-    license_key: "" # Встановити через змінну середовища
-    settings:
-      metrics_retention_days: 90
-      max_reports_per_user: 10
-      max_dashboards_per_user: 5
+  enabled: true
+  version: "1.0.0"
+  description: "Advanced analytics and reporting"
+  license_key: "" # Встановити через змінну середовища
+  settings:
+  metrics_retention_days: 90
+  max_reports_per_user: 10
+  max_dashboards_per_user: 5
 ```
 
 ---
@@ -330,10 +306,10 @@ go build -o ./bin/license-generator ./cmd/license-generator/main.go
 
 ```bash
 ./bin/license-generator \
-  -module=ANALYTICS \
-  -tier=PRO \
-  -expiry=20261231 \
-  -secret="your-secret-key"
+ -module=ANALYTICS \
+ -tier=PRO \
+ -expiry=20261231 \
+ -secret="your-secret-key"
 ```
 
 ---
@@ -381,12 +357,12 @@ openssl rand -base64 32
 
 ```go
 var (
-    ErrLicenseRequired   = errors.New("license key is required")
-    ErrInvalidFormat     = errors.New("invalid license format")
-    ErrInvalidSignature  = errors.New("invalid license signature")
-    ErrLicenseExpired    = errors.New("license has expired")
-    ErrModuleMismatch    = errors.New("license module mismatch")
-    ErrInvalidTier       = errors.New("invalid license tier")
+ ErrLicenseRequired = errors.New("license key is required")
+ ErrInvalidFormat = errors.New("invalid license format")
+ ErrInvalidSignature = errors.New("invalid license signature")
+ ErrLicenseExpired = errors.New("license has expired")
+ ErrModuleMismatch = errors.New("license module mismatch")
+ ErrInvalidTier = errors.New("invalid license tier")
 )
 ```
 
@@ -404,7 +380,7 @@ return fmt.Errorf("analytics module requires valid license: %w", err)
 
 // Попередження розробки (дозволяюче)
 logger.Warn("Analytics license validation failed, continuing in dev mode",
-    "error", err)
+ "error", err)
 ```
 
 ---
@@ -413,12 +389,12 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Поточний Стан
 
-| Модуль        | Статус             | Рівень             | Причина                            |
-| ------------- | ------------------ | ------------------ | ---------------------------------- |
-| posts         |  Безкоштовний    | N/A                | Основні соціальні функції          |
-| profiles      |  Безкоштовний    | N/A                | Основні функції користувача        |
+| Модуль        | Статус           | Рівень             | Причина                            |
+| ------------- | ---------------- | ------------------ | ---------------------------------- |
+| posts         | Безкоштовний     | N/A                | Основні соціальні функції          |
+| profiles      | Безкоштовний     | N/A                | Основні функції користувача        |
 | **analytics** | ** Комерційний** | **PRO/ENTERPRISE** | **Активний: Аналітика як преміум** |
-| warehouse     | 🔮 Запланований    | TBD                | Майбутнє: Управління інвентарем    |
+| warehouse     | 🔮 Запланований  | TBD                | Майбутнє: Управління інвентарем    |
 
 ### Дорожня Карта
 
@@ -427,7 +403,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 - Модуль analytics є **комерційним** (рівні PRO/ENTERPRISE)
 - Фокус на бізнес-метриках, звітах, дашбордах
 - Цільова аудиторія: МСБ, підприємства, що потребують інсайтів з даних
-- Статус:  Реалізовано та увімкнено
+- Статус: Реалізовано та увімкнено
 
 **Фаза 2 (Q2 2026 - Запланована)**:
 
@@ -443,7 +419,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Обґрунтування
 
-1. **Analytics Перший**:  Працює з існуючими даними, негайна цінність
+1. **Analytics Перший**: Працює з існуючими даними, негайна цінність
 2. **Audit Log Преміум**: Відповідність є вимогою підприємств
 3. **Безкоштовний Analytics**: Ширше впровадження, продаж Audit Log
 
@@ -457,10 +433,10 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ```go
 logger.Info("License validated",
-    "module", "analytics",
-    "tier", license.Tier,
-    "expiry", license.ExpiryDate,
-    "days_remaining", daysRemaining)
+ "module", "analytics",
+ "tier", license.Tier,
+ "expiry", license.ExpiryDate,
+ "days_remaining", daysRemaining)
 ```
 
 ### Ендпоінт Здоров'я
@@ -472,13 +448,13 @@ curl http://localhost:8080/api/v1/analytics/health
 
 # Відповідь:
 {
-  "status": "healthy",
-  "license": {
-    "tier": "PRO",
-    "expiry": "2026-12-31",
-    "days_remaining": 365,
-    "in_grace_period": false
-  }
+ "status": "healthy",
+ "license": {
+ "tier": "PRO",
+ "expiry": "2026-12-31",
+ "days_remaining": 365,
+ "in_grace_period": false
+ }
 }
 ```
 
@@ -508,13 +484,13 @@ go test ./internal/modules/analytics/license/... -v
 
 Покриття тестами:
 
--  Розбір дійсної ліцензії
--  Виявлення невірного формату
--  Перевірка підпису
--  Обробка прострочення
--  Логіка пільгового періоду
--  Невідповідність модуля
--  Валідація рівня
+- Розбір дійсної ліцензії
+- Виявлення невірного формату
+- Перевірка підпису
+- Обробка прострочення
+- Логіка пільгового періоду
+- Невідповідність модуля
+- Валідація рівня
 
 ### Інтеграційні Тести
 
@@ -522,17 +498,17 @@ go test ./internal/modules/analytics/license/... -v
 
 ```go
 func TestModuleInitialization(t *testing.T) {
-    tests := []struct {
-        name        string
-        licenseKey  string
-        expectError bool
-    }{
-        {"valid license", validLicense, false},
-        {"expired license", expiredLicense, true},
-        {"invalid signature", tamperedLicense, true},
-        {"missing license", "", true},
-    }
-    // ...
+ tests := []struct {
+ name string
+ licenseKey string
+ expectError bool
+ }{
+ {"valid license", validLicense, false},
+ {"expired license", expiredLicense, true},
+ {"invalid signature", tamperedLicense, true},
+ {"missing license", "", true},
+ }
+ // ...
 }
 ```
 
@@ -595,8 +571,8 @@ log:
 
 modules:
   analytics:
-    settings:
-      debug_license: true # Логувати всі кроки валідації
+  settings:
+  debug_license: true # Логувати всі кроки валідації
 ```
 
 ### Інструмент Валідації Ліцензій
@@ -606,12 +582,12 @@ modules:
 ```bash
 # Валідувати ліцензію
 go run ./cmd/license-generator/main.go \
-  -validate \
-  -key="PROMENADE-ANALYTICS-PRO-20261231-..." \
-  -secret="your-secret-key"
+ -validate \
+ -key="PROMENADE-ANALYTICS-PRO-20261231-..." \
+ -secret="your-secret-key"
 
 # Вивід:
-#  License valid
+# License valid
 # Module: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
@@ -678,15 +654,15 @@ go run ./cmd/license-generator/main.go \
 
 ```go
 func generateSignature(data, secret string) string {
-    h := hmac.New(sha256.New, []byte(secret))
-    h.Write([]byte(data))
-    signature := base64.URLEncoding.EncodeToString(h.Sum(nil))
-    return strings.TrimRight(signature, "=")  // Видалити padding
+ h := hmac.New(sha256.New, []byte(secret))
+ h.Write([]byte(data))
+ signature := base64.URLEncoding.EncodeToString(h.Sum(nil))
+ return strings.TrimRight(signature, "=") // Видалити padding
 }
 
 func verifySignature(data, signature, secret string) bool {
-    expected := generateSignature(data, secret)
-    return hmac.Equal([]byte(expected), []byte(signature))
+ expected := generateSignature(data, secret)
+ return hmac.Equal([]byte(expected), []byte(signature))
 }
 ```
 
