@@ -337,28 +337,40 @@ make migrate-create-core NAME=add_audit_log
 
 ## Тестування
 
-**388 тестів** на всіх шарах (100% пройдено, ~41 секунда):
+**400+ тестів** на всіх шарах (100% успішно, ~20 секунд):
 
 ```bash
-# Запуск всіх тестів (unit + integration + smoke)
-make test               # Всі тести (~41с)
+# Запуск всіх тестів
+make test               # Всі тести (~20с)
 
-# Запуск за типом
-make test-unit          # Тільки unit тести (183 тести, ~5с)
-make test-integration   # Integration тести (91 тест, ~36с)
-make test-smoke         # Smoke тести (114 тестів, ~4с)
+# Запуск за модулями
+make test-core          # Тести ядра (275 тестів: 39 entity + 236 usecase)
+make test-modules       # Всі тести модулів
+make test-module-posts      # Тести модуля Posts (33 тести)
+make test-module-profiles   # Тести модуля Profiles (21 тест)
+make test-module-analytics  # Тести модуля Analytics (11 тестів)
 
 # Звіт покриття
-make test-coverage
+make test-coverage      # HTML звіт покриття
 ```
 
-### Структура Тестів
+### Покриття Тестами
 
-- **Core Тести**: Domain сутності (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
-- **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge операції
-- **IModule Тести**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, валідація ліцензії)
-- **Integration Тести**: Операції репозиторію з реальною PostgreSQL на порту 5433
-- **Test Helpers**: `test/helpers/` та `test/integration/` для fixtures, налаштування DB, управління транзакціями
+- **Шар Core**: 275 тестів
+  - Доменні сутності: 39 тестів (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge)
+  - Use cases: 236 тестів (Auth, RBAC, CRUD довідкових даних, Операції очищення)
+- **Модуль Posts**: 33 тести, 83.3% покриття (PostStatus, життєвий цикл UserPost, валідація, генерація slug)
+- **Модуль Profiles**: 21 тест, 80.4% покриття (UserContact, UserProfile, приватність, валідація)
+- **Модуль Analytics**: 11 тестів (Metrics, MetricAggregate, операції usecase)
+- **Утиліти**: 51 тест, 89.5% середнє покриття (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
+
+### Час Виконання Тестів
+
+- **Тести Core**: 14.7с (entity 4.4с + usecase 10.2с)
+- **Модуль Posts**: 1.4с
+- **Модуль Profiles**: 1.5с
+- **Модуль Analytics**: 2.7с (entity 1.4с + usecase 1.4с)
+- **Всього**: ~20 секунд для повного набору тестів
 
 **Гайди з тестування**:
 

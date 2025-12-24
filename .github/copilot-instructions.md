@@ -25,7 +25,7 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 - **CRITICAL**: Modules MUST NOT import `internal/domain|usecase|adapter`. Only `pkg/*` allowed.
 - Self-contained: entity → repo → usecase → handler → routes
 - Auto-register via `init()` in `register.go`, import in [cmd/api/main.go](../cmd/api/main.go)
-- Examples: `posts` (posts+comments+likes), `profiles`, `analytics` (commercial)
+- Examples: `posts` (posts+comments+likes), `profiles`, `analytics` (free), `audit` (commercial)
 
 **Core orchestrates, modules execute**. Core knows WHEN to call modules, not HOW they work.
 
@@ -66,7 +66,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, 
 
 **Testing** (tests live alongside code in `*_test.go`):
 
-- `make test` - All tests (388 total: 183 unit + 91 integration + 114 smoke)
+- `make test` - All tests (unit + integration + smoke)
 - `make test-unit` - Unit only (~5s)
 - `make test-integration` - Integration with real DB port 5433 (~36s)
 - `make test-coverage` - HTML coverage report
@@ -81,6 +81,12 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, 
 **API**:
 
 - `make swagger-all` - Generate v1 + v2 API docs (run after handler/DTO changes)
+
+**Mocks** (for testing):
+
+- `make mocks` - Generate all mocks for all modules (uses .mockery.yaml)
+- `make mocks-posts` / `make mocks-profiles` / `make mocks-analytics` - Generate module-specific mocks
+- Mock files generated in `{module}/domain/repository/mocks/` or `{module}/usecase/mocks/`
 
 ## API & HTTP Patterns
 
@@ -157,7 +163,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 1. **Structure** in `internal/modules/mymodule/`:
 
    ```
-   ├── module.go              # Implement pkg/module.Module
+   ├── module.go              # Implement pkg/module.IModule
    ├── register.go            # init() auto-registration
    ├── config/                # Own YAML configs
    ├── domain/entity/         # Business entities
@@ -168,7 +174,36 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
        └── repository/postgres/ # DB implementation + BaseRepository
    ```
 
-2. **register.go** template:
+2. **module.go** - Implement `pkg/module.IModule` interface:
+
+   ```go
+   package mymodule
+
+   import "github.com/basilex/promenade/pkg/module"
+
+   type MyModule struct {
+       core *module.Core
+       // ... handlers, usecases, config
+   }
+
+   func New() module.IModule {
+       return &MyModule{}
+   }
+
+   // Implement required methods:
+   // - Metadata() module.Metadata
+   // - Dependencies() []string
+   // - Initialize(ctx, core) error
+   // - RegisterRoutes(router)
+   // - RegisterMigrations() []module.Migration
+   // - RegisterEventHandlers(bus) error
+   // - RegisterPermissions() []module.Permission
+   // - Start(ctx) error
+   // - Stop(ctx) error
+   // - HealthCheck(ctx) error
+   ```
+
+3. **register.go** template:
 
    ```go
    package mymodule
@@ -185,9 +220,18 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
    }
    ```
 
-3. **Import** in `cmd/api/main.go`: `_ "github.com/basilex/promenade/internal/modules/mymodule"`
-4. **Enable** in `config/modules.yaml`: `mymodule: { enabled: true }`
-5. **Migrations**: `make migrate-create MODULE=mymodule NAME=init`
+4. **Import** in `cmd/api/main.go`: `_ "github.com/basilex/promenade/internal/modules/mymodule"`
+5. **Enable** in `config/modules.yaml`:
+   ```yaml
+   modules:
+     enabled:
+       - posts
+       - profiles
+       - analytics # Free
+       - audit # Commercial (requires license)
+       - mymodule # Add here
+   ```
+6. **Migrations**: `make migrate-create MODULE=mymodule NAME=init`
 
 **CRITICAL**: Never import `internal/domain`, `internal/usecase`, or `internal/adapter` in modules. Only `pkg/*` allowed.
 
@@ -212,9 +256,25 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 
 **Test Types**:
 
-- **Unit** (183): Mock repos, test business logic (`make test-unit`, ~5s)
-- **Integration** (91): Real DB port 5433, test repos (`make test-integration`, ~36s)
-- **Smoke** (114): E2E critical flows (`make test-smoke`, ~4s)
+- **Core Entity Tests** (39 tests) - Domain entities: Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge
+- **Core UseCase Tests** (236 tests) - Business logic: Auth (Register, Login, Logout, RefreshToken, GetMe, Sessions), RBAC (CountryUseCase, CurrencyUseCase, LanguageUseCase, PermissionUseCase, PurgeUseCase, RoleUseCase, TimezoneUseCase)
+- **Module Entity Tests**:
+  - Posts module (33 tests, 83.3% coverage) - PostStatus, UserPost lifecycle, validation, slug generation
+  - Profiles module (21 tests, 80.4% coverage) - UserContact, UserProfile, privacy, validation
+  - Analytics module (11 tests) - Metric validation, MetricAggregate, usecase operations
+- **Utilities Tests** (51 tests, 89.5% avg) - response (100%), validator (80%), logger (83.8%), pagination (94.1%)
+
+**Test Execution** (~20 seconds total):
+
+```bash
+make test                      # All tests (400+ tests)
+make test-core                 # Core tests (275 tests: 39 entity + 236 usecase)
+make test-modules              # All module tests
+make test-module-posts         # Posts module (33 tests)
+make test-module-profiles      # Profiles module (21 tests)
+make test-module-analytics     # Analytics module (11 tests)
+make test-coverage             # HTML coverage report
+```
 
 **Example**:
 
@@ -422,9 +482,11 @@ pageSize := response.GetPageSizeFromQuery(c) //Default: 20, max: 100
 
 - Format: `PROMENADE-{MODULE}-{TIER}-{EXPIRY}-{SIGNATURE}`
 - Tiers: BASIC, PRO, ENTERPRISE (different features/retention)
-- Generation: `./scripts/generate-license.sh analytics PRO 365`
+- Generation: `./scripts/generate-license.sh <module> <tier> <days>`
 - Config: Set `{MODULE}_LICENSE_KEY` env var or `license_required: false` for dev
-- Example: `analytics` module (metrics, reports, dashboards)
+- Examples:
+  - `analytics` module (metrics, reports, dashboards) - **FREE** (no license required)
+  - `audit` module (immutable audit logs, signatures) - **COMMERCIAL** (requires license)
 
 ## Code Consistency Standards
 

@@ -2,102 +2,196 @@
 
 ## Overview
 
-A comprehensive testing system covering all application layers with **388 tests (100% passing)**:
+A comprehensive testing system covering all application layers with **400+ tests (100% passing)**:
 
-- **Unit Tests** (183) - isolated business logic and entity validation
-- **Integration Tests** (91) - repository operations with real PostgreSQL
-- **Smoke Tests** (114) - end-to-end critical flows with real database
-- **E2E Tests** - HTTP API tests (TODO)
+- **Core Entity Tests** (39) - domain entities and validation
+- **Core UseCase Tests** (236) - business logic with auth, RBAC, purge operations
+- **Module Entity Tests** (65) - Posts (33, 83.3% coverage), Profiles (21, 80.4% coverage), Analytics (11)
+- **Utilities Tests** (51, 89.5% avg) - response, validator, logger, pagination
 
 ## Quick Start
 
 ```bash
-# Run all tests (unit + integration)
-make test                  # 274 tests in ~41s
+# Run all tests (~20 seconds)
+make test                  # 400+ tests across all layers
 
 # Individual test suites
-make test-unit            # 183 unit tests (~5s)
-make test-integration     # 91 integration tests (~36s)
-make test-smoke           # 114 smoke tests (~4s)
+make test-core             # Core tests (275 tests: 39 entity + 236 usecase)
+make test-modules          # All module tests
+make test-module-posts     # Posts module (33 tests, 83.3% coverage)
+make test-module-profiles  # Profiles module (21 tests, 80.4% coverage)
+make test-module-analytics # Analytics module (11 tests)
 
 # Coverage and monitoring
-make test-coverage        # HTML coverage report
-make test-watch           # Watch mode (gotestsum)
+make test-coverage         # HTML coverage report
 ```
-
-## Test Database
-
-Integration tests use a separate test database on port **5433**:
-
-```bash
-# Start test DB
-make test-db-start
-
-# Stop and clean
-make test-db-stop
-
-# View logs
-make test-db-logs
-```
-
-**Important:** Test DB is completely isolated from dev/prod databases.
 
 ## Test Structure
 
-### 1. Integration Tests (Repositories)
+### 1. Core Entity Tests (39 tests)
 
-Located alongside code: `internal/adapter/repository/postgres/*_test.go`
+Located alongside code: `internal/domain/entity/*_test.go`
+
+**Entities tested:**
+
+- Country (validation, ISO codes, currency relationships)
+- Currency (validation, symbols, country relationships)
+- Language (ISO codes, native names)
+- Timezone (IANA database, UTC offsets)
+- Permission (resource-action format, wildcards)
+- Role (RBAC roles, system roles)
+- User (password hashing/checking, status management)
+- Session (token generation, expiration, refresh)
+- Purge (retention policies, entity tracking)
 
 Example:
 
 ```go
-func TestUserRepository_Create(t *testing.T) {
-    testDB := helpers.SetupTestDB(t)
-    defer testDB.Close()
-    defer testDB.CleanupTables(t)
+func TestUser_HashPassword(t *testing.T) {
+    user := &entity.User{Email: "test@example.com"}
 
-    repo := postgres.NewUserRepository(testDB.DB)
-    ctx := context.Background()
+    err := user.HashPassword("password123")
+    require.NoError(t, err)
+    assert.NotEmpty(t, user.Password)
 
-    t.Run("creates user successfully", func(t *testing.T) {
-        user := helpers.UserFixture()
-        err := repo.Create(ctx, user)
-        require.NoError(t, err)
-
-        retrieved, err := repo.GetByID(ctx, user.ID)
-        require.NoError(t, err)
-        assert.Equal(t, user.Email, retrieved.Email)
-    })
+    ok := user.CheckPassword("password123")
+    assert.True(t, ok)
 }
 ```
 
-**Coverage:**
+**Coverage:** Comprehensive coverage of all domain entity business logic.
 
-- [+] IUserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
-- [+] ISessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
+---
 
-### 2. Unit Tests (Use Cases)
+### 2. Core UseCase Tests (236 tests)
 
-_TODO: Next step_
+Located alongside code: `internal/usecase/*_test.go`
 
-Will test business logic with mocked repositories:
+**Auth UseCase** (Register, Login, Logout, RefreshToken, GetMe, Sessions):
 
-- Register
-- Login
-- RefreshToken
-- Logout
-- SuspendUser
-- BanUser
-- ReactivateUser
-- ChangePassword
+- User registration with email/password validation
+- Login with credential verification
+- Logout and session cleanup
+- JWT token refresh logic
+- Get current authenticated user
+- Session management operations
 
-### 3. Smoke Tests (End-to-End Critical Flows)
+**RBAC UseCases** (Country, Currency, Language, Permission, Role, Timezone):
 
-Located in: `test/smoke/*_smoke_test.go`
+- CountryUseCase: CRUD operations, currency associations
+- CurrencyUseCase: CRUD operations, country relationships
+- LanguageUseCase: CRUD operations, active lists
+- PermissionUseCase: Create, get, list, update, delete, batch operations
+- RoleUseCase: CRUD operations, permission assignments, user role management
+- TimezoneUseCase: CRUD operations, active timezone lists
 
-**114 smoke tests** verify critical user flows with real database operations.
+**Purge UseCase**:
+
+- Purge entities by retention policies
+- Policy registry management
+- Preview purge operations before execution
 
 Example:
+
+```go
+func TestAuthUseCase_Register(t *testing.T) {
+    mockUserRepo := mocks.NewMockUserRepository(t)
+    uc := usecase.NewAuthUseCase(mockUserRepo, nil, jwtManager, eventBus)
+
+    mockUserRepo.EXPECT().GetByEmail(mock.Anything, "new@example.com").Return(nil, entity.ErrNotFound)
+    mockUserRepo.EXPECT().Create(mock.Anything, mock.Anything).Return(nil)
+
+    user, err := uc.Register(ctx, "new@example.com", "John Doe", "password123")
+    require.NoError(t, err)
+    assert.Equal(t, "new@example.com", user.Email)
+}
+```
+
+---
+
+### 3. Module Entity Tests
+
+**Posts Module** (33 tests, 83.3% coverage):
+
+Located: `internal/modules/posts/domain/entity/*_test.go`
+
+Tests cover:
+
+- PostStatus lifecycle and valid transitions
+- UserPost creation, validation, publish/unpublish
+- Archive and schedule functionality
+- Comment counters and interactions
+- Soft delete operations
+- Featured image management
+- Slug generation and uniqueness validation
+
+**Profiles Module** (21 tests, 80.4% coverage):
+
+Located: `internal/modules/profiles/entity/*_test.go`
+
+Tests cover:
+
+- UserContact validation and availability checks
+- UserProfile field management
+- Gender and privacy settings
+- Social link validation
+- User preferences
+- Ban/unban operations
+- Email verification
+- View tracking and last seen timestamps
+
+**Analytics Module** (11 tests):
+
+Located: `internal/modules/analytics/domain/entity/*_test.go` and `usecase/*_test.go`
+
+Tests cover:
+
+- Metric validation (types, scopes, modules)
+- MetricAggregate calculations
+- UseCase operations: collect metric, get metric, list metrics by scope/module, get latest metric
+
+Example:
+
+```go
+func TestUserPost_Publish(t *testing.T) {
+    post := &entity.UserPost{
+        Status: entity.PostStatusDraft,
+    }
+
+    post.Publish()
+
+    assert.Equal(t, entity.PostStatusPublished, post.Status)
+    assert.NotNil(t, post.PublishedAt)
+    assert.Nil(t, post.ScheduledAt)
+}
+```
+
+---
+
+### 4. Utilities Tests (51 tests, 89.5% avg coverage)
+
+**response** (26 tests, 100% coverage):
+
+- Success/error responses
+- Pagination responses
+- Query parameter parsing (page, page_size)
+
+**validator** (5 tests, 80% coverage):
+
+- Custom validators (slug, timezone, language code)
+- Validation error handling
+
+**logger** (12 tests, 83.8% coverage):
+
+- Context-aware logging with request IDs
+- Log level configuration
+- Structured logging with slog
+
+**pagination** (8 tests, 94.1% coverage):
+
+- Page/size calculation
+- Offset/limit conversion
+- Default values and max limits
 
 ```go
 func TestAuth_SmokeTest(t *testing.T) {
@@ -144,7 +238,7 @@ go test -short ./test/smoke  # Smoke tests are skipped
 
 **Coverage by IModule:**
 
-| IModule           | Scenarios | Coverage                                                 |
+| IModule          | Scenarios | Coverage                                                 |
 | ---------------- | --------- | -------------------------------------------------------- |
 | Auth             | 8         | Register, login, sessions, refresh, logout               |
 | Country/Currency | 12        | Complete CRUD operations                                 |

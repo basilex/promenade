@@ -25,7 +25,7 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **IModule Layer** - Independent Vertical Slices (Domain Areas)
 
-| IModule        | Entities                         | Description                   | Status   |
+| IModule       | Entities                         | Description                   | Status   |
 | ------------- | -------------------------------- | ----------------------------- | -------- |
 | Posts         | posts, comments, likes           | User-generated content        | Free     |
 | Profiles      | contacts, profiles               | User profiles                 | Free     |
@@ -144,10 +144,10 @@ Server starts on **http://localhost:8081**
 
 ### IModule System
 
-| Document                                                                     | Description                                     |
-| ---------------------------------------------------------------------------- | ----------------------------------------------- |
+| Document                                                                     | Description                                      |
+| ---------------------------------------------------------------------------- | ------------------------------------------------ |
 | **[internal/modules/README.md](internal/modules/README.md)**                 | IModule system overview, structure, registration |
-| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Creating new modules, best practices            |
+| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Creating new modules, best practices             |
 | **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | IModule autonomy rules, dependency management    |
 | **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | IModule configuration system                     |
 
@@ -344,28 +344,40 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**388 tests** across all layers (100% passing, ~41 seconds):
+**400+ tests** across all layers (100% passing, ~20 seconds):
 
 ```bash
-# Run all tests (unit + integration + smoke)
-make test               # All tests (~41s)
+# Run all tests
+make test               # All tests (~20s)
 
-# Run by type
-make test-unit          # Unit tests only (183 tests, ~5s)
-make test-integration   # Integration tests (91 tests, ~36s)
-make test-smoke         # Smoke tests (114 tests, ~4s)
+# Run by module
+make test-core          # Core tests (275 tests: 39 entity + 236 usecase)
+make test-modules       # All module tests
+make test-module-posts      # Posts module tests (33 tests)
+make test-module-profiles   # Profiles module tests (21 tests)
+make test-module-analytics  # Analytics module tests (11 tests)
 
 # Coverage report
-make test-coverage
+make test-coverage      # HTML coverage report
 ```
 
-### Test Structure
+### Test Coverage
 
-- **Core Tests**: Domain entities (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
-- **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge operations
-- **IModule Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, License validation)
-- **Integration Tests**: Repository operations with real PostgreSQL on port 5433
-- **Test Helpers**: `test/helpers/` and `test/integration/` for fixtures, database setup, transaction management
+- **Core Layer**: 275 tests
+  - Domain entities: 39 tests (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge)
+  - Use cases: 236 tests (Auth, RBAC, Reference data CRUD, Purge operations)
+- **Posts Module**: 33 tests, 83.3% coverage (PostStatus, UserPost lifecycle, validation, slug generation)
+- **Profiles Module**: 21 tests, 80.4% coverage (UserContact, UserProfile, privacy, validation)
+- **Analytics Module**: 11 tests (Metrics, MetricAggregate, usecase operations)
+- **Utilities**: 51 tests, 89.5% avg coverage (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
+
+### Test Execution Time
+
+- **Core Tests**: 14.7s (entity 4.4s + usecase 10.2s)
+- **Posts Module**: 1.4s
+- **Profiles Module**: 1.5s
+- **Analytics Module**: 2.7s (entity 1.4s + usecase 1.4s)
+- **Total**: ~20 seconds for full test suite
 
 **Testing guides**:
 

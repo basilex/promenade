@@ -38,7 +38,9 @@ func TestCreateProfile(t *testing.T) {
 	firstName := "Test"
 
 	t.Run("success", func(t *testing.T) {
+		displayName := "Test User"
 		reqBody := dto.CreateProfileRequest{
+			DisplayName: &displayName,
 			Nickname:  &nickname,
 			FirstName: &firstName,
 			Timezone:  "UTC",
@@ -67,10 +69,11 @@ func TestCreateProfile(t *testing.T) {
 
 		handler.CreateProfile(ctx)
 
-		assert.Equal(t, http.StatusCreated, w.Code)
-		var response map[string]any
-		json.Unmarshal(w.Body.Bytes(), &response)
-		assert.Equal(t, true, response["success"])
+		assert.Equal(t, http.StatusCreated, w.Code, "Response body: %s", w.Body.String())
+		var resp map[string]any
+		err := json.Unmarshal(w.Body.Bytes(), &resp)
+		assert.NoError(t, err, "Failed to unmarshal response: %s", w.Body.String())
+		assert.Equal(t, true, resp["success"]) // Use "success" field (bool), not "status" (string)
 		mockUC.AssertExpectations(t)
 	})
 
@@ -106,7 +109,12 @@ func TestCreateProfile(t *testing.T) {
 	})
 
 	t.Run("profile already exists", func(t *testing.T) {
-		reqBody := dto.CreateProfileRequest{Timezone: "UTC", Locale: "en-US"}
+		displayName := "Test User"
+		reqBody := dto.CreateProfileRequest{
+			DisplayName: &displayName,
+			Timezone: "UTC",
+			Locale: "en-US",
+		}
 		body, _ := json.Marshal(reqBody)
 
 		mockUC.On("CreateProfile", mock.Anything, userID, mock.Anything).
@@ -127,7 +135,9 @@ func TestCreateProfile(t *testing.T) {
 	})
 
 	t.Run("nickname already taken", func(t *testing.T) {
+		displayName := "Test User"
 		reqBody := dto.CreateProfileRequest{
+			DisplayName: &displayName,
 			Nickname: &nickname,
 			Timezone: "UTC",
 			Locale:   "en-US",

@@ -4,7 +4,7 @@ Unit tests for Promenade project - tests are located alongside the code they tes
 
 ---
 
-##  Test Structure
+## Test Structure
 
 Tests are organized **per component** - each module and core component has its own tests in the same directory:
 
@@ -12,16 +12,21 @@ Tests are organized **per component** - each module and core component has its o
 
 ```
 internal/
-└── domain/
-    └── entity/              # Core entity tests
-        ├── user.go
-        ├── user_test.go     # ← Tests here
-        ├── session.go
-        ├── session_test.go  # ← Tests here
-        ├── role.go
-        ├── role_test.go
-        ├── permission.go
-        └── permission_test.go
+├── domain/
+│   └── entity/              # Core entity tests (39 tests)
+│       ├── user.go
+│       ├── user_test.go     # ← Tests here
+│       ├── session.go
+│       ├── session_test.go  # ← Tests here
+│       ├── role.go
+│       ├── role_test.go
+│       ├── permission.go
+│       └── permission_test.go
+└── usecase/                 # Core usecase tests (236 tests)
+    ├── auth_usecase.go
+    ├── auth_usecase_test.go
+    ├── role_usecase.go
+    └── role_usecase_test.go
 ```
 
 ### IModule Tests
@@ -32,47 +37,46 @@ internal/modules/
 │   └── domain/
 │       └── entity/
 │           ├── post.go
-│           ├── post_test.go      # ← Tests here
+│           ├── post_test.go      # ← 33 tests, 83.3% coverage
 │           ├── comment.go
 │           └── comment_test.go
-└── profiles/
-    └── entity/
-        ├── user_profile.go
-        ├── user_profile_test.go  # ← Tests here
-        ├── user_contact.go
-        └── user_contact_test.go
+├── profiles/
+│   └── entity/
+│       ├── user_profile.go
+│       ├── user_profile_test.go  # ← 21 tests, 80.4% coverage
+│       ├── user_contact.go
+│       └── user_contact_test.go
+└── analytics/
+    └── domain/
+        └── entity/
+            ├── metric.go
+            ├── metric_test.go    # ← 11 tests
+            └── metric_aggregate_test.go
 ```
 
 ---
 
-##  Running Tests
+## Running Tests
 
 ### All Tests
 
 ```bash
-make test                    # Run all tests (core + modules)
+make test                    # Run all tests (400+ tests, ~20s)
 ```
 
 ### Core Tests
 
 ```bash
-make test-core               # Run core domain tests
+make test-core               # Run core tests (275 tests: 39 entity + 236 usecase)
 ```
 
 ### IModule Tests
 
 ```bash
 make test-modules            # Run all module tests
-make test-module-posts       # Run posts module tests only
-make test-module-profiles    # Run profiles module tests only
-```
-
-### Quick Tests
-
-```bash
-make test-quick              # Fast run without race detector
-make test-verbose            # Verbose output
-make test-watch              # Watch mode (requires gotestsum)
+make test-module-posts       # Posts module (33 tests, 83.3% coverage)
+make test-module-profiles    # Profiles module (21 tests, 80.4% coverage)
+make test-module-analytics   # Analytics module (11 tests)
 ```
 
 ### Coverage
@@ -84,16 +88,21 @@ make test-coverage           # Generate coverage report (HTML)
 
 ---
 
-##  Test Categories
+## Test Categories
 
 ### 1. **Core Entity Tests** (`internal/domain/entity/*_test.go`)
 
-Test core domain entities and business logic:
+**39 tests** covering core domain entities:
 
-- **User**: Password hashing, status management
-- **Session**: Expiration, validation, refresh tokens
-- **Role**: RBAC roles, validation
-- **Permission**: Permission constants, format validation
+- **Country**: Validation, currency relationships, ISO codes
+- **Currency**: Validation, country relationships, symbols
+- **Language**: ISO codes, native names, validation
+- **Timezone**: IANA database, UTC offsets, validation
+- **Permission**: Resource-action format, wildcard validation
+- **Role**: RBAC roles, system roles, validation
+- **User**: Password hashing/checking, status management, email validation
+- **Session**: Token generation, expiration, refresh logic
+- **Purge**: Retention policies, entity tracking
 
 **Example**:
 
@@ -114,9 +123,10 @@ go test -v ./internal/domain/entity/
 
 ### 2. **Posts IModule Tests** (`internal/modules/posts/domain/entity/*_test.go`)
 
-Test posts module entities:
+**33 tests, 83.3% coverage** - Test posts module entities:
 
-- **UserPost**: Post status, creation, validation
+- **PostStatus**: Lifecycle management, valid transitions
+- **UserPost**: Creation, validation, publish/unpublish, archive, schedule, counters, soft delete, featured image, slug generation
 - **Comment**: Threading, validation, soft delete
 
 **Example**:
@@ -129,18 +139,20 @@ go test -v ./internal/modules/posts/domain/entity/
 
 - `TestPostStatus_IsValid` - Post status validation
 - `TestUserPost_Creation` - Post creation
+- `TestUserPost_Publish` - Publish operations
+- `TestUserPost_Archive` - Archive operations
+- `TestUserPost_Slug` - Slug generation
 - `TestComment_Validate` - Comment validation
 - `TestComment_IsTopLevel` - Comment threading
-- `TestNewComment` - Comment factory
 
 ---
 
 ### 3. **Profiles IModule Tests** (`internal/modules/profiles/entity/*_test.go`)
 
-Test profiles module entities:
+**21 tests, 80.4% coverage** - Test profiles module entities:
 
-- **UserProfile**: Profile fields, privacy settings, gender validation
-- **UserContact**: Contact types, verification flags
+- **UserProfile**: Profile fields, privacy settings, gender validation, social links, ban/verify operations
+- **UserContact**: Contact types, verification flags, availability
 
 **Example**:
 
@@ -153,13 +165,38 @@ go test -v ./internal/modules/profiles/entity/
 - `TestUserProfile_Fields` - Profile field validation
 - `TestGender_IsValid` - Gender enum validation
 - `TestUserProfile_Privacy` - Privacy flags
+- `TestUserProfile_Ban` - Ban/unban operations
 - `TestContactType_IsValid` - Contact type validation
 - `TestUserContact_Creation` - Contact creation
-- `TestUserContact_Flags` - Contact flags (verified, primary, active)
+- `TestUserContact_Availability` - Availability checks
 
 ---
 
-##  Test Conventions
+### 4. **Analytics IModule Tests** (`internal/modules/analytics/*_test.go`)
+
+**11 tests** - Test analytics module:
+
+- **Metric**: Validation, types, scopes
+- **MetricAggregate**: Calculations
+- **UseCase**: Collect, get, list operations
+
+**Example**:
+
+```bash
+go test -v ./internal/modules/analytics/...
+```
+
+**Tests**:
+
+- `TestMetric_Validation` - Metric validation
+- `TestMetricAggregate` - Aggregate calculations
+- `TestAnalyticsUseCase_CollectMetric` - Collect metrics
+- `TestAnalyticsUseCase_GetMetric` - Get metric by ID
+- `TestAnalyticsUseCase_ListMetrics` - List metrics with filters
+
+---
+
+## Test Conventions
 
 ### Naming
 
@@ -202,7 +239,7 @@ func TestEntity_Method(t *testing.T) {
 
 ---
 
-##  Test Coverage
+## Test Coverage
 
 **Current Status**: All tests passing
 
@@ -217,7 +254,7 @@ func TestEntity_Method(t *testing.T) {
 
 ### Modules
 
-| IModule   | Entity      | Tests       | Coverage                         |
+| IModule  | Entity      | Tests       | Coverage                         |
 | -------- | ----------- | ----------- | -------------------------------- |
 | Posts    | UserPost    | 2 functions | Status, creation                 |
 | Posts    | Comment     | 3 functions | Validation, threading, factory   |
@@ -226,7 +263,7 @@ func TestEntity_Method(t *testing.T) {
 
 ---
 
-##  Test Helpers
+## Test Helpers
 
 Located in `test/helpers/`:
 
@@ -330,4 +367,4 @@ make test-quick || exit 1
 
 ---
 
-**Test Status**:  All tests passing |  Unit tests only |  Fast execution
+**Test Status**: All tests passing | Unit tests only | Fast execution

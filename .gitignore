@@ -45,7 +45,6 @@ tmp/
 temp/
 
 # Local settings
-.github/
 .vscode/
 .idea/
 *.code-workspace

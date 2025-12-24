@@ -326,28 +326,40 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testes
 
-**388 testes** em todas as camadas (100% aprovados, ~41 segundos):
+**400+ testes** em todas as camadas (100% aprovados, ~20 segundos):
 
 ```bash
-# Executar todos os testes (unit + integration + smoke)
-make test               # Todos os testes (~41s)
+# Executar todos os testes
+make test               # Todos os testes (~20s)
 
-# Executar por tipo
-make test-unit          # Apenas testes unitários (183 testes, ~5s)
-make test-integration   # Testes de integração (91 testes, ~36s)
-make test-smoke         # Smoke tests (114 testes, ~4s)
+# Executar por módulo
+make test-core          # Testes do núcleo (275 testes: 39 entity + 236 usecase)
+make test-modules       # Todos os testes de módulos
+make test-module-posts      # Testes do módulo Posts (33 testes)
+make test-module-profiles   # Testes do módulo Profiles (21 testes)
+make test-module-analytics  # Testes do módulo Analytics (11 testes)
 
 # Relatório de cobertura
-make test-coverage
+make test-coverage      # Relatório de cobertura HTML
 ```
 
-### Estrutura de Testes
+### Cobertura de Testes
 
-- **Testes Core**: Entidades de domínio (Country, Currency, Language, Timezone, Permission, Role, User, Session, políticas de Purga)
-- **Core Use Cases**: Auth, RBAC, CRUD de dados de referência, operações de Purga
-- **Testes de Módulos**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, validação de licença)
-- **Testes de Integração**: Operações de repositório com PostgreSQL real na porta 5433
-- **Helpers de Teste**: `test/helpers/` e `test/integration/` para fixtures, configuração de banco de dados, gestão de transações
+- **Camada Core**: 275 testes
+  - Entidades de domínio: 39 testes (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge)
+  - Use cases: 236 testes (Auth, RBAC, CRUD de dados de referência, Operações de limpeza)
+- **Módulo Posts**: 33 testes, 83.3% de cobertura (PostStatus, ciclo de vida UserPost, validação, geração de slug)
+- **Módulo Profiles**: 21 testes, 80.4% de cobertura (UserContact, UserProfile, privacidade, validação)
+- **Módulo Analytics**: 11 testes (Metrics, MetricAggregate, operações de usecase)
+- **Utilitários**: 51 testes, 89.5% de cobertura média (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
+
+### Tempo de Execução dos Testes
+
+- **Testes Core**: 14.7s (entity 4.4s + usecase 10.2s)
+- **Módulo Posts**: 1.4s
+- **Módulo Profiles**: 1.5s
+- **Módulo Analytics**: 2.7s (entity 1.4s + usecase 1.4s)
+- **Total**: ~20 segundos para a suíte completa de testes
 
 **Guias de teste**:
 

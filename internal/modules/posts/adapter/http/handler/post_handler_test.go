@@ -21,7 +21,8 @@ import (
 )
 
 // TestUserPostHandler_CreatePost tests the CreatePost handler
-//  IModule-independent: uses only module types and mocks
+//
+//	IModule-independent: uses only module types and mocks
 func TestUserPostHandler_CreatePost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -414,3 +415,672 @@ func TestUserPostHandler_PublishPost(t *testing.T) {
 		mockUC.AssertExpectations(t)
 	})
 }
+
+func TestUserPostHandler_UpdatePost(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	title := "Updated"
+	content := "Updated content here"
+	updateReq := dto.UpdatePostRequest{
+		Title:   &title,
+		Content: &content,
+	}
+
+	expectedPost := &entity.UserPost{
+		ID:      postID,
+		UserID:  userID,
+		Title:   "Updated",
+		Content: content,
+		Status:  entity.PostStatusDraft,
+	}
+
+	mockUC.On("UpdatePost", mock.Anything, userID, postID, mock.Anything).Return(expectedPost, nil)
+
+	body, _ := json.Marshal(updateReq)
+	req := httptest.NewRequest(http.MethodPut, "/posts/"+postID.String(), bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UpdatePost(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_GetPost_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	postID := uuidv7.New()
+
+	mockUC.On("GetPost", mock.Anything, postID).Return(nil, entity.ErrNotFound)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/"+postID.String(), nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.GetPost(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_DeletePost_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	mockUC.On("SoftDeletePost", mock.Anything, userID, postID).Return(entity.ErrNotFound)
+
+	req := httptest.NewRequest(http.MethodDelete, "/posts/"+postID.String(), nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.DeletePost(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_PublishPost_Unauthorized(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	mockUC.On("PublishPost", mock.Anything, userID, postID).Return(usecase.ErrUnauthorized)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/publish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.PublishPost(c)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_CreatePost_InvalidRequest(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	// Invalid JSON
+	req := httptest.NewRequest(http.MethodPost, "/posts", bytes.NewBufferString("invalid json"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+
+	handler.CreatePost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_GetPost_InvalidID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/invalid-uuid", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
+
+	handler.GetPost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_GetUserPosts(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	posts := []*entity.UserPost{
+		{ID: uuidv7.New(), UserID: userID, Title: "My Post 1"},
+	}
+
+	mockUC.On("GetUserPosts", mock.Anything, userID, mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(posts, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/users/"+userID.String()+"/posts", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "user_id", Value: userID.String()}}
+
+	handler.GetUserPosts(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_UnpublishPost(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	post := &entity.UserPost{
+		ID:     postID,
+		UserID: userID,
+		Title:  "Test",
+		Status: entity.PostStatusDraft,
+	}
+
+	mockUC.On("UnpublishPost", mock.Anything, userID, postID).Return(nil)
+	mockUC.On("GetPost", mock.Anything, postID).Return(post, nil)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/unpublish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UnpublishPost(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_GetPublishedPosts(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	posts := []*entity.UserPost{
+		{ID: uuidv7.New(), Title: "Post 1", Status: entity.PostStatusPublished},
+	}
+
+	mockUC.On("GetPublishedPosts", mock.Anything, mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(posts, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/published", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+
+	handler.GetPublishedPosts(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_GetFeaturedPosts(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	posts := []*entity.UserPost{
+		{ID: uuidv7.New(), Title: "Featured", IsFeatured: true, Status: entity.PostStatusPublished},
+	}
+
+	mockUC.On("GetFeaturedPosts", mock.Anything, mock.AnythingOfType("int")).Return(posts, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/featured", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+
+	handler.GetFeaturedPosts(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_SearchPosts(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	posts := []*entity.UserPost{
+		{ID: uuidv7.New(), Title: "Search Result", Status: entity.PostStatusPublished},
+	}
+
+	mockUC.On("SearchPosts", mock.Anything, "test", mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(posts, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/search?q=test", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+
+	handler.SearchPosts(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_GetPostsByTag(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	posts := []*entity.UserPost{
+		{ID: uuidv7.New(), Title: "Tagged Post", Tags: []string{"golang"}, Status: entity.PostStatusPublished},
+	}
+
+	mockUC.On("GetPostsByTag", mock.Anything, "golang", mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(posts, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/tags/golang", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "tag", Value: "golang"}}
+
+	handler.GetPostsByTag(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_ToggleFeatured(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	post := &entity.UserPost{
+		ID:         postID,
+		UserID:     userID,
+		Title:      "Test",
+		IsFeatured: true,
+	}
+
+	mockUC.On("ToggleFeatured", mock.Anything, userID, postID).Return(nil)
+	mockUC.On("GetPost", mock.Anything, postID).Return(post, nil)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/toggle-featured", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.ToggleFeatured(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_ToggleComments(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	post := &entity.UserPost{
+		ID:                postID,
+		UserID:            userID,
+		Title:             "Test",
+		IsCommentsEnabled: false,
+	}
+
+	mockUC.On("ToggleComments", mock.Anything, userID, postID).Return(nil)
+	mockUC.On("GetPost", mock.Anything, postID).Return(post, nil)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/toggle-comments", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.ToggleComments(c)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+// Additional error test cases
+
+func TestUserPostHandler_UpdatePost_InvalidJSON(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	req := httptest.NewRequest(http.MethodPut, "/posts/"+postID.String(), bytes.NewBufferString("invalid json"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UpdatePost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_UpdatePost_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	title := "Updated Title"
+	reqData := dto.UpdatePostRequest{
+		Title: &title,
+	}
+	reqBody, _ := json.Marshal(reqData)
+
+	mockUC.On("UpdatePost", mock.Anything, userID, postID, mock.Anything).Return(nil, entity.ErrNotFound)
+
+	req := httptest.NewRequest(http.MethodPut, "/posts/"+postID.String(), bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UpdatePost(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_UpdatePost_Unauthorized(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	titleUpdate := "Updated Title"
+	reqData := dto.UpdatePostRequest{
+		Title: &titleUpdate,
+	}
+	reqBody, _ := json.Marshal(reqData)
+
+	mockUC.On("UpdatePost", mock.Anything, userID, postID, mock.Anything).Return(nil, usecase.ErrUnauthorized)
+
+	req := httptest.NewRequest(http.MethodPut, "/posts/"+postID.String(), bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UpdatePost(c)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_UpdatePost_InvalidID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	titleInvalid := "Updated Title"
+	reqData := dto.UpdatePostRequest{
+		Title: &titleInvalid,
+	}
+	reqBody, _ := json.Marshal(reqData)
+
+	req := httptest.NewRequest(http.MethodPut, "/posts/invalid-uuid", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
+
+	handler.UpdatePost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_DeletePost_InvalidID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	req := httptest.NewRequest(http.MethodDelete, "/posts/invalid-uuid", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
+
+	handler.DeletePost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_PublishPost_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	mockUC.On("PublishPost", mock.Anything, userID, postID).Return(entity.ErrNotFound)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/publish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.PublishPost(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_PublishPost_InvalidID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/invalid-uuid/publish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
+
+	handler.PublishPost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_UnpublishPost_InvalidID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/invalid-uuid/unpublish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
+
+	handler.UnpublishPost(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_UnpublishPost_NotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	userID := uuidv7.New()
+	postID := uuidv7.New()
+
+	mockUC.On("UnpublishPost", mock.Anything, userID, postID).Return(entity.ErrNotFound)
+
+	req := httptest.NewRequest(http.MethodPost, "/posts/"+postID.String()+"/unpublish", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Set("user_id", userID)
+	c.Params = gin.Params{{Key: "id", Value: postID.String()}}
+
+	handler.UnpublishPost(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_GetUserPosts_InvalidUserID(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	req := httptest.NewRequest(http.MethodGet, "/users/invalid-uuid/posts", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "user_id", Value: "invalid-uuid"}}
+
+	handler.GetUserPosts(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestUserPostHandler_GetPostsByTag_InvalidTag(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	// Empty tag - handler should still call usecase with empty string
+	mockUC.On("GetPostsByTag", mock.Anything, "", mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return([]*entity.UserPost{}, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/tags/", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = gin.Params{{Key: "tag", Value: ""}}
+
+	handler.GetPostsByTag(c)
+
+	// Handler returns OK even with empty tag
+	assert.Equal(t, http.StatusOK, w.Code)
+	mockUC.AssertExpectations(t)
+}
+
+func TestUserPostHandler_SearchPosts_EmptyQuery(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockUC := new(usecaseMocks.MockUserPostUseCase)
+	handler := NewUserPostHandler(mockUC)
+
+	req := httptest.NewRequest(http.MethodGet, "/posts/search", nil)
+	w := httptest.NewRecorder()
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+
+	handler.SearchPosts(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+// Comment handler test (already exists in file)
+

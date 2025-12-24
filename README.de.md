@@ -145,7 +145,7 @@ Server startet auf **http://localhost:8081**
 
 | Dokument                                                                                 | Beschreibung                                   |
 | ---------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **[docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)**                 | Neue IModule erstellen, Best Practices          |
+| **[docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)**                 | Neue IModule erstellen, Best Practices         |
 | **[docs/de/MODULE_INDEPENDENCE.de.md](docs/de/MODULE_INDEPENDENCE.de.md)**               | Modul-Autonomieregeln, Abhängigkeitsverwaltung |
 | **[docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)** | Modul-Konfigurationssystem                     |
 
@@ -326,28 +326,40 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**388 Tests** über alle Schichten (100% bestanden, ~41 Sekunden):
+**400+ Tests** über alle Schichten (100% bestanden, ~20 Sekunden):
 
 ```bash
-# Alle Tests ausführen (unit + integration + smoke)
-make test               # Alle Tests (~41s)
+# Alle Tests ausführen
+make test               # Alle Tests (~20s)
 
-# Nach Typ ausführen
-make test-unit          # Nur Unit-Tests (183 Tests, ~5s)
-make test-integration   # Integrationstests (91 Tests, ~36s)
-make test-smoke         # Smoke-Tests (114 Tests, ~4s)
+# Nach Modul ausführen
+make test-core          # Core-Tests (275 Tests: 39 Entity + 236 Usecase)
+make test-modules       # Alle Modul-Tests
+make test-module-posts      # Posts-Modul Tests (33 Tests)
+make test-module-profiles   # Profiles-Modul Tests (21 Tests)
+make test-module-analytics  # Analytics-Modul Tests (11 Tests)
 
 # Coverage-Bericht
-make test-coverage
+make test-coverage      # HTML Coverage-Bericht
 ```
 
-### Teststruktur
+### Test-Abdeckung
 
-- **Core-Tests**: Domain-Entitäten (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge-Policies)
-- **Core Use Cases**: Auth, RBAC, Referenzdaten-CRUD, Purge-Operationen
-- **Modul-Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, Lizenzvalidierung)
-- **Integrationstests**: Repository-Operationen mit echtem PostgreSQL auf Port 5433
-- **Test-Helfer**: `test/helpers/` und `test/integration/` für Fixtures, Datenbank-Setup, Transaktionsverwaltung
+- **Core-Schicht**: 275 Tests
+  - Domain-Entities: 39 Tests (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge)
+  - Use Cases: 236 Tests (Auth, RBAC, Referenzdaten-CRUD, Purge-Operationen)
+- **Posts-Modul**: 33 Tests, 83.3% Abdeckung (PostStatus, UserPost-Lebenszyklus, Validierung, Slug-Generierung)
+- **Profiles-Modul**: 21 Tests, 80.4% Abdeckung (UserContact, UserProfile, Privatsphäre, Validierung)
+- **Analytics-Modul**: 11 Tests (Metrics, MetricAggregate, Usecase-Operationen)
+- **Utilities**: 51 Tests, 89.5% durchschnittliche Abdeckung (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
+
+### Test-Ausführungszeit
+
+- **Core-Tests**: 14.7s (Entity 4.4s + Usecase 10.2s)
+- **Posts-Modul**: 1.4s
+- **Profiles-Modul**: 1.5s
+- **Analytics-Modul**: 2.7s (Entity 1.4s + Usecase 1.4s)
+- **Gesamt**: ~20 Sekunden für die vollständige Test-Suite
 
 **Testing-Leitfäden**:
 

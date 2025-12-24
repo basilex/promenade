@@ -24,8 +24,8 @@ const (
 	Version    = "1.0.0"
 )
 
-// IModule represents the audit module
-type IModule struct {
+// AuditModule represents the audit module
+type AuditModule struct {
 	config     *Config
 	db         *sqlx.DB
 	handler    *handler.AuditEventHandler
@@ -63,11 +63,11 @@ type Config struct {
 
 // New creates a new audit module instance
 func New() module.IModule {
-	return &IModule{}
+	return &AuditModule{}
 }
 
 // Metadata returns module information
-func (m *IModule) Metadata() module.Metadata {
+func (m *AuditModule) Metadata() module.Metadata {
 	return module.Metadata{
 		Name:        ModuleName,
 		DisplayName: "Audit Logging",
@@ -80,22 +80,22 @@ func (m *IModule) Metadata() module.Metadata {
 }
 
 // Name returns module name
-func (m *IModule) Name() string {
+func (m *AuditModule) Name() string {
 	return ModuleName
 }
 
 // Version returns module version
-func (m *IModule) Version() string {
+func (m *AuditModule) Version() string {
 	return Version
 }
 
 // Dependencies returns module dependencies
-func (m *IModule) Dependencies() []string {
+func (m *AuditModule) Dependencies() []string {
 	return []string{} // No dependencies
 }
 
 // Initialize initializes the audit module
-func (m *IModule) Initialize(ctx context.Context, core *module.Core) error {
+func (m *AuditModule) Initialize(ctx context.Context, core *module.Core) error {
 	m.db = core.DB
 
 	if err := m.loadConfig(); err != nil {
@@ -143,7 +143,7 @@ func (m *IModule) Initialize(ctx context.Context, core *module.Core) error {
 }
 
 // RegisterRoutes registers HTTP routes
-func (m *IModule) RegisterRoutes(router *gin.RouterGroup) {
+func (m *AuditModule) RegisterRoutes(router *gin.RouterGroup) {
 	if !m.config.IModule.Enabled {
 		return
 	}
@@ -151,17 +151,17 @@ func (m *IModule) RegisterRoutes(router *gin.RouterGroup) {
 }
 
 // RegisterMigrations returns database migrations
-func (m *IModule) RegisterMigrations() []module.Migration {
+func (m *AuditModule) RegisterMigrations() []module.Migration {
 	return []module.Migration{}
 }
 
 // RegisterEventHandlers subscribes to domain events
-func (m *IModule) RegisterEventHandlers(eventBus bus.IBus) error {
+func (m *AuditModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	return nil // No event subscriptions needed
 }
 
 // RegisterPermissions returns RBAC permissions
-func (m *IModule) RegisterPermissions() []module.Permission {
+func (m *AuditModule) RegisterPermissions() []module.Permission {
 	return []module.Permission{
 		{Resource: "audit", Action: "read", Description: "View audit logs"},
 		{Resource: "audit", Action: "create", Description: "Create audit entries"},
@@ -170,17 +170,17 @@ func (m *IModule) RegisterPermissions() []module.Permission {
 }
 
 // Start starts the audit module
-func (m *IModule) Start(ctx context.Context) error {
+func (m *AuditModule) Start(ctx context.Context) error {
 	return nil
 }
 
 // Stop stops the audit module
-func (m *IModule) Stop(ctx context.Context) error {
+func (m *AuditModule) Stop(ctx context.Context) error {
 	return nil
 }
 
 // HealthCheck performs module health check
-func (m *IModule) HealthCheck(ctx context.Context) error {
+func (m *AuditModule) HealthCheck(ctx context.Context) error {
 	if !m.config.IModule.Enabled {
 		return nil
 	}
@@ -202,7 +202,7 @@ func (m *IModule) HealthCheck(ctx context.Context) error {
 }
 
 // loadConfig loads module configuration
-func (m *IModule) loadConfig() error {
+func (m *AuditModule) loadConfig() error {
 	env := os.Getenv("ENVIRONMENT")
 	if env == "" {
 		env = "development"
@@ -237,7 +237,7 @@ func (m *IModule) loadConfig() error {
 }
 
 // validateLicense validates module license
-func (m *IModule) validateLicense() error {
+func (m *AuditModule) validateLicense() error {
 	if m.licenseKey == "" {
 		return fmt.Errorf("license key not provided (set AUDIT_LICENSE_KEY environment variable)")
 	}
@@ -261,7 +261,7 @@ func (m *IModule) validateLicense() error {
 }
 
 // registerRoutes registers HTTP routes
-func (m *IModule) registerRoutes(router *gin.RouterGroup) {
+func (m *AuditModule) registerRoutes(router *gin.RouterGroup) {
 	auditGroup := router.Group("/audit")
 	{
 		auditGroup.POST("/events", m.handler.CreateAuditEvent)
