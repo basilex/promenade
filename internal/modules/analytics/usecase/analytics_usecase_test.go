@@ -151,7 +151,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := mocks.NewMockMetricRepository()
+			repo := new(mocks.MockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -223,7 +223,7 @@ func TestAnalyticsUseCase_GetMetric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := mocks.NewMockMetricRepository()
+			repo := new(mocks.MockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -310,7 +310,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := mocks.NewMockMetricRepository()
+			repo := new(mocks.MockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -368,7 +368,7 @@ func TestAnalyticsUseCase_ListMetricsByModule(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := mocks.NewMockMetricRepository()
+			repo := new(mocks.MockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -456,7 +456,7 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := mocks.NewMockMetricRepository()
+			repo := new(mocks.MockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)

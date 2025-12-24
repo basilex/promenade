@@ -1,277 +1,774 @@
-# Promenade AI Agent Instructions
+# Promenade AI Instructions
 
-This guide enables AI coding agents to work productively in Promenade. It summarizes architecture, workflows, and conventions unique to this project. For details, see referenced files and docs.
+Essential guide for AI agents working in Promenade. For detailed documentation, see [README.md](../README.md) and [docs/](../docs/).
+
+## Core Architecture Principles
+
+### 1. Clean Architecture with Module Independence
+
+**Four Layers**: Domain → Use Case → Adapter → Infrastructure
+
+- **Strict Dependency Rule**: Inner layers never depend on outer layers
+- **No ORM**: Raw SQL with sqlx + BaseRepository pattern
+- **UUID v7 Only**: Use `pkg/uuidv7.New()` for all IDs, never `uuid.New()` (v4) or auto-increment
+
+### 2. Core vs Modules Pattern
+
+**Core** (`internal/domain`, `internal/usecase`) - Always enabled:
+
+- Auth, RBAC, event bus, database, logging
+- Reference data: countries, currencies, regions, cities, payment methods, timezones, languages
+- Registries: modules, purge, permissions
+
+**Modules** (`internal/modules/*`) - Optional vertical slices:
+
+- **CRITICAL**: Modules MUST NOT import `internal/domain|usecase|adapter`. Only `pkg/*` allowed.
+- Self-contained: entity → repo → usecase → handler → routes
+- Auto-register via `init()` in `register.go`, import in [cmd/api/main.go](../cmd/api/main.go)
+- Examples: `posts` (posts+comments+likes), `profiles`, `analytics` (commercial)
+
+**Core orchestrates, modules execute**. Core knows WHEN to call modules, not HOW they work.
+
+### 3. Key Patterns
+
+**BaseRepository**: Core and each module have own BaseRepository (duplication maintains independence)
+
+```go
+// Every repo embeds BaseRepository
+type UserRepository struct {
+    *BaseRepository
+}
+
+func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, error) {
+    var user entity.User
+    err := r.Get(ctx, &user, `SELECT * FROM users WHERE id = $1`, id)
+    return &user, err
+}
+```
+
+**Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`. Repos auto-select tx/db via `getExecutor(ctx)`.
+
+**Soft Delete**: Tables with `deleted_at` MUST filter `WHERE deleted_at IS NULL` in all SELECT queries.
+
+**Event Bus**: Dual adapters (Memory for dev, Redis for prod). Config: `bus.adapter: memory|redis` in `config/app.{env}.yaml`.
+
+**Context Propagation**: Always pass `ctx` - carries transaction, logger, request ID, user info. Use `logger.FromContext(ctx)`, never global logger.
+
+## Essential Workflows
+
+### Make Commands (use `make help` for full list)
+
+**Development**:
+
+- `make dev` - Start Postgres, run migrations, start app
+- `make build` - Build binary (auto-runs swagger generation)
+- `make lint` / `make fmt` - Code quality checks
+
+**Testing** (tests live alongside code in `*_test.go`):
+
+- `make test` - All tests (388 total: 183 unit + 91 integration + 114 smoke)
+- `make test-unit` - Unit only (~5s)
+- `make test-integration` - Integration with real DB port 5433 (~36s)
+- `make test-coverage` - HTML coverage report
+- Test DB: `make test-db-start` / `make test-db-stop`
+
+**Migrations** (namespace-based: `migrations/{namespace}/NNNNNN_*.sql`):
+
+- `make migrate-up` / `make migrate-down`
+- `make migrate-create MODULE=posts NAME=xxx` - New module migration
+- `make migrate-create-core NAME=xxx` - New core migration
+
+**API**:
+
+- `make swagger-all` - Generate v1 + v2 API docs (run after handler/DTO changes)
+
+## API & HTTP Patterns
+
+**Versioning**: v1 and v2 APIs isolated (handlers, DTOs, routers, Swagger docs)
+
+**Response format** (`pkg/response`):
+
+```go
+// Success
+{"status":"success","data":{...}}
+// Error
+{"status":"error","error":{"code":"VALIDATION_ERROR","message":"..."}}
+// Paginated
+{"status":"success","data":[...],"pagination":{"total":100,"page":1,"page_size":20}}
+```
+
+**Handler pattern**:
+
+```go
+func (h *PostHandler) Create(c *gin.Context) {
+    var req CreatePostDTO
+    if err := c.ShouldBindJSON(&req); err != nil {
+        response.Error(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+        return
+    }
+    post, err := h.usecase.CreatePost(c.Request.Context(), req.Title, req.Content)
+    if errors.Is(err, domain.ErrPostNotFound) {
+        response.Error(c, http.StatusNotFound, "POST_NOT_FOUND", err.Error())
+        return
+    }
+    response.Success(c, post)
+}
+```
+
+**Middleware**: Recovery → Request ID → Logger → CORS. Per-route: `RequireAuth()`, `RequirePermission("posts:create")`
+
+## Data Patterns
+
+**Repository pattern** (embed BaseRepository):
+
+```go
+type PostRepository struct {
+    *BaseRepository  // Provides Get, Select, Exec, NamedExec, getExecutor
+}
+
+func (r *PostRepository) GetByID(ctx context.Context, id string) (*entity.Post, error) {
+    var post entity.Post
+    query := `SELECT * FROM user_posts WHERE id = $1 AND deleted_at IS NULL`
+    return &post, r.Get(ctx, &post, query, id)
+}
+```
+
+**Transactions** (context-aware):
+
+```go
+err := tm.WithTransaction(ctx, func(ctx context.Context) error {
+    // All repo calls use same tx via getExecutor(ctx)
+    if err := userRepo.Create(ctx, user); err != nil {
+        return err  // Auto-rollback
+    }
+    return postRepo.Create(ctx, post)  // Auto-commit if no error
+})
+```
+
+**Critical Rules**:
+
+- UUID v7: `pkg/uuidv7.New()` ONLY (never `uuid.New()`)
+- Soft delete: Always add `WHERE deleted_at IS NULL`
+- Context: Always pass `ctx` for tx/logger propagation
+- Logger: `logger.FromContext(ctx)` not global logger
+
+## Adding a New Module
+
+1. **Structure** in `internal/modules/mymodule/`:
+
+   ```
+   ├── module.go              # Implement pkg/module.Module
+   ├── register.go            # init() auto-registration
+   ├── config/                # Own YAML configs
+   ├── domain/entity/         # Business entities
+   ├── domain/repository/     # Repo interfaces
+   ├── usecase/               # Business logic
+   └── adapter/
+       ├── http/handler/      # HTTP handlers
+       └── repository/postgres/ # DB implementation + BaseRepository
+   ```
+
+2. **register.go** template:
+
+   ```go
+   package mymodule
+
+   import (
+       "log/slog"
+       "github.com/basilex/promenade/pkg/module"
+   )
+
+   func init() {
+       if err := module.DefaultRegistry.Register(New()); err != nil {
+           slog.Error("Failed to register mymodule", "error", err)
+       }
+   }
+   ```
+
+3. **Import** in `cmd/api/main.go`: `_ "github.com/basilex/promenade/internal/modules/mymodule"`
+4. **Enable** in `config/modules.yaml`: `mymodule: { enabled: true }`
+5. **Migrations**: `make migrate-create MODULE=mymodule NAME=init`
+
+**CRITICAL**: Never import `internal/domain`, `internal/usecase`, or `internal/adapter` in modules. Only `pkg/*` allowed.
+
+## Event Bus & Configuration
+
+**Event Bus** - Dual adapters (factory with graceful fallback):
+
+- **Memory** (`pkg/bus/memory`): Dev/test, in-process, fast
+- **Redis** (`pkg/bus/redis`): Prod, distributed, persistent
+- Config: `bus.adapter: memory|redis` in `config/app.{env}.yaml`
+
+**Config Loading**:
+
+- Core: `config/app.{env}.yaml` (ENVIRONMENT=dev/test/prod)
+- Modules: `internal/modules/{name}/config/config.{env}.yaml`
+- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET)
+- Access: `logger.FromContext(ctx)`, `database.GetTx(ctx)`
+
+## Testing Strategy
+
+**Test Organization**: Tests live alongside code (`*_test.go` in same directory)
+
+**Test Types**:
+
+- **Unit** (183): Mock repos, test business logic (`make test-unit`, ~5s)
+- **Integration** (91): Real DB port 5433, test repos (`make test-integration`, ~36s)
+- **Smoke** (114): E2E critical flows (`make test-smoke`, ~4s)
+
+**Example**:
+
+```go
+func TestPostUsecase_Create(t *testing.T) {
+    mockRepo := mocks.NewMockPostRepository(t)
+    usecase := NewPostUsecase(mockRepo, nil)
+
+    mockRepo.EXPECT().Create(mock.Anything, mock.Anything).Return(nil)
+
+    post, err := usecase.CreatePost(context.Background(), "Title", "Content")
+    assert.NoError(t, err)
+    assert.NotEmpty(t, post.ID)
+}
+```
+
+**Helpers**: [test/integration/](../test/integration/) for DB setup, fixtures
+
+## Codebase Conventions & Patterns
+
+### Naming Conventions
+
+**DTOs** (Data Transfer Objects):
+
+- Request DTOs: `Create{Entity}Request`, `Update{Entity}Request`
+- Response DTOs: `{Entity}Response`
+- Nested DTOs: `FeaturedImageDTO`, `MetadataDTO`
+- Use pointers for optional fields in Update DTOs: `Title *string`
+
+**Entities**:
+
+- Business entities in `domain/entity/` (e.g., `UserPost`, `Comment`, `UserProfile`)
+- Use `uuidv7.UUID` for all IDs
+- Include struct tags: `db` for sqlx, `json` for API, `validate` for rules
+- Example: `Title string \`db:"title" json:"title" validate:"required,min=3,max=255"\``
+
+**Errors**:
+
+- Define domain errors as variables in usecase layer: `var ErrProfileNotFound = errors.New("profile not found")`
+- Common patterns: `Err{Entity}NotFound`, `Err{Entity}AlreadyExists`, `ErrUnauthorized{Action}`, `ErrInvalid{Field}`
+- Never use `errors.New()` in handlers - check with `errors.Is(err, usecase.ErrXxx)`
+- Wrap errors with context: `fmt.Errorf("failed to create user: %w", err)`
+
+**Repositories**:
+
+- Interface in `domain/repository/`, implementation in `adapter/repository/postgres/`
+- Method names: `GetByID`, `GetByUserID`, `GetBySlug`, `Create`, `Update`, `Delete`, `List{Entity}s`
+- Always return `(*Entity, error)` for single, `([]*Entity, error)` for multiple
+- Queries use positional parameters: `$1`, `$2`, etc.
+
+**Use Cases**:
+
+- Interface first, then implementation (lowercase struct)
+- Method signatures: `(ctx context.Context, params...) (result, error)`
+- Always check entity ownership: `if post.UserID != requestUserID { return ErrUnauthorized }`
+- Business logic here, not in handlers or entities
+
+### Validation Patterns
+
+**Entity Validation** (in domain layer):
+
+```go
+func (p *UserPost) Validate() error {
+    if err := p.ValidateTitle(); err != nil {
+        return err
+    }
+    if err := p.ValidateSlug(); err != nil {
+        return err
+    }
+    return nil
+}
+
+func (p *UserPost) ValidateTitle() error {
+    title := strings.TrimSpace(p.Title)
+    if title == "" {
+        return fmt.Errorf("title is required")
+    }
+    if utf8.RuneCountInString(title) < 3 {
+        return fmt.Errorf("title must be at least 3 characters")
+    }
+    return nil
+}
+```
+
+**Request Validation** (in handler layer):
+
+- Use Gin binding tags: `binding:"required,min=3,max=200"`
+- Validate in handler: `if err := c.ShouldBindJSON(&req); err != nil`
+- Common validators: `required`, `email`, `min`, `max`, `oneof`, `omitempty`, `dive` (for arrays)
+
+**Business Rules Validation** (in usecase layer):
+
+- Check uniqueness constraints before creating
+- Validate ownership before updating/deleting
+- Apply business logic (e.g., can't publish archived post)
+
+### Error Handling Flow
+
+**Handler → UseCase → Repository**:
+
+```go
+// Handler: Check error type and return appropriate HTTP code
+post, err := h.postUC.GetPost(ctx, postID)
+if err != nil {
+    if err == entity.ErrNotFound {
+        response.Error(c, http.StatusNotFound, "post not found", err)
+        return
+    }
+    response.Error(c, http.StatusInternalServerError, "failed to get post", err)
+    return
+}
+
+// UseCase: Define domain errors and add context
+if existingPost != nil {
+    return nil, ErrSlugAlreadyExists
+}
+if err := uc.postRepo.Create(ctx, post); err != nil {
+    return nil, fmt.Errorf("failed to create post: %w", err)
+}
+
+// Repository: Return raw errors from database
+if err := r.Get(ctx, &post, query, id); err != nil {
+    if err == sql.ErrNoRows {
+        return nil, entity.ErrNotFound
+    }
+    return nil, err
+}
+```
+
+### Entity State Methods
+
+**Status Management** (entities control their own state):
+
+```go
+// Prefer methods over direct field assignment
+func (p *UserPost) Publish() {
+    p.Status = PostStatusPublished
+    now := time.Now()
+    p.PublishedAt = &now
+    p.ScheduledAt = nil
+}
+
+func (p *UserPost) Archive() {
+    p.Status = PostStatusArchived
+}
+
+func (u *User) Suspend(reason string, until *time.Time) {
+    u.Status = UserStatusSuspended
+    u.SuspendedReason = &reason
+    u.SuspendedUntil = until
+}
+```
+
+### DTO Conversion Pattern
+
+**Always in adapter layer** (`adapter/http/dto/`):
+
+```go
+// Entity → Response DTO
+func ToPostResponse(post *entity.UserPost) PostResponse {
+    return PostResponse{
+        ID:       post.ID.String(),
+        UserID:   post.UserID.String(),
+        Title:    post.Title,
+        // ... map all fields
+    }
+}
+
+// Request DTO → Entity (in usecase, not DTO layer)
+post, err := entity.NewUserPost(userID, req.Title, slug, req.Content)
+```
+
+### Database Field Naming
+
+- Snake_case: `user_id`, `created_at`, `is_public`, `featured_image`
+- JSONB columns: `featured_image`, `tags`, `categories`, `meta_keywords`
+- Soft delete: `deleted_at TIMESTAMP NULL`
+- Timestamps: Always `created_at` and `updated_at`, use `DEFAULT CURRENT_TIMESTAMP`
+
+### Response Helpers
+
+**Standard responses** (`pkg/response`):
+
+```go
+// Success with data
+response.Success(c, http.StatusOK, data)
+response.Success(c, http.StatusCreated, data)
+
+// Errors with message
+response.Error(c, http.StatusBadRequest, "invalid request", err)
+response.Error(c, http.StatusNotFound, "post not found", err)
+response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
+```
+
+**Pagination helpers**:
+
+```go
+page := response.GetPageFromQuery(c)        // Default: 1
+pageSize := response.GetPageSizeFromQuery(c) // Default: 20, max: 100
+```
+
+## Commercial Modules (Optional)
+
+**License System** (signature-based HMAC-SHA256):
+
+- Format: `PROMENADE-{MODULE}-{TIER}-{EXPIRY}-{SIGNATURE}`
+- Tiers: BASIC, PRO, ENTERPRISE (different features/retention)
+- Generation: `./scripts/generate-license.sh analytics PRO 365`
+- Config: Set `{MODULE}_LICENSE_KEY` env var or `license_required: false` for dev
+- Example: `analytics` module (metrics, reports, dashboards)
+
+## Code Consistency Standards
+
+### Professional Naming Rules (Єдині Стандарти)
+
+**CRITICAL**: Every name in this project follows strict patterns. No exceptions, no variations.
+
+**Interface Names** (завжди з великої літери):
+
+```go
+// ✅ CORRECT - PascalCase with "UseCase" suffix
+type UserPostUseCase interface { }
+type AuthUseCase interface { }
+type RoleUseCase interface { }
+
+// ✅ CORRECT - PascalCase with "Repository" suffix (never "Repo")
+type UserPostRepository interface { }
+type UserRepository interface { }
+type CountryRepository interface { }
+
+// ❌ WRONG - inconsistent casing or abbreviations
+type userPostUsecase interface { }  // lowercase
+type UserPostUC interface { }       // abbreviated
+type UserRepo interface { }         // "Repo" instead of "Repository"
+```
+
+**Implementation Names** (lowercase private):
+
+```go
+// ✅ CORRECT - lowercase struct, PascalCase constructor
+type userPostUseCase struct { }
+func NewUserPostUseCase(...) UserPostUseCase { return &userPostUseCase{} }
+
+type authUseCase struct { }
+func NewAuthUseCase(...) AuthUseCase { return &authUseCase{} }
+
+// ❌ WRONG - inconsistent patterns
+type UserPostUseCase struct { }  // Public struct
+type userpostUseCase struct { }  // missing camelCase
+```
+
+**Handler Names** (always "{Entity}Handler"):
+
+```go
+// ✅ CORRECT - Entity name + "Handler"
+type UserPostHandler struct { postUC usecase.UserPostUseCase }
+type UserProfileHandler struct { profileUC usecase.UserProfileUseCase }
+type AuthHandler struct { authUC usecase.AuthUseCase }
+
+// ❌ WRONG - inconsistent suffixes
+type PostsHandler struct { }    // plural
+type UserPostHdl struct { }     // abbreviated
+```
+
+**Method Names** (consistent prefixes):
+
+```go
+// ✅ Repository methods - always start with Get/Create/Update/Delete/List
+func (r *UserRepository) GetByID(ctx, id) (*User, error)
+func (r *UserRepository) GetByEmail(ctx, email) (*User, error)
+func (r *UserRepository) Create(ctx, user) error
+func (r *UserRepository) Update(ctx, user) error
+func (r *UserRepository) Delete(ctx, id) error
+func (r *UserRepository) ListUsers(ctx, limit, offset) ([]*User, error)
+
+// ✅ UseCase methods - business operations
+func (uc *authUseCase) Login(ctx, email, password) (string, error)
+func (uc *authUseCase) Register(ctx, email, name) (*User, error)
+func (uc *userPostUseCase) PublishPost(ctx, userID, postID) error
+
+// ❌ WRONG - inconsistent prefixes
+func (r *UserRepository) FindByID(ctx, id) (*User, error)  // Use "GetByID"
+func (r *UserRepository) FetchUsers(ctx) ([]*User, error)  // Use "ListUsers"
+func (r *UserRepository) Remove(ctx, id) error             // Use "Delete"
+```
+
+### File & Directory Naming
+
+**Directory structure** (завжди однакова):
+
+```
+internal/modules/{module}/
+├── module.go              # MUST be named "module.go"
+├── register.go            # MUST be named "register.go"
+├── config/
+│   ├── config.dev.yaml   # MUST be "config.{env}.yaml"
+│   └── config.test.yaml
+├── domain/
+│   ├── entity/           # MUST be "entity" (not "entities")
+│   │   ├── user_post.go  # snake_case file names
+│   │   └── comment.go
+│   └── repository/       # MUST be "repository" (not "repositories")
+│       ├── user_post_repository.go
+│       └── comment_repository.go
+├── usecase/              # MUST be "usecase" (not "usecases")
+│   ├── post_usecase.go
+│   └── comment_usecase.go
+└── adapter/
+    ├── http/
+    │   ├── handler/      # MUST be "handler" (not "handlers")
+    │   │   ├── post_handler.go
+    │   │   └── comment_handler.go
+    │   └── dto/          # MUST be "dto" (not "dtos")
+    │       ├── post_dto.go
+    │       └── comment_dto.go
+    └── repository/postgres/
+        ├── base_repository.go
+        ├── user_post_repository.go
+        └── comment_repository.go
+```
+
+**File naming**:
+
+- Entities: `{entity_name}.go` → `user_post.go`, `comment.go`, `user_profile.go`
+- Repositories: `{entity_name}_repository.go` → `user_post_repository.go`
+- Use cases: `{entity_name}_usecase.go` → `post_usecase.go`, `auth_usecase.go`
+- Handlers: `{entity_name}_handler.go` → `post_handler.go`
+- DTOs: `{entity_name}_dto.go` → `post_dto.go`
+- Tests: `{file_name}_test.go` → `post_usecase_test.go`
+
+### Variable & Parameter Naming
+
+**Context** (завжди перший параметр):
+
+```go
+// ✅ CORRECT - ctx is always first parameter
+func (uc *postUseCase) CreatePost(ctx context.Context, userID uuid.UUID, title string) (*Post, error)
+func (r *PostRepository) GetByID(ctx context.Context, id uuid.UUID) (*Post, error)
+func (h *PostHandler) Create(c *gin.Context)
+
+// ❌ WRONG - ctx not first
+func CreatePost(userID uuid.UUID, ctx context.Context, title string) (*Post, error)
+```
+
+**Standard abbreviations** (завжди однакові):
+
+```go
+uc  - usecase      // e.g., postUC := NewPostUseCase(repo)
+ctx - context      // e.g., ctx context.Context
+req - request      // e.g., var req CreatePostRequest
+err - error        // e.g., if err != nil { }
+tx  - transaction  // e.g., tx, err := db.BeginTx(ctx)
+db  - database     // e.g., db *sqlx.DB
+c   - gin.Context  // e.g., func (h *Handler) Get(c *gin.Context)
+```
+
+**Receiver names** (consistent):
+
+```go
+// ✅ CORRECT - consistent abbreviations
+func (r *UserRepository) GetByID(ctx, id) (*User, error)    // r = repository
+func (uc *authUseCase) Login(ctx, email) (string, error)   // uc = usecase
+func (h *PostHandler) Create(c *gin.Context)               // h = handler
+func (u *User) Validate() error                            // u = entity instance
+func (p *UserPost) Publish()                               // p = entity instance
+
+// ❌ WRONG - inconsistent receivers
+func (repo *UserRepository) GetByID(...)    // Use "r"
+func (usecase *authUseCase) Login(...)      // Use "uc"
+func (handler *PostHandler) Create(...)     // Use "h"
+```
+
+### Error Messages (Однакові формулювання)
+
+**Error variable names**:
+
+```go
+// ✅ CORRECT - Err{Entity}{Condition}
+var (
+    ErrUserNotFound              = errors.New("user not found")
+    ErrPostNotFound              = errors.New("post not found")
+    ErrProfileAlreadyExists      = errors.New("profile already exists")
+    ErrSlugAlreadyExists         = errors.New("slug already exists")
+    ErrUnauthorizedAccess        = errors.New("unauthorized access")
+    ErrInvalidInput              = errors.New("invalid input")
+)
+
+// ❌ WRONG - inconsistent naming
+var (
+    UserNotFoundError = errors.New(...)  // suffix instead of prefix
+    ErrNoUser = errors.New(...)          // too abbreviated
+    NotFound = errors.New(...)           // missing entity
+)
+```
+
+**Error wrapping format**:
+
+```go
+// ✅ CORRECT - descriptive context + %w
+return nil, fmt.Errorf("failed to create user: %w", err)
+return nil, fmt.Errorf("failed to get post by ID: %w", err)
+return nil, fmt.Errorf("failed to update profile: %w", err)
+
+// ❌ WRONG - inconsistent format
+return nil, fmt.Errorf("error: %w", err)        // not descriptive
+return nil, fmt.Errorf("cannot create: %v", err) // %v instead of %w
+return nil, errors.Wrap(err, "failed")          // use fmt.Errorf
+```
+
+### Import Order (Завжди однаковий)
+
+```go
+import (
+    // 1. Standard library (alphabetical)
+    "context"
+    "errors"
+    "fmt"
+    "time"
+
+    // 2. External packages (alphabetical)
+    "github.com/gin-gonic/gin"
+    "github.com/google/uuid"
+
+    // 3. Internal packages (alphabetical by path depth)
+    "github.com/basilex/promenade/internal/domain/entity"
+    "github.com/basilex/promenade/internal/domain/repository"
+    "github.com/basilex/promenade/pkg/response"
+    "github.com/basilex/promenade/pkg/uuidv7"
+)
+```
+
+### Onboarding Checklist (Для нових розробників)
+
+**Before writing code, verify**:
+
+- [ ] All interfaces end with `UseCase` or `Repository` (never abbreviated)
+- [ ] All private structs are lowercase: `userPostUseCase`, `authUseCase`
+- [ ] All constructors return interface: `func New...() InterfaceName`
+- [ ] All repository methods start with: `Get`, `Create`, `Update`, `Delete`, `List`
+- [ ] All handlers have `Handler` suffix: `UserPostHandler`, `AuthHandler`
+- [ ] All errors start with `Err`: `ErrUserNotFound`, `ErrSlugExists`
+- [ ] Context is always first parameter: `(ctx context.Context, ...)`
+- [ ] Files follow snake_case: `user_post.go`, `post_repository.go`
+- [ ] Directories are singular: `entity/`, `repository/`, `handler/`, `usecase/`
+- [ ] Module structure matches template exactly (no creative variations)
+
+**Quick self-check questions**:
+
+1. Would a new developer understand this without asking?
+2. Does this name match existing patterns exactly?
+3. Is this the same as how it's done in other modules?
+4. Can I find 3 similar examples in the codebase?
+
+**If unsure**: Search codebase for similar code and copy the pattern exactly.
+
+## Critical Gotchas
+
+**Top Mistakes**:
+
+1. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
+2. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
+3. **Module Dependencies**: No `internal/domain|usecase|adapter` imports in modules. Only `pkg/*`
+4. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
+5. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
+6. **Migration Namespaces**: Core migrations run first. Wrong namespace breaks history
+
+**Debugging Quick Reference**:
+
+- **DB Connection**: `make docker-ps` → check Postgres on 5432, test DB on 5433
+- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~36s)
+- **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `posts/`, etc.)
+- **Module Won't Load**: Verify import in `cmd/api/main.go` + enabled in `config/modules.yaml`
+- **API 404s**: Run `make swagger-all` after handler changes
+- **License Errors**: Check `{MODULE}_LICENSE_KEY` env var or set `license_required: false`
+
+## Code Review Checklist
+
+**Before submitting PR, verify every file**:
+
+### Naming Consistency
+
+- [ ] All interfaces: `{Entity}UseCase`, `{Entity}Repository` (full words, no abbreviations)
+- [ ] All structs: lowercase `{entity}UseCase`, `{entity}Repository`
+- [ ] All constructors: `New{Entity}UseCase() {Entity}UseCase`
+- [ ] All handlers: `{Entity}Handler struct { {entity}UC usecase.{Entity}UseCase }`
+- [ ] All errors: `Err{Entity}{Condition}` (e.g., `ErrUserNotFound`)
+- [ ] All files: `{entity_name}_{type}.go` (snake_case)
+
+### Method Signatures
+
+- [ ] Context first: `func Method(ctx context.Context, ...)`
+- [ ] Repository methods: `GetByID`, `GetByXxx`, `Create`, `Update`, `Delete`, `ListXxx`
+- [ ] Error returns: Always `(*Entity, error)` or `([]*Entity, error)` or `error`
+- [ ] Receiver names: `r` (repo), `uc` (usecase), `h` (handler), first letter of entity
+
+### Code Structure
+
+- [ ] Handler calls usecase, NOT repository directly
+- [ ] UseCase has business logic, handler has HTTP logic
+- [ ] Repository has ONLY data access, no business logic
+- [ ] Entity has validation methods, not validation in usecase
+- [ ] DTOs convert in adapter layer, never in usecase
+- [ ] Errors defined in usecase, checked in handler with `errors.Is()`
+
+### SQL & Data
+
+- [ ] All IDs use `uuidv7.New()`, never `uuid.New()`
+- [ ] Soft delete queries include `WHERE deleted_at IS NULL`
+- [ ] Positional parameters: `$1`, `$2` (never named in raw SQL)
+- [ ] Repository methods use `getExecutor(ctx)` for tx support
+- [ ] All timestamps: `created_at`, `updated_at`, `deleted_at` (snake_case)
+
+### Documentation
+
+- [ ] Swagger comments on all public handlers
+- [ ] Error variable has comment: `// ErrUserNotFound is returned when...`
+- [ ] Complex logic has brief inline comment
+- [ ] README.md updated if module added/changed
+
+### Testing
+
+- [ ] Unit tests for usecase business logic
+- [ ] Integration tests for repository methods
+- [ ] Test file: `{filename}_test.go` in same directory
+- [ ] Mocks generated: `make mocks` (check `mocks/` directory exists)
+
+**Red Flags** (автоматично reject):
+
+- ❌ Interface name `UserPostUC` (use `UserPostUseCase`)
+- ❌ Public struct `type UserPostUseCase struct` (must be lowercase)
+- ❌ Repository method `FindByID` (use `GetByID`)
+- ❌ `uuid.New()` instead of `uuidv7.New()`
+- ❌ Handler calls repository directly (must go through usecase)
+- ❌ Business logic in handler or repository (must be in usecase)
+- ❌ Missing `ctx context.Context` as first parameter
+- ❌ Directory named `entities/` or `handlers/` (must be singular)
+
+## Key Files
+
+| File                                                                | Purpose                        |
+| ------------------------------------------------------------------- | ------------------------------ |
+| [cmd/api/main.go](../cmd/api/main.go)                               | Entry point, module loading    |
+| [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk)      | All workflows (modular)        |
+| [pkg/module/module.go](../pkg/module/module.go)                     | Module interface & registry    |
+| [pkg/uuidv7/uuidv7.go](../pkg/uuidv7/uuidv7.go)                     | Time-ordered UUIDs             |
+| [internal/infrastructure/database/transaction.go][tx]               | Transaction management         |
+| [internal/adapter/repository/postgres/base_repository.go][baserepo] | Core BaseRepository            |
+| [scripts/generate-license.sh](../scripts/generate-license.sh)       | Commercial license generation  |
+| [docs/](../docs/)                                                   | Architecture guides (20+ docs) |
+| [test/integration/](../test/integration/)                           | Test utilities & fixtures      |
+
+[tx]: ../internal/infrastructure/database/transaction.go
+[baserepo]: ../internal/adapter/repository/postgres/base_repository.go
 
 ---
 
-## 1. Architecture Overview
-
-- **Clean Architecture**: Four layers—Domain (`internal/domain`), Use Case (`internal/usecase`), Adapter (`internal/adapter`), Infrastructure (`internal/infrastructure`).
-- **Dependency Rule**: Inner layers never depend on outer layers. Use cases depend only on domain interfaces. Never import adapter code into use case/domain.
-- **Plugin Architecture**: Business modules (`internal/modules/*`) are **completely independent vertical slices**:
-  - **CRITICAL**: Modules MUST NOT import core internal packages (`internal/domain`, `internal/usecase`, `internal/adapter`). Only `pkg/*` imports allowed.
-  - **Module = Domain Area**: One module can contain multiple related entities (e.g., `posts` module includes posts + comments + likes)
-  - Auto-registration via `init()` in `register.go`, enabled/disabled via `config/modules.yaml`
-  - Each module has own domain/entity/repository/usecase/adapter/handler/purge structure
-  - Modules implement `pkg/module.Module` interface with lifecycle hooks (Initialize, Start, Stop, HealthCheck)
-  - Examples:
-    - **Free**: `posts` (posts+comments+likes), `profiles` (profiles+contacts)
-    - **Commercial (Active)**: `analytics` (metrics+reports+dashboards, requires license)
-    - **Future**: `warehouse` (inventory+products, planned)
-  - See [internal/modules/README.md](internal/modules/README.md) and [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md).
-- **Core as Orchestrator**: Core provides registry systems (purge, modules, permissions) and delegates to modules via interfaces. Core never knows HOW modules work, only WHEN to call them.
-- **Event-Driven**: Domain events (`internal/domain/event`) use `pkg/bus` with **dual adapters**:
-  - **Memory Adapter** (`pkg/bus/memory`): In-memory Pub/Sub for dev/test/single-instance (fast, zero dependencies)
-  - **Redis Adapter** (`pkg/bus/redis`): Distributed Pub/Sub for production multi-instance deployments (persistent, scalable)
-  - Factory pattern with graceful fallback (Redis → Memory if Redis unavailable)
-  - Events embed `bus.BaseEvent` and follow `User{Action}Event` naming. See [pkg/bus/README.md](pkg/bus/README.md).
-- **Core vs Modules**: Core (`internal/domain`, `internal/usecase`) provides auth, RBAC, events, audit, reference data (countries, currencies, regions, cities, payment methods, timezones, languages) - always enabled. Modules add optional business features. See [internal/CORE.md](internal/CORE.md).
-- **Module Wiring**: Core modules wire repo → usecase → handler → router in `init_*.go` files (e.g., [internal/adapter/http/v1/router/init_auth.go](internal/adapter/http/v1/router/init_auth.go)). Business modules self-wire in their `Initialize()` method.
-- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`, `NamedExec`. **Dual BaseRepository Pattern**: Core repos (`internal/adapter/repository/postgres/`) and each module (`internal/modules/*/adapter/repository/postgres/`) have their own BaseRepository implementation to maintain independence. All primary keys are UUID v7 (`pkg/uuidv7.New()`), never v4 or auto-increment.
-- **Namespace-Based Migrations**: Each module has independent migration history (`migrations/{namespace}/NNNNNN_*.sql`). Core migrations run first, then enabled modules. See [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md).
-- **Automated Purge**: Modules register purge handlers via `pkg/purge.DefaultRegistry`. Cron scheduler (`internal/infrastructure/scheduler`) auto-purges soft-deleted records based on retention policies.
-
----
-
-## 2. Developer Workflows
-
-- **Makefile System**: Modular (3 files) — see [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md). Use `make help` for all commands.
-- **Essential commands**:
-  - `make dev` — Start Postgres, run migrations, start app in dev mode
-  - `make test` — Run all tests (unit + integration, 274 tests, ~41s)
-  - `make test-unit` — Unit tests only (183 tests, ~5s)
-  - `make test-integration` — Integration tests (91 tests, ~36s)
-  - `make test-smoke` — Smoke tests (114 tests, ~4s)
-  - `make test-coverage` — Generate HTML coverage report
-  - `make build` — Build binary (runs `swagger-all` first)
-  - `make migrate-up` / `make migrate-down` — DB migrations
-  - `make migrate-create MODULE=posts NAME=xxx` — Create module migration
-  - `make migrate-create-core NAME=xxx` — Create core migration
-  - `make swagger-all` — Generate API docs for v1 and v2
-  - `make lint` / `make fmt` — Lint and format code
-  - `make docker-up` / `make docker-down` — Manage Docker Compose services
-- **Testing**: Tests are organized per-component (tests live alongside code). Core tests in `internal/domain/entity/*_test.go` and `internal/usecase/*_test.go`. Module tests in each module's directory (e.g., `internal/modules/posts/domain/entity/*_test.go`). Test helpers in [test/helpers/](test/helpers/). See [test/README.md](test/README.md) and [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md).
-  - **Test Types**: Unit tests (183), Integration tests with real DB on port 5433 (91), Smoke tests for E2E flows (114)
-  - **Test DB**: Separate test database on port 5433 (`make test-db-start` / `make test-db-stop`)
-- **Docker**: Use `make docker-build`, `make docker-run` for container workflows. See [docker/README.md](docker/README.md).
-
----
-
-## 3. API & HTTP Conventions
-
-- **Versioning**: v1 and v2 APIs are isolated (handlers, DTOs, routers). Each version has separate Swagger docs.
-- **Router Structure**: Each module has its own router, registered in [internal/adapter/http/v1/router/router.go](internal/adapter/http/v1/router/router.go).
-- **Middleware**: Stack includes recovery, request ID, logger, CORS. Per-route: auth and RBAC via `RequireAuth()` and `RequirePermission()`.
-- **Handlers**: Accept use case in constructor. Bind request DTO, call use case, handle errors with domain-specific checks (`errors.Is`). Use `response.Success()`/`response.Error()` from `pkg/response`.
-- **Response format**: Consistent JSON structure via `pkg/response`:
-  - Success: `{"status":"success","data":{...}}`
-  - Error: `{"status":"error","error":{"code":"VALIDATION_ERROR","message":"..."}}`
-  - Pagination: `{"status":"success","data":[...],"pagination":{"total":100,"page":1,"page_size":20}}`
-- **Swagger**: Add comments for API docs. Run `make swagger-all` after handler/DTO changes.
-
----
-
-## 4. Data, Transactions, and Patterns
-
-- **No ORM**: Use raw SQL with sqlx. **Dual BaseRepository Pattern**: Core and each module have their own BaseRepository to maintain independence.
-- **Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`; `getExecutor(ctx)` auto-selects transaction or DB.
-- **UUID v7**: All primary keys use time-ordered UUIDs via `pkg/uuidv7.New()`. Never use `uuid.New()` (v4) or database auto-increment.
-- **Soft Delete**: `user_posts` and `post_comments` use `deleted_at` timestamp. **CRITICAL**: Always filter `deleted_at IS NULL` in SELECT queries. See [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md).
-- **BaseRepository Pattern**:
-  - **Core**: `internal/adapter/repository/postgres/base_repository.go`
-  - **Modules**: Each module has `internal/modules/{name}/adapter/repository/postgres/base_repository.go`
-  - Both provide: `Get()`, `Select()`, `Exec()`, `NamedExec()`, `getExecutor()`
-  - This duplication maintains module independence (no core dependencies)
-- **BaseRepository Pattern**: All repos in `internal/adapter/repository/postgres/*_repository.go` embed `*BaseRepository` which provides:
-
-  - `Get(ctx, dest, query, args...)` - Single row
-  - `Select(ctx, dest, query, args...)` - Multiple rows
-  - `Exec(ctx, query, args...)` - No return
-  - `NamedExec(ctx, query, arg)` - Named parameter execution
-  - `getExecutor(ctx)` - Auto-selects transaction or DB connection from context
-
-  Example:
-
-  ```go
-  func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, error) {
-      var user entity.User
-      query := `SELECT * FROM users WHERE id = $1`
-      if err := r.Get(ctx, &user, query, id); err != nil {
-          return nil, err
-      }
-      return &user, nil
-  }
-  ```
-
-  **Module Repositories**: Modules have identical BaseRepository at `internal/modules/{name}/adapter/repository/postgres/base_repository.go` to avoid core dependencies.
-
----
-
-## 5. Adding Features
-
-- **Manual steps**: Add entity, repo interface/impl, usecase, handler, DTO, router, migration. Register in router and main. See [README.md](README.md).
-- **New Module Pattern**:
-
-  1. Create `internal/modules/{name}/` with structure: `domain/entity/`, `domain/repository/`, `usecase/`, `adapter/http/handler/`, `adapter/repository/postgres/`
-  2. Implement `pkg/module.Module` interface in `module.go`
-  3. Create `register.go` with `init()` function calling `module.DefaultRegistry.Register()`
-  4. Import module in `cmd/api/main.go`: `_ "github.com/basilex/promenade/internal/modules/{name}"`
-  5. Create migrations in `migrations/{name}/000001_*.sql`
-  6. Add config in `config/modules.yaml`
-
-  Example `register.go`:
-
-  ```go
-  package mymodule
-
-  import (
-      "log/slog"
-      "github.com/basilex/promenade/pkg/module"
-  )
-
-  func init() {
-      mod := New()
-      if err := module.DefaultRegistry.Register(mod); err != nil {
-          slog.Error("Failed to register mymodule", "error", err)
-      }
-  }
-  ```
-
----
-
-## 6. Testing
-
-- **Test Organization**: Tests live alongside code they test (`*_test.go` files in same directory as source). Core tests in `internal/domain/entity/` and `internal/usecase/`. Module tests in each module's directory.
-- **Test Types**:
-  - **Unit**: Test business logic in isolation. Mock repos using generated mocks (e.g., `usecase/mocks/`).
-  - **Integration**: Repository operations with real PostgreSQL on port 5433 (`make test-db-start`).
-  - **Smoke**: End-to-end critical flows with real database.
-  - **Core Tests**: Domain entities + use case business logic (`make test-unit`)
-  - **Module Tests**: Each module's entities and use cases (`make test-integration` or `make test-module-posts`)
-- **Test Helpers**: Available in [test/helpers/](test/helpers/) for database setup, fixtures, and common test utilities.
-- **Coverage**: 388 total tests (183 unit + 91 integration + 114 smoke), all passing. Use `make test-coverage` for HTML report.
-- **Running Tests**: Use `make test` for all tests, `make test-unit` for unit only, `make test-integration` for integration only.
-
----
-
-## 7. Event Bus & Async
-
-- **Dual Bus Adapters**: Factory pattern with graceful fallback
-  - **Memory** (`pkg/bus/memory`): In-memory Pub/Sub for dev/test, zero dependencies, fast
-  - **Redis** (`pkg/bus/redis`): Distributed Pub/Sub for production multi-instance, persistent, scalable
-  - Config: Set `bus.adapter: memory` or `redis` in `config/app.{env}.yaml`, Redis auto-falls back to memory if unavailable
-  - Health checks and reconnection logic built-in for Redis adapter
-- **Bus configuration** (`cfg.Bus.*`): WorkerPoolSize (default: 4), BufferSize (default: 100), RetryAttempts/RetryDelay
-- **Event patterns**: Events embed `bus.BaseEvent`, published via `eventBus.Publish(ctx, bus.TopicUserRegistered, event)`
-- **Email Notifications**: Async via event bus subscriptions. Templates in `templates/email/`. Started in [cmd/api/main.go](cmd/api/main.go) with graceful shutdown.
-- **Testing**: Both adapters have integration tests. See [docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md) for Redis-specific testing patterns.
-
----
-
-## 8. Logging & Context
-
-- **Logger**: Use `logger.FromContext(ctx)` for structured logs with request/user context. Never use global logger directly.
-- **Context Propagation**: Context carries transaction state, logger, request ID, and user info. Always pass `ctx` through call chain.
-- **Transaction Context**: `database.GetTx(ctx)` retrieves active transaction from context. `getExecutor(ctx)` in repos auto-selects transaction or DB connection.
-
----
-
-## 9. Authorization & RBAC
-
-- **Permissions**: Format `resource:action` (e.g., `posts:create`). Wildcards supported. Five system roles. See [migrations/000009_create_rbac_tables.up.sql](migrations/000009_create_rbac_tables.up.sql).
-
----
-
-## 10. Configuration & Validation
-
-- **YAML-Based Config**: Primary configuration via `config/app.{env}.yaml` (dev/test/prod). Core loads `app.{env}.yaml` based on `ENVIRONMENT` variable (defaults to "development").
-- **Environment Variable Overrides**: Sensitive values (DB_PASSWORD, JWT_SECRET) can override YAML settings via `applyEnvOverrides()`.
-- **Module Config**: Modules load their own config from `internal/modules/{name}/config/config.{env}.yaml`. Core does NOT load module configs - modules are autonomous.
-- **Config Loading**: `config.Load()` → auto-detects environment → loads `config/app.{env}.yaml` → applies env overrides.
-- **Custom Validators**: See [pkg/validator/custom_validators.go](pkg/validator/custom_validators.go).
-
----
-
-## 11. Commercial Modules & Licensing
-
-- **License System**: Signature-based licensing for commercial modules (currently `analytics`). See [docs/LICENSE_ARCHITECTURE.md](docs/LICENSE_ARCHITECTURE.md).
-- **License Format**: `PROMENADE-{MODULE}-{TIER}-{EXPIRY}-{SIGNATURE}` (e.g., `PROMENADE-ANALYTICS-PRO-20261231-AbC...`)
-- **Tiers**: BASIC, PRO, ENTERPRISE with different feature sets and retention periods
-- **Validation**: HMAC-SHA256 signature verification, expiry checks, grace periods (3 days default)
-- **License Generation**:
-  - Script: `./scripts/generate-license.sh analytics PRO 365` (module, tier, days)
-  - Tool: `go run ./cmd/license-generator/main.go -module=analytics -tier=PRO -expiry=20261231 -secret=...`
-  - Environment: Set `{MODULE}_LICENSE_KEY` (e.g., `ANALYTICS_LICENSE_KEY`)
-- **Development Mode**: Set `license_required: false` in module's `config.{env}.yaml` to bypass validation
-- **Module Config**: Each commercial module has license settings in its config file:
-  ```yaml
-  module:
-    license_required: true
-  license:
-    key: "" # Set via environment variable
-    validation:
-      check_on_startup: true
-      check_on_request: true
-    grace_period_days: 3
-  ```
-- **Analytics Module**: Metrics collection, custom reports, dashboards. Tables use `analytics_` prefix. See [internal/modules/analytics/README.md](internal/modules/analytics/README.md).
-
----
-
-## 12. Key Files & Entry Points
-
-- [cmd/api/main.go](cmd/api/main.go) — Application entry point, module loading
-- [Makefile] + [Makefile.dev.mk] + [Makefile.test.mk] + [Makefile.prod.mk] — All workflows
-- [internal/adapter/http/v1/router/init_*.go] — Core module wiring examples (auth, users, RBAC)
-- [internal/infrastructure/config/yaml_config.go] — YAML config loader with env overrides
-- [internal/infrastructure/database/transaction.go] — Transaction management
-- [internal/adapter/repository/postgres/base_repository.go] — Base repo with Get/Select/Exec
-- [internal/infrastructure/scheduler/scheduler.go] — Automated purge scheduler (cron-based)
-- [pkg/module/module.go] — Module interface and registry
-- [pkg/purge/registry.go] — Purge policy registry
-- [scripts/generate-license.sh] — License generation helper (for commercial modules)
-- [test/README.md](test/README.md) — Test structure & helpers
-- [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md) — Makefile system
-- [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md) — Module configuration patterns
-- [docs/LICENSE_ARCHITECTURE.md](docs/LICENSE_ARCHITECTURE.md) — Commercial licensing system
-
----
-
-## 13. Critical Gotchas & Debugging
-
-### Common Pitfalls
-
-1. **UUID v4 vs v7**: NEVER use `uuid.New()` (v4). Always use `pkg/uuidv7.New()` for time-ordered UUIDs.
-2. **Soft Delete Filtering**: Always add `WHERE deleted_at IS NULL` to SELECT queries on soft-deleted tables.
-3. **Module Dependencies**: Modules importing `internal/domain` or `internal/usecase` break independence. Only import `pkg/*`.
-4. **Transaction Context**: Always pass `ctx` through call chain. `getExecutor(ctx)` in repos will fail without it.
-5. **Logger Context**: Use `logger.FromContext(ctx)`, never global logger, to preserve request/user context.
-6. **Migration Namespaces**: Core migrations (`migrations/core/`) MUST run before module migrations. Wrong namespace breaks history.
-7. **License Configuration**: Commercial modules require valid license or `license_required: false` in config. Check environment variable `{MODULE}_LICENSE_KEY` is set.
-
-### Debugging Workflows
-
-- **Database Issues**: Check Docker: `make docker-ps`. Verify `config/app.dev.yaml` database settings.
-- **Test Failures**: Run `make test-unit` first (fast, ~5s), then `make test-integration` (~36s). Tests are isolated - check `*_test.go` files in same directory as failing code.
-- **Migration Errors**: Check `schema_migrations` table for dirty flag. Use `make migrate-down` then `make migrate-up`. Verify namespace is correct (`core/`, `posts/`, `profiles/`, `analytics/`).
-- **Module Not Loading**: Verify import in `cmd/api/main.go` and enabled in `config/modules.yaml`. Check `init()` registration in module's `register.go`.
-- **Event Bus Issues**: Memory adapter is default. For Redis, set `bus.adapter: redis` in `config/app.{env}.yaml` and verify Redis is running on port 6379.
-- **API 404s**: Run `make swagger-all` to regenerate routes. Check handler registration in module's router setup.
-- **Config Issues**: Check `ENVIRONMENT` variable (development/test/production). Use `make config-show ENV=dev` to view loaded config.
-- **License Errors**: Check `{MODULE}_LICENSE_KEY` environment variable. Generate new license with `./scripts/generate-license.sh`. For dev, set `license_required: false` in module config.
-
-### Performance Patterns
-
-- **Batch Operations**: Use `COPY` or bulk inserts for > 100 rows. See purge handlers for examples.
-- **N+1 Queries**: Use `SELECT ... WHERE id IN (...)` with sqlx `IN` query expansion.
-- **Transaction Scope**: Keep transactions short. Don't call external APIs inside `WithTransaction()`.
-- **Context Timeouts**: Set explicit timeouts for long operations: `ctx, cancel := context.WithTimeout(ctx, 30*time.Second)`.
-
----
-
-**For more, see:**
-
-- [README.md](README.md)
-- [docs/](docs/) for guides on testing, UUID v7, validation, and more.
-- [pkg/uuidv7/uuidv7.go] — UUID v7 implementation
-- [scripts/create-migration.sh] — Migration creation helper
+**For comprehensive documentation**: [README.md](../README.md) | [docs/INDEX.md](../docs/INDEX.md) | [docs/ARCHITECTURE_QUICKREF.md](../docs/ARCHITECTURE_QUICKREF.md)

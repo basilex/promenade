@@ -1,0 +1,650 @@
+# Promenade
+
+[🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
+
+[![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+**Готовий до продакшену REST API**, побудований на **Clean Architecture**, **модульній плагін-системі** та **namespace-based міграціях бази даних**. Включає автономні бізнес-модулі, PostgreSQL з UUID v7, event-driven архітектуру та комплексну тестову інфраструктуру.
+
+---
+
+## Огляд Архітектури
+
+Promenade використовує **сувору шарову архітектуру**, де **Core оркеструє**, а **Модулі виконують** бізнес-логіку:
+
+**Core Layer** - Оркестратор + Інфраструктура + Спільні Сервіси
+
+- Аутентифікація та Авторизація (RBAC)
+- Event Bus (Memory/Redis)
+- База Даних та Транзакції
+- Логування та Конфігурація
+- Реєстр Модулів та Життєвий Цикл
+- Довідкові Дані (країни, валюти, регіони, міста, часові зони, мови, способи оплати)
+
+**Module Layer** - Незалежні Вертикальні Зрізи (Бізнес-Домени)
+
+| Модуль        | Сутності                     | Опис                            | Статус          |
+| ------------- | ---------------------------- | ------------------------------- | --------------- |
+| Posts         | пости, коментарі, лайки      | Контент створений користувачами | Безкоштовно     |
+| Profiles      | контакти, профілі            | Профілі користувачів            | Безкоштовно     |
+| **Analytics** | **метрики, звіти, дашборди** | **Аналітика та звітність**      | **Безкоштовно** |
+| Warehouse     | продукти, інвентар           | Управління складом (майбутнє)   | В планах        |
+
+Кожен модуль є самодостатнім з:
+
+- Власними domain entities та бізнес-логікою
+- Власними міграціями бази даних (namespace-based)
+- Власними репозиторіями та use cases
+- Власними HTTP handlers та routes
+- Власною конфігурацією та життєвим циклом
+- Опціонально: Політики очищення, дозволи, події
+
+### Основні Принципи
+
+1. **Core як Оркестратор**
+
+   - Core **керує** життєвим циклом модулів (init, start, stop)
+   - Core **надає** спільні сервіси (auth, events, DB, logging)
+   - Core **знає КОЛИ** викликати модулі, але не **ЯК** вони працюють
+   - Core **ніколи** не імпортує код специфічний для модулів
+
+2. **Модулі як Виконавці**
+
+   - Модулі **реалізують** domain-specific бізнес-логіку
+   - Модулі **реєструються** через функції `init()`
+   - Модулі є **незалежними** - можна вмикати/вимикати без впливу на інші
+   - Модулі **ніколи** не імпортують код інших модулів (тільки `pkg/*`)
+   - Кожен модуль = повний вертикальний зріз (entities → handlers)
+
+3. **Шари Clean Architecture**
+
+   ```
+   Domain (сутності, інтерфейси) → Use Case (бізнес-логіка)
+      ↓                                      ↓
+   Adapter (репо, хендлери) → Infrastructure (DB, HTTP, події)
+   ```
+
+   - **Правило Залежностей**: Внутрішні шари ніколи не залежать від зовнішніх
+   - Use cases залежать тільки від domain інтерфейсів, ніколи від конкретних реалізацій
+
+4. **Namespace-Based Міграції**
+   - Кожен namespace (core, posts, profiles) має незалежну історію версій
+   - Міграції знаходяться в `migrations/{namespace}/NNNNNN_description.{up|down}.sql`
+   - Core міграції виконуються першими, потім увімкнені модулі
+   - Справжня автономія модулів - вмикай/вимикай без конфліктів схеми
+
+---
+
+## Швидкий Старт
+
+### Передумови
+
+- **Go 1.25+**
+- **Docker & Docker Compose** (для PostgreSQL, Redis)
+- **Make** (для автоматизації)
+
+### 1. Клонування та Налаштування
+
+```bash
+git clone https://github.com/basilex/promenade.git
+cd promenade
+
+# Встановлення залежностей для розробки
+make install
+
+# Запуск PostgreSQL + Redis через Docker
+make docker-up
+```
+
+### 2. Запуск Міграцій
+
+Міграції виконуються **автоматично** при запуску додатку, але ви також можете запустити їх вручну:
+
+```bash
+# Перевірка статусу міграцій для всіх namespaces
+make migrate-status
+
+# Запуск всіх міграцій (core + увімкнені модулі)
+make migrate
+
+# Запуск конкретного namespace
+make migrate-core                    # Тільки Core
+make migrate-module MODULE=posts     # Конкретний модуль
+```
+
+Дивіться [migrations/README.md](migrations/README.md) для детального гайду з міграцій.
+
+### 3. Запуск Додатку
+
+```bash
+# Режим розробки (hot reload, debug logging)
+make dev
+
+# Або зібрати та запустити бінарник
+make build
+./bin/promenade
+```
+
+Сервер запускається на **http://localhost:8081**
+
+---
+
+## Структура Документації
+
+### Основна Документація
+
+| Документ                                                           | Опис                                                   |
+| ------------------------------------------------------------------ | ------------------------------------------------------ |
+| **[docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)** | Візуальні діаграми архітектури, відповідальності шарів |
+| **[docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md)** | Швидкий довідник, дерева рішень, поширені помилки      |
+| **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Аудит відповідності архітектури, чеклист перевірки     |
+| **[internal/CORE.md](internal/CORE.md)**                           | Відповідальності Core та межі                          |
+
+### Система Модулів
+
+| Документ                                                                     | Опис                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| **[internal/modules/README.md](internal/modules/README.md)**                 | Огляд системи модулів, структура, реєстрація       |
+| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Створення нових модулів, кращі практики            |
+| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Правила автономії модулів, управління залежностями |
+| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Система конфігурації модулів                       |
+
+### Інфраструктура та Системи
+
+| Документ                                                             | Опис                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------ |
+| **[migrations/README.md](migrations/README.md)**                     | Namespace-based система міграцій, використання CLI     |
+| **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)** | Дизайн та реалізація системи міграцій                  |
+| **[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)**         | Автоматизована система очищення даних (registry-based) |
+| **[pkg/bus/README.md](pkg/bus/README.md)**                           | Event bus (Memory/Redis адаптери)                      |
+| **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)**           | Тестування Redis event bus                             |
+
+### Гайди для Розробників
+
+| Документ                                                             | Опис                                       |
+| -------------------------------------------------------------------- | ------------------------------------------ |
+| **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**   | Система Makefile (команди dev, test, prod) |
+| **[test/README.md](test/README.md)**                                 | Тестова інфраструктура (388 тестів)        |
+| **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**                   | Кращі практики тестування, патерни         |
+| **[docs/TESTING_INFRASTRUCTURE.md](docs/TESTING_INFRASTRUCTURE.md)** | Налаштування тестової інфраструктури       |
+
+### Технічні Довідники
+
+| Документ                                           | Опис                                               |
+| -------------------------------------------------- | -------------------------------------------------- |
+| **[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)** | Реалізація UUID v7 та переваги                     |
+| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**     | Патерн м'якого видалення для контенту користувачів |
+| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | Система RBAC (4 ролі, wildcard дозволи)            |
+| **[docs/LOGGING.md](docs/LOGGING.md)**             | Структуроване логування з slog                     |
+| **[docs/VALIDATION.md](docs/VALIDATION.md)**       | Патерни валідації запитів                          |
+| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**     | Стандартні тестові користувачі та облікові дані    |
+| **[docs/INDEX.md](docs/INDEX.md)**                 | Повний індекс документації з навчальними шляхами   |
+
+---
+
+## Система Модулів
+
+### Доступні Модулі
+
+#### **Модуль Posts** (`internal/modules/posts`)
+
+Управління контентом створеним користувачами:
+
+- **Сутності**: Пости, Коментарі, Лайки
+- **Функції**: Створення/редагування постів, треди коментарів, система лайків
+- **Міграції**: 3 міграції (namespace: `posts`)
+- **Конфіг**: `config/modules.yaml` → `posts`
+
+**Повна документація**: [internal/modules/posts/README.md](internal/modules/posts/README.md)
+
+#### **Модуль Profiles** (`internal/modules/profiles`)
+
+Управління профілями та контактами користувачів:
+
+- **Сутності**: UserProfiles, UserContacts
+- **Функції**: Управління профілями, контактна інформація
+- **Міграції**: 2 міграції (namespace: `profiles`)
+- **Конфіг**: `config/modules.yaml` → `profiles`
+
+**Повна документація**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
+
+#### **Модуль Analytics** (`internal/modules/analytics`) - Безкоштовно
+
+Аналітика, метрики та звітність:
+
+- **Статус**: Безкоштовно - Доступний для всіх користувачів
+- **Сутності**: Метрики, Звіти, Дашборди
+- **Функції**: Збір метрик, кастомні звіти, візуальні дашборди
+- **Міграції**: 1 міграція (namespace: `analytics`)
+- **Призначення**: Бізнес-аналітика, моніторинг продуктивності, інсайти з даних
+
+**Повна документація**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
+
+#### **Модуль Warehouse** (`internal/modules/warehouse`) - Майбутній Модуль
+
+Управління інвентарем та продуктами (в планах):
+
+- **Статус**: Заплановано - Структура існує як placeholder, ще не реалізована
+- **Призначення**: E-commerce, інвентарні системи, роздрібна торгівля
+
+**Планована документація**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
+
+### Структура Модуля
+
+Кожен модуль має послідовну структуру:
+
+```
+internal/modules/{module}/
+├── module.go           # Реєстрація модуля та життєвий цикл
+├── domain/
+│   └── entity/         # Domain сутності
+├── repository/         # Інтерфейси доступу до даних та реалізації
+├── usecase/            # Бізнес-логіка
+├── adapter/
+│   └── handler/        # HTTP хендлери та DTO
+└── README.md           # Документація модуля
+```
+
+### Увімкнення/Вимкнення Модулів
+
+Редагуйте `config/modules.yaml`:
+
+```yaml
+modules:
+  enabled:
+    - posts # Контент користувачів
+    - profiles # Профілі + контакти користувачів
+    - analytics # Бізнес аналітика
+    # - warehouse  # Майбутнє: Управління складом
+```
+
+Модулі завантажуються автоматично при запуску додатку.
+
+---
+
+## Міграції Бази Даних
+
+### Namespace-Based Система
+
+Кожен namespace підтримує **незалежну історію версій**:
+
+```
+migrations/
+├── core/               # Core інфраструктура (завжди виконується першою)
+│   ├── 000001_core_init_uuid_v7.up.sql
+│   ├── 000002_core_auth_full.up.sql
+│   ├── 000003_core_rbac_full.up.sql
+│   ├── 000004_core_ref_timezones.up.sql
+│   ├── 000005_core_ref_languages.up.sql
+│   ├── 000006_core_ref_countries_currencies.up.sql    # 145 країн, 124 валюти
+│   ├── 000007_core_ref_regions_cities.up.sql          # 30 регіонів, 17 міст
+│   └── 000008_core_ref_payment_methods.up.sql         # 40+ способів оплати
+├── posts/              # Міграції модуля Posts
+│   ├── 000001_posts_posts.up.sql
+│   ├── 000002_posts_comments.up.sql
+│   └── 000003_posts_comment_likes.up.sql
+├── profiles/           # Міграції модуля Profiles
+│   ├── 000001_profiles_contacts.up.sql
+│   └── 000002_profiles_profiles.up.sql
+└── analytics/          # Міграції модуля Analytics
+    └── 000001_analytics_tables.up.sql
+```
+
+### Команди Міграцій
+
+```bash
+# Статус для всіх namespaces
+make migrate-status
+
+# Запуск всіх (core + увімкнені модулі)
+make migrate
+
+# Запуск конкретного namespace
+make migrate-core
+make migrate-module MODULE=posts
+
+# Відкат
+make migrate-rollback MODULE=posts STEPS=1
+
+# Створити нову міграцію
+make migrate-create MODULE=posts NAME=add_post_views
+make migrate-create-core NAME=add_audit_log
+```
+
+**Авто-міграції**: Міграції виконуються автоматично при запуску додатку (спочатку core, потім увімкнені модулі).
+
+**Повний гайд**: [migrations/README.md](migrations/README.md)
+
+---
+
+## Аутентифікація та Авторизація
+
+### Стандартні Тестові Користувачі
+
+| Email                           | Пароль     | Роль      | Дозволи                            |
+| ------------------------------- | ---------- | --------- | ---------------------------------- |
+| `system@promenade.com`          | `passw0rd` | Admin     | Повний доступ (`*`)                |
+| `admin@promenade.com`           | `passw0rd` | Admin     | Управління користувачами/контентом |
+| `moderator@promenade.com`       | `passw0rd` | Moderator | Модерація контенту                 |
+| `alexander.vasilenko@gmail.com` | `03041965` | User      | Базові операції                    |
+
+**Змініть паролі перед розгортанням у продакшен!**
+
+### Система RBAC
+
+- **4 Системні Ролі**: Admin, Moderator, User, Guest
+- **Wildcard Дозволи**: `posts:*` (всі дії з постами), `*` (повний доступ)
+- **Формат Ресурс-Дія**: `posts:create`, `users:delete`, `comments:moderate`
+
+**Повний RBAC гайд**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
+
+---
+
+## Тестування
+
+**388 тестів** на всіх шарах (100% пройдено, ~41 секунда):
+
+```bash
+# Запуск всіх тестів (unit + integration + smoke)
+make test               # Всі тести (~41с)
+
+# Запуск за типом
+make test-unit          # Тільки unit тести (183 тести, ~5с)
+make test-integration   # Integration тести (91 тест, ~36с)
+make test-smoke         # Smoke тести (114 тестів, ~4с)
+
+# Звіт покриття
+make test-coverage
+```
+
+### Структура Тестів
+
+- **Core Тести**: Domain сутності (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
+- **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge операції
+- **Module Тести**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, валідація ліцензії)
+- **Integration Тести**: Операції репозиторію з реальною PostgreSQL на порту 5433
+- **Test Helpers**: `test/helpers/` та `test/integration/` для fixtures, налаштування DB, управління транзакціями
+
+**Гайди з тестування**:
+
+- [test/README.md](test/README.md) - Тестова інфраструктура
+- [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Кращі практики
+
+---
+
+## Event Bus
+
+**Dual-adapter event bus** для асинхронних операцій:
+
+### Memory Адаптер
+
+- In-memory Pub/Sub (goroutines + channels)
+- **Призначення**: Розробка, тестування, single-instance розгортання
+- **Переваги**: Без залежностей, швидкий, простий
+- **Конфіг**: `BUS_ADAPTER=memory` (за замовчуванням)
+
+### Redis Адаптер
+
+- Розподілений Pub/Sub через Redis
+- **Призначення**: Продакшен multi-instance розгортання
+- **Переваги**: Персистентний, масштабований, відмовостійкий
+- **Конфіг**: `BUS_ADAPTER=redis` + налаштування підключення Redis
+- **Fallback**: Автоматичний перехід на memory якщо Redis недоступний
+
+### Приклад Використання
+
+```go
+// Публікація події
+event := &UserRegisteredEvent{
+    BaseEvent: bus.BaseEvent{ID: uuid.New().String()},
+    UserID:    user.ID,
+    Email:     user.Email,
+}
+eventBus.Publish(ctx, bus.TopicUserRegistered, event)
+
+// Підписка на події
+eventBus.Subscribe(ctx, bus.TopicUserRegistered, func(ctx context.Context, e bus.Event) error {
+    evt := e.(*UserRegisteredEvent)
+    // Надіслати вітальний email
+    return emailService.SendWelcome(ctx, evt.Email)
+})
+```
+
+**Повний гайд**: [pkg/bus/README.md](pkg/bus/README.md)
+
+---
+
+## Команди Makefile
+
+### Розробка
+
+```bash
+make dev                # Запуск dev сервера (hot reload)
+make build              # Зібрати production бінарник
+make run                # Запустити зібраний бінарник
+make lint               # Запуск linter (golangci-lint)
+make fmt                # Форматування коду
+make config-show        # Показати YAML конфігурацію (використовуйте ENV=dev|test|prod)
+```
+
+### Тестування
+
+```bash
+make test                      # Всі тести (core + модулі)
+make test-core                 # Тільки core тести (domain + usecase)
+make test-modules              # Всі тести модулів
+make test-module-posts         # Тести модуля Posts
+make test-module-profiles      # Тести модуля Profiles
+make test-coverage             # Генерація HTML звіту покриття
+```
+
+### База Даних
+
+```bash
+make migrate                   # Запуск всіх міграцій (core + увімкнені модулі)
+make migrate-status            # Показати статус міграцій
+make migrate-core              # Мігрувати тільки core
+make migrate-module MODULE=posts          # Мігрувати конкретний модуль
+make migrate-rollback MODULE=posts STEPS=1  # Відкат
+make migrate-create MODULE=posts NAME=xxx  # Створити міграцію модуля
+make migrate-create-core NAME=xxx          # Створити core міграцію
+```
+
+### Docker
+
+```bash
+make docker-up          # Запуск PostgreSQL + Redis
+make docker-down        # Зупинка сервісів
+make docker-clean       # Видалення контейнерів + volumes
+make docker-logs        # Перегляд логів
+```
+
+### Swagger
+
+```bash
+make swagger-all        # Генерація API docs (v1 + v2)
+make swagger-v1         # Генерація тільки v1 docs
+make swagger-v2         # Генерація тільки v2 docs
+```
+
+**Повний Makefile гайд**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+
+---
+
+## Docker
+
+### Налаштування Розробки
+
+```bash
+# Запуск сервісів
+make docker-up
+
+# Перегляд логів
+make docker-logs
+
+# Зупинка сервісів
+make docker-down
+
+# Чиста установка (видалення volumes)
+make docker-clean
+```
+
+### Сервіси
+
+- **PostgreSQL 16**: Порт 5432, користувач `system`, база даних `promenade_dev`
+- **Redis 7**: Порт 6379 (для розподіленого event bus)
+
+**Docker гайд**: [docker/README.md](docker/README.md)
+
+---
+
+## Ключові Технічні Особливості
+
+### UUID v7 Первинні Ключі
+
+Time-ordered UUID для **2x швидших вставок** ніж UUID v4 та кращої продуктивності B-tree.
+
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    ...
+);
+```
+
+[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
+
+### Патерн М'якого Видалення
+
+Контент створений користувачами (пости, коментарі) використовує timestamp `deleted_at` для безпечного видалення.
+
+```go
+// Завжди фільтруйте м'яко видалені записи
+WHERE deleted_at IS NULL
+```
+
+[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
+
+### Автоматизована Система Очищення
+
+Registry-based система де модулі реєструють свої політики утримання:
+
+```go
+purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
+    EntityName:    "user_posts",
+    RetentionDays: 90,
+    Enabled:       true,
+})
+```
+
+Core планувальник запускає purge jobs через cron. Core не знає про конкретні сутності.
+
+[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
+
+### Структуроване Логування
+
+Context-aware логування з `slog`:
+
+```go
+log := logger.FromContext(ctx)  // Включає request_id, user_id
+log.Info("User registered", "email", user.Email)
+```
+
+[docs/LOGGING.md](docs/LOGGING.md)
+
+---
+
+## API Документація
+
+### Swagger UI
+
+- **v1 API**: http://localhost:8081/api/v1/docs/swagger/index.html
+- **v2 API**: http://localhost:8081/api/v2/docs/swagger/index.html
+
+### Health Check
+
+```bash
+curl http://localhost:8081/api/v1/health
+```
+
+Відповідь:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": "healthy",
+    "database": "connected",
+    "timestamp": "2025-12-22T16:40:00Z"
+  }
+}
+```
+
+### Версіювання API
+
+- **v1**: Поточний стабільний API (`internal/adapter/http/v1`)
+- **v2**: API наступного покоління (`internal/adapter/http/v2`)
+
+Обидві версії мають:
+
+- Ізольовані handlers та DTOs
+- Окрему Swagger документацію
+- Незалежну реєстрацію routes
+
+---
+
+## Навчальні Шляхи
+
+### Для Нових Розробників
+
+1. **Старт**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - 15-хвилинний огляд
+2. **Основні Концепції**: [internal/CORE.md](internal/CORE.md) - Відповідальності Core
+3. **Система Модулів**: [internal/modules/README.md](internal/modules/README.md)
+4. **Практика**: Створіть простий модуль слідуючи [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+
+### Для DevOps/Розгортання
+
+1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+2. **Міграції**: [migrations/README.md](migrations/README.md)
+3. **Docker**: [docker/README.md](docker/README.md)
+4. **Конфігурація**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+
+### Для Архітекторів
+
+1. **Огляд Архітектури**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
+2. **Аудит та Верифікація**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
+3. **Незалежність Модулів**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
+4. **Система Міграцій**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
+
+**Повний індекс**: [docs/INDEX.md](docs/INDEX.md)
+
+---
+
+## Внесок у Проєкт
+
+1. Зробіть Fork репозиторію
+2. Створіть гілку features (`git checkout -b feature/amazing-feature`)
+3. Слідуйте архітектурним принципам (дивіться [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md))
+4. Пишіть тести (підтримуйте 100% pass rate)
+5. Закомітьте зміни (`git commit -m 'Add amazing feature'`)
+6. Запушіть до гілки (`git push origin feature/amazing-feature`)
+7. Відкрийте Pull Request
+
+---
+
+## Ліцензія
+
+Цей проєкт ліцензований під ліцензією MIT - дивіться файл [LICENSE](LICENSE) для деталей.
+
+---
+
+## Підтримка
+
+- **Документація**: [docs/INDEX.md](docs/INDEX.md)
+- **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
+- **Email**: alexander.vasilenko@gmail.com
+
+---
+
+**Побудовано з Clean Architecture та Go** 🇺🇦

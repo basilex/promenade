@@ -465,7 +465,7 @@ func TestWarehouseModule(t *testing.T) {
 1. See existing modules in `internal/modules/`
 2. Use `make generate-module NAME=mymodule` (TODO)
 3. Check `pkg/module/` for full API reference
-4. Read `docs/ARCHITECTURE.md` for Clean Architecture patterns
+4. Read [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) for Clean Architecture patterns
 
 ---
 

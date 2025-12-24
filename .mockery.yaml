@@ -1,0 +1,58 @@
+quiet: false
+recursive: true
+inpackage: false
+testonly: false
+with-expecter: true
+filename: "{{.InterfaceName | snakecase}}_mock.go"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: mocks
+dir: "{{.InterfaceDir}}/mocks"
+disable-version-string: true
+
+packages:
+  # Core repositories
+  github.com/basilex/promenade/internal/domain/repository:
+    config:
+      all: true
+      dir: internal/adapter/repository/mocks
+    interfaces:
+      UserRepository:
+      RoleRepository:
+      PermissionRepository:
+      SessionRepository:
+      CountryRepository:
+      CurrencyRepository:
+      RegionRepository:
+      CityRepository:
+      LanguageRepository:
+      TimezoneRepository:
+
+  # Posts module
+  github.com/basilex/promenade/internal/modules/posts/domain/repository:
+    config:
+      all: true
+      dir: internal/modules/posts/domain/repository/mocks
+
+  # Profiles module
+  github.com/basilex/promenade/internal/modules/profiles/domain/repository:
+    config:
+      all: true
+      dir: internal/modules/profiles/repository/mocks
+
+  # Audit module
+  github.com/basilex/promenade/internal/modules/audit/domain/repository:
+    config:
+      all: true
+      dir: internal/modules/audit/domain/repository/mocks
+
+  # Analytics module
+  github.com/basilex/promenade/internal/modules/analytics/domain/repository:
+    config:
+      all: true
+      dir: internal/modules/analytics/usecase/mocks
+
+  # Warehouse module (future)
+  github.com/basilex/promenade/internal/modules/warehouse/domain/repository:
+    config:
+      all: true
+      dir: internal/modules/warehouse/domain/repository/mocks

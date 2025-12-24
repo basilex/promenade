@@ -16,11 +16,11 @@ import (
 )
 
 type MetricsHandler struct {
-	analyticsUC *usecase.AnalyticsUseCase
+	analyticsUC usecase.AnalyticsUseCase
 	logger      *slog.Logger
 }
 
-func NewMetricsHandler(analyticsUC *usecase.AnalyticsUseCase, logger *slog.Logger) *MetricsHandler {
+func NewMetricsHandler(analyticsUC usecase.AnalyticsUseCase, logger *slog.Logger) *MetricsHandler {
 	return &MetricsHandler{
 		analyticsUC: analyticsUC,
 		logger:      logger,

@@ -1,5 +1,7 @@
 # Promenade
 
+🇬🇧 **English** | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
+
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

@@ -7,6 +7,7 @@ modules:
     - posts # User-generated content: posts + comments + likes
     - profiles # User profiles + contacts (merged into one module)
     - analytics # Analytics & reporting (Free)
+    - audit # Immutable audit logging (Commercial)
 
   # Per-module configuration
   config:
@@ -28,6 +29,11 @@ modules:
       version: "1.0.0"
       description: "Advanced analytics, metrics, reports, and dashboards"
       license_key: "" # Set via ANALYTICS_LICENSE_KEY environment variable
+
+    audit:
+      version: "1.0.0"
+      description: "Immutable audit logging with cryptographic signatures (Commercial)"
+      license_key: "" # Set via AUDIT_LICENSE_KEY environment variable
       settings:
         metrics_retention_days: 90
         max_reports_per_user: 10

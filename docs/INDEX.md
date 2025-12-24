@@ -1,5 +1,11 @@
 # Promenade Documentation Index
 
+🇬🇧 **English** | [🇺🇦 Українська](uk/INDEX.uk.md) | [🇩🇪 Deutsch](de/INDEX.de.md) | [🇵🇹 Português](pt/INDEX.pt.md) | [🇪🇸 Español](es/INDEX.es.md)
+
+This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
+
+> 🌍 **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
+
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
 ---
@@ -70,11 +76,13 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ## Testing
 
-| Document                                               | Description               | When to Read                    |
-| ------------------------------------------------------ | ------------------------- | ------------------------------- |
-| [TESTING_GUIDE.md](TESTING_GUIDE.md)                   | Complete testing strategy | Writing tests                   |
-| [TESTING_INFRASTRUCTURE.md](TESTING_INFRASTRUCTURE.md) | Test infrastructure setup | Setting up test environment     |
-| [../test/README.md](../test/README.md)                 | Test directory structure  | Understanding test organization |
+| Document                                                   | Description                      | When to Read                    |
+| ---------------------------------------------------------- | -------------------------------- | ------------------------------- |
+| [TESTING_GUIDE.md](TESTING_GUIDE.md)                       | Complete testing strategy        | Writing tests                   |
+| [TESTING_INFRASTRUCTURE.md](TESTING_INFRASTRUCTURE.md)     | Test infrastructure setup        | Setting up test environment     |
+| [MOCK_GENERATION_STANDARD.md](MOCK_GENERATION_STANDARD.md) | Unified mock generation approach | Working with repository mocks   |
+| [MOCK_STANDARDIZATION.md](MOCK_STANDARDIZATION.md)         | Mock standardization summary     | Understanding mock unification  |
+| [../test/README.md](../test/README.md)                     | Test directory structure         | Understanding test organization |
 
 ---
 

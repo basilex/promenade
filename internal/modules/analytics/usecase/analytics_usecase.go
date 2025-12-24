@@ -10,13 +10,22 @@ import (
 	"github.com/basilex/promenade/internal/modules/analytics/domain/repository"
 )
 
-type AnalyticsUseCase struct {
+// AnalyticsUseCase defines the interface for analytics business logic
+type AnalyticsUseCase interface {
+	CollectMetric(ctx context.Context, input *CollectMetricInput) (*entity.Metric, error)
+	GetMetric(ctx context.Context, id string) (*entity.Metric, error)
+	ListMetricsByScope(ctx context.Context, scope entity.MetricScope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error)
+	ListMetricsByModule(ctx context.Context, module string, limit, offset int) ([]*entity.Metric, int64, error)
+	GetLatestMetric(ctx context.Context, module string, scope entity.MetricScope, scopeID, name string) (*entity.Metric, error)
+}
+
+type analyticsUseCase struct {
 	metricRepo repository.MetricRepository
 	logger     *slog.Logger
 }
 
-func NewAnalyticsUseCase(metricRepo repository.MetricRepository, logger *slog.Logger) *AnalyticsUseCase {
-	return &AnalyticsUseCase{
+func NewAnalyticsUseCase(metricRepo repository.MetricRepository, logger *slog.Logger) AnalyticsUseCase {
+	return &analyticsUseCase{
 		metricRepo: metricRepo,
 		logger:     logger,
 	}
@@ -32,7 +41,7 @@ type CollectMetricInput struct {
 	Metadata map[string]interface{}
 }
 
-func (uc *AnalyticsUseCase) CollectMetric(ctx context.Context, input *CollectMetricInput) (*entity.Metric, error) {
+func (uc *analyticsUseCase) CollectMetric(ctx context.Context, input *CollectMetricInput) (*entity.Metric, error) {
 	if input.Module == "" {
 		return nil, entity.ErrInvalidModule
 	}
@@ -64,28 +73,28 @@ func (uc *AnalyticsUseCase) CollectMetric(ctx context.Context, input *CollectMet
 	return metric, nil
 }
 
-func (uc *AnalyticsUseCase) GetMetric(ctx context.Context, id string) (*entity.Metric, error) {
+func (uc *analyticsUseCase) GetMetric(ctx context.Context, id string) (*entity.Metric, error) {
 	if id == "" {
 		return nil, fmt.Errorf("metric ID is required")
 	}
 	return uc.metricRepo.GetByID(ctx, id)
 }
 
-func (uc *AnalyticsUseCase) ListMetricsByScope(ctx context.Context, scope entity.MetricScope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error) {
+func (uc *analyticsUseCase) ListMetricsByScope(ctx context.Context, scope entity.MetricScope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error) {
 	if scopeID == "" {
 		return nil, 0, fmt.Errorf("scope ID is required")
 	}
 	return uc.metricRepo.ListByScope(ctx, string(scope), scopeID, limit, offset)
 }
 
-func (uc *AnalyticsUseCase) ListMetricsByModule(ctx context.Context, module string, limit, offset int) ([]*entity.Metric, int64, error) {
+func (uc *analyticsUseCase) ListMetricsByModule(ctx context.Context, module string, limit, offset int) ([]*entity.Metric, int64, error) {
 	if module == "" {
 		return nil, 0, fmt.Errorf("module name is required")
 	}
 	return uc.metricRepo.ListByModule(ctx, module, limit, offset)
 }
 
-func (uc *AnalyticsUseCase) GetLatestMetric(ctx context.Context, module string, scope entity.MetricScope, scopeID, name string) (*entity.Metric, error) {
+func (uc *analyticsUseCase) GetLatestMetric(ctx context.Context, module string, scope entity.MetricScope, scopeID, name string) (*entity.Metric, error) {
 	if module == "" || scopeID == "" || name == "" {
 		return nil, fmt.Errorf("module, scope ID, and metric name are required")
 	}

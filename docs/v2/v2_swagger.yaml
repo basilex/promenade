@@ -1,0 +1,2829 @@
+basePath: /api/v1
+definitions:
+  github_com_basilex_promenade_internal_adapter_http_shared_response.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+      timestamp:
+        description: Unix timestamp in seconds
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      depth:
+        type: integer
+      id:
+        type: string
+      likes_count:
+        type: integer
+      parent_id:
+        type: string
+      path:
+        type: string
+      post_id:
+        type: string
+      replies_count:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CreateCommentRequest:
+    properties:
+      content:
+        maxLength: 2000
+        minLength: 1
+        type: string
+      parent_id:
+        type: string
+    required:
+    - content
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CreatePostRequest:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      content:
+        minLength: 10
+        type: string
+      excerpt:
+        maxLength: 500
+        type: string
+      featured_image:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.FeaturedImageDTO'
+      is_public:
+        type: boolean
+      meta_description:
+        maxLength: 250
+        type: string
+      meta_keywords:
+        items:
+          type: string
+        type: array
+      meta_title:
+        maxLength: 100
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        maxLength: 200
+        minLength: 3
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.FeaturedImageDTO:
+    properties:
+      alt:
+        type: string
+      height:
+        type: integer
+      thumbnail_url:
+        type: string
+      url:
+        type: string
+      width:
+        type: integer
+    required:
+    - url
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.ListPostsRequest:
+    properties:
+      is_featured:
+        type: boolean
+      is_public:
+        type: boolean
+      limit:
+        maximum: 100
+        minimum: 1
+        type: integer
+      offset:
+        minimum: 0
+        type: integer
+      q:
+        type: string
+      sort_by:
+        enum:
+        - created_at
+        - updated_at
+        - published_at
+        - view_count
+        - like_count
+        type: string
+      sort_order:
+        enum:
+        - asc
+        - desc
+        - ASC
+        - DESC
+        type: string
+      status:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_domain_entity.PostStatus'
+      tag:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse:
+    properties:
+      pagination:
+        additionalProperties: {}
+        type: object
+      posts:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+        type: array
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      comment_count:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      excerpt:
+        type: string
+      featured_image:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.FeaturedImageDTO'
+      id:
+        type: string
+      is_comments_enabled:
+        type: boolean
+      is_featured:
+        type: boolean
+      is_public:
+        type: boolean
+      like_count:
+        type: integer
+      meta_description:
+        type: string
+      meta_keywords:
+        items:
+          type: string
+        type: array
+      meta_title:
+        type: string
+      published_at:
+        type: string
+      reading_time_minutes:
+        type: integer
+      scheduled_at:
+        type: string
+      share_count:
+        type: integer
+      slug:
+        type: string
+      status:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PublishPostRequest:
+    properties:
+      scheduled_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.UpdateCommentRequest:
+    properties:
+      content:
+        maxLength: 2000
+        minLength: 1
+        type: string
+    required:
+    - content
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.UpdatePostRequest:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      content:
+        minLength: 10
+        type: string
+      excerpt:
+        maxLength: 500
+        type: string
+      featured_image:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.FeaturedImageDTO'
+      is_public:
+        type: boolean
+      meta_description:
+        maxLength: 250
+        type: string
+      meta_keywords:
+        items:
+          type: string
+        type: array
+      meta_title:
+        maxLength: 100
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        maxLength: 200
+        minLength: 3
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_posts_domain_entity.PostStatus:
+    enum:
+    - draft
+    - published
+    - archived
+    - scheduled
+    type: string
+    x-enum-varnames:
+    - PostStatusDraft
+    - PostStatusPublished
+    - PostStatusArchived
+    - PostStatusScheduled
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.BanProfileRequest:
+    properties:
+      reason:
+        maxLength: 500
+        minLength: 10
+        type: string
+    required:
+    - reason
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.CreateProfileRequest:
+    properties:
+      avatar_url:
+        type: string
+      bio:
+        maxLength: 1000
+        type: string
+      city:
+        type: string
+      company:
+        type: string
+      country_id:
+        type: string
+      cover_url:
+        type: string
+      date_of_birth:
+        type: string
+      display_name:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      is_public:
+        type: boolean
+      job_title:
+        type: string
+      last_name:
+        type: string
+      locale:
+        type: string
+      middle_name:
+        type: string
+      nickname:
+        maxLength: 50
+        minLength: 3
+        type: string
+      preferences:
+        additionalProperties: {}
+        type: object
+      show_birthday:
+        type: boolean
+      show_email:
+        type: boolean
+      show_location:
+        type: boolean
+      social_links:
+        additionalProperties:
+          type: string
+        type: object
+      timezone:
+        type: string
+      website_url:
+        type: string
+    required:
+    - display_name
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.CreateUserContactRequest:
+    properties:
+      available_days:
+        items:
+          type: string
+        type: array
+      available_from:
+        description: 'Format: "09:00:00"'
+        type: string
+      available_to:
+        description: 'Format: "18:00:00"'
+        type: string
+      contact_type:
+        enum:
+        - email
+        - phone
+        - telegram
+        - whatsapp
+        - viber
+        - signal
+        - skype
+        - discord
+        - linkedin
+        - other
+        type: string
+      contact_value:
+        maxLength: 255
+        minLength: 1
+        type: string
+      is_public:
+        type: boolean
+      label:
+        maxLength: 100
+        type: string
+      notes:
+        maxLength: 1000
+        type: string
+      timezone:
+        maxLength: 50
+        type: string
+    required:
+    - contact_type
+    - contact_value
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      profiles:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse:
+    properties:
+      avatar_url:
+        type: string
+      ban_reason:
+        type: string
+      banned_at:
+        type: string
+      banned_by:
+        type: string
+      bio:
+        type: string
+      city:
+        type: string
+      company:
+        type: string
+      country_id:
+        type: string
+      cover_url:
+        type: string
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      display_name:
+        type: string
+      first_name:
+        type: string
+      followers_count:
+        type: integer
+      following_count:
+        type: integer
+      gender:
+        type: string
+      id:
+        type: string
+      is_banned:
+        type: boolean
+      is_public:
+        type: boolean
+      is_verified:
+        type: boolean
+      job_title:
+        type: string
+      last_name:
+        type: string
+      last_seen_at:
+        type: string
+      locale:
+        type: string
+      middle_name:
+        type: string
+      nickname:
+        type: string
+      preferences:
+        additionalProperties: {}
+        type: object
+      profile_views_count:
+        type: integer
+      show_birthday:
+        type: boolean
+      show_email:
+        type: boolean
+      show_location:
+        type: boolean
+      social_links:
+        additionalProperties:
+          type: string
+        type: object
+      timezone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      website_url:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UpdateProfileRequest:
+    properties:
+      avatar_url:
+        type: string
+      bio:
+        maxLength: 1000
+        type: string
+      city:
+        type: string
+      company:
+        type: string
+      country_id:
+        type: string
+      cover_url:
+        type: string
+      date_of_birth:
+        type: string
+      display_name:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      is_public:
+        type: boolean
+      job_title:
+        type: string
+      last_name:
+        type: string
+      locale:
+        type: string
+      middle_name:
+        type: string
+      nickname:
+        maxLength: 50
+        minLength: 3
+        type: string
+      preferences:
+        additionalProperties: {}
+        type: object
+      show_birthday:
+        type: boolean
+      show_email:
+        type: boolean
+      show_location:
+        type: boolean
+      social_links:
+        additionalProperties:
+          type: string
+        type: object
+      timezone:
+        type: string
+      website_url:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UpdateUserContactRequest:
+    properties:
+      available_days:
+        items:
+          type: string
+        type: array
+      available_from:
+        description: 'Format: "09:00:00"'
+        type: string
+      available_to:
+        description: 'Format: "18:00:00"'
+        type: string
+      contact_type:
+        enum:
+        - email
+        - phone
+        - telegram
+        - whatsapp
+        - viber
+        - signal
+        - skype
+        - discord
+        - linkedin
+        - other
+        type: string
+      contact_value:
+        maxLength: 255
+        minLength: 1
+        type: string
+      is_public:
+        type: boolean
+      label:
+        maxLength: 100
+        type: string
+      notes:
+        maxLength: 1000
+        type: string
+      timezone:
+        maxLength: 50
+        type: string
+    required:
+    - contact_type
+    - contact_value
+    type: object
+  github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse:
+    properties:
+      available_days:
+        items:
+          type: string
+        type: array
+      available_from:
+        description: 'Format: "09:00:00"'
+        type: string
+      available_to:
+        description: 'Format: "18:00:00"'
+        type: string
+      contact_type:
+        type: string
+      contact_value:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      is_primary:
+        type: boolean
+      is_public:
+        type: boolean
+      is_verified:
+        type: boolean
+      label:
+        type: string
+      notes:
+        type: string
+      timezone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_basilex_promenade_pkg_response.ErrorResponse:
+    properties:
+      error:
+        example: Detailed error
+        type: string
+      message:
+        example: Error message
+        type: string
+      success:
+        example: false
+        type: boolean
+      timestamp:
+        example: 1766124866
+        type: integer
+    type: object
+  github_com_basilex_promenade_pkg_response.PaginatedResponse:
+    properties:
+      items: {}
+      page:
+        type: integer
+      page_size:
+        type: integer
+      timestamp:
+        description: Unix timestamp in seconds
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  github_com_basilex_promenade_pkg_response.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+      timestamp:
+        description: Unix timestamp in seconds
+        type: integer
+    type: object
+  github_com_basilex_promenade_pkg_response.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        example: Operation completed successfully
+        type: string
+      success:
+        example: true
+        type: boolean
+      timestamp:
+        example: 1766124866
+        type: integer
+    type: object
+  internal_modules_audit_adapter_http_handler.AuditEventResponse:
+    properties:
+      action:
+        type: string
+      created_at:
+        type: string
+      entity_id:
+        type: string
+      entity_type:
+        type: string
+      id:
+        type: string
+      ip_address:
+        type: string
+      metadata:
+        type: string
+      new_data:
+        type: string
+      old_data:
+        type: string
+      request_id:
+        type: string
+      signature:
+        type: string
+      user_agent:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_modules_audit_adapter_http_handler.CreateAuditEventRequest:
+    properties:
+      action:
+        maxLength: 100
+        type: string
+      entity_id:
+        type: string
+      entity_type:
+        maxLength: 100
+        type: string
+      ip_address:
+        type: string
+      metadata:
+        type: string
+      new_data:
+        type: string
+      old_data:
+        type: string
+      request_id:
+        type: string
+      user_agent:
+        type: string
+      user_id:
+        type: string
+    required:
+    - action
+    - entity_id
+    - entity_type
+    - user_id
+    type: object
+  internal_modules_audit_adapter_http_handler.VerifyAuditEventResponse:
+    properties:
+      event_id:
+        type: string
+      valid:
+        type: boolean
+      verified_at:
+        type: string
+    type: object
+info:
+  contact:
+    email: alexander.vasilenko@gmail.com
+    name: API Support
+    url: https://github.com/basilex/promenade
+  description: Production-ready REST API built with Clean Architecture, featuring
+    PostgreSQL with UUID v7, comprehensive testing infrastructure, JWT authentication,
+    and API versioning.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Promenade API
+  version: "1.0"
+paths:
+  /api/v1/audit/events:
+    get:
+      description: List audit events with filters and pagination
+      parameters:
+      - description: Filter by user ID
+        in: query
+        name: user_id
+        type: string
+      - description: Filter by action
+        in: query
+        name: action
+        type: string
+      - description: Filter by entity type
+        in: query
+        name: entity_type
+        type: string
+      - description: Filter by entity ID
+        in: query
+        name: entity_id
+        type: string
+      - description: Filter from date (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: Filter to date (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_modules_audit_adapter_http_handler.AuditEventResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List audit events
+      tags:
+      - audit
+    post:
+      consumes:
+      - application/json
+      description: Create a new immutable audit event
+      parameters:
+      - description: Audit event data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_audit_adapter_http_handler.CreateAuditEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_audit_adapter_http_handler.AuditEventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create audit event
+      tags:
+      - audit
+  /api/v1/audit/events/{id}:
+    get:
+      description: Get audit event by ID
+      parameters:
+      - description: Audit Event ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_audit_adapter_http_handler.AuditEventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get audit event
+      tags:
+      - audit
+  /api/v1/audit/events/{id}/verify:
+    get:
+      description: Verify HMAC-SHA256 signature of audit event
+      parameters:
+      - description: Audit Event ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_audit_adapter_http_handler.VerifyAuditEventResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify audit event signature
+      tags:
+      - audit
+  /api/v1/audit/events/entity/{entity_type}/{entity_id}:
+    get:
+      description: Get all audit events for a specific entity
+      parameters:
+      - description: Entity type
+        in: path
+        name: entity_type
+        required: true
+        type: string
+      - description: Entity ID (UUID)
+        in: path
+        name: entity_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_modules_audit_adapter_http_handler.AuditEventResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get audit events by entity
+      tags:
+      - audit
+  /comments/{id}:
+    delete:
+      description: Soft-delete a comment (only by the author)
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a comment
+      tags:
+      - comments
+    get:
+      description: Retrieve details of a specific comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a comment by ID
+      tags:
+      - comments
+    put:
+      consumes:
+      - application/json
+      description: Update the content of an existing comment (only by the author)
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated comment content
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.UpdateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a comment
+      tags:
+      - comments
+  /comments/{id}/replies:
+    get:
+      description: Retrieve all replies to a specific comment with pagination
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.PaginatedResponse'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get replies to a comment
+      tags:
+      - comments
+  /posts:
+    post:
+      consumes:
+      - application/json
+      description: Create a new blog post
+      parameters:
+      - description: Create post request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new post
+      tags:
+      - posts
+  /posts/{id}:
+    delete:
+      description: Soft delete a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete post
+      tags:
+      - posts
+    get:
+      description: Get a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get post by ID
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      description: Update an existing post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update post request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.UpdatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update post
+      tags:
+      - posts
+  /posts/{id}/comments:
+    post:
+      description: Toggle comments enabled/disabled for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Toggle comments
+      tags:
+      - posts
+  /posts/{id}/featured:
+    post:
+      description: Toggle the featured flag for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Toggle featured status
+      tags:
+      - posts
+  /posts/{id}/like:
+    post:
+      description: Increment like count for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Like post
+      tags:
+      - posts
+  /posts/{id}/publish:
+    post:
+      consumes:
+      - application/json
+      description: Publish a draft post immediately or schedule for later
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Publish options
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PublishPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Publish post
+      tags:
+      - posts
+  /posts/{id}/unlike:
+    post:
+      description: Decrement like count for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Unlike post
+      tags:
+      - posts
+  /posts/{id}/unpublish:
+    post:
+      description: Unpublish a published post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Unpublish post
+      tags:
+      - posts
+  /posts/{id}/view:
+    post:
+      description: Increment view count for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: View post (increment views)
+      tags:
+      - posts
+  /posts/{postId}/comments:
+    get:
+      description: Retrieve all top-level comments for a specific post with pagination
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: string
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.PaginatedResponse'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get comments for a post
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment on a specific post (can be a top-level comment
+        or a reply)
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: string
+      - description: Comment details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new comment on a post
+      tags:
+      - comments
+  /posts/featured:
+    get:
+      description: Get featured posts
+      parameters:
+      - default: 5
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get featured posts
+      tags:
+      - posts
+  /posts/list:
+    post:
+      consumes:
+      - application/json
+      description: List posts with advanced filtering and pagination
+      parameters:
+      - description: List posts request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.ListPostsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List posts with filters
+      tags:
+      - posts
+  /posts/published:
+    get:
+      description: Get all published posts
+      parameters:
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get published posts
+      tags:
+      - posts
+  /posts/search:
+    get:
+      description: Search posts by keyword
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Search posts
+      tags:
+      - posts
+  /posts/tags/{tag}:
+    get:
+      description: Get posts filtered by tag
+      parameters:
+      - description: Tag name
+        in: path
+        name: tag
+        required: true
+        type: string
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get posts by tag
+      tags:
+      - posts
+  /profiles:
+    get:
+      consumes:
+      - application/json
+      description: List user profiles with pagination
+      parameters:
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: true
+        description: Show only public profiles
+        in: query
+        name: public_only
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profiles list
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileListResponse'
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      summary: List profiles
+      tags:
+      - profiles
+    post:
+      consumes:
+      - application/json
+      description: Create a new profile for the authenticated user
+      parameters:
+      - description: Profile data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.CreateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Profile created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+              type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "409":
+          description: Profile already exists
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create user profile
+      tags:
+      - profiles
+  /profiles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the authenticated user's profile
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Profile deleted
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete profile
+      tags:
+      - profiles
+    get:
+      consumes:
+      - application/json
+      description: Get a user profile by ID
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+              type: object
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      summary: Get profile by ID
+      tags:
+      - profiles
+    put:
+      consumes:
+      - application/json
+      description: Update the authenticated user's profile
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated profile data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+              type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "409":
+          description: Nickname already taken
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update profile
+      tags:
+      - profiles
+  /profiles/{id}/ban:
+    post:
+      consumes:
+      - application/json
+      description: Ban a user profile (admin only)
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Ban reason
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.BanProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile banned
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Ban profile
+      tags:
+      - profiles
+  /profiles/{id}/unban:
+    post:
+      consumes:
+      - application/json
+      description: Unban a user profile (admin only)
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile unbanned
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Unban profile
+      tags:
+      - profiles
+  /profiles/{id}/unverify:
+    post:
+      consumes:
+      - application/json
+      description: Unverify a user profile (admin only)
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile unverified
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Unverify profile
+      tags:
+      - profiles
+  /profiles/{id}/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify a user profile (admin only)
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile verified
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Verify profile
+      tags:
+      - profiles
+  /profiles/me:
+    get:
+      consumes:
+      - application/json
+      description: Get the authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my profile
+      tags:
+      - profiles
+  /profiles/nickname/{nickname}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user profile by nickname
+      parameters:
+      - description: Profile nickname
+        in: path
+        name: nickname
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile found
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileResponse'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      summary: Get profile by nickname
+      tags:
+      - profiles
+  /profiles/search:
+    get:
+      consumes:
+      - application/json
+      description: Search profiles by nickname, display name, or bio
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Search results
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.ProfileListResponse'
+              type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      summary: Search profiles
+      tags:
+      - profiles
+  /users/{user_id}/posts:
+    get:
+      description: Get all posts created by a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.PostListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get user's posts
+      tags:
+      - posts
+  /users/{userId}/comments:
+    get:
+      description: Retrieve all comments made by a specific user with pagination
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.PaginatedResponse'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_posts_adapter_http_dto.CommentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get comments by user
+      tags:
+      - comments
+  /users/contacts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all contacts for the authenticated user
+      parameters:
+      - description: Include inactive contacts
+        in: query
+        name: include_inactive
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get user's contacts
+      tags:
+      - user-contacts
+    post:
+      consumes:
+      - application/json
+      description: Creates a new contact for the authenticated user
+      parameters:
+      - description: Contact data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.CreateUserContactRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create user contact
+      tags:
+      - user-contacts
+  /users/contacts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a contact
+      parameters:
+      - description: Contact ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete contact
+      tags:
+      - user-contacts
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific contact by its ID
+      parameters:
+      - description: Contact ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get contact by ID
+      tags:
+      - user-contacts
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing contact
+      parameters:
+      - description: Contact ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated contact data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UpdateUserContactRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update contact
+      tags:
+      - user-contacts
+  /users/contacts/{id}/primary:
+    post:
+      consumes:
+      - application/json
+      description: Sets a contact as the primary contact for its type
+      parameters:
+      - description: Contact ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Set primary contact
+      tags:
+      - user-contacts
+  /users/contacts/{id}/toggle:
+    post:
+      consumes:
+      - application/json
+      description: Toggles the active status of a contact
+      parameters:
+      - description: Contact ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Toggle contact active status
+      tags:
+      - user-contacts
+  /users/contacts/primary/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the primary contact for a specific type
+      parameters:
+      - description: Contact type
+        enum:
+        - email
+        - phone
+        - telegram
+        - whatsapp
+        - viber
+        - signal
+        - skype
+        - discord
+        - linkedin
+        - other
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get primary contact by type
+      tags:
+      - user-contacts
+  /users/contacts/type/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves user contacts filtered by type
+      parameters:
+      - description: Contact type
+        enum:
+        - email
+        - phone
+        - telegram
+        - whatsapp
+        - viber
+        - signal
+        - skype
+        - discord
+        - linkedin
+        - other
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_profiles_adapter_http_dto.UserContactResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_adapter_http_shared_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get contacts by type
+      tags:
+      - user-contacts
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: 'Enter JWT token in format: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

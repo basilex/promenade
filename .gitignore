@@ -44,7 +44,11 @@ coverage.html
 tmp/
 temp/
 
-# Docs (auto-generated)
-docs/v1/
-docs/v2/
+# Local settings
+.github/
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
 
