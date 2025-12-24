@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](README.es.md)
 
-> **📝 Nota sobre traduções**: Alguns documentos técnicos (migrations/, internal/, pkg/, test/) e guias especializados (REDIS_BUS_TESTING.md, MOCK\*\*.md) estão disponíveis apenas em inglês no momento. Todos os principais documentos de arquitetura e guias técnicos estão completamente traduzidos para português. Consulte [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md) para a lista completa de traduções disponíveis.
+> **📝 Nota sobre traduções**: Alguns documentos técnicos de diretórios internos (migrations/, internal/, pkg/, test/) estão disponíveis apenas em inglês. **Todos os documentos de docs/ estão completamente traduzidos para português.** Consulte [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md) para a lista completa de traduções disponíveis.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
