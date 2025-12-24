@@ -137,9 +137,9 @@ Server startet auf **http://localhost:8081**
 
 | Dokument                                                           | Beschreibung                                                             |
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| **[docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)** | Visuelle Architekturdiagramme, Schichtverantwortlichkeiten, Lebenszyklus |
-| **[docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md)** | Schnellreferenz, Entscheidungsbäume, häufige Fehler                      |
-| **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Architektur-Compliance-Audit, Verifikationscheckliste                    |
+| **[docs/de/ARCHITECTURE_OVERVIEW.de.md](docs/de/ARCHITECTURE_OVERVIEW.de.md)** | Visuelle Architekturdiagramme, Schichtverantwortlichkeiten, Lebenszyklus |
+| **[docs/de/ARCHITECTURE_QUICKREF.de.md](docs/de/ARCHITECTURE_QUICKREF.de.md)** | Schnellreferenz, Entscheidungsbäume, häufige Fehler                      |
+| **[docs/de/ARCHITECTURE_AUDIT.de.md](docs/de/ARCHITECTURE_AUDIT.de.md)**       | Architektur-Compliance-Audit, Verifikationscheckliste                    |
 | **[internal/CORE.md](internal/CORE.md)**                           | Core-Verantwortlichkeiten und Grenzen                                    |
 
 ### Modulsystem
@@ -147,9 +147,9 @@ Server startet auf **http://localhost:8081**
 | Dokument                                                                     | Beschreibung                                   |
 | ---------------------------------------------------------------------------- | ---------------------------------------------- |
 | **[internal/modules/README.md](internal/modules/README.md)**                 | Modulsystem-Übersicht, Struktur, Registrierung |
-| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Neue Module erstellen, Best Practices          |
-| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Modul-Autonomieregeln, Abhängigkeitsverwaltung |
-| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Modul-Konfigurationssystem                     |
+| **[docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)**                 | Neue Module erstellen, Best Practices          |
+| **[docs/de/MODULE_INDEPENDENCE.de.md](docs/de/MODULE_INDEPENDENCE.de.md)**               | Modul-Autonomieregeln, Abhängigkeitsverwaltung |
+| **[docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)** | Modul-Konfigurationssystem                     |
 
 ### Infrastruktur & Systeme
 
@@ -157,7 +157,7 @@ Server startet auf **http://localhost:8081**
 | -------------------------------------------------------------------- | ----------------------------------------------------- |
 | **[migrations/README.md](migrations/README.md)**                     | Namespace-basiertes Migrationssystem, CLI-Nutzung     |
 | **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)** | Migrationssystem-Design und Implementierung           |
-| **[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)**         | Automatisiertes Daten-Purge-System (registry-basiert) |
+| **[docs/de/PURGE_ARCHITECTURE.de.md](docs/de/PURGE_ARCHITECTURE.de.md)**         | Automatisiertes Daten-Purge-System (registry-basiert) |
 | **[pkg/bus/README.md](pkg/bus/README.md)**                           | Event Bus (Memory/Redis-Adapter)                      |
 | **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)**           | Testen des Redis Event Bus                            |
 
@@ -167,20 +167,20 @@ Server startet auf **http://localhost:8081**
 | -------------------------------------------------------------------- | ----------------------------------------- |
 | **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**   | Makefile-System (dev, test, prod-Befehle) |
 | **[test/README.md](test/README.md)**                                 | Testing-Infrastruktur (200+ Tests)        |
-| **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**                   | Testing Best Practices, Patterns          |
-| **[docs/TESTING_INFRASTRUCTURE.md](docs/TESTING_INFRASTRUCTURE.md)** | Test-Infrastruktur-Setup                  |
+| **[docs/de/TESTING_GUIDE.de.md](docs/de/TESTING_GUIDE.de.md)**                   | Testing Best Practices, Patterns          |
+| **[docs/de/TESTING_INFRASTRUCTURE.de.md](docs/de/TESTING_INFRASTRUCTURE.de.md)** | Test-Infrastruktur-Setup                  |
 
 ### Technische Referenzen
 
 | Dokument                                           | Beschreibung                                     |
 | -------------------------------------------------- | ------------------------------------------------ |
-| **[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)** | UUID v7 Implementierung und Vorteile             |
+| **[docs/de/UUID_V7_GUIDE.de.md](docs/de/UUID_V7_GUIDE.de.md)** | UUID v7 Implementierung und Vorteile             |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**     | Soft-Delete-Pattern für Benutzerinhalte          |
-| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | RBAC-System (4 Rollen, Wildcard-Berechtigungen)  |
+| **[docs/de/AUTHORIZATION.de.md](docs/de/AUTHORIZATION.de.md)** | RBAC-System (4 Rollen, Wildcard-Berechtigungen)  |
 | **[docs/LOGGING.md](docs/LOGGING.md)**             | Strukturiertes Logging mit slog                  |
 | **[docs/VALIDATION.md](docs/VALIDATION.md)**       | Request-Validierungsmuster                       |
 | **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**     | Standard-Testbenutzer und Anmeldedaten           |
-| **[docs/INDEX.md](docs/INDEX.md)**                 | Vollständiger Dokumentationsindex mit Lernpfaden |
+| **[docs/de/INDEX.de.md](docs/de/INDEX.de.md)**                 | Vollständiger Dokumentationsindex mit Lernpfaden |
 
 ---
 
@@ -338,7 +338,7 @@ make migrate-create-core NAME=add_audit_log
 - **Wildcard-Berechtigungen**: `posts:*` (alle Post-Aktionen), `*` (Vollzugriff)
 - **Ressource-Aktion-Format**: `posts:create`, `users:delete`, `comments:moderate`
 
-**Vollständiger RBAC-Leitfaden**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
+**Vollständiger RBAC-Leitfaden**: [docs/de/AUTHORIZATION.de.md](docs/de/AUTHORIZATION.de.md)
 
 ---
 
@@ -370,7 +370,7 @@ make test-coverage
 **Testing-Leitfäden**:
 
 - [test/README.md](test/README.md) - Test-Infrastruktur
-- [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Best Practices
+- [docs/de/TESTING_GUIDE.de.md](docs/de/TESTING_GUIDE.de.md) - Best Practices
 
 ---
 
@@ -513,7 +513,7 @@ CREATE TABLE users (
 );
 ```
 
-[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
+[docs/de/UUID_V7_GUIDE.de.md](docs/de/UUID_V7_GUIDE.de.md)
 
 ### Soft-Delete-Pattern
 
@@ -540,7 +540,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 Core-Scheduler führt Purge-Jobs per Cron aus. Core kennt keine spezifischen Entitäten.
 
-[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
+[docs/de/PURGE_ARCHITECTURE.de.md](docs/de/PURGE_ARCHITECTURE.de.md)
 
 ### Strukturiertes Logging
 
@@ -722,7 +722,7 @@ modules:
         metrics_retention_days: 90
 ```
 
-**Konfigurations-Leitfaden**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+**Konfigurations-Leitfaden**: [docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)
 
 ---
 
@@ -782,7 +782,7 @@ modules:
     - mymodule
 ```
 
-**Vollständiger Leitfaden**: [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+**Vollständiger Leitfaden**: [docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)
 
 ---
 
@@ -790,26 +790,26 @@ modules:
 
 ### Für Neue Entwickler
 
-1. **Start**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - 15-Minuten-Übersicht
+1. **Start**: [docs/de/ARCHITECTURE_QUICKREF.de.md](docs/de/ARCHITECTURE_QUICKREF.de.md) - 15-Minuten-Übersicht
 2. **Core-Konzepte**: [internal/CORE.md](internal/CORE.md) - Core-Verantwortlichkeiten
 3. **Modulsystem**: [internal/modules/README.md](internal/modules/README.md)
-4. **Hands-on**: Ein einfaches Modul erstellen gemäß [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+4. **Hands-on**: Ein einfaches Modul erstellen gemäß [docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)
 
 ### Für DevOps/Deployment
 
 1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
 2. **Migrationen**: [migrations/README.md](migrations/README.md)
 3. **Docker**: [docker/README.md](docker/README.md)
-4. **Konfiguration**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+4. **Konfiguration**: [docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)
 
 ### Für Architekten
 
-1. **Architekturübersicht**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
-2. **Audit & Verifikation**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
-3. **Modul-Unabhängigkeit**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
+1. **Architekturübersicht**: [docs/de/ARCHITECTURE_OVERVIEW.de.md](docs/de/ARCHITECTURE_OVERVIEW.de.md)
+2. **Audit & Verifikation**: [docs/de/ARCHITECTURE_AUDIT.de.md](docs/de/ARCHITECTURE_AUDIT.de.md)
+3. **Modul-Unabhängigkeit**: [docs/de/MODULE_INDEPENDENCE.de.md](docs/de/MODULE_INDEPENDENCE.de.md)
 4. **Migrationssystem**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
-**Vollständiger Index**: [docs/INDEX.md](docs/INDEX.md)
+**Vollständiger Index**: [docs/de/INDEX.de.md](docs/de/INDEX.de.md)
 
 ---
 
@@ -817,7 +817,7 @@ modules:
 
 1. Repository forken
 2. Feature-Branch erstellen (`git checkout -b feature/amazing-feature`)
-3. Architekturprinzipien befolgen (siehe [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md))
+3. Architekturprinzipien befolgen (siehe [docs/de/ARCHITECTURE_QUICKREF.de.md](docs/de/ARCHITECTURE_QUICKREF.de.md))
 4. Tests schreiben (100% Pass-Rate beibehalten)
 5. Änderungen committen (`git commit -m 'Add amazing feature'`)
 6. Branch pushen (`git push origin feature/amazing-feature`)
@@ -833,7 +833,7 @@ Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE](LICENSE)-Da
 
 ## Support
 
-- **Dokumentation**: [docs/INDEX.md](docs/INDEX.md)
+- **Dokumentation**: [docs/de/INDEX.de.md](docs/de/INDEX.de.md)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
 - **E-Mail**: alexander.vasilenko@gmail.com
 

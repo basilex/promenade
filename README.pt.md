@@ -137,9 +137,9 @@ Servidor inicia em **http://localhost:8081**
 
 | Documento                                                          | Descrição                                                                     |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| **[docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)** | Diagramas visuais de arquitetura, responsabilidades de camadas, ciclo de vida |
-| **[docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md)** | Referência rápida, árvores de decisão, erros comuns                           |
-| **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Auditoria de conformidade de arquitetura, checklist de verificação            |
+| **[docs/pt/ARCHITECTURE_OVERVIEW.pt.md](docs/pt/ARCHITECTURE_OVERVIEW.pt.md)** | Diagramas visuais de arquitetura, responsabilidades de camadas, ciclo de vida |
+| **[docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md)** | Referência rápida, árvores de decisão, erros comuns                           |
+| **[docs/pt/ARCHITECTURE_AUDIT.pt.md](docs/pt/ARCHITECTURE_AUDIT.pt.md)**       | Auditoria de conformidade de arquitetura, checklist de verificação            |
 | **[internal/CORE.md](internal/CORE.md)**                           | Responsabilidades e limites do Core                                           |
 
 ### Sistema de Módulos
@@ -147,9 +147,9 @@ Servidor inicia em **http://localhost:8081**
 | Documento                                                                    | Descrição                                              |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------ |
 | **[internal/modules/README.md](internal/modules/README.md)**                 | Visão geral do sistema de módulos, estrutura, registro |
-| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Criação de novos módulos, melhores práticas            |
-| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Regras de autonomia de módulos, gestão de dependências |
-| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Sistema de configuração de módulos                     |
+| **[docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)**                 | Criação de novos módulos, melhores práticas            |
+| **[docs/pt/MODULE_INDEPENDENCE.pt.md](docs/pt/MODULE_INDEPENDENCE.pt.md)**               | Regras de autonomia de módulos, gestão de dependências |
+| **[docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)** | Sistema de configuração de módulos                     |
 
 ### Infraestrutura & Sistemas
 
@@ -157,7 +157,7 @@ Servidor inicia em **http://localhost:8081**
 | -------------------------------------------------------------------- | ------------------------------------------------------------ |
 | **[migrations/README.md](migrations/README.md)**                     | Sistema de migração baseado em namespace, uso CLI            |
 | **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)** | Design e implementação do sistema de migração                |
-| **[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)**         | Sistema automatizado de purga de dados (baseado em registro) |
+| **[docs/pt/PURGE_ARCHITECTURE.pt.md](docs/pt/PURGE_ARCHITECTURE.pt.md)**         | Sistema automatizado de purga de dados (baseado em registro) |
 | **[pkg/bus/README.md](pkg/bus/README.md)**                           | Event bus (adaptadores Memory/Redis)                         |
 | **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)**           | Testando event bus Redis                                     |
 
@@ -167,20 +167,20 @@ Servidor inicia em **http://localhost:8081**
 | -------------------------------------------------------------------- | ------------------------------------------- |
 | **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**   | Sistema Makefile (comandos dev, test, prod) |
 | **[test/README.md](test/README.md)**                                 | Infraestrutura de testes (200+ testes)      |
-| **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**                   | Melhores práticas de testes, padrões        |
-| **[docs/TESTING_INFRASTRUCTURE.md](docs/TESTING_INFRASTRUCTURE.md)** | Configuração de infraestrutura de testes    |
+| **[docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md)**                   | Melhores práticas de testes, padrões        |
+| **[docs/pt/TESTING_INFRASTRUCTURE.pt.md](docs/pt/TESTING_INFRASTRUCTURE.pt.md)** | Configuração de infraestrutura de testes    |
 
 ### Referências Técnicas
 
 | Documento                                          | Descrição                                                  |
 | -------------------------------------------------- | ---------------------------------------------------------- |
-| **[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)** | Implementação e benefícios do UUID v7                      |
+| **[docs/pt/UUID_V7_GUIDE.pt.md](docs/pt/UUID_V7_GUIDE.pt.md)** | Implementação e benefícios do UUID v7                      |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**     | Padrão soft delete para conteúdo de usuários               |
-| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | Sistema RBAC (4 papéis, permissões wildcard)               |
+| **[docs/pt/AUTHORIZATION.pt.md](docs/pt/AUTHORIZATION.pt.md)** | Sistema RBAC (4 papéis, permissões wildcard)               |
 | **[docs/LOGGING.md](docs/LOGGING.md)**             | Logging estruturado com slog                               |
 | **[docs/VALIDATION.md](docs/VALIDATION.md)**       | Padrões de validação de requisições                        |
 | **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**     | Usuários de teste padrão e credenciais                     |
-| **[docs/INDEX.md](docs/INDEX.md)**                 | Índice completo de documentação com trilhas de aprendizado |
+| **[docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md)**                 | Índice completo de documentação com trilhas de aprendizado |
 
 ---
 
@@ -338,7 +338,7 @@ make migrate-create-core NAME=add_audit_log
 - **Permissões Wildcard**: `posts:*` (todas as ações de posts), `*` (acesso completo)
 - **Formato Recurso-Ação**: `posts:create`, `users:delete`, `comments:moderate`
 
-**Guia completo RBAC**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
+**Guia completo RBAC**: [docs/pt/AUTHORIZATION.pt.md](docs/pt/AUTHORIZATION.pt.md)
 
 ---
 
@@ -370,7 +370,7 @@ make test-coverage
 **Guias de teste**:
 
 - [test/README.md](test/README.md) - Infraestrutura de testes
-- [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Melhores práticas
+- [docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md) - Melhores práticas
 
 ---
 
@@ -513,7 +513,7 @@ CREATE TABLE users (
 );
 ```
 
-[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
+[docs/pt/UUID_V7_GUIDE.pt.md](docs/pt/UUID_V7_GUIDE.pt.md)
 
 ### Padrão Soft Delete
 
@@ -540,7 +540,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 Scheduler do Core executa jobs de purga via cron. Core não conhece entidades específicas.
 
-[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
+[docs/pt/PURGE_ARCHITECTURE.pt.md](docs/pt/PURGE_ARCHITECTURE.pt.md)
 
 ### Logging Estruturado
 
@@ -722,7 +722,7 @@ modules:
         metrics_retention_days: 90
 ```
 
-**Guia de configuração**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+**Guia de configuração**: [docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)
 
 ---
 
@@ -782,7 +782,7 @@ modules:
     - mymodule
 ```
 
-**Guia completo**: [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+**Guia completo**: [docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)
 
 ---
 
@@ -790,26 +790,26 @@ modules:
 
 ### Para Novos Desenvolvedores
 
-1. **Início**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - Visão geral de 15 minutos
+1. **Início**: [docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md) - Visão geral de 15 minutos
 2. **Conceitos Core**: [internal/CORE.md](internal/CORE.md) - Responsabilidades do Core
 3. **Sistema de Módulos**: [internal/modules/README.md](internal/modules/README.md)
-4. **Prática**: Criar um módulo simples seguindo [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
+4. **Prática**: Criar um módulo simples seguindo [docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)
 
 ### Para DevOps/Deployment
 
 1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
 2. **Migrações**: [migrations/README.md](migrations/README.md)
 3. **Docker**: [docker/README.md](docker/README.md)
-4. **Configuração**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
+4. **Configuração**: [docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)
 
 ### Para Arquitetos
 
-1. **Visão Geral da Arquitetura**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
-2. **Auditoria & Verificação**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
-3. **Independência de Módulos**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
+1. **Visão Geral da Arquitetura**: [docs/pt/ARCHITECTURE_OVERVIEW.pt.md](docs/pt/ARCHITECTURE_OVERVIEW.pt.md)
+2. **Auditoria & Verificação**: [docs/pt/ARCHITECTURE_AUDIT.pt.md](docs/pt/ARCHITECTURE_AUDIT.pt.md)
+3. **Independência de Módulos**: [docs/pt/MODULE_INDEPENDENCE.pt.md](docs/pt/MODULE_INDEPENDENCE.pt.md)
 4. **Sistema de Migração**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
-**Índice completo**: [docs/INDEX.md](docs/INDEX.md)
+**Índice completo**: [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md)
 
 ---
 
@@ -817,7 +817,7 @@ modules:
 
 1. Fazer fork do repositório
 2. Criar branch de feature (`git checkout -b feature/amazing-feature`)
-3. Seguir princípios de arquitetura (veja [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md))
+3. Seguir princípios de arquitetura (veja [docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md))
 4. Escrever testes (manter 100% de taxa de aprovação)
 5. Commitar mudanças (`git commit -m 'Add amazing feature'`)
 6. Push para branch (`git push origin feature/amazing-feature`)
@@ -833,7 +833,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## Suporte
 
-- **Documentação**: [docs/INDEX.md](docs/INDEX.md)
+- **Documentação**: [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
 - **Email**: alexander.vasilenko@gmail.com
 
