@@ -435,44 +435,45 @@ pageSize := response.GetPageSizeFromQuery(c) //Default: 20, max: 100
 **Interface Names** (завжди з великої літери):
 
 ```go
-//CORRECT - PascalCase with "UseCase" suffix
-type UserPostUseCase interface { }
-type AuthUseCase interface { }
-type RoleUseCase interface { }
+//CORRECT - PascalCase with "I" prefix and "UseCase" suffix
+type IUserPostUseCase interface { }
+type IAuthUseCase interface { }
+type IRoleUseCase interface { }
 
-//CORRECT - PascalCase with "Repository" suffix (never "Repo")
-type UserPostRepository interface { }
-type UserRepository interface { }
-type CountryRepository interface { }
+//CORRECT - PascalCase with "I" prefix and "Repository" suffix (never "Repo")
+type IUserPostRepository interface { }
+type IUserRepository interface { }
+type ICountryRepository interface { }
 
 //WRONG - inconsistent casing or abbreviations
 type userPostUsecase interface { }  //lowercase
-type UserPostUC interface { }       //abbreviated
-type UserRepo interface { }         //"Repo" instead of "Repository"
+type UserPostUC interface { }       //abbreviated (missing I prefix)
+type UserRepo interface { }         //"Repo" instead of "Repository" (missing I prefix)
 ```
 
 **Implementation Names** (lowercase private):
 
 ```go
-//CORRECT - lowercase struct, PascalCase constructor
+//CORRECT - lowercase struct, PascalCase constructor returning I-prefixed interface
 type userPostUseCase struct { }
-func NewUserPostUseCase(...) UserPostUseCase { return &userPostUseCase{} }
+func NewUserPostUseCase(...) IUserPostUseCase { return &userPostUseCase{} }
 
 type authUseCase struct { }
-func NewAuthUseCase(...) AuthUseCase { return &authUseCase{} }
+func NewAuthUseCase(...) IAuthUseCase { return &authUseCase{} }
 
 //WRONG - inconsistent patterns
-type UserPostUseCase struct { }  //Public struct
+type UserPostUseCase struct { }  //Public struct (should be lowercase)
 type userpostUseCase struct { }  //missing camelCase
+type IUserPostUseCase struct { } //Interface name used for struct
 ```
 
 **Handler Names** (always "{Entity}Handler"):
 
 ```go
-//CORRECT - Entity name + "Handler"
-type UserPostHandler struct { postUC usecase.UserPostUseCase }
-type UserProfileHandler struct { profileUC usecase.UserProfileUseCase }
-type AuthHandler struct { authUC usecase.AuthUseCase }
+//CORRECT - Entity name + "Handler", fields use I-prefixed interfaces
+type UserPostHandler struct { postUC usecase.IUserPostUseCase }
+type UserProfileHandler struct { profileUC usecase.IUserProfileUseCase }
+type AuthHandler struct { authUC usecase.IAuthUseCase }
 
 //WRONG - inconsistent suffixes
 type PostsHandler struct { }    //plural
@@ -650,9 +651,9 @@ import (
 
 **Before writing code, verify**:
 
-- [ ] All interfaces end with `UseCase` or `Repository` (never abbreviated)
+- [ ] All interfaces start with `I` and end with `UseCase` or `Repository` (never abbreviated)
 - [ ] All private structs are lowercase: `userPostUseCase`, `authUseCase`
-- [ ] All constructors return interface: `func New...() InterfaceName`
+- [ ] All constructors return I-prefixed interface: `func New...() IInterfaceName`
 - [ ] All repository methods start with: `Get`, `Create`, `Update`, `Delete`, `List`
 - [ ] All handlers have `Handler` suffix: `UserPostHandler`, `AuthHandler`
 - [ ] All errors start with `Err`: `ErrUserNotFound`, `ErrSlugExists`
@@ -696,10 +697,10 @@ import (
 
 ### Naming Consistency
 
-- [ ] All interfaces: `{Entity}UseCase`, `{Entity}Repository` (full words, no abbreviations)
+- [ ] All interfaces: `I{Entity}UseCase`, `I{Entity}Repository` (full words, no abbreviations)
 - [ ] All structs: lowercase `{entity}UseCase`, `{entity}Repository`
-- [ ] All constructors: `New{Entity}UseCase() {Entity}UseCase`
-- [ ] All handlers: `{Entity}Handler struct { {entity}UC usecase.{Entity}UseCase }`
+- [ ] All constructors: `New{Entity}UseCase() I{Entity}UseCase`
+- [ ] All handlers: `{Entity}Handler struct { {entity}UC usecase.I{Entity}UseCase }`
 - [ ] All errors: `Err{Entity}{Condition}` (e.g., `ErrUserNotFound`)
 - [ ] All files: `{entity_name}_{type}.go` (snake_case)
 
@@ -743,7 +744,7 @@ import (
 
 **Red Flags** (автоматично reject):
 
-- Interface name `UserPostUC` (use `UserPostUseCase`)
+- Interface name `UserPostUC` (use `IUserPostUseCase`)
 - Public struct `type UserPostUseCase struct` (must be lowercase)
 - Repository method `FindByID` (use `GetByID`)
 - `uuid.New()` instead of `uuidv7.New()`
