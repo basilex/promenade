@@ -731,27 +731,27 @@ package mymodule
 
 import "github.com/basilex/promenade/pkg/module"
 
-type IModule struct{}
+type MyModule struct{}
 
-func (m *IModule) Name() string { return "mymodule" }
+func (m *MyModule) Name() string { return "mymodule" }
 
-func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
+func (m *MyModule) Initialize(ctx context.Context, core module.Core) error {
     // Routen, Berechtigungen, Purge-Handler registrieren
     return nil
 }
 
-func (m *IModule) Start(ctx context.Context) error {
+func (m *MyModule) Start(ctx context.Context) error {
     // Background-Worker starten
     return nil
 }
 
-func (m *IModule) Stop(ctx context.Context) error {
+func (m *MyModule) Stop(ctx context.Context) error {
     // Graceful Shutdown
     return nil
 }
 
 func init() {
-    module.DefaultRegistry.Register(&IModule{})
+    module.DefaultRegistry.Register(&MyModule{})
 }
 ```
 

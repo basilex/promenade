@@ -29,7 +29,7 @@ internal/
     └── role_usecase_test.go
 ```
 
-### IModule Tests
+### Module Tests
 
 ```
 internal/modules/
@@ -70,7 +70,7 @@ make test                    # Run all tests (400+ tests, ~20s)
 make test-core               # Run core tests (275 tests: 39 entity + 236 usecase)
 ```
 
-### IModule Tests
+### Module Tests
 
 ```bash
 make test-modules            # Run all module tests
@@ -121,7 +121,7 @@ go test -v ./internal/domain/entity/
 
 ---
 
-### 2. **Posts IModule Tests** (`internal/modules/posts/domain/entity/*_test.go`)
+### 2. **Posts Module Tests** (`internal/modules/posts/domain/entity/*_test.go`)
 
 **33 tests, 83.3% coverage** - Test posts module entities:
 
@@ -147,7 +147,7 @@ go test -v ./internal/modules/posts/domain/entity/
 
 ---
 
-### 3. **Profiles IModule Tests** (`internal/modules/profiles/entity/*_test.go`)
+### 3. **Profiles Module Tests** (`internal/modules/profiles/entity/*_test.go`)
 
 **21 tests, 80.4% coverage** - Test profiles module entities:
 
@@ -172,7 +172,7 @@ go test -v ./internal/modules/profiles/entity/
 
 ---
 
-### 4. **Analytics IModule Tests** (`internal/modules/analytics/*_test.go`)
+### 4. **Analytics Module Tests** (`internal/modules/analytics/*_test.go`)
 
 **11 tests** - Test analytics module:
 
@@ -254,7 +254,7 @@ func TestEntity_Method(t *testing.T) {
 
 ### Modules
 
-| IModule  | Entity      | Tests       | Coverage                         |
+| Module   | Entity      | Tests       | Coverage                         |
 | -------- | ----------- | ----------- | -------------------------------- |
 | Posts    | UserPost    | 2 functions | Status, creation                 |
 | Posts    | Comment     | 3 functions | Validation, threading, factory   |

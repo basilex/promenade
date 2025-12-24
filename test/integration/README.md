@@ -65,7 +65,7 @@ Tests:
 - `ILanguageRepository` - Languages, ListActive
 - `ITimezoneRepository` - Timezones
 
-### IModule Repository Tests
+### Module Repository Tests
 
 ```bash
 # Posts module
@@ -78,18 +78,18 @@ make test-integration-profiles
 make test-integration-analytics
 ```
 
-**Posts IModule Tests:**
+**Posts Module Tests:**
 
 - `PostRepository` - Post CRUD, ListByUserID, ListByStatus, soft delete
 - `ICommentRepository` - Comment CRUD, ListByPostID, nested comments
 - `LikeRepository` - Like/Unlike, CountByPostID
 
-**Profiles IModule Tests:**
+**Profiles Module Tests:**
 
 - `IUserProfileRepository` - Profile CRUD, GetByUserID, IncrementProfileViews
 - `IUserContactRepository` - Contact CRUD, GetByUserID
 
-**Analytics IModule Tests:**
+**Analytics Module Tests:**
 
 - `IMetricRepository` - Store metrics, Query, Aggregate, DeleteOlderThan
 
@@ -231,7 +231,7 @@ internal/
 - [x] **ITimezoneRepository** - 5 tests
   - GetByID, GetByName, List, ListActive, ExistsByName
 
-### IModule Repositories
+### Module Repositories
 
 - [x] **PostRepository** (posts module) - 7 tests
   - Create, GetByID, Update, Delete (soft), ListByUserID, ListByStatus, CountByUserID

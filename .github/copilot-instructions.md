@@ -163,7 +163,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 1. **Structure** in `internal/modules/mymodule/`:
 
    ```
-   ├── module.go              # Implement pkg/module.IModule
+   ├── module.go              # Implement pkg/module.Module interface
    ├── register.go            # init() auto-registration
    ├── config/                # Own YAML configs
    ├── domain/entity/         # Business entities
@@ -174,7 +174,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
        └── repository/postgres/ # DB implementation + BaseRepository
    ```
 
-2. **module.go** - Implement `pkg/module.IModule` interface:
+2. **module.go** - Implement `pkg/module.Module` interface:
 
    ```go
    package mymodule
@@ -186,7 +186,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
        // ... handlers, usecases, config
    }
 
-   func New() module.IModule {
+   func New() module.Module {
        return &MyModule{}
    }
 
