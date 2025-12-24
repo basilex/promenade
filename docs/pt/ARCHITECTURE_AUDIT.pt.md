@@ -603,7 +603,7 @@ type PurgeConfig struct {
 | **Fusos Horários**  | Core        | Dados de referência   | Correto      |
 | **Idiomas**         | Core        | Dados de referência   | Correto      |
 | **Banco de Dados**  | Core        | Infraestrutura        | Correto      |
-| **Event Bus**       | Core        | Infraestrutura        | Correto      |
+| **Event IBus**       | Core        | Infraestrutura        | Correto      |
 | **Agendador Purga** | Core        | Infraestrutura        | Correto      |
 | **Registro Módulo** | Core        | Orquestração          | Correto      |
 |                     |             |                       |

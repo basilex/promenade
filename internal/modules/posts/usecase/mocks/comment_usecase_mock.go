@@ -11,14 +11,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockCommentUseCase is a mock implementation of CommentUseCase interface
-//  Module-independent: imports only module types, no core dependencies
+// MockCommentUseCase is a mock implementation of ICommentUseCase interface
+//  IModule-independent: imports only module types, no core dependencies
 type MockCommentUseCase struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockCommentUseCase implements CommentUseCase interface
-var _ usecase.CommentUseCase = (*MockCommentUseCase)(nil)
+// Compile-time check to ensure MockCommentUseCase implements ICommentUseCase interface
+var _ usecase.ICommentUseCase = (*MockCommentUseCase)(nil)
 
 func (m *MockCommentUseCase) CreateComment(ctx context.Context, postID, userID uuidv7.UUID, content string, parentID *uuidv7.UUID) (*entity.Comment, error) {
 	args := m.Called(ctx, postID, userID, content, parentID)

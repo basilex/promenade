@@ -58,7 +58,7 @@ Este diretório contém documentação abrangente sobre a arquitetura da aplica�
 | Documento                                         | Descrição                               | Quando Ler                           |
 | ------------------------------------------------- | --------------------------------------- | ------------------------------------ |
 | [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.pt.md) | Design do sistema de purge automatizado | Implementar políticas de retenção    |
-| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testes com Redis Event Bus              | Testar recursos orientados a eventos |
+| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testes com Redis Event IBus              | Testar recursos orientados a eventos |
 | [LOGGING.md](../LOGGING.md)                       | Logging estruturado com contexto        | Adicionar logging ao código          |
 
 ### Segurança & Autenticação

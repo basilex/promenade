@@ -16,7 +16,7 @@ type currencyRepository struct {
 }
 
 // NewCurrencyRepository creates a new currency repository
-func NewCurrencyRepository(db *sqlx.DB) repository.CurrencyRepository {
+func NewCurrencyRepository(db *sqlx.DB) repository.ICurrencyRepository {
 	return &currencyRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

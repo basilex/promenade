@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// RoleRepository defines operations for role management
-type RoleRepository interface {
+// IRoleRepository defines operations for role management
+type IRoleRepository interface {
 	// Basic CRUD
 	Create(ctx context.Context, role *entity.Role) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Role, error)

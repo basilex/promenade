@@ -13,14 +13,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockUserPostUseCase is a mock implementation of UserPostUseCase interface
-//  Module-independent: imports only module types, no core dependencies
+// MockUserPostUseCase is a mock implementation of IUserPostUseCase interface
+//  IModule-independent: imports only module types, no core dependencies
 type MockUserPostUseCase struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockUserPostUseCase implements UserPostUseCase interface
-var _ usecase.UserPostUseCase = (*MockUserPostUseCase)(nil)
+// Compile-time check to ensure MockUserPostUseCase implements IUserPostUseCase interface
+var _ usecase.IUserPostUseCase = (*MockUserPostUseCase)(nil)
 
 func (m *MockUserPostUseCase) CreatePost(ctx context.Context, userID uuidv7.UUID, title, content, excerpt string, tags, categories []string) (*entity.UserPost, error) {
 	args := m.Called(ctx, userID, title, content, excerpt, tags, categories)

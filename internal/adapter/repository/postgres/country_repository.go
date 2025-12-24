@@ -16,7 +16,7 @@ type countryRepository struct {
 }
 
 // NewCountryRepository creates a new country repository
-func NewCountryRepository(db *sqlx.DB) repository.CountryRepository {
+func NewCountryRepository(db *sqlx.DB) repository.ICountryRepository {
 	return &countryRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

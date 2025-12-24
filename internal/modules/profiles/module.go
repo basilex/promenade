@@ -16,19 +16,19 @@ import (
 	moduleconfig "github.com/basilex/promenade/pkg/module/config"
 )
 
-// ProfilesModule implements module.Module for user profiles and contacts functionality
+// ProfilesModule implements module.IModule for user profiles and contacts functionality
 type ProfilesModule struct {
 	db             *sqlx.DB
-	eventBus       bus.Bus
+	eventBus       bus.IBus
 	config         *moduleconfig.Config
-	profileUseCase usecase.UserProfileUseCase
+	profileUseCase usecase.IUserProfileUseCase
 	profileHandler *handler.UserProfileHandler
-	contactUseCase usecase.UserContactUseCase
+	contactUseCase usecase.IUserContactUseCase
 	contactHandler *handler.UserContactHandler
 }
 
 // New creates a new profiles module instance
-func New() module.Module {
+func New() module.IModule {
 	return &ProfilesModule{}
 }
 
@@ -64,8 +64,8 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 	} else {
 		m.config = cfg
 		slog.Info("Profiles module config loaded",
-			"version", cfg.Module.Version,
-			"enabled", cfg.Module.Enabled,
+			"version", cfg.IModule.Version,
+			"enabled", cfg.IModule.Enabled,
 		)
 	}
 
@@ -165,7 +165,7 @@ func (m *ProfilesModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers subscribes to events
-func (m *ProfilesModule) RegisterEventHandlers(eventBus bus.Bus) error {
+func (m *ProfilesModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	slog.Info("Registering profiles module event handlers")
 	return nil
 }

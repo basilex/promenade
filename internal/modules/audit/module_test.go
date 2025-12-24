@@ -46,12 +46,12 @@ func TestModule_Metadata(t *testing.T) {
 }
 
 func TestModule_Name(t *testing.T) {
-	mod := New().(*Module)
+	mod := New().(*IModule)
 	assert.Equal(t, "audit", mod.Name())
 }
 
 func TestModule_Version(t *testing.T) {
-	mod := New().(*Module)
+	mod := New().(*IModule)
 	assert.Equal(t, "1.0.0", mod.Version())
 }
 
@@ -66,12 +66,12 @@ func TestNew(t *testing.T) {
 	t.Run("creates new module", func(t *testing.T) {
 		mod := New()
 		assert.NotNil(t, mod)
-		assert.Implements(t, (*module.Module)(nil), mod)
+		assert.Implements(t, (*module.IModule)(nil), mod)
 	})
 
 	t.Run("module is properly typed", func(t *testing.T) {
 		mod := New()
-		_, ok := mod.(module.Module)
+		_, ok := mod.(module.IModule)
 		assert.True(t, ok)
 	})
 }
@@ -102,7 +102,7 @@ func TestModule_Registration(t *testing.T) {
 }
 
 func TestModule_RegisterPermissions(t *testing.T) {
-	mod := &Module{}
+	mod := &IModule{}
 	permissions := mod.RegisterPermissions()
 
 	assert.Len(t, permissions, 3)
@@ -130,21 +130,21 @@ func TestModule_RegisterPermissions(t *testing.T) {
 }
 
 func TestModule_RegisterMigrations(t *testing.T) {
-	mod := &Module{}
+	mod := &IModule{}
 	migrations := mod.RegisterMigrations()
 	assert.NotNil(t, migrations)
 	assert.Len(t, migrations, 0)
 }
 
 func TestModule_RegisterEventHandlers(t *testing.T) {
-	mod := &Module{}
+	mod := &IModule{}
 	err := mod.RegisterEventHandlers(nil)
 	assert.NoError(t, err)
 }
 
 func TestModule_StartStop(t *testing.T) {
 	ctx := context.Background()
-	mod := &Module{}
+	mod := &IModule{}
 
 	t.Run("start succeeds", func(t *testing.T) {
 		err := mod.Start(ctx)
@@ -173,7 +173,7 @@ func TestModule_LoadConfig(t *testing.T) {
 		os.Setenv("ENVIRONMENT", "test")
 		defer os.Unsetenv("ENVIRONMENT")
 
-		mod := &Module{}
+		mod := &IModule{}
 		err := mod.loadConfig()
 
 		assert.NoError(t, err)
@@ -183,7 +183,7 @@ func TestModule_LoadConfig(t *testing.T) {
 	t.Run("loads dev config by default", func(t *testing.T) {
 		os.Unsetenv("ENVIRONMENT")
 
-		mod := &Module{}
+		mod := &IModule{}
 		err := mod.loadConfig()
 
 		assert.NoError(t, err)
@@ -198,7 +198,7 @@ func TestModule_LoadConfig(t *testing.T) {
 			os.Unsetenv("AUDIT_LICENSE_KEY")
 		}()
 
-		mod := &Module{}
+		mod := &IModule{}
 		err := mod.loadConfig()
 
 		assert.NoError(t, err)
@@ -210,7 +210,7 @@ func TestModule_LoadConfig(t *testing.T) {
 		os.Unsetenv("AUDIT_LICENSE_KEY")
 		defer os.Unsetenv("ENVIRONMENT")
 
-		mod := &Module{}
+		mod := &IModule{}
 		err := mod.loadConfig()
 
 		assert.NoError(t, err)
@@ -246,7 +246,7 @@ func TestModule_Initialize_Disabled(t *testing.T) {
 	os.Setenv("ENVIRONMENT", "test")
 	defer os.Unsetenv("ENVIRONMENT")
 
-	mod := &Module{}
+	mod := &IModule{}
 	core := &module.Core{DB: db}
 
 	// If module is disabled in config, initialization should succeed but do nothing
@@ -290,8 +290,8 @@ func TestModule_Initialize_Success(t *testing.T) {
 
 	t.Run("initializes successfully when enabled without license", func(t *testing.T) {
 		auditMod := New()
-		mod, ok := auditMod.(*Module)
-		require.True(t, ok, "New() should return *Module")
+		mod, ok := auditMod.(*IModule)
+		require.True(t, ok, "New() should return *IModule")
 		
 		core := &module.Core{DB: db}
 
@@ -309,8 +309,8 @@ func TestModule_Initialize_Success(t *testing.T) {
 
 	t.Run("loads config and sets database", func(t *testing.T) {
 		auditMod := New()
-		mod, ok := auditMod.(*Module)
-		require.True(t, ok, "New() should return *Module")
+		mod, ok := auditMod.(*IModule)
+		require.True(t, ok, "New() should return *IModule")
 		
 		core := &module.Core{DB: db}
 
@@ -325,20 +325,20 @@ func TestModule_HealthCheck(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("disabled module passes health check", func(t *testing.T) {
-		mod := &Module{
+		mod := &IModule{
 			config: &Config{},
 		}
-		mod.config.Module.Enabled = false
+		mod.config.IModule.Enabled = false
 
 		err := mod.HealthCheck(ctx)
 		assert.NoError(t, err)
 	})
 
 	t.Run("enabled module without db panics", func(t *testing.T) {
-		mod := &Module{
+		mod := &IModule{
 			config: &Config{},
 		}
-		mod.config.Module.Enabled = true
+		mod.config.IModule.Enabled = true
 		// m.db is nil, so PingContext will panic
 
 		// Expecting panic when db is nil
@@ -350,7 +350,7 @@ func TestModule_HealthCheck(t *testing.T) {
 
 func TestModule_ValidateLicense_Errors(t *testing.T) {
 	t.Run("empty license key fails", func(t *testing.T) {
-		mod := &Module{
+		mod := &IModule{
 			config:     &Config{},
 			licenseKey: "",
 		}
@@ -361,7 +361,7 @@ func TestModule_ValidateLicense_Errors(t *testing.T) {
 	})
 
 	t.Run("invalid license format fails", func(t *testing.T) {
-		mod := &Module{
+		mod := &IModule{
 			config:     &Config{},
 			licenseKey: "invalid-license-format",
 		}
@@ -373,7 +373,7 @@ func TestModule_ValidateLicense_Errors(t *testing.T) {
 	t.Run("missing LICENSE_SECRET fails", func(t *testing.T) {
 		os.Unsetenv("LICENSE_SECRET")
 
-		mod := &Module{
+		mod := &IModule{
 			config:     &Config{},
 			licenseKey: "PROMENADE-AUDIT-PRO-20261231-ABC123",
 		}
@@ -388,10 +388,10 @@ func TestModule_Config_Structure(t *testing.T) {
 	config := &Config{}
 
 	t.Run("has module section", func(t *testing.T) {
-		config.Module.Enabled = true
-		config.Module.LicenseRequired = true
-		assert.True(t, config.Module.Enabled)
-		assert.True(t, config.Module.LicenseRequired)
+		config.IModule.Enabled = true
+		config.IModule.LicenseRequired = true
+		assert.True(t, config.IModule.Enabled)
+		assert.True(t, config.IModule.LicenseRequired)
 	})
 
 	t.Run("has audit section", func(t *testing.T) {
@@ -429,10 +429,10 @@ func TestModule_Config_Structure(t *testing.T) {
 }
 
 func TestModule_RegisterRoutes_WhenDisabled(t *testing.T) {
-	mod := &Module{
+	mod := &IModule{
 		config: &Config{},
 	}
-	mod.config.Module.Enabled = false
+	mod.config.IModule.Enabled = false
 
 	// Should not panic when module is disabled
 	require.NotPanics(t, func() {
@@ -474,8 +474,8 @@ func TestModule_RegisterRoutes(t *testing.T) {
 		defer db.Close()
 
 		auditMod := New()
-		mod, ok := auditMod.(*Module)
-		require.True(t, ok, "New() should return *Module")
+		mod, ok := auditMod.(*IModule)
+		require.True(t, ok, "New() should return *IModule")
 		
 		core := &module.Core{DB: db}
 
@@ -494,10 +494,10 @@ func TestModule_RegisterRoutes(t *testing.T) {
 	})
 
 	t.Run("does not panic when disabled", func(t *testing.T) {
-		mod := &Module{
+		mod := &IModule{
 			config: &Config{},
 		}
-		mod.config.Module.Enabled = false
+		mod.config.IModule.Enabled = false
 
 		require.NotPanics(t, func() {
 			mod.RegisterRoutes(nil)

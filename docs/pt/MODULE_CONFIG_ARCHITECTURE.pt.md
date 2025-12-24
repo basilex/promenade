@@ -35,7 +35,7 @@ Núcleo inicializa infraestrutura (DB, EventBus etc.)
 Registro de módulos descobre módulos
     ↓
 Para cada módulo habilitado:
-    Module.Initialize(ctx, core) é chamado
+    IModule.Initialize(ctx, core) é chamado
         ↓
     Módulo carrega internal/modules/{nome}/config/config.{env}.yaml
         ↓
@@ -43,7 +43,7 @@ Para cada módulo habilitado:
         ↓
     Módulo inicializa repositórios, casos de uso, manipuladores
         ↓
-    Module.RegisterRoutes() registra endpoints HTTP
+    IModule.RegisterRoutes() registra endpoints HTTP
 ```
 
 ## Estrutura de Diretórios
@@ -336,7 +336,7 @@ func (m *WarehouseModule) verifyLicense() error {
 ### Verificar qual configuração foi carregada:
 
 ```go
-logger.FromContext(ctx).Info("Module config loaded",
+logger.FromContext(ctx).Info("IModule config loaded",
     "module", m.GetMetadata().Name,
     "config_path", "internal/modules/posts/config",
     "environment", os.Getenv("ENVIRONMENT"),

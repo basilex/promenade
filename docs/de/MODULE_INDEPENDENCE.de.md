@@ -58,7 +58,7 @@ Jede Ebene innerhalb des Moduls implementiert:
 4. **Klare Grenzen**: Alle Abhängigkeiten explizit und minimal
 5. **Einfaches Testen**: Nur Domain-Interfaces mocken, nicht Core-Services
 
-## Neue Module erstellen
+## Neue IModule erstellen
 
 Um ein neues unabhängiges Modul zu erstellen:
 
@@ -80,7 +80,7 @@ Um ein neues unabhängiges Modul zu erstellen:
 2. Implementierung aus Core kopieren oder von Grund auf neu schreiben
 3. Alle Imports auf Modulpfade aktualisieren
 4. Modulspezifische Fehler in `domain/entity/errors.go` definieren
-5. `module.Module`-Interface in `module.go` implementieren
+5. `module.IModule`-Interface in `module.go` implementieren
 6. Auto-Registrierung in `register.go` mittels `init()` durchführen
 
 ## Verifizierungsbefehl

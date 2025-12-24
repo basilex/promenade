@@ -95,7 +95,7 @@ func (c *PostComment) Restore() {
 ### Interfaz del Repositorio
 
 ```go
-type UserPostRepository interface {
+type IUserPostRepository interface {
     // ... métodos CRUD
 
     // Operaciones de eliminación lógica
@@ -103,7 +103,7 @@ type UserPostRepository interface {
     Restore(ctx context.Context, id uuidv7.UUID) error
 }
 
-type PostCommentRepository interface {
+type IPostCommentRepository interface {
     // ... métodos CRUD
 
     // Operaciones de eliminación lógica

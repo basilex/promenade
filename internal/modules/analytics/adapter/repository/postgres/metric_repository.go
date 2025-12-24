@@ -14,18 +14,18 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-type MetricRepository struct {
+type IMetricRepository struct {
 	db *sqlx.DB
 }
 
-func NewMetricRepository(db *sqlx.DB) repository.MetricRepository {
-	return &MetricRepository{db: db}
+func NewMetricRepository(db *sqlx.DB) repository.IMetricRepository {
+	return &IMetricRepository{db: db}
 }
 
 // metricDB is an internal type for scanning from database
 type metricDB struct {
 	ID        string          `db:"id"`
-	Module    string          `db:"module"`
+	IModule    string          `db:"module"`
 	Scope     string          `db:"scope"`
 	ScopeID   string          `db:"scope_id"`
 	Name      string          `db:"name"`
@@ -47,7 +47,7 @@ func (m *metricDB) toEntity() (*entity.Metric, error) {
 
 	return &entity.Metric{
 		ID:        m.ID,
-		Module:    m.Module,
+		IModule:    m.IModule,
 		Scope:     entity.MetricScope(m.Scope),
 		ScopeID:   m.ScopeID,
 		Name:      m.Name,
@@ -58,7 +58,7 @@ func (m *metricDB) toEntity() (*entity.Metric, error) {
 	}, nil
 }
 
-func (r *MetricRepository) Store(ctx context.Context, metric *entity.Metric) error {
+func (r *IMetricRepository) Store(ctx context.Context, metric *entity.Metric) error {
 	if metric.ID == "" {
 		metric.ID = uuidv7.New().String()
 	}
@@ -77,13 +77,13 @@ func (r *MetricRepository) Store(ctx context.Context, metric *entity.Metric) err
 		)`
 
 	_, err = r.db.ExecContext(ctx, query,
-		metric.ID, metric.Module, metric.Scope, metric.ScopeID,
+		metric.ID, metric.IModule, metric.Scope, metric.ScopeID,
 		metric.Name, metric.Type, metric.Value, metadataJSON, metric.CreatedAt)
 
 	return err
 }
 
-func (r *MetricRepository) GetByID(ctx context.Context, id string) (*entity.Metric, error) {
+func (r *IMetricRepository) GetByID(ctx context.Context, id string) (*entity.Metric, error) {
 	query := `SELECT id, module, scope, scope_id, name, type, value, metadata, created_at
 		FROM analytics_metrics WHERE id = $1`
 
@@ -99,7 +99,7 @@ func (r *MetricRepository) GetByID(ctx context.Context, id string) (*entity.Metr
 	return metricDB.toEntity()
 }
 
-func (r *MetricRepository) ListByScope(ctx context.Context, scope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error) {
+func (r *IMetricRepository) ListByScope(ctx context.Context, scope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error) {
 	var total int64
 	if err := r.db.GetContext(ctx, &total, "SELECT COUNT(*) FROM analytics_metrics WHERE scope = $1 AND scope_id = $2", scope, scopeID); err != nil {
 		return nil, 0, err
@@ -126,7 +126,7 @@ func (r *MetricRepository) ListByScope(ctx context.Context, scope, scopeID strin
 	return metrics, total, nil
 }
 
-func (r *MetricRepository) ListByModule(ctx context.Context, module string, limit, offset int) ([]*entity.Metric, int64, error) {
+func (r *IMetricRepository) ListByModule(ctx context.Context, module string, limit, offset int) ([]*entity.Metric, int64, error) {
 	var total int64
 	if err := r.db.GetContext(ctx, &total, "SELECT COUNT(*) FROM analytics_metrics WHERE module = $1", module); err != nil {
 		return nil, 0, err
@@ -153,7 +153,7 @@ func (r *MetricRepository) ListByModule(ctx context.Context, module string, limi
 	return metrics, total, nil
 }
 
-func (r *MetricRepository) DeleteOlderThan(ctx context.Context, days int) (int64, error) {
+func (r *IMetricRepository) DeleteOlderThan(ctx context.Context, days int) (int64, error) {
 	result, err := r.db.ExecContext(ctx, "DELETE FROM analytics_metrics WHERE created_at < NOW() - INTERVAL '1 day' * $1", days)
 	if err != nil {
 		return 0, err
@@ -162,7 +162,7 @@ func (r *MetricRepository) DeleteOlderThan(ctx context.Context, days int) (int64
 	return count, nil
 }
 
-func (r *MetricRepository) GetLatestByName(ctx context.Context, module, scope, scopeID, name string) (*entity.Metric, error) {
+func (r *IMetricRepository) GetLatestByName(ctx context.Context, module, scope, scopeID, name string) (*entity.Metric, error) {
 	query := `SELECT id, module, scope, scope_id, name, type, value, metadata, created_at
 		FROM analytics_metrics
 		WHERE module = $1 AND scope = $2 AND scope_id = $3 AND name = $4

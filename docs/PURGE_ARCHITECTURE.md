@@ -9,7 +9,7 @@ The purge system is designed to automatically clean up soft-deleted records base
 
 ## Architecture Principles
 
-### 1. Module Independence
+### 1. IModule Independence
 
 Each module is responsible for:
 
@@ -26,7 +26,7 @@ Two global registries enable module independence:
 #### Handler Registry (`purge.DefaultRegistry`)
 
 ```go
-// Module registers handler during initialization
+// IModule registers handler during initialization
 handler := NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 ```
@@ -34,7 +34,7 @@ purge.DefaultRegistry.Register(handler)
 #### Policy Registry (`purge.DefaultPolicyRegistry`)
 
 ```go
-// Module registers retention policy
+// IModule registers retention policy
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -71,10 +71,10 @@ purge:
   batch_size: 1000 # Records per batch
 ```
 
-### Module Config (`internal/modules/{name}/config/config.*.yaml`)
+### IModule Config (`internal/modules/{name}/config/config.*.yaml`)
 
 ```yaml
-# Module's retention policies
+# IModule's retention policies
 purge:
   user_posts:
     retention_days: 90 # Keep for 90 days
@@ -87,7 +87,7 @@ purge:
 
 ## Implementation Flow
 
-### 1. Module Initialization
+### 1. IModule Initialization
 
 ```go
 func (m *PostsModule) Initialize(core *Core) error {
@@ -117,7 +117,7 @@ func (m *PostsModule) Initialize(core *Core) error {
 ### 2. Core Initialization
 
 ```go
-func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.Bus) {
+func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.IBus) {
     // Get all registered handlers
     handlerRegistry := purge.DefaultRegistry
 
@@ -227,7 +227,7 @@ func (h *MyEntityPurgeHandler) Purge(
 }
 ```
 
-### 2. Register in Module
+### 2. Register in IModule
 
 ```go
 // internal/modules/mymodule/module.go
@@ -257,7 +257,7 @@ func (m *MyModule) Initialize(core *Core) error {
 }
 ```
 
-### 3. Add Module Config
+### 3. Add IModule Config
 
 ```yaml
 # internal/modules/mymodule/config/config.dev.yaml
@@ -273,7 +273,7 @@ purge:
 
 ## Benefits
 
-###  Module Independence
+###  IModule Independence
 
 - Modules own their purge logic completely
 - No core dependencies on module entities
@@ -347,6 +347,6 @@ Modules now register their own policies via `purge.DefaultPolicyRegistry`.
 
 ## See Also
 
-- [Module Independence](MODULE_INDEPENDENCE.md)
-- [Module Development](MODULE_DEVELOPMENT.md)
+- [IModule Independence](MODULE_INDEPENDENCE.md)
+- [IModule Development](MODULE_DEVELOPMENT.md)
 - [Testing Guide](TESTING_GUIDE.md)

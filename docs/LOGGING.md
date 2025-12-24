@@ -201,7 +201,7 @@ func (uc *UserUseCase) Create(ctx context.Context, req *dto.CreateUserRequest) (
 ### Repository
 
 ```go
-func (r *UserRepository) Create(ctx context.Context, user *entity.User) error {
+func (r *IUserRepository) Create(ctx context.Context, user *entity.User) error {
     query := `
         INSERT INTO users (email, name, status)
         VALUES ($1, $2, $3)

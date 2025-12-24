@@ -11,17 +11,17 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type UserProfileRepository struct {
+type IUserProfileRepository struct {
 	*BaseRepository
 }
 
-func NewUserProfileRepository(db *sqlx.DB) repository.UserProfileRepository {
-	return &UserProfileRepository{
+func NewUserProfileRepository(db *sqlx.DB) repository.IUserProfileRepository {
+	return &IUserProfileRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
 
-func (r *UserProfileRepository) Create(ctx context.Context, profile *entity.UserProfile) error {
+func (r *IUserProfileRepository) Create(ctx context.Context, profile *entity.UserProfile) error {
 	// Marshal JSONB fields before saving
 	if err := profile.MarshalSocialLinks(); err != nil {
 		return err
@@ -61,7 +61,7 @@ func (r *UserProfileRepository) Create(ctx context.Context, profile *entity.User
 	return err
 }
 
-func (r *UserProfileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.UserProfile, error) {
+func (r *IUserProfileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.UserProfile, error) {
 	var profile entity.UserProfile
 	query := `
 		SELECT * FROM profiles_profiles WHERE id = $1
@@ -86,7 +86,7 @@ func (r *UserProfileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*e
 	return &profile, nil
 }
 
-func (r *UserProfileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*entity.UserProfile, error) {
+func (r *IUserProfileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*entity.UserProfile, error) {
 	var profile entity.UserProfile
 	query := `
 		SELECT * FROM profiles_profiles WHERE user_id = $1
@@ -111,7 +111,7 @@ func (r *UserProfileRepository) GetByUserID(ctx context.Context, userID uuidv7.U
 	return &profile, nil
 }
 
-func (r *UserProfileRepository) GetByNickname(ctx context.Context, nickname string) (*entity.UserProfile, error) {
+func (r *IUserProfileRepository) GetByNickname(ctx context.Context, nickname string) (*entity.UserProfile, error) {
 	var profile entity.UserProfile
 	query := `
 		SELECT * FROM profiles_profiles WHERE nickname = $1
@@ -136,7 +136,7 @@ func (r *UserProfileRepository) GetByNickname(ctx context.Context, nickname stri
 	return &profile, nil
 }
 
-func (r *UserProfileRepository) Update(ctx context.Context, profile *entity.UserProfile) error {
+func (r *IUserProfileRepository) Update(ctx context.Context, profile *entity.UserProfile) error {
 	// Marshal JSONB fields before saving
 	if err := profile.MarshalSocialLinks(); err != nil {
 		return err
@@ -170,7 +170,7 @@ func (r *UserProfileRepository) Update(ctx context.Context, profile *entity.User
 	return err
 }
 
-func (r *UserProfileRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserProfileRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `DELETE FROM profiles_profiles WHERE id = $1`
 
 	err := r.Exec(ctx, query, id)
@@ -181,7 +181,7 @@ func (r *UserProfileRepository) Delete(ctx context.Context, id uuidv7.UUID) erro
 	return nil
 }
 
-func (r *UserProfileRepository) List(ctx context.Context, limit, offset int, isPublic *bool) ([]*entity.UserProfile, error) {
+func (r *IUserProfileRepository) List(ctx context.Context, limit, offset int, isPublic *bool) ([]*entity.UserProfile, error) {
 	var profiles []*entity.UserProfile
 
 	query := `
@@ -209,17 +209,17 @@ func (r *UserProfileRepository) List(ctx context.Context, limit, offset int, isP
 	return profiles, nil
 }
 
-func (r *UserProfileRepository) UpdateLastSeen(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserProfileRepository) UpdateLastSeen(ctx context.Context, id uuidv7.UUID) error {
 	query := `UPDATE profiles_profiles SET last_seen_at = NOW() WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
-func (r *UserProfileRepository) IncrementProfileViews(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserProfileRepository) IncrementProfileViews(ctx context.Context, id uuidv7.UUID) error {
 	query := `UPDATE profiles_profiles SET profile_views_count = profile_views_count + 1 WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
-func (r *UserProfileRepository) Ban(ctx context.Context, id uuidv7.UUID, reason string, bannedBy uuidv7.UUID) error {
+func (r *IUserProfileRepository) Ban(ctx context.Context, id uuidv7.UUID, reason string, bannedBy uuidv7.UUID) error {
 	query := `
 		UPDATE profiles_profiles SET
 			is_banned = true,
@@ -231,7 +231,7 @@ func (r *UserProfileRepository) Ban(ctx context.Context, id uuidv7.UUID, reason 
 	return r.Exec(ctx, query, id, reason, bannedBy)
 }
 
-func (r *UserProfileRepository) Unban(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserProfileRepository) Unban(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE profiles_profiles SET
 			is_banned = false,
@@ -243,12 +243,12 @@ func (r *UserProfileRepository) Unban(ctx context.Context, id uuidv7.UUID) error
 	return r.Exec(ctx, query, id)
 }
 
-func (r *UserProfileRepository) SetVerified(ctx context.Context, id uuidv7.UUID, verified bool) error {
+func (r *IUserProfileRepository) SetVerified(ctx context.Context, id uuidv7.UUID, verified bool) error {
 	query := `UPDATE profiles_profiles SET is_verified = $2 WHERE id = $1`
 	return r.Exec(ctx, query, id, verified)
 }
 
-func (r *UserProfileRepository) Search(ctx context.Context, query string, limit, offset int) ([]*entity.UserProfile, error) {
+func (r *IUserProfileRepository) Search(ctx context.Context, query string, limit, offset int) ([]*entity.UserProfile, error) {
 	var profiles []*entity.UserProfile
 
 	searchQuery := `

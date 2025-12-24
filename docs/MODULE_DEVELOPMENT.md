@@ -1,14 +1,14 @@
-# Module Development Guide
+# IModule Development Guide
 
 This guide explains how to develop custom modules for Promenade using the Plugin Architecture.
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Module Structure](#module-structure)
-- [Creating a Module](#creating-a-module)
-- [Module Lifecycle](#module-lifecycle)
-- [Inter-Module Communication](#inter-module-communication)
+- [IModule Structure](#module-structure)
+- [Creating a IModule](#creating-a-module)
+- [IModule Lifecycle](#module-lifecycle)
+- [Inter-IModule Communication](#inter-module-communication)
 - [Best Practices](#best-practices)
 - [Examples](#examples)
 
@@ -19,7 +19,7 @@ This guide explains how to develop custom modules for Promenade using the Plugin
 Promenade uses a **Plugin Architecture** that allows you to:
 
 - Package business logic as independent, reusable modules
-- Share core infrastructure (DB, Event Bus, Auth, RBAC)
+- Share core infrastructure (DB, Event IBus, Auth, RBAC)
 - Enable/disable modules via configuration
 - Sell modules commercially with licensing
 - Combine multiple modules (e.g., Warehouse + Fleet)
@@ -30,7 +30,7 @@ Promenade uses a **Plugin Architecture** that allows you to:
 
 - Authentication & JWT
 - RBAC & Permissions
-- Event Bus & Notifications
+- Event IBus & Notifications
 - Reference Data (Countries, Currencies)
 - Audit Logging
 
@@ -44,7 +44,7 @@ Promenade uses a **Plugin Architecture** that allows you to:
 
 ---
 
-## Module Structure
+## IModule Structure
 
 A typical module follows Clean Architecture:
 
@@ -73,14 +73,14 @@ modules/warehouse/
 │   ├── 001_create_warehouse_items.up.sql
 │   └── 001_create_warehouse_items.down.sql
 │
-└── module.go  # Module registration
+└── module.go  # IModule registration
 ```
 
 ---
 
-## Creating a Module
+## Creating a IModule
 
-### Step 1: Define Module Metadata
+### Step 1: Define IModule Metadata
 
 ```go
 // modules/warehouse/module.go
@@ -98,7 +98,7 @@ type WarehouseModule struct {
 	itemUC   usecase.ItemUseCase
 }
 
-func New() module.Module {
+func New() module.IModule {
 	meta := module.Metadata{
 		Name:        "warehouse",
 		DisplayName: "Warehouse Management",
@@ -115,7 +115,7 @@ func New() module.Module {
 }
 ```
 
-### Step 2: Implement Module Interface
+### Step 2: Implement IModule Interface
 
 ```go
 // Dependencies (optional - return empty slice if none)
@@ -176,7 +176,7 @@ func (m *WarehouseModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers - subscribe to events
-func (m *WarehouseModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *WarehouseModule) RegisterEventHandlers(bus bus.IBus) error {
 	// Subscribe to order events
 	return bus.Subscribe(ctx, "order.created", m.handleOrderCreated)
 }
@@ -217,7 +217,7 @@ func (m *WarehouseModule) HealthCheck(ctx context.Context) error {
 }
 ```
 
-### Step 3: Register Module
+### Step 3: Register IModule
 
 ```go
 // modules/warehouse/register.go
@@ -231,7 +231,7 @@ func init() {
 }
 ```
 
-### Step 4: Enable Module
+### Step 4: Enable IModule
 
 ```yaml
 # config/modules.yaml
@@ -249,7 +249,7 @@ modules:
 
 ---
 
-## Module Lifecycle
+## IModule Lifecycle
 
 **Startup Sequence:**
 
@@ -266,29 +266,29 @@ modules:
    - JWT manager
    - Logger
 
-3. **Module.Initialize()** (in dependency order)
+3. **IModule.Initialize()** (in dependency order)
 
    - Resolve dependencies
    - Initialize repositories
    - Initialize use cases
 
-4. **Module.RegisterRoutes()**
+4. **IModule.RegisterRoutes()**
 
    - Register HTTP endpoints
 
-5. **Module.RegisterMigrations()**
+5. **IModule.RegisterMigrations()**
 
    - Apply database migrations
 
-6. **Module.RegisterEventHandlers()**
+6. **IModule.RegisterEventHandlers()**
 
    - Subscribe to events
 
-7. **Module.RegisterPermissions()**
+7. **IModule.RegisterPermissions()**
 
    - Insert RBAC permissions
 
-8. **Module.Start()**
+8. **IModule.Start()**
 
    - Start background workers
    - Initialize external connections
@@ -297,14 +297,14 @@ modules:
 
 **Shutdown Sequence:**
 
-10. **Module.Stop()** (in reverse order)
+10. **IModule.Stop()** (in reverse order)
     - Stop workers
     - Close connections
     - Cleanup resources
 
 ---
 
-## Inter-Module Communication
+## Inter-IModule Communication
 
 Modules should communicate via **events** (loose coupling):
 
@@ -334,7 +334,7 @@ func (uc *ItemUseCase) CreateItem(ctx context.Context, item *entity.Item) error 
 
 ```go
 // In Fleet module (needs warehouse items for spare parts)
-func (m *FleetModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *FleetModule) RegisterEventHandlers(bus bus.IBus) error {
 	return bus.Subscribe(ctx, "warehouse.item.created", m.handleItemCreated)
 }
 
@@ -375,7 +375,7 @@ func (m *FleetModule) handleItemCreated(ctx context.Context, event bus.Event) er
 
 ## Examples
 
-### Example 1: Simple Module (No Dependencies)
+### Example 1: Simple IModule (No Dependencies)
 
 ```go
 package hello
@@ -384,7 +384,7 @@ type HelloModule struct {
 	*module.BaseModule
 }
 
-func New() module.Module {
+func New() module.IModule {
 	return &HelloModule{
 		BaseModule: module.NewBaseModule(module.Metadata{
 			Name:    "hello",
@@ -400,7 +400,7 @@ func (m *HelloModule) RegisterRoutes(router *gin.RouterGroup) {
 }
 ```
 
-### Example 2: Module with Dependencies
+### Example 2: IModule with Dependencies
 
 ```go
 package fleet

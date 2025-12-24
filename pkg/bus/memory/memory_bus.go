@@ -15,12 +15,12 @@ import (
 
 // init registers the memory bus factory with the bus package to avoid circular imports
 func init() {
-	bus.MemoryBusFactory = func(config bus.BusConfig) bus.Bus {
+	bus.MemoryBusFactory = func(config bus.BusConfig) bus.IBus {
 		return NewMemoryBus(config)
 	}
 }
 
-// MemoryBus is an in-memory implementation of bus.Bus.
+// MemoryBus is an in-memory implementation of bus.IBus.
 // Useful for development, testing, and simple deployments.
 // Events are processed in goroutines without any persistence.
 type MemoryBus struct {

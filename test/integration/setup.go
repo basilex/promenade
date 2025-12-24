@@ -98,17 +98,17 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
-		// Module tables (analytics)
+		// IModule tables (analytics)
 		"analytics_dashboard_widgets",
 		"analytics_dashboards",
 		"analytics_report_schedules",
 		"analytics_reports",
 		"analytics_metric_aggregates",
 		"analytics_metrics",
-		// Module tables (profiles)
+		// IModule tables (profiles)
 		"profiles_contacts",
 		"profiles_profiles",
-		// Module tables (posts)
+		// IModule tables (posts)
 		"posts_comment_likes",
 		"posts_comments",
 		"posts_posts",

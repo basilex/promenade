@@ -10,14 +10,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockUserContactRepository is a mock implementation of UserContactRepository
-//  Module-independent: imports only module types, no core dependencies
+// MockUserContactRepository is a mock implementation of IUserContactRepository
+//  IModule-independent: imports only module types, no core dependencies
 type MockUserContactRepository struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockUserContactRepository implements UserContactRepository interface
-var _ repository.UserContactRepository = (*MockUserContactRepository)(nil)
+// Compile-time check to ensure MockUserContactRepository implements IUserContactRepository interface
+var _ repository.IUserContactRepository = (*MockUserContactRepository)(nil)
 
 func (m *MockUserContactRepository) Create(ctx context.Context, contact *entity.UserContact) error {
 	args := m.Called(ctx, contact)

@@ -60,10 +60,10 @@ Run `make mocks` after:
 - Changing method signatures
 - Modifying return types
 
-## Core vs Module Repositories
+## Core vs IModule Repositories
 
 - **Core repositories**: Always enabled, system-wide functionality (auth, RBAC, reference data)
-- **Module repositories**: Optional business features, can be enabled/disabled per deployment
+- **IModule repositories**: Optional business features, can be enabled/disabled per deployment
 
 See [internal/CORE.md](../../CORE.md) for details on core architecture.
 

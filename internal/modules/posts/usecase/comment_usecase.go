@@ -11,10 +11,10 @@ import (
 )
 
 // PostRepository is an alias to avoid import cycle
-type PostRepository = repository.UserPostRepository
+type PostRepository = repository.IUserPostRepository
 
-// CommentUseCase defines business logic for comment operations
-type CommentUseCase interface {
+// ICommentUseCase defines business logic for comment operations
+type ICommentUseCase interface {
 	// CreateComment creates a new comment on a post
 	CreateComment(ctx context.Context, postID, userID uuidv7.UUID, content string, parentID *uuidv7.UUID) (*entity.Comment, error)
 
@@ -38,12 +38,12 @@ type CommentUseCase interface {
 }
 
 type commentUseCase struct {
-	commentRepo repository.CommentRepository
+	commentRepo repository.ICommentRepository
 	postRepo    PostRepository
 }
 
 // NewCommentUseCase creates a new comment use case
-func NewCommentUseCase(commentRepo repository.CommentRepository, postRepo PostRepository) CommentUseCase {
+func NewCommentUseCase(commentRepo repository.ICommentRepository, postRepo PostRepository) ICommentUseCase {
 	return &commentUseCase{
 		commentRepo: commentRepo,
 		postRepo:    postRepo,

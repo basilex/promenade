@@ -18,7 +18,7 @@ type userRepository struct {
 }
 
 // NewUserRepository creates a new user repository
-func NewUserRepository(db *sqlx.DB) repository.UserRepository {
+func NewUserRepository(db *sqlx.DB) repository.IUserRepository {
 	return &userRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

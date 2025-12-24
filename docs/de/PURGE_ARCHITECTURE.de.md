@@ -6,8 +6,8 @@
 
 Das Purge-System wurde entwickelt, um soft-gelöschte Datensätze basierend auf Aufbewahrungsrichtlinien automatisch zu bereinigen. Es folgt dem **Orchestrator-Muster**, wobei:
 
-- **Kern** die Infrastruktur verwaltet (Scheduler, Use Case, Event Bus)
-- **Module** die Geschäftslogik besitzen (Handler, Aufbewahrungsrichtlinien)
+- **Kern** die Infrastruktur verwaltet (Scheduler, Use Case, Event IBus)
+- **IModule** die Geschäftslogik besitzen (Handler, Aufbewahrungsrichtlinien)
 
 ## Architekturprinzipien
 
@@ -119,7 +119,7 @@ func (m *PostsModule) Initialize(core *Core) error {
 ### 2. Kern-Initialisierung
 
 ```go
-func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.Bus) {
+func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.IBus) {
     // Alle registrierten Handler abrufen
     handlerRegistry := purge.DefaultRegistry
 
@@ -277,14 +277,14 @@ purge:
 
 ###  Modulunabhängigkeit
 
-- Module besitzen ihre Purge-Logik vollständig
+- IModule besitzen ihre Purge-Logik vollständig
 - Keine Kern-Abhängigkeiten von Modul-Entitäten
 - Einfaches Hinzufügen/Entfernen von Modulen
 
 ###  Konfigurationsklarheit
 
 - Kern: Infrastruktureinstellungen
-- Module: Geschäftsrichtlinien
+- IModule: Geschäftsrichtlinien
 - Klare Trennung der Verantwortlichkeiten
 
 ###  Testbarkeit
@@ -345,7 +345,7 @@ type PurgeConfig struct {
 }
 ```
 
-Module registrieren jetzt ihre eigenen Richtlinien über `purge.DefaultPolicyRegistry`.
+IModule registrieren jetzt ihre eigenen Richtlinien über `purge.DefaultPolicyRegistry`.
 
 ## Siehe auch
 

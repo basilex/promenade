@@ -4,14 +4,14 @@
 
 ## Überblick
 
-Module in Promenade sind **vollständig autonome vertikale Schnitte**, die ihre eigene Konfiguration verwalten. Jedes Modul lädt seine Konfiguration aus seinem eigenen Verzeichnisbaum und gewährleistet so vollständige Unabhängigkeit vom Kernsystem.
+IModule in Promenade sind **vollständig autonome vertikale Schnitte**, die ihre eigene Konfiguration verwalten. Jedes Modul lädt seine Konfiguration aus seinem eigenen Verzeichnisbaum und gewährleistet so vollständige Unabhängigkeit vom Kernsystem.
 
 ## Architekturprinzipien
 
 ### 1. Modulautonomie
 
 - Jedes Modul ist für das Laden seiner eigenen Konfiguration verantwortlich
-- Module speichern Konfigurationen in ihrem eigenen Verzeichnis: `internal/modules/{modulname}/config/`
+- IModule speichern Konfigurationen in ihrem eigenen Verzeichnis: `internal/modules/{modulname}/config/`
 - Der Kern lädt oder verwaltet keine Modulkonfigurationen
 - Der Kern stellt nur Infrastruktur (DB, EventBus, JWT) und Umgebungskontext bereit
 
@@ -32,10 +32,10 @@ Kern lädt app.{env}.yaml
     ↓
 Kern initialisiert Infrastruktur (DB, EventBus usw.)
     ↓
-Modul-Registry entdeckt Module
+Modul-Registry entdeckt IModule
     ↓
 Für jedes aktivierte Modul:
-    Module.Initialize(ctx, core) wird aufgerufen
+    IModule.Initialize(ctx, core) wird aufgerufen
         ↓
     Modul lädt internal/modules/{name}/config/config.{env}.yaml
         ↓
@@ -43,7 +43,7 @@ Für jedes aktivierte Modul:
         ↓
     Modul initialisiert Repositories, Use Cases, Handler
         ↓
-    Module.RegisterRoutes() registriert HTTP-Endpunkte
+    IModule.RegisterRoutes() registriert HTTP-Endpunkte
 ```
 
 ## Verzeichnisstruktur
@@ -96,7 +96,7 @@ Enthält:
 - JWT-Einstellungen (Secret, Ablauf)
 - Logging-Konfiguration
 - CORS-Einstellungen
-- Event-Bus-Adapter (memory/redis)
+- Event-IBus-Adapter (memory/redis)
 - Ratenbegrenzung
 - E-Mail-Dienst
 
@@ -113,7 +113,7 @@ Enthält:
 - Bereinigungsrichtlinien (Aufbewahrungstage, Batch-Größen)
 - Berechtigungsdefinitionen
 - Feature-Flags
-- Lizenzschlüssel (für kommerzielle Module)
+- Lizenzschlüssel (für kommerzielle IModule)
 
 **Enthält niemals**: Kern-Infrastruktur-Einstellungen
 
@@ -234,7 +234,7 @@ config/modules/
 └── ...
 
 Kern lädt alle Modulkonfigurationen   Enge Kopplung
-Kern übergibt Konfigurationen an Module   Abhängigkeit
+Kern übergibt Konfigurationen an IModule   Abhängigkeit
 ```
 
 ### Neue Architektur (Aktuell)
@@ -253,9 +253,9 @@ Modul verwaltet eigene Einstellungen   Unabhängig
 
 ### 1. Echte Modulunabhängigkeit
 
-- Module können unabhängig entwickelt, getestet und bereitgestellt werden
+- IModule können unabhängig entwickelt, getestet und bereitgestellt werden
 - Keine Kernänderungen erforderlich beim Hinzufügen/Ändern von Modulkonfigurationen
-- Module sind wirklich autonome Plugins
+- IModule sind wirklich autonome Plugins
 
 ### 2. Bessere Kapselung
 
@@ -277,13 +277,13 @@ Modul verwaltet eigene Einstellungen   Unabhängig
 
 ### 5. Flexible Bereitstellung
 
-- Module aktivieren/deaktivieren ohne Kernänderungen
+- IModule aktivieren/deaktivieren ohne Kernänderungen
 - Unterschiedliche Umgebungen können unterschiedliche Modulkonfigurationen haben
-- Kommerzielle Module können Lizenzvalidierung haben
+- Kommerzielle IModule können Lizenzvalidierung haben
 
-## Kommerzielle Module
+## Kommerzielle IModule
 
-Kommerzielle Module (z.B. warehouse) erfordern Lizenzschlüssel:
+Kommerzielle IModule (z.B. warehouse) erfordern Lizenzschlüssel:
 
 ```yaml
 # internal/modules/warehouse/config/config.prod.yaml
@@ -329,14 +329,14 @@ func (m *WarehouseModule) verifyLicense() error {
 - Moduleinstellungen in Kernkonfiguration ablegen
 - Umgebungsspezifische Werte fest kodieren
 - Konfigurationsvalidierung überspringen
-- Auf Konfigurationen anderer Module zugreifen
+- Auf Konfigurationen anderer IModule zugreifen
 
 ## Fehlersuche
 
 ### Prüfen, welche Konfiguration geladen wurde:
 
 ```go
-logger.FromContext(ctx).Info("Module config loaded",
+logger.FromContext(ctx).Info("IModule config loaded",
     "module", m.GetMetadata().Name,
     "config_path", "internal/modules/posts/config",
     "environment", os.Getenv("ENVIRONMENT"),

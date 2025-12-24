@@ -18,8 +18,8 @@ var (
 	ErrUnauthorized         = errors.New("unauthorized to access this contact")
 )
 
-// UserContactUseCase defines business logic for user contacts
-type UserContactUseCase interface {
+// IUserContactUseCase defines business logic for user contacts
+type IUserContactUseCase interface {
 	// CreateContact creates a new contact for a user
 	CreateContact(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType, contactValue string,
 		label *string, isPublic bool, availableFrom, availableTo *time.Time, availableDays []string, timezone *string, notes *string) (*entity.UserContact, error)
@@ -58,11 +58,11 @@ type UserContactUseCase interface {
 }
 
 type userContactUseCase struct {
-	contactRepo repository.UserContactRepository
+	contactRepo repository.IUserContactRepository
 }
 
-// NewUserContactUseCase creates a new UserContactUseCase instance
-func NewUserContactUseCase(contactRepo repository.UserContactRepository) UserContactUseCase {
+// NewUserContactUseCase creates a new IUserContactUseCase instance
+func NewUserContactUseCase(contactRepo repository.IUserContactRepository) IUserContactUseCase {
 	return &userContactUseCase{
 		contactRepo: contactRepo,
 	}

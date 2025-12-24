@@ -1,4 +1,4 @@
-# Архітектура Module Migration
+# Архітектура IModule Migration
 
 [🇬🇧 English](../MIGRATION_ARCHITECTURE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](MIGRATION_ARCHITECTURE.de.md) | [🇵🇹 Português](MIGRATION_ARCHITECTURE.pt.md) | [🇪🇸 Español](MIGRATION_ARCHITECTURE.es.md)
 
@@ -147,13 +147,13 @@ func (m *manager) MigrateAll(ctx context.Context, enabledModules []string) error
 
 ---
 
-### 4. Інтеграція з Module
+### 4. Інтеграція з IModule
 
-Module можуть опціонально надавати migration програмно:
+IModule можуть опціонально надавати migration програмно:
 
 ```go
 // pkg/module/module.go
-type Module interface {
+type IModule interface {
     // ... existing methods ...
 
     // RegisterMigrations returns embedded migrations for this module
@@ -311,7 +311,7 @@ migrations/
 
 ### 8. Переваги
 
-**Незалежність Module**
+**Незалежність IModule**
 
 - Кожен module володіє своїми migration
 - Увімкнення/вимкнення module без конфліктів migration
@@ -333,7 +333,7 @@ migrations/
 
 - Зрозуміло, куди додавати нові migration
 - Не потрібно вгадувати наступний глобальний номер
-- Module-специфічні команди migration
+- IModule-специфічні команди migration
 
 ---
 
@@ -345,7 +345,7 @@ migrations/
 # Core migration
 make migrate-create-core NAME=add_audit_tables
 
-# Module migration
+# IModule migration
 make migrate-create MODULE=posts NAME=add_post_views
 ```
 
@@ -430,7 +430,7 @@ VALUES
 3. Оновити main.go для використання нового manager
 4. Тестування на staging
 
-**Фаза 4: Інтеграція з Module (Тиждень 2)**
+**Фаза 4: Інтеграція з IModule (Тиждень 2)**
 
 1. Додати `RegisterMigrations()` до інтерфейсу module
 2. Оновити існуючі module

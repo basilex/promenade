@@ -1,4 +1,4 @@
-# Redis Bus Testing Guide
+# Redis IBus Testing Guide
 
 This guide describes how to test the Redis adapter for the event bus.
 
@@ -45,7 +45,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 **Expected result:**
 
 ```
-[OK] Bus health check passed
+[OK] IBus health check passed
 [OK] Subscribed to topic
 [>>] Publishing test events count=5
 [OK] Published event num=1
@@ -53,7 +53,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 ...
 [RESULTS] Test Results published=5 received=5
 [SUCCESS] All messages received!
-[OK] Bus closed gracefully
+[OK] IBus closed gracefully
 ```
 
 ## Switching Adapters in Production
@@ -93,7 +93,7 @@ In **test/development** mode, the system will return an error (fail fast).
 ctx := context.Background()
 err := eventBus.Health(ctx)
 if err != nil {
-    // Bus is unhealthy
+    // IBus is unhealthy
 }
 ```
 

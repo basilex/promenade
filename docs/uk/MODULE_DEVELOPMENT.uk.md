@@ -21,7 +21,7 @@
 Promenade використовує **Плагінну Архітектуру**, яка дозволяє:
 
 - Упаковувати бізнес-логіку як незалежні, багаторазові модулі
-- Спільно використовувати основну інфраструктуру (БД, Event Bus, Auth, RBAC)
+- Спільно використовувати основну інфраструктуру (БД, Event IBus, Auth, RBAC)
 - Увімкнути/вимкнути модулі через конфігурацію
 - Продавати модулі комерційно з ліцензуванням
 - Комбінувати кілька модулів (наприклад, Warehouse + Fleet)
@@ -32,7 +32,7 @@ Promenade використовує **Плагінну Архітектуру**, 
 
 - Автентифікація і JWT
 - RBAC і Дозволи
-- Event Bus і Сповіщення
+- Event IBus і Сповіщення
 - Довідкові Дані (Країни, Валюти)
 - Журнал Аудиту
 
@@ -100,7 +100,7 @@ type WarehouseModule struct {
 	itemUC   usecase.ItemUseCase
 }
 
-func New() module.Module {
+func New() module.IModule {
 	meta := module.Metadata{
 		Name:        "warehouse",
 		DisplayName: "Warehouse Management",
@@ -178,7 +178,7 @@ func (m *WarehouseModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers - підписатися на події
-func (m *WarehouseModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *WarehouseModule) RegisterEventHandlers(bus bus.IBus) error {
 	// Підписатися на події замовлень
 	return bus.Subscribe(ctx, "order.created", m.handleOrderCreated)
 }
@@ -268,29 +268,29 @@ modules:
    - JWT менеджер
    - Логер
 
-3. **Module.Initialize()** (у порядку залежностей)
+3. **IModule.Initialize()** (у порядку залежностей)
 
    - Вирішити залежності
    - Ініціалізувати репозиторії
    - Ініціалізувати сценарії використання
 
-4. **Module.RegisterRoutes()**
+4. **IModule.RegisterRoutes()**
 
    - Зареєструвати HTTP endpoints
 
-5. **Module.RegisterMigrations()**
+5. **IModule.RegisterMigrations()**
 
    - Застосувати міграції бази даних
 
-6. **Module.RegisterEventHandlers()**
+6. **IModule.RegisterEventHandlers()**
 
    - Підписатися на події
 
-7. **Module.RegisterPermissions()**
+7. **IModule.RegisterPermissions()**
 
    - Вставити RBAC дозволи
 
-8. **Module.Start()**
+8. **IModule.Start()**
 
    - Запустити фонові робітники
    - Ініціалізувати зовнішні з'єднання
@@ -299,7 +299,7 @@ modules:
 
 **Послідовність Завершення:**
 
-10. **Module.Stop()** (у зворотному порядку)
+10. **IModule.Stop()** (у зворотному порядку)
     - Зупинити робітників
     - Закрити з'єднання
     - Очистити ресурси
@@ -336,7 +336,7 @@ func (uc *ItemUseCase) CreateItem(ctx context.Context, item *entity.Item) error 
 
 ```go
 // В модулі Fleet (потребує товари зі складу для запчастин)
-func (m *FleetModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *FleetModule) RegisterEventHandlers(bus bus.IBus) error {
 	return bus.Subscribe(ctx, "warehouse.item.created", m.handleItemCreated)
 }
 
@@ -386,7 +386,7 @@ type HelloModule struct {
 	*module.BaseModule
 }
 
-func New() module.Module {
+func New() module.IModule {
 	return &HelloModule{
 		BaseModule: module.NewBaseModule(module.Metadata{
 			Name:    "hello",

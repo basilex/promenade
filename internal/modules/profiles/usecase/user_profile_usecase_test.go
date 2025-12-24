@@ -13,7 +13,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-//  Module-independent test: imports only module and pkg, no core dependencies
+//  IModule-independent test: imports only module and pkg, no core dependencies
 
 func TestCreateProfile(t *testing.T) {
 	mockRepo := new(mocks.MockUserProfileRepository)

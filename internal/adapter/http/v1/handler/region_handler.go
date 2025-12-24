@@ -13,10 +13,10 @@ import (
 )
 
 type RegionHandler struct {
-	regionUseCase usecase.RegionUseCase
+	regionUseCase usecase.IRegionUseCase
 }
 
-func NewRegionHandler(regionUseCase usecase.RegionUseCase) *RegionHandler {
+func NewRegionHandler(regionUseCase usecase.IRegionUseCase) *RegionHandler {
 	return &RegionHandler{
 		regionUseCase: regionUseCase,
 	}

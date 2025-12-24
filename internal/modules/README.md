@@ -4,7 +4,7 @@
 
 ---
 
-## 🧩 Module Philosophy
+## 🧩 IModule Philosophy
 
 ### Core Principles
 
@@ -158,13 +158,13 @@ _This module is in design phase. Structure exists as placeholder._
 
 ---
 
-## Module Structure
+## IModule Structure
 
 Every module follows this structure:
 
 ```
 internal/modules/{module}/
-├── module.go                    # Module registration & lifecycle
+├── module.go                    # IModule registration & lifecycle
 │
 ├── domain/                      # Domain layer (pure business logic)
 │   └── entity/                  # Domain entities
@@ -190,10 +190,10 @@ internal/modules/{module}/
 │       └── router/              # Route registration
 │           └── {module}_router.go
 │
-└── README.md                    # Module-specific documentation
+└── README.md                    # IModule-specific documentation
 ```
 
-### Example: Posts Module
+### Example: Posts IModule
 
 ```
 internal/modules/posts/
@@ -232,7 +232,7 @@ internal/modules/posts/
 
 ---
 
-## 🔄 Module Lifecycle
+## 🔄 IModule Lifecycle
 
 ### 1. Registration (Auto-Discovery)
 
@@ -244,12 +244,12 @@ package posts
 
 import "github.com/basilex/promenade/pkg/module"
 
-type Module struct {
+type IModule struct {
     // dependencies initialized in Initialize()
 }
 
 func init() {
-    module.DefaultRegistry.Register(&Module{})
+    module.DefaultRegistry.Register(&IModule{})
 }
 ```
 
@@ -260,7 +260,7 @@ When the package is imported (`import _ "github.com/basilex/promenade/internal/m
 Core calls `Initialize()` with services:
 
 ```go
-func (m *Module) Initialize(ctx context.Context, core module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
     // Get services from core
     db := core.DB()
     logger := core.Logger()
@@ -297,7 +297,7 @@ func (m *Module) Initialize(ctx context.Context, core module.Core) error {
 Core calls `Start()` for background workers:
 
 ```go
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
     // Start background workers (if any)
     // e.g., notification processor, scheduled tasks
     return nil
@@ -309,7 +309,7 @@ func (m *Module) Start(ctx context.Context) error {
 Core calls `Stop()` for graceful cleanup:
 
 ```go
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
     // Stop background workers
     // Close connections
     // Flush caches
@@ -319,7 +319,7 @@ func (m *Module) Stop(ctx context.Context) error {
 
 ---
 
-## Creating a New Module
+## Creating a New IModule
 
 ### Step 1: Create Directory Structure
 
@@ -327,7 +327,7 @@ func (m *Module) Stop(ctx context.Context) error {
 mkdir -p internal/modules/mymodule/{domain/entity,repository/postgres,usecase,adapter/handler/dto}
 ```
 
-### Step 2: Create Module Interface Implementation
+### Step 2: Create IModule Interface Implementation
 
 ```go
 // internal/modules/mymodule/module.go
@@ -338,33 +338,33 @@ import (
     "github.com/basilex/promenade/pkg/module"
 )
 
-type Module struct {
+type IModule struct {
     // Store dependencies if needed for Stop()
 }
 
-func (m *Module) Name() string {
+func (m *IModule) Name() string {
     return "mymodule"
 }
 
-func (m *Module) Initialize(ctx context.Context, core module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
     // Initialize repositories, use cases, handlers
     // Register routes
     // Register purge policies (if needed)
     return nil
 }
 
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
     // Start background workers (optional)
     return nil
 }
 
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
     // Graceful shutdown (optional)
     return nil
 }
 
 func init() {
-    module.DefaultRegistry.Register(&Module{})
+    module.DefaultRegistry.Register(&IModule{})
 }
 ```
 
@@ -427,7 +427,7 @@ DROP TRIGGER IF EXISTS trg_items_updated_at ON items;
 DROP TABLE IF EXISTS items;
 ```
 
-### Step 5: Enable Module
+### Step 5: Enable IModule
 
 Add to `config/modules.yaml`:
 
@@ -445,7 +445,7 @@ modules:
         max_items: 1000
 ```
 
-### Step 6: Import Module
+### Step 6: Import IModule
 
 Add to `cmd/api/main.go`:
 
@@ -468,7 +468,7 @@ make dev
 
 ---
 
-## Module Conventions
+## IModule Conventions
 
 ### Naming
 
@@ -507,7 +507,7 @@ import "github.com/basilex/promenade/internal/domain"           // Core domain
 
 ---
 
-## Module Independence Rules
+## IModule Independence Rules
 
 ### Modules CAN
 
@@ -531,17 +531,17 @@ import "github.com/basilex/promenade/internal/domain"           // Core domain
 
 ---
 
-## 🔗 Inter-Module Communication
+## 🔗 Inter-IModule Communication
 
 Modules communicate **asynchronously** via the event bus:
 
 ```go
-// Module A: Publish event
+// IModule A: Publish event
 eventBus.Publish(ctx, "user.updated", &UserUpdatedEvent{
     UserID: user.ID,
 })
 
-// Module B: Subscribe to event
+// IModule B: Subscribe to event
 eventBus.Subscribe(ctx, "user.updated", func(ctx context.Context, e bus.Event) error {
     evt := e.(*UserUpdatedEvent)
     // Update local cache or related data

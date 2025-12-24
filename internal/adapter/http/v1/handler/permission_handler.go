@@ -13,10 +13,10 @@ import (
 )
 
 type PermissionHandler struct {
-	permissionUseCase usecase.PermissionUseCase
+	permissionUseCase usecase.IPermissionUseCase
 }
 
-func NewPermissionHandler(permissionUseCase usecase.PermissionUseCase) *PermissionHandler {
+func NewPermissionHandler(permissionUseCase usecase.IPermissionUseCase) *PermissionHandler {
 	return &PermissionHandler{
 		permissionUseCase: permissionUseCase,
 	}

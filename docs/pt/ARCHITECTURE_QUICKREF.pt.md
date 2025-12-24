@@ -21,7 +21,7 @@
 1. **Serviços de Infraestrutura**
 
    - Gerenciamento de conexão com banco de dados
-   - Event Bus (adaptadores Memory/Redis)
+   - Event IBus (adaptadores Memory/Redis)
    - Agendador (tarefas cron)
    - Carregador de configuração
    - Logger
@@ -118,11 +118,11 @@ type MyModule struct {
     // ... outros campos
 }
 
-func New() module.Module {
+func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My Module",
+            DisplayName: "My IModule",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),

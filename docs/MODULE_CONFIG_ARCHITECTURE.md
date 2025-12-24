@@ -1,4 +1,4 @@
-# Module Configuration Architecture
+# IModule Configuration Architecture
 
 ## Overview
 
@@ -6,7 +6,7 @@ Modules in Promenade are **fully autonomous vertical slices** that manage their 
 
 ## Architecture Principles
 
-### 1. Module Autonomy
+### 1. IModule Autonomy
 
 - Each module is responsible for loading its own configuration
 - Modules store configs in their own directory: `internal/modules/{module_name}/config/`
@@ -19,7 +19,7 @@ Modules in Promenade are **fully autonomous vertical slices** that manage their 
   - `config.dev.yaml` - Development settings
   - `config.test.yaml` - Test settings
   - `config.prod.yaml` - Production settings
-- Module SDK automatically loads the correct config based on `ENVIRONMENT` variable
+- IModule SDK automatically loads the correct config based on `ENVIRONMENT` variable
 
 ### 3. Configuration Loading Flow
 
@@ -30,18 +30,18 @@ Core loads app.{env}.yaml
     ↓
 Core initializes infrastructure (DB, EventBus, etc.)
     ↓
-Module Registry discovers modules
+IModule Registry discovers modules
     ↓
 For each enabled module:
-    Module.Initialize(ctx, core) is called
+    IModule.Initialize(ctx, core) is called
         ↓
-    Module loads internal/modules/{name}/config/config.{env}.yaml
+    IModule loads internal/modules/{name}/config/config.{env}.yaml
         ↓
-    Module validates settings (license, features, etc.)
+    IModule validates settings (license, features, etc.)
         ↓
-    Module initializes repositories, use cases, handlers
+    IModule initializes repositories, use cases, handlers
         ↓
-    Module.RegisterRoutes() registers HTTP endpoints
+    IModule.RegisterRoutes() registers HTTP endpoints
 ```
 
 ## Directory Structure
@@ -51,7 +51,7 @@ config/
 ├── app.dev.yaml          # Core config - development
 ├── app.test.yaml         # Core config - test
 ├── app.prod.yaml         # Core config - production
-└── modules.yaml          # Module registry (enabled/disabled)
+└── modules.yaml          # IModule registry (enabled/disabled)
 
 internal/modules/
 ├── posts/
@@ -98,16 +98,16 @@ Contains:
 - Rate limiting
 - Email service
 
-**Never contains**: Module-specific business logic settings
+**Never contains**: IModule-specific business logic settings
 
-### Module Config (`internal/modules/{name}/config/config.{env}.yaml`)
+### IModule Config (`internal/modules/{name}/config/config.{env}.yaml`)
 
 **Managed by**: Each module using `pkg/module/config`
 
 Contains:
 
-- Module metadata (name, version, enabled flag)
-- Module-specific settings
+- IModule metadata (name, version, enabled flag)
+- IModule-specific settings
 - Purge policies (retention days, batch sizes)
 - Permissions definitions
 - Feature flags
@@ -117,7 +117,7 @@ Contains:
 
 ## Implementation Example
 
-### Posts Module Config Loading
+### Posts IModule Config Loading
 
 ```go
 // internal/modules/posts/module.go
@@ -158,7 +158,7 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 }
 ```
 
-### Module Config File Structure
+### IModule Config File Structure
 
 ```yaml
 # internal/modules/posts/config/config.dev.yaml
@@ -193,7 +193,7 @@ features:
   enable_sharing: true
 ```
 
-## Module Config SDK
+## IModule Config SDK
 
 ### Loading Config
 
@@ -239,17 +239,17 @@ Core passes configs to modules  Dependency
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml        Module-owned
-├── config.test.yaml       Module-owned
-└── config.prod.yaml       Module-owned
+├── config.dev.yaml        IModule-owned
+├── config.test.yaml       IModule-owned
+└── config.prod.yaml       IModule-owned
 
-Module loads own config  Autonomous
-Module manages own settings  Independent
+IModule loads own config  Autonomous
+IModule manages own settings  Independent
 ```
 
 ## Benefits
 
-### 1. True Module Independence
+### 1. True IModule Independence
 
 - Modules can be developed, tested, and deployed independently
 - No core changes needed when adding/modifying module configs
@@ -271,7 +271,7 @@ Module manages own settings  Independent
 
 - Each module can have different test configs
 - No global config pollution
-- Module tests are isolated
+- IModule tests are isolated
 
 ### 5. Flexible Deployment
 
@@ -334,7 +334,7 @@ func (m *WarehouseModule) verifyLicense() error {
 ### Check which config is loaded:
 
 ```go
-logger.FromContext(ctx).Info("Module config loaded",
+logger.FromContext(ctx).Info("IModule config loaded",
     "module", m.GetMetadata().Name,
     "config_path", "internal/modules/posts/config",
     "environment", os.Getenv("ENVIRONMENT"),
@@ -356,7 +356,7 @@ echo $ENVIRONMENT  # Should be: development, test, or production
 
 ## Related Documentation
 
-- [Module Development Guide](MODULE_DEVELOPMENT.md)
-- [Module Independence](MODULE_INDEPENDENCE.md)
+- [IModule Development Guide](MODULE_DEVELOPMENT.md)
+- [IModule Independence](MODULE_INDEPENDENCE.md)
 - [Testing Infrastructure](TESTING_INFRASTRUCTURE.md)
 - [Config Migration](CONFIG_MIGRATION.md)

@@ -886,11 +886,11 @@ WHERE u.id = '<user_uuid>';
 Повільний час відповіді на захищених ендпоінтах.
 
 **Рішення:**
-Впровадьте кешування в RoleUseCase:
+Впровадьте кешування в IRoleUseCase:
 
 ```go
 // Використовуйте Redis/кеш у пам'яті для перевірок дозволів
-func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
+func (uc *IRoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
     // Спочатку перевірте кеш
     cacheKey := fmt.Sprintf("user:%s:permission:%s", userID, permission)
     if cached, found := uc.cache.Get(cacheKey); found {

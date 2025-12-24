@@ -14,11 +14,11 @@ import (
 
 // CommentHandler handles comment-related HTTP requests
 type CommentHandler struct {
-	commentUC usecase.CommentUseCase
+	commentUC usecase.ICommentUseCase
 }
 
 // NewCommentHandler creates a new comment handler
-func NewCommentHandler(commentUC usecase.CommentUseCase) *CommentHandler {
+func NewCommentHandler(commentUC usecase.ICommentUseCase) *CommentHandler {
 	return &CommentHandler{
 		commentUC: commentUC,
 	}

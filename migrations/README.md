@@ -82,7 +82,7 @@ make migrate-create-core NAME=add_audit_log
 Migrations run automatically on application startup:
 
 - **Core** migrations always run first
-- **Module** migrations run only for enabled modules (from config)
+- **IModule** migrations run only for enabled modules (from config)
 
 See [cmd/api/main.go](../cmd/api/main.go):
 
@@ -188,7 +188,7 @@ make migrate-rollback MODULE=posts STEPS=1
 make migrate-module MODULE=posts
 ```
 
-### 4. Module Dependencies
+### 4. IModule Dependencies
 
 If your module depends on tables from another module:
 
@@ -262,7 +262,7 @@ See "Dirty State" section above for recovery steps.
 - Consider adding `IF NOT EXISTS` checks
 - Verify namespace execution order (core → modules)
 
-### Module migrations not running
+### IModule migrations not running
 
 - Check module is enabled in `config/modules.yaml`
 - Verify `cfg.Modules.Enabled` includes the module
@@ -278,7 +278,7 @@ See full documentation:
 
 ## Examples
 
-### Creating a New Module's First Migration
+### Creating a New IModule's First Migration
 
 ```bash
 # 1. Create module directory

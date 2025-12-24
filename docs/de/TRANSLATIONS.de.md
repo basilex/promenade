@@ -67,7 +67,7 @@ Dokumente werden in der folgenden Reihenfolge übersetzt:
 ### 🔷 Niedrige Priorität (Fortgeschrittene Themen)
 
 7. `docs/PURGE_ARCHITECTURE.md` - Purge-System
-8. `docs/REDIS_BUS_TESTING.md` - Event Bus Testing
+8. `docs/REDIS_BUS_TESTING.md` - Event IBus Testing
 9. Technische Referenzdokumente
 
 ---
@@ -157,7 +157,7 @@ Um Konsistenz über Übersetzungen hinweg zu gewährleisten:
 
 | English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
-| Module             | Модуль                   | Modul              | Módulo            | Módulo              |
+| IModule             | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
 | Use Case           | Use Case / Бізнес-логіка | Anwendungsfall     | Caso de Uso       | Caso de Uso         |
 | Handler            | Хендлер                  | Handler            | Manipulador       | Manejador           |

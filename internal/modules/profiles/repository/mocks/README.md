@@ -1,4 +1,4 @@
-# Profiles Module Mocks
+# Profiles IModule Mocks
 
 This directory contains auto-generated mocks for the profiles module's repository interfaces.
 

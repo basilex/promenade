@@ -12,7 +12,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Mock PermissionRepository
+// Mock IPermissionRepository
 type mockPermissionRepository struct {
 	mock.Mock
 }

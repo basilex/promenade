@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// UserRepository defines the interface for user data access
-type UserRepository interface {
+// IUserRepository defines the interface for user data access
+type IUserRepository interface {
 	// Basic CRUD
 	Create(ctx context.Context, user *entity.User) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.User, error)

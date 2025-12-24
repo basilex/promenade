@@ -1,4 +1,4 @@
-# Warehouse Module - Commercial
+# Warehouse IModule - Commercial
 
 Enterprise-grade warehouse and inventory management system.
 
@@ -45,7 +45,7 @@ Enterprise-grade warehouse and inventory management system.
 
 Visit [https://promenade.dev/modules/warehouse](https://promenade.dev) to purchase a license.
 
-### 2. Enable Module
+### 2. Enable IModule
 
 Add to `config/modules.yaml`:
 
@@ -64,7 +64,7 @@ modules:
         low_stock_threshold: 10
 ```
 
-### 3. Import Module
+### 3. Import IModule
 
 Uncomment in `cmd/api/main.go`:
 

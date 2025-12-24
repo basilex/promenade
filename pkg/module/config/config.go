@@ -10,7 +10,7 @@ import (
 
 // Config represents a module's configuration
 type Config struct {
-	Module   ModuleSection          `yaml:"module"`
+	IModule   ModuleSection          `yaml:"module"`
 	Settings map[string]any `yaml:"settings"`
 	Purge    PurgeSection           `yaml:"purge"`
 }

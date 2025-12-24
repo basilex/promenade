@@ -20,8 +20,8 @@ var (
 	ErrPolicyDisabled   = errors.New("retention policy is disabled")
 )
 
-// PurgeUseCase defines business logic for purging soft-deleted records
-type PurgeUseCase interface {
+// IPurgeUseCase defines business logic for purging soft-deleted records
+type IPurgeUseCase interface {
 	// PurgeEntity purges a specific entity based on its retention policy
 	PurgeEntity(ctx context.Context, entityName string, dryRun bool) (*entity.PurgeResult, error)
 
@@ -42,7 +42,7 @@ type purgeUseCase struct {
 	registry  *purge.Registry
 	policies  map[string]entity.RetentionPolicy
 	batchSize int
-	eventBus  bus.Bus
+	eventBus  bus.IBus
 }
 
 // NewPurgeUseCase creates a new purge use case
@@ -50,8 +50,8 @@ func NewPurgeUseCase(
 	registry *purge.Registry,
 	policies []entity.RetentionPolicy,
 	batchSize int,
-	eventBus bus.Bus,
-) PurgeUseCase {
+	eventBus bus.IBus,
+) IPurgeUseCase {
 	policyMap := make(map[string]entity.RetentionPolicy)
 	for _, policy := range policies {
 		policyMap[policy.EntityName] = policy

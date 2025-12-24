@@ -19,8 +19,8 @@ type AuditEventFilters struct {
 	DateTo     *time.Time
 }
 
-// AuditEventRepository defines audit event data access operations
-type AuditEventRepository interface {
+// IAuditEventRepository defines audit event data access operations
+type IAuditEventRepository interface {
 	// Create creates a new audit event (immutable after creation)
 	Create(ctx context.Context, event *entity.AuditEvent) error
 

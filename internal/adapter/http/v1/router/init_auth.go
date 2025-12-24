@@ -18,7 +18,7 @@ func InitAuthModule(
 	jwtManager *jwtpkg.JWTManager,
 	authMiddleware *middleware.AuthMiddleware,
 	authzMiddleware *middleware.AuthorizationMiddleware,
-	eventBus bus.Bus,
+	eventBus bus.IBus,
 ) *AuthRouter {
 	// Repository layer
 	userRepo := postgres.NewUserRepository(db)

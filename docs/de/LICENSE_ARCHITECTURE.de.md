@@ -1,6 +1,6 @@
 # Architektur des Lizenzsystems
 
-Promenade verwendet ein signaturbasiertes Lizenzsystem für kommerzielle Module. Dieses Dokument beschreibt die Architektur, Implementierung und Nutzungsmuster.
+Promenade verwendet ein signaturbasiertes Lizenzsystem für kommerzielle IModule. Dieses Dokument beschreibt die Architektur, Implementierung und Nutzungsmuster.
 
 ---
 
@@ -45,7 +45,7 @@ Komponenten:
 1. **Anwendungsstart**
    - Modul-Registry (`pkg/module`) wird initialisiert
 2. **Für Jedes Aktivierte Modul**
-   - `Module.Initialize()` wird aufgerufen
+   - `IModule.Initialize()` wird aufgerufen
 3. **Lizenz-Validator** (`module/license/`)
    - `Parse()` - Lizenzkomponenten extrahieren
    - `Validate()` - Signatur und Ablauf prüfen
@@ -588,7 +588,7 @@ go run ./cmd/license-generator/main.go \
 
 # Ausgabe:
 # License valid
-# Module: ANALYTICS
+# IModule: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
 # Days remaining: 365

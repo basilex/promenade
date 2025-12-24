@@ -18,7 +18,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-//  Module-independent test: imports only module and pkg, no core dependencies
+//  IModule-independent test: imports only module and pkg, no core dependencies
 
 func setupContactTest() (*gin.Engine, *ucmocks.MockUserContactUseCase) {
 	gin.SetMode(gin.TestMode)

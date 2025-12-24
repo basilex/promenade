@@ -21,7 +21,7 @@ import (
 )
 
 // TestUserPostHandler_CreatePost tests the CreatePost handler
-//  Module-independent: uses only module types and mocks
+//  IModule-independent: uses only module types and mocks
 func TestUserPostHandler_CreatePost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

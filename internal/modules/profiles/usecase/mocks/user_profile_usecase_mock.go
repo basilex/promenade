@@ -10,14 +10,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockUserProfileUseCase is a mock implementation of UserProfileUseCase
-//  Module-independent: imports only module types, no core dependencies
+// MockUserProfileUseCase is a mock implementation of IUserProfileUseCase
+//  IModule-independent: imports only module types, no core dependencies
 type MockUserProfileUseCase struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockUserProfileUseCase implements UserProfileUseCase interface
-var _ usecase.UserProfileUseCase = (*MockUserProfileUseCase)(nil)
+// Compile-time check to ensure MockUserProfileUseCase implements IUserProfileUseCase interface
+var _ usecase.IUserProfileUseCase = (*MockUserProfileUseCase)(nil)
 
 func (m *MockUserProfileUseCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, profile *entity.UserProfile) (*entity.UserProfile, error) {
 	args := m.Called(ctx, userID, profile)

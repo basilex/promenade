@@ -20,7 +20,7 @@ import (
 )
 
 // TestCommentHandler_CreateComment tests comment creation handler
-//  Module-independent: uses only module types and mocks
+//  IModule-independent: uses only module types and mocks
 func TestCommentHandler_CreateComment(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

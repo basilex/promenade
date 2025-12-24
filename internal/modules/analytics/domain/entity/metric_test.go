@@ -17,7 +17,7 @@ func TestMetric_Validate(t *testing.T) {
 			name: "valid counter metric",
 			metric: &Metric{
 				ID:        "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
-				Module:    "posts",
+				IModule:    "posts",
 				Scope:     MetricScopePost,
 				ScopeID:   "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 				Name:      "post_views",
@@ -31,7 +31,7 @@ func TestMetric_Validate(t *testing.T) {
 			name: "valid gauge metric",
 			metric: &Metric{
 				ID:        "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
-				Module:    "system",
+				IModule:    "system",
 				Scope:     MetricScopeSystem,
 				ScopeID:   "system",
 				Name:      "cpu_usage",
@@ -45,7 +45,7 @@ func TestMetric_Validate(t *testing.T) {
 			name: "valid histogram metric",
 			metric: &Metric{
 				ID:        "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
-				Module:    "api",
+				IModule:    "api",
 				Scope:     MetricScopeSystem,
 				ScopeID:   "api",
 				Name:      "request_duration",
@@ -58,7 +58,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "empty module",
 			metric: &Metric{
-				Module:    "",
+				IModule:    "",
 				Scope:     MetricScopeUser,
 				Name:      "login_count",
 				Type:      MetricTypeCounter,
@@ -70,7 +70,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "empty name",
 			metric: &Metric{
-				Module:    "users",
+				IModule:    "users",
 				Scope:     MetricScopeUser,
 				Name:      "",
 				Type:      MetricTypeCounter,
@@ -82,7 +82,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "invalid type",
 			metric: &Metric{
-				Module:    "users",
+				IModule:    "users",
 				Scope:     MetricScopeUser,
 				Name:      "login_count",
 				Type:      "invalid",
@@ -94,7 +94,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "invalid scope",
 			metric: &Metric{
-				Module:    "users",
+				IModule:    "users",
 				Scope:     "invalid",
 				Name:      "login_count",
 				Type:      MetricTypeCounter,
@@ -106,7 +106,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "user scope with metadata",
 			metric: &Metric{
-				Module:  "users",
+				IModule:  "users",
 				Scope:   MetricScopeUser,
 				ScopeID: "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 				Name:    "profile_updates",
@@ -124,7 +124,7 @@ func TestMetric_Validate(t *testing.T) {
 		{
 			name: "comment scope metric",
 			metric: &Metric{
-				Module:    "posts",
+				IModule:    "posts",
 				Scope:     MetricScopeComment,
 				ScopeID:   "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 				Name:      "comment_likes",

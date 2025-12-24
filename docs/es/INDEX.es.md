@@ -58,7 +58,7 @@ Este directorio contiene documentación completa sobre la arquitectura de la apl
 | Documento                                         | Descripción                              | Cuándo Leer                                 |
 | ------------------------------------------------- | ---------------------------------------- | ------------------------------------------- |
 | [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.es.md) | Diseño del sistema de purga automatizado | Implementar políticas de retención          |
-| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Pruebas con Redis Event Bus              | Probar características orientadas a eventos |
+| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Pruebas con Redis Event IBus              | Probar características orientadas a eventos |
 | [LOGGING.md](../LOGGING.md)                       | Logging estructurado con contexto        | Agregar logging al código                   |
 
 ### Seguridad & Autenticación

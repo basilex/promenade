@@ -17,7 +17,7 @@ var (
 	ErrRoleNotFound           = errors.New("role not found")
 )
 
-type RoleUseCase interface {
+type IRoleUseCase interface {
 	// Role management
 	CreateRole(ctx context.Context, name, displayName, description string) (*entity.Role, error)
 	GetRole(ctx context.Context, roleID uuidv7.UUID) (*entity.Role, error)
@@ -47,14 +47,14 @@ type RoleUseCase interface {
 }
 
 type roleUseCase struct {
-	roleRepo       repository.RoleRepository
-	permissionRepo repository.PermissionRepository
+	roleRepo       repository.IRoleRepository
+	permissionRepo repository.IPermissionRepository
 }
 
 func NewRoleUseCase(
-	roleRepo repository.RoleRepository,
-	permissionRepo repository.PermissionRepository,
-) RoleUseCase {
+	roleRepo repository.IRoleRepository,
+	permissionRepo repository.IPermissionRepository,
+) IRoleUseCase {
 	return &roleUseCase{
 		roleRepo:       roleRepo,
 		permissionRepo: permissionRepo,

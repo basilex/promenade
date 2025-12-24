@@ -10,12 +10,12 @@ import (
 
 // AuditEventPurgeHandler handles purging of old audit events
 type AuditEventPurgeHandler struct {
-	useCase       usecase.AuditEventUseCase
+	useCase       usecase.IAuditEventUseCase
 	retentionDays int
 }
 
 // NewAuditEventPurgeHandler creates a new audit event purge handler
-func NewAuditEventPurgeHandler(useCase usecase.AuditEventUseCase, retentionDays int) *AuditEventPurgeHandler {
+func NewAuditEventPurgeHandler(useCase usecase.IAuditEventUseCase, retentionDays int) *AuditEventPurgeHandler {
 	return &AuditEventPurgeHandler{
 		useCase:       useCase,
 		retentionDays: retentionDays,
@@ -41,7 +41,7 @@ func (h *AuditEventPurgeHandler) Purge(ctx context.Context, cutoffDate time.Time
 }
 
 // RegisterPurgeHandlers registers audit module purge handlers
-func RegisterPurgeHandlers(useCase usecase.AuditEventUseCase, retentionDays int) error {
+func RegisterPurgeHandlers(useCase usecase.IAuditEventUseCase, retentionDays int) error {
 	handler := NewAuditEventPurgeHandler(useCase, retentionDays)
 	
 	// Register handler

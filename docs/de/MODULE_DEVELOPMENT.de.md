@@ -2,7 +2,7 @@
 
 [🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
 
-Dieser Leitfaden erklärt, wie man benutzerdefinierte Module für Promenade unter Verwendung der Plugin-Architektur entwickelt.
+Dieser Leitfaden erklärt, wie man benutzerdefinierte IModule für Promenade unter Verwendung der Plugin-Architektur entwickelt.
 
 ## Inhaltsverzeichnis
 
@@ -20,23 +20,23 @@ Dieser Leitfaden erklärt, wie man benutzerdefinierte Module für Promenade unte
 
 Promenade verwendet eine **Plugin-Architektur**, die es ermöglicht:
 
-- Geschäftslogik als unabhängige, wiederverwendbare Module zu verpacken
-- Kern-Infrastruktur zu teilen (DB, Event Bus, Auth, RBAC)
-- Module über Konfiguration zu aktivieren/deaktivieren
-- Module kommerziell mit Lizenzierung zu verkaufen
-- Mehrere Module zu kombinieren (z.B. Warehouse + Fleet)
+- Geschäftslogik als unabhängige, wiederverwendbare IModule zu verpacken
+- Kern-Infrastruktur zu teilen (DB, Event IBus, Auth, RBAC)
+- IModule über Konfiguration zu aktivieren/deaktivieren
+- IModule kommerziell mit Lizenzierung zu verkaufen
+- Mehrere IModule zu kombinieren (z.B. Warehouse + Fleet)
 
-### Core vs Module
+### Core vs IModule
 
 **Core** (immer aktiviert):
 
 - Authentifizierung & JWT
 - RBAC & Berechtigungen
-- Event Bus & Benachrichtigungen
+- Event IBus & Benachrichtigungen
 - Referenzdaten (Länder, Währungen)
 - Audit-Logging
 
-**Module** (optional):
+**IModule** (optional):
 
 - Posts, Comments, Profiles (soziale Funktionen)
 - Warehouse Management (Bestandsverwaltung)
@@ -100,7 +100,7 @@ type WarehouseModule struct {
 	itemUC   usecase.ItemUseCase
 }
 
-func New() module.Module {
+func New() module.IModule {
 	meta := module.Metadata{
 		Name:        "warehouse",
 		DisplayName: "Warehouse Management",
@@ -178,7 +178,7 @@ func (m *WarehouseModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers - Auf Events abonnieren
-func (m *WarehouseModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *WarehouseModule) RegisterEventHandlers(bus bus.IBus) error {
 	// Auf Order-Events abonnieren
 	return bus.Subscribe(ctx, "order.created", m.handleOrderCreated)
 }
@@ -258,39 +258,39 @@ modules:
 1. **Anwendungsstart**
 
    - `config/modules.yaml` lesen
-   - Aktivierte Module laden
+   - Aktivierte IModule laden
    - Pro-Modul-Einstellungen laden
 
 2. **Core Initialisieren**
 
    - Datenbank-Verbindung
-   - Event Bus
+   - Event IBus
    - JWT-Manager
    - Logger
 
-3. **Module.Initialize()** (in Abhängigkeitsreihenfolge)
+3. **IModule.Initialize()** (in Abhängigkeitsreihenfolge)
 
    - Abhängigkeiten auflösen
    - Repositories initialisieren
    - Use Cases initialisieren
 
-4. **Module.RegisterRoutes()**
+4. **IModule.RegisterRoutes()**
 
    - HTTP-Endpunkte registrieren
 
-5. **Module.RegisterMigrations()**
+5. **IModule.RegisterMigrations()**
 
    - Datenbank-Migrationen anwenden
 
-6. **Module.RegisterEventHandlers()**
+6. **IModule.RegisterEventHandlers()**
 
    - Events abonnieren
 
-7. **Module.RegisterPermissions()**
+7. **IModule.RegisterPermissions()**
 
    - RBAC-Berechtigungen einfügen
 
-8. **Module.Start()**
+8. **IModule.Start()**
 
    - Hintergrund-Worker starten
    - Externe Verbindungen initialisieren
@@ -299,7 +299,7 @@ modules:
 
 **Shutdown-Sequenz:**
 
-10. **Module.Stop()** (in umgekehrter Reihenfolge)
+10. **IModule.Stop()** (in umgekehrter Reihenfolge)
     - Worker stoppen
     - Verbindungen schließen
     - Ressourcen aufräumen
@@ -308,7 +308,7 @@ modules:
 
 ## Inter-Modul-Kommunikation
 
-Module sollten über **Events** kommunizieren (lose Kopplung):
+IModule sollten über **Events** kommunizieren (lose Kopplung):
 
 ### Events Veröffentlichen
 
@@ -336,7 +336,7 @@ func (uc *ItemUseCase) CreateItem(ctx context.Context, item *entity.Item) error 
 
 ```go
 // Im Fleet-Modul (benötigt Warehouse-Items für Ersatzteile)
-func (m *FleetModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *FleetModule) RegisterEventHandlers(bus bus.IBus) error {
 	return bus.Subscribe(ctx, "warehouse.item.created", m.handleItemCreated)
 }
 
@@ -367,7 +367,7 @@ func (m *FleetModule) handleItemCreated(ctx context.Context, event bus.Event) er
 
 ### NICHT TUN
 
-1. **Direkte Abhängigkeiten** - Niemals Code anderer Module direkt importieren
+1. **Direkte Abhängigkeiten** - Niemals Code anderer IModule direkt importieren
 2. **Gemeinsame Tabellen** - Jedes Modul besitzt seine Tabellen
 3. **Core-Modifikationen** - Core-Code nicht für Modul-Features ändern
 4. **Synchrone Aufrufe** - Blockierende Inter-Modul-Kommunikation vermeiden
@@ -386,7 +386,7 @@ type HelloModule struct {
 	*module.BaseModule
 }
 
-func New() module.Module {
+func New() module.IModule {
 	return &HelloModule{
 		BaseModule: module.NewBaseModule(module.Metadata{
 			Name:    "hello",
@@ -431,7 +431,7 @@ func (m *FleetModule) Initialize(ctx context.Context, core *module.Core) error {
 
 ---
 
-## Module Testen
+## IModule Testen
 
 ```go
 // modules/warehouse/module_test.go
@@ -464,7 +464,7 @@ func TestWarehouseModule(t *testing.T) {
 
 ## Nächste Schritte
 
-1. Vorhandene Module in `internal/modules/` ansehen
+1. Vorhandene IModule in `internal/modules/` ansehen
 2. `make generate-module NAME=mymodule` verwenden (TODO)
 3. `pkg/module/` für vollständige API-Referenz prüfen
 4. [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.de.md) für Clean-Architecture-Muster lesen

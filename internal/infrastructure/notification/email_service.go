@@ -16,7 +16,7 @@ import (
 // EmailService handles email notifications based on domain events.
 // It subscribes to user-related events and sends appropriate emails.
 type EmailService struct {
-	bus           bus.Bus
+	bus           bus.IBus
 	sender        EmailSender
 	templates     *template.Template
 	templatesPath string
@@ -43,7 +43,7 @@ type Email struct {
 // NewEmailService creates a new email notification service.
 // templatesPath should point to the directory containing email templates.
 // If templatesPath is empty, uses fallback templates (useful for testing).
-func NewEmailService(eventBus bus.Bus, sender EmailSender, templatesPath, fromAddress, fromName, appURL, appName string) (*EmailService, error) {
+func NewEmailService(eventBus bus.IBus, sender EmailSender, templatesPath, fromAddress, fromName, appURL, appName string) (*EmailService, error) {
 	var templates *template.Template
 
 	// Load templates if path provided

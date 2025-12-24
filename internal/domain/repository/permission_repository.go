@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// PermissionRepository defines operations for permission management
-type PermissionRepository interface {
+// IPermissionRepository defines operations for permission management
+type IPermissionRepository interface {
 	// Basic CRUD
 	Create(ctx context.Context, permission *entity.Permission) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Permission, error)

@@ -17,7 +17,7 @@ type sessionRepository struct {
 }
 
 // NewSessionRepository creates a new session repository
-func NewSessionRepository(db *sqlx.DB) repository.SessionRepository {
+func NewSessionRepository(db *sqlx.DB) repository.ISessionRepository {
 	return &sessionRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

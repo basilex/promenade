@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AnalyticsModule implements the module.Module interface
+// AnalyticsModule implements the module.IModule interface
 type AnalyticsModule struct {
 	core           *module.Core
 	config         *Config
@@ -28,7 +28,7 @@ type Config struct {
 }
 
 // New creates a new analytics module instance
-func New() module.Module {
+func New() module.IModule {
 	return &AnalyticsModule{
 		logger: slog.Default().With("module", "analytics"),
 	}
@@ -129,7 +129,7 @@ func (m *AnalyticsModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers subscribes to domain events
-func (m *AnalyticsModule) RegisterEventHandlers(eventBus bus.Bus) error {
+func (m *AnalyticsModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	m.logger.Info("Registering analytics event handlers")
 
 	// TODO: Subscribe to user events

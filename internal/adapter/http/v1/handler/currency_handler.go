@@ -12,10 +12,10 @@ import (
 )
 
 type CurrencyHandler struct {
-	currencyUseCase usecase.CurrencyUseCase
+	currencyUseCase usecase.ICurrencyUseCase
 }
 
-func NewCurrencyHandler(currencyUseCase usecase.CurrencyUseCase) *CurrencyHandler {
+func NewCurrencyHandler(currencyUseCase usecase.ICurrencyUseCase) *CurrencyHandler {
 	return &CurrencyHandler{
 		currencyUseCase: currencyUseCase,
 	}

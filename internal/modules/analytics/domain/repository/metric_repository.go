@@ -6,7 +6,7 @@ import (
 	"github.com/basilex/promenade/internal/modules/analytics/domain/entity"
 )
 
-type MetricRepository interface {
+type IMetricRepository interface {
 	Store(ctx context.Context, metric *entity.Metric) error
 	GetByID(ctx context.Context, id string) (*entity.Metric, error)
 	ListByScope(ctx context.Context, scope, scopeID string, limit, offset int) ([]*entity.Metric, int64, error)

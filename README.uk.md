@@ -19,13 +19,13 @@ Promenade використовує **сувору шарову архітект�
 **Core Layer** - Оркестратор + Інфраструктура + Спільні Сервіси
 
 - Аутентифікація та Авторизація (RBAC)
-- Event Bus (Memory/Redis)
+- Event IBus (Memory/Redis)
 - База Даних та Транзакції
 - Логування та Конфігурація
 - Реєстр Модулів та Життєвий Цикл
 - Довідкові Дані (країни, валюти, регіони, міста, часові зони, мови, способи оплати)
 
-**Module Layer** - Незалежні Вертикальні Зрізи (Бізнес-Домени)
+**IModule Layer** - Незалежні Вертикальні Зрізи (Бізнес-Домени)
 
 | Модуль        | Сутності                     | Опис                            | Статус          |
 | ------------- | ---------------------------- | ------------------------------- | --------------- |
@@ -356,7 +356,7 @@ make test-coverage
 
 - **Core Тести**: Domain сутності (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
 - **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge операції
-- **Module Тести**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, валідація ліцензії)
+- **IModule Тести**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, валідація ліцензії)
 - **Integration Тести**: Операції репозиторію з реальною PostgreSQL на порту 5433
 - **Test Helpers**: `test/helpers/` та `test/integration/` для fixtures, налаштування DB, управління транзакціями
 
@@ -366,7 +366,7 @@ make test-coverage
 
 ---
 
-## Event Bus
+## Event IBus
 
 **Dual-adapter event bus** для асинхронних операцій:
 

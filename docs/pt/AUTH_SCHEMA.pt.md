@@ -30,7 +30,7 @@ Referência completa para o sistema de autenticação no Promenade. Abrange regi
 | JWT Manager     | Geração/validação de access tokens        | HMAC-SHA256         |
 | Auth UseCase    | Lógica de negócio de todas operações auth | Go                  |
 | Auth Middleware | Autenticação de requisições               | Gin middleware      |
-| Event Bus       | Notificações assíncronas (e-mail, logs)   | Memory/Redis        |
+| Event IBus       | Notificações assíncronas (e-mail, logs)   | Memory/Redis        |
 
 **Recursos Principais:**
 
@@ -171,7 +171,7 @@ func (u *User) CanLogin() bool {
 ### 1. Fluxo de Registro
 
 ```
-Cliente                 API                    UseCase                Banco de Dados    Event Bus
+Cliente                 API                    UseCase                Banco de Dados    Event IBus
   │                      │                        │                        │                 │
   │  POST /auth/register │                        │                        │                 │
   │─────────────────────>│                        │                        │                 │

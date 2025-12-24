@@ -40,9 +40,9 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | Document                                                       | Description                          | When to Read                    |
 | -------------------------------------------------------------- | ------------------------------------ | ------------------------------- |
 | [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md)                 | Complete guide to creating modules   | Building new modules            |
-| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | Module independence principles       | Understanding module boundaries |
+| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | IModule independence principles       | Understanding module boundaries |
 | [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) | Configuration management for modules | Setting up module configs       |
-| [../internal/modules/README.md](../internal/modules/README.md) | Module directory structure           | Quick module overview           |
+| [../internal/modules/README.md](../internal/modules/README.md) | IModule directory structure           | Quick module overview           |
 
 ---
 
@@ -70,7 +70,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication system (registration, login, JWT) | Understanding auth flow         |
 | [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                           | Implementing authorization      |
 | [CREDENTIALS.md](CREDENTIALS.md)                   | Default users and roles for dev/test             | Testing with predefined users   |
-| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | Module licensing system with HMAC-SHA256         | Implementing commercial modules |
+| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | IModule licensing system with HMAC-SHA256         | Implementing commercial modules |
 
 ---
 
@@ -128,12 +128,12 @@ This directory contains comprehensive documentation for the Promenade applicatio
 - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference
 - [../internal/CORE.md](../internal/CORE.md) - Core components
 
-### Module System
+### IModule System
 
 - [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Development guide
 - [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Independence principles
 - [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) - Configuration
-- [../internal/modules/README.md](../internal/modules/README.md) - Module index
+- [../internal/modules/README.md](../internal/modules/README.md) - IModule index
 
 ### Data Management
 
@@ -172,9 +172,9 @@ This directory contains comprehensive documentation for the Promenade applicatio
 4. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Building features
 5. [TESTING_GUIDE.md](TESTING_GUIDE.md) - Testing your code
 
-### Path 2: Building a New Module
+### Path 2: Building a New IModule
 
-1. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Module creation guide
+1. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - IModule creation guide
 2. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Design principles
 3. [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) - Configuration
 4. [UUID_V7_GUIDE.md](UUID_V7_GUIDE.md) - Primary keys
@@ -186,7 +186,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 1. [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Current state analysis
 2. [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) - Visual diagrams
 3. [../internal/CORE.md](../internal/CORE.md) - Core boundaries
-4. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Module isolation
+4. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - IModule isolation
 
 ### Path 4: Security Implementation
 
@@ -269,7 +269,7 @@ When adding new documentation:
 1. **Choose the right type:**
 
    - `ARCHITECTURE_*.md` - Architecture and design patterns
-   - `MODULE_*.md` - Module system documentation
+   - `MODULE_*.md` - IModule system documentation
    - `*_GUIDE.md` - How-to guides and tutorials
    - `*_SCHEMA.md` - Data schemas and structures
    - `README.md` - Directory overviews

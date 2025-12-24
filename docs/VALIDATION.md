@@ -80,7 +80,7 @@ func (c *Country) Validate() error {
 **Example**:
 
 ```go
-func (uc *CountryUseCase) Create(ctx context.Context, country *entity.Country) error {
+func (uc *ICountryUseCase) Create(ctx context.Context, country *entity.Country) error {
     // Validate entity
     if err := country.Validate(); err != nil {
         return fmt.Errorf("validation failed: %w", err)

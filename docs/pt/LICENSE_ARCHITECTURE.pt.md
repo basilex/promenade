@@ -45,7 +45,7 @@ Componentes:
 1. **Inicialização da Aplicação**
    - Registro de Módulos (`pkg/module`) inicializa
 2. **Para Cada Módulo Habilitado**
-   - `Module.Initialize()` é chamado
+   - `IModule.Initialize()` é chamado
 3. **Validador de Licença** (`module/license/`)
    - `Parse()` - Extrair componentes da licença
    - `Validate()` - Verificar assinatura e expiração
@@ -588,7 +588,7 @@ go run ./cmd/license-generator/main.go \
 
 # Saída:
 # License valid
-# Module: ANALYTICS
+# IModule: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
 # Days remaining: 365

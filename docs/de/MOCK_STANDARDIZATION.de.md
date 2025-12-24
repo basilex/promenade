@@ -4,7 +4,7 @@
 
 ## Was wurde getan
 
-Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Projekt hinweg.
+Einheitlicher Ansatz zur Mock-Generierung über **alle IModule** im Promenade-Projekt hinweg.
 
 ## Vorgenommene Änderungen
 
@@ -22,7 +22,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
  **`Makefile.dev.mk` aktualisiert** mit Standardbefehlen:
 
 - `make install` - Beinhaltet jetzt die mockery-Installation
-- `make mocks` - Generiert ALLE Mocks (Core + alle Module)
+- `make mocks` - Generiert ALLE Mocks (Core + alle IModule)
 - `make mocks-audit` - Generiert nur Audit-Modul-Mocks
 - `make mocks-posts` - Generiert nur Posts-Modul-Mocks
 - `make mocks-profiles` - Generiert nur Profiles-Modul-Mocks
@@ -50,7 +50,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 - Profiles: 2 Repository-Mocks (UserProfile, UserContact)
 - Analytics: 1 Repository-Mock (Metric)
 
-**Gesamt: 16 standardisierte Mock-Dateien** über alle Module hinweg.
+**Gesamt: 16 standardisierte Mock-Dateien** über alle IModule hinweg.
 
 ## Vorher vs. Nachher
 
@@ -69,9 +69,9 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 ### Nachher (vereinheitlicht)
 
 ```
- Alle Module: mockery-generiert mit "Code generated"-Header
+ Alle IModule: mockery-generiert mit "Code generated"-Header
  Zentralisierte .mockery.yaml-Konfiguration
- Makefile-Befehle für alle Module
+ Makefile-Befehle für alle IModule
  Umfassende Dokumentation
  CI/CD-bereit mit `make mocks-verify`
  Konsistente Dateibenennung und Struktur
@@ -158,7 +158,7 @@ Zur Pipeline hinzufügen:
 
 ## Vorteile
 
- **Konsistenz** - Alle Module verwenden denselben Ansatz
+ **Konsistenz** - Alle IModule verwenden denselben Ansatz
  **Automatisierung** - Keine manuelle Mock-Wartung
  **Typsicherheit** - mockery stellt Interface-Compliance sicher
  **Dokumentation** - Klare READMEs in jedem mocks-Verzeichnis
@@ -220,11 +220,11 @@ make test
 1.  **Abgeschlossen** - Alle Mocks standardisiert
 2. Optional: Inline-Mocks in bestehenden Tests refaktorieren, um zentralisierte Mocks zu verwenden
 3. Optional: `make mocks-verify` zur CI/CD-Pipeline hinzufügen
-4. Zukunft: Dasselbe Pattern auf neue Module anwenden (Warehouse usw.)
+4. Zukunft: Dasselbe Pattern auf neue IModule anwenden (Warehouse usw.)
 
 ## Erfolgskriterien
 
- Alle Module verwenden mockery-generierte Mocks
+ Alle IModule verwenden mockery-generierte Mocks
  Single Source of Truth (`.mockery.yaml`)
  Konsistente Benennung und Struktur
  Umfassende Dokumentation
@@ -233,4 +233,4 @@ make test
 
 ---
 
-**Status**:  ABGESCHLOSSEN - Alle Module folgen jetzt dem einheitlichen Mock-Generierungsstandard.
+**Status**:  ABGESCHLOSSEN - Alle IModule folgen jetzt dem einheitlichen Mock-Generierungsstandard.

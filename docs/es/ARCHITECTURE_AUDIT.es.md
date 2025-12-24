@@ -104,7 +104,7 @@ pkg/module/
 
 ---
 
-### 5. Infraestructura del Bus de Eventos
+### 5. Infraestructura del IBus de Eventos
 
 ```
 pkg/bus/
@@ -601,9 +601,9 @@ type PurgeConfig struct {
 | **Timezones**       | Core      | Datos de referencia | Correcto      |
 | **Languages**       | Core      | Datos de referencia | Correcto      |
 | **Database**        | Core      | Infraestructura     | Correcto      |
-| **Event Bus**       | Core      | Infraestructura     | Correcto      |
+| **Event IBus**       | Core      | Infraestructura     | Correcto      |
 | **Purge Scheduler** | Core      | Infraestructura     | Correcto      |
-| **Module Registry** | Core      | Orquestación        | Correcto      |
+| **IModule Registry** | Core      | Orquestación        | Correcto      |
 |                     |           |                     |
 | **Posts**           | Módulo    | Lógica de negocio   | Independiente |
 | **Comments**        | Módulo    | Lógica de negocio   | Independiente |

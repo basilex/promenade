@@ -13,7 +13,7 @@ import (
 // Scheduler manages scheduled jobs using cron
 type Scheduler struct {
 	cron          *cron.Cron
-	purgeUseCase  usecase.PurgeUseCase
+	purgeUseCase  usecase.IPurgeUseCase
 	schedule      string
 	dryRun        bool
 	enabled       bool
@@ -25,7 +25,7 @@ type Scheduler struct {
 
 // NewScheduler creates a new scheduler
 func NewScheduler(
-	purgeUseCase usecase.PurgeUseCase,
+	purgeUseCase usecase.IPurgeUseCase,
 	schedule string,
 	dryRun bool,
 	enabled bool,

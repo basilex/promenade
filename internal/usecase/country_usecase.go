@@ -9,8 +9,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CountryUseCase interface defines operations for country management
-type CountryUseCase interface {
+// ICountryUseCase interface defines operations for country management
+type ICountryUseCase interface {
 	Create(ctx context.Context, country *entity.Country) error
 	GetByID(ctx context.Context, id uuidv7.UUID, withCurrencies bool) (*entity.Country, error)
 	GetByCode(ctx context.Context, code string, withCurrencies bool) (*entity.Country, error)
@@ -24,14 +24,14 @@ type CountryUseCase interface {
 }
 
 type countryUseCase struct {
-	countryRepo  repository.CountryRepository
-	currencyRepo repository.CurrencyRepository
+	countryRepo  repository.ICountryRepository
+	currencyRepo repository.ICurrencyRepository
 }
 
 func NewCountryUseCase(
-	countryRepo repository.CountryRepository,
-	currencyRepo repository.CurrencyRepository,
-) CountryUseCase {
+	countryRepo repository.ICountryRepository,
+	currencyRepo repository.ICurrencyRepository,
+) ICountryUseCase {
 	return &countryUseCase{
 		countryRepo:  countryRepo,
 		currencyRepo: currencyRepo,

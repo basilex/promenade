@@ -1,4 +1,4 @@
-# Analytics Module
+# Analytics IModule
 
 **Status:** Free
 **Version:** 1.0.0
@@ -177,7 +177,7 @@ go test ./internal/modules/analytics/license/...
 
 **Internal:**
 
-- `pkg/module` - Module system interface
+- `pkg/module` - IModule system interface
 - `pkg/bus` - Event bus for metric collection
 - `pkg/uuidv7` - UUID generation
 
@@ -223,7 +223,7 @@ make migrate-rollback MODULE=analytics STEPS=1
 - License expired beyond grace period
 - Obtain new license or extend existing one
 
-### Module Not Loading
+### IModule Not Loading
 
 1. Check `config/modules.yaml`:
 

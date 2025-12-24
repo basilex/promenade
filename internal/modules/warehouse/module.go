@@ -13,7 +13,7 @@ import (
 	moduleconfig "github.com/basilex/promenade/pkg/module/config"
 )
 
-// WarehouseModule implements the Module interface for warehouse management
+// WarehouseModule implements the IModule interface for warehouse management
 // This is a COMMERCIAL module (requires license)
 type WarehouseModule struct {
 	*module.BaseModule
@@ -23,16 +23,16 @@ type WarehouseModule struct {
 	authMiddleware  *middleware.AuthMiddleware
 	authzMiddleware *middleware.AuthorizationMiddleware
 
-	// Module configuration
+	// IModule configuration
 	config *moduleconfig.Config
 
-	// Module-specific configuration
+	// IModule-specific configuration
 	maxItems             int
 	enableBarcodeScanner bool
 }
 
 // New creates a new warehouse module
-func New() module.Module {
+func New() module.IModule {
 	meta := module.Metadata{
 		Name:        "warehouse",
 		DisplayName: "Warehouse Management",
@@ -264,7 +264,7 @@ func (m *WarehouseModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers subscribes to domain events
-func (m *WarehouseModule) RegisterEventHandlers(eventBus bus.Bus) error {
+func (m *WarehouseModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	// Subscribe to order events (if orders module exists)
 	// return eventBus.Subscribe(ctx, "order.created", m.handleOrderCreated)
 	return nil

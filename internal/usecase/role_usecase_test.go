@@ -13,7 +13,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Mock RoleRepository
+// Mock IRoleRepository
 type mockRoleRepository struct {
 	mock.Mock
 }

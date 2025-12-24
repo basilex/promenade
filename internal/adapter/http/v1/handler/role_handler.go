@@ -14,10 +14,10 @@ import (
 )
 
 type RoleHandler struct {
-	roleUseCase usecase.RoleUseCase
+	roleUseCase usecase.IRoleUseCase
 }
 
-func NewRoleHandler(roleUseCase usecase.RoleUseCase) *RoleHandler {
+func NewRoleHandler(roleUseCase usecase.IRoleUseCase) *RoleHandler {
 	return &RoleHandler{
 		roleUseCase: roleUseCase,
 	}

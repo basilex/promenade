@@ -38,10 +38,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("Testing Event Bus", slog.String("adapter", cfg.Bus.Adapter))
+	log.Info("Testing Event IBus", slog.String("adapter", cfg.IBus.Adapter))
 
 	// Create event bus using factory
-	eventBus, err := bus.NewBus(cfg.Bus)
+	eventBus, err := bus.NewBus(cfg.IBus)
 	if err != nil {
 		log.Error("Failed to create event bus", slog.Any("error", err))
 		os.Exit(1)
@@ -51,10 +51,10 @@ func main() {
 	// Check health
 	ctx := context.Background()
 	if err := eventBus.Health(ctx); err != nil {
-		log.Error("Bus health check failed", slog.Any("error", err))
+		log.Error("IBus health check failed", slog.Any("error", err))
 		os.Exit(1)
 	}
-	log.Info("[OK] Bus health check passed")
+	log.Info("[OK] IBus health check passed")
 
 	// Subscribe to test topic
 	messagesReceived := 0
@@ -123,6 +123,6 @@ func main() {
 	if err := eventBus.Close(shutdownCtx); err != nil {
 		log.Error("Failed to close bus", slog.Any("error", err))
 	} else {
-		log.Info("[OK] Bus closed gracefully")
+		log.Info("[OK] IBus closed gracefully")
 	}
 }

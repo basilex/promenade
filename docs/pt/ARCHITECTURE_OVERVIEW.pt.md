@@ -30,7 +30,7 @@ Este documento fornece uma visão geral de alto nível da arquitetura Promenade,
 | Componente    | Propósito                              |
 | ------------- | -------------------------------------- |
 | Database      | Gerenciamento de conexão PostgreSQL    |
-| Event Bus     | Adaptadores Memory/Redis Pub/Sub       |
+| Event IBus     | Adaptadores Memory/Redis Pub/Sub       |
 | Scheduler     | Agendamento de tarefas baseado em cron |
 | Config        | Carregador de configuração YAML        |
 | Logger        | Logging estruturado com slog           |
@@ -194,7 +194,7 @@ Este documento fornece uma visão geral de alto nível da arquitetura Promenade,
 
 ## Comunicação Inter-Módulos
 
-### Event Bus
+### Event IBus
 
 **Localização:** `pkg/bus/`
 

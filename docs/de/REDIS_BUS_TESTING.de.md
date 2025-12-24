@@ -1,10 +1,10 @@
-# Redis Bus Testing Leitfaden
+# Redis IBus Testing Leitfaden
 
 [🇬🇧 English](../REDIS_BUS_TESTING.md) | [🇺🇦 Українська](../uk/REDIS_BUS_TESTING.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/REDIS_BUS_TESTING.pt.md) | [🇪🇸 Español](../es/REDIS_BUS_TESTING.es.md)
 
 ---
 
-Dieser Leitfaden beschreibt, wie der Redis Adapter für den Event Bus getestet wird.
+Dieser Leitfaden beschreibt, wie der Redis Adapter für den Event IBus getestet wird.
 
 ## Schnellstart
 
@@ -49,7 +49,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 **Erwartetes Ergebnis:**
 
 ```
-[OK] Bus health check passed
+[OK] IBus health check passed
 [OK] Subscribed to topic
 [>>] Publishing test events count=5
 [OK] Published event num=1
@@ -57,7 +57,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 ...
 [RESULTS] Test Results published=5 received=5
 [SUCCESS] All messages received!
-[OK] Bus closed gracefully
+[OK] IBus closed gracefully
 ```
 
 ## Adapter-Wechsel in der Produktion
@@ -97,7 +97,7 @@ Im **Test/Development**-Modus gibt das System einen Fehler zurück (fail fast).
 ctx := context.Background()
 err := eventBus.Health(ctx)
 if err != nil {
-    // Bus is unhealthy
+    // IBus is unhealthy
 }
 ```
 

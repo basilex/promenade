@@ -2,7 +2,7 @@
 
 [🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
-## Core vs Module: Einfache Regel
+## Core vs IModule: Einfache Regel
 
 **CORE** = Infrastruktur + Referenzdaten + Auth
 
@@ -21,7 +21,7 @@
 1. **Infrastrukturdienste**
 
    - Datenbank-Verbindungsverwaltung
-   - Event Bus (Memory/Redis-Adapter)
+   - Event IBus (Memory/Redis-Adapter)
    - Scheduler (Cron-Jobs)
    - Konfigurationslader
    - Logger
@@ -49,7 +49,7 @@
    - Modul-Registry
    - Purge-Handler-Registry
    - Purge-Policy-Registry
-   - Event-Bus-Schnittstelle
+   - Event-IBus-Schnittstelle
 
 ### GEHÖRT NICHT in Core:
 
@@ -64,7 +64,7 @@
 
 ---
 
-## Was Gehört in Module?
+## Was Gehört in IModule?
 
 ### Modul-Struktur
 
@@ -118,11 +118,11 @@ type MyModule struct {
     // ... andere Felder
 }
 
-func New() module.Module {
+func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My Module",
+            DisplayName: "My IModule",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),
@@ -225,16 +225,16 @@ import (
 **Enthält NUR:**
 
 - Infrastruktur-Einstellungen (DB, Server, JWT, Logging)
-- Event-Bus-Konfiguration
+- Event-IBus-Konfiguration
 - Purge-Infrastruktur (enabled, schedule, batch_size)
 - CORS-Einstellungen
 - E-Mail-Dienst-Einstellungen
 
 **Enthält NICHT:**
 
-- Entitätsspezifische Aufbewahrungstage → Module
-- Modulspezifische Einstellungen → Module
-- Geschäftslogik-Konfiguration → Module
+- Entitätsspezifische Aufbewahrungstage → IModule
+- Modulspezifische Einstellungen → IModule
+- Geschäftslogik-Konfiguration → IModule
 
 ### Modul-Konfiguration
 
@@ -448,7 +448,7 @@ make migrate-create NAME=add_my_table
 ## Entscheidungsbaum: Core oder Modul?
 
 ```
-Ist es Infrastruktur (DB, Logger, Event Bus)?
+Ist es Infrastruktur (DB, Logger, Event IBus)?
 └─> JA → CORE
 
 Ist es Sicherheit (Auth, RBAC)?
@@ -489,7 +489,7 @@ Im Zweifel?
 **Merken Sie sich:**
 
 - Core = Infrastruktur + Referenzdaten + Auth
-- Module = Geschäftslogik (unabhängig, lizenzierbar)
+- IModule = Geschäftslogik (unabhängig, lizenzierbar)
 - Registries für lose Kopplung verwenden
 - Events für asynchrone Kommunikation
 - Konfigurations-Autonomie für jedes Modul

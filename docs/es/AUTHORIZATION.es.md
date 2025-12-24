@@ -886,11 +886,11 @@ WHERE u.id = '<user_uuid>';
 Tiempos de respuesta lentos en endpoints protegidos.
 
 **Solución:**
-Implementar caché en RoleUseCase:
+Implementar caché en IRoleUseCase:
 
 ```go
 // Usar Redis/caché en memoria para verificaciones de permisos
-func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
+func (uc *IRoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
     // Verificar caché primero
     cacheKey := fmt.Sprintf("user:%s:permission:%s", userID, permission)
     if cached, found := uc.cache.Get(cacheKey); found {

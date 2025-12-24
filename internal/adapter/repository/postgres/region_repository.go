@@ -16,7 +16,7 @@ type regionRepository struct {
 }
 
 // NewRegionRepository creates a new region repository
-func NewRegionRepository(db *sqlx.DB) repository.RegionRepository {
+func NewRegionRepository(db *sqlx.DB) repository.IRegionRepository {
 	return &regionRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

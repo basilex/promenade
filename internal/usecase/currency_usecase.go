@@ -9,8 +9,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CurrencyUseCase interface defines operations for currency management
-type CurrencyUseCase interface {
+// ICurrencyUseCase interface defines operations for currency management
+type ICurrencyUseCase interface {
 	Create(ctx context.Context, currency *entity.Currency) error
 	GetByID(ctx context.Context, id uuidv7.UUID, withCountries bool) (*entity.Currency, error)
 	GetByCode(ctx context.Context, code string, withCountries bool) (*entity.Currency, error)
@@ -23,14 +23,14 @@ type CurrencyUseCase interface {
 }
 
 type currencyUseCase struct {
-	currencyRepo repository.CurrencyRepository
-	countryRepo  repository.CountryRepository
+	currencyRepo repository.ICurrencyRepository
+	countryRepo  repository.ICountryRepository
 }
 
 func NewCurrencyUseCase(
-	currencyRepo repository.CurrencyRepository,
-	countryRepo repository.CountryRepository,
-) CurrencyUseCase {
+	currencyRepo repository.ICurrencyRepository,
+	countryRepo repository.ICountryRepository,
+) ICurrencyUseCase {
 	return &currencyUseCase{
 		currencyRepo: currencyRepo,
 		countryRepo:  countryRepo,

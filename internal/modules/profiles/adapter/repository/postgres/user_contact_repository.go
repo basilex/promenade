@@ -11,20 +11,20 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// UserContactRepository implements repository.UserContactRepository
-type UserContactRepository struct {
+// IUserContactRepository implements repository.IUserContactRepository
+type IUserContactRepository struct {
 	*BaseRepository
 }
 
-// NewUserContactRepository creates a new UserContactRepository
-func NewUserContactRepository(db *sqlx.DB) *UserContactRepository {
-	return &UserContactRepository{
+// NewUserContactRepository creates a new IUserContactRepository
+func NewUserContactRepository(db *sqlx.DB) *IUserContactRepository {
+	return &IUserContactRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
 
 // Create creates a new user contact
-func (r *UserContactRepository) Create(ctx context.Context, contact *entity.UserContact) error {
+func (r *IUserContactRepository) Create(ctx context.Context, contact *entity.UserContact) error {
 	contact.ID = uuidv7.New()
 
 	query := `
@@ -59,7 +59,7 @@ func (r *UserContactRepository) Create(ctx context.Context, contact *entity.User
 }
 
 // GetByID retrieves a contact by ID
-func (r *UserContactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.UserContact, error) {
+func (r *IUserContactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*entity.UserContact, error) {
 	var contact entity.UserContact
 	query := `
 		SELECT id, user_id, contact_type, contact_value, label,
@@ -81,7 +81,7 @@ func (r *UserContactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*e
 }
 
 // GetUserContacts retrieves all contacts for a user
-func (r *UserContactRepository) GetUserContacts(ctx context.Context, userID uuidv7.UUID, includeInactive bool) ([]*entity.UserContact, error) {
+func (r *IUserContactRepository) GetUserContacts(ctx context.Context, userID uuidv7.UUID, includeInactive bool) ([]*entity.UserContact, error) {
 	var contacts []*entity.UserContact
 	query := `
 		SELECT id, user_id, contact_type, contact_value, label,
@@ -106,7 +106,7 @@ func (r *UserContactRepository) GetUserContacts(ctx context.Context, userID uuid
 }
 
 // GetUserContactsByType retrieves user contacts filtered by type
-func (r *UserContactRepository) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType) ([]*entity.UserContact, error) {
+func (r *IUserContactRepository) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType) ([]*entity.UserContact, error) {
 	var contacts []*entity.UserContact
 	query := `
 		SELECT id, user_id, contact_type, contact_value, label,
@@ -126,7 +126,7 @@ func (r *UserContactRepository) GetUserContactsByType(ctx context.Context, userI
 }
 
 // GetPrimaryContact retrieves the primary contact of a specific type for a user
-func (r *UserContactRepository) GetPrimaryContact(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType) (*entity.UserContact, error) {
+func (r *IUserContactRepository) GetPrimaryContact(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType) (*entity.UserContact, error) {
 	var contact entity.UserContact
 	query := `
 		SELECT id, user_id, contact_type, contact_value, label,
@@ -149,7 +149,7 @@ func (r *UserContactRepository) GetPrimaryContact(ctx context.Context, userID uu
 }
 
 // GetPublicContacts retrieves all public contacts for a user
-func (r *UserContactRepository) GetPublicContacts(ctx context.Context, userID uuidv7.UUID) ([]*entity.UserContact, error) {
+func (r *IUserContactRepository) GetPublicContacts(ctx context.Context, userID uuidv7.UUID) ([]*entity.UserContact, error) {
 	var contacts []*entity.UserContact
 	query := `
 		SELECT id, user_id, contact_type, contact_value, label,
@@ -169,7 +169,7 @@ func (r *UserContactRepository) GetPublicContacts(ctx context.Context, userID uu
 }
 
 // Update updates an existing contact
-func (r *UserContactRepository) Update(ctx context.Context, contact *entity.UserContact) error {
+func (r *IUserContactRepository) Update(ctx context.Context, contact *entity.UserContact) error {
 	query := `
 		UPDATE profiles_contacts SET
 			contact_type = $2,
@@ -207,13 +207,13 @@ func (r *UserContactRepository) Update(ctx context.Context, contact *entity.User
 }
 
 // Delete deletes a contact
-func (r *UserContactRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserContactRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `DELETE FROM profiles_contacts WHERE id = $1`
 	return r.Exec(ctx, query, id)
 }
 
 // SetPrimary sets a contact as primary (unsets other primary contacts of same type)
-func (r *UserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType, id uuidv7.UUID) error {
+func (r *IUserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType, id uuidv7.UUID) error {
 	// Get the contact first to verify it exists
 	contact, err := r.GetByID(ctx, id)
 	if err != nil {
@@ -262,7 +262,7 @@ func (r *UserContactRepository) SetPrimary(ctx context.Context, userID uuidv7.UU
 }
 
 // VerifyContact marks a contact as verified
-func (r *UserContactRepository) VerifyContact(ctx context.Context, id uuidv7.UUID) error {
+func (r *IUserContactRepository) VerifyContact(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE profiles_contacts 
 		SET is_verified = true, updated_at = CURRENT_TIMESTAMP

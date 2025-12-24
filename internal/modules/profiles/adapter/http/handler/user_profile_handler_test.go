@@ -19,7 +19,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-//  Module-independent test: imports only module and pkg, no core dependencies
+//  IModule-independent test: imports only module and pkg, no core dependencies
 
 func setupProfileTest() (*gin.Engine, *ucmocks.MockUserProfileUseCase) {
 	gin.SetMode(gin.TestMode)

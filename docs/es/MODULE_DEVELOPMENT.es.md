@@ -21,7 +21,7 @@ Esta guía explica cómo desarrollar módulos personalizados para Promenade usan
 Promenade usa una **Arquitectura de Plugin** que permite:
 
 - Empaquetar lógica de negocio como módulos independientes y reutilizables
-- Compartir infraestructura central (DB, Event Bus, Auth, RBAC)
+- Compartir infraestructura central (DB, Event IBus, Auth, RBAC)
 - Habilitar/deshabilitar módulos vía configuración
 - Vender módulos comercialmente con licenciamiento
 - Combinar múltiples módulos (ej: Warehouse + Fleet)
@@ -32,7 +32,7 @@ Promenade usa una **Arquitectura de Plugin** que permite:
 
 - Autenticación & JWT
 - RBAC & Permisos
-- Event Bus & Notificaciones
+- Event IBus & Notificaciones
 - Datos de Referencia (Países, Monedas)
 - Registro de Auditoría
 
@@ -100,7 +100,7 @@ type WarehouseModule struct {
 	itemUC   usecase.ItemUseCase
 }
 
-func New() module.Module {
+func New() module.IModule {
 	meta := module.Metadata{
 		Name:        "warehouse",
 		DisplayName: "Warehouse Management",
@@ -178,7 +178,7 @@ func (m *WarehouseModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers - suscribirse a eventos
-func (m *WarehouseModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *WarehouseModule) RegisterEventHandlers(bus bus.IBus) error {
 	// Suscribirse a eventos de pedidos
 	return bus.Subscribe(ctx, "order.created", m.handleOrderCreated)
 }
@@ -268,29 +268,29 @@ modules:
    - Gestor JWT
    - Logger
 
-3. **Module.Initialize()** (en orden de dependencia)
+3. **IModule.Initialize()** (en orden de dependencia)
 
    - Resolver dependencias
    - Inicializar repositorios
    - Inicializar casos de uso
 
-4. **Module.RegisterRoutes()**
+4. **IModule.RegisterRoutes()**
 
    - Registrar endpoints HTTP
 
-5. **Module.RegisterMigrations()**
+5. **IModule.RegisterMigrations()**
 
    - Aplicar migraciones de base de datos
 
-6. **Module.RegisterEventHandlers()**
+6. **IModule.RegisterEventHandlers()**
 
    - Suscribirse a eventos
 
-7. **Module.RegisterPermissions()**
+7. **IModule.RegisterPermissions()**
 
    - Insertar permisos RBAC
 
-8. **Module.Start()**
+8. **IModule.Start()**
 
    - Iniciar workers en segundo plano
    - Inicializar conexiones externas
@@ -299,7 +299,7 @@ modules:
 
 **Secuencia de Apagado:**
 
-10. **Module.Stop()** (en orden inverso)
+10. **IModule.Stop()** (en orden inverso)
     - Detener workers
     - Cerrar conexiones
     - Limpiar recursos
@@ -336,7 +336,7 @@ func (uc *ItemUseCase) CreateItem(ctx context.Context, item *entity.Item) error 
 
 ```go
 // En el módulo Fleet (necesita artículos del warehouse para piezas de repuesto)
-func (m *FleetModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *FleetModule) RegisterEventHandlers(bus bus.IBus) error {
 	return bus.Subscribe(ctx, "warehouse.item.created", m.handleItemCreated)
 }
 
@@ -386,7 +386,7 @@ type HelloModule struct {
 	*module.BaseModule
 }
 
-func New() module.Module {
+func New() module.IModule {
 	return &HelloModule{
 		BaseModule: module.NewBaseModule(module.Metadata{
 			Name:    "hello",

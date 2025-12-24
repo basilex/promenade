@@ -14,12 +14,12 @@
 
 ## Architekturübersicht
 
-Promenade folgt einer **strikten Schichtenarchitektur**, bei der der **Core orchestriert** und **Module die Geschäftslogik ausführen**:
+Promenade folgt einer **strikten Schichtenarchitektur**, bei der der **Core orchestriert** und **IModule die Geschäftslogik ausführen**:
 
 **Core-Schicht** - Orchestrator + Infrastruktur + Gemeinsame Dienste
 
 - Authentifizierung & Autorisierung (RBAC)
-- Event Bus (Memory/Redis)
+- Event IBus (Memory/Redis)
 - Datenbank & Transaktionen
 - Logging & Konfiguration
 - Modul-Registry & Lebenszyklus
@@ -49,15 +49,15 @@ Jedes Modul ist eigenständig mit:
 
    - Core **verwaltet** den Modul-Lebenszyklus (init, start, stop)
    - Core **stellt** gemeinsame Dienste bereit (Auth, Events, DB, Logging)
-   - Core **weiß WANN** Module aufgerufen werden, aber nicht **WIE** sie arbeiten
+   - Core **weiß WANN** IModule aufgerufen werden, aber nicht **WIE** sie arbeiten
    - Core **importiert niemals** modulspezifischen Code
 
-2. **Module als Worker**
+2. **IModule als Worker**
 
-   - Module **implementieren** domänenspezifische Geschäftslogik
-   - Module **registrieren** sich selbst über `init()`-Funktionen
-   - Module sind **unabhängig** - können aktiviert/deaktiviert werden ohne andere zu beeinflussen
-   - Module **importieren niemals** Code anderer Module (nur `pkg/*`)
+   - IModule **implementieren** domänenspezifische Geschäftslogik
+   - IModule **registrieren** sich selbst über `init()`-Funktionen
+   - IModule sind **unabhängig** - können aktiviert/deaktiviert werden ohne andere zu beeinflussen
+   - IModule **importieren niemals** Code anderer IModule (nur `pkg/*`)
    - Jedes Modul = vollständige vertikale Slice (Entitäten → Handler)
 
 3. **Clean Architecture Schichten**
@@ -74,7 +74,7 @@ Jedes Modul ist eigenständig mit:
 4. **Namespace-Basierte Migrationen**
    - Jeder Namespace (core, posts, profiles) hat unabhängige Versionsgeschichte
    - Migrationen liegen in `migrations/{namespace}/NNNNNN_beschreibung.{up|down}.sql`
-   - Core-Migrationen laufen zuerst, dann aktivierte Module
+   - Core-Migrationen laufen zuerst, dann aktivierte IModule
    - Echte Modul-Autonomie - aktivieren/deaktivieren ohne Schema-Konflikte
 
 ---
@@ -108,7 +108,7 @@ Migrationen laufen **automatisch** beim Anwendungsstart, können aber auch manue
 # Migrationsstatus für alle Namespaces prüfen
 make migrate-status
 
-# Alle Migrationen ausführen (core + aktivierte Module)
+# Alle Migrationen ausführen (core + aktivierte IModule)
 make migrate
 
 # Spezifischen Namespace ausführen
@@ -145,7 +145,7 @@ Server startet auf **http://localhost:8081**
 
 | Dokument                                                                                 | Beschreibung                                   |
 | ---------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **[docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)**                 | Neue Module erstellen, Best Practices          |
+| **[docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)**                 | Neue IModule erstellen, Best Practices          |
 | **[docs/de/MODULE_INDEPENDENCE.de.md](docs/de/MODULE_INDEPENDENCE.de.md)**               | Modul-Autonomieregeln, Abhängigkeitsverwaltung |
 | **[docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)** | Modul-Konfigurationssystem                     |
 
@@ -178,7 +178,7 @@ Server startet auf **http://localhost:8081**
 
 ## Modulsystem
 
-### Verfügbare Module
+### Verfügbare IModule
 
 #### **Posts-Modul** (`internal/modules/posts`)
 
@@ -231,7 +231,7 @@ internal/modules/{module}/
 └── README.md           # Modulspezifische Dokumentation
 ```
 
-### Module Aktivieren/Deaktivieren
+### IModule Aktivieren/Deaktivieren
 
 Bearbeiten Sie `config/modules.yaml`:
 
@@ -244,7 +244,7 @@ modules:
     # - warehouse  # Zukünftig: Lagerverwaltung
 ```
 
-Module werden automatisch beim Anwendungsstart geladen.
+IModule werden automatisch beim Anwendungsstart geladen.
 
 ---
 
@@ -282,7 +282,7 @@ migrations/
 # Status für alle Namespaces
 make migrate-status
 
-# Alle ausführen (core + aktivierte Module)
+# Alle ausführen (core + aktivierte IModule)
 make migrate
 
 # Spezifischen Namespace ausführen
@@ -297,7 +297,7 @@ make migrate-create MODULE=posts NAME=add_post_views
 make migrate-create-core NAME=add_audit_log
 ```
 
-**Auto-Migrationen**: Migrationen laufen automatisch beim App-Start (core zuerst, dann aktivierte Module).
+**Auto-Migrationen**: Migrationen laufen automatisch beim App-Start (core zuerst, dann aktivierte IModule).
 
 ---
 
@@ -355,9 +355,9 @@ make test-coverage
 
 ---
 
-## Event Bus
+## Event IBus
 
-**Dual-Adapter Event Bus** für asynchrone Operationen:
+**Dual-Adapter Event IBus** für asynchrone Operationen:
 
 ### Memory-Adapter
 
@@ -411,7 +411,7 @@ make config-show        # YAML-Konfiguration anzeigen (ENV=dev|test|prod)
 ### Testing
 
 ```bash
-make test                      # Alle Tests (core + Module)
+make test                      # Alle Tests (core + IModule)
 make test-core                 # Nur Core-Tests (domain + usecase)
 make test-modules              # Alle Modul-Tests
 make test-module-posts         # Posts-Modul-Tests
@@ -422,7 +422,7 @@ make test-coverage             # HTML-Coverage-Bericht generieren
 ### Datenbank
 
 ```bash
-make migrate                   # Alle Migrationen ausführen (core + aktivierte Module)
+make migrate                   # Alle Migrationen ausführen (core + aktivierte IModule)
 make migrate-status            # Migrationsstatus anzeigen
 make migrate-core              # Nur Core migrieren
 make migrate-module MODULE=posts          # Spezifisches Modul migrieren
@@ -473,7 +473,7 @@ make docker-clean
 ### Dienste
 
 - **PostgreSQL 16**: Port 5432, Benutzer `system`, Datenbank `promenade_dev`
-- **Redis 7**: Port 6379 (für verteilten Event Bus)
+- **Redis 7**: Port 6379 (für verteilten Event IBus)
 
 ---
 
@@ -505,7 +505,7 @@ WHERE deleted_at IS NULL
 
 ### Automatisiertes Purge-System
 
-Registry-basiertes System, bei dem Module ihre Retention-Policies registrieren:
+Registry-basiertes System, bei dem IModule ihre Retention-Policies registrieren:
 
 ```go
 purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
@@ -600,7 +600,7 @@ promenade/
 │       ├── analytics/          # Analytics + Berichte (Kommerziell, aktiv)
 │       └── warehouse/          # Lagerverwaltung (zukünftig)
 ├── pkg/                        # Gemeinsame Pakete (wiederverwendbar)
-│   ├── bus/                    # Event Bus (memory/redis)
+│   ├── bus/                    # Event IBus (memory/redis)
 │   ├── jwt/                    # JWT-Manager
 │   ├── logger/                 # Strukturierter Logger
 │   ├── migration/              # Migrations-Manager
@@ -703,7 +703,7 @@ modules:
 
 ---
 
-## Neue Module Erstellen
+## Neue IModule Erstellen
 
 ### Schritt 1: Modulstruktur Erstellen
 
@@ -719,27 +719,27 @@ package mymodule
 
 import "github.com/basilex/promenade/pkg/module"
 
-type Module struct{}
+type IModule struct{}
 
-func (m *Module) Name() string { return "mymodule" }
+func (m *IModule) Name() string { return "mymodule" }
 
-func (m *Module) Initialize(ctx context.Context, core module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
     // Routen, Berechtigungen, Purge-Handler registrieren
     return nil
 }
 
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
     // Background-Worker starten
     return nil
 }
 
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
     // Graceful Shutdown
     return nil
 }
 
 func init() {
-    module.DefaultRegistry.Register(&Module{})
+    module.DefaultRegistry.Register(&IModule{})
 }
 ```
 

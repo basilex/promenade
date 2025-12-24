@@ -15,10 +15,10 @@ import (
 )
 
 type UserPostHandler struct {
-	postUC usecase.UserPostUseCase
+	postUC usecase.IUserPostUseCase
 }
 
-func NewUserPostHandler(postUC usecase.UserPostUseCase) *UserPostHandler {
+func NewUserPostHandler(postUC usecase.IUserPostUseCase) *UserPostHandler {
 	return &UserPostHandler{
 		postUC: postUC,
 	}

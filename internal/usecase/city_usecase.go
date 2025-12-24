@@ -9,8 +9,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CityUseCase interface defines operations for city management
-type CityUseCase interface {
+// ICityUseCase interface defines operations for city management
+type ICityUseCase interface {
 	Create(ctx context.Context, city *entity.City) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.City, error)
 	List(ctx context.Context, page, pageSize int) ([]entity.City, int, error)
@@ -25,10 +25,10 @@ type CityUseCase interface {
 }
 
 type cityUseCase struct {
-	cityRepo repository.CityRepository
+	cityRepo repository.ICityRepository
 }
 
-func NewCityUseCase(cityRepo repository.CityRepository) CityUseCase {
+func NewCityUseCase(cityRepo repository.ICityRepository) ICityUseCase {
 	return &cityUseCase{
 		cityRepo: cityRepo,
 	}

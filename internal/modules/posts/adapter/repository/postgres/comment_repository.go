@@ -18,7 +18,7 @@ type commentRepository struct {
 }
 
 // NewCommentRepository creates a new comment repository
-func NewCommentRepository(db *sqlx.DB) repository.CommentRepository {
+func NewCommentRepository(db *sqlx.DB) repository.ICommentRepository {
 	return &commentRepository{db: db}
 }
 

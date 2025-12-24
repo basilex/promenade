@@ -1,4 +1,4 @@
-# Audit Module (Commercial)
+# Audit IModule (Commercial)
 
 > **License Required**: This is a commercial module requiring a valid license key for production use.
 
@@ -285,6 +285,6 @@ FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
 
 ---
 
-**Module Version**: 1.0.0
+**IModule Version**: 1.0.0
 **License**: Commercial (Proprietary)
 **Requires**: Promenade Core 1.0.0+

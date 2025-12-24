@@ -1,4 +1,4 @@
-# Posts Module Mocks
+# Posts IModule Mocks
 
 This directory contains auto-generated mocks for the posts module's repository interfaces.
 

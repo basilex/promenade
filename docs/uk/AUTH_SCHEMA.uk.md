@@ -30,7 +30,7 @@
 | JWT Manager     | Генерація/валідація access токенів      | HMAC-SHA256         |
 | Auth UseCase    | Бізнес-логіка всіх операцій авторизації | Go                  |
 | Auth Middleware | Автентифікація запитів                  | Gin middleware      |
-| Event Bus       | Асинхронні сповіщення (email, журнали)  | Memory/Redis        |
+| Event IBus       | Асинхронні сповіщення (email, журнали)  | Memory/Redis        |
 
 **Ключові Функції:**
 

@@ -18,7 +18,7 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 
 ### Architektur-Review
 
-- **[ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.de.md)** - Vollständiges Architektur-Compliance-Audit (Core vs Module)
+- **[ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.de.md)** - Vollständiges Architektur-Compliance-Audit (Core vs IModule)
 
 ---
 
@@ -33,13 +33,13 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 | [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.de.md) | Schnellreferenz für gängige Muster               | Tägliche Entwicklung                |
 | [../../internal/CORE.md](../../internal/CORE.md)        | Dokumentation der Core-Komponenten               | Core-Verantwortlichkeiten verstehen |
 
-### Module
+### IModule
 
 | Dokument                                                             | Beschreibung                                       | Wann Lesen                       |
 | -------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------- |
-| [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md)                    | Vollständiger Leitfaden zur Erstellung von Modulen | Neue Module erstellen            |
+| [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md)                    | Vollständiger Leitfaden zur Erstellung von Modulen | Neue IModule erstellen            |
 | [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.de.md)                  | Prinzipien der Modul-Unabhängigkeit                | Modulg renzen verstehen          |
-| [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.de.md)    | Konfigurationsmanagement für Module                | Modul-Konfigurationen einrichten |
+| [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.de.md)    | Konfigurationsmanagement für IModule                | Modul-Konfigurationen einrichten |
 | [../../internal/modules/README.md](../../internal/modules/README.md) | Modul-Verzeichnisstruktur                          | Schneller Modul-Überblick        |
 
 ---
@@ -58,7 +58,7 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 | Dokument                                          | Beschreibung                             | Wann Lesen                        |
 | ------------------------------------------------- | ---------------------------------------- | --------------------------------- |
 | [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.de.md) | Design des automatisierten Purge-Systems | Retention-Policies implementieren |
-| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testen mit Redis Event Bus               | Event-gesteuerte Features testen  |
+| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testen mit Redis Event IBus               | Event-gesteuerte Features testen  |
 | [LOGGING.md](../LOGGING.md)                       | Strukturiertes Logging mit Kontext       | Logging zum Code hinzufügen       |
 
 ### Sicherheit & Authentifizierung
@@ -68,7 +68,7 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 | [AUTH_SCHEMA.md](AUTH_SCHEMA.de.md)                   | Authentifizierungssystem (Registrierung, Login, JWT) | Auth-Flow verstehen                |
 | [AUTHORIZATION.md](AUTHORIZATION.de.md)               | RBAC-Berechtigungssystem                             | Autorisierung implementieren       |
 | [CREDENTIALS.md](../CREDENTIALS.md)                   | Standardbenutzer und Rollen für dev/test             | Tests mit vordefinierten Benutzern |
-| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.de.md) | Modul-Lizenzsystem mit HMAC-SHA256                   | Kommerzielle Module implementieren |
+| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.de.md) | Modul-Lizenzsystem mit HMAC-SHA256                   | Kommerzielle IModule implementieren |
 
 ---
 
@@ -150,7 +150,7 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 - [TESTING_GUIDE.md](TESTING_GUIDE.de.md) - Test-Strategie
 - [TESTING_INFRASTRUCTURE.md](TESTING_INFRASTRUCTURE.de.md) - Test-Setup
 - [VALIDATION.md](../VALIDATION.md) - Input-Validierung
-- [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md) - Event-Bus-Tests
+- [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md) - Event-IBus-Tests
 
 ### Infrastruktur
 

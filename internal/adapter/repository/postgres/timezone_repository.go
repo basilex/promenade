@@ -17,7 +17,7 @@ type timezoneRepository struct {
 }
 
 // NewTimezoneRepository creates a new timezone repository
-func NewTimezoneRepository(db *sqlx.DB) repository.TimezoneRepository {
+func NewTimezoneRepository(db *sqlx.DB) repository.ITimezoneRepository {
 	return &timezoneRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

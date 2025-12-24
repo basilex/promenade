@@ -1,4 +1,4 @@
-# Posts Module
+# Posts IModule
 
 User-generated content management system with posts, threaded comments, and likes.
 
@@ -515,7 +515,7 @@ make test-integration
 
 ```
 internal/modules/posts/
-├── module.go                          # Module registration & lifecycle
+├── module.go                          # IModule registration & lifecycle
 │
 ├── domain/
 │   └── entity/
@@ -652,12 +652,12 @@ Potential features (not yet implemented):
 
 ## 📚 Related Documentation
 
-- **[../README.md](../README.md)** - Module system overview
+- **[../README.md](../README.md)** - IModule system overview
 - **[../../README.md](../../README.md)** - Main project README
 - **[../../docs/SOFT_DELETE.md](../../docs/SOFT_DELETE.md)** - Soft delete pattern
-- **[../../docs/MODULE_DEVELOPMENT.md](../../docs/MODULE_DEVELOPMENT.md)** - Module development guide
+- **[../../docs/MODULE_DEVELOPMENT.md](../../docs/MODULE_DEVELOPMENT.md)** - IModule development guide
 - **[../../migrations/README.md](../../migrations/README.md)** - Migration system
 
 ---
 
-**Module Status**:  Production-ready |  120+ tests |  3 migrations |  RBAC-enabled
+**IModule Status**:  Production-ready |  120+ tests |  3 migrations |  RBAC-enabled

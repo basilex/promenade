@@ -13,7 +13,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-type UserPostUseCase interface {
+type IUserPostUseCase interface {
 	CreatePost(ctx context.Context, userID uuidv7.UUID, title, content, excerpt string, tags, categories []string) (*entity.UserPost, error)
 	GetPost(ctx context.Context, id uuidv7.UUID) (*entity.UserPost, error)
 	GetPostBySlug(ctx context.Context, userID uuidv7.UUID, slug string) (*entity.UserPost, error)
@@ -46,10 +46,10 @@ type UserPostUseCase interface {
 }
 
 type userPostUseCase struct {
-	postRepo repository.UserPostRepository
+	postRepo repository.IUserPostRepository
 }
 
-func NewUserPostUseCase(postRepo repository.UserPostRepository) UserPostUseCase {
+func NewUserPostUseCase(postRepo repository.IUserPostRepository) IUserPostUseCase {
 	return &userPostUseCase{
 		postRepo: postRepo,
 	}

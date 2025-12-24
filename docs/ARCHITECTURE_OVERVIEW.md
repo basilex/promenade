@@ -28,7 +28,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 | Component     | Purpose                          |
 | ------------- | -------------------------------- |
 | Database      | PostgreSQL connection management |
-| Event Bus     | Memory/Redis Pub/Sub adapters    |
+| Event IBus     | Memory/Redis Pub/Sub adapters    |
 | Scheduler     | Cron-based job scheduling        |
 | Config        | YAML configuration loader        |
 | Logger        | Structured logging with slog     |
@@ -97,9 +97,9 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-## Module System
+## IModule System
 
-### Module Registry & Manager
+### IModule Registry & Manager
 
 **Location:** `pkg/module/`
 
@@ -122,7 +122,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### Module: Posts
+### IModule: Posts
 
 **Location:** `internal/modules/posts/`
 
@@ -148,7 +148,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### Module: Profiles
+### IModule: Profiles
 
 **Location:** `internal/modules/profiles/`
 
@@ -173,7 +173,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### Module: Warehouse
+### IModule: Warehouse
 
 **Location:** `internal/modules/warehouse/`
 
@@ -190,9 +190,9 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-## Inter-Module Communication
+## Inter-IModule Communication
 
-### Event Bus
+### Event IBus
 
 **Location:** `pkg/bus/`
 
@@ -205,7 +205,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 **Event Flow:**
 
-1. Module A publishes event to EventBus
+1. IModule A publishes event to EventBus
 2. EventBus fans out to all subscribers
 3. Modules B, C, D process event asynchronously
 
@@ -229,7 +229,7 @@ config/
 └── modules.yaml     - Which modules to load
 ```
 
-### Module Configuration
+### IModule Configuration
 
 ```
 internal/modules/posts/config/
@@ -247,11 +247,11 @@ internal/modules/profiles/config/
 
 ---
 
-## Module Lifecycle
+## IModule Lifecycle
 
 ### 1. Auto-Registration (via init())
 
-Module registers itself on package import:
+IModule registers itself on package import:
 
 ```go
 package posts
@@ -404,7 +404,7 @@ For each module (reverse order):
 - Infrastructure (DB, EventBus, Scheduler, Config, Logger)
 - Security (Auth, RBAC, JWT, Sessions)
 - Reference Data (Countries, Currencies, Timezones, Languages)
-- Module Management (Registry, Lifecycle, Config Loader)
+- IModule Management (Registry, Lifecycle, Config Loader)
 - Purge Orchestration (Registry-based, no entity knowledge)
 
 ### Modules
@@ -434,5 +434,5 @@ For each module (reverse order):
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Architecture compliance audit
 - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference guide
 - [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Creating new modules
-- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Module independence principles
+- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - IModule independence principles
 - [../internal/CORE.md](../internal/CORE.md) - Core components details

@@ -24,7 +24,7 @@ internal/
         └── permission_test.go
 ```
 
-### Module Tests
+### IModule Tests
 
 ```
 internal/modules/
@@ -59,7 +59,7 @@ make test                    # Run all tests (core + modules)
 make test-core               # Run core domain tests
 ```
 
-### Module Tests
+### IModule Tests
 
 ```bash
 make test-modules            # Run all module tests
@@ -112,7 +112,7 @@ go test -v ./internal/domain/entity/
 
 ---
 
-### 2. **Posts Module Tests** (`internal/modules/posts/domain/entity/*_test.go`)
+### 2. **Posts IModule Tests** (`internal/modules/posts/domain/entity/*_test.go`)
 
 Test posts module entities:
 
@@ -135,7 +135,7 @@ go test -v ./internal/modules/posts/domain/entity/
 
 ---
 
-### 3. **Profiles Module Tests** (`internal/modules/profiles/entity/*_test.go`)
+### 3. **Profiles IModule Tests** (`internal/modules/profiles/entity/*_test.go`)
 
 Test profiles module entities:
 
@@ -217,7 +217,7 @@ func TestEntity_Method(t *testing.T) {
 
 ### Modules
 
-| Module   | Entity      | Tests       | Coverage                         |
+| IModule   | Entity      | Tests       | Coverage                         |
 | -------- | ----------- | ----------- | -------------------------------- |
 | Posts    | UserPost    | 2 functions | Status, creation                 |
 | Posts    | Comment     | 3 functions | Validation, threading, factory   |

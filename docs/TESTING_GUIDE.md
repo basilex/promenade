@@ -73,8 +73,8 @@ func TestUserRepository_Create(t *testing.T) {
 
 **Coverage:**
 
-- [+] UserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
-- [+] SessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
+- [+] IUserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
+- [+] ISessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
 
 ### 2. Unit Tests (Use Cases)
 
@@ -142,9 +142,9 @@ go test -v ./test/smoke -run TestUserPost_SmokeTest
 go test -short ./test/smoke  # Smoke tests are skipped
 ```
 
-**Coverage by Module:**
+**Coverage by IModule:**
 
-| Module           | Scenarios | Coverage                                                 |
+| IModule           | Scenarios | Coverage                                                 |
 | ---------------- | --------- | -------------------------------------------------------- |
 | Auth             | 8         | Register, login, sessions, refresh, logout               |
 | Country/Currency | 12        | Complete CRUD operations                                 |

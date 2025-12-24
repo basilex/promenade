@@ -30,7 +30,7 @@ Vollständige Referenz für das Authentifizierungssystem in Promenade. Behandelt
 | JWT Manager     | Generierung/Validierung von Access-Tokens    | HMAC-SHA256         |
 | Auth UseCase    | Geschäftslogik aller Auth-Operationen        | Go                  |
 | Auth Middleware | Anfrage-Authentifizierung                    | Gin Middleware      |
-| Event Bus       | Asynchrone Benachrichtigungen (E-Mail, Logs) | Memory/Redis        |
+| Event IBus       | Asynchrone Benachrichtigungen (E-Mail, Logs) | Memory/Redis        |
 
 **Hauptfunktionen:**
 
@@ -41,7 +41,7 @@ Vollständige Referenz für das Authentifizierungssystem in Promenade. Behandelt
 -  Passwort-Hashing mit bcrypt (Kosten 10)
 -  Refresh Token Hashing mit SHA-256
 -  Automatische Session-Bereinigung bei Statusänderungen
--  Asynchrone E-Mail-Benachrichtigungen über Event Bus
+-  Asynchrone E-Mail-Benachrichtigungen über Event IBus
 
 ---
 
@@ -171,7 +171,7 @@ func (u *User) CanLogin() bool {
 ### 1. Registrierungsablauf
 
 ```
-Client                  API                    UseCase                Datenbank         Event Bus
+Client                  API                    UseCase                Datenbank         Event IBus
   │                      │                        │                        │                 │
   │  POST /auth/register │                        │                        │                 │
   │─────────────────────>│                        │                        │                 │

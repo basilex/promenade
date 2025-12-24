@@ -83,7 +83,7 @@ type Manager interface {
     // MigrateNamespace wendet alle ausstehenden Migrationen für einen Namespace an
     MigrateNamespace(ctx context.Context, namespace string) error
 
-    // MigrateAll wendet alle ausstehenden Migrationen an (Core + aktivierte Module)
+    // MigrateAll wendet alle ausstehenden Migrationen an (Core + aktivierte IModule)
     MigrateAll(ctx context.Context, enabledModules []string) error
 
     // Rollback rollt N Migrationen für einen Namespace zurück
@@ -147,11 +147,11 @@ func (m *manager) MigrateAll(ctx context.Context, enabledModules []string) error
 
 ### 4. Modulintegration
 
-Module können optional Migrationen programmatisch bereitstellen:
+IModule können optional Migrationen programmatisch bereitstellen:
 
 ```go
 // pkg/module/module.go
-type Module interface {
+type IModule interface {
     // ... bestehende Methoden ...
 
     // RegisterMigrations gibt eingebettete Migrationen für dieses Modul zurück
@@ -199,10 +199,10 @@ func main() {
     // Migration Manager initialisieren
     migrationMgr := migration.NewManager(db, "migrations")
 
-    // Aktivierte Module aus Config abrufen
+    // Aktivierte IModule aus Config abrufen
     enabledModules := cfg.Modules.Enabled  // ["posts", "profiles"]
 
-    // Migrationen für Core + aktivierte Module ausführen
+    // Migrationen für Core + aktivierte IModule ausführen
     if err := migrationMgr.MigrateAll(ctx, enabledModules); err != nil {
         log.Fatal("Failed to run migrations", "error", err)
     }
@@ -222,7 +222,7 @@ make migrate-core
 # Spezifisches Modul migrieren
 make migrate-module MODULE=posts
 
-# Alles migrieren (Core + aktivierte Module)
+# Alles migrieren (Core + aktivierte IModule)
 make migrate-all
 
 # Modulmigrationen zurückrollen
@@ -312,7 +312,7 @@ migrations/
 **Modulunabhängigkeit**
 
 - Jedes Modul besitzt seine Migrationen
-- Module aktivieren/deaktivieren ohne Migrationskonflikte
+- IModule aktivieren/deaktivieren ohne Migrationskonflikte
 - Klare Eigentumsgrenzen
 
 **Versionskontrolle**
@@ -324,7 +324,7 @@ migrations/
 **Flexibles Deployment**
 
 - Deployment nur mit benötigten Modulen
-- Neue Module hinzufügen ohne bestehende Migrationen zu berühren
+- Neue IModule hinzufügen ohne bestehende Migrationen zu berühren
 - Modulmigrationen unabhängig zurückrollen
 
 **Entwicklererfahrung**
@@ -361,7 +361,7 @@ migrations/posts/
 # Entwicklung: Alles migrieren
 make migrate-all
 
-# Produktion: Core + spezifische Module migrieren
+# Produktion: Core + spezifische IModule migrieren
 MODULES=posts,profiles make migrate-all
 
 # Selektiv: Nur neues Modul migrieren
@@ -431,7 +431,7 @@ VALUES
 **Phase 4: Modulintegration (Woche 2)**
 
 1. `RegisterMigrations()` zum Modul-Interface hinzufügen
-2. Bestehende Module aktualisieren
+2. Bestehende IModule aktualisieren
 3. Dokumentation & Beispiele
 
 ---

@@ -16,7 +16,7 @@ type cityRepository struct {
 }
 
 // NewCityRepository creates a new city repository
-func NewCityRepository(db *sqlx.DB) repository.CityRepository {
+func NewCityRepository(db *sqlx.DB) repository.ICityRepository {
 	return &cityRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

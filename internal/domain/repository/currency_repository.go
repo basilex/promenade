@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CurrencyRepository defines the interface for currency data access
-type CurrencyRepository interface {
+// ICurrencyRepository defines the interface for currency data access
+type ICurrencyRepository interface {
 	// Create creates a new currency
 	Create(ctx context.Context, currency *entity.Currency) error
 

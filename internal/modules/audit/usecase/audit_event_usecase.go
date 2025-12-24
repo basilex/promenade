@@ -11,8 +11,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// AuditEventUseCase defines the interface for audit event business logic
-type AuditEventUseCase interface {
+// IAuditEventUseCase defines the interface for audit event business logic
+type IAuditEventUseCase interface {
 	CreateAuditEvent(ctx context.Context, data *entity.AuditEventCreate) (*entity.AuditEvent, error)
 	GetAuditEvent(ctx context.Context, id uuidv7.UUID) (*entity.AuditEvent, error)
 	ListAuditEvents(ctx context.Context, filters repository.AuditEventFilters, params pagination.Params) ([]*entity.AuditEvent, *pagination.Metadata, error)
@@ -24,12 +24,12 @@ type AuditEventUseCase interface {
 }
 
 type auditEventUseCase struct {
-	repo   repository.AuditEventRepository
+	repo   repository.IAuditEventRepository
 	secret string
 }
 
 // NewAuditEventUseCase creates a new audit event use case
-func NewAuditEventUseCase(repo repository.AuditEventRepository, secret string) AuditEventUseCase {
+func NewAuditEventUseCase(repo repository.IAuditEventRepository, secret string) IAuditEventUseCase {
 	return &auditEventUseCase{
 		repo:   repo,
 		secret: secret,

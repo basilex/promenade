@@ -15,7 +15,7 @@ import (
 )
 
 // TestCommentUseCase_CreateComment tests comment creation
-//  Module-independent: uses only module types and mocks
+//  IModule-independent: uses only module types and mocks
 func TestCommentUseCase_CreateComment(t *testing.T) {
 	ctx := context.Background()
 	postID := uuidv7.New()

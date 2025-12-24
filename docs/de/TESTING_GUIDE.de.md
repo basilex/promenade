@@ -75,8 +75,8 @@ func TestUserRepository_Create(t *testing.T) {
 
 **Abdeckung:**
 
-- [+] UserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
-- [+] SessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
+- [+] IUserRepository: Create, GetByID, GetByEmail, UpdateStatus, Suspend, Ban, Reactivate, VerifyEmail
+- [+] ISessionRepository: Create, GetByID, GetByRefreshToken, GetUserSessions, DeleteByUserID, DeleteExpired
 
 ### 2. Unit-Tests (Use Cases)
 
@@ -262,7 +262,7 @@ make test-coverage
 open coverage.html
 ```
 
-Ziel: **>80% Coverage** für kritische Module (usecase, repository).
+Ziel: **>80% Coverage** für kritische IModule (usecase, repository).
 
 ## Was kommt als Nächstes
 

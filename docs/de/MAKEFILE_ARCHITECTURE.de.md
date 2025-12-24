@@ -24,7 +24,7 @@ Gesamt:              274 Zeilen
 - Laden von Umgebungsvariablen (`.env.development`)
 - Gemeinsame Variablen (`APP_NAME`, `VERSION`, `DB_URL`, `MIGRATE`)
 - Modul-Includes (`include Makefile.*.mk`)
-- Gruppierter help-Befehl (zeigt alle Module)
+- Gruppierter help-Befehl (zeigt alle IModule)
 
 **Makefile.dev.mk** - Entwickler-Workflow:
 

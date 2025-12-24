@@ -14,10 +14,10 @@ import (
 )
 
 type AuthHandler struct {
-	authUseCase usecase.AuthUseCase
+	authUseCase usecase.IAuthUseCase
 }
 
-func NewAuthHandler(authUseCase usecase.AuthUseCase) *AuthHandler {
+func NewAuthHandler(authUseCase usecase.IAuthUseCase) *AuthHandler {
 	return &AuthHandler{
 		authUseCase: authUseCase,
 	}

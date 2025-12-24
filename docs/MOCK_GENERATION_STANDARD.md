@@ -41,7 +41,7 @@ This command:
 3. Generates mocks for ALL repositories in ALL modules
 4. Places mocks in standardized locations
 
-### Generate Module-Specific Mocks
+### Generate IModule-Specific Mocks
 
 ```bash
 make mocks-audit      # Audit module only
@@ -140,7 +140,7 @@ func TestSomeUseCase(t *testing.T) {
 }
 ```
 
-## Module Independence
+## IModule Independence
 
 Each module's mocks are **completely independent**:
 
@@ -171,7 +171,7 @@ Regenerate mocks whenever you:
 
 ## Naming Conventions
 
-- **Interface**: `AuditEventRepository`
+- **Interface**: `IAuditEventRepository`
 - **Mock**: `MockAuditEventRepository`
 - **File**: `audit_event_repository_mock.go`
 - **Package**: `mocks`

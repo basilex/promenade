@@ -7,7 +7,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Bus represents a message bus for publishing and subscribing to events.
+// IBus represents a message bus for publishing and subscribing to events.
 // It provides an abstraction over different message transport implementations
 // (Redis Pub/Sub, NATS, Kafka, in-memory, etc.).
 //
@@ -16,7 +16,7 @@ import (
 // - Fire-and-forget publishing (no acks required for basic use)
 // - Multiple subscribers per topic
 // - Graceful shutdown support
-type Bus interface {
+type IBus interface {
 	// Publish sends an event to the specified topic.
 	// Returns immediately after queuing the message.
 	Publish(ctx context.Context, topic string, event Event) error

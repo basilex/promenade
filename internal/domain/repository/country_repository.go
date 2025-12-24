@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CountryRepository defines the interface for country data access
-type CountryRepository interface {
+// ICountryRepository defines the interface for country data access
+type ICountryRepository interface {
 	// Create creates a new country
 	Create(ctx context.Context, country *entity.Country) error
 

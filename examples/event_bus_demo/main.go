@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	fmt.Println("* Event Bus Demo - Async Email Notifications")
+	fmt.Println("* Event IBus Demo - Async Email Notifications")
 	fmt.Println("================================================")
 
 	// Create memory bus with config
@@ -77,9 +77,9 @@ func main() {
 		}
 	}
 
-	// Bus stats
+	// IBus stats
 	stats := eventBus.Stats()
-	fmt.Printf("\nEvent Bus Stats:\n")
+	fmt.Printf("\nEvent IBus Stats:\n")
 	fmt.Printf("  Topics: %d\n", stats["total_topics"])
 	fmt.Printf("  Subscribers: %d\n", stats["total_subscribers"])
 	fmt.Printf("  Worker Pool Size: %d\n", stats["worker_pool_size"])

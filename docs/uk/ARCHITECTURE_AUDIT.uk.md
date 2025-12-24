@@ -104,7 +104,7 @@ pkg/module/
 
 ---
 
-### 5. Інфраструктура Event Bus
+### 5. Інфраструктура Event IBus
 
 ```
 pkg/bus/
@@ -601,16 +601,16 @@ type PurgeConfig struct {
 | **Timezones**       | Core         | Довідкові дані   | Правильно    |
 | **Languages**       | Core         | Довідкові дані   | Правильно    |
 | **Database**        | Core         | Інфраструктура   | Правильно    |
-| **Event Bus**       | Core         | Інфраструктура   | Правильно    |
+| **Event IBus**       | Core         | Інфраструктура   | Правильно    |
 | **Purge Scheduler** | Core         | Інфраструктура   | Правильно    |
-| **Module Registry** | Core         | Оркестрація      | Правильно    |
+| **IModule Registry** | Core         | Оркестрація      | Правильно    |
 |                     |              |                  |
-| **Posts**           | Module       | Бізнес-логіка    | Незалежний   |
-| **Comments**        | Module       | Бізнес-логіка    | Незалежний   |
-| **Likes**           | Module       | Бізнес-логіка    | Незалежний   |
-| **Profiles**        | Module       | Бізнес-логіка    | Незалежний   |
-| **Contacts**        | Module       | Бізнес-логіка    | Незалежний   |
-| **Warehouse**       | Module       | Бізнес-логіка    | Ліцензований |
+| **Posts**           | IModule       | Бізнес-логіка    | Незалежний   |
+| **Comments**        | IModule       | Бізнес-логіка    | Незалежний   |
+| **Likes**           | IModule       | Бізнес-логіка    | Незалежний   |
+| **Profiles**        | IModule       | Бізнес-логіка    | Незалежний   |
+| **Contacts**        | IModule       | Бізнес-логіка    | Незалежний   |
+| **Warehouse**       | IModule       | Бізнес-логіка    | Ліцензований |
 
 ---
 

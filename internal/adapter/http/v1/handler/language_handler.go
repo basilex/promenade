@@ -14,10 +14,10 @@ import (
 )
 
 type LanguageHandler struct {
-	languageUseCase usecase.LanguageUseCase
+	languageUseCase usecase.ILanguageUseCase
 }
 
-func NewLanguageHandler(languageUseCase usecase.LanguageUseCase) *LanguageHandler {
+func NewLanguageHandler(languageUseCase usecase.ILanguageUseCase) *LanguageHandler {
 	return &LanguageHandler{
 		languageUseCase: languageUseCase,
 	}

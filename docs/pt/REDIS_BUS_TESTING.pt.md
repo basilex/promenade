@@ -1,4 +1,4 @@
-# Guia de Testes do Redis Bus
+# Guia de Testes do Redis IBus
 
 [🇬🇧 English](../REDIS_BUS_TESTING.md) | [🇺🇦 Українська](../uk/REDIS_BUS_TESTING.uk.md) | [🇩🇪 Deutsch](../de/REDIS_BUS_TESTING.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](../es/REDIS_BUS_TESTING.es.md)
 
@@ -49,7 +49,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 **Resultado esperado:**
 
 ```
-[OK] Bus health check passed
+[OK] IBus health check passed
 [OK] Subscribed to topic
 [>>] Publishing test events count=5
 [OK] Published event num=1
@@ -57,7 +57,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 ...
 [RESULTS] Test Results published=5 received=5
 [SUCCESS] All messages received!
-[OK] Bus closed gracefully
+[OK] IBus closed gracefully
 ```
 
 ## Alternância de Adapters em Produção
@@ -97,7 +97,7 @@ Nos modos **test/development**, o sistema retornará um erro (fail fast).
 ctx := context.Background()
 err := eventBus.Health(ctx)
 if err != nil {
-    // Bus is unhealthy
+    // IBus is unhealthy
 }
 ```
 

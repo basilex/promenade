@@ -10,10 +10,10 @@ import (
 
 // AuthorizationMiddleware handles RBAC permission checks
 type AuthorizationMiddleware struct {
-	roleUseCase usecase.RoleUseCase
+	roleUseCase usecase.IRoleUseCase
 }
 
-func NewAuthorizationMiddleware(roleUseCase usecase.RoleUseCase) *AuthorizationMiddleware {
+func NewAuthorizationMiddleware(roleUseCase usecase.IRoleUseCase) *AuthorizationMiddleware {
 	return &AuthorizationMiddleware{
 		roleUseCase: roleUseCase,
 	}

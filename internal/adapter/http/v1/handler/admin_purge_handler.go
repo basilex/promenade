@@ -14,12 +14,12 @@ import (
 
 // AdminPurgeHandler handles admin purge operations
 type AdminPurgeHandler struct {
-	purgeUseCase usecase.PurgeUseCase
+	purgeUseCase usecase.IPurgeUseCase
 	scheduler    *scheduler.Scheduler
 }
 
 // NewAdminPurgeHandler creates a new admin purge handler
-func NewAdminPurgeHandler(purgeUseCase usecase.PurgeUseCase, scheduler *scheduler.Scheduler) *AdminPurgeHandler {
+func NewAdminPurgeHandler(purgeUseCase usecase.IPurgeUseCase, scheduler *scheduler.Scheduler) *AdminPurgeHandler {
 	return &AdminPurgeHandler{
 		purgeUseCase: purgeUseCase,
 		scheduler:    scheduler,

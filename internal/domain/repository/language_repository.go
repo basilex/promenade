@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// LanguageRepository defines the interface for language data operations
-type LanguageRepository interface {
+// ILanguageRepository defines the interface for language data operations
+type ILanguageRepository interface {
 	// Create creates a new language
 	Create(ctx context.Context, language *entity.Language) error
 

@@ -30,13 +30,13 @@ Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organis
 | Komponente    | Zweck                            |
 | ------------- | -------------------------------- |
 | Database      | PostgreSQL-Verbindungsverwaltung |
-| Event Bus     | Memory/Redis Pub/Sub-Adapter     |
+| Event IBus     | Memory/Redis Pub/Sub-Adapter     |
 | Scheduler     | Cron-basierte Aufgabenplanung    |
 | Config        | YAML-Konfigurationslader         |
 | Logger        | Strukturiertes Logging mit slog  |
 | Email Service | Asynchrones E-Mail-Versenden     |
 
-**Bietet:** Gemeinsame Dienste für alle Module (DB, EventBus, Config, JWT, Logger)
+**Bietet:** Gemeinsame Dienste für alle IModule (DB, EventBus, Config, JWT, Logger)
 
 ---
 
@@ -110,7 +110,7 @@ Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organis
 **Registry-Funktionen:**
 
 - `Register(module)` - Auto-Registrierung via `init()`
-- `GetEnabled(config)` - Aktivierte Module aus Config filtern
+- `GetEnabled(config)` - Aktivierte IModule aus Config filtern
 - `InitializeAll()` - Initialisierung in Abhängigkeitsreihenfolge
 - `StartAll()` - Hintergrund-Worker starten
 - `StopAll()` - Graceful Shutdown
@@ -194,7 +194,7 @@ Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organis
 
 ## Inter-Modul-Kommunikation
 
-### Event Bus
+### Event IBus
 
 **Ort:** `pkg/bus/`
 
@@ -209,7 +209,7 @@ Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organis
 
 1. Modul A veröffentlicht Event zum EventBus
 2. EventBus verteilt an alle Abonnenten
-3. Module B, C, D verarbeiten Event asynchron
+3. IModule B, C, D verarbeiten Event asynchron
 
 **Beispiele:**
 
@@ -228,7 +228,7 @@ config/
 ├── app.dev.yaml     - Core-Infrastruktur (dev)
 ├── app.test.yaml    - Core-Infrastruktur (test)
 ├── app.prod.yaml    - Core-Infrastruktur (prod)
-└── modules.yaml     - Welche Module zu laden sind
+└── modules.yaml     - Welche IModule zu laden sind
 ```
 
 ### Modul-Konfiguration
@@ -266,7 +266,7 @@ func init() {
 ### 2. Erkennung & Filterung
 
 - `config/modules.yaml` lesen
-- Aktivierte Module filtern
+- Aktivierte IModule filtern
 - Abhängigkeiten auflösen (topologische Sortierung)
 
 ### 3. Initialisierung (in Abhängigkeitsreihenfolge)
@@ -304,7 +304,7 @@ Für jedes Modul:
 
 ### 7. Laufzeit
 
-- Module verarbeiten HTTP-Requests
+- IModule verarbeiten HTTP-Requests
 - Veröffentlichen/Abonnieren von Events
 - Geplante Aufgaben ausführen
 
@@ -329,12 +329,12 @@ Für jedes Modul (umgekehrte Reihenfolge):
 
 ### 2. MODULE = GESCHÄFTSLOGIK
 
-- Module sind selbstständige vertikale Slices
-- Module besitzen ihre Entities, Use Cases, Adapter
-- Module registrieren Handler, Policies, Berechtigungen
-- Module können via Config aktiviert/deaktiviert werden
-- Module importieren NICHT aus `internal/domain` oder `internal/usecase`
-- Module hängen NICHT direkt voneinander ab (verwenden Events)
+- IModule sind selbstständige vertikale Slices
+- IModule besitzen ihre Entities, Use Cases, Adapter
+- IModule registrieren Handler, Policies, Berechtigungen
+- IModule können via Config aktiviert/deaktiviert werden
+- IModule importieren NICHT aus `internal/domain` oder `internal/usecase`
+- IModule hängen NICHT direkt voneinander ab (verwenden Events)
 
 ### 3. PLUGIN-ARCHITEKTUR
 
@@ -346,7 +346,7 @@ Für jedes Modul (umgekehrte Reihenfolge):
 ### 4. KONFIGURATIONSAUTONOMIE
 
 - Core: `config/app.*.yaml` (nur Infrastruktur)
-- Module: `internal/modules/{name}/config/config.*.yaml`
+- IModule: `internal/modules/{name}/config/config.*.yaml`
 - Jedes Modul lädt seine eigene Config
 - Umgebungsspezifische Configs (dev, test, prod)
 
@@ -369,19 +369,19 @@ Für jedes Modul (umgekehrte Reihenfolge):
 
 ### Modularität
 
-- Neue Module hinzufügen ohne Core zu berühren
-- Module entfernen ohne andere zu brechen
-- Module unabhängig testen
+- Neue IModule hinzufügen ohne Core zu berühren
+- IModule entfernen ohne andere zu brechen
+- IModule unabhängig testen
 
 ### Skalierbarkeit
 
-- Kommerzielle Module (warehouse, fleet, finance)
+- Kommerzielle IModule (warehouse, fleet, finance)
 - Lizenzbasierte Feature-Aktivierung
 - Einfaches Hinzufügen neuer Vertikalen
 
 ### Wartbarkeit
 
-- Klare Grenzen (Core vs Module)
+- Klare Grenzen (Core vs IModule)
 - Single Responsibility (jedes Modul besitzt seine Domain)
 - Konfigurationsklarheit (keine monolithische Config)
 
@@ -393,8 +393,8 @@ Für jedes Modul (umgekehrte Reihenfolge):
 
 ### Deployability
 
-- Nur benötigte Module pro Deployment aktivieren
-- A/B-Testing neuer Module
+- Nur benötigte IModule pro Deployment aktivieren
+- A/B-Testing neuer IModule
 - Schrittweiser Feature-Rollout
 
 ---
@@ -409,7 +409,7 @@ Für jedes Modul (umgekehrte Reihenfolge):
 - Modulverwaltung (Registry, Lifecycle, Config Loader)
 - Purge-Orchestrierung (Registry-basiert, keine Entity-Kenntnisse)
 
-### Module
+### IModule
 
 - **Posts** (posts + comments + likes) - Vollständig unabhängig
 - **Profiles** (profiles + contacts) - Vollständig unabhängig
@@ -418,13 +418,13 @@ Für jedes Modul (umgekehrte Reihenfolge):
 ### Architektur-Compliance
 
 - Core enthält NUR Infrastruktur + Referenzdaten
-- Module sind VOLLSTÄNDIG unabhängig (keine Core-Imports)
+- IModule sind VOLLSTÄNDIG unabhängig (keine Core-Imports)
 - Konfiguration ist AUTONOM (jedes Modul besitzt Config)
-- Lizenzierung wird UNTERSTÜTZT (bereit für kommerzielle Module)
+- Lizenzierung wird UNTERSTÜTZT (bereit für kommerzielle IModule)
 
 ### Aktuelle Verbesserungen
 
-- Purge-System refactored (Core = Orchestrator, Module = Worker)
+- Purge-System refactored (Core = Orchestrator, IModule = Worker)
 - Profiles/Contacts zu Modul migriert (aus Core entfernt)
 - 15.000+ Codezeilen aus Core entfernt
 - Vollständige Modulunabhängigkeit erreicht
@@ -435,6 +435,6 @@ Für jedes Modul (umgekehrte Reihenfolge):
 
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Architektur-Compliance-Audit
 - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Schnellreferenz
-- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Neue Module erstellen
+- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Neue IModule erstellen
 - [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Modulunabhängigkeitsprinzipien
 - [../internal/CORE.md](../internal/CORE.md) - Core-Komponenten-Details

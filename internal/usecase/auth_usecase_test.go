@@ -16,7 +16,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Mock UserRepository
+// Mock IUserRepository
 type mockUserRepository struct {
 	mock.Mock
 }
@@ -100,7 +100,7 @@ func (m *mockUserRepository) Deactivate(ctx context.Context, id uuidv7.UUID) err
 	return args.Error(0)
 }
 
-// Mock SessionRepository
+// Mock ISessionRepository
 type mockSessionRepository struct {
 	mock.Mock
 }

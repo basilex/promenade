@@ -24,19 +24,19 @@ const (
 	Version    = "1.0.0"
 )
 
-// Module represents the audit module
-type Module struct {
+// IModule represents the audit module
+type IModule struct {
 	config     *Config
 	db         *sqlx.DB
 	handler    *handler.AuditEventHandler
-	useCase    usecase.AuditEventUseCase
+	useCase    usecase.IAuditEventUseCase
 	license    *license.License
 	licenseKey string
 }
 
 // Config holds audit module configuration
 type Config struct {
-	Module struct {
+	IModule struct {
 		Enabled         bool `yaml:"enabled"`
 		LicenseRequired bool `yaml:"license_required"`
 	} `yaml:"module"`
@@ -62,12 +62,12 @@ type Config struct {
 }
 
 // New creates a new audit module instance
-func New() module.Module {
-	return &Module{}
+func New() module.IModule {
+	return &IModule{}
 }
 
 // Metadata returns module information
-func (m *Module) Metadata() module.Metadata {
+func (m *IModule) Metadata() module.Metadata {
 	return module.Metadata{
 		Name:        ModuleName,
 		DisplayName: "Audit Logging",
@@ -80,34 +80,34 @@ func (m *Module) Metadata() module.Metadata {
 }
 
 // Name returns module name
-func (m *Module) Name() string {
+func (m *IModule) Name() string {
 	return ModuleName
 }
 
 // Version returns module version
-func (m *Module) Version() string {
+func (m *IModule) Version() string {
 	return Version
 }
 
 // Dependencies returns module dependencies
-func (m *Module) Dependencies() []string {
+func (m *IModule) Dependencies() []string {
 	return []string{} // No dependencies
 }
 
 // Initialize initializes the audit module
-func (m *Module) Initialize(ctx context.Context, core *module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core *module.Core) error {
 	m.db = core.DB
 
 	if err := m.loadConfig(); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	if !m.config.Module.Enabled {
+	if !m.config.IModule.Enabled {
 		slog.Info("Audit module is disabled")
 		return nil
 	}
 
-	if m.config.Module.LicenseRequired {
+	if m.config.IModule.LicenseRequired {
 		if err := m.validateLicense(); err != nil {
 			return fmt.Errorf("license validation failed: %w", err)
 		}
@@ -143,25 +143,25 @@ func (m *Module) Initialize(ctx context.Context, core *module.Core) error {
 }
 
 // RegisterRoutes registers HTTP routes
-func (m *Module) RegisterRoutes(router *gin.RouterGroup) {
-	if !m.config.Module.Enabled {
+func (m *IModule) RegisterRoutes(router *gin.RouterGroup) {
+	if !m.config.IModule.Enabled {
 		return
 	}
 	m.registerRoutes(router)
 }
 
 // RegisterMigrations returns database migrations
-func (m *Module) RegisterMigrations() []module.Migration {
+func (m *IModule) RegisterMigrations() []module.Migration {
 	return []module.Migration{}
 }
 
 // RegisterEventHandlers subscribes to domain events
-func (m *Module) RegisterEventHandlers(eventBus bus.Bus) error {
+func (m *IModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	return nil // No event subscriptions needed
 }
 
 // RegisterPermissions returns RBAC permissions
-func (m *Module) RegisterPermissions() []module.Permission {
+func (m *IModule) RegisterPermissions() []module.Permission {
 	return []module.Permission{
 		{Resource: "audit", Action: "read", Description: "View audit logs"},
 		{Resource: "audit", Action: "create", Description: "Create audit entries"},
@@ -170,22 +170,22 @@ func (m *Module) RegisterPermissions() []module.Permission {
 }
 
 // Start starts the audit module
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
 	return nil
 }
 
 // Stop stops the audit module
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
 	return nil
 }
 
 // HealthCheck performs module health check
-func (m *Module) HealthCheck(ctx context.Context) error {
-	if !m.config.Module.Enabled {
+func (m *IModule) HealthCheck(ctx context.Context) error {
+	if !m.config.IModule.Enabled {
 		return nil
 	}
 
-	if m.config.Module.LicenseRequired && m.license != nil {
+	if m.config.IModule.LicenseRequired && m.license != nil {
 		if m.license.IsExpired() {
 			daysExpired := -m.license.DaysUntilExpiry()
 			if daysExpired > m.config.License.GracePeriodDays {
@@ -202,7 +202,7 @@ func (m *Module) HealthCheck(ctx context.Context) error {
 }
 
 // loadConfig loads module configuration
-func (m *Module) loadConfig() error {
+func (m *IModule) loadConfig() error {
 	env := os.Getenv("ENVIRONMENT")
 	if env == "" {
 		env = "development"
@@ -237,7 +237,7 @@ func (m *Module) loadConfig() error {
 }
 
 // validateLicense validates module license
-func (m *Module) validateLicense() error {
+func (m *IModule) validateLicense() error {
 	if m.licenseKey == "" {
 		return fmt.Errorf("license key not provided (set AUDIT_LICENSE_KEY environment variable)")
 	}
@@ -261,7 +261,7 @@ func (m *Module) validateLicense() error {
 }
 
 // registerRoutes registers HTTP routes
-func (m *Module) registerRoutes(router *gin.RouterGroup) {
+func (m *IModule) registerRoutes(router *gin.RouterGroup) {
 	auditGroup := router.Group("/audit")
 	{
 		auditGroup.POST("/events", m.handler.CreateAuditEvent)

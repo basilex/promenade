@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// UserProfileRepository defines the interface for user profile data access
-type UserProfileRepository interface {
+// IUserProfileRepository defines the interface for user profile data access
+type IUserProfileRepository interface {
 	// Create creates a new user profile
 	Create(ctx context.Context, profile *entity.UserProfile) error
 

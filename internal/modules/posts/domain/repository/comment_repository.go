@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CommentRepository defines the interface for comment data operations
-type CommentRepository interface {
+// ICommentRepository defines the interface for comment data operations
+type ICommentRepository interface {
 	// Create creates a new comment
 	Create(ctx context.Context, comment *entity.Comment) error
 

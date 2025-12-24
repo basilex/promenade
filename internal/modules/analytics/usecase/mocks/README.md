@@ -1,4 +1,4 @@
-# Analytics Module Mocks
+# Analytics IModule Mocks
 
 This directory contains auto-generated mocks for the analytics module's repository interfaces.
 
@@ -47,11 +47,11 @@ func TestMetricUseCase_RecordMetric(t *testing.T) {
 
 Run `make mocks-analytics` after:
 
-- Adding new methods to `MetricRepository`
+- Adding new methods to `IMetricRepository`
 - Changing method signatures
 - Modifying return types
 
-## Commercial Module
+## Commercial IModule
 
 Analytics is a commercial module requiring a valid license. See [internal/modules/analytics/README.md](../../README.md) for details.
 

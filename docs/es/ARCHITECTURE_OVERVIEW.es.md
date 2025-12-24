@@ -30,7 +30,7 @@ Este documento proporciona una visión general de alto nivel de la arquitectura 
 | Componente    | Propósito                             |
 | ------------- | ------------------------------------- |
 | Database      | Gestión de conexión PostgreSQL        |
-| Event Bus     | Adaptadores Memory/Redis Pub/Sub      |
+| Event IBus     | Adaptadores Memory/Redis Pub/Sub      |
 | Scheduler     | Programación de tareas basada en cron |
 | Config        | Cargador de configuración YAML        |
 | Logger        | Logging estructurado con slog         |
@@ -194,7 +194,7 @@ Este documento proporciona una visión general de alto nivel de la arquitectura 
 
 ## Comunicación Inter-Módulos
 
-### Event Bus
+### Event IBus
 
 **Ubicación:** `pkg/bus/`
 

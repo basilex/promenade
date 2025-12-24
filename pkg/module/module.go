@@ -12,10 +12,10 @@ import (
 	jwtpkg "github.com/basilex/promenade/pkg/jwt"
 )
 
-// Module defines the interface that all Promenade modules must implement.
+// IModule defines the interface that all Promenade modules must implement.
 // This enables a plugin architecture where business logic can be packaged
 // as independent, reusable modules.
-type Module interface {
+type IModule interface {
 	// Metadata returns module information
 	Metadata() Metadata
 
@@ -36,7 +36,7 @@ type Module interface {
 
 	// RegisterEventHandlers subscribes to domain events
 	// This enables async communication between modules
-	RegisterEventHandlers(bus bus.Bus) error
+	RegisterEventHandlers(bus bus.IBus) error
 
 	// RegisterPermissions returns RBAC permissions for this module
 	// These are automatically inserted into the database
@@ -58,7 +58,7 @@ type Metadata struct {
 	Name        string   // Unique module identifier (e.g., "warehouse")
 	DisplayName string   // Human-readable name (e.g., "Warehouse Management")
 	Version     string   // Semantic version (e.g., "1.2.0")
-	Author      string   // Module author/vendor
+	Author      string   // IModule author/vendor
 	Description string   // Short description
 	License     string   // License type (e.g., "MIT", "Commercial")
 	Tags        []string // Categories (e.g., ["inventory", "logistics"])
@@ -70,7 +70,7 @@ type Core struct {
 	DB *sqlx.DB
 
 	// Event bus for async communication
-	EventBus bus.Bus
+	EventBus bus.IBus
 
 	// JWT manager for authentication
 	JWT *jwtpkg.JWTManager
@@ -81,7 +81,7 @@ type Core struct {
 	// Structured logger
 	Logger *slog.Logger
 
-	// Module registry (for inter-module communication)
+	// IModule registry (for inter-module communication)
 	Registry *Registry
 }
 
@@ -132,7 +132,7 @@ func (m *BaseModule) RegisterMigrations() []Migration {
 	return []Migration{} // No migrations by default
 }
 
-func (m *BaseModule) RegisterEventHandlers(bus bus.Bus) error {
+func (m *BaseModule) RegisterEventHandlers(bus bus.IBus) error {
 	return nil // No event handlers by default
 }
 

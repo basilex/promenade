@@ -14,10 +14,10 @@ import (
 )
 
 type TimezoneHandler struct {
-	timezoneUseCase usecase.TimezoneUseCase
+	timezoneUseCase usecase.ITimezoneUseCase
 }
 
-func NewTimezoneHandler(timezoneUseCase usecase.TimezoneUseCase) *TimezoneHandler {
+func NewTimezoneHandler(timezoneUseCase usecase.ITimezoneUseCase) *TimezoneHandler {
 	return &TimezoneHandler{
 		timezoneUseCase: timezoneUseCase,
 	}

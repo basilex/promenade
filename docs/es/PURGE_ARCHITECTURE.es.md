@@ -119,7 +119,7 @@ func (m *PostsModule) Initialize(core *Core) error {
 ### 2. Inicialización del Núcleo
 
 ```go
-func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.Bus) {
+func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.IBus) {
     // Obtener todos los manejadores registrados
     handlerRegistry := purge.DefaultRegistry
 

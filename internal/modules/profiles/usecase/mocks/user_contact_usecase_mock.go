@@ -11,14 +11,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockUserContactUseCase is a mock implementation of UserContactUseCase
-//  Module-independent: imports only module types, no core dependencies
+// MockUserContactUseCase is a mock implementation of IUserContactUseCase
+//  IModule-independent: imports only module types, no core dependencies
 type MockUserContactUseCase struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockUserContactUseCase implements UserContactUseCase interface
-var _ usecase.UserContactUseCase = (*MockUserContactUseCase)(nil)
+// Compile-time check to ensure MockUserContactUseCase implements IUserContactUseCase interface
+var _ usecase.IUserContactUseCase = (*MockUserContactUseCase)(nil)
 
 func (m *MockUserContactUseCase) CreateContact(ctx context.Context, userID uuidv7.UUID, contactType entity.ContactType, contactValue string, label *string, isPublic bool, availableFrom, availableTo *time.Time, availableDays []string, timezone *string, notes *string) (*entity.UserContact, error) {
 	args := m.Called(ctx, userID, contactType, contactValue, label, isPublic, availableFrom, availableTo, availableDays, timezone, notes)

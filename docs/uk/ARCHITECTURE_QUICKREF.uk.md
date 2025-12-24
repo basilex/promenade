@@ -21,7 +21,7 @@
 1. **Інфраструктурні Сервіси**
 
    - Управління з'єднанням з БД
-   - Event Bus (Memory/Redis адаптери)
+   - Event IBus (Memory/Redis адаптери)
    - Планувальник (cron завдання)
    - Завантажувач конфігурації
    - Логер
@@ -118,11 +118,11 @@ type MyModule struct {
     // ... інші поля
 }
 
-func New() module.Module {
+func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My Module",
+            DisplayName: "My IModule",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),

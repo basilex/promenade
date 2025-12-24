@@ -10,14 +10,14 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// MockUserProfileRepository is a mock implementation of UserProfileRepository
-//  Module-independent: imports only module types, no core dependencies
+// MockUserProfileRepository is a mock implementation of IUserProfileRepository
+//  IModule-independent: imports only module types, no core dependencies
 type MockUserProfileRepository struct {
 	mock.Mock
 }
 
-// Compile-time check to ensure MockUserProfileRepository implements UserProfileRepository interface
-var _ repository.UserProfileRepository = (*MockUserProfileRepository)(nil)
+// Compile-time check to ensure MockUserProfileRepository implements IUserProfileRepository interface
+var _ repository.IUserProfileRepository = (*MockUserProfileRepository)(nil)
 
 func (m *MockUserProfileRepository) Create(ctx context.Context, profile *entity.UserProfile) error {
 	args := m.Called(ctx, profile)

@@ -157,7 +157,7 @@ touch docs/uk/ARCHITECTURE_QUICKREF.uk.md
 
 | English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
-| Module             | Модуль                   | Modul              | Módulo            | Módulo              |
+| IModule             | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
 | Use Case           | Use Case / Бізнес-логіка | Anwendungsfall     | Caso de Uso       | Caso de Uso         |
 | Handler            | Хендлер                  | Handler            | Manipulador       | Manejador           |

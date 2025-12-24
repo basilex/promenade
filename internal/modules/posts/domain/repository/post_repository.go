@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// UserPostRepository defines the interface for user post persistence
-type UserPostRepository interface {
+// IUserPostRepository defines the interface for user post persistence
+type IUserPostRepository interface {
 	// Create creates a new post
 	Create(ctx context.Context, post *entity.UserPost) error
 

@@ -16,11 +16,11 @@ import (
 )
 
 type MetricsHandler struct {
-	analyticsUC usecase.AnalyticsUseCase
+	analyticsUC usecase.IAnalyticsUseCase
 	logger      *slog.Logger
 }
 
-func NewMetricsHandler(analyticsUC usecase.AnalyticsUseCase, logger *slog.Logger) *MetricsHandler {
+func NewMetricsHandler(analyticsUC usecase.IAnalyticsUseCase, logger *slog.Logger) *MetricsHandler {
 	return &MetricsHandler{
 		analyticsUC: analyticsUC,
 		logger:      logger,
@@ -35,7 +35,7 @@ func (h *MetricsHandler) CollectMetric(c *gin.Context) {
 	}
 
 	input := &usecase.CollectMetricInput{
-		Module:   req.Module,
+		IModule:   req.IModule,
 		Scope:    entity.MetricScope(req.Scope),
 		ScopeID:  req.ScopeID,
 		Name:     req.Name,

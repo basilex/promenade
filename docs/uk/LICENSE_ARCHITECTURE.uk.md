@@ -45,7 +45,7 @@ PROMENADE-ANALYTICS-PRO-20261231-K8mF3pL9qT2xN7vR4zW6yH1jC5eS8bD0aG3hM6nP9
 1. **Запуск Додатку**
    - Реєстр Модулів (`pkg/module`) ініціалізується
 2. **Для Кожного Увімкненого Модуля**
-   - Викликається `Module.Initialize()`
+   - Викликається `IModule.Initialize()`
 3. **Валідатор Ліцензій** (`module/license/`)
    - `Parse()` - Вилучення компонентів ліцензії
    - `Validate()` - Перевірка підпису та терміну
@@ -588,7 +588,7 @@ go run ./cmd/license-generator/main.go \
 
 # Вивід:
 # License valid
-# Module: ANALYTICS
+# IModule: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
 # Days remaining: 365

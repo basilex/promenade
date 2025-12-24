@@ -15,11 +15,11 @@ import (
 
 // AuditEventHandler handles audit event HTTP requests
 type AuditEventHandler struct {
-	useCase usecase.AuditEventUseCase
+	useCase usecase.IAuditEventUseCase
 }
 
 // NewAuditEventHandler creates a new audit event handler
-func NewAuditEventHandler(useCase usecase.AuditEventUseCase) *AuditEventHandler {
+func NewAuditEventHandler(useCase usecase.IAuditEventUseCase) *AuditEventHandler {
 	return &AuditEventHandler{
 		useCase: useCase,
 	}

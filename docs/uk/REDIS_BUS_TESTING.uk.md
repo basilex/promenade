@@ -1,4 +1,4 @@
-# Посібник з тестування Redis Bus
+# Посібник з тестування Redis IBus
 
 [🇬🇧 English](../REDIS_BUS_TESTING.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](REDIS_BUS_TESTING.de.md) | [🇵🇹 Português](REDIS_BUS_TESTING.pt.md) | [🇪🇸 Español](REDIS_BUS_TESTING.es.md)
 
@@ -49,7 +49,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 **Очікуваний результат:**
 
 ```
-[OK] Bus health check passed
+[OK] IBus health check passed
 [OK] Subscribed to topic
 [>>] Publishing test events count=5
 [OK] Published event num=1
@@ -57,7 +57,7 @@ BUS_ADAPTER=redis REDIS_HOST=localhost REDIS_PORT=6379 \
 ...
 [RESULTS] Test Results published=5 received=5
 [SUCCESS] All messages received!
-[OK] Bus closed gracefully
+[OK] IBus closed gracefully
 ```
 
 ## Перемикання адаптерів у продакшені
@@ -97,7 +97,7 @@ level=WARN msg="Failed to initialize Redis event bus, falling back to in-memory 
 ctx := context.Background()
 err := eventBus.Health(ctx)
 if err != nil {
-    // Bus is unhealthy
+    // IBus is unhealthy
 }
 ```
 

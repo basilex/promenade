@@ -34,7 +34,7 @@ var (
 	ErrEmailNotVerified   = errors.New("email not verified")
 )
 
-type AuthUseCase interface {
+type IAuthUseCase interface {
 	Register(ctx context.Context, email, name, password string) (*entity.User, error)
 	Login(ctx context.Context, email, password, userAgent, ipAddress string) (accessToken, refreshToken string, user *entity.User, err error)
 	Logout(ctx context.Context, refreshToken string) error
@@ -49,19 +49,19 @@ type AuthUseCase interface {
 }
 
 type authUseCase struct {
-	userRepo    repository.UserRepository
-	sessionRepo repository.SessionRepository
+	userRepo    repository.IUserRepository
+	sessionRepo repository.ISessionRepository
 	jwtManager  *jwtpkg.JWTManager
-	eventBus    bus.Bus
+	eventBus    bus.IBus
 	logger      *slog.Logger
 }
 
 func NewAuthUseCase(
-	userRepo repository.UserRepository,
-	sessionRepo repository.SessionRepository,
+	userRepo repository.IUserRepository,
+	sessionRepo repository.ISessionRepository,
 	jwtManager *jwtpkg.JWTManager,
-	eventBus bus.Bus,
-) AuthUseCase {
+	eventBus bus.IBus,
+) IAuthUseCase {
 	return &authUseCase{
 		userRepo:    userRepo,
 		sessionRepo: sessionRepo,

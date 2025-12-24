@@ -9,7 +9,7 @@ import (
 
 // InitAdminModule initializes the admin module with all dependencies
 func InitAdminModule(
-	purgeUseCase usecase.PurgeUseCase,
+	purgeUseCase usecase.IPurgeUseCase,
 	scheduler *scheduler.Scheduler,
 	authMiddleware *middleware.AuthMiddleware,
 	authzMiddleware *middleware.AuthorizationMiddleware,

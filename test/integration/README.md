@@ -56,16 +56,16 @@ make test-integration-core
 
 Tests:
 
-- `UserRepository` - User CRUD, GetByEmail, ExistsByEmail
-- `RoleRepository` - Role management, GetUserRoles
-- `PermissionRepository` - Permissions, GetRolePermissions
-- `SessionRepository` - Sessions, GetByRefreshToken, CountUserSessions
-- `CountryRepository` - Countries, ListByRegion
-- `CurrencyRepository` - Currencies
-- `LanguageRepository` - Languages, ListActive
-- `TimezoneRepository` - Timezones
+- `IUserRepository` - User CRUD, GetByEmail, ExistsByEmail
+- `IRoleRepository` - Role management, GetUserRoles
+- `IPermissionRepository` - Permissions, GetRolePermissions
+- `ISessionRepository` - Sessions, GetByRefreshToken, CountUserSessions
+- `ICountryRepository` - Countries, ListByRegion
+- `ICurrencyRepository` - Currencies
+- `ILanguageRepository` - Languages, ListActive
+- `ITimezoneRepository` - Timezones
 
-### Module Repository Tests
+### IModule Repository Tests
 
 ```bash
 # Posts module
@@ -78,20 +78,20 @@ make test-integration-profiles
 make test-integration-analytics
 ```
 
-**Posts Module Tests:**
+**Posts IModule Tests:**
 
 - `PostRepository` - Post CRUD, ListByUserID, ListByStatus, soft delete
-- `CommentRepository` - Comment CRUD, ListByPostID, nested comments
+- `ICommentRepository` - Comment CRUD, ListByPostID, nested comments
 - `LikeRepository` - Like/Unlike, CountByPostID
 
-**Profiles Module Tests:**
+**Profiles IModule Tests:**
 
-- `UserProfileRepository` - Profile CRUD, GetByUserID, IncrementProfileViews
-- `UserContactRepository` - Contact CRUD, GetByUserID
+- `IUserProfileRepository` - Profile CRUD, GetByUserID, IncrementProfileViews
+- `IUserContactRepository` - Contact CRUD, GetByUserID
 
-**Analytics Module Tests:**
+**Analytics IModule Tests:**
 
-- `MetricRepository` - Store metrics, Query, Aggregate, DeleteOlderThan
+- `IMetricRepository` - Store metrics, Query, Aggregate, DeleteOlderThan
 
 ### Check Database Status
 
@@ -211,31 +211,31 @@ internal/
 
 ### Core Repositories
 
-- [x] **UserRepository** - 7 tests
+- [x] **IUserRepository** - 7 tests
   - Create, GetByID, GetByEmail, Update, Delete, ExistsByEmail, List
-- [x] **RoleRepository** - 5 tests
+- [x] **IRoleRepository** - 5 tests
   - GetByID, GetByName, List, ExistsByName, GetUserRoles
-- [x] **PermissionRepository** - 5 tests
+- [x] **IPermissionRepository** - 5 tests
   - GetByID, GetByResourceAction, List, FindByResource, GetRolePermissions
-- [x] **SessionRepository** - 5 tests
+- [x] **ISessionRepository** - 5 tests
   - GetByID, GetByRefreshToken, GetUserSessions, CountUserSessions, Delete
 
 ### Reference Data Repositories
 
-- [x] **CountryRepository** - 5 tests
+- [x] **ICountryRepository** - 5 tests
   - GetByID, GetByCode, List, ListByRegion, ExistsByCode
-- [x] **CurrencyRepository** - 4 tests
+- [x] **ICurrencyRepository** - 4 tests
   - GetByID, GetByCode, List, ExistsByCode
-- [x] **LanguageRepository** - 5 tests
+- [x] **ILanguageRepository** - 5 tests
   - GetByID, GetByCode, List, ListActive, ExistsByCode
-- [x] **TimezoneRepository** - 5 tests
+- [x] **ITimezoneRepository** - 5 tests
   - GetByID, GetByName, List, ListActive, ExistsByName
 
-### Module Repositories
+### IModule Repositories
 
 - [x] **PostRepository** (posts module) - 7 tests
   - Create, GetByID, Update, Delete (soft), ListByUserID, ListByStatus, CountByUserID
-- [x] **CommentRepository** (posts module) - 7 tests
+- [x] **ICommentRepository** (posts module) - 7 tests
   - Create, GetByID, Create reply, ListByPostID, ListByUserID, CountByPostID, Delete (soft)
 - [x] **LikeRepository** (posts module) - 4 tests
   - Create, GetByID, UserHasLikedPost, CountByPostID, Delete

@@ -119,7 +119,7 @@ func (m *PostsModule) Initialize(core *Core) error {
 ### 2. Ініціалізація Ядра
 
 ```go
-func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.Bus) {
+func InitPurgeModule(purgeConfig config.PurgeConfig, eventBus bus.IBus) {
     // Отримати всі зареєстровані обробники
     handlerRegistry := purge.DefaultRegistry
 

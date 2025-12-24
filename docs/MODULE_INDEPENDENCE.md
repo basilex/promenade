@@ -1,6 +1,6 @@
-# Module Independence Verification
+# IModule Independence Verification
 
-## Posts Module Structure
+## Posts IModule Structure
 
 The `posts` module demonstrates complete independence from the core system, implementing its own full Clean Architecture stack:
 
@@ -13,8 +13,8 @@ internal/modules/posts/
 ├── adapter/
 │   ├── http/           # HTTP handlers & DTOs
 │   └── repository/     # Database implementation
-├── tests/              # Module-specific tests
-├── module.go           # Module integration
+├── tests/              # IModule-specific tests
+├── module.go           # IModule integration
 └── register.go         # Auto-registration
 ```
 
@@ -48,7 +48,7 @@ Each layer implemented within module:
 | **HTTP Handler**      | `adapter/http/handler/`                | Use case, DTO, pkg/response |
 | **DTOs**              | `adapter/http/dto/`                    | Domain entity               |
 
-### Module Isolation Benefits
+### IModule Isolation Benefits
 
 1. **Independent Development**: Can be developed/tested in isolation
 2. **Reusability**: Can be copied to another project with pkg/
@@ -78,7 +78,7 @@ To create a new independent module:
 2. Copy implementation from core or write from scratch
 3. Update all imports to point to module paths
 4. Define module-specific errors in `domain/entity/errors.go`
-5. Implement `module.Module` interface in `module.go`
+5. Implement `module.IModule` interface in `module.go`
 6. Auto-register in `register.go` using `init()`
 
 ## Verification Command
@@ -86,7 +86,7 @@ To create a new independent module:
 ```bash
 # Check for any core internal dependencies
 grep -r "github.com/basilex/promenade/internal/\(domain\|usecase\|adapter\)" \
-  internal/modules/posts/ || echo " Module is independent"
+  internal/modules/posts/ || echo " IModule is independent"
 ```
 
 ## Current Status

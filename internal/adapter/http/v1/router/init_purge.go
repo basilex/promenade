@@ -18,8 +18,8 @@ import (
 // Returns the use case and scheduler for admin module and graceful shutdown management
 func InitPurgeModule(
 	purgeConfig config.PurgeSection,
-	eventBus bus.Bus,
-) (usecase.PurgeUseCase, *scheduler.Scheduler, error) {
+	eventBus bus.IBus,
+) (usecase.IPurgeUseCase, *scheduler.Scheduler, error) {
 	// Use the global purge handler registry
 	// Modules will register their handlers during initialization
 	handlerRegistry := purge.DefaultRegistry

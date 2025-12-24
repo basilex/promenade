@@ -19,7 +19,7 @@ Promenade sigue una **arquitectura de capas estricta** donde el **Core orquesta*
 **Capa Core** - Orquestador + Infraestructura + Servicios Compartidos
 
 - Autenticación & Autorización (RBAC)
-- Event Bus (Memory/Redis)
+- Event IBus (Memory/Redis)
 - Base de Datos & Transacciones
 - Logging & Configuración
 - Registro de Módulos & Ciclo de Vida
@@ -355,7 +355,7 @@ make test-coverage
 
 ---
 
-## Event Bus
+## Event IBus
 
 **Event bus de adaptador dual** para operaciones asíncronas:
 
@@ -719,27 +719,27 @@ package mymodule
 
 import "github.com/basilex/promenade/pkg/module"
 
-type Module struct{}
+type IModule struct{}
 
-func (m *Module) Name() string { return "mymodule" }
+func (m *IModule) Name() string { return "mymodule" }
 
-func (m *Module) Initialize(ctx context.Context, core module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
     // Registrar rutas, permisos, handlers de purga
     return nil
 }
 
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
     // Iniciar workers en background
     return nil
 }
 
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
     // Graceful shutdown
     return nil
 }
 
 func init() {
-    module.DefaultRegistry.Register(&Module{})
+    module.DefaultRegistry.Register(&IModule{})
 }
 ```
 

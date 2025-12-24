@@ -12,7 +12,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Mock CountryRepository
+// Mock ICountryRepository
 type mockCountryRepository struct {
 	mock.Mock
 }
@@ -82,7 +82,7 @@ func (m *mockCountryRepository) GetCurrencies(ctx context.Context, countryID uui
 	return args.Get(0).([]entity.Currency), args.Error(1)
 }
 
-// Mock CurrencyRepository
+// Mock ICurrencyRepository
 type mockCurrencyRepository struct {
 	mock.Mock
 }

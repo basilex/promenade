@@ -52,12 +52,12 @@ Documents are translated in the following priority order:
 
 1. `README.md` - Project overview and quick start
 2. `docs/ARCHITECTURE_QUICKREF.md` - Architecture quick reference
-3. `docs/MODULE_DEVELOPMENT.md` - Module development guide
+3. `docs/MODULE_DEVELOPMENT.md` - IModule development guide
 
 ### 🔶 Medium Priority (Important for development)
 
 4. `docs/TESTING_GUIDE.md` - Testing best practices
-5. `docs/MODULE_INDEPENDENCE.md` - Module principles
+5. `docs/MODULE_INDEPENDENCE.md` - IModule principles
 6. `docs/ARCHITECTURE_OVERVIEW.md` - Detailed architecture
 
 ### 🔷 Low Priority (Advanced topics)
@@ -153,7 +153,7 @@ To ensure consistency across translations:
 
 | English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
-| Module             | Модуль                   | Modul              | Módulo            | Módulo              |
+| IModule             | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
 | Use Case           | Use Case / Бізнес-логіка | Anwendungsfall     | Caso de Uso       | Caso de Uso         |
 | Handler            | Хендлер                  | Handler            | Manipulador       | Manejador           |

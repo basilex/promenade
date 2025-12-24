@@ -8,7 +8,7 @@ Dieses Dokument definiert den einheitlichen Ansatz zur Mock-Generierung in allen
 
 **Alle Mocks MÜSSEN mit mockery generiert werden**, um Folgendes sicherzustellen:
 
-- Konsistenz über alle Module hinweg
+- Konsistenz über alle IModule hinweg
 - Automatische Synchronisierung mit Interface-Änderungen
 - Standardisierte Tooling- und CI/CD-Integration
 - Reduzierter manueller Wartungsaufwand
@@ -18,7 +18,7 @@ Dieses Dokument definiert den einheitlichen Ansatz zur Mock-Generierung in allen
 Das Projekt verwendet eine zentralisierte Konfigurationsdatei `.mockery.yaml` auf der Root-Ebene, die die Mock-Generierung definiert für:
 
 - Core repositories (`internal/domain/repository`)
-- Alle Business-Module (`internal/modules/*/domain/repository`)
+- Alle Business-IModule (`internal/modules/*/domain/repository`)
 
 ## Installation
 
@@ -149,7 +149,7 @@ Die Mocks jedes Moduls sind **völlig unabhängig**:
 - Mocks verwenden NUR Typen aus ihrem eigenen Modul
 - Keine Imports aus `internal/domain` oder `internal/usecase`
 - Nur `pkg/*`-Imports sind erlaubt
-- Dies stellt sicher, dass Module unabhängig aktiviert/deaktiviert werden können
+- Dies stellt sicher, dass IModule unabhängig aktiviert/deaktiviert werden können
 
 ## CI/CD-Integration
 
@@ -173,7 +173,7 @@ Regenerieren Sie Mocks, wenn Sie:
 
 ## Namenskonventionen
 
-- **Interface**: `AuditEventRepository`
+- **Interface**: `IAuditEventRepository`
 - **Mock**: `MockAuditEventRepository`
 - **Datei**: `audit_event_repository_mock.go`
 - **Package**: `mocks`
@@ -236,7 +236,7 @@ Siehe existierende Modul-Tests für Patterns:
 - mockery für ALLE Mock-Generierung verwenden
 - `make mocks` nach Interface-Änderungen ausführen
 - Standard-Mock-Patterns in Tests verwenden
-- Module unabhängig halten
+- IModule unabhängig halten
 
  **NICHT TUN**:
 
@@ -247,4 +247,4 @@ Siehe existierende Modul-Tests für Patterns:
 
 ---
 
-**Compliance**: Dieser Standard ist für alle Module obligatorisch. Alle vorhandenen manuellen Mocks sollten zu mockery-generierten Mocks migriert werden.
+**Compliance**: Dieser Standard ist für alle IModule obligatorisch. Alle vorhandenen manuellen Mocks sollten zu mockery-generierten Mocks migriert werden.

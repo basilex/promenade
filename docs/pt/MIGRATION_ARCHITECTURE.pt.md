@@ -151,7 +151,7 @@ Módulos podem opcionalmente fornecer migrações programaticamente:
 
 ```go
 // pkg/module/module.go
-type Module interface {
+type IModule interface {
     // ... métodos existentes ...
 
     // RegisterMigrations retorna migrações incorporadas para este módulo

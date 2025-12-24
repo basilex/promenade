@@ -10,8 +10,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// LanguageUseCase interface defines operations for language management
-type LanguageUseCase interface {
+// ILanguageUseCase interface defines operations for language management
+type ILanguageUseCase interface {
 	Create(ctx context.Context, language *entity.Language) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Language, error)
 	GetByCode(ctx context.Context, code string) (*entity.Language, error)
@@ -22,11 +22,11 @@ type LanguageUseCase interface {
 }
 
 type languageUseCase struct {
-	languageRepo repository.LanguageRepository
+	languageRepo repository.ILanguageRepository
 }
 
 // NewLanguageUseCase creates a new language use case
-func NewLanguageUseCase(languageRepo repository.LanguageRepository) LanguageUseCase {
+func NewLanguageUseCase(languageRepo repository.ILanguageRepository) ILanguageUseCase {
 	return &languageUseCase{
 		languageRepo: languageRepo,
 	}

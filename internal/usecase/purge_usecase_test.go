@@ -13,7 +13,7 @@ import (
 	"github.com/basilex/promenade/pkg/purge"
 )
 
-// Mock Event Bus
+// Mock Event IBus
 type mockEventBus struct {
 	mock.Mock
 }

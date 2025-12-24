@@ -19,7 +19,7 @@ import (
 
 // init registers the Redis bus factory
 func init() {
-	bus.RedisBusFactory = func(cfg config.BusSection, busConfig bus.BusConfig) (bus.Bus, error) {
+	bus.RedisBusFactory = func(cfg config.BusSection, busConfig bus.BusConfig) (bus.IBus, error) {
 		return NewRedisBus(
 			cfg.Redis.Host,
 			cfg.Redis.Port,
@@ -31,7 +31,7 @@ func init() {
 	}
 }
 
-// RedisBus implements the Bus interface using Redis Pub/Sub
+// RedisBus implements the IBus interface using Redis Pub/Sub
 type RedisBus struct {
 	client     *redis.Client
 	config     bus.BusConfig

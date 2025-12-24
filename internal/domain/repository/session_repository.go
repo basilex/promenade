@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// SessionRepository defines the interface for session data access
-type SessionRepository interface {
+// ISessionRepository defines the interface for session data access
+type ISessionRepository interface {
 	// Basic CRUD
 	Create(ctx context.Context, session *entity.Session) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Session, error)

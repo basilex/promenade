@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	module := flag.String("module", "", "Module name (analytics, warehouse, etc.)")
+	module := flag.String("module", "", "IModule name (analytics, warehouse, etc.)")
 	tier := flag.String("tier", "BASIC", "License tier (BASIC, PRO, ENTERPRISE)")
 	expiry := flag.String("expiry", "", "Expiry date (YYYYMMDD)")
 	secret := flag.String("secret", "", "Secret key for signing")

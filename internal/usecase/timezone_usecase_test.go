@@ -12,7 +12,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Mock TimezoneRepository
+// Mock ITimezoneRepository
 type mockTimezoneRepository struct {
 	mock.Mock
 }

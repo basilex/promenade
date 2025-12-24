@@ -21,7 +21,7 @@ type auditEventRepository struct {
 }
 
 // NewAuditEventRepository creates a new audit event repository
-func NewAuditEventRepository(db *sqlx.DB) repository.AuditEventRepository {
+func NewAuditEventRepository(db *sqlx.DB) repository.IAuditEventRepository {
 	return &auditEventRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

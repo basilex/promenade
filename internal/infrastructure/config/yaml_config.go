@@ -16,7 +16,7 @@ type AppConfig struct {
 	JWT       JWTSection       `yaml:"jwt"`
 	Logging   LoggingSection   `yaml:"logging"`
 	CORS      CORSSection      `yaml:"cors"`
-	Bus       BusSection       `yaml:"bus"`
+	IBus       BusSection       `yaml:"bus"`
 	RateLimit RateLimitSection `yaml:"rate_limit"`
 	Email     EmailSection     `yaml:"email"`
 	Purge     PurgeSection     `yaml:"purge"`
@@ -127,8 +127,8 @@ type ModulesSection struct {
 
 // ModuleConfig represents a module's configuration
 type ModuleConfig struct {
-	Module      ModuleSection          `yaml:"module"`
-	Settings    map[string]any `yaml:",inline"` // Module-specific settings
+	IModule      ModuleSection          `yaml:"module"`
+	Settings    map[string]any `yaml:",inline"` // IModule-specific settings
 	Purge       *ModulePurgeSection    `yaml:"purge,omitempty"`
 	Permissions []PermissionSection    `yaml:"permissions,omitempty"`
 	Features    map[string]bool        `yaml:"features,omitempty"`
@@ -243,8 +243,8 @@ func applyEnvOverrides(cfg *AppConfig) {
 		cfg.App.Environment = v
 	}
 
-	// Bus adapter override
+	// IBus adapter override
 	if v := os.Getenv("BUS_ADAPTER"); v != "" {
-		cfg.Bus.Adapter = v
+		cfg.IBus.Adapter = v
 	}
 }

@@ -14,19 +14,19 @@ var DefaultRegistry = NewRegistry()
 
 // Registry manages all registered modules
 type Registry struct {
-	modules map[string]Module
+	modules map[string]IModule
 	mu      sync.RWMutex
 }
 
 // NewRegistry creates a new module registry
 func NewRegistry() *Registry {
 	return &Registry{
-		modules: make(map[string]Module),
+		modules: make(map[string]IModule),
 	}
 }
 
 // Register adds a module to the registry
-func (r *Registry) Register(module Module) error {
+func (r *Registry) Register(module IModule) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -40,7 +40,7 @@ func (r *Registry) Register(module Module) error {
 	}
 
 	r.modules[meta.Name] = module
-	logger.Info("Module registered",
+	logger.Info("IModule registered",
 		"module", meta.Name,
 		"version", meta.Version,
 		"author", meta.Author)
@@ -49,18 +49,18 @@ func (r *Registry) Register(module Module) error {
 }
 
 // Get retrieves a module by name
-func (r *Registry) Get(name string) Module {
+func (r *Registry) Get(name string) IModule {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	return r.modules[name]
 }
 
 // GetAll returns all registered modules
-func (r *Registry) GetAll() []Module {
+func (r *Registry) GetAll() []IModule {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	modules := make([]Module, 0, len(r.modules))
+	modules := make([]IModule, 0, len(r.modules))
 	for _, mod := range r.modules {
 		modules = append(modules, mod)
 	}
@@ -68,11 +68,11 @@ func (r *Registry) GetAll() []Module {
 }
 
 // GetEnabled returns modules that are enabled in configuration
-func (r *Registry) GetEnabled(enabledNames []string) []Module {
+func (r *Registry) GetEnabled(enabledNames []string) []IModule {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	enabled := make([]Module, 0, len(enabledNames))
+	enabled := make([]IModule, 0, len(enabledNames))
 	for _, name := range enabledNames {
 		if mod, exists := r.modules[name]; exists {
 			enabled = append(enabled, mod)
@@ -104,7 +104,7 @@ func (r *Registry) InitializeAll(ctx context.Context, core *Core, enabledNames [
 			return fmt.Errorf("failed to initialize module %s: %w", meta.Name, err)
 		}
 
-		logger.Info("Module initialized successfully", "module", meta.Name)
+		logger.Info("IModule initialized successfully", "module", meta.Name)
 	}
 
 	return nil
@@ -122,7 +122,7 @@ func (r *Registry) StartAll(ctx context.Context, enabledNames []string) error {
 			return fmt.Errorf("failed to start module %s: %w", meta.Name, err)
 		}
 
-		logger.Info("Module started successfully", "module", meta.Name)
+		logger.Info("IModule started successfully", "module", meta.Name)
 	}
 
 	return nil
@@ -148,10 +148,10 @@ func (r *Registry) StopAll(ctx context.Context, enabledNames []string) error {
 }
 
 // sortByDependencies returns modules sorted in dependency order
-func (r *Registry) sortByDependencies(modules []Module) ([]Module, error) {
+func (r *Registry) sortByDependencies(modules []IModule) ([]IModule, error) {
 	// Build dependency graph
 	graph := make(map[string][]string)
-	moduleMap := make(map[string]Module)
+	moduleMap := make(map[string]IModule)
 
 	for _, mod := range modules {
 		name := mod.Metadata().Name
@@ -193,7 +193,7 @@ func (r *Registry) sortByDependencies(modules []Module) ([]Module, error) {
 	}
 
 	// Convert sorted names back to modules
-	result := make([]Module, 0, len(sorted))
+	result := make([]IModule, 0, len(sorted))
 	for _, name := range sorted {
 		result = append(result, moduleMap[name])
 	}

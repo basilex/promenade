@@ -22,7 +22,7 @@ type userPostRepository struct {
 }
 
 // NewUserPostRepository creates a new user post repository
-func NewUserPostRepository(db *sqlx.DB) repository.UserPostRepository {
+func NewUserPostRepository(db *sqlx.DB) repository.IUserPostRepository {
 	return &userPostRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

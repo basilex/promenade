@@ -35,7 +35,7 @@
 Реєстр модулів виявляє модулі
     ↓
 Для кожного увімкненого модуля:
-    Викликається Module.Initialize(ctx, core)
+    Викликається IModule.Initialize(ctx, core)
         ↓
     Модуль завантажує internal/modules/{назва}/config/config.{env}.yaml
         ↓
@@ -43,7 +43,7 @@
         ↓
     Модуль ініціалізує репозиторії, use cases, обробники
         ↓
-    Module.RegisterRoutes() реєструє HTTP ендпоінти
+    IModule.RegisterRoutes() реєструє HTTP ендпоінти
 ```
 
 ## Структура Каталогів
@@ -336,7 +336,7 @@ func (m *WarehouseModule) verifyLicense() error {
 ### Перевірка, яка конфігурація завантажена:
 
 ```go
-logger.FromContext(ctx).Info("Module config loaded",
+logger.FromContext(ctx).Info("IModule config loaded",
     "module", m.GetMetadata().Name,
     "config_path", "internal/modules/posts/config",
     "environment", os.Getenv("ENVIRONMENT"),

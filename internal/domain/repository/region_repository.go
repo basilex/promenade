@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// RegionRepository defines the interface for region data operations
-type RegionRepository interface {
+// IRegionRepository defines the interface for region data operations
+type IRegionRepository interface {
 	// Create creates a new region
 	Create(ctx context.Context, region *entity.Region) error
 

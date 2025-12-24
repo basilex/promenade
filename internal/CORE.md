@@ -38,7 +38,7 @@ Core provides shared services that modules can use:
 - Session management
 - Password reset & email verification
 
-**Location**: `internal/domain/entity/` (User, Session), `internal/usecase/` (AuthUseCase, RBACUseCase)
+**Location**: `internal/domain/entity/` (User, Session), `internal/usecase/` (IAuthUseCase, RBACUseCase)
 
 #### **Database & Transactions**
 
@@ -49,7 +49,7 @@ Core provides shared services that modules can use:
 
 **Location**: `internal/infrastructure/database/`
 
-#### **Event Bus**
+#### **Event IBus**
 
 - Dual-adapter event bus (Memory/Redis)
 - Pub/Sub for asynchronous operations
@@ -69,7 +69,7 @@ Core provides shared services that modules can use:
 
 - YAML-based configuration
 - Environment-specific configs (dev, test, prod)
-- Module configuration loading
+- IModule configuration loading
 
 **Location**: `internal/infrastructure/config/`
 
@@ -83,13 +83,13 @@ Core provides shared services that modules can use:
 
 ---
 
-### 3. **Module Management**
+### 3. **IModule Management**
 
-Core provides the **Module Registry** system:
+Core provides the **IModule Registry** system:
 
 ```go
-// Module interface (defined by core)
-type Module interface {
+// IModule interface (defined by core)
+type IModule interface {
     Name() string
     Initialize(ctx context.Context, core Core) error
     Start(ctx context.Context) error
@@ -100,7 +100,7 @@ type Module interface {
 type Core interface {
     DB() *sqlx.DB
     Logger() *logger.Logger
-    EventBus() bus.Bus
+    EventBus() bus.IBus
     Config() *config.Config
     // ... other services
 }
@@ -140,9 +140,9 @@ for _, moduleName := range enabledModules {
 - RBAC tables (roles, permissions, user_roles)
 - Reference data (timezones, languages, countries, currencies, regions, cities, payment methods)
 
-**Module migrations** (`migrations/{module}/`):
+**IModule migrations** (`migrations/{module}/`):
 
-- Module-specific tables (e.g., `user_posts`, `post_comments`)
+- IModule-specific tables (e.g., `user_posts`, `post_comments`)
 - Independent versioning per namespace
 
 **Location**: `pkg/migration/`, `cmd/migrate/`, `migrations/core/`
@@ -228,7 +228,7 @@ scheduler.Schedule("0 2 * * *", func() {
     }
 })
 
-// Module: Registers policy
+// IModule: Registers policy
 purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -260,7 +260,7 @@ func (c *Core) DB() *sqlx.DB {
 }
 ```
 
-### Module-Specific Entities
+### IModule-Specific Entities
 
 Core does not define entities like `Post`, `Comment`, `Product`:
 
@@ -278,7 +278,7 @@ package entity
 type Post struct { ... }
 ```
 
-### Import Module Code
+### Import IModule Code
 
 Core **never** imports from `internal/modules/*`:
 
@@ -383,8 +383,8 @@ When working on core, ensure:
 - **[README.md](../README.md)** - Architecture overview
 - **[docs/ARCHITECTURE_OVERVIEW.md](../docs/ARCHITECTURE_OVERVIEW.md)** - Visual diagrams
 - **[docs/ARCHITECTURE_QUICKREF.md](../docs/ARCHITECTURE_QUICKREF.md)** - Quick reference
-- **[internal/modules/README.md](modules/README.md)** - Module system
-- **[docs/MODULE_INDEPENDENCE.md](../docs/MODULE_INDEPENDENCE.md)** - Module autonomy rules
+- **[internal/modules/README.md](modules/README.md)** - IModule system
+- **[docs/MODULE_INDEPENDENCE.md](../docs/MODULE_INDEPENDENCE.md)** - IModule autonomy rules
 - **[docs/PURGE_ARCHITECTURE.md](../docs/PURGE_ARCHITECTURE.md)** - Purge orchestration
 - **[migrations/README.md](../migrations/README.md)** - Migration system
 

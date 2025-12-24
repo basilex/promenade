@@ -173,7 +173,7 @@ Mock-об'єкти кожного модуля **повністю незалеж
 
 ## Правила іменування
 
-- **Interface**: `AuditEventRepository`
+- **Interface**: `IAuditEventRepository`
 - **Mock**: `MockAuditEventRepository`
 - **Файл**: `audit_event_repository_mock.go`
 - **Package**: `mocks`

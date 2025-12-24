@@ -19,7 +19,7 @@ Total:              274 lines
 
 - Environment variables loading (`.env.development`)
 - Shared variables (`APP_NAME`, `VERSION`, `DB_URL`, `MIGRATE`)
-- Module includes (`include Makefile.*.mk`)
+- IModule includes (`include Makefile.*.mk`)
 - Grouped help command (shows all modules)
 
 **Makefile.dev.mk** - Developer workflow:

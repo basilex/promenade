@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// CityRepository defines the interface for city data operations
-type CityRepository interface {
+// ICityRepository defines the interface for city data operations
+type ICityRepository interface {
 	// Create creates a new city
 	Create(ctx context.Context, city *entity.City) error
 

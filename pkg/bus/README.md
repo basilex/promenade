@@ -1,4 +1,4 @@
-# Event Bus Package
+# Event IBus Package
 
 Universal message bus implementation with dual adapters (Memory + Redis) for event-driven architecture in Promenade.
 
@@ -24,8 +24,8 @@ This enables asynchronous, decoupled communication between components with a cle
 
 **Flow:**
 
-1. UseCase publishes event to Event Bus
-2. Event Bus dispatches to multiple workers concurrently
+1. UseCase publishes event to Event IBus
+2. Event IBus dispatches to multiple workers concurrently
 3. Workers (Email, Analytics, Logs) process independently
 4. All within single process boundary
 
@@ -45,7 +45,7 @@ This enables asynchronous, decoupled communication between components with a cle
 3. Services subscribe to relevant topics
 4. Services process independently and scale horizontally
 
-**Same code, different transport!** Just swap `memory.Bus` → `redis.Bus` or `nats.Bus`
+**Same code, different transport!** Just swap `memory.IBus` → `redis.IBus` or `nats.IBus`
 
 ## Features
 
@@ -128,12 +128,12 @@ func main() {
 
     // Initialize event bus with configuration
     busConfig := bus.NewBusConfig(
-        cfg.Bus.WorkerPoolSize,  // BUS_WORKER_POOL_SIZE=10
-        cfg.Bus.BufferSize,      // BUS_BUFFER_SIZE=1000
-        cfg.Bus.RetryAttempts,   // BUS_RETRY_ATTEMPTS=3
-        cfg.Bus.RetryDelay,      // BUS_RETRY_DELAY=1s
-        cfg.Bus.RetryMaxDelay,   // BUS_RETRY_MAX_DELAY=5s
-        cfg.Bus.RetryMultiplier, // BUS_RETRY_MULTIPLIER=2.0
+        cfg.IBus.WorkerPoolSize,  // BUS_WORKER_POOL_SIZE=10
+        cfg.IBus.BufferSize,      // BUS_BUFFER_SIZE=1000
+        cfg.IBus.RetryAttempts,   // BUS_RETRY_ATTEMPTS=3
+        cfg.IBus.RetryDelay,      // BUS_RETRY_DELAY=1s
+        cfg.IBus.RetryMaxDelay,   // BUS_RETRY_MAX_DELAY=5s
+        cfg.IBus.RetryMultiplier, // BUS_RETRY_MULTIPLIER=2.0
     )
     eventBus := memory.NewMemoryBus(busConfig)
     defer eventBus.Close(context.Background())
@@ -158,7 +158,7 @@ func main() {
 
 ## Available Implementations
 
-### 1. In-Memory Bus (Default - Development/Testing)
+### 1. In-Memory IBus (Default - Development/Testing)
 
 **Use case:** Development, testing, single-instance deployments
 

@@ -14,10 +14,10 @@ import (
 )
 
 type UserContactHandler struct {
-	contactUC usecase.UserContactUseCase
+	contactUC usecase.IUserContactUseCase
 }
 
-func NewUserContactHandler(contactUC usecase.UserContactUseCase) *UserContactHandler {
+func NewUserContactHandler(contactUC usecase.IUserContactUseCase) *UserContactHandler {
 	return &UserContactHandler{
 		contactUC: contactUC,
 	}

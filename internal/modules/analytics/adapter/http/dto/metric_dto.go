@@ -8,7 +8,7 @@ import (
 )
 
 type CollectMetricRequest struct {
-	Module   string                 `json:"module" binding:"required"`
+	IModule   string                 `json:"module" binding:"required"`
 	Scope    string                 `json:"scope" binding:"required,oneof=user post comment system"`
 	ScopeID  string                 `json:"scope_id" binding:"required"`
 	Name     string                 `json:"name" binding:"required"`
@@ -19,7 +19,7 @@ type CollectMetricRequest struct {
 
 type MetricResponse struct {
 	ID        string                 `json:"id"`
-	Module    string                 `json:"module"`
+	IModule    string                 `json:"module"`
 	Scope     string                 `json:"scope"`
 	ScopeID   string                 `json:"scope_id"`
 	Name      string                 `json:"name"`
@@ -37,7 +37,7 @@ type MetricListResponse struct {
 func ToMetricResponse(metric *entity.Metric) *MetricResponse {
 	return &MetricResponse{
 		ID:        metric.ID,
-		Module:    metric.Module,
+		IModule:    metric.IModule,
 		Scope:     string(metric.Scope),
 		ScopeID:   metric.ScopeID,
 		Name:      metric.Name,

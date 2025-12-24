@@ -17,7 +17,7 @@ var (
 	ErrPermissionNotFound      = errors.New("permission not found")
 )
 
-type PermissionUseCase interface {
+type IPermissionUseCase interface {
 	// Permission management
 	CreatePermission(ctx context.Context, resource, action, description string) (*entity.Permission, error)
 	CreatePermissionFromString(ctx context.Context, permissionString, description string) (*entity.Permission, error)
@@ -33,10 +33,10 @@ type PermissionUseCase interface {
 }
 
 type permissionUseCase struct {
-	permissionRepo repository.PermissionRepository
+	permissionRepo repository.IPermissionRepository
 }
 
-func NewPermissionUseCase(permissionRepo repository.PermissionRepository) PermissionUseCase {
+func NewPermissionUseCase(permissionRepo repository.IPermissionRepository) IPermissionUseCase {
 	return &permissionUseCase{
 		permissionRepo: permissionRepo,
 	}

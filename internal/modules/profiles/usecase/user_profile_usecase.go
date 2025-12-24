@@ -17,7 +17,7 @@ var (
 	ErrInvalidProfileData        = errors.New("invalid profile data")
 )
 
-type UserProfileUseCase interface {
+type IUserProfileUseCase interface {
 	CreateProfile(ctx context.Context, userID uuidv7.UUID, profile *entity.UserProfile) (*entity.UserProfile, error)
 	GetProfile(ctx context.Context, profileID uuidv7.UUID, viewerID *uuidv7.UUID) (*entity.UserProfile, error)
 	GetProfileByUserID(ctx context.Context, userID uuidv7.UUID, viewerID *uuidv7.UUID) (*entity.UserProfile, error)
@@ -35,10 +35,10 @@ type UserProfileUseCase interface {
 }
 
 type userProfileUseCase struct {
-	profileRepo repository.UserProfileRepository
+	profileRepo repository.IUserProfileRepository
 }
 
-func NewUserProfileUseCase(profileRepo repository.UserProfileRepository) UserProfileUseCase {
+func NewUserProfileUseCase(profileRepo repository.IUserProfileRepository) IUserProfileUseCase {
 	return &userProfileUseCase{
 		profileRepo: profileRepo,
 	}

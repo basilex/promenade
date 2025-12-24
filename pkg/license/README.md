@@ -73,7 +73,7 @@ if lic.IsExpired() {
 ## Environment Variables
 
 ```bash
-# Module-specific license key
+# IModule-specific license key
 export AUDIT_LICENSE_KEY="PROMENADE-AUDIT-PRO-20261231-..."
 
 # License secret (for validation)

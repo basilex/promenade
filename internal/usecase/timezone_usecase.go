@@ -10,8 +10,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// TimezoneUseCase interface defines operations for timezone management
-type TimezoneUseCase interface {
+// ITimezoneUseCase interface defines operations for timezone management
+type ITimezoneUseCase interface {
 	Create(ctx context.Context, timezone *entity.Timezone) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Timezone, error)
 	GetByName(ctx context.Context, name string) (*entity.Timezone, error)
@@ -22,11 +22,11 @@ type TimezoneUseCase interface {
 }
 
 type timezoneUseCase struct {
-	timezoneRepo repository.TimezoneRepository
+	timezoneRepo repository.ITimezoneRepository
 }
 
 // NewTimezoneUseCase creates a new timezone use case
-func NewTimezoneUseCase(timezoneRepo repository.TimezoneRepository) TimezoneUseCase {
+func NewTimezoneUseCase(timezoneRepo repository.ITimezoneRepository) ITimezoneUseCase {
 	return &timezoneUseCase{
 		timezoneRepo: timezoneRepo,
 	}

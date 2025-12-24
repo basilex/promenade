@@ -886,11 +886,11 @@ WHERE u.id = '<user_uuid>';
 Langsame Antwortzeiten bei geschützten Endpunkten.
 
 **Lösung:**
-Caching in RoleUseCase implementieren:
+Caching in IRoleUseCase implementieren:
 
 ```go
 // Redis/In-Memory-Cache für Berechtigungsprüfungen verwenden
-func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
+func (uc *IRoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, permission string) (bool, error) {
     // Cache zuerst prüfen
     cacheKey := fmt.Sprintf("user:%s:permission:%s", userID, permission)
     if cached, found := uc.cache.Get(cacheKey); found {

@@ -20,10 +20,10 @@ const (
 
 // MemoryBusFactory is a function type for creating memory bus instances
 // This avoids circular import with memory package
-var MemoryBusFactory func(BusConfig) Bus
+var MemoryBusFactory func(BusConfig) IBus
 
 // RedisBusFactory is a function type for creating Redis bus instances
-var RedisBusFactory func(config.BusSection, BusConfig) (Bus, error)
+var RedisBusFactory func(config.BusSection, BusConfig) (IBus, error)
 
 // init initializes the factory functions using late binding to avoid circular imports
 func init() {
@@ -35,7 +35,7 @@ func init() {
 // It implements graceful degradation:
 // - Development/Test: Returns error if adapter initialization fails
 // - Production: Falls back to in-memory adapter with warning log
-func NewBus(cfg config.BusSection) (Bus, error) {
+func NewBus(cfg config.BusSection) (IBus, error) {
 	adapterType := AdapterType(strings.ToLower(cfg.Adapter))
 
 	// Validate adapter type
@@ -56,7 +56,7 @@ func NewBus(cfg config.BusSection) (Bus, error) {
 		cfg.RetryMultiplier,
 	)
 
-	var eventBus Bus
+	var eventBus IBus
 	var err error
 
 	switch adapterType {
@@ -123,7 +123,7 @@ func shouldFailFast() bool {
 
 // MustNewBus creates a new bus or panics on error.
 // Use this only when bus initialization failure should be fatal.
-func MustNewBus(cfg config.BusSection) Bus {
+func MustNewBus(cfg config.BusSection) IBus {
 	bus, err := NewBus(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("failed to initialize event bus: %v", err))
@@ -132,7 +132,7 @@ func MustNewBus(cfg config.BusSection) Bus {
 }
 
 // HealthCheck performs a health check on the bus
-func HealthCheck(ctx context.Context, bus Bus) error {
+func HealthCheck(ctx context.Context, bus IBus) error {
 	if bus == nil {
 		return fmt.Errorf("bus is nil")
 	}

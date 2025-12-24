@@ -140,8 +140,8 @@ func main() {
 	txManager := database.NewTransactionManager(db)
 	_ = txManager // Reserved for future use
 
-	// Initialize Event Bus from configuration (supports memory/redis adapters)
-	eventBus, err := bus.NewBus(cfg.Bus)
+	// Initialize Event IBus from configuration (supports memory/redis adapters)
+	eventBus, err := bus.NewBus(cfg.IBus)
 	if err != nil {
 		logger.Fatal("Failed to initialize event bus", slog.Any("error", err))
 	}

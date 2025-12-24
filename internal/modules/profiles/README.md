@@ -1,4 +1,4 @@
-# Profiles Module
+# Profiles IModule
 
 User profile and contact information management.
 
@@ -460,7 +460,7 @@ make test-integration
 
 ```
 internal/modules/profiles/
-├── module.go                          # Module registration & lifecycle
+├── module.go                          # IModule registration & lifecycle
 │
 ├── domain/
 │   └── entity/
@@ -596,12 +596,12 @@ Potential features (not yet implemented):
 
 ## 📚 Related Documentation
 
-- **[../README.md](../README.md)** - Module system overview
+- **[../README.md](../README.md)** - IModule system overview
 - **[../../README.md](../../README.md)** - Main project README
-- **[../../docs/MODULE_DEVELOPMENT.md](../../docs/MODULE_DEVELOPMENT.md)** - Module development guide
+- **[../../docs/MODULE_DEVELOPMENT.md](../../docs/MODULE_DEVELOPMENT.md)** - IModule development guide
 - **[../../docs/VALIDATION.md](../../docs/VALIDATION.md)** - Validation patterns
 - **[../../migrations/README.md](../../migrations/README.md)** - Migration system
 
 ---
 
-**Module Status**:  Production-ready |  Tested |  2 migrations |  RBAC-enabled
+**IModule Status**:  Production-ready |  Tested |  2 migrations |  RBAC-enabled

@@ -1,4 +1,4 @@
-# Architektur-Audit - Core vs Module
+# Architektur-Audit - Core vs IModule
 
 [🇬🇧 English](../ARCHITECTURE_AUDIT.md) | [🇺🇦 Українська](../ARCHITECTURE_AUDIT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../ARCHITECTURE_AUDIT.pt.md) | [🇪🇸 Español](../ARCHITECTURE_AUDIT.es.md)
 
@@ -10,7 +10,7 @@
 Promenade folgt einer **Plugin-Architektur**, bei der:
 
 - **Core** = Infrastruktur + Referenzdaten + Manager (immer aktiviert)
-- **Module** = Geschäftslogik (optional, lizenzierbar, unabhängig)
+- **IModule** = Geschäftslogik (optional, lizenzierbar, unabhängig)
 
 Dieses Audit bestätigt, dass die Architektur **korrekt implementiert** ist mit ordnungsgemäßer Trennung der Zuständigkeiten.
 
@@ -28,7 +28,7 @@ internal/infrastructure/
 └── scheduler/      Cron-Scheduler
 ```
 
-**Status:** Korrekt - Core stellt Infrastruktur als Service für Module bereit.
+**Status:** Korrekt - Core stellt Infrastruktur als Service für IModule bereit.
 
 ---
 
@@ -66,9 +66,9 @@ internal/domain/entity/
 └── permission.go   RBAC-Berechtigungen (resource:action)
 ```
 
-**Zweck:** Sicherheit und Zugriffskontrolle - grundlegend für alle Module.
+**Zweck:** Sicherheit und Zugriffskontrolle - grundlegend für alle IModule.
 
-**Status:** Korrekt - Auth/RBAC muss im Core sein (alle Module hängen davon ab).
+**Status:** Korrekt - Auth/RBAC muss im Core sein (alle IModule hängen davon ab).
 
 **Use Case-Implementierungen:**
 
@@ -91,9 +91,9 @@ pkg/module/
 └── base.go         BaseModule-Helfer
 ```
 
-**Zweck:** Orchestrierung - Module entdecken, initialisieren, starten/stoppen.
+**Zweck:** Orchestrierung - IModule entdecken, initialisieren, starten/stoppen.
 
-**Status:** Korrekt - Core ist der Orchestrator, Module sind Worker.
+**Status:** Korrekt - Core ist der Orchestrator, IModule sind Worker.
 
 **Hauptmerkmale:**
 
@@ -104,11 +104,11 @@ pkg/module/
 
 ---
 
-### 5. Event Bus-Infrastruktur
+### 5. Event IBus-Infrastruktur
 
 ```
 pkg/bus/
-├── bus.go          Event Bus-Interface
+├── bus.go          Event IBus-Interface
 ├── memory/         In-Memory-Adapter (dev/test)
 ├── redis/          Redis-Adapter (production)
 └── factory.go      Adapter-Factory mit Fallback
@@ -116,7 +116,7 @@ pkg/bus/
 
 **Zweck:** Modul-übergreifende Kommunikationsinfrastruktur.
 
-**Status:** Korrekt - Core stellt den Bus bereit, Module nutzen ihn.
+**Status:** Korrekt - Core stellt den IBus bereit, IModule nutzen ihn.
 
 ---
 
@@ -124,8 +124,8 @@ pkg/bus/
 
 ```
 pkg/purge/
-├── handler.go      Handler-Registry (Module registrieren Handler)
-└── (NEU) Policy-Registry (Module registrieren Aufbewahrungsrichtlinien)
+├── handler.go      Handler-Registry (IModule registrieren Handler)
+└── (NEU) Policy-Registry (IModule registrieren Aufbewahrungsrichtlinien)
 ```
 
 ```
@@ -133,15 +133,15 @@ internal/usecase/
 └── purge_usecase.go  Nur Orchestrierung (holt Policies aus Registry)
 ```
 
-**Zweck:** Scheduler-Infrastruktur - Module definieren was/wann zu löschen ist.
+**Zweck:** Scheduler-Infrastruktur - IModule definieren was/wann zu löschen ist.
 
-**Status:** BEHOBEN (kürzliches Refactoring) - Core orchestriert, Module implementieren.
+**Status:** BEHOBEN (kürzliches Refactoring) - Core orchestriert, IModule implementieren.
 
 ---
 
 ## Modul-Verantwortlichkeiten
 
-### Aktuelle Module
+### Aktuelle IModule
 
 #### 1. Posts-Modul (`internal/modules/posts/`)
 
@@ -279,7 +279,7 @@ purge:
 ### Modul-Registry
 
 ```yaml
-# config/modules.yaml - Welche Module zu laden sind
+# config/modules.yaml - Welche IModule zu laden sind
 modules:
   enabled:
     - posts
@@ -287,7 +287,7 @@ modules:
     # - warehouse  # Benötigt Lizenzschlüssel
 ```
 
-**Zweck:** Kontrolle, welche Module aktiv sind (Lizenzierung, Funktionen, etc.)
+**Zweck:** Kontrolle, welche IModule aktiv sind (Lizenzierung, Funktionen, etc.)
 
 ---
 
@@ -342,7 +342,7 @@ func (m *MyModule) Dependencies() []string {
 
 **Registry löst Abhängigkeiten automatisch auf:**
 
-1. Topologische Sortierung der Module
+1. Topologische Sortierung der IModule
 2. Initialisierung in Abhängigkeitsreihenfolge
 3. Fehler bei zirkulären Abhängigkeiten oder fehlenden Modulen
 
@@ -485,7 +485,7 @@ migrations/profiles/
 └── 000002_profiles_profiles.up.sql            Benutzerprofile
 ```
 
-**Zukünftig:** Module können Migrationen programmatisch registrieren:
+**Zukünftig:** IModule können Migrationen programmatisch registrieren:
 
 ```go
 func (m *MyModule) RegisterMigrations() []module.Migration {
@@ -565,7 +565,7 @@ type PurgeConfig struct {
     BatchSize int
 }
 
-// Module registrieren Policies via purge.DefaultPolicyRegistry
+// IModule registrieren Policies via purge.DefaultPolicyRegistry
 ```
 
 ---
@@ -590,7 +590,7 @@ type PurgeConfig struct {
 
 ---
 
-## Zusammenfassung: Core vs Module
+## Zusammenfassung: Core vs IModule
 
 | Komponente          | Ort    | Zweck             | Status       |
 | ------------------- | ------ | ----------------- | ------------ |
@@ -601,16 +601,16 @@ type PurgeConfig struct {
 | **Timezones**       | Core   | Referenzdaten     | Korrekt      |
 | **Languages**       | Core   | Referenzdaten     | Korrekt      |
 | **Database**        | Core   | Infrastruktur     | Korrekt      |
-| **Event Bus**       | Core   | Infrastruktur     | Korrekt      |
+| **Event IBus**       | Core   | Infrastruktur     | Korrekt      |
 | **Purge Scheduler** | Core   | Infrastruktur     | Korrekt      |
-| **Module Registry** | Core   | Orchestrierung    | Korrekt      |
+| **IModule Registry** | Core   | Orchestrierung    | Korrekt      |
 |                     |        |                   |
-| **Posts**           | Module | Geschäftslogik    | Unabhängig   |
-| **Comments**        | Module | Geschäftslogik    | Unabhängig   |
-| **Likes**           | Module | Geschäftslogik    | Unabhängig   |
-| **Profiles**        | Module | Geschäftslogik    | Unabhängig   |
-| **Contacts**        | Module | Geschäftslogik    | Unabhängig   |
-| **Warehouse**       | Module | Geschäftslogik    | Lizenzierbar |
+| **Posts**           | IModule | Geschäftslogik    | Unabhängig   |
+| **Comments**        | IModule | Geschäftslogik    | Unabhängig   |
+| **Likes**           | IModule | Geschäftslogik    | Unabhängig   |
+| **Profiles**        | IModule | Geschäftslogik    | Unabhängig   |
+| **Contacts**        | IModule | Geschäftslogik    | Unabhängig   |
+| **Warehouse**       | IModule | Geschäftslogik    | Lizenzierbar |
 
 ---
 
@@ -629,7 +629,7 @@ Der aktuelle Core enthält nur:
 
 ---
 
-### 2. Module sind unabhängig
+### 2. IModule sind unabhängig
 
 Jedes Modul:
 
@@ -638,7 +638,7 @@ Jedes Modul:
 - Registriert Handler/Policies/Permissions
 - Kann via Konfiguration aktiviert/deaktiviert werden
 
-**Maßnahme:** Keine Änderungen erforderlich - Module sind ordnungsgemäß isoliert.
+**Maßnahme:** Keine Änderungen erforderlich - IModule sind ordnungsgemäß isoliert.
 
 ---
 
@@ -650,7 +650,7 @@ Die Architektur unterstützt:
 - Modul-spezifische Lizenzkonfiguration
 - Abhängigkeitsverwaltung (lizenziertes Modul hängt von freiem Modul ab)
 
-**Maßnahme:** ⏳ Lizenzvalidierung implementieren, wenn kommerzielle Module bereit sind.
+**Maßnahme:** ⏳ Lizenzvalidierung implementieren, wenn kommerzielle IModule bereit sind.
 
 ---
 
@@ -673,7 +673,7 @@ Promenade implementiert erfolgreich eine **Plugin-Architektur** mit:
 - Modul-Unabhängigkeit (keine Core-Abhängigkeiten)
 - Dynamisches Laden von Modulen mit Abhängigkeitsauflösung
 - Konfigurations-Autonomie (jedes Modul besitzt seine Konfiguration)
-- Lizenzierungs-Unterstützung (bereit für kommerzielle Module)
+- Lizenzierungs-Unterstützung (bereit für kommerzielle IModule)
 - Event-gesteuerte Kommunikation (lose Kopplung)
 
 **Core ist wirklich minimal:**
@@ -682,7 +682,7 @@ Promenade implementiert erfolgreich eine **Plugin-Architektur** mit:
 - Referenzdaten
 - Sicherheitsbasis (Auth + RBAC)
 
-**Module sind in sich geschlossen:**
+**IModule sind in sich geschlossen:**
 
 - Eigene Entities, Use Cases, Adapter
 - Eigene Konfiguration
@@ -691,7 +691,7 @@ Promenade implementiert erfolgreich eine **Plugin-Architektur** mit:
 
 **Nächste Schritte:**
 
-1. Lizenzvalidierung für kommerzielle Module implementieren
+1. Lizenzvalidierung für kommerzielle IModule implementieren
 2. Smoke-Tests aktualisieren
 3. Erwägen, Timezone/Language in separates "reference"-Modul zu extrahieren, falls sie groß werden
 

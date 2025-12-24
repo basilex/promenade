@@ -173,7 +173,7 @@ Regenere os mocks sempre que você:
 
 ## Convenções de Nomenclatura
 
-- **Interface**: `AuditEventRepository`
+- **Interface**: `IAuditEventRepository`
 - **Mock**: `MockAuditEventRepository`
 - **Arquivo**: `audit_event_repository_mock.go`
 - **Package**: `mocks`

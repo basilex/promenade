@@ -13,10 +13,10 @@ import (
 )
 
 type CityHandler struct {
-	cityUseCase usecase.CityUseCase
+	cityUseCase usecase.ICityUseCase
 }
 
-func NewCityHandler(cityUseCase usecase.CityUseCase) *CityHandler {
+func NewCityHandler(cityUseCase usecase.ICityUseCase) *CityHandler {
 	return &CityHandler{
 		cityUseCase: cityUseCase,
 	}

@@ -139,7 +139,7 @@ JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=  # Secret key (change!)
 JWT_ACCESS_TTL_MINUTES=15                   # Access token TTL (15 minutes)
 JWT_REFRESH_TTL_HOURS=168                   # Refresh token TTL (7 days)
 
-# Event Bus Configuration
+# Event IBus Configuration
 BUS_ADAPTER=memory                          # Adapter: "memory" or "redis"
 BUS_WORKER_POOL_SIZE=10                     # Worker goroutines for event processing
 BUS_BUFFER_SIZE=1000                        # Event queue buffer size

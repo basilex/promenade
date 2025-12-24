@@ -17,15 +17,15 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 **Core Layer** - Orchestrator + Infrastructure + Shared Services
 
 - Authentication & Authorization (RBAC)
-- Event Bus (Memory/Redis)
+- Event IBus (Memory/Redis)
 - Database & Transactions
 - Logging & Configuration
-- Module Registry & Lifecycle
+- IModule Registry & Lifecycle
 - Reference Data (countries, currencies, regions, cities, timezones, languages, payment methods)
 
-**Module Layer** - Independent Vertical Slices (Domain Areas)
+**IModule Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module        | Entities                         | Description                   | Status   |
+| IModule        | Entities                         | Description                   | Status   |
 | ------------- | -------------------------------- | ----------------------------- | -------- |
 | Posts         | posts, comments, likes           | User-generated content        | Free     |
 | Profiles      | contacts, profiles               | User profiles                 | Free     |
@@ -142,14 +142,14 @@ Server starts on **http://localhost:8081**
 | **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Architecture compliance audit, verification checklist           |
 | **[internal/CORE.md](internal/CORE.md)**                           | Core responsibilities and boundaries                            |
 
-### Module System
+### IModule System
 
 | Document                                                                     | Description                                     |
 | ---------------------------------------------------------------------------- | ----------------------------------------------- |
-| **[internal/modules/README.md](internal/modules/README.md)**                 | Module system overview, structure, registration |
+| **[internal/modules/README.md](internal/modules/README.md)**                 | IModule system overview, structure, registration |
 | **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Creating new modules, best practices            |
-| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Module autonomy rules, dependency management    |
-| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Module configuration system                     |
+| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | IModule autonomy rules, dependency management    |
+| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | IModule configuration system                     |
 
 ### Infrastructure & Systems
 
@@ -184,11 +184,11 @@ Server starts on **http://localhost:8081**
 
 ---
 
-## Module System
+## IModule System
 
 ### Available Modules
 
-#### **Posts Module** (`internal/modules/posts`)
+#### **Posts IModule** (`internal/modules/posts`)
 
 User-generated content management:
 
@@ -199,7 +199,7 @@ User-generated content management:
 
 **Full documentation**: [internal/modules/posts/README.md](internal/modules/posts/README.md)
 
-#### **Profiles Module** (`internal/modules/profiles`)
+#### **Profiles IModule** (`internal/modules/profiles`)
 
 User profile and contact management:
 
@@ -210,7 +210,7 @@ User profile and contact management:
 
 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
-#### **Analytics Module** (`internal/modules/analytics`) - Free
+#### **Analytics IModule** (`internal/modules/analytics`) - Free
 
 Analytics, metrics, and reporting:
 
@@ -222,7 +222,7 @@ Analytics, metrics, and reporting:
 
 **Full documentation**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
 
-#### **Warehouse Module** (`internal/modules/warehouse`) - Future Module
+#### **Warehouse IModule** (`internal/modules/warehouse`) - Future IModule
 
 Inventory and product management (planned):
 
@@ -231,20 +231,20 @@ Inventory and product management (planned):
 
 **Planned documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
 
-### Module Structure
+### IModule Structure
 
 Each module follows a consistent structure:
 
 ```
 internal/modules/{module}/
-├── module.go           # Module registration & lifecycle
+├── module.go           # IModule registration & lifecycle
 ├── domain/
 │   └── entity/         # Domain entities
 ├── repository/         # Data access interfaces & implementations
 ├── usecase/            # Business logic
 ├── adapter/
 │   └── handler/        # HTTP handlers & DTOs
-└── README.md           # Module-specific documentation
+└── README.md           # IModule-specific documentation
 ```
 
 ### Enabling/Disabling Modules
@@ -363,7 +363,7 @@ make test-coverage
 
 - **Core Tests**: Domain entities (Country, Currency, Language, Timezone, Permission, Role, User, Session, Purge policies)
 - **Core Use Cases**: Auth, RBAC, Reference data CRUD, Purge operations
-- **Module Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, License validation)
+- **IModule Tests**: Posts (Comment, Post, PostStatus), Profiles (UserContact, UserProfile, ContactType, Gender), Analytics (Metrics, Reports, License validation)
 - **Integration Tests**: Repository operations with real PostgreSQL on port 5433
 - **Test Helpers**: `test/helpers/` and `test/integration/` for fixtures, database setup, transaction management
 
@@ -374,7 +374,7 @@ make test-coverage
 
 ---
 
-## Event Bus
+## Event IBus
 
 **Dual-adapter event bus** for asynchronous operations:
 
@@ -627,7 +627,7 @@ promenade/
 │   ├── jwt/                    # JWT manager
 │   ├── logger/                 # Structured logger
 │   ├── migration/              # Migration manager
-│   ├── module/                 # Module registry
+│   ├── module/                 # IModule registry
 │   ├── purge/                  # Purge registry
 │   ├── response/               # HTTP response helpers
 │   ├── uuidv7/                 # UUID v7 generator
@@ -645,7 +645,7 @@ promenade/
 │   ├── app.dev.yaml            # Dev environment config
 │   ├── app.test.yaml           # Test environment config
 │   ├── app.prod.yaml           # Production config
-│   └── modules.yaml            # Module enable/disable + settings
+│   └── modules.yaml            # IModule enable/disable + settings
 ├── docs/                       # Documentation
 ├── scripts/                    # Helper scripts
 ├── templates/                  # Email templates
@@ -661,7 +661,7 @@ promenade/
 Config priority (YAML first, `.env` fallback):
 
 1. `config/app.{dev|test|prod}.yaml` - Core infrastructure settings
-2. `config/modules.yaml` - Module enable/disable + module-specific settings
+2. `config/modules.yaml` - IModule enable/disable + module-specific settings
 3. `.env.{env}.local` / `.env.{env}` / `.env` - Legacy support
 
 ### Example: `config/app.dev.yaml`
@@ -728,13 +728,13 @@ modules:
 
 ## Creating New Modules
 
-### Step 1: Create Module Structure
+### Step 1: Create IModule Structure
 
 ```bash
 mkdir -p internal/modules/mymodule/{domain/entity,repository,usecase,adapter/handler}
 ```
 
-### Step 2: Implement Module Interface
+### Step 2: Implement IModule Interface
 
 ```go
 // internal/modules/mymodule/module.go
@@ -742,27 +742,27 @@ package mymodule
 
 import "github.com/basilex/promenade/pkg/module"
 
-type Module struct{}
+type IModule struct{}
 
-func (m *Module) Name() string { return "mymodule" }
+func (m *IModule) Name() string { return "mymodule" }
 
-func (m *Module) Initialize(ctx context.Context, core module.Core) error {
+func (m *IModule) Initialize(ctx context.Context, core module.Core) error {
     // Register routes, permissions, purge handlers
     return nil
 }
 
-func (m *Module) Start(ctx context.Context) error {
+func (m *IModule) Start(ctx context.Context) error {
     // Start background workers
     return nil
 }
 
-func (m *Module) Stop(ctx context.Context) error {
+func (m *IModule) Stop(ctx context.Context) error {
     // Graceful shutdown
     return nil
 }
 
 func init() {
-    module.DefaultRegistry.Register(&Module{})
+    module.DefaultRegistry.Register(&IModule{})
 }
 ```
 
@@ -772,7 +772,7 @@ func init() {
 make migrate-create MODULE=mymodule NAME=create_tables
 ```
 
-### Step 4: Enable Module
+### Step 4: Enable IModule
 
 Add to `config/modules.yaml`:
 
@@ -792,7 +792,7 @@ modules:
 
 1. **Start**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - 15-minute overview
 2. **Core Concepts**: [internal/CORE.md](internal/CORE.md) - Core responsibilities
-3. **Module System**: [internal/modules/README.md](internal/modules/README.md)
+3. **IModule System**: [internal/modules/README.md](internal/modules/README.md)
 4. **Hands-on**: Create a simple module following [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
 
 ### For DevOps/Deployment
@@ -806,7 +806,7 @@ modules:
 
 1. **Architecture Overview**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
 2. **Audit & Verification**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
-3. **Module Independence**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
+3. **IModule Independence**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
 4. **Migration System**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
 **Complete index**: [docs/INDEX.md](docs/INDEX.md)

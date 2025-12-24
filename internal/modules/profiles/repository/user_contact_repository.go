@@ -7,8 +7,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// UserContactRepository defines the interface for user contact operations
-type UserContactRepository interface {
+// IUserContactRepository defines the interface for user contact operations
+type IUserContactRepository interface {
 	// Create creates a new user contact
 	Create(ctx context.Context, contact *entity.UserContact) error
 

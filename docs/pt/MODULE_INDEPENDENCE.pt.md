@@ -80,7 +80,7 @@ Para criar um novo módulo independente:
 2. Copiar implementação do core ou escrever do zero
 3. Atualizar todos os imports para apontar para caminhos do módulo
 4. Definir erros específicos do módulo em `domain/entity/errors.go`
-5. Implementar interface `module.Module` em `module.go`
+5. Implementar interface `module.IModule` em `module.go`
 6. Auto-registrar em `register.go` usando `init()`
 
 ## Comando de Verificação

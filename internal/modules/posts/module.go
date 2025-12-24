@@ -18,19 +18,19 @@ import (
 	"github.com/basilex/promenade/pkg/purge"
 )
 
-// PostsModule implements module.Module for user posts functionality
+// PostsModule implements module.IModule for user posts functionality
 type PostsModule struct {
 	db             *sqlx.DB
-	eventBus       bus.Bus
-	config         *moduleconfig.Config // Module's own config
-	postUseCase    usecase.UserPostUseCase
+	eventBus       bus.IBus
+	config         *moduleconfig.Config // IModule's own config
+	postUseCase    usecase.IUserPostUseCase
 	postHandler    *handler.UserPostHandler
-	commentUseCase usecase.CommentUseCase
+	commentUseCase usecase.ICommentUseCase
 	commentHandler *handler.CommentHandler
 }
 
 // New creates a new posts module instance
-func New() module.Module {
+func New() module.IModule {
 	return &PostsModule{}
 }
 
@@ -67,8 +67,8 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 	} else {
 		m.config = cfg
 		slog.Info("Posts module config loaded",
-			"version", cfg.Module.Version,
-			"enabled", cfg.Module.Enabled,
+			"version", cfg.IModule.Version,
+			"enabled", cfg.IModule.Enabled,
 		)
 	}
 
@@ -210,7 +210,7 @@ func (m *PostsModule) RegisterMigrations() []module.Migration {
 }
 
 // RegisterEventHandlers subscribes to events
-func (m *PostsModule) RegisterEventHandlers(eventBus bus.Bus) error {
+func (m *PostsModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	slog.Info("Registering posts module event handlers")
 	return nil
 }

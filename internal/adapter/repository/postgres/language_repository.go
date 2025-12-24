@@ -17,7 +17,7 @@ type languageRepository struct {
 }
 
 // NewLanguageRepository creates a new language repository
-func NewLanguageRepository(db *sqlx.DB) repository.LanguageRepository {
+func NewLanguageRepository(db *sqlx.DB) repository.ILanguageRepository {
 	return &languageRepository{
 		BaseRepository: NewBaseRepository(db),
 	}

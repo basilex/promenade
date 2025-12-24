@@ -9,8 +9,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// RegionUseCase interface defines operations for region management
-type RegionUseCase interface {
+// IRegionUseCase interface defines operations for region management
+type IRegionUseCase interface {
 	Create(ctx context.Context, region *entity.Region) error
 	GetByID(ctx context.Context, id uuidv7.UUID) (*entity.Region, error)
 	GetByCode(ctx context.Context, countryID uuidv7.UUID, code string) (*entity.Region, error)
@@ -23,10 +23,10 @@ type RegionUseCase interface {
 }
 
 type regionUseCase struct {
-	regionRepo repository.RegionRepository
+	regionRepo repository.IRegionRepository
 }
 
-func NewRegionUseCase(regionRepo repository.RegionRepository) RegionUseCase {
+func NewRegionUseCase(regionRepo repository.IRegionRepository) IRegionUseCase {
 	return &regionUseCase{
 		regionRepo: regionRepo,
 	}

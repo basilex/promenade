@@ -1,4 +1,4 @@
-# Audit Module Mocks
+# Audit IModule Mocks
 
 This directory contains auto-generated mocks for the audit module's repository interfaces.
 
@@ -52,7 +52,7 @@ func TestAuditEventUseCase_GetEvent(t *testing.T) {
 
 Run `make mocks-audit` after:
 
-- Adding new methods to `AuditEventRepository`
+- Adding new methods to `IAuditEventRepository`
 - Changing method signatures
 - Modifying return types
 

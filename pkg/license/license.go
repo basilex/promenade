@@ -27,7 +27,7 @@ var (
 
 // License represents a parsed license key
 type License struct {
-	Module     string
+	IModule     string
 	Tier       string
 	ExpiryDate time.Time
 	Signature  string
@@ -57,7 +57,7 @@ func Parse(licenseKey string) (*License, error) {
 	}
 
 	return &License{
-		Module:     parts[1],
+		IModule:     parts[1],
 		Tier:       parts[2],
 		ExpiryDate: expiryDate,
 		Signature:  strings.Join(parts[4:], "-"), // Join remaining parts as signature
@@ -67,7 +67,7 @@ func Parse(licenseKey string) (*License, error) {
 // Validate checks license validity against secret and module name
 func (l *License) Validate(secret, expectedModule string, gracePeriodDays int) error {
 	// Check module match
-	if !strings.EqualFold(l.Module, expectedModule) {
+	if !strings.EqualFold(l.IModule, expectedModule) {
 		return ErrModuleMismatch
 	}
 
@@ -102,7 +102,7 @@ func (l *License) DaysUntilExpiry() int {
 // generateSignature creates HMAC-SHA256 signature
 func (l *License) generateSignature(secret string) string {
 	data := fmt.Sprintf("PROMENADE-%s-%s-%s",
-		l.Module,
+		l.IModule,
 		l.Tier,
 		l.ExpiryDate.Format("20060102"))
 
@@ -117,7 +117,7 @@ func (l *License) generateSignature(secret string) string {
 // Generate creates a new license key (for testing/tooling)
 func Generate(secret, module, tier string, expiryDate time.Time) string {
 	license := &License{
-		Module:     strings.ToUpper(module),
+		IModule:     strings.ToUpper(module),
 		Tier:       strings.ToUpper(tier),
 		ExpiryDate: expiryDate,
 	}
@@ -126,7 +126,7 @@ func Generate(secret, module, tier string, expiryDate time.Time) string {
 	license.Signature = signature
 
 	return fmt.Sprintf("PROMENADE-%s-%s-%s-%s",
-		license.Module,
+		license.IModule,
 		license.Tier,
 		expiryDate.Format("20060102"),
 		signature)

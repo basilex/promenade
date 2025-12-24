@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// TimezoneRepository defines the interface for timezone data operations
-type TimezoneRepository interface {
+// ITimezoneRepository defines the interface for timezone data operations
+type ITimezoneRepository interface {
 	// Create creates a new timezone
 	Create(ctx context.Context, timezone *entity.Timezone) error
 
