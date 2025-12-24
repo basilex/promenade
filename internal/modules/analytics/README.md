@@ -1,9 +1,9 @@
 # Analytics Module
 
-**Status:** Commercial (License Required)  
+**Status:** Free  
 **Version:** 1.0.0
 
-Advanced analytics, metrics collection, custom reports, and dashboards for Promenade.
+Analytics, metrics collection, custom reports, and dashboards for Promenade.
 
 ---
 
@@ -47,96 +47,6 @@ All tables use `analytics_` prefix:
 | `analytics_report_schedules`  | Scheduled report configurations |
 | `analytics_dashboards`        | User dashboards                 |
 | `analytics_dashboard_widgets` | Dashboard widgets               |
-
----
-
-## License System
-
-### License Format
-
-```
-PROMENADE-ANALYTICS-{TIER}-{EXPIRY}-{SIGNATURE}
-```
-
-**Example:**
-
-```
-PROMENADE-ANALYTICS-PRO-20261231-AbCd1234Xyz...
-```
-
-### License Tiers
-
-| Tier       | Features                                    |
-| ---------- | ------------------------------------------- |
-| BASIC      | 30 days history, basic metrics, JSON export |
-| PRO        | 1 year history, custom reports, all formats |
-| ENTERPRISE | Unlimited history, scheduled reports, API   |
-
-### Configuration
-
-**Development (license not required):**
-
-```yaml
-module:
-  license_required: false
-```
-
-**Production (license required):**
-
-```yaml
-module:
-  license_required: true
-
-license:
-  key: "" # Set via ANALYTICS_LICENSE_KEY environment variable
-  validation:
-    check_on_startup: true
-    check_on_request: true
-  grace_period_days: 3
-```
-
-### Environment Variables
-
-```bash
-# License key
-export ANALYTICS_LICENSE_KEY="PROMENADE-ANALYTICS-PRO-20261231-..."
-
-# License secret (for validation)
-export LICENSE_SECRET="your-secret-key"
-```
-
-### Generating License Keys
-
-Use the `license.Generate()` function:
-
-```go
-import "github.com/basilex/promenade/internal/modules/analytics/license"
-
-key := license.Generate(
-    "your-secret-key",
-    "analytics",
-    license.TierPro,
-    time.Date(2026, 12, 31, 0, 0, 0, 0, time.UTC),
-)
-// Returns: PROMENADE-ANALYTICS-PRO-20261231-{signature}
-```
-
-### License Validation
-
-The module validates licenses automatically on:
-
-- Module initialization (startup)
-- Per-request (if enabled in config)
-- Health checks
-
-**Validation rules:**
-
-1. Signature verification (HMAC-SHA256)
-2. Module name match
-3. Expiration check with grace period
-4. Format validation
-
-**Grace period:** Allows continued operation for N days after expiration (configurable).
 
 ---
 
@@ -324,23 +234,22 @@ make migrate-rollback MODULE=analytics STEPS=1
    ```
 
 2. Verify license (if required):
+   Testing
 
-   ```bash
-   echo $ANALYTICS_LICENSE_KEY
-   ```
+Run module tests:
 
-3. Check logs for initialization errors
+````bash
+go test ./internal/modules/analyticsModule Not Loading
 
----
+1. Check `config/modules.yaml`:
 
-## Related Documentation
+   ```yaml
+   modules:
+     enabled:
+       - analytics
+````
 
-- [Module Development Guide](../../../docs/MODULE_DEVELOPMENT.md)
-- [Module Independence](../../../docs/MODULE_INDEPENDENCE.md)
-- [License System Architecture](../../../docs/LICENSE_ARCHITECTURE.md) (TODO)
-
----
+## 2
 
 **Author:** Promenade Team  
-**License:** Commercial (requires valid license key)  
-**Support:** For licensing inquiries, contact: license@promenade.example.com
+**License:** MIT (Free)

@@ -2,13 +2,10 @@ package analytics
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"os"
 
 	"github.com/basilex/promenade/internal/modules/analytics/adapter/http/handler"
 	"github.com/basilex/promenade/internal/modules/analytics/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/modules/analytics/license"
 	"github.com/basilex/promenade/internal/modules/analytics/usecase"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/module"
@@ -19,22 +16,15 @@ import (
 type AnalyticsModule struct {
 	core           *module.Core
 	config         *Config
-	license        *license.License
 	logger         *slog.Logger
 	metricsHandler *handler.MetricsHandler
 }
 
 // Config holds analytics module configuration
 type Config struct {
-	LicenseRequired    bool   `yaml:"license_required"`
-	LicenseKey         string `yaml:"license_key"`
-	ValidateExpiry     bool   `yaml:"validate_expiry"`
-	ValidateSignature  bool   `yaml:"validate_signature"`
-	GracePeriodDays    int    `yaml:"grace_period_days"`
-	ValidateOnRequest  bool   `yaml:"validate_on_request"`
-	MetricsRetention   int    `yaml:"metrics_retention_days"`
-	MaxReportsPerUser  int    `yaml:"max_reports_per_user"`
-	MaxDashboards      int    `yaml:"max_dashboards_per_user"`
+	MetricsRetention  int `yaml:"metrics_retention_days"`
+	MaxReportsPerUser int `yaml:"max_reports_per_user"`
+	MaxDashboards     int `yaml:"max_dashboards_per_user"`
 }
 
 // New creates a new analytics module instance
@@ -49,7 +39,7 @@ func (m *AnalyticsModule) Metadata() module.Metadata {
 	return module.Metadata{
 		Name:        "analytics",
 		Version:     "1.0.0",
-		Description: "Advanced analytics and reporting (Commercial)",
+		Description: "Analytics and reporting (Free)",
 	}
 }
 
@@ -67,26 +57,9 @@ func (m *AnalyticsModule) Initialize(ctx context.Context, core *module.Core) err
 	// Load module-specific configuration
 	// TODO: Load from config/modules/analytics/config.yaml
 	m.config = &Config{
-		LicenseRequired:   false, // Set via configuration
-		ValidateExpiry:    true,
-		ValidateSignature: true,
-		GracePeriodDays:   7,
 		MetricsRetention:  90,
 		MaxReportsPerUser: 10,
 		MaxDashboards:     5,
-	}
-
-	// Validate license if required
-	if m.config.LicenseRequired {
-		if err := m.validateLicense(); err != nil {
-			return fmt.Errorf("license validation failed: %w", err)
-		}
-		m.logger.Info("License validated successfully",
-			"tier", m.license.Tier,
-			"expiry", m.license.ExpiryDate.Format("2006-01-02"),
-			"days_remaining", m.license.DaysUntilExpiry())
-	} else {
-		m.logger.Warn("License validation disabled (development mode)")
 	}
 
 	// Initialize repositories
@@ -99,41 +72,6 @@ func (m *AnalyticsModule) Initialize(ctx context.Context, core *module.Core) err
 	m.metricsHandler = handler.NewMetricsHandler(analyticsUC, m.logger)
 
 	m.logger.Info("Analytics module initialized successfully")
-	return nil
-}
-
-// validateLicense validates the module license
-func (m *AnalyticsModule) validateLicense() error {
-	// Get license key from config or environment
-	licenseKey := m.config.LicenseKey
-	if licenseKey == "" {
-		licenseKey = os.Getenv("ANALYTICS_LICENSE_KEY")
-	}
-
-	if licenseKey == "" {
-		return fmt.Errorf("license key is required but not provided")
-	}
-
-	// Get secret from environment
-	secret := os.Getenv("LICENSE_SECRET")
-	if secret == "" {
-		secret = "default-dev-secret-change-in-production"
-		m.logger.Warn("Using default license secret (not for production)")
-	}
-
-	// Parse license
-	lic, err := license.Parse(licenseKey)
-	if err != nil {
-		return fmt.Errorf("failed to parse license: %w", err)
-	}
-
-	// Validate license
-	err = lic.Validate(secret, m.Metadata().Name, m.config.GracePeriodDays)
-	if err != nil {
-		return fmt.Errorf("license validation failed: %w", err)
-	}
-
-	m.license = lic
 	return nil
 }
 
@@ -161,25 +99,10 @@ func (m *AnalyticsModule) RegisterRoutes(router *gin.RouterGroup) {
 
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
-		status := "healthy"
-		licenseInfo := make(map[string]interface{})
-
-		if m.license != nil {
-			licenseInfo["tier"] = m.license.Tier
-			licenseInfo["expiry"] = m.license.ExpiryDate.Format("2006-01-02")
-			licenseInfo["days_remaining"] = m.license.DaysUntilExpiry()
-			licenseInfo["expired"] = m.license.IsExpired()
-
-			if m.license.IsExpired() && m.config.LicenseRequired {
-				status = "degraded"
-			}
-		}
-
 		c.JSON(200, gin.H{
-			"status":  status,
+			"status":  "healthy",
 			"module":  m.Metadata().Name,
 			"version": m.Metadata().Version,
-			"license": licenseInfo,
 		})
 	})
 
@@ -238,16 +161,6 @@ func (m *AnalyticsModule) RegisterPermissions() []module.Permission {
 
 // HealthCheck returns the module's health status
 func (m *AnalyticsModule) HealthCheck(ctx context.Context) error {
-	// Check license status
-	if m.license != nil {
-		if m.license.IsExpired() {
-			daysExpired := -m.license.DaysUntilExpiry()
-			if daysExpired > m.config.GracePeriodDays {
-				return fmt.Errorf("license expired %d days ago (grace period exceeded)", daysExpired)
-			}
-		}
-	}
-
 	// TODO: Check database connectivity
 	// TODO: Check background workers status
 

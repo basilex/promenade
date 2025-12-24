@@ -23,12 +23,12 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module        | Entities                         | Description                       | Status     |
-| ------------- | -------------------------------- | --------------------------------- | ---------- |
-| Posts         | posts, comments, likes           | User-generated content            | Free       |
-| Profiles      | contacts, profiles               | User profiles                     | Free       |
-| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | Commercial |
-| Warehouse     | products, inventory              | Inventory management (future)     | Planned    |
+| Module        | Entities                         | Description                   | Status   |
+| ------------- | -------------------------------- | ----------------------------- | -------- |
+| Posts         | posts, comments, likes           | User-generated content        | Free     |
+| Profiles      | contacts, profiles               | User profiles                 | Free     |
+| **Analytics** | **metrics, reports, dashboards** | **Analytics and reporting**   | **Free** |
+| Warehouse     | products, inventory              | Inventory management (future) | Planned  |
 
 Each module is self-contained with:
 
@@ -208,11 +208,11 @@ User profile and contact management:
 
 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
-#### **Analytics Module** (`internal/modules/analytics`) - Commercial (Active)
+#### **Analytics Module** (`internal/modules/analytics`) - Free
 
-Business analytics, metrics, and reporting:
+Analytics, metrics, and reporting:
 
-- **Status**: Enabled - Requires license key (BASIC/PRO/ENTERPRISE)
+- **Status**: Free - Available for all users
 - **Entities**: Metrics, Reports, Dashboards
 - **Features**: Metrics collection, custom reports, visual dashboards
 - **Migrations**: 1 migration (namespace: `analytics`)

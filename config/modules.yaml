@@ -6,7 +6,7 @@ modules:
   enabled:
     - posts # User-generated content: posts + comments + likes
     - profiles # User profiles + contacts (merged into one module)
-    - analytics # Advanced analytics & reporting (Commercial - requires license)
+    - analytics # Analytics & reporting (Free)
 
   # Per-module configuration
   config:
