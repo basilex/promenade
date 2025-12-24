@@ -1,6 +1,6 @@
 # Promenade Testing-Leitfaden
 
-[🇬🇧 English](TESTING_GUIDE.de.md) | [🇺🇦 Українська](../uk/TESTING_GUIDE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | [🇪🇸 Español](../es/TESTING_GUIDE.es.md)
+[🇬🇧 English](../TESTING_GUIDE.md) | [🇺🇦 Українська](../uk/TESTING_GUIDE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | [🇪🇸 Español](../es/TESTING_GUIDE.es.md)
 
 ## Überblick
 

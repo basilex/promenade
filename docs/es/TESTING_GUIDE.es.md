@@ -1,6 +1,6 @@
 # Guía de Pruebas Promenade
 
-[🇬🇧 English](TESTING_GUIDE.es.md) | [🇺🇦 Українська](../uk/TESTING_GUIDE.uk.md) | [🇩🇪 Deutsch](../de/TESTING_GUIDE.de.md) | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | 🇪🇸 **Español**
+[🇬🇧 English](../TESTING_GUIDE.md) | [🇺🇦 Українська](../uk/TESTING_GUIDE.uk.md) | [🇩🇪 Deutsch](../de/TESTING_GUIDE.de.md) | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | 🇪🇸 **Español**
 
 ## Visión General
 

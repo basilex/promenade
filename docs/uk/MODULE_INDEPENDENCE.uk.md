@@ -1,6 +1,6 @@
 # Верифікація незалежності модулів
 
-[🇬🇧 English](MODULE_INDEPENDENCE.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_INDEPENDENCE.de.md) | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
+[🇬🇧 English](../MODULE_INDEPENDENCE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_INDEPENDENCE.de.md) | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
 
 ## Структура модуля Posts
 

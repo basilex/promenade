@@ -1,6 +1,6 @@
 # Guía de Desarrollo de Módulos
 
-[🇬🇧 English](MODULE_DEVELOPMENT.es.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | 🇪🇸 **Español**
+[🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | 🇪🇸 **Español**
 
 Esta guía explica cómo desarrollar módulos personalizados para Promenade usando la Arquitectura de Plugin.
 

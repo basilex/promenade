@@ -1,6 +1,6 @@
 # Modul-Unabhängigkeitsverifizierung
 
-[🇬🇧 English](MODULE_INDEPENDENCE.de.md) | [🇺🇦 Українська](../uk/MODULE_INDEPENDENCE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
+[🇬🇧 English](../MODULE_INDEPENDENCE.md) | [🇺🇦 Українська](../uk/MODULE_INDEPENDENCE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
 
 ## Posts-Modulstruktur
 

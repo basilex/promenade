@@ -1,6 +1,6 @@
 # Modul-Entwicklungs-Leitfaden
 
-[🇬🇧 English](MODULE_DEVELOPMENT.de.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Dieser Leitfaden erklärt, wie man benutzerdefinierte Module für Promenade unter Verwendung der Plugin-Architektur entwickelt.
 

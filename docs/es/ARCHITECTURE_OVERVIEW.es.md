@@ -1,6 +1,6 @@
 # Visión General de la Arquitectura Promenade
 
-[🇬🇧 English](ARCHITECTURE_OVERVIEW.es.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) | [🇩🇪 Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | 🇪🇸 **Español**
+[🇬🇧 English](../ARCHITECTURE_OVERVIEW.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) | [🇩🇪 Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | 🇪🇸 **Español**
 
 Este documento proporciona una visión general de alto nivel de la arquitectura Promenade, organizada en torno a **principios de Clean Architecture** y un **sistema de módulos basado en plugins**.
 

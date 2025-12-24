@@ -1,6 +1,6 @@
 # Архітектура Promenade - Швидка Довідка
 
-[🇬🇧 English](ARCHITECTURE_QUICKREF.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Модулі: Просте Правило
 

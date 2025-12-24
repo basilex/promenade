@@ -1,6 +1,6 @@
 # Огляд архітектури Promenade
 
-[🇬🇧 English](ARCHITECTURE_OVERVIEW.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
+[🇬🇧 English](../ARCHITECTURE_OVERVIEW.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
 
 Цей документ надає високорівневий огляд архітектури Promenade, організованої навколо **принципів Clean Architecture** та **системи модулів на основі плагінів**.
 

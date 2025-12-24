@@ -1,6 +1,6 @@
 # Promenade Architektur - Schnellreferenz
 
-[🇬🇧 English](ARCHITECTURE_QUICKREF.de.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Module: Einfache Regel
 

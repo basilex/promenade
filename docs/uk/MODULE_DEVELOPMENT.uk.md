@@ -1,6 +1,6 @@
 # Посібник з Розробки Модулів
 
-[🇬🇧 English](MODULE_DEVELOPMENT.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[🇬🇧 English](../MODULE_DEVELOPMENT.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Цей посібник пояснює, як розробляти власні модулі для Promenade, використовуючи Плагінну Архітектуру.
 

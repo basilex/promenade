@@ -1,6 +1,6 @@
 # Promenade Dokumentationsindex
 
-[🇬🇧 English](INDEX.de.md) | [🇺🇦 Українська](../uk/INDEX.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/INDEX.pt.md) | [🇪🇸 Español](../es/INDEX.es.md)
+[🇬🇧 English](../INDEX.md) | [🇺🇦 Українська](../uk/INDEX.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/INDEX.pt.md) | [🇪🇸 Español](../es/INDEX.es.md)
 
 Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarchitektur, Entwicklungs-Workflows und Best Practices.
 
