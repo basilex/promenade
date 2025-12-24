@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](README.es.md)
 
-> **📝 Nota sobre traduções**: Alguns documentos técnicos (migrations/, internal/, pkg/, test/) e guias especializados (SOFT*DELETE.md, LOGGING.md, VALIDATION.md, CREDENTIALS.md, MAKEFILE_ARCHITECTURE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK*\*.md) estão disponíveis apenas em inglês no momento. Os principais documentos de arquitetura estão completamente traduzidos para português. Consulte [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md) para a lista de traduções disponíveis.
+> **📝 Nota sobre traduções**: Alguns documentos técnicos (migrations/, internal/, pkg/, test/) e guias especializados (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) estão disponíveis apenas em inglês no momento. Os principais documentos de arquitetura e guias (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) estão completamente traduzidos para português. Consulte [docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md) para a lista de traduções disponíveis.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -140,6 +140,7 @@ Servidor inicia em **http://localhost:8081**
 | **[docs/pt/ARCHITECTURE_OVERVIEW.pt.md](docs/pt/ARCHITECTURE_OVERVIEW.pt.md)** | Diagramas visuais de arquitetura, responsabilidades de camadas, ciclo de vida |
 | **[docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md)** | Referência rápida, árvores de decisão, erros comuns                           |
 | **[docs/pt/ARCHITECTURE_AUDIT.pt.md](docs/pt/ARCHITECTURE_AUDIT.pt.md)**       | Auditoria de conformidade de arquitetura, checklist de verificação            |
+
 ### Sistema de Módulos
 
 | Documento                                                                                | Descrição                                              |
@@ -150,15 +151,16 @@ Servidor inicia em **http://localhost:8081**
 
 ### Infraestrutura & Sistemas
 
-| Documento                                                                          | Descrição                                                         |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **[docs/pt/PURGE_ARCHITECTURE.pt.md](docs/pt/PURGE_ARCHITECTURE.pt.md)**           | Sistema automatizado de expurgação de dados (baseado em registro) |
+| Documento                                                                | Descrição                                                         |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| **[docs/pt/PURGE_ARCHITECTURE.pt.md](docs/pt/PURGE_ARCHITECTURE.pt.md)** | Sistema automatizado de expurgação de dados (baseado em registro) |
+
 ### Guias de Desenvolvimento
 
-| Documento                                                                        | Descrição                                   |
-| -------------------------------------------------------------------------------- | ------------------------------------------- |
-| **[docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md)**                   | Melhores práticas de testes, padrões        |
-| **[docs/pt/TESTING_INFRASTRUCTURE.pt.md](docs/pt/TESTING_INFRASTRUCTURE.pt.md)** | Configuração de infraestrutura de testes    |
+| Documento                                                                        | Descrição                                |
+| -------------------------------------------------------------------------------- | ---------------------------------------- |
+| **[docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md)**                   | Melhores práticas de testes, padrões     |
+| **[docs/pt/TESTING_INFRASTRUCTURE.pt.md](docs/pt/TESTING_INFRASTRUCTURE.pt.md)** | Configuração de infraestrutura de testes |
 
 ### Referências Técnicas
 
@@ -167,9 +169,9 @@ Servidor inicia em **http://localhost:8081**
 | **[docs/pt/UUID_V7_GUIDE.pt.md](docs/pt/UUID_V7_GUIDE.pt.md)** | Implementação e benefícios do UUID v7                      |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Padrão soft delete para conteúdo de usuários               |
 | **[docs/pt/AUTHORIZATION.pt.md](docs/pt/AUTHORIZATION.pt.md)** | Sistema RBAC (4 papéis, permissões wildcard)               |
-| **[docs/LOGGING.md](docs/LOGGING.md)**                         | Logging estruturado com slog                               |
-| **[docs/VALIDATION.md](docs/VALIDATION.md)**                   | Padrões de validação de requisições                        |
-| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**                 | Usuários de teste padrão e credenciais                     |
+| **[docs/pt/LOGGING.pt.md](docs/pt/LOGGING.pt.md)**             | Logging estruturado com slog                               |
+| **[docs/pt/VALIDATION.pt.md](docs/pt/VALIDATION.pt.md)**       | Padrões de validação de requisições                        |
+| **[docs/pt/CREDENTIALS.pt.md](docs/pt/CREDENTIALS.pt.md)**     | Usuários de teste padrão e credenciais                     |
 | **[docs/pt/INDEX.pt.md](docs/pt/INDEX.pt.md)**                 | Índice completo de documentação com trilhas de aprendizado |
 
 ---
@@ -446,7 +448,7 @@ make swagger-v1         # Gerar apenas docs v1
 make swagger-v2         # Gerar apenas docs v2
 ```
 
-**Guia completo Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+**Guia completo Makefile**: [docs/pt/MAKEFILE_ARCHITECTURE.pt.md](docs/pt/MAKEFILE_ARCHITECTURE.pt.md)
 
 ---
 
@@ -526,7 +528,7 @@ log := logger.FromContext(ctx)  // Inclui request_id, user_id
 log.Info("User registered", "email", user.Email)
 ```
 
-[docs/LOGGING.md](docs/LOGGING.md)
+[docs/pt/LOGGING.pt.md](docs/pt/LOGGING.pt.md)
 
 ---
 
@@ -766,12 +768,12 @@ modules:
 ### Para Novos Desenvolvedores
 
 1. **Início**: [docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md) - Visão geral de 15 minutos
-4. **Prática**: Criar um módulo simples seguindo [docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)
+2. **Prática**: Criar um módulo simples seguindo [docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)
 
 ### Para DevOps/Deployment
 
-1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
-4. **Configuração**: [docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)
+1. **Makefile**: [docs/pt/MAKEFILE_ARCHITECTURE.pt.md](docs/pt/MAKEFILE_ARCHITECTURE.pt.md)
+2. **Configuração**: [docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)
 
 ### Para Arquitetos
 

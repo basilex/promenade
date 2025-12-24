@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
 
-> **📝 Hinweis zu Übersetzungen**: Einige technische Dokumente (migrations/, internal/, pkg/, test/) und spezialisierte Leitfäden (SOFT*DELETE.md, LOGGING.md, VALIDATION.md, CREDENTIALS.md, MAKEFILE_ARCHITECTURE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK*\*.md) sind derzeit nur auf Englisch verfügbar. Die wichtigsten Architekturdokumente sind vollständig auf Deutsch übersetzt. Siehe [docs/de/INDEX.de.md](docs/de/INDEX.de.md) für eine Liste der verfügbaren Übersetzungen.
+> **📝 Hinweis zu Übersetzungen**: Einige technische Dokumente (migrations/, internal/, pkg/, test/) und spezialisierte Leitfäden (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) sind derzeit nur auf Englisch verfügbar. Die wichtigsten Architekturdokumente und Leitfäden (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) sind vollständig auf Deutsch übersetzt. Siehe [docs/de/INDEX.de.md](docs/de/INDEX.de.md) für eine Liste der verfügbaren Übersetzungen.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -140,6 +140,7 @@ Server startet auf **http://localhost:8081**
 | **[docs/de/ARCHITECTURE_OVERVIEW.de.md](docs/de/ARCHITECTURE_OVERVIEW.de.md)** | Visuelle Architekturdiagramme, Schichtverantwortlichkeiten, Lebenszyklus |
 | **[docs/de/ARCHITECTURE_QUICKREF.de.md](docs/de/ARCHITECTURE_QUICKREF.de.md)** | Schnellreferenz, Entscheidungsbäume, häufige Fehler                      |
 | **[docs/de/ARCHITECTURE_AUDIT.de.md](docs/de/ARCHITECTURE_AUDIT.de.md)**       | Architektur-Compliance-Audit, Verifikationscheckliste                    |
+
 ### Modulsystem
 
 | Dokument                                                                                 | Beschreibung                                   |
@@ -150,15 +151,16 @@ Server startet auf **http://localhost:8081**
 
 ### Infrastruktur & Systeme
 
-| Dokument                                                                              | Beschreibung                                          |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| **[docs/de/PURGE_ARCHITECTURE.de.md](docs/de/PURGE_ARCHITECTURE.de.md)**              | Automatisiertes Daten-Purge-System (registry-basiert) |
+| Dokument                                                                 | Beschreibung                                          |
+| ------------------------------------------------------------------------ | ----------------------------------------------------- |
+| **[docs/de/PURGE_ARCHITECTURE.de.md](docs/de/PURGE_ARCHITECTURE.de.md)** | Automatisiertes Daten-Purge-System (registry-basiert) |
+
 ### Entwicklungsleitfäden
 
-| Dokument                                                                            | Beschreibung                              |
-| ----------------------------------------------------------------------------------- | ----------------------------------------- |
-| **[docs/de/TESTING_GUIDE.de.md](docs/de/TESTING_GUIDE.de.md)**                      | Testing Best Practices, Patterns          |
-| **[docs/de/TESTING_INFRASTRUCTURE.de.md](docs/de/TESTING_INFRASTRUCTURE.de.md)**    | Test-Infrastruktur-Setup                  |
+| Dokument                                                                         | Beschreibung                     |
+| -------------------------------------------------------------------------------- | -------------------------------- |
+| **[docs/de/TESTING_GUIDE.de.md](docs/de/TESTING_GUIDE.de.md)**                   | Testing Best Practices, Patterns |
+| **[docs/de/TESTING_INFRASTRUCTURE.de.md](docs/de/TESTING_INFRASTRUCTURE.de.md)** | Test-Infrastruktur-Setup         |
 
 ### Technische Referenzen
 
@@ -167,9 +169,9 @@ Server startet auf **http://localhost:8081**
 | **[docs/de/UUID_V7_GUIDE.de.md](docs/de/UUID_V7_GUIDE.de.md)** | UUID v7 Implementierung und Vorteile             |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Soft-Delete-Pattern für Benutzerinhalte          |
 | **[docs/de/AUTHORIZATION.de.md](docs/de/AUTHORIZATION.de.md)** | RBAC-System (4 Rollen, Wildcard-Berechtigungen)  |
-| **[docs/LOGGING.md](docs/LOGGING.md)**                         | Strukturiertes Logging mit slog                  |
-| **[docs/VALIDATION.md](docs/VALIDATION.md)**                   | Request-Validierungsmuster                       |
-| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**                 | Standard-Testbenutzer und Anmeldedaten           |
+| **[docs/de/LOGGING.de.md](docs/de/LOGGING.de.md)**             | Strukturiertes Logging mit slog                  |
+| **[docs/de/VALIDATION.de.md](docs/de/VALIDATION.de.md)**       | Request-Validierungsmuster                       |
+| **[docs/de/CREDENTIALS.de.md](docs/de/CREDENTIALS.de.md)**     | Standard-Testbenutzer und Anmeldedaten           |
 | **[docs/de/INDEX.de.md](docs/de/INDEX.de.md)**                 | Vollständiger Dokumentationsindex mit Lernpfaden |
 
 ---
@@ -446,7 +448,7 @@ make swagger-v1         # Nur v1-Docs generieren
 make swagger-v2         # Nur v2-Docs generieren
 ```
 
-**Vollständiger Makefile-Leitfaden**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+**Vollständiger Makefile-Leitfaden**: [docs/de/MAKEFILE_ARCHITECTURE.de.md](docs/de/MAKEFILE_ARCHITECTURE.de.md)
 
 ---
 
@@ -526,7 +528,7 @@ log := logger.FromContext(ctx)  // Enthält request_id, user_id
 log.Info("User registered", "email", user.Email)
 ```
 
-[docs/LOGGING.md](docs/LOGGING.md)
+[docs/de/LOGGING.de.md](docs/de/LOGGING.de.md)
 
 ---
 
@@ -766,12 +768,12 @@ modules:
 ### Für Neue Entwickler
 
 1. **Start**: [docs/de/ARCHITECTURE_QUICKREF.de.md](docs/de/ARCHITECTURE_QUICKREF.de.md) - 15-Minuten-Übersicht
-4. **Hands-on**: Ein einfaches Modul erstellen gemäß [docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)
+2. **Hands-on**: Ein einfaches Modul erstellen gemäß [docs/de/MODULE_DEVELOPMENT.de.md](docs/de/MODULE_DEVELOPMENT.de.md)
 
 ### Für DevOps/Deployment
 
-1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
-4. **Konfiguration**: [docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)
+1. **Makefile**: [docs/de/MAKEFILE_ARCHITECTURE.de.md](docs/de/MAKEFILE_ARCHITECTURE.de.md)
+2. **Konfiguration**: [docs/de/MODULE_CONFIG_ARCHITECTURE.de.md](docs/de/MODULE_CONFIG_ARCHITECTURE.de.md)
 
 ### Für Architekten
 

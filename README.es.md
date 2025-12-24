@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | 🇪🇸 **Español**
 
-> **📝 Nota sobre traducciones**: Algunos documentos técnicos (migrations/, internal/, pkg/, test/) y guías especializadas (SOFT*DELETE.md, LOGGING.md, VALIDATION.md, CREDENTIALS.md, MAKEFILE_ARCHITECTURE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK*\*.md) están disponibles solo en inglés por el momento. Los principales documentos de arquitectura están completamente traducidos al español. Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista de traducciones disponibles.
+> **📝 Nota sobre Traducciones**: Algunos documentos técnicos (migrations/, internal/, pkg/, test/) y guías especializadas (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) están disponibles solo en inglés. Los principales documentos de arquitectura y guías (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) están completamente traducidos al español. Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista de traducciones disponibles.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -140,19 +140,21 @@ El servidor inicia en **http://localhost:8081**
 | **[docs/es/ARCHITECTURE_OVERVIEW.es.md](docs/es/ARCHITECTURE_OVERVIEW.es.md)** | Diagramas visuales de arquitectura, responsabilidades de capas, ciclo de vida |
 | **[docs/es/ARCHITECTURE_QUICKREF.es.md](docs/es/ARCHITECTURE_QUICKREF.es.md)** | Referencia rápida, árboles de decisión, errores comunes                       |
 | **[docs/es/ARCHITECTURE_AUDIT.es.md](docs/es/ARCHITECTURE_AUDIT.es.md)**       | Auditoría de cumplimiento de arquitectura, checklist de verificación          |
+
 ### Sistema de Módulos
 
-| Documento                                                                                | Descripción                                                 |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **[docs/es/MODULE_DEVELOPMENT.es.md](docs/es/MODULE_DEVELOPMENT.es.md)**                 | Creación de nuevos módulos, mejores prácticas               |
-| **[docs/es/MODULE_INDEPENDENCE.es.md](docs/es/MODULE_INDEPENDENCE.es.md)**               | Reglas de autonomía de módulos, gestión de dependencias     |
-| **[docs/es/MODULE_CONFIG_ARCHITECTURE.es.md](docs/es/MODULE_CONFIG_ARCHITECTURE.es.md)** | Sistema de configuración de módulos                         |
+| Documento                                                                                | Descripción                                             |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **[docs/es/MODULE_DEVELOPMENT.es.md](docs/es/MODULE_DEVELOPMENT.es.md)**                 | Creación de nuevos módulos, mejores prácticas           |
+| **[docs/es/MODULE_INDEPENDENCE.es.md](docs/es/MODULE_INDEPENDENCE.es.md)**               | Reglas de autonomía de módulos, gestión de dependencias |
+| **[docs/es/MODULE_CONFIG_ARCHITECTURE.es.md](docs/es/MODULE_CONFIG_ARCHITECTURE.es.md)** | Sistema de configuración de módulos                     |
 
 ### Infraestructura & Sistemas
 
-| Documento                                                                          | Descripción                                                 |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **[docs/es/PURGE_ARCHITECTURE.es.md](docs/es/PURGE_ARCHITECTURE.es.md)**           | Sistema automatizado de purga de datos (basado en registro) |
+| Documento                                                                | Descripción                                                 |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **[docs/es/PURGE_ARCHITECTURE.es.md](docs/es/PURGE_ARCHITECTURE.es.md)** | Sistema automatizado de purga de datos (basado en registro) |
+
 ### Guías de Desarrollo
 
 | Documento                                                                        | Descripción                                 |
@@ -167,9 +169,9 @@ El servidor inicia en **http://localhost:8081**
 | **[docs/es/UUID_V7_GUIDE.es.md](docs/es/UUID_V7_GUIDE.es.md)** | Implementación y beneficios del UUID v7                   |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Patrón soft delete para contenido de usuarios             |
 | **[docs/es/AUTHORIZATION.es.md](docs/es/AUTHORIZATION.es.md)** | Sistema RBAC (4 roles, permisos wildcard)                 |
-| **[docs/LOGGING.md](docs/LOGGING.md)**                         | Logging estructurado con slog                             |
-| **[docs/VALIDATION.md](docs/VALIDATION.md)**                   | Patrones de validación de peticiones                      |
-| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**                 | Usuarios de prueba por defecto y credenciales             |
+| **[docs/es/LOGGING.es.md](docs/es/LOGGING.es.md)**             | Logging estructurado con slog                             |
+| **[docs/es/VALIDATION.es.md](docs/es/VALIDATION.es.md)**       | Patrones de validación de peticiones                      |
+| **[docs/es/CREDENTIALS.es.md](docs/es/CREDENTIALS.es.md)**     | Usuarios de prueba por defecto y credenciales             |
 | **[docs/es/INDEX.es.md](docs/es/INDEX.es.md)**                 | Índice completo de documentación con rutas de aprendizaje |
 
 ---
@@ -446,7 +448,7 @@ make swagger-v1         # Generar solo docs v1
 make swagger-v2         # Generar solo docs v2
 ```
 
-**Guía completa Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
+**Guía completa Makefile**: [docs/es/MAKEFILE_ARCHITECTURE.es.md](docs/es/MAKEFILE_ARCHITECTURE.es.md)
 
 ---
 
@@ -526,7 +528,7 @@ log := logger.FromContext(ctx)  // Incluye request_id, user_id
 log.Info("User registered", "email", user.Email)
 ```
 
-[docs/LOGGING.md](docs/LOGGING.md)
+[docs/es/LOGGING.es.md](docs/es/LOGGING.es.md)
 
 ---
 
@@ -766,12 +768,12 @@ modules:
 ### Para Nuevos Desarrolladores
 
 1. **Inicio**: [docs/es/ARCHITECTURE_QUICKREF.es.md](docs/es/ARCHITECTURE_QUICKREF.es.md) - Visión general de 15 minutos
-4. **Práctica**: Crear un módulo simple siguiendo [docs/es/MODULE_DEVELOPMENT.es.md](docs/es/MODULE_DEVELOPMENT.es.md)
+2. **Práctica**: Crear un módulo simple siguiendo [docs/es/MODULE_DEVELOPMENT.es.md](docs/es/MODULE_DEVELOPMENT.es.md)
 
 ### Para DevOps/Despliegue
 
-1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
-4. **Configuración**: [docs/es/MODULE_CONFIG_ARCHITECTURE.es.md](docs/es/MODULE_CONFIG_ARCHITECTURE.es.md)
+1. **Makefile**: [docs/es/MAKEFILE_ARCHITECTURE.es.md](docs/es/MAKEFILE_ARCHITECTURE.es.md)
+2. **Configuración**: [docs/es/MODULE_CONFIG_ARCHITECTURE.es.md](docs/es/MODULE_CONFIG_ARCHITECTURE.es.md)
 
 ### Para Arquitectos
 

@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
 
-> **📝 Примітка про переклади**: Деякі технічні документи (migrations/, internal/, pkg/, test/) та спеціалізовані гайди (SOFT*DELETE.md, LOGGING.md, VALIDATION.md, CREDENTIALS.md, MAKEFILE_ARCHITECTURE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK*\*.md) поки доступні тільки англійською мовою. Основні архітектурні документи повністю перекладені українською. Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для переліку доступних перекладів.
+> **📝 Примітка про переклади**: Деякі технічні документи (migrations/, internal/, pkg/, test/) та спеціалізовані гайди (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) поки доступні тільки англійською мовою. Основні архітектурні документи та гайди (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) повністю перекладені українською. Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для переліку доступних перекладів.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -165,12 +165,13 @@ make build
 
 ### Гайди для Розробників
 
-| Документ                                                                         | Опис                                 |
-| -------------------------------------------------------------------------------- | ------------------------------------ |
-| **[docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md)**                   | Кращі практики тестування, патерни   |
-| **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури |
+| Документ                                                                         | Опис                                    |
+| -------------------------------------------------------------------------------- | --------------------------------------- |
+| **[docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md)**                   | Кращі практики тестування, патерни      |
+| **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури    |
+| **[docs/uk/MAKEFILE_ARCHITECTURE.uk.md](docs/uk/MAKEFILE_ARCHITECTURE.uk.md)**   | Система Makefile (модульна архітектура) |
 
-> 📖 **Технічна документація**: test/, Makefile та інші інструменти розробки описані в [англійській версії](README.md).
+> 📖 **Технічна документація**: test/ та інші інструменти розробки описані в [англійській версії](README.md).
 
 ### Технічні Довідники
 
@@ -179,9 +180,9 @@ make build
 | **[docs/uk/UUID_V7_GUIDE.uk.md](docs/uk/UUID_V7_GUIDE.uk.md)** | Реалізація UUID v7 та переваги                     |
 | **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Патерн м'якого видалення для контенту користувачів |
 | **[docs/uk/AUTHORIZATION.uk.md](docs/uk/AUTHORIZATION.uk.md)** | Система RBAC (4 ролі, wildcard дозволи)            |
-| **[docs/LOGGING.md](docs/LOGGING.md)**                         | Структуроване логування з slog                     |
-| **[docs/VALIDATION.md](docs/VALIDATION.md)**                   | Патерни валідації запитів                          |
-| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**                 | Стандартні тестові користувачі та облікові дані    |
+| **[docs/uk/LOGGING.uk.md](docs/uk/LOGGING.uk.md)**             | Структуроване логування з slog                     |
+| **[docs/uk/VALIDATION.uk.md](docs/uk/VALIDATION.uk.md)**       | Патерни валідації запитів                          |
+| **[docs/uk/CREDENTIALS.uk.md](docs/uk/CREDENTIALS.uk.md)**     | Стандартні тестові користувачі та облікові дані    |
 | **[docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)**                 | Повний індекс документації з навчальними шляхами   |
 
 ---
@@ -536,7 +537,7 @@ log := logger.FromContext(ctx)  // Включає request_id, user_id
 log.Info("User registered", "email", user.Email)
 ```
 
-[docs/LOGGING.md](docs/LOGGING.md)
+[docs/uk/LOGGING.uk.md](docs/uk/LOGGING.uk.md)
 
 ---
 
