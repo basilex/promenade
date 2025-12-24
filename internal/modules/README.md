@@ -109,11 +109,11 @@ profiles:
 
 ---
 
-### **Analytics** (`internal/modules/analytics/`) - _✅ Commercial (Active)_
+### **Analytics** (`internal/modules/analytics/`) - _ Commercial (Active)_
 
 **Domain**: Business analytics, metrics, reports, and dashboards
 
-**Status**: ✅ Enabled - Requires license key (BASIC/PRO/ENTERPRISE tiers)
+**Status**:  Enabled - Requires license key (BASIC/PRO/ENTERPRISE tiers)
 
 **Entities**:
 

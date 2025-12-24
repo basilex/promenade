@@ -256,7 +256,7 @@ import (
 ### ALTER WEG (Core kennt Entitäten)
 
 ```go
-// ❌ FALSCH - Core hat entitätsspezifische Config
+//  FALSCH - Core hat entitätsspezifische Config
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -359,7 +359,7 @@ if api, ok := postsModule.(PostsAPI); ok {
 ### Core-Pakete in Modulen Importieren
 
 ```go
-// ❌ FALSCH
+//  FALSCH
 import "github.com/basilex/promenade/internal/domain/entity"
 import "github.com/basilex/promenade/internal/usecase"
 ```
@@ -369,7 +369,7 @@ import "github.com/basilex/promenade/internal/usecase"
 ### Geschäftswerte im Code Hart Codieren
 
 ```go
-// ❌ FALSCH
+//  FALSCH
 const maxCommentLength = 2000
 ```
 
@@ -378,7 +378,7 @@ const maxCommentLength = 2000
 ### Geschäftslogik in Core Platzieren
 
 ```go
-// ❌ FALSCH - PostUseCase in internal/usecase/
+//  FALSCH - PostUseCase in internal/usecase/
 ```
 
 **Behebung:** In `usecase/` Paket des Moduls verschieben.
@@ -386,7 +386,7 @@ const maxCommentLength = 2000
 ### Core Kennt Modul-Entitäten
 
 ```go
-// ❌ FALSCH - Core hat Aufbewahrungstage für Posts
+//  FALSCH - Core hat Aufbewahrungstage für Posts
 type PurgeConfig struct {
     RetentionDaysUserPosts int
 }

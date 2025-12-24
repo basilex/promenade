@@ -4,7 +4,7 @@
 
 ---
 
-🌍 **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
+ **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
 
 A documentação do Promenade está disponível em vários idiomas para torná-la acessível a desenvolvedores em todo o mundo.
 
@@ -14,7 +14,7 @@ A documentação do Promenade está disponível em vários idiomas para torná-l
 
 ### 🇬🇧 English (Primário)
 
-- Status: **Completo** ✅
+- Status: **Completo**
 - Localização: `/docs/` e `README.md`
 - Mantenedor: Equipe principal
 
@@ -52,7 +52,7 @@ A documentação do Promenade está disponível em vários idiomas para torná-l
 
 Os documentos são traduzidos na seguinte ordem de prioridade:
 
-### 🔥 Alta Prioridade (Essencial para começar)
+###  Alta Prioridade (Essencial para começar)
 
 1. `README.md` - Visão geral do projeto e início rápido
 2. `docs/ARCHITECTURE_QUICKREF.md` - Referência rápida de arquitetura
@@ -133,7 +133,7 @@ Atualize o README do idioma relevante (`docs/{lang}/README.md`) para marcar o do
 
 ## Diretrizes de Tradução
 
-### ✅ FAÇA:
+###  FAÇA:
 
 - Traduza termos técnicos de forma consistente (use o glossário abaixo)
 - Mantenha os exemplos de código inalterados (código é universal)
@@ -141,7 +141,7 @@ Atualize o README do idioma relevante (`docs/{lang}/README.md`) para marcar o do
 - Mantenha a mesma estrutura do documento
 - Use convenções do idioma nativo (por exemplo, formatos de data, aspas)
 
-### ❌ NÃO FAÇA:
+###  NÃO FAÇA:
 
 - Não traduza nomes de arquivos ou caminhos no código
 - Não altere exemplos de código ou saídas de comandos
@@ -189,4 +189,4 @@ Agradecimentos especiais aos contribuidores de tradução:
 
 ---
 
-**Tornando o Promenade acessível a desenvolvedores em todo o mundo** 🌍
+**Tornando o Promenade acessível a desenvolvedores em todo o mundo**

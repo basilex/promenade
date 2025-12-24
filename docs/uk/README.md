@@ -20,7 +20,7 @@ docs/uk/
 
 ## Доступні Переклади / Available Translations
 
-### ✅ Готово / Ready
+###  Готово / Ready
 
 - [README.uk.md](../../README.uk.md) - Головна сторінка українською
 - INDEX.uk.md - (в процесі)

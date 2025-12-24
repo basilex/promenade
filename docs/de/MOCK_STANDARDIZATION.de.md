@@ -10,7 +10,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 
 ### 1. Konfigurationsdateien
 
-✅ **`.mockery.yaml` erstellt** - Zentralisierte Konfiguration für die gesamte Mock-Generierung
+ **`.mockery.yaml` erstellt** - Zentralisierte Konfiguration für die gesamte Mock-Generierung
 
 - Definiert Mock-Generierung für Core-Repositories
 - Definiert Mock-Generierung für alle Modul-Repositories
@@ -19,7 +19,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 
 ### 2. Makefile-Befehle
 
-✅ **`Makefile.dev.mk` aktualisiert** mit Standardbefehlen:
+ **`Makefile.dev.mk` aktualisiert** mit Standardbefehlen:
 
 - `make install` - Beinhaltet jetzt die mockery-Installation
 - `make mocks` - Generiert ALLE Mocks (Core + alle Module)
@@ -31,7 +31,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 
 ### 3. Dokumentation
 
-✅ **Umfassende Dokumentation erstellt**:
+ **Umfassende Dokumentation erstellt**:
 
 - [docs/MOCK_GENERATION_STANDARD.md](../MOCK_GENERATION_STANDARD.md) - Projektweiter Standard
 - [internal/adapter/repository/mocks/README.md](../../internal/adapter/repository/mocks/README.md) - Core-Mocks
@@ -42,7 +42,7 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 
 ### 4. Mock-Regenerierung
 
-✅ **Alle Mocks mit mockery regeneriert**:
+ **Alle Mocks mit mockery regeneriert**:
 
 - Core: 10 Repository-Mocks (User, Role, Permission, Session, Countries, Currencies, Regions, Cities, Languages, Timezones)
 - Audit: 1 Repository-Mock (AuditEvent)
@@ -57,24 +57,24 @@ Einheitlicher Ansatz zur Mock-Generierung über **alle Module** im Promenade-Pro
 ### Vorher (inkonsistent)
 
 ```
-❌ Posts: Manuelle Mocks (kein "Code generated"-Header)
-❌ Profiles: Manuelle Mocks (kein "Code generated"-Header)
-✅ Analytics: mockery-generiert (aber keine Config-Datei)
-❌ Audit: Manuelle Mocks (gerade erstellt)
-❌ Keine zentralisierte Konfiguration
-❌ Keine Makefile-Befehle
-❌ Keine Dokumentation
+ Posts: Manuelle Mocks (kein "Code generated"-Header)
+ Profiles: Manuelle Mocks (kein "Code generated"-Header)
+ Analytics: mockery-generiert (aber keine Config-Datei)
+ Audit: Manuelle Mocks (gerade erstellt)
+ Keine zentralisierte Konfiguration
+ Keine Makefile-Befehle
+ Keine Dokumentation
 ```
 
 ### Nachher (vereinheitlicht)
 
 ```
-✅ Alle Module: mockery-generiert mit "Code generated"-Header
-✅ Zentralisierte .mockery.yaml-Konfiguration
-✅ Makefile-Befehle für alle Module
-✅ Umfassende Dokumentation
-✅ CI/CD-bereit mit `make mocks-verify`
-✅ Konsistente Dateibenennung und Struktur
+ Alle Module: mockery-generiert mit "Code generated"-Header
+ Zentralisierte .mockery.yaml-Konfiguration
+ Makefile-Befehle für alle Module
+ Umfassende Dokumentation
+ CI/CD-bereit mit `make mocks-verify`
+ Konsistente Dateibenennung und Struktur
 ```
 
 ## Mock-Dateistruktur (Standard)
@@ -105,34 +105,34 @@ internal/
 ├── adapter/
 │   └── repository/
 │       └── mocks/                           # Core-Mocks
-│           ├── README.md                    ✅ NEU
-│           ├── user_repository_mock.go      ✅ REGENERIERT
+│           ├── README.md                     NEU
+│           ├── user_repository_mock.go       REGENERIERT
 │           └── ...
 └── modules/
     ├── audit/
     │   └── domain/
     │       └── repository/
     │           └── mocks/
-    │               ├── README.md            ✅ NEU
-    │               └── audit_event_repository_mock.go  ✅ REGENERIERT
+    │               ├── README.md             NEU
+    │               └── audit_event_repository_mock.go   REGENERIERT
     ├── posts/
     │   └── domain/
     │       └── repository/
     │           └── mocks/
-    │               ├── README.md            ✅ NEU
-    │               ├── user_post_repository_mock.go    ✅ REGENERIERT
-    │               └── comment_repository_mock.go      ✅ REGENERIERT
+    │               ├── README.md             NEU
+    │               ├── user_post_repository_mock.go     REGENERIERT
+    │               └── comment_repository_mock.go       REGENERIERT
     ├── profiles/
     │   └── repository/
     │       └── mocks/
-    │           ├── README.md                ✅ NEU
-    │           ├── user_profile_repository_mock.go    ✅ REGENERIERT
-    │           └── user_contact_repository_mock.go    ✅ REGENERIERT
+    │           ├── README.md                 NEU
+    │           ├── user_profile_repository_mock.go     REGENERIERT
+    │           └── user_contact_repository_mock.go     REGENERIERT
     └── analytics/
         └── usecase/
             └── mocks/
-                ├── README.md                ✅ NEU
-                └── metric_repository_mock.go           ✅ REGENERIERT
+                ├── README.md                 NEU
+                └── metric_repository_mock.go            REGENERIERT
 ```
 
 ## Workflow (Standard)
@@ -158,13 +158,13 @@ Zur Pipeline hinzufügen:
 
 ## Vorteile
 
-✅ **Konsistenz** - Alle Module verwenden denselben Ansatz
-✅ **Automatisierung** - Keine manuelle Mock-Wartung
-✅ **Typsicherheit** - mockery stellt Interface-Compliance sicher
-✅ **Dokumentation** - Klare READMEs in jedem mocks-Verzeichnis
-✅ **CI/CD-bereit** - Mocks können in Pipeline überprüft werden
-✅ **Wartbarkeit** - Einfache Regenerierung bei Interface-Änderungen
-✅ **Modul-Unabhängigkeit** - Die Mocks jedes Moduls sind eigenständig
+ **Konsistenz** - Alle Module verwenden denselben Ansatz
+ **Automatisierung** - Keine manuelle Mock-Wartung
+ **Typsicherheit** - mockery stellt Interface-Compliance sicher
+ **Dokumentation** - Klare READMEs in jedem mocks-Verzeichnis
+ **CI/CD-bereit** - Mocks können in Pipeline überprüft werden
+ **Wartbarkeit** - Einfache Regenerierung bei Interface-Änderungen
+ **Modul-Unabhängigkeit** - Die Mocks jedes Moduls sind eigenständig
 
 ## Überprüfung
 
@@ -182,14 +182,14 @@ make test
 
 ## Migrations-Checkliste
 
-✅ mockery installieren: `go install github.com/vektra/mockery/v2@latest`
-✅ `.mockery.yaml` mit allen Modul-Konfigurationen erstellen
-✅ Makefile-Befehle hinzufügen (`mocks`, `mocks-{module}`, `mocks-verify`)
-✅ Alle Mocks regenerieren: `make mocks`
-✅ README.md in jedem mocks-Verzeichnis erstellen
-✅ Projektweite Standard-Dokumentation erstellen
-✅ Überprüfen, dass alle Mocks kompilieren
-✅ Bestehende Tests aktualisieren (falls erforderlich)
+ mockery installieren: `go install github.com/vektra/mockery/v2@latest`
+ `.mockery.yaml` mit allen Modul-Konfigurationen erstellen
+ Makefile-Befehle hinzufügen (`mocks`, `mocks-{module}`, `mocks-verify`)
+ Alle Mocks regenerieren: `make mocks`
+ README.md in jedem mocks-Verzeichnis erstellen
+ Projektweite Standard-Dokumentation erstellen
+ Überprüfen, dass alle Mocks kompilieren
+ Bestehende Tests aktualisieren (falls erforderlich)
 
 ## Geänderte/erstellte Dateien
 
@@ -217,20 +217,20 @@ make test
 
 ## Nächste Schritte
 
-1. ✅ **Abgeschlossen** - Alle Mocks standardisiert
+1.  **Abgeschlossen** - Alle Mocks standardisiert
 2. Optional: Inline-Mocks in bestehenden Tests refaktorieren, um zentralisierte Mocks zu verwenden
 3. Optional: `make mocks-verify` zur CI/CD-Pipeline hinzufügen
 4. Zukunft: Dasselbe Pattern auf neue Module anwenden (Warehouse usw.)
 
 ## Erfolgskriterien
 
-✅ Alle Module verwenden mockery-generierte Mocks
-✅ Single Source of Truth (`.mockery.yaml`)
-✅ Konsistente Benennung und Struktur
-✅ Umfassende Dokumentation
-✅ Einfach zu warten und zu erweitern
-✅ CI/CD-bereit
+ Alle Module verwenden mockery-generierte Mocks
+ Single Source of Truth (`.mockery.yaml`)
+ Konsistente Benennung und Struktur
+ Umfassende Dokumentation
+ Einfach zu warten und zu erweitern
+ CI/CD-bereit
 
 ---
 
-**Status**: ✅ ABGESCHLOSSEN - Alle Module folgen jetzt dem einheitlichen Mock-Generierungsstandard.
+**Status**:  ABGESCHLOSSEN - Alle Module folgen jetzt dem einheitlichen Mock-Generierungsstandard.

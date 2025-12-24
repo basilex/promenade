@@ -9,7 +9,7 @@ Makefile             (63 lines)  - Main file: variables, env loading, help
 Makefile.dev.mk      (64 lines)  - Development workflow
 Makefile.test.mk     (57 lines)  - Testing infrastructure
 Makefile.prod.mk     (90 lines)  - Production/DevOps operations
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Total:              274 lines
 ```
 

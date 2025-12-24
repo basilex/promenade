@@ -1,6 +1,6 @@
 # Analytics Module
 
-**Status:** Free  
+**Status:** Free
 **Version:** 1.0.0
 
 Analytics, metrics collection, custom reports, and dashboards for Promenade.
@@ -251,5 +251,5 @@ go test ./internal/modules/analyticsModule Not Loading
 
 ## 2
 
-**Author:** Promenade Team  
+**Author:** Promenade Team
 **License:** MIT (Free)

@@ -914,11 +914,11 @@ func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, pe
 
 El Middleware de Autorización proporciona control de acceso potente y flexible para su API:
 
-[+] **Basado en permisos** - Control granular en formato `resource:action`  
-[+] **Soporte de comodines** - Herencia potente con patrones `*`  
-[+] **Verificaciones compuestas** - Lógica Y/O para requisitos complejos  
-[+] **Atajos de roles** - Verificaciones rápidas basadas en roles cuando sea necesario  
-[+] **Arquitectura limpia** - Separa autorización de autenticación  
+[+] **Basado en permisos** - Control granular en formato `resource:action`
+[+] **Soporte de comodines** - Herencia potente con patrones `*`
+[+] **Verificaciones compuestas** - Lógica Y/O para requisitos complejos
+[+] **Atajos de roles** - Verificaciones rápidas basadas en roles cuando sea necesario
+[+] **Arquitectura limpia** - Separa autorización de autenticación
 [+] **Listo para producción** - Manejo de errores y rendimiento probados
 
 **Referencia Rápida:**

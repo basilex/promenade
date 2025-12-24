@@ -41,42 +41,42 @@ Componentes:
 ### Componentes do Sistema
 
 ```
-┌─────────────────────────────────────────────────────────────┐
+─────────────────────────────────────────────────────────────
 │                    Inicialização da Aplicação                │
-└──────────────────────┬──────────────────────────────────────┘
+└────────────────────────────────────────────────────────────
                        │
                        ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Registro de Módulos    │
          │  (pkg/module)           │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
                   │ Para cada módulo habilitado
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Module.Initialize()    │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Validador de Licença   │
          │  (module/license/)      │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
-    ┌─────────────┼─────────────┐
+    ──────────────────────────
     │             │             │
     ▼             ▼             ▼
 Parse()       Validate()    HealthCheck()
     │             │             │
-    └─────────────┴─────────────┘
+    └──────────────────────────
                   │
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Status da Licença      │
          │  - Válida               │
          │  - Expirada (Graça)     │
          │  - Inválida             │
-         └─────────────────────────┘
+         └─────────────────────────
 ```
 
 ### Fluxo de Validação
@@ -415,9 +415,9 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 | Módulo        | Status           | Nível              | Motivo                            |
 | ------------- | ---------------- | ------------------ | --------------------------------- |
-| posts         | ✅ Gratuito      | N/A                | Recursos sociais principais       |
-| profiles      | ✅ Gratuito      | N/A                | Recursos principais de usuário    |
-| **analytics** | **✅ Comercial** | **PRO/ENTERPRISE** | **Ativo: Analytics como premium** |
+| posts         |  Gratuito      | N/A                | Recursos sociais principais       |
+| profiles      |  Gratuito      | N/A                | Recursos principais de usuário    |
+| **analytics** | ** Comercial** | **PRO/ENTERPRISE** | **Ativo: Analytics como premium** |
 | warehouse     | 🔮 Planejado     | TBD                | Futuro: Gerenciamento de estoque  |
 
 ### Roteiro
@@ -427,7 +427,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 - Módulo Analytics é **comercial** (níveis PRO/ENTERPRISE)
 - Foco em métricas de negócio, relatórios, dashboards
 - Alvo: PMEs, empresas com necessidade de insights de dados
-- Status: ✅ Implementado e ativado
+- Status:  Implementado e ativado
 
 **Fase 2 (Q2 2026 - Planejado)**:
 
@@ -443,7 +443,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Justificativa
 
-1. **Analytics Primeiro**: ✅ Funciona com dados existentes, valor imediato
+1. **Analytics Primeiro**:  Funciona com dados existentes, valor imediato
 2. **Audit Log Premium**: Conformidade é requisito empresarial
 3. **Analytics Gratuito**: Adoção mais ampla, upsell para Audit Log
 
@@ -508,13 +508,13 @@ go test ./internal/modules/analytics/license/... -v
 
 Cobertura de testes:
 
-- ✅ Parsear licença válida
-- ✅ Detectar formato inválido
-- ✅ Verificação de assinatura
-- ✅ Tratamento de expiração
-- ✅ Lógica de período de graça
-- ✅ Incompatibilidade de módulo
-- ✅ Validação de nível
+-  Parsear licença válida
+-  Detectar formato inválido
+-  Verificação de assinatura
+-  Tratamento de expiração
+-  Lógica de período de graça
+-  Incompatibilidade de módulo
+-  Validação de nível
 
 ### Testes de Integração
 
@@ -611,7 +611,7 @@ go run ./cmd/license-generator/main.go \
   -secret="your-secret-key"
 
 # Saída:
-# ✓ License valid
+#  License valid
 # Module: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
@@ -707,6 +707,6 @@ func verifySignature(data, signature, secret string) bool {
 
 ---
 
-**Última Atualização**: 2024-12-19  
-**Versão**: 1.0.0  
+**Última Atualização**: 2024-12-19
+**Versão**: 1.0.0
 **Status**: Pronto para Produção

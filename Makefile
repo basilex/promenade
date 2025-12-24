@@ -38,9 +38,9 @@ include Makefile.prod.mk
 .DEFAULT_GOAL := help
 
 help:  ## Show this help message
-	@echo "╔════════════════════════════════════════════════════════════════╗"
-	@echo "║          Promenade - Available Commands                        ║"
-	@echo "╚════════════════════════════════════════════════════════════════╝"
+	@echo "================================================================"
+	@echo "          Promenade - Available Commands                        "
+	@echo "================================================================"
 	@echo ""
 	@echo "DEV DEVELOPMENT (Makefile.dev.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk

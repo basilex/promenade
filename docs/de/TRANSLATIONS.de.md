@@ -4,7 +4,7 @@
 
 ---
 
-🌍 **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
+ **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
 
 Die Promenade-Dokumentation ist in mehreren Sprachen verfügbar, um sie für Entwickler weltweit zugänglich zu machen.
 
@@ -14,7 +14,7 @@ Die Promenade-Dokumentation ist in mehreren Sprachen verfügbar, um sie für Ent
 
 ### 🇬🇧 English (Primär)
 
-- Status: **Vollständig** ✅
+- Status: **Vollständig**
 - Ort: `/docs/` und `README.md`
 - Betreuer: Kernteam
 
@@ -52,7 +52,7 @@ Die Promenade-Dokumentation ist in mehreren Sprachen verfügbar, um sie für Ent
 
 Dokumente werden in der folgenden Reihenfolge übersetzt:
 
-### 🔥 Hohe Priorität (Wesentlich für den Einstieg)
+###  Hohe Priorität (Wesentlich für den Einstieg)
 
 1. `README.md` - Projektübersicht und Schnellstart
 2. `docs/ARCHITECTURE_QUICKREF.md` - Architektur-Kurzreferenz
@@ -133,7 +133,7 @@ Aktualisieren Sie die entsprechende Sprach-README (`docs/{lang}/README.md`), um 
 
 ## Übersetzungsrichtlinien
 
-### ✅ TUN SIE:
+###  TUN SIE:
 
 - Übersetzen Sie technische Begriffe konsistent (verwenden Sie das Glossar unten)
 - Lassen Sie Code-Beispiele unverändert (Code ist universell)
@@ -141,7 +141,7 @@ Aktualisieren Sie die entsprechende Sprach-README (`docs/{lang}/README.md`), um 
 - Behalten Sie die gleiche Dokumentstruktur bei
 - Verwenden Sie native Sprachkonventionen (z.B. Datumsformate, Anführungszeichen)
 
-### ❌ TUN SIE NICHT:
+###  TUN SIE NICHT:
 
 - Übersetzen Sie keine Dateinamen oder Pfade im Code
 - Ändern Sie keine Code-Beispiele oder Befehlsausgaben
@@ -189,4 +189,4 @@ Besonderer Dank an die Übersetzungsmitwirkenden:
 
 ---
 
-**Promenade für Entwickler weltweit zugänglich machen** 🌍
+**Promenade für Entwickler weltweit zugänglich machen**

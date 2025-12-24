@@ -228,25 +228,25 @@ value := config.GetNestedSetting("settings", "max_content_length")
 
 ```
 config/modules/
-├── posts.dev.yaml         ❌ Zentralisiert
-├── posts.test.yaml        ❌ Zentralisiert
-├── posts.prod.yaml        ❌ Zentralisiert
+├── posts.dev.yaml          Zentralisiert
+├── posts.test.yaml         Zentralisiert
+├── posts.prod.yaml         Zentralisiert
 └── ...
 
-Kern lädt alle Modulkonfigurationen  ❌ Enge Kopplung
-Kern übergibt Konfigurationen an Module  ❌ Abhängigkeit
+Kern lädt alle Modulkonfigurationen   Enge Kopplung
+Kern übergibt Konfigurationen an Module   Abhängigkeit
 ```
 
 ### Neue Architektur (Aktuell)
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml        ✅ Modul-eigentum
-├── config.test.yaml       ✅ Modul-eigentum
-└── config.prod.yaml       ✅ Modul-eigentum
+├── config.dev.yaml         Modul-eigentum
+├── config.test.yaml        Modul-eigentum
+└── config.prod.yaml        Modul-eigentum
 
-Modul lädt eigene Konfiguration  ✅ Autonom
-Modul verwaltet eigene Einstellungen  ✅ Unabhängig
+Modul lädt eigene Konfiguration   Autonom
+Modul verwaltet eigene Einstellungen   Unabhängig
 ```
 
 ## Vorteile
@@ -313,7 +313,7 @@ func (m *WarehouseModule) verifyLicense() error {
 
 ## Best Practices
 
-### TUN ✅
+### TUN
 
 - Modulkonfigurationen in `internal/modules/{name}/config/` speichern
 - Konfiguration in der `Initialize()`-Methode des Moduls laden
@@ -322,7 +322,7 @@ func (m *WarehouseModule) verifyLicense() error {
 - Hilfsmethoden von `pkg/module/config` verwenden
 - Vernünftige Standardwerte für optionale Einstellungen bereitstellen
 
-### NICHT TUN ❌
+### NICHT TUN
 
 - Modulkonfigurationen in `config/modules/` ablegen (veraltet)
 - Modulkonfigurationen im Kern laden

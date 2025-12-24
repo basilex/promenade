@@ -88,7 +88,7 @@ Para crear un nuevo módulo independiente:
 ```bash
 # Verificar cualquier dependencia interna del core
 grep -r "github.com/basilex/promenade/internal/\(domain\|usecase\|adapter\)" \
-  internal/modules/posts/ || echo "✅ Módulo es independiente"
+  internal/modules/posts/ || echo " Módulo es independiente"
 ```
 
 ## Estado Actual

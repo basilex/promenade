@@ -2,7 +2,7 @@
 
 [🇬🇧 English](../ARCHITECTURE_AUDIT.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_AUDIT.uk.md) | [🇩🇪 Deutsch](../de/ARCHITECTURE_AUDIT.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_AUDIT.pt.md) | 🇪🇸 **Español**
 
-**Fecha:** 22 de diciembre de 2025  
+**Fecha:** 22 de diciembre de 2025
 **Estado:** Arquitectura Conforme
 
 ## Resumen Ejecutivo
@@ -697,6 +697,6 @@ Promenade implementa con éxito una **arquitectura de plugins** con:
 
 ---
 
-**Fecha de Auditoría:** 22 de diciembre de 2025  
-**Auditor:** Asistente AI (GitHub Copilot)  
+**Fecha de Auditoría:** 22 de diciembre de 2025
+**Auditor:** Asistente AI (GitHub Copilot)
 **Estado:** APROBADO - La arquitectura es sólida y está correctamente implementada

@@ -914,11 +914,11 @@ func (uc *RoleUseCase) HasPermission(ctx context.Context, userID uuidv7.UUID, pe
 
 Die Autorisierungs-Middleware bietet leistungsstarke, flexible Zugriffskontrolle für Ihre API:
 
-[+] **Berechtigungsbasiert** - Feinkörnige Kontrolle im Format `resource:action`  
-[+] **Wildcard-Unterstützung** - Leistungsstarke Vererbung mit `*` Mustern  
-[+] **Zusammengesetzte Prüfungen** - UND/ODER-Logik für komplexe Anforderungen  
-[+] **Rollen-Shortcuts** - Schnelle rollenbasierte Prüfungen bei Bedarf  
-[+] **Saubere Architektur** - Trennt Autorisierung von Authentifizierung  
+[+] **Berechtigungsbasiert** - Feinkörnige Kontrolle im Format `resource:action`
+[+] **Wildcard-Unterstützung** - Leistungsstarke Vererbung mit `*` Mustern
+[+] **Zusammengesetzte Prüfungen** - UND/ODER-Logik für komplexe Anforderungen
+[+] **Rollen-Shortcuts** - Schnelle rollenbasierte Prüfungen bei Bedarf
+[+] **Saubere Architektur** - Trennt Autorisierung von Authentifizierung
 [+] **Produktionsbereit** - Bewährte Fehlerbehandlung und Leistung
 
 **Schnellreferenz:**

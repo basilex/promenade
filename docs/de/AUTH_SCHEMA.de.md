@@ -34,14 +34,14 @@ Vollständige Referenz für das Authentifizierungssystem in Promenade. Behandelt
 
 **Hauptfunktionen:**
 
-- ✅ JWT-basierte Authentifizierung (Access + Refresh Tokens)
-- ✅ Refresh Token Rotation (Security Best Practice)
-- ✅ Concurrent Session Management (max. 5 pro Benutzer)
-- ✅ Benutzer-Zustandsautomat (unverified → active → suspended/banned)
-- ✅ Passwort-Hashing mit bcrypt (Kosten 10)
-- ✅ Refresh Token Hashing mit SHA-256
-- ✅ Automatische Session-Bereinigung bei Statusänderungen
-- ✅ Asynchrone E-Mail-Benachrichtigungen über Event Bus
+-  JWT-basierte Authentifizierung (Access + Refresh Tokens)
+-  Refresh Token Rotation (Security Best Practice)
+-  Concurrent Session Management (max. 5 pro Benutzer)
+-  Benutzer-Zustandsautomat (unverified → active → suspended/banned)
+-  Passwort-Hashing mit bcrypt (Kosten 10)
+-  Refresh Token Hashing mit SHA-256
+-  Automatische Session-Bereinigung bei Statusänderungen
+-  Asynchrone E-Mail-Benachrichtigungen über Event Bus
 
 ---
 
@@ -116,33 +116,33 @@ const (
                     Register()
                         │
                         ▼
-                 ┌──────────────┐
-                 │  unverified  │  ──────────────┐
-                 └──────────────┘                │
+                 ──────────────
+                 │  unverified  │  ──────────────
+                 └──────────────                │
                         │                        │
                  VerifyEmail()            Login() erlaubt
                         │                        │
                         ▼                        ▼
-                 ┌──────────────┐         Benutzer kann sich anmelden
+                 ──────────────         Benutzer kann sich anmelden
                  │    active    │         (unverified oder active)
-                 └──────────────┘
+                 └──────────────
                     │   │   │
-        ┌───────────┘   │   └───────────┐
+        ───────────   │   └───────────
    Suspend()      Ban()           Deactivate()
         │               │                │
         ▼               ▼                ▼
- ┌───────────┐   ┌──────────┐    ┌─────────────┐
+ ───────────   ──────────    ─────────────
  │ suspended │   │  banned  │    │  inactive   │
- └───────────┘   └──────────┘    └─────────────┘
+ └───────────   └──────────    └─────────────
         │                              │
    Reactivate()                   Reactivate()
         │                              │
-        └────────────┬─────────────────┘
+        └─────────────────────────────
                      │
                      ▼
-              ┌──────────────┐
+              ──────────────
               │    active    │
-              └──────────────┘
+              └──────────────
 ```
 
 ### CanLogin() Logik
@@ -155,14 +155,14 @@ func (u *User) CanLogin() bool {
 
 **Erlaubte Status:**
 
-- ✅ `active` - Voller Zugriff
-- ✅ `unverified` - Kann sich anmelden, aber Funktionen können eingeschränkt sein
+-  `active` - Voller Zugriff
+-  `unverified` - Kann sich anmelden, aber Funktionen können eingeschränkt sein
 
 **Gesperrte Status:**
 
-- ❌ `suspended` - Gibt `ErrUserSuspended` zurück
-- ❌ `banned` - Gibt `ErrUserBanned` zurück
-- ❌ `inactive` - Gibt `ErrUserNotActive` zurück
+-  `suspended` - Gibt `ErrUserSuspended` zurück
+-  `banned` - Gibt `ErrUserBanned` zurück
+-  `inactive` - Gibt `ErrUserNotActive` zurück
 
 ---
 
@@ -223,10 +223,10 @@ Client                  API                    UseCase                Datenbank 
   │                      │                        │  Benutzer gefunden     │                 │
   │                      │                        │                        │                 │
   │                      │                        │  bcrypt.Compare(pwd, hash)               │
-  │                      │                        │  OK ✓                  │                 │
+  │                      │                        │  OK                   │                 │
   │                      │                        │                        │                 │
   │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  JA ✓                  │                 │
+  │                      │                        │  JA                   │                 │
   │                      │                        │                        │                 │
   │                      │                        │  JWTManager.GenerateAccessToken()        │
   │                      │                        │  crypto/rand 32 Bytes für Refresh Token  │
@@ -287,7 +287,7 @@ Client                  API                    UseCase                Datenbank 
   │                      │                        │  Session gefunden      │                 │
   │                      │                        │                        │                 │
   │                      │                        │  session.IsExpired()?  │                 │
-  │                      │                        │  NEIN ✓                │                 │
+  │                      │                        │  NEIN                 │                 │
   │                      │                        │                        │                 │
   │                      │                        │  GetByID(session.user_id)                │
   │                      │                        │───────────────────────>│                 │
@@ -295,7 +295,7 @@ Client                  API                    UseCase                Datenbank 
   │                      │                        │  Benutzer gefunden     │                 │
   │                      │                        │                        │                 │
   │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  JA ✓                  │                 │
+  │                      │                        │  JA                   │                 │
   │                      │                        │                        │                 │
   │                      │                        │  GenerateAccessToken() │                 │
   │                      │                        │  crypto/rand neuer Refresh               │
@@ -476,9 +476,9 @@ func hashToken(token string) string {
 
 **Angriffszenario-Prävention:**
 
-- ❌ Angreifer stiehlt Refresh Token
-- ❌ Angreifer versucht ihn zu verwenden
-- ✅ Token wurde bereits vom legitimen Benutzer rotiert → **Angriff schlägt fehl**
+-  Angreifer stiehlt Refresh Token
+-  Angreifer versucht ihn zu verwenden
+-  Token wurde bereits vom legitimen Benutzer rotiert → **Angriff schlägt fehl**
 
 ---
 

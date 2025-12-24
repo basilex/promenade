@@ -4,7 +4,7 @@
 
 Este diretório contém documentação abrangente sobre a arquitetura da aplicação Promenade, fluxos de trabalho de desenvolvimento e melhores práticas.
 
-> 🌍 **Novo!** A documentação está agora disponível em vários idiomas. Veja [TRANSLATIONS.md](../TRANSLATIONS.md) para o status da tradução e diretrizes de contribuição.
+>  **Novo!** A documentação está agora disponível em vários idiomas. Veja [TRANSLATIONS.md](../TRANSLATIONS.md) para o status da tradução e diretrizes de contribuição.
 
 ---
 
@@ -298,6 +298,6 @@ Ao adicionar nova documentação:
 
 ---
 
-**Versão da Documentação:** 2.0  
-**Última Atualização:** 22 de Dezembro de 2025  
+**Versão da Documentação:** 2.0
+**Última Atualização:** 22 de Dezembro de 2025
 **Mantido por:** Equipe de Desenvolvimento Promenade

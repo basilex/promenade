@@ -209,7 +209,7 @@ internal/
 
 ## Test Coverage
 
-### Core Repositories ✅
+### Core Repositories
 
 - [x] **UserRepository** - 7 tests
   - Create, GetByID, GetByEmail, Update, Delete, ExistsByEmail, List
@@ -220,7 +220,7 @@ internal/
 - [x] **SessionRepository** - 5 tests
   - GetByID, GetByRefreshToken, GetUserSessions, CountUserSessions, Delete
 
-### Reference Data Repositories ✅
+### Reference Data Repositories
 
 - [x] **CountryRepository** - 5 tests
   - GetByID, GetByCode, List, ListByRegion, ExistsByCode
@@ -231,7 +231,7 @@ internal/
 - [x] **TimezoneRepository** - 5 tests
   - GetByID, GetByName, List, ListActive, ExistsByName
 
-### Module Repositories ✅
+### Module Repositories
 
 - [x] **PostRepository** (posts module) - 7 tests
   - Create, GetByID, Update, Delete (soft), ListByUserID, ListByStatus, CountByUserID
@@ -259,10 +259,10 @@ testDB := integration.SetupTestDBWithCleanTables(t)
 Don't manually insert test data - use fixtures:
 
 ```go
-// ❌ Don't do this
+//  Don't do this
 testDB.MustExec(t, "INSERT INTO users ...", ...)
 
-// ✅ Do this instead
+//  Do this instead
 user := fixtures.CreateUser(t, "test@example.com", "password123")
 ```
 
@@ -331,7 +331,7 @@ t.Run("Pagination edge cases", func(t *testing.T) {
 ### Test Database Not Available
 
 ```bash
-❌ Test database not available. Run 'make docker-up' first
+ Test database not available. Run 'make docker-up' first
 ```
 
 **Solution**:
@@ -382,10 +382,10 @@ ERROR: insert or update on table violates foreign key constraint
 Create parent records first using fixtures:
 
 ```go
-// ❌ Wrong order
+//  Wrong order
 post := createPost(t, "nonexistent-user-id")
 
-// ✅ Correct order
+//  Correct order
 user := fixtures.CreateUser(t, "test@example.com", "password123")
 post := createPost(t, user.ID)
 ```

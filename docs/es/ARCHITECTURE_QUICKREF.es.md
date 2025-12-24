@@ -256,7 +256,7 @@ import (
 ### FORMA ANTIGUA (Core conoce entidades)
 
 ```go
-// ❌ INCORRECTO - Core tiene configuración específica de entidades
+//  INCORRECTO - Core tiene configuración específica de entidades
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -359,7 +359,7 @@ if api, ok := postsModule.(PostsAPI); ok {
 ### Importar Paquetes Core en Módulos
 
 ```go
-// ❌ INCORRECTO
+//  INCORRECTO
 import "github.com/basilex/promenade/internal/domain/entity"
 import "github.com/basilex/promenade/internal/usecase"
 ```
@@ -369,7 +369,7 @@ import "github.com/basilex/promenade/internal/usecase"
 ### Codificar Valores de Negocio en el Código
 
 ```go
-// ❌ INCORRECTO
+//  INCORRECTO
 const maxCommentLength = 2000
 ```
 
@@ -378,7 +378,7 @@ const maxCommentLength = 2000
 ### Colocar Lógica de Negocio en Core
 
 ```go
-// ❌ INCORRECTO - PostUseCase en internal/usecase/
+//  INCORRECTO - PostUseCase en internal/usecase/
 ```
 
 **Corrección:** Mover al paquete `usecase/` del módulo.
@@ -386,7 +386,7 @@ const maxCommentLength = 2000
 ### Core Conociendo Entidades de Módulos
 
 ```go
-// ❌ INCORRECTO - Core tiene días de retención para posts
+//  INCORRECTO - Core tiene días de retención para posts
 type PurgeConfig struct {
     RetentionDaysUserPosts int
 }

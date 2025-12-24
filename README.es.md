@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | 🇪🇸 **Español**
 
-> **📝 Nota sobre Traducciones**: Algunos documentos técnicos de directorios internos (migrations/, internal/, pkg/, test/) están disponibles solo en inglés. **Todos los documentos de docs/ están completamente traducidos al español.** Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista completa de traducciones disponibles.
+> ** Nota sobre Traducciones**: Algunos documentos técnicos de directorios internos (migrations/, internal/, pkg/, test/) están disponibles solo en inglés. **Todos los documentos de docs/ están completamente traducidos al español.** Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista completa de traducciones disponibles.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)

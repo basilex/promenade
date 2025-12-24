@@ -13,7 +13,7 @@ Makefile             (63 líneas)  - Archivo principal: variables, carga env, he
 Makefile.dev.mk      (64 líneas)  - Flujo de trabajo de desarrollo
 Makefile.test.mk     (57 líneas)  - Infraestructura de pruebas
 Makefile.prod.mk     (90 líneas)  - Operaciones de producción/DevOps
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Total:              274 líneas
 ```
 

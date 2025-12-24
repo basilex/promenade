@@ -6,12 +6,12 @@ Immutable audit logging system with cryptographic signatures for tamper detectio
 
 ## Features
 
-- ✅ **Immutable Audit Log**: Records cannot be modified after creation
-- ✅ **Cryptographic Signatures**: HMAC-SHA256 signatures for tamper detection
-- ✅ **Flexible Filtering**: Search by user, action, entity, date range
-- ✅ **Signature Verification**: Verify event integrity at any time
-- ✅ **Retention Policies**: Automatic purge based on license tier
-- ✅ **Performance Optimized**: Indexed for common query patterns
+-  **Immutable Audit Log**: Records cannot be modified after creation
+-  **Cryptographic Signatures**: HMAC-SHA256 signatures for tamper detection
+-  **Flexible Filtering**: Search by user, action, entity, date range
+-  **Signature Verification**: Verify event integrity at any time
+-  **Retention Policies**: Automatic purge based on license tier
+-  **Performance Optimized**: Indexed for common query patterns
 
 ## License Tiers
 
@@ -285,6 +285,6 @@ FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
 
 ---
 
-**Module Version**: 1.0.0  
-**License**: Commercial (Proprietary)  
+**Module Version**: 1.0.0
+**License**: Commercial (Proprietary)
 **Requires**: Promenade Core 1.0.0+

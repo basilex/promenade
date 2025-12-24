@@ -4,7 +4,7 @@
 
 Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarchitektur, Entwicklungs-Workflows und Best Practices.
 
-> 🌍 **Neu!** Die Dokumentation ist jetzt in mehreren Sprachen verfügbar. Siehe [TRANSLATIONS.md](../TRANSLATIONS.md) für Übersetzungsstatus und Beitragsrichtlinien.
+>  **Neu!** Die Dokumentation ist jetzt in mehreren Sprachen verfügbar. Siehe [TRANSLATIONS.md](../TRANSLATIONS.md) für Übersetzungsstatus und Beitragsrichtlinien.
 
 ---
 
@@ -298,6 +298,6 @@ Beim Hinzufügen neuer Dokumentation:
 
 ---
 
-**Dokumentationsversion:** 2.0  
-**Zuletzt aktualisiert:** 22. Dezember 2025  
+**Dokumentationsversion:** 2.0
+**Zuletzt aktualisiert:** 22. Dezember 2025
 **Gewartet von:** Promenade-Entwicklungsteam

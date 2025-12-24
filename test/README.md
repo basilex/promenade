@@ -204,7 +204,7 @@ func TestEntity_Method(t *testing.T) {
 
 ##  Test Coverage
 
-**Current Status**: All tests passing 
+**Current Status**: All tests passing
 
 ### Core Domain
 

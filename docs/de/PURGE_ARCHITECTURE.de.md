@@ -275,25 +275,25 @@ purge:
 
 ## Vorteile
 
-### ✅ Modulunabhängigkeit
+###  Modulunabhängigkeit
 
 - Module besitzen ihre Purge-Logik vollständig
 - Keine Kern-Abhängigkeiten von Modul-Entitäten
 - Einfaches Hinzufügen/Entfernen von Modulen
 
-### ✅ Konfigurationsklarheit
+###  Konfigurationsklarheit
 
 - Kern: Infrastruktureinstellungen
 - Module: Geschäftsrichtlinien
 - Klare Trennung der Verantwortlichkeiten
 
-### ✅ Testbarkeit
+###  Testbarkeit
 
 - Handler können unabhängig getestet werden
 - Richtlinien können ohne Code-Änderungen geändert werden
 - Registry-Muster ermöglicht einfaches Mocken
 
-### ✅ Wartbarkeit
+###  Wartbarkeit
 
 - Änderungen an Aufbewahrungsrichtlinien erfordern keine Kernänderungen
 - Neue Entitäten werden automatisch über Registry erkannt
@@ -326,7 +326,7 @@ level=info msg="Purge operation completed" entity=user_posts records_purged=150 
 **Vorher** (Kern kannte Entitäten):
 
 ```go
-// ❌ Kern hatte entitätsspezifische Konfiguration
+//  Kern hatte entitätsspezifische Konfiguration
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -336,7 +336,7 @@ type PurgeConfig struct {
 **Nachher** (Kern hat nur Infrastruktur):
 
 ```go
-// ✅ Kern hat nur Infrastruktureinstellungen
+//  Kern hat nur Infrastruktureinstellungen
 type PurgeConfig struct {
     Enabled   bool
     Schedule  string

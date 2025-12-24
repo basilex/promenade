@@ -311,7 +311,7 @@ func (m *WarehouseModule) verifyLicense() error {
 
 ## Best Practices
 
-### DO 
+### DO
 
 - Store module configs in `internal/modules/{name}/config/`
 - Load config in module's `Initialize()` method
@@ -320,7 +320,7 @@ func (m *WarehouseModule) verifyLicense() error {
 - Use `pkg/module/config` helper methods
 - Provide sensible defaults for optional settings
 
-### DON'T 
+### DON'T
 
 - Put module configs in `config/modules/` (deprecated)
 - Load module configs in core

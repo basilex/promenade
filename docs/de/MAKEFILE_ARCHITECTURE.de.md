@@ -13,7 +13,7 @@ Makefile             (63 Zeilen)  - Hauptdatei: Variablen, env-Laden, help
 Makefile.dev.mk      (64 Zeilen)  - Entwicklungs-Workflow
 Makefile.test.mk     (57 Zeilen)  - Test-Infrastruktur
 Makefile.prod.mk     (90 Zeilen)  - Produktions-/DevOps-Operationen
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Gesamt:              274 Zeilen
 ```
 

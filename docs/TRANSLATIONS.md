@@ -1,6 +1,6 @@
 # Promenade Documentation Translations
 
-🌍 **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
+ **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
 
 Promenade documentation is available in multiple languages to make it accessible to developers worldwide.
 
@@ -10,7 +10,7 @@ Promenade documentation is available in multiple languages to make it accessible
 
 ### 🇬🇧 English (Primary)
 
-- Status: **Complete** ✅
+- Status: **Complete**
 - Location: `/docs/` and `README.md`
 - Maintainer: Core team
 
@@ -48,7 +48,7 @@ Promenade documentation is available in multiple languages to make it accessible
 
 Documents are translated in the following priority order:
 
-### 🔥 High Priority (Essential for getting started)
+###  High Priority (Essential for getting started)
 
 1. `README.md` - Project overview and quick start
 2. `docs/ARCHITECTURE_QUICKREF.md` - Architecture quick reference
@@ -129,7 +129,7 @@ Update the relevant language README (`docs/{lang}/README.md`) to mark the docume
 
 ## Translation Guidelines
 
-### ✅ DO:
+###  DO:
 
 - Translate technical terms consistently (use glossary below)
 - Keep code examples unchanged (code is universal)
@@ -137,7 +137,7 @@ Update the relevant language README (`docs/{lang}/README.md`) to mark the docume
 - Maintain the same document structure
 - Use native language conventions (е.g., date formats, quotes)
 
-### ❌ DON'T:
+###  DON'T:
 
 - Translate file names or paths in code
 - Change code examples or command outputs
@@ -185,4 +185,4 @@ Special thanks to translation contributors:
 
 ---
 
-**Making Promenade accessible to developers worldwide** 🌍
+**Making Promenade accessible to developers worldwide**

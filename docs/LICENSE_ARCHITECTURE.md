@@ -41,42 +41,42 @@ Components:
 ### System Components
 
 ```
-┌─────────────────────────────────────────────────────────────┐
+─────────────────────────────────────────────────────────────
 │                      Application Startup                     │
-└──────────────────────┬──────────────────────────────────────┘
+└────────────────────────────────────────────────────────────
                        │
                        ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Module Registry        │
          │  (pkg/module)           │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
                   │ For each enabled module
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  Module.Initialize()    │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  License Validator      │
          │  (module/license/)      │
-         └────────┬────────────────┘
+         └────────────────────────
                   │
-    ┌─────────────┼─────────────┐
+    ──────────────────────────
     │             │             │
     ▼             ▼             ▼
 Parse()       Validate()    HealthCheck()
     │             │             │
-    └─────────────┴─────────────┘
+    └──────────────────────────
                   │
                   ▼
-         ┌─────────────────────────┐
+         ─────────────────────────
          │  License Status         │
          │  - Valid                │
          │  - Expired (grace)      │
          │  - Invalid              │
-         └─────────────────────────┘
+         └─────────────────────────
 ```
 
 ### Validation Flow
@@ -415,9 +415,9 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 | Module        | Status            | Tier               | Reason                           |
 | ------------- | ----------------- | ------------------ | -------------------------------- |
-| posts         | ✅ Free           | N/A                | Core social features             |
-| profiles      | ✅ Free           | N/A                | Core user features               |
-| **analytics** | **✅ Commercial** | **PRO/ENTERPRISE** | **Active: Analytics as premium** |
+| posts         |  Free           | N/A                | Core social features             |
+| profiles      |  Free           | N/A                | Core user features               |
+| **analytics** | ** Commercial** | **PRO/ENTERPRISE** | **Active: Analytics as premium** |
 | warehouse     | 🔮 Planned        | TBD                | Future: Inventory management     |
 
 ### Roadmap
@@ -427,7 +427,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 - Analytics module is **commercial** (PRO/ENTERPRISE tiers)
 - Focus on business metrics, reports, dashboards
 - Target: SMBs, enterprises needing data insights
-- Status: ✅ Implemented and enabled
+- Status:  Implemented and enabled
 
 **Phase 2 (Q2 2026 - Planned)**:
 
@@ -443,7 +443,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 
 ### Rationale
 
-1. **Analytics First**: ✅ Works with existing data, immediate value
+1. **Analytics First**:  Works with existing data, immediate value
 2. **Audit Log Premium**: Compliance is enterprise requirement
 3. **Free Analytics**: Broader adoption, upsell to Audit Log
 
@@ -508,13 +508,13 @@ go test ./internal/modules/analytics/license/... -v
 
 Test coverage:
 
-- ✅ Valid license parsing
-- ✅ Invalid format detection
-- ✅ Signature verification
-- ✅ Expiration handling
-- ✅ Grace period logic
-- ✅ Module mismatch
-- ✅ Tier validation
+-  Valid license parsing
+-  Invalid format detection
+-  Signature verification
+-  Expiration handling
+-  Grace period logic
+-  Module mismatch
+-  Tier validation
 
 ### Integration Tests
 
@@ -611,7 +611,7 @@ go run ./cmd/license-generator/main.go \
   -secret="your-secret-key"
 
 # Output:
-# ✓ License valid
+#  License valid
 # Module: ANALYTICS
 # Tier: PRO
 # Expiry: 2026-12-31
@@ -707,6 +707,6 @@ func verifySignature(data, signature, secret string) bool {
 
 ---
 
-**Last Updated**: 2024-12-19  
-**Version**: 1.0.0  
+**Last Updated**: 2024-12-19
+**Version**: 1.0.0
 **Status**: Production Ready

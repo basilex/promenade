@@ -4,7 +4,7 @@
 
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
-> 🌍 **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
+>  **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
 
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
@@ -300,6 +300,6 @@ When adding new documentation:
 
 ---
 
-**Documentation Version:** 2.0  
-**Last Updated:** December 22, 2025  
+**Documentation Version:** 2.0
+**Last Updated:** December 22, 2025
 **Maintained by:** Promenade Development Team

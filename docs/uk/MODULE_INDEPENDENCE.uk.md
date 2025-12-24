@@ -88,7 +88,7 @@ internal/modules/posts/
 ```bash
 # Перевірити на будь-які внутрішні залежності core
 grep -r "github.com/basilex/promenade/internal/\(domain\|usecase\|adapter\)" \
-  internal/modules/posts/ || echo "✅ Модуль незалежний"
+  internal/modules/posts/ || echo " Модуль незалежний"
 ```
 
 ## Поточний стан

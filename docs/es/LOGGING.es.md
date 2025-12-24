@@ -8,10 +8,10 @@ Promenade usa **slog** (structured logging de Go 1.21+) para logging de alto ren
 
 ## Beneficios Clave
 
-[+] **Logging estructurado** - Formato JSON para automatización  
-[+] **Campos de contexto** - request_id, user_id, trace_id  
-[+] **Niveles de log** - Debug, Info, Warn, Error  
-[+] **Rendimiento** - Zero allocation donde sea posible  
+[+] **Logging estructurado** - Formato JSON para automatización
+[+] **Campos de contexto** - request_id, user_id, trace_id
+[+] **Niveles de log** - Debug, Info, Warn, Error
+[+] **Rendimiento** - Zero allocation donde sea posible
 [+] **stdlib** - Sin dependencias externas
 
 ## Configuración

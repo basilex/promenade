@@ -2,7 +2,7 @@
 
 [🇬🇧 English](../ARCHITECTURE_AUDIT.md) | [🇺🇦 Українська](../ARCHITECTURE_AUDIT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../ARCHITECTURE_AUDIT.pt.md) | [🇪🇸 Español](../ARCHITECTURE_AUDIT.es.md)
 
-**Datum:** 22. Dezember 2025  
+**Datum:** 22. Dezember 2025
 **Status:** Architekturkonform
 
 ## Zusammenfassung
@@ -548,7 +548,7 @@ test/smoke/
 **Vorher:**
 
 ```go
-// ❌ Core kannte Modul-Entities
+//  Core kannte Modul-Entities
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -558,7 +558,7 @@ type PurgeConfig struct {
 **Nachher:**
 
 ```go
-// ✅ Core hat nur Infrastruktur
+//  Core hat nur Infrastruktur
 type PurgeConfig struct {
     Enabled   bool
     Schedule  string
@@ -697,6 +697,6 @@ Promenade implementiert erfolgreich eine **Plugin-Architektur** mit:
 
 ---
 
-**Audit-Datum:** 22. Dezember 2025  
-**Auditor:** AI Assistant (GitHub Copilot)  
+**Audit-Datum:** 22. Dezember 2025
+**Auditor:** AI Assistant (GitHub Copilot)
 **Status:** BESTANDEN - Architektur ist solide und korrekt implementiert

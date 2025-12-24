@@ -231,14 +231,14 @@ Vea las pruebas de módulos existentes para patrones:
 
 ## Resumen
 
-✅ **HACER**:
+ **HACER**:
 
 - Usar mockery para TODA la generación de mocks
 - Ejecutar `make mocks` después de cambios de interface
 - Usar patrones de mock estándar en pruebas
 - Mantener módulos independientes
 
-❌ **NO HACER**:
+ **NO HACER**:
 
 - No editar archivos de mock generados manualmente
 - No crear implementaciones de mock manuales

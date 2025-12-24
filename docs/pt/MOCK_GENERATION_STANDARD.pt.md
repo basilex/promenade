@@ -231,14 +231,14 @@ Veja os testes de módulos existentes para padrões:
 
 ## Resumo
 
-✅ **FAÇA**:
+ **FAÇA**:
 
 - Use mockery para TODA geração de mock
 - Execute `make mocks` após mudanças de interface
 - Use padrões de mock padrão em testes
 - Mantenha módulos independentes
 
-❌ **NÃO FAÇA**:
+ **NÃO FAÇA**:
 
 - Não edite arquivos de mock gerados manualmente
 - Não crie implementações de mock manuais

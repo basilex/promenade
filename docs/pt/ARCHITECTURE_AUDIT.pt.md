@@ -4,7 +4,7 @@
 
 ---
 
-**Data:** 22 de dezembro de 2025  
+**Data:** 22 de dezembro de 2025
 **Status:** Conformidade Arquitetural
 
 ## Resumo Executivo
@@ -550,7 +550,7 @@ test/smoke/
 **Antes:**
 
 ```go
-// ❌ Core sabia sobre entidades de módulos
+//  Core sabia sobre entidades de módulos
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -560,7 +560,7 @@ type PurgeConfig struct {
 **Depois:**
 
 ```go
-// ✅ Core tem apenas infraestrutura
+//  Core tem apenas infraestrutura
 type PurgeConfig struct {
     Enabled   bool
     Schedule  string
@@ -699,6 +699,6 @@ Promenade implementa com sucesso uma **arquitetura de plugins** com:
 
 ---
 
-**Data da Auditoria:** 22 de dezembro de 2025  
-**Auditor:** AI Assistant (GitHub Copilot)  
+**Data da Auditoria:** 22 de dezembro de 2025
+**Auditor:** AI Assistant (GitHub Copilot)
 **Status:** APROVADO - Arquitetura é sólida e corretamente implementada

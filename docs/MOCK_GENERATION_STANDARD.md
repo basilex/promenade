@@ -229,14 +229,14 @@ See existing module tests for patterns:
 
 ## Summary
 
-✅ **DO**:
+ **DO**:
 
 - Use mockery for ALL mock generation
 - Run `make mocks` after interface changes
 - Use standard mock patterns in tests
 - Keep modules independent
 
-❌ **DON'T**:
+ **DON'T**:
 
 - Edit generated mock files manually
 - Create manual mock implementations

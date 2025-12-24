@@ -34,7 +34,7 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 **BaseRepository**: Core and each module have own BaseRepository (duplication maintains independence)
 
 ```go
-// Every repo embeds BaseRepository
+//Every repo embeds BaseRepository
 type UserRepository struct {
     *BaseRepository
 }
@@ -89,11 +89,11 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, 
 **Response format** (`pkg/response`):
 
 ```go
-// Success
+//Success
 {"status":"success","data":{...}}
-// Error
+//Error
 {"status":"error","error":{"code":"VALIDATION_ERROR","message":"..."}}
-// Paginated
+//Paginated
 {"status":"success","data":[...],"pagination":{"total":100,"page":1,"page_size":20}}
 ```
 
@@ -123,7 +123,7 @@ func (h *PostHandler) Create(c *gin.Context) {
 
 ```go
 type PostRepository struct {
-    *BaseRepository  // Provides Get, Select, Exec, NamedExec, getExecutor
+    *BaseRepository  //Provides Get, Select, Exec, NamedExec, getExecutor
 }
 
 func (r *PostRepository) GetByID(ctx context.Context, id string) (*entity.Post, error) {
@@ -137,11 +137,11 @@ func (r *PostRepository) GetByID(ctx context.Context, id string) (*entity.Post, 
 
 ```go
 err := tm.WithTransaction(ctx, func(ctx context.Context) error {
-    // All repo calls use same tx via getExecutor(ctx)
+    //All repo calls use same tx via getExecutor(ctx)
     if err := userRepo.Create(ctx, user); err != nil {
-        return err  // Auto-rollback
+        return err  //Auto-rollback
     }
-    return postRepo.Create(ctx, post)  // Auto-commit if no error
+    return postRepo.Create(ctx, post)  //Auto-commit if no error
 })
 ```
 
@@ -316,7 +316,7 @@ func (p *UserPost) ValidateTitle() error {
 **Handler → UseCase → Repository**:
 
 ```go
-// Handler: Check error type and return appropriate HTTP code
+//Handler: Check error type and return appropriate HTTP code
 post, err := h.postUC.GetPost(ctx, postID)
 if err != nil {
     if err == entity.ErrNotFound {
@@ -327,7 +327,7 @@ if err != nil {
     return
 }
 
-// UseCase: Define domain errors and add context
+//UseCase: Define domain errors and add context
 if existingPost != nil {
     return nil, ErrSlugAlreadyExists
 }
@@ -335,7 +335,7 @@ if err := uc.postRepo.Create(ctx, post); err != nil {
     return nil, fmt.Errorf("failed to create post: %w", err)
 }
 
-// Repository: Return raw errors from database
+//Repository: Return raw errors from database
 if err := r.Get(ctx, &post, query, id); err != nil {
     if err == sql.ErrNoRows {
         return nil, entity.ErrNotFound
@@ -349,7 +349,7 @@ if err := r.Get(ctx, &post, query, id); err != nil {
 **Status Management** (entities control their own state):
 
 ```go
-// Prefer methods over direct field assignment
+//Prefer methods over direct field assignment
 func (p *UserPost) Publish() {
     p.Status = PostStatusPublished
     now := time.Now()
@@ -373,17 +373,17 @@ func (u *User) Suspend(reason string, until *time.Time) {
 **Always in adapter layer** (`adapter/http/dto/`):
 
 ```go
-// Entity → Response DTO
+//Entity → Response DTO
 func ToPostResponse(post *entity.UserPost) PostResponse {
     return PostResponse{
         ID:       post.ID.String(),
         UserID:   post.UserID.String(),
         Title:    post.Title,
-        // ... map all fields
+        //... map all fields
     }
 }
 
-// Request DTO → Entity (in usecase, not DTO layer)
+//Request DTO → Entity (in usecase, not DTO layer)
 post, err := entity.NewUserPost(userID, req.Title, slug, req.Content)
 ```
 
@@ -399,11 +399,11 @@ post, err := entity.NewUserPost(userID, req.Title, slug, req.Content)
 **Standard responses** (`pkg/response`):
 
 ```go
-// Success with data
+//Success with data
 response.Success(c, http.StatusOK, data)
 response.Success(c, http.StatusCreated, data)
 
-// Errors with message
+//Errors with message
 response.Error(c, http.StatusBadRequest, "invalid request", err)
 response.Error(c, http.StatusNotFound, "post not found", err)
 response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
@@ -412,8 +412,8 @@ response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 **Pagination helpers**:
 
 ```go
-page := response.GetPageFromQuery(c)        // Default: 1
-pageSize := response.GetPageSizeFromQuery(c) // Default: 20, max: 100
+page := response.GetPageFromQuery(c)        //Default: 1
+pageSize := response.GetPageSizeFromQuery(c) //Default: 20, max: 100
 ```
 
 ## Commercial Modules (Optional)
@@ -435,54 +435,54 @@ pageSize := response.GetPageSizeFromQuery(c) // Default: 20, max: 100
 **Interface Names** (завжди з великої літери):
 
 ```go
-// ✅ CORRECT - PascalCase with "UseCase" suffix
+//CORRECT - PascalCase with "UseCase" suffix
 type UserPostUseCase interface { }
 type AuthUseCase interface { }
 type RoleUseCase interface { }
 
-// ✅ CORRECT - PascalCase with "Repository" suffix (never "Repo")
+//CORRECT - PascalCase with "Repository" suffix (never "Repo")
 type UserPostRepository interface { }
 type UserRepository interface { }
 type CountryRepository interface { }
 
-// ❌ WRONG - inconsistent casing or abbreviations
-type userPostUsecase interface { }  // lowercase
-type UserPostUC interface { }       // abbreviated
-type UserRepo interface { }         // "Repo" instead of "Repository"
+//WRONG - inconsistent casing or abbreviations
+type userPostUsecase interface { }  //lowercase
+type UserPostUC interface { }       //abbreviated
+type UserRepo interface { }         //"Repo" instead of "Repository"
 ```
 
 **Implementation Names** (lowercase private):
 
 ```go
-// ✅ CORRECT - lowercase struct, PascalCase constructor
+//CORRECT - lowercase struct, PascalCase constructor
 type userPostUseCase struct { }
 func NewUserPostUseCase(...) UserPostUseCase { return &userPostUseCase{} }
 
 type authUseCase struct { }
 func NewAuthUseCase(...) AuthUseCase { return &authUseCase{} }
 
-// ❌ WRONG - inconsistent patterns
-type UserPostUseCase struct { }  // Public struct
-type userpostUseCase struct { }  // missing camelCase
+//WRONG - inconsistent patterns
+type UserPostUseCase struct { }  //Public struct
+type userpostUseCase struct { }  //missing camelCase
 ```
 
 **Handler Names** (always "{Entity}Handler"):
 
 ```go
-// ✅ CORRECT - Entity name + "Handler"
+//CORRECT - Entity name + "Handler"
 type UserPostHandler struct { postUC usecase.UserPostUseCase }
 type UserProfileHandler struct { profileUC usecase.UserProfileUseCase }
 type AuthHandler struct { authUC usecase.AuthUseCase }
 
-// ❌ WRONG - inconsistent suffixes
-type PostsHandler struct { }    // plural
-type UserPostHdl struct { }     // abbreviated
+//WRONG - inconsistent suffixes
+type PostsHandler struct { }    //plural
+type UserPostHdl struct { }     //abbreviated
 ```
 
 **Method Names** (consistent prefixes):
 
 ```go
-// ✅ Repository methods - always start with Get/Create/Update/Delete/List
+// Repository methods - always start with Get/Create/Update/Delete/List
 func (r *UserRepository) GetByID(ctx, id) (*User, error)
 func (r *UserRepository) GetByEmail(ctx, email) (*User, error)
 func (r *UserRepository) Create(ctx, user) error
@@ -490,15 +490,15 @@ func (r *UserRepository) Update(ctx, user) error
 func (r *UserRepository) Delete(ctx, id) error
 func (r *UserRepository) ListUsers(ctx, limit, offset) ([]*User, error)
 
-// ✅ UseCase methods - business operations
+// UseCase methods - business operations
 func (uc *authUseCase) Login(ctx, email, password) (string, error)
 func (uc *authUseCase) Register(ctx, email, name) (*User, error)
 func (uc *userPostUseCase) PublishPost(ctx, userID, postID) error
 
-// ❌ WRONG - inconsistent prefixes
-func (r *UserRepository) FindByID(ctx, id) (*User, error)  // Use "GetByID"
-func (r *UserRepository) FetchUsers(ctx) ([]*User, error)  // Use "ListUsers"
-func (r *UserRepository) Remove(ctx, id) error             // Use "Delete"
+//WRONG - inconsistent prefixes
+func (r *UserRepository) FindByID(ctx, id) (*User, error)  //Use "GetByID"
+func (r *UserRepository) FetchUsers(ctx) ([]*User, error)  //Use "ListUsers"
+func (r *UserRepository) Remove(ctx, id) error             //Use "Delete"
 ```
 
 ### File & Directory Naming
@@ -550,41 +550,41 @@ internal/modules/{module}/
 **Context** (завжди перший параметр):
 
 ```go
-// ✅ CORRECT - ctx is always first parameter
+//CORRECT - ctx is always first parameter
 func (uc *postUseCase) CreatePost(ctx context.Context, userID uuid.UUID, title string) (*Post, error)
 func (r *PostRepository) GetByID(ctx context.Context, id uuid.UUID) (*Post, error)
 func (h *PostHandler) Create(c *gin.Context)
 
-// ❌ WRONG - ctx not first
+//WRONG - ctx not first
 func CreatePost(userID uuid.UUID, ctx context.Context, title string) (*Post, error)
 ```
 
 **Standard abbreviations** (завжди однакові):
 
 ```go
-uc  - usecase      // e.g., postUC := NewPostUseCase(repo)
-ctx - context      // e.g., ctx context.Context
-req - request      // e.g., var req CreatePostRequest
-err - error        // e.g., if err != nil { }
-tx  - transaction  // e.g., tx, err := db.BeginTx(ctx)
-db  - database     // e.g., db *sqlx.DB
-c   - gin.Context  // e.g., func (h *Handler) Get(c *gin.Context)
+uc  - usecase      //e.g., postUC := NewPostUseCase(repo)
+ctx - context      //e.g., ctx context.Context
+req - request      //e.g., var req CreatePostRequest
+err - error        //e.g., if err != nil { }
+tx  - transaction  //e.g., tx, err := db.BeginTx(ctx)
+db  - database     //e.g., db *sqlx.DB
+c   - gin.Context  //e.g., func (h *Handler) Get(c *gin.Context)
 ```
 
 **Receiver names** (consistent):
 
 ```go
-// ✅ CORRECT - consistent abbreviations
-func (r *UserRepository) GetByID(ctx, id) (*User, error)    // r = repository
-func (uc *authUseCase) Login(ctx, email) (string, error)   // uc = usecase
-func (h *PostHandler) Create(c *gin.Context)               // h = handler
-func (u *User) Validate() error                            // u = entity instance
-func (p *UserPost) Publish()                               // p = entity instance
+//CORRECT - consistent abbreviations
+func (r *UserRepository) GetByID(ctx, id) (*User, error)    //r = repository
+func (uc *authUseCase) Login(ctx, email) (string, error)   //uc = usecase
+func (h *PostHandler) Create(c *gin.Context)               //h = handler
+func (u *User) Validate() error                            //u = entity instance
+func (p *UserPost) Publish()                               //p = entity instance
 
-// ❌ WRONG - inconsistent receivers
-func (repo *UserRepository) GetByID(...)    // Use "r"
-func (usecase *authUseCase) Login(...)      // Use "uc"
-func (handler *PostHandler) Create(...)     // Use "h"
+//WRONG - inconsistent receivers
+func (repo *UserRepository) GetByID(...)    //Use "r"
+func (usecase *authUseCase) Login(...)      //Use "uc"
+func (handler *PostHandler) Create(...)     //Use "h"
 ```
 
 ### Error Messages (Однакові формулювання)
@@ -592,7 +592,7 @@ func (handler *PostHandler) Create(...)     // Use "h"
 **Error variable names**:
 
 ```go
-// ✅ CORRECT - Err{Entity}{Condition}
+//CORRECT - Err{Entity}{Condition}
 var (
     ErrUserNotFound              = errors.New("user not found")
     ErrPostNotFound              = errors.New("post not found")
@@ -602,43 +602,43 @@ var (
     ErrInvalidInput              = errors.New("invalid input")
 )
 
-// ❌ WRONG - inconsistent naming
+//WRONG - inconsistent naming
 var (
-    UserNotFoundError = errors.New(...)  // suffix instead of prefix
-    ErrNoUser = errors.New(...)          // too abbreviated
-    NotFound = errors.New(...)           // missing entity
+    UserNotFoundError = errors.New(...)  //suffix instead of prefix
+    ErrNoUser = errors.New(...)          //too abbreviated
+    NotFound = errors.New(...)           //missing entity
 )
 ```
 
 **Error wrapping format**:
 
 ```go
-// ✅ CORRECT - descriptive context + %w
+//CORRECT - descriptive context + %w
 return nil, fmt.Errorf("failed to create user: %w", err)
 return nil, fmt.Errorf("failed to get post by ID: %w", err)
 return nil, fmt.Errorf("failed to update profile: %w", err)
 
-// ❌ WRONG - inconsistent format
-return nil, fmt.Errorf("error: %w", err)        // not descriptive
-return nil, fmt.Errorf("cannot create: %v", err) // %v instead of %w
-return nil, errors.Wrap(err, "failed")          // use fmt.Errorf
+//WRONG - inconsistent format
+return nil, fmt.Errorf("error: %w", err)        //not descriptive
+return nil, fmt.Errorf("cannot create: %v", err) //%v instead of %w
+return nil, errors.Wrap(err, "failed")          //use fmt.Errorf
 ```
 
 ### Import Order (Завжди однаковий)
 
 ```go
 import (
-    // 1. Standard library (alphabetical)
+    //1. Standard library (alphabetical)
     "context"
     "errors"
     "fmt"
     "time"
 
-    // 2. External packages (alphabetical)
+    //2. External packages (alphabetical)
     "github.com/gin-gonic/gin"
     "github.com/google/uuid"
 
-    // 3. Internal packages (alphabetical by path depth)
+    //3. Internal packages (alphabetical by path depth)
     "github.com/basilex/promenade/internal/domain/entity"
     "github.com/basilex/promenade/internal/domain/repository"
     "github.com/basilex/promenade/pkg/response"
@@ -730,7 +730,7 @@ import (
 ### Documentation
 
 - [ ] Swagger comments on all public handlers
-- [ ] Error variable has comment: `// ErrUserNotFound is returned when...`
+- [ ] Error variable has comment: `//ErrUserNotFound is returned when...`
 - [ ] Complex logic has brief inline comment
 - [ ] README.md updated if module added/changed
 
@@ -743,14 +743,14 @@ import (
 
 **Red Flags** (автоматично reject):
 
-- ❌ Interface name `UserPostUC` (use `UserPostUseCase`)
-- ❌ Public struct `type UserPostUseCase struct` (must be lowercase)
-- ❌ Repository method `FindByID` (use `GetByID`)
-- ❌ `uuid.New()` instead of `uuidv7.New()`
-- ❌ Handler calls repository directly (must go through usecase)
-- ❌ Business logic in handler or repository (must be in usecase)
-- ❌ Missing `ctx context.Context` as first parameter
-- ❌ Directory named `entities/` or `handlers/` (must be singular)
+- Interface name `UserPostUC` (use `UserPostUseCase`)
+- Public struct `type UserPostUseCase struct` (must be lowercase)
+- Repository method `FindByID` (use `GetByID`)
+- `uuid.New()` instead of `uuidv7.New()`
+- Handler calls repository directly (must go through usecase)
+- Business logic in handler or repository (must be in usecase)
+- Missing `ctx context.Context` as first parameter
+- Directory named `entities/` or `handlers/` (must be singular)
 
 ## Key Files
 

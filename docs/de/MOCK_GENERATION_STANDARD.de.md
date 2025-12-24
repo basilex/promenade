@@ -231,14 +231,14 @@ Siehe existierende Modul-Tests für Patterns:
 
 ## Zusammenfassung
 
-✅ **TUN**:
+ **TUN**:
 
 - mockery für ALLE Mock-Generierung verwenden
 - `make mocks` nach Interface-Änderungen ausführen
 - Standard-Mock-Patterns in Tests verwenden
 - Module unabhängig halten
 
-❌ **NICHT TUN**:
+ **NICHT TUN**:
 
 - Generierte Mock-Dateien nicht manuell bearbeiten
 - Keine manuellen Mock-Implementierungen erstellen

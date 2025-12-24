@@ -228,25 +228,25 @@ value := config.GetNestedSetting("settings", "max_content_length")
 
 ```
 config/modules/
-├── posts.dev.yaml         ❌ Centralizado
-├── posts.test.yaml        ❌ Centralizado
-├── posts.prod.yaml        ❌ Centralizado
+├── posts.dev.yaml          Centralizado
+├── posts.test.yaml         Centralizado
+├── posts.prod.yaml         Centralizado
 └── ...
 
-Núcleo carga todas las configuraciones de módulos  ❌ Acoplamiento fuerte
-Núcleo pasa configuraciones a módulos  ❌ Dependencia
+Núcleo carga todas las configuraciones de módulos   Acoplamiento fuerte
+Núcleo pasa configuraciones a módulos   Dependencia
 ```
 
 ### Nueva Arquitectura (Actual)
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml        ✅ Propiedad del módulo
-├── config.test.yaml       ✅ Propiedad del módulo
-└── config.prod.yaml       ✅ Propiedad del módulo
+├── config.dev.yaml         Propiedad del módulo
+├── config.test.yaml        Propiedad del módulo
+└── config.prod.yaml        Propiedad del módulo
 
-Módulo carga propia configuración  ✅ Autónomo
-Módulo gestiona propias configuraciones  ✅ Independiente
+Módulo carga propia configuración   Autónomo
+Módulo gestiona propias configuraciones   Independiente
 ```
 
 ## Beneficios
@@ -313,7 +313,7 @@ func (m *WarehouseModule) verifyLicense() error {
 
 ## Mejores Prácticas
 
-### HACER ✅
+### HACER
 
 - Almacenar configuraciones de módulos en `internal/modules/{nombre}/config/`
 - Cargar configuración en el método `Initialize()` del módulo
@@ -322,7 +322,7 @@ func (m *WarehouseModule) verifyLicense() error {
 - Usar métodos auxiliares de `pkg/module/config`
 - Proporcionar valores predeterminados sensatos para configuraciones opcionales
 
-### NO HACER ❌
+### NO HACER
 
 - Colocar configuraciones de módulos en `config/modules/` (obsoleto)
 - Cargar configuraciones de módulos en el núcleo

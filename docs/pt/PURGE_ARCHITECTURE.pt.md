@@ -275,25 +275,25 @@ purge:
 
 ## Benefícios
 
-### ✅ Independência de Módulo
+###  Independência de Módulo
 
 - Módulos possuem completamente sua lógica de limpeza
 - Sem dependências do núcleo em entidades de módulos
 - Fácil adicionar/remover módulos
 
-### ✅ Clareza de Configuração
+###  Clareza de Configuração
 
 - Núcleo: Configurações de infraestrutura
 - Módulos: Políticas de negócio
 - Separação clara de responsabilidades
 
-### ✅ Testabilidade
+###  Testabilidade
 
 - Manipuladores podem ser testados independentemente
 - Políticas podem ser alteradas sem mudanças de código
 - Padrão de registro permite mocagem fácil
 
-### ✅ Manutenibilidade
+###  Manutenibilidade
 
 - Mudanças em políticas de retenção não requerem mudanças no núcleo
 - Novas entidades automaticamente captadas via registro
@@ -326,7 +326,7 @@ level=info msg="Purge operation completed" entity=user_posts records_purged=150 
 **Antes** (Núcleo conhecia entidades):
 
 ```go
-// ❌ Núcleo tinha configuração específica de entidade
+//  Núcleo tinha configuração específica de entidade
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -336,7 +336,7 @@ type PurgeConfig struct {
 **Depois** (Núcleo tem apenas infraestrutura):
 
 ```go
-// ✅ Núcleo tem apenas configurações de infraestrutura
+//  Núcleo tem apenas configurações de infraestrutura
 type PurgeConfig struct {
     Enabled   bool
     Schedule  string

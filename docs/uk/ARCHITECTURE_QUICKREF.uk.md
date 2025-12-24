@@ -256,7 +256,7 @@ import (
 ### СТАРИЙ СПОСІБ (Core знає про сутності)
 
 ```go
-// ❌ НЕПРАВИЛЬНО - Core має конфігурацію для конкретних сутностей
+//  НЕПРАВИЛЬНО - Core має конфігурацію для конкретних сутностей
 type PurgeConfig struct {
     RetentionDaysUserPosts    int
     RetentionDaysPostComments int
@@ -359,7 +359,7 @@ if api, ok := postsModule.(PostsAPI); ok {
 ### Імпорт Пакетів Core в Модулях
 
 ```go
-// ❌ НЕПРАВИЛЬНО
+//  НЕПРАВИЛЬНО
 import "github.com/basilex/promenade/internal/domain/entity"
 import "github.com/basilex/promenade/internal/usecase"
 ```
@@ -369,7 +369,7 @@ import "github.com/basilex/promenade/internal/usecase"
 ### Жорстке Кодування Бізнес-Значень у Коді
 
 ```go
-// ❌ НЕПРАВИЛЬНО
+//  НЕПРАВИЛЬНО
 const maxCommentLength = 2000
 ```
 
@@ -378,7 +378,7 @@ const maxCommentLength = 2000
 ### Розміщення Бізнес-Логіки в Core
 
 ```go
-// ❌ НЕПРАВИЛЬНО - PostUseCase в internal/usecase/
+//  НЕПРАВИЛЬНО - PostUseCase в internal/usecase/
 ```
 
 **Виправлення:** Перемістити у пакет `usecase/` модуля.
@@ -386,7 +386,7 @@ const maxCommentLength = 2000
 ### Core Знає про Сутності Модулів
 
 ```go
-// ❌ НЕПРАВИЛЬНО - Core має дні зберігання для постів
+//  НЕПРАВИЛЬНО - Core має дні зберігання для постів
 type PurgeConfig struct {
     RetentionDaysUserPosts int
 }
