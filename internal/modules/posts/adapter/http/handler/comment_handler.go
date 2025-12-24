@@ -51,7 +51,7 @@ func (h *CommentHandler) CreateComment(c *gin.Context) {
 	}
 
 	// Get user ID from context (set by auth middleware)
-	userIDInterface, exists := c.Get("userID")
+	userIDInterface, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -137,7 +137,7 @@ func (h *CommentHandler) UpdateComment(c *gin.Context) {
 	}
 
 	// Get user ID from context
-	userIDInterface, exists := c.Get("userID")
+	userIDInterface, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
@@ -188,7 +188,7 @@ func (h *CommentHandler) DeleteComment(c *gin.Context) {
 	}
 
 	// Get user ID from context
-	userIDInterface, exists := c.Get("userID")
+	userIDInterface, exists := c.Get("user_id")
 	if !exists {
 		response.Error(c, http.StatusUnauthorized, "user not authenticated", nil)
 		return
