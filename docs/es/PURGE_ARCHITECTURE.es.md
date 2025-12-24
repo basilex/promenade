@@ -1,6 +1,6 @@
 # Arquitectura del Sistema de Purga
 
-🇬🇧 [English](../PURGE_ARCHITECTURE.md) | [🇺🇦 Українська](../uk/PURGE_ARCHITECTURE.uk.md) | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/PURGE_ARCHITECTURE.pt.md) | 🇪🇸 **Español**
+🇬🇧 [English](PURGE_ARCHITECTURE.es.md) | [🇺🇦 Українська](../uk/PURGE_ARCHITECTURE.uk.md) | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/PURGE_ARCHITECTURE.pt.md) | 🇪🇸 **Español**
 
 ## Descripción General
 

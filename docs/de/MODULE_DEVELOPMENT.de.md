@@ -1,6 +1,6 @@
 # Modul-Entwicklungs-Leitfaden
 
-[🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[🇬🇧 English](MODULE_DEVELOPMENT.de.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Dieser Leitfaden erklärt, wie man benutzerdefinierte Module für Promenade unter Verwendung der Plugin-Architektur entwickelt.
 
@@ -467,7 +467,7 @@ func TestWarehouseModule(t *testing.T) {
 1. Vorhandene Module in `internal/modules/` ansehen
 2. `make generate-module NAME=mymodule` verwenden (TODO)
 3. `pkg/module/` für vollständige API-Referenz prüfen
-4. [ARCHITECTURE_OVERVIEW.md](../ARCHITECTURE_OVERVIEW.md) für Clean-Architecture-Muster lesen
+4. [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.de.md) für Clean-Architecture-Muster lesen
 
 ---
 

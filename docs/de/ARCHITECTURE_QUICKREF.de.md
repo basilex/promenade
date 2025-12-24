@@ -1,6 +1,6 @@
 # Promenade Architektur - Schnellreferenz
 
-[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[🇬🇧 English](ARCHITECTURE_QUICKREF.de.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Module: Einfache Regel
 
@@ -477,11 +477,11 @@ Im Zweifel?
 
 ## Ressourcen
 
-- [ARCHITECTURE_AUDIT.md](../ARCHITECTURE_AUDIT.md) - Detaillierter Architektur-Review
-- [ARCHITECTURE_OVERVIEW.md](../ARCHITECTURE_OVERVIEW.md) - Visuelle Architektur
-- [MODULE_DEVELOPMENT.md](../MODULE_DEVELOPMENT.md) - Modul-Entwicklungs-Leitfaden
-- [MODULE_INDEPENDENCE.md](../MODULE_INDEPENDENCE.md) - Unabhängigkeitsprinzipien
-- [PURGE_ARCHITECTURE.md](../PURGE_ARCHITECTURE.md) - Purge-System-Details
+- [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.de.md) - Detaillierter Architektur-Review
+- [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.de.md) - Visuelle Architektur
+- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md) - Modul-Entwicklungs-Leitfaden
+- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.de.md) - Unabhängigkeitsprinzipien
+- [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.de.md) - Purge-System-Details
 - [../../internal/CORE.md](../../internal/CORE.md) - Core-Komponenten-Dokumentation
 
 ---

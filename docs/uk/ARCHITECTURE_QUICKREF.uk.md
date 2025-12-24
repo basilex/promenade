@@ -1,6 +1,6 @@
 # Архітектура Promenade - Швидка Довідка
 
-[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[🇬🇧 English](ARCHITECTURE_QUICKREF.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Модулі: Просте Правило
 
@@ -477,11 +477,11 @@ make migrate-create NAME=add_my_table
 
 ## Ресурси
 
-- [ARCHITECTURE_AUDIT.md](../ARCHITECTURE_AUDIT.md) - Детальний огляд архітектури
-- [ARCHITECTURE_OVERVIEW.md](../ARCHITECTURE_OVERVIEW.md) - Візуальна архітектура
-- [MODULE_DEVELOPMENT.md](../MODULE_DEVELOPMENT.md) - Посібник з розробки модулів
-- [MODULE_INDEPENDENCE.md](../MODULE_INDEPENDENCE.md) - Принципи незалежності
-- [PURGE_ARCHITECTURE.md](../PURGE_ARCHITECTURE.md) - Деталі системи очищення
+- [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.uk.md) - Детальний огляд архітектури
+- [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.uk.md) - Візуальна архітектура
+- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.uk.md) - Посібник з розробки модулів
+- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.uk.md) - Принципи незалежності
+- [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.uk.md) - Деталі системи очищення
 - [../../internal/CORE.md](../../internal/CORE.md) - Документація компонентів Core
 
 ---

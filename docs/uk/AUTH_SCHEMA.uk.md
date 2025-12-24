@@ -1,6 +1,6 @@
 # Архітектура Системи Автентифікації
 
-🇬🇧 [English](../AUTH_SCHEMA.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/AUTH_SCHEMA.de.md) | [🇵🇹 Português](../pt/AUTH_SCHEMA.pt.md) | [🇪🇸 Español](../es/AUTH_SCHEMA.es.md)
+🇬🇧 [English](AUTH_SCHEMA.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/AUTH_SCHEMA.de.md) | [🇵🇹 Português](../pt/AUTH_SCHEMA.pt.md) | [🇪🇸 Español](../es/AUTH_SCHEMA.es.md)
 
 Повний довідник системи автентифікації в Promenade. Охоплює реєстрацію користувачів, вхід, управління сесіями, обробку токенів та механізми безпеки.
 

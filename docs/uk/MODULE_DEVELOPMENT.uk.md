@@ -1,6 +1,6 @@
 # Посібник з Розробки Модулів
 
-[🇬🇧 English](../MODULE_DEVELOPMENT.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[🇬🇧 English](MODULE_DEVELOPMENT.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Цей посібник пояснює, як розробляти власні модулі для Promenade, використовуючи Плагінну Архітектуру.
 
@@ -467,7 +467,7 @@ func TestWarehouseModule(t *testing.T) {
 1. Переглянути існуючі модулі в `internal/modules/`
 2. Використати `make generate-module NAME=mymodule` (TODO)
 3. Перевірити `pkg/module/` для повного API довідника
-4. Прочитати [ARCHITECTURE_OVERVIEW.md](../ARCHITECTURE_OVERVIEW.md) для шаблонів Clean Architecture
+4. Прочитати [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.uk.md) для шаблонів Clean Architecture
 
 ---
 

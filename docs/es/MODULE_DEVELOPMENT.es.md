@@ -1,6 +1,6 @@
 # Guía de Desarrollo de Módulos
 
-[🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | 🇪🇸 **Español**
+[🇬🇧 English](MODULE_DEVELOPMENT.es.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | 🇪🇸 **Español**
 
 Esta guía explica cómo desarrollar módulos personalizados para Promenade usando la Arquitectura de Plugin.
 
@@ -467,7 +467,7 @@ func TestWarehouseModule(t *testing.T) {
 1. Ver módulos existentes en `internal/modules/`
 2. Usar `make generate-module NAME=mymodule` (TODO)
 3. Verificar `pkg/module/` para referencia completa de API
-4. Leer [ARCHITECTURE_OVERVIEW.md](../ARCHITECTURE_OVERVIEW.md) para patrones de Clean Architecture
+4. Leer [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.es.md) para patrones de Clean Architecture
 
 ---
 

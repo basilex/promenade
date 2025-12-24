@@ -1,6 +1,6 @@
 # Modul-Konfigurationsarchitektur
 
-🇬🇧 [English](../MODULE_CONFIG_ARCHITECTURE.md) | [🇺🇦 Українська](../uk/MODULE_CONFIG_ARCHITECTURE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
+🇬🇧 [English](MODULE_CONFIG_ARCHITECTURE.de.md) | [🇺🇦 Українська](../uk/MODULE_CONFIG_ARCHITECTURE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
 
 ## Überblick
 

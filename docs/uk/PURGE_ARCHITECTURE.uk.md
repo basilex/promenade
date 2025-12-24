@@ -1,6 +1,6 @@
 # Архітектура Системи Очищення
 
-🇬🇧 [English](../PURGE_ARCHITECTURE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/PURGE_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/PURGE_ARCHITECTURE.es.md)
+🇬🇧 [English](PURGE_ARCHITECTURE.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/PURGE_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/PURGE_ARCHITECTURE.es.md)
 
 ## Огляд
 

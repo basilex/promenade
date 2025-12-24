@@ -1,6 +1,6 @@
 # Arquitetura do Sistema de Autenticação
 
-🇬🇧 [English](../AUTH_SCHEMA.md) | [🇺🇦 Українська](../uk/AUTH_SCHEMA.uk.md) | [🇩🇪 Deutsch](../de/AUTH_SCHEMA.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](../es/AUTH_SCHEMA.es.md)
+🇬🇧 [English](AUTH_SCHEMA.pt.md) | [🇺🇦 Українська](../uk/AUTH_SCHEMA.uk.md) | [🇩🇪 Deutsch](../de/AUTH_SCHEMA.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](../es/AUTH_SCHEMA.es.md)
 
 Referência completa para o sistema de autenticação no Promenade. Abrange registro de usuários, login, gerenciamento de sessões, manipulação de tokens e mecanismos de segurança.
 

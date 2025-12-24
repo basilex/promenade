@@ -1,6 +1,6 @@
 # Посібник з тестування Promenade
 
-[🇬🇧 English](../TESTING_GUIDE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/TESTING_GUIDE.de.md) | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | [🇪🇸 Español](../es/TESTING_GUIDE.es.md)
+[🇬🇧 English](TESTING_GUIDE.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/TESTING_GUIDE.de.md) | [🇵🇹 Português](../pt/TESTING_GUIDE.pt.md) | [🇪🇸 Español](../es/TESTING_GUIDE.es.md)
 
 ## Огляд
 

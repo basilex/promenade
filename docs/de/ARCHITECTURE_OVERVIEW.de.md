@@ -1,6 +1,6 @@
 # Promenade Architektur-Überblick
 
-[🇬🇧 English](../ARCHITECTURE_OVERVIEW.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
+[🇬🇧 English](ARCHITECTURE_OVERVIEW.de.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
 
 Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organisiert um **Clean Architecture-Prinzipien** und ein **Plugin-basiertes Modulsystem**.
 
