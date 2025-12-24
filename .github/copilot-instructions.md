@@ -27,7 +27,7 @@ This guide enables AI coding agents to work productively in Promenade. It summar
   - Events embed `bus.BaseEvent` and follow `User{Action}Event` naming. See [pkg/bus/README.md](pkg/bus/README.md).
 - **Core vs Modules**: Core (`internal/domain`, `internal/usecase`) provides auth, RBAC, events, audit, reference data (countries, currencies, regions, cities, payment methods, timezones, languages) - always enabled. Modules add optional business features. See [internal/CORE.md](internal/CORE.md).
 - **Module Wiring**: Core modules wire repo → usecase → handler → router in `init_*.go` files (e.g., [internal/adapter/http/v1/router/init_auth.go](internal/adapter/http/v1/router/init_auth.go)). Business modules self-wire in their `Initialize()` method.
-- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`. All primary keys are UUID v7 (`pkg/uuidv7.New()`), never v4 or auto-increment.
+- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`, `NamedExec`. **Dual BaseRepository Pattern**: Core repos (`internal/adapter/repository/postgres/`) and each module (`internal/modules/*/adapter/repository/postgres/`) have their own BaseRepository implementation to maintain independence. All primary keys are UUID v7 (`pkg/uuidv7.New()`), never v4 or auto-increment.
 - **Namespace-Based Migrations**: Each module has independent migration history (`migrations/{namespace}/NNNNNN_*.sql`). Core migrations run first, then enabled modules. See [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md).
 - **Automated Purge**: Modules register purge handlers via `pkg/purge.DefaultRegistry`. Cron scheduler (`internal/infrastructure/scheduler`) auto-purges soft-deleted records based on retention policies.
 
@@ -73,15 +73,21 @@ This guide enables AI coding agents to work productively in Promenade. It summar
 
 ## 4. Data, Transactions, and Patterns
 
-- **No ORM**: Use raw SQL with sqlx. All repos embed `*BaseRepository` for `Get`, `Select`, `Exec`.
+- **No ORM**: Use raw SQL with sqlx. **Dual BaseRepository Pattern**: Core and each module have their own BaseRepository to maintain independence.
 - **Transactions**: Use `TransactionManager.WithTransaction(ctx, func(ctx) error)`; `getExecutor(ctx)` auto-selects transaction or DB.
 - **UUID v7**: All primary keys use time-ordered UUIDs via `pkg/uuidv7.New()`. Never use `uuid.New()` (v4) or database auto-increment.
 - **Soft Delete**: `user_posts` and `post_comments` use `deleted_at` timestamp. **CRITICAL**: Always filter `deleted_at IS NULL` in SELECT queries. See [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md).
+- **BaseRepository Pattern**:
+  - **Core**: `internal/adapter/repository/postgres/base_repository.go`
+  - **Modules**: Each module has `internal/modules/{name}/adapter/repository/postgres/base_repository.go`
+  - Both provide: `Get()`, `Select()`, `Exec()`, `NamedExec()`, `getExecutor()`
+  - This duplication maintains module independence (no core dependencies)
 - **BaseRepository Pattern**: All repos in `internal/adapter/repository/postgres/*_repository.go` embed `*BaseRepository` which provides:
 
   - `Get(ctx, dest, query, args...)` - Single row
   - `Select(ctx, dest, query, args...)` - Multiple rows
   - `Exec(ctx, query, args...)` - No return
+  - `NamedExec(ctx, query, arg)` - Named parameter execution
   - `getExecutor(ctx)` - Auto-selects transaction or DB connection from context
 
   Example:
@@ -96,6 +102,8 @@ This guide enables AI coding agents to work productively in Promenade. It summar
       return &user, nil
   }
   ```
+
+  **Module Repositories**: Modules have identical BaseRepository at `internal/modules/{name}/adapter/repository/postgres/base_repository.go` to avoid core dependencies.
 
 ---
 

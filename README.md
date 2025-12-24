@@ -1,6 +1,6 @@
 # Promenade
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -23,12 +23,12 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module        | Entities                         | Description                       | Status            |
-| ------------- | -------------------------------- | --------------------------------- | ----------------- |
-| Posts         | posts, comments, likes           | User-generated content            | ✅ Free           |
-| Profiles      | contacts, profiles               | User profiles                     | ✅ Free           |
-| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | ✅ **Commercial** |
-| Warehouse     | products, inventory              | Inventory management (future)     | 🔮 Planned        |
+| Module        | Entities                         | Description                       | Status     |
+| ------------- | -------------------------------- | --------------------------------- | ---------- |
+| Posts         | posts, comments, likes           | User-generated content            | Free       |
+| Profiles      | contacts, profiles               | User profiles                     | Free       |
+| **Analytics** | **metrics, reports, dashboards** | **Business analytics & insights** | Commercial |
+| Warehouse     | products, inventory              | Inventory management (future)     | Planned    |
 
 Each module is self-contained with:
 
@@ -79,7 +79,7 @@ Each module is self-contained with:
 
 ### Prerequisites
 
-- **Go 1.21+**
+- **Go 1.25+**
 - **Docker & Docker Compose** (for PostgreSQL, Redis)
 - **Make** (for automation)
 
@@ -208,11 +208,11 @@ User profile and contact management:
 
 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
-#### **Analytics Module** (`internal/modules/analytics`) - ✅ _Commercial (Active)_
+#### **Analytics Module** (`internal/modules/analytics`) - Commercial (Active)
 
 Business analytics, metrics, and reporting:
 
-- **Status**: ✅ Enabled - Requires license key (BASIC/PRO/ENTERPRISE)
+- **Status**: Enabled - Requires license key (BASIC/PRO/ENTERPRISE)
 - **Entities**: Metrics, Reports, Dashboards
 - **Features**: Metrics collection, custom reports, visual dashboards
 - **Migrations**: 1 migration (namespace: `analytics`)
@@ -220,11 +220,11 @@ Business analytics, metrics, and reporting:
 
 **Full documentation**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
 
-#### **Warehouse Module** (`internal/modules/warehouse`) - 🔮 _Future Module_
+#### **Warehouse Module** (`internal/modules/warehouse`) - Future Module
 
 Inventory and product management (planned):
 
-- **Status**: 🔮 Planned - Structure exists as placeholder, not yet implemented
+- **Status**: Planned - Structure exists as placeholder, not yet implemented
 - **Use Case**: E-commerce, inventory systems, retail
 
 **Planned documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
@@ -592,7 +592,7 @@ Both versions have:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 promenade/
@@ -618,8 +618,8 @@ promenade/
 │   └── modules/                # Business modules (plugins)
 │       ├── posts/              # Posts + comments + likes
 │       ├── profiles/           # User profiles + contacts
-│       ├── analytics/          # ✅ Analytics + reports (Commercial, active)
-│       └── warehouse/          # 🔮 Inventory management (future)
+│       ├── analytics/          # Analytics + reports (Commercial, active)
+│       └── warehouse/          # Inventory management (future)
 ├── pkg/                        # Shared packages (reusable)
 │   ├── bus/                    # Event bus (memory/redis)
 │   ├── jwt/                    # JWT manager
