@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
 
-> **📝 Hinweis zu Übersetzungen**: Einige technische Dokumente (migrations/, internal/, pkg/, test/) und spezialisierte Leitfäden (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) sind derzeit nur auf Englisch verfügbar. Die wichtigsten Architekturdokumente und Leitfäden (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) sind vollständig auf Deutsch übersetzt. Siehe [docs/de/INDEX.de.md](docs/de/INDEX.de.md) für eine Liste der verfügbaren Übersetzungen.
+> **📝 Hinweis zu Übersetzungen**: Einige technische Dokumente (migrations/, internal/, pkg/, test/) und spezialisierte Leitfäden (REDIS_BUS_TESTING.md, MOCK\*\*.md) sind derzeit nur auf Englisch verfügbar. Alle wichtigsten Architekturdokumente und technischen Leitfäden sind vollständig auf Deutsch übersetzt. Siehe [docs/de/INDEX.de.md](docs/de/INDEX.de.md) für die vollständige Liste der verfügbaren Übersetzungen.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -167,7 +167,7 @@ Server startet auf **http://localhost:8081**
 | Dokument                                                       | Beschreibung                                     |
 | -------------------------------------------------------------- | ------------------------------------------------ |
 | **[docs/de/UUID_V7_GUIDE.de.md](docs/de/UUID_V7_GUIDE.de.md)** | UUID v7 Implementierung und Vorteile             |
-| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Soft-Delete-Pattern für Benutzerinhalte          |
+| **[docs/de/SOFT_DELETE.de.md](docs/de/SOFT_DELETE.de.md)**     | Soft-Delete-Pattern für Benutzerinhalte          |
 | **[docs/de/AUTHORIZATION.de.md](docs/de/AUTHORIZATION.de.md)** | RBAC-System (4 Rollen, Wildcard-Berechtigungen)  |
 | **[docs/de/LOGGING.de.md](docs/de/LOGGING.de.md)**             | Strukturiertes Logging mit slog                  |
 | **[docs/de/VALIDATION.de.md](docs/de/VALIDATION.de.md)**       | Request-Validierungsmuster                       |
@@ -501,7 +501,7 @@ Benutzergenerierte Inhalte (Posts, Kommentare) verwenden `deleted_at`-Zeitstempe
 WHERE deleted_at IS NULL
 ```
 
-[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
+[docs/de/SOFT_DELETE.de.md](docs/de/SOFT_DELETE.de.md)
 
 ### Automatisiertes Purge-System
 
@@ -780,7 +780,7 @@ modules:
 1. **Architekturübersicht**: [docs/de/ARCHITECTURE_OVERVIEW.de.md](docs/de/ARCHITECTURE_OVERVIEW.de.md)
 2. **Audit & Verifikation**: [docs/de/ARCHITECTURE_AUDIT.de.md](docs/de/ARCHITECTURE_AUDIT.de.md)
 3. **Modul-Unabhängigkeit**: [docs/de/MODULE_INDEPENDENCE.de.md](docs/de/MODULE_INDEPENDENCE.de.md)
-4. **Migrationssystem**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
+4. **Migrationssystem**: [docs/de/MIGRATION_ARCHITECTURE.de.md](docs/de/MIGRATION_ARCHITECTURE.de.md)
 
 **Vollständiger Index**: [docs/de/INDEX.de.md](docs/de/INDEX.de.md)
 

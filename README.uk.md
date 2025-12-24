@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
 
-> **📝 Примітка про переклади**: Деякі технічні документи (migrations/, internal/, pkg/, test/) та спеціалізовані гайди (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) поки доступні тільки англійською мовою. Основні архітектурні документи та гайди (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) повністю перекладені українською. Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для переліку доступних перекладів.
+> **📝 Примітка про переклади**: Деякі технічні документи (migrations/, internal/, pkg/, test/) та спеціалізовані гайди (REDIS_BUS_TESTING.md, MOCK\*\*.md) поки доступні тільки англійською мовою. Всі основні архітектурні документи та технічні гайди повністю перекладені українською. Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для повного переліку доступних перекладів.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -178,7 +178,7 @@ make build
 | Документ                                                       | Опис                                               |
 | -------------------------------------------------------------- | -------------------------------------------------- |
 | **[docs/uk/UUID_V7_GUIDE.uk.md](docs/uk/UUID_V7_GUIDE.uk.md)** | Реалізація UUID v7 та переваги                     |
-| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Патерн м'якого видалення для контенту користувачів |
+| **[docs/uk/SOFT_DELETE.uk.md](docs/uk/SOFT_DELETE.uk.md)**     | Патерн м'якого видалення для контенту користувачів |
 | **[docs/uk/AUTHORIZATION.uk.md](docs/uk/AUTHORIZATION.uk.md)** | Система RBAC (4 ролі, wildcard дозволи)            |
 | **[docs/uk/LOGGING.uk.md](docs/uk/LOGGING.uk.md)**             | Структуроване логування з slog                     |
 | **[docs/uk/VALIDATION.uk.md](docs/uk/VALIDATION.uk.md)**       | Патерни валідації запитів                          |
@@ -510,7 +510,7 @@ CREATE TABLE users (
 WHERE deleted_at IS NULL
 ```
 
-[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
+[docs/uk/SOFT_DELETE.uk.md](docs/uk/SOFT_DELETE.uk.md)
 
 ### Автоматизована Система Очищення
 

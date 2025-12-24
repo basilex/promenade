@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | 🇪🇸 **Español**
 
-> **📝 Nota sobre Traducciones**: Algunos documentos técnicos (migrations/, internal/, pkg/, test/) y guías especializadas (SOFT_DELETE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK\*\*.md) están disponibles solo en inglés. Los principales documentos de arquitectura y guías (LOGGING, VALIDATION, CREDENTIALS, MAKEFILE_ARCHITECTURE) están completamente traducidos al español. Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista de traducciones disponibles.
+> **📝 Nota sobre Traducciones**: Algunos documentos técnicos (migrations/, internal/, pkg/, test/) y guías especializadas (REDIS_BUS_TESTING.md, MOCK\*\*.md) están disponibles solo en inglés. Todos los principales documentos de arquitectura y guías técnicas están completamente traducidos al español. Consulte [docs/es/INDEX.es.md](docs/es/INDEX.es.md) para la lista completa de traducciones disponibles.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -167,7 +167,7 @@ El servidor inicia en **http://localhost:8081**
 | Documento                                                      | Descripción                                               |
 | -------------------------------------------------------------- | --------------------------------------------------------- |
 | **[docs/es/UUID_V7_GUIDE.es.md](docs/es/UUID_V7_GUIDE.es.md)** | Implementación y beneficios del UUID v7                   |
-| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Patrón soft delete para contenido de usuarios             |
+| **[docs/es/SOFT_DELETE.es.md](docs/es/SOFT_DELETE.es.md)**     | Patrón soft delete para contenido de usuarios             |
 | **[docs/es/AUTHORIZATION.es.md](docs/es/AUTHORIZATION.es.md)** | Sistema RBAC (4 roles, permisos wildcard)                 |
 | **[docs/es/LOGGING.es.md](docs/es/LOGGING.es.md)**             | Logging estructurado con slog                             |
 | **[docs/es/VALIDATION.es.md](docs/es/VALIDATION.es.md)**       | Patrones de validación de peticiones                      |
@@ -501,7 +501,7 @@ El contenido generado por usuarios (posts, comentarios) usa timestamp `deleted_a
 WHERE deleted_at IS NULL
 ```
 
-[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)
+[docs/es/SOFT_DELETE.es.md](docs/es/SOFT_DELETE.es.md)
 
 ### Sistema Automatizado de Purga
 
@@ -780,7 +780,7 @@ modules:
 1. **Visión General de Arquitectura**: [docs/es/ARCHITECTURE_OVERVIEW.es.md](docs/es/ARCHITECTURE_OVERVIEW.es.md)
 2. **Auditoría & Verificación**: [docs/es/ARCHITECTURE_AUDIT.es.md](docs/es/ARCHITECTURE_AUDIT.es.md)
 3. **Independencia de Módulos**: [docs/es/MODULE_INDEPENDENCE.es.md](docs/es/MODULE_INDEPENDENCE.es.md)
-4. **Sistema de Migración**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
+4. **Sistema de Migración**: [docs/es/MIGRATION_ARCHITECTURE.es.md](docs/es/MIGRATION_ARCHITECTURE.es.md)
 
 **Índice completo**: [docs/es/INDEX.es.md](docs/es/INDEX.es.md)
 
