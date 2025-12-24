@@ -1,6 +1,6 @@
 # Архітектура Конфігурації Модулів
 
-🇬🇧 [English](MODULE_CONFIG_ARCHITECTURE.uk.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_CONFIG_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
+🇬🇧 [English](../MODULE_CONFIG_ARCHITECTURE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_CONFIG_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
 
 ## Огляд
 

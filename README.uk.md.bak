@@ -2,8 +2,6 @@
 
 [🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
 
-> **📝 Примітка про переклади**: Деякі технічні документи (migrations/, internal/, pkg/, test/) та спеціалізовані гайди (SOFT*DELETE.md, LOGGING.md, VALIDATION.md, CREDENTIALS.md, MAKEFILE_ARCHITECTURE.md, MIGRATION_ARCHITECTURE.md, REDIS_BUS_TESTING.md, MOCK*\*.md) поки доступні тільки англійською мовою. Основні архітектурні документи повністю перекладені українською. Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для переліку доступних перекладів.
-
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -137,52 +135,52 @@ make build
 
 ### Основна Документація
 
-| Документ                                                                       | Опис                                                   |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **[docs/uk/ARCHITECTURE_OVERVIEW.uk.md](docs/uk/ARCHITECTURE_OVERVIEW.uk.md)** | Візуальні діаграми архітектури, відповідальності шарів |
-| **[docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md)** | Швидкий довідник, дерева рішень, поширені помилки      |
-| **[docs/uk/ARCHITECTURE_AUDIT.uk.md](docs/uk/ARCHITECTURE_AUDIT.uk.md)**       | Аудит відповідності архітектури, чеклист перевірки     |
-| **[internal/CORE.md](internal/CORE.md)**                                       | Відповідальності Core та межі                          |
+| Документ                                                           | Опис                                                   |
+| ------------------------------------------------------------------ | ------------------------------------------------------ |
+| **[docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)** | Візуальні діаграми архітектури, відповідальності шарів |
+| **[docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md)** | Швидкий довідник, дерева рішень, поширені помилки      |
+| **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Аудит відповідності архітектури, чеклист перевірки     |
+| **[internal/CORE.md](internal/CORE.md)**                           | Відповідальності Core та межі                          |
 
 ### Система Модулів
 
-| Документ                                                                                 | Опис                                               |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **[internal/modules/README.md](internal/modules/README.md)**                             | Огляд системи модулів, структура, реєстрація       |
-| **[docs/uk/MODULE_DEVELOPMENT.uk.md](docs/uk/MODULE_DEVELOPMENT.uk.md)**                 | Створення нових модулів, кращі практики            |
-| **[docs/uk/MODULE_INDEPENDENCE.uk.md](docs/uk/MODULE_INDEPENDENCE.uk.md)**               | Правила автономії модулів, управління залежностями |
-| **[docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)** | Система конфігурації модулів                       |
+| Документ                                                                     | Опис                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| **[internal/modules/README.md](internal/modules/README.md)**                 | Огляд системи модулів, структура, реєстрація       |
+| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Створення нових модулів, кращі практики            |
+| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Правила автономії модулів, управління залежностями |
+| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Система конфігурації модулів                       |
 
 ### Інфраструктура та Системи
 
-| Документ                                                                 | Опис                                                   |
-| ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **[migrations/README.md](migrations/README.md)**                         | Namespace-based система міграцій, використання CLI     |
-| **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)**     | Дизайн та реалізація системи міграцій                  |
-| **[docs/uk/PURGE_ARCHITECTURE.uk.md](docs/uk/PURGE_ARCHITECTURE.uk.md)** | Автоматизована система очищення даних (registry-based) |
-| **[pkg/bus/README.md](pkg/bus/README.md)**                               | Event bus (Memory/Redis адаптери)                      |
-| **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)**               | Тестування Redis event bus                             |
+| Документ                                                             | Опис                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------ |
+| **[migrations/README.md](migrations/README.md)**                     | Namespace-based система міграцій, використання CLI     |
+| **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)** | Дизайн та реалізація системи міграцій                  |
+| **[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)**         | Автоматизована система очищення даних (registry-based) |
+| **[pkg/bus/README.md](pkg/bus/README.md)**                           | Event bus (Memory/Redis адаптери)                      |
+| **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)**           | Тестування Redis event bus                             |
 
 ### Гайди для Розробників
 
-| Документ                                                                         | Опис                                       |
-| -------------------------------------------------------------------------------- | ------------------------------------------ |
-| **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**               | Система Makefile (команди dev, test, prod) |
-| **[test/README.md](test/README.md)**                                             | Тестова інфраструктура (388 тестів)        |
-| **[docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md)**                   | Кращі практики тестування, патерни         |
-| **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури       |
+| Документ                                                             | Опис                                       |
+| -------------------------------------------------------------------- | ------------------------------------------ |
+| **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)**   | Система Makefile (команди dev, test, prod) |
+| **[test/README.md](test/README.md)**                                 | Тестова інфраструктура (388 тестів)        |
+| **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)**                   | Кращі практики тестування, патерни         |
+| **[docs/TESTING_INFRASTRUCTURE.md](docs/TESTING_INFRASTRUCTURE.md)** | Налаштування тестової інфраструктури       |
 
 ### Технічні Довідники
 
-| Документ                                                       | Опис                                               |
-| -------------------------------------------------------------- | -------------------------------------------------- |
-| **[docs/uk/UUID_V7_GUIDE.uk.md](docs/uk/UUID_V7_GUIDE.uk.md)** | Реалізація UUID v7 та переваги                     |
-| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**                 | Патерн м'якого видалення для контенту користувачів |
-| **[docs/uk/AUTHORIZATION.uk.md](docs/uk/AUTHORIZATION.uk.md)** | Система RBAC (4 ролі, wildcard дозволи)            |
-| **[docs/LOGGING.md](docs/LOGGING.md)**                         | Структуроване логування з slog                     |
-| **[docs/VALIDATION.md](docs/VALIDATION.md)**                   | Патерни валідації запитів                          |
-| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**                 | Стандартні тестові користувачі та облікові дані    |
-| **[docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)**                 | Повний індекс документації з навчальними шляхами   |
+| Документ                                           | Опис                                               |
+| -------------------------------------------------- | -------------------------------------------------- |
+| **[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)** | Реалізація UUID v7 та переваги                     |
+| **[docs/SOFT_DELETE.md](docs/SOFT_DELETE.md)**     | Патерн м'якого видалення для контенту користувачів |
+| **[docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)** | Система RBAC (4 ролі, wildcard дозволи)            |
+| **[docs/LOGGING.md](docs/LOGGING.md)**             | Структуроване логування з slog                     |
+| **[docs/VALIDATION.md](docs/VALIDATION.md)**       | Патерни валідації запитів                          |
+| **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**     | Стандартні тестові користувачі та облікові дані    |
+| **[docs/INDEX.md](docs/INDEX.md)**                 | Повний індекс документації з навчальними шляхами   |
 
 ---
 
@@ -340,7 +338,7 @@ make migrate-create-core NAME=add_audit_log
 - **Wildcard Дозволи**: `posts:*` (всі дії з постами), `*` (повний доступ)
 - **Формат Ресурс-Дія**: `posts:create`, `users:delete`, `comments:moderate`
 
-**Повний RBAC гайд**: [docs/uk/AUTHORIZATION.uk.md](docs/uk/AUTHORIZATION.uk.md)
+**Повний RBAC гайд**: [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md)
 
 ---
 
@@ -372,7 +370,7 @@ make test-coverage
 **Гайди з тестування**:
 
 - [test/README.md](test/README.md) - Тестова інфраструктура
-- [docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md) - Кращі практики
+- [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Кращі практики
 
 ---
 
@@ -515,7 +513,7 @@ CREATE TABLE users (
 );
 ```
 
-[docs/uk/UUID_V7_GUIDE.uk.md](docs/uk/UUID_V7_GUIDE.uk.md)
+[docs/UUID_V7_GUIDE.md](docs/UUID_V7_GUIDE.md)
 
 ### Патерн М'якого Видалення
 
@@ -542,7 +540,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 Core планувальник запускає purge jobs через cron. Core не знає про конкретні сутності.
 
-[docs/uk/PURGE_ARCHITECTURE.uk.md](docs/uk/PURGE_ARCHITECTURE.uk.md)
+[docs/PURGE_ARCHITECTURE.md](docs/PURGE_ARCHITECTURE.md)
 
 ### Структуроване Логування
 
@@ -600,26 +598,26 @@ curl http://localhost:8081/api/v1/health
 
 ### Для Нових Розробників
 
-1. **Старт**: [docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md) - 15-хвилинний огляд
+1. **Старт**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - 15-хвилинний огляд
 2. **Основні Концепції**: [internal/CORE.md](internal/CORE.md) - Відповідальності Core
 3. **Система Модулів**: [internal/modules/README.md](internal/modules/README.md)
-4. **Практика**: Створіть простий модуль слідуючи [docs/uk/MODULE_DEVELOPMENT.uk.md](docs/uk/MODULE_DEVELOPMENT.uk.md)
+4. **Практика**: Створіть простий модуль слідуючи [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
 
 ### Для DevOps/Розгортання
 
 1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
 2. **Міграції**: [migrations/README.md](migrations/README.md)
 3. **Docker**: [docker/README.md](docker/README.md)
-4. **Конфігурація**: [docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)
+4. **Конфігурація**: [docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)
 
 ### Для Архітекторів
 
-1. **Огляд Архітектури**: [docs/uk/ARCHITECTURE_OVERVIEW.uk.md](docs/uk/ARCHITECTURE_OVERVIEW.uk.md)
-2. **Аудит та Верифікація**: [docs/uk/ARCHITECTURE_AUDIT.uk.md](docs/uk/ARCHITECTURE_AUDIT.uk.md)
-3. **Незалежність Модулів**: [docs/uk/MODULE_INDEPENDENCE.uk.md](docs/uk/MODULE_INDEPENDENCE.uk.md)
+1. **Огляд Архітектури**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
+2. **Аудит та Верифікація**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
+3. **Незалежність Модулів**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
 4. **Система Міграцій**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
-**Повний індекс**: [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)
+**Повний індекс**: [docs/INDEX.md](docs/INDEX.md)
 
 ---
 
@@ -627,7 +625,7 @@ curl http://localhost:8081/api/v1/health
 
 1. Зробіть Fork репозиторію
 2. Створіть гілку features (`git checkout -b feature/amazing-feature`)
-3. Слідуйте архітектурним принципам (дивіться [docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md))
+3. Слідуйте архітектурним принципам (дивіться [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md))
 4. Пишіть тести (підтримуйте 100% pass rate)
 5. Закомітьте зміни (`git commit -m 'Add amazing feature'`)
 6. Запушіть до гілки (`git push origin feature/amazing-feature`)
@@ -643,7 +641,7 @@ curl http://localhost:8081/api/v1/health
 
 ## Підтримка
 
-- **Документація**: [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)
+- **Документація**: [docs/INDEX.md](docs/INDEX.md)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
 - **Email**: alexander.vasilenko@gmail.com
 

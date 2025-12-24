@@ -1,6 +1,6 @@
 # Arquitetura do Sistema de Limpeza
 
-🇬🇧 [English](PURGE_ARCHITECTURE.pt.md) | [🇺🇦 Українська](../uk/PURGE_ARCHITECTURE.uk.md) | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](../es/PURGE_ARCHITECTURE.es.md)
+🇬🇧 [English](../PURGE_ARCHITECTURE.md) | [🇺🇦 Українська](../uk/PURGE_ARCHITECTURE.uk.md) | [🇩🇪 Deutsch](../de/PURGE_ARCHITECTURE.de.md) | 🇵🇹 **Português** | [🇪🇸 Español](../es/PURGE_ARCHITECTURE.es.md)
 
 ## Visão Geral
 
