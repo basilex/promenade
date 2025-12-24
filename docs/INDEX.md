@@ -4,7 +4,7 @@
 
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
->  **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
+> **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
 
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
@@ -40,9 +40,9 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | Document                                                       | Description                          | When to Read                    |
 | -------------------------------------------------------------- | ------------------------------------ | ------------------------------- |
 | [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md)                 | Complete guide to creating modules   | Building new modules            |
-| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | IModule independence principles       | Understanding module boundaries |
+| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | IModule independence principles      | Understanding module boundaries |
 | [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) | Configuration management for modules | Setting up module configs       |
-| [../internal/modules/README.md](../internal/modules/README.md) | IModule directory structure           | Quick module overview           |
+| [../internal/modules/README.md](../internal/modules/README.md) | IModule directory structure          | Quick module overview           |
 
 ---
 
@@ -70,7 +70,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication system (registration, login, JWT) | Understanding auth flow         |
 | [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                           | Implementing authorization      |
 | [CREDENTIALS.md](CREDENTIALS.md)                   | Default users and roles for dev/test             | Testing with predefined users   |
-| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | IModule licensing system with HMAC-SHA256         | Implementing commercial modules |
+| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | IModule licensing system with HMAC-SHA256        | Implementing commercial modules |
 
 ---
 
@@ -97,9 +97,10 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ### Validation & Quality
 
-| Document                       | Description               | When to Read            |
-| ------------------------------ | ------------------------- | ----------------------- |
-| [VALIDATION.md](VALIDATION.md) | Input validation patterns | Adding validation rules |
+| Document                                           | Description                    | When to Read            |
+| -------------------------------------------------- | ------------------------------ | ----------------------- |
+| [VALIDATION.md](VALIDATION.md)                     | Input validation patterns      | Adding validation rules |
+| [SWAGGER_AUDIT_REPORT.md](SWAGGER_AUDIT_REPORT.md) | Swagger annotations audit 2025 | API documentation QA    |
 
 ---
 
@@ -116,6 +117,10 @@ This directory contains comprehensive documentation for the Promenade applicatio
 - [v2/v2_docs.go](v2/v2_docs.go) - V2 API documentation
 - [v2/v2_swagger.yaml](v2/v2_swagger.yaml) - V2 Swagger spec (YAML)
 - [v2/v2_swagger.json](v2/v2_swagger.json) - V2 Swagger spec (JSON)
+
+### Audit Reports
+
+- [SWAGGER_AUDIT_REPORT.md](SWAGGER_AUDIT_REPORT.md) - Swagger annotations audit (Dec 2025)
 
 ---
 
@@ -252,12 +257,17 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ### December 22, 2025
 
+- **Swagger Annotations Audit:**
+  - [SWAGGER_AUDIT_REPORT.md](SWAGGER_AUDIT_REPORT.md) - Comprehensive audit of all API documentation
+  - Fixed critical bug in comment_handler.go (context key mismatch)
+  - Verified 127 endpoints across 16 handler files
+  - 100% authentication annotation coverage confirmed
 - Created comprehensive architecture documentation:
-- [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Complete compliance review
-- [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) - Visual diagrams
-- [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference
+  - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Complete compliance review
+  - [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) - Visual diagrams
+  - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference
 - Updated purge system documentation:
-- [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.md) - Registry-based approach
+  - [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.md) - Registry-based approach
 - Verified module independence (15,000+ lines removed from core)
 
 ---
