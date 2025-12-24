@@ -116,7 +116,7 @@ make migrate-core                    # Тільки Core
 make migrate-module MODULE=posts     # Конкретний модуль
 ```
 
-Дивіться [migrations/README.md](migrations/README.md) _(англійською)_ для детального гайду з міграцій.
+**Повний гайд з міграцій**: див. розділ "Database Migrations" в [англійській версії README](README.md#database-migrations).
 
 ### 3. Запуск Додатку
 
@@ -142,35 +142,35 @@ make build
 | **[docs/uk/ARCHITECTURE_OVERVIEW.uk.md](docs/uk/ARCHITECTURE_OVERVIEW.uk.md)** | Візуальні діаграми архітектури, відповідальності шарів |
 | **[docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md)** | Швидкий довідник, дерева рішень, поширені помилки      |
 | **[docs/uk/ARCHITECTURE_AUDIT.uk.md](docs/uk/ARCHITECTURE_AUDIT.uk.md)**       | Аудит відповідності архітектури, чеклист перевірки     |
-| **[internal/CORE.md](internal/CORE.md) _(англійською)_**                                       | Відповідальності Core та межі                          |
+
+> 📖 **Додаткова документація**: internal/CORE.md та інші технічні документи доступні в [англійській версії](README.md).
 
 ### Система Модулів
 
 | Документ                                                                                 | Опис                                               |
 | ---------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **[internal/modules/README.md](internal/modules/README.md) _(англійською)_**                             | Огляд системи модулів, структура, реєстрація       |
 | **[docs/uk/MODULE_DEVELOPMENT.uk.md](docs/uk/MODULE_DEVELOPMENT.uk.md)**                 | Створення нових модулів, кращі практики            |
 | **[docs/uk/MODULE_INDEPENDENCE.uk.md](docs/uk/MODULE_INDEPENDENCE.uk.md)**               | Правила автономії модулів, управління залежностями |
 | **[docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)** | Система конфігурації модулів                       |
+
+> 📖 **Додаткова документація**: internal/modules/ та інші технічні модулі описані в [англійській версії](README.md).
 
 ### Інфраструктура та Системи
 
 | Документ                                                                 | Опис                                                   |
 | ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **[migrations/README.md](migrations/README.md) _(англійською)_**                         | Namespace-based система міграцій, використання CLI     |
-| **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md) _(англійською)_**     | Дизайн та реалізація системи міграцій                  |
 | **[docs/uk/PURGE_ARCHITECTURE.uk.md](docs/uk/PURGE_ARCHITECTURE.uk.md)** | Автоматизована система очищення даних (registry-based) |
-| **[pkg/bus/README.md](pkg/bus/README.md) _(англійською)_**                               | Event bus (Memory/Redis адаптери)                      |
-| **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md) _(англійською)_**               | Тестування Redis event bus                             |
+
+> 📖 **Технічна документація**: migrations/, pkg/bus/, test/ та інші технічні компоненти описані в [англійській версії](README.md).
 
 ### Гайди для Розробників
 
-| Документ                                                                         | Опис                                       |
-| -------------------------------------------------------------------------------- | ------------------------------------------ |
-| **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md) _(англійською)_**               | Система Makefile (команди dev, test, prod) |
-| **[test/README.md](test/README.md) _(англійською)_**                                             | Тестова інфраструктура (388 тестів)        |
-| **[docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md)**                   | Кращі практики тестування, патерни         |
-| **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури       |
+| Документ                                                                         | Опис                                 |
+| -------------------------------------------------------------------------------- | ------------------------------------ |
+| **[docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md)**                   | Кращі практики тестування, патерни   |
+| **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури |
+
+> 📖 **Технічна документація**: test/, Makefile та інші інструменти розробки описані в [англійській версії](README.md).
 
 ### Технічні Довідники
 
@@ -199,8 +199,6 @@ make build
 - **Міграції**: 3 міграції (namespace: `posts`)
 - **Конфіг**: `config/modules.yaml` → `posts`
 
-**Повна документація**: [internal/modules/posts/README.md](internal/modules/posts/README.md) _(англійською)_
-
 #### **Модуль Profiles** (`internal/modules/profiles`)
 
 Управління профілями та контактами користувачів:
@@ -209,8 +207,6 @@ make build
 - **Функції**: Управління профілями, контактна інформація
 - **Міграції**: 2 міграції (namespace: `profiles`)
 - **Конфіг**: `config/modules.yaml` → `profiles`
-
-**Повна документація**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md) _(англійською)_
 
 #### **Модуль Analytics** (`internal/modules/analytics`) - Безкоштовно
 
@@ -222,16 +218,12 @@ make build
 - **Міграції**: 1 міграція (namespace: `analytics`)
 - **Призначення**: Бізнес-аналітика, моніторинг продуктивності, інсайти з даних
 
-**Повна документація**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md) _(англійською)_
-
 #### **Модуль Warehouse** (`internal/modules/warehouse`) - Майбутній Модуль
 
 Управління інвентарем та продуктами (в планах):
 
 - **Статус**: Заплановано - Структура існує як placeholder, ще не реалізована
 - **Призначення**: E-commerce, інвентарні системи, роздрібна торгівля
-
-**Планована документація**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md) _(англійською)_
 
 ### Структура Модуля
 
@@ -317,8 +309,6 @@ make migrate-create-core NAME=add_audit_log
 
 **Авто-міграції**: Міграції виконуються автоматично при запуску додатку (спочатку core, потім увімкнені модулі).
 
-**Повний гайд**: [migrations/README.md](migrations/README.md) _(англійською)_
-
 ---
 
 ## Аутентифікація та Авторизація
@@ -371,7 +361,6 @@ make test-coverage
 
 **Гайди з тестування**:
 
-- [test/README.md](test/README.md) _(англійською)_ - Тестова інфраструктура
 - [docs/uk/TESTING_GUIDE.uk.md](docs/uk/TESTING_GUIDE.uk.md) - Кращі практики
 
 ---
@@ -413,8 +402,6 @@ eventBus.Subscribe(ctx, bus.TopicUserRegistered, func(ctx context.Context, e bus
     return emailService.SendWelcome(ctx, evt.Email)
 })
 ```
-
-**Повний гайд**: [pkg/bus/README.md](pkg/bus/README.md) _(англійською)_
 
 ---
 
@@ -471,8 +458,6 @@ make swagger-v1         # Генерація тільки v1 docs
 make swagger-v2         # Генерація тільки v2 docs
 ```
 
-**Повний Makefile гайд**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md) _(англійською)_
-
 ---
 
 ## Docker
@@ -497,8 +482,6 @@ make docker-clean
 
 - **PostgreSQL 16**: Порт 5432, користувач `system`, база даних `promenade_dev`
 - **Redis 7**: Порт 6379 (для розподіленого event bus)
-
-**Docker гайд**: [docker/README.md](docker/README.md) _(англійською)_
 
 ---
 
@@ -601,25 +584,23 @@ curl http://localhost:8081/api/v1/health
 ### Для Нових Розробників
 
 1. **Старт**: [docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md) - 15-хвилинний огляд
-2. **Основні Концепції**: [internal/CORE.md](internal/CORE.md) _(англійською)_ - Відповідальності Core
-3. **Система Модулів**: [internal/modules/README.md](internal/modules/README.md) _(англійською)_
-4. **Практика**: Створіть простий модуль слідуючи [docs/uk/MODULE_DEVELOPMENT.uk.md](docs/uk/MODULE_DEVELOPMENT.uk.md)
+2. **Практика**: Створіть простий модуль слідуючи [docs/uk/MODULE_DEVELOPMENT.uk.md](docs/uk/MODULE_DEVELOPMENT.uk.md)
 
 ### Для DevOps/Розгортання
 
-1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md) _(англійською)_
-2. **Міграції**: [migrations/README.md](migrations/README.md) _(англійською)_
-3. **Docker**: [docker/README.md](docker/README.md) _(англійською)_
 4. **Конфігурація**: [docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)
+
+> 📖 **Додаткові шляхи навчання**: Технічні шляхи (DevOps, інфраструктура, інструменти) описані в [англійській версії](README.md).
 
 ### Для Архітекторів
 
 1. **Огляд Архітектури**: [docs/uk/ARCHITECTURE_OVERVIEW.uk.md](docs/uk/ARCHITECTURE_OVERVIEW.uk.md)
 2. **Аудит та Верифікація**: [docs/uk/ARCHITECTURE_AUDIT.uk.md](docs/uk/ARCHITECTURE_AUDIT.uk.md)
 3. **Незалежність Модулів**: [docs/uk/MODULE_INDEPENDENCE.uk.md](docs/uk/MODULE_INDEPENDENCE.uk.md)
-4. **Система Міграцій**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md) _(англійською)_
 
 **Повний індекс**: [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)
+
+> 📖 **Додаткова інформація**: Технічні деталі (міграції, Docker, інфраструктура) доступні в [англійській версії](README.md).
 
 ---
 

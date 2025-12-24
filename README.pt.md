@@ -116,8 +116,6 @@ make migrate-core                    # Apenas Core
 make migrate-module MODULE=posts     # Módulo específico
 ```
 
-Veja [migrations/README.md](migrations/README.md) _(em inglês)_ para guia detalhado de migrações.
-
 ### 3. Iniciar Aplicação
 
 ```bash
@@ -142,13 +140,10 @@ Servidor inicia em **http://localhost:8081**
 | **[docs/pt/ARCHITECTURE_OVERVIEW.pt.md](docs/pt/ARCHITECTURE_OVERVIEW.pt.md)** | Diagramas visuais de arquitetura, responsabilidades de camadas, ciclo de vida |
 | **[docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md)** | Referência rápida, árvores de decisão, erros comuns                           |
 | **[docs/pt/ARCHITECTURE_AUDIT.pt.md](docs/pt/ARCHITECTURE_AUDIT.pt.md)**       | Auditoria de conformidade de arquitetura, checklist de verificação            |
-| **[internal/CORE.md](internal/CORE.md)** _(em inglês)_                         | Responsabilidades e limites do Core                                           |
-
 ### Sistema de Módulos
 
 | Documento                                                                                | Descrição                                              |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **[internal/modules/README.md](internal/modules/README.md)** _(em inglês)_               | Visão geral do sistema de módulos, estrutura, registro |
 | **[docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)**                 | Criação de novos módulos, melhores práticas            |
 | **[docs/pt/MODULE_INDEPENDENCE.pt.md](docs/pt/MODULE_INDEPENDENCE.pt.md)**               | Regras de autonomia de módulos, gestão de dependências |
 | **[docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)** | Sistema de configuração de módulos                     |
@@ -157,18 +152,11 @@ Servidor inicia em **http://localhost:8081**
 
 | Documento                                                                          | Descrição                                                         |
 | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **[migrations/README.md](migrations/README.md)** _(em inglês)_                     | Sistema de migração baseado em namespace, uso CLI                 |
-| **[docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)** _(em inglês)_ | Design e implementação do sistema de migração                     |
 | **[docs/pt/PURGE_ARCHITECTURE.pt.md](docs/pt/PURGE_ARCHITECTURE.pt.md)**           | Sistema automatizado de expurgação de dados (baseado em registro) |
-| **[pkg/bus/README.md](pkg/bus/README.md)** _(em inglês)_                           | Event bus (adaptadores Memory/Redis)                              |
-| **[docs/REDIS_BUS_TESTING.md](docs/REDIS_BUS_TESTING.md)** _(em inglês)_           | Testando o Redis event bus                                        |
-
 ### Guias de Desenvolvimento
 
 | Documento                                                                        | Descrição                                   |
 | -------------------------------------------------------------------------------- | ------------------------------------------- |
-| **[docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)** _(em inglês)_ | Sistema Makefile (comandos dev, test, prod) |
-| **[test/README.md](test/README.md)** _(em inglês)_                               | Infraestrutura de testes (200+ testes)      |
 | **[docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md)**                   | Melhores práticas de testes, padrões        |
 | **[docs/pt/TESTING_INFRASTRUCTURE.pt.md](docs/pt/TESTING_INFRASTRUCTURE.pt.md)** | Configuração de infraestrutura de testes    |
 
@@ -199,8 +187,6 @@ Gestão de conteúdo gerado por usuários:
 - **Migrações**: 3 migrações (namespace: `posts`)
 - **Configuração**: `config/modules.yaml` → `posts`
 
-**Documentação completa**: [internal/modules/posts/README.md](internal/modules/posts/README.md) _(em inglês)_
-
 #### **Módulo Profiles** (`internal/modules/profiles`)
 
 Gestão de perfis de usuários e contatos:
@@ -209,8 +195,6 @@ Gestão de perfis de usuários e contatos:
 - **Funcionalidades**: Gestão de perfis, informações de contato
 - **Migrações**: 2 migrações (namespace: `profiles`)
 - **Configuração**: `config/modules.yaml` → `profiles`
-
-**Documentação completa**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md) _(em inglês)_
 
 #### **Módulo Analytics** (`internal/modules/analytics`) - Gratuito
 
@@ -222,16 +206,12 @@ Analytics, métricas e relatórios:
 - **Migrações**: 1 migração (namespace: `analytics`)
 - **Caso de Uso**: Business intelligence, monitoramento de performance, insights de dados
 
-**Documentação completa**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md) _(em inglês)_
-
 #### **Módulo Warehouse** (`internal/modules/warehouse`) - Módulo Futuro
 
 Gestão de inventário e produtos (planejado):
 
 - **Status**: Planejado - Estrutura existe como placeholder, ainda não implementado
 - **Caso de Uso**: E-commerce, sistemas de inventário, varejo
-
-**Documentação planejada**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md) _(em inglês)_
 
 ### Estrutura de Módulo
 
@@ -317,8 +297,6 @@ make migrate-create-core NAME=add_audit_log
 
 **Auto-migrações**: Migrações executam automaticamente no início da aplicação (core primeiro, depois módulos habilitados).
 
-**Guia completo**: [migrations/README.md](migrations/README.md) _(em inglês)_
-
 ---
 
 ## Autenticação & Autorização
@@ -371,7 +349,6 @@ make test-coverage
 
 **Guias de teste**:
 
-- [test/README.md](test/README.md) _(em inglês)_ - Infraestrutura de testes
 - [docs/pt/TESTING_GUIDE.pt.md](docs/pt/TESTING_GUIDE.pt.md) - Melhores práticas
 
 ---
@@ -413,8 +390,6 @@ eventBus.Subscribe(ctx, bus.TopicUserRegistered, func(ctx context.Context, e bus
     return emailService.SendWelcome(ctx, evt.Email)
 })
 ```
-
-**Guia completo**: [pkg/bus/README.md](pkg/bus/README.md) _(em inglês)_
 
 ---
 
@@ -497,8 +472,6 @@ make docker-clean
 
 - **PostgreSQL 16**: Porta 5432, usuário `system`, banco de dados `promenade_dev`
 - **Redis 7**: Porta 6379 (para event bus distribuído)
-
-**Guia Docker**: [docker/README.md](docker/README.md) _(em inglês)_
 
 ---
 
@@ -793,15 +766,11 @@ modules:
 ### Para Novos Desenvolvedores
 
 1. **Início**: [docs/pt/ARCHITECTURE_QUICKREF.pt.md](docs/pt/ARCHITECTURE_QUICKREF.pt.md) - Visão geral de 15 minutos
-2. **Conceitos Core**: [internal/CORE.md](internal/CORE.md) _(em inglês)_ - Responsabilidades do Core
-3. **Sistema de Módulos**: [internal/modules/README.md](internal/modules/README.md) _(em inglês)_
 4. **Prática**: Criar um módulo simples seguindo [docs/pt/MODULE_DEVELOPMENT.pt.md](docs/pt/MODULE_DEVELOPMENT.pt.md)
 
 ### Para DevOps/Deployment
 
 1. **Makefile**: [docs/MAKEFILE_ARCHITECTURE.md](docs/MAKEFILE_ARCHITECTURE.md)
-2. **Migrações**: [migrations/README.md](migrations/README.md) _(em inglês)_
-3. **Docker**: [docker/README.md](docker/README.md) _(em inglês)_
 4. **Configuração**: [docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md](docs/pt/MODULE_CONFIG_ARCHITECTURE.pt.md)
 
 ### Para Arquitetos
