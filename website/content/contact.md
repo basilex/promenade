@@ -7,7 +7,7 @@ description: "Get in touch with the Promenade team"
 
 Have questions about Promenade? Want to report an issue or suggest a feature? We'd love to hear from you!
 
-<form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="contact-form">
+<form action="https://formspree.io/f/xqezrdbv" method="POST" class="contact-form">
   <div class="form-group">
     <label for="name">Name</label>
     <input type="text" id="name" name="name" required placeholder="Your name">
