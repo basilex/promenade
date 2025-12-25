@@ -92,7 +92,7 @@ make dev
 
 ## Документація
 
-📖 [Огляд Архітектури](/promenade/uk/docs/architecture/) | [Схема БД](/promenade/uk/docs/database-schema/) | [Розробка Модулів](/promenade/uk/docs/module-development/)
+📖 [Огляд Архітектури](docs/architecture/) | [Схема БД](docs/database-schema/) | [Розробка Модулів](docs/module-development/)
 
 🌐 EN/UK/DE | 📝 [Swagger API](/api/v1/docs/swagger/index.html)
 
@@ -100,4 +100,4 @@ make dev
 
 **Створено з ❤️ використовуючи Clean Architecture та Go**
 
-[Почніть](/promenade/uk/docs/getting-started/) | [Функції](/promenade/uk/features/) | [GitHub](https://github.com/basilex/promenade)
+[Почніть](docs/getting-started/) | [Функції](features/) | [GitHub](https://github.com/basilex/promenade)

@@ -92,7 +92,7 @@ Server startet auf **http://localhost:8081**
 
 ## Dokumentation
 
-📖 [Architektur-Überblick](/promenade/de/docs/architecture/) | [DB-Schema](/promenade/de/docs/database-schema/) | [Modul-Entwicklung](/promenade/de/docs/module-development/)
+📖 [Architektur-Überblick](docs/architecture/) | [DB-Schema](docs/database-schema/) | [Modul-Entwicklung](docs/module-development/)
 
 🌐 EN/UK/DE | 📝 [Swagger API](/api/v1/docs/swagger/index.html)
 
@@ -100,4 +100,4 @@ Server startet auf **http://localhost:8081**
 
 **Erstellt mit ❤️ unter Verwendung von Clean Architecture und Go**
 
-[Erste Schritte](/promenade/de/docs/getting-started/) | [Features](/promenade/de/features/) | [GitHub](https://github.com/basilex/promenade)
+[Erste Schritte](docs/getting-started/) | [Features](features/) | [GitHub](https://github.com/basilex/promenade)

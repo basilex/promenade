@@ -431,9 +431,9 @@ open http://localhost:8081/api/v1/docs/swagger/index.html
 
 ### Next Steps
 
-1. **Read the docs**: [Documentation](/promenade/docs/) covers architecture, modules, database patterns
+1. **Read the docs**: [Documentation](docs/) covers architecture, modules, database patterns
 2. **Try the API**: Use Swagger UI to test endpoints with default users
-3. **Build a module**: Follow [Module Development Guide](/promenade/docs/module-development/)
+3. **Build a module**: Follow [Module Development Guide](docs/module-development/)
 4. **Run tests**: `make test` to see comprehensive test suite
 5. **Deploy**: Docker setup ready for production deployment
 
@@ -443,10 +443,10 @@ open http://localhost:8081/api/v1/docs/swagger/index.html
 
 📖 **20+ Comprehensive Guides**:
 
-- [Architecture Overview](/promenade/docs/architecture/) - System design and principles
-- [Database Schema](/promenade/docs/database-schema/) - Complete schema with ER diagrams
-- [Module Development](/promenade/docs/module-development/) - Build custom modules
-- [Getting Started](/promenade/docs/getting-started/) - Quick start tutorial
+- [Architecture Overview](docs/architecture/) - System design and principles
+- [Database Schema](docs/database-schema/) - Complete schema with ER diagrams
+- [Module Development](docs/module-development/) - Build custom modules
+- [Getting Started](docs/getting-started/) - Quick start tutorial
 
 🌐 **Multilingual**:
 
@@ -481,4 +481,4 @@ Commercial modules (billing, audit, warehouse) require separate license keys.
 
 **Built with ❤️ using Clean Architecture and Go**
 
-Ready to build production-grade APIs? [Get Started](/promenade/docs/getting-started/) or [Explore Features](/promenade/features/)
+Ready to build production-grade APIs? [Get Started](docs/getting-started/) or [Explore Features](features/)
