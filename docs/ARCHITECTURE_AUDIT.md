@@ -79,13 +79,13 @@ internal/usecase/
 
 ---
 
-### 4. IModule Management System
+### 4. Module Management System
 
 ```
 pkg/module/
-├── module.go       IModule interface
-├── registry.go     IModule registry + dependency resolution
-├── config/         IModule config loader
+├── module.go       Module interface
+├── registry.go     Module registry + dependency resolution
+├── config/         Module config loader
 └── base.go         BaseModule helper
 ```
 
@@ -137,15 +137,15 @@ internal/usecase/
 
 ---
 
-## IModule Responsibilities
+## Module Responsibilities
 
 ### Current Modules
 
-#### 1. Posts IModule (`internal/modules/posts/`)
+#### 1. Posts Module (`internal/modules/posts/`)
 
 ```
 posts/
-├── module.go               IModule implementation
+├── module.go               Module implementation
 ├── register.go             Auto-registration via init()
 ├── config/                 Own YAML configs (dev, test, prod)
 │   └── config.*.yaml
@@ -169,11 +169,11 @@ posts/
 
 ---
 
-#### 2. Profiles IModule (`internal/modules/profiles/`)
+#### 2. Profiles Module (`internal/modules/profiles/`)
 
 ```
 profiles/
-├── module.go               IModule implementation
+├── module.go               Module implementation
 ├── register.go             Auto-registration
 ├── config/                 Own YAML configs
 │   └── config.*.yaml
@@ -195,7 +195,7 @@ profiles/
 
 ---
 
-#### 3. Warehouse IModule (`internal/modules/warehouse/`)
+#### 3. Warehouse Module (`internal/modules/warehouse/`)
 
 **Status:** Commented out (commercial module, license required)
 
@@ -236,12 +236,12 @@ purge:
 **What's NOT in core config:**
 
 - Entity-specific retention policies → Moved to modules
-- IModule-specific settings → Moved to modules
+- Module-specific settings → Moved to modules
 - Business logic configuration → Moved to modules
 
 ---
 
-### IModule Configuration
+### Module Configuration
 
 ```yaml
 # internal/modules/posts/config/config.dev.yaml
@@ -274,7 +274,7 @@ purge:
 
 ---
 
-### IModule Registry
+### Module Registry
 
 ```yaml
 # config/modules.yaml - Which modules to load
@@ -307,7 +307,7 @@ modules:
         max_items: 10000
 ```
 
-**IModule can validate license in Initialize():**
+Module can validate license in Initialize():**
 
 ```go
 func (m *WarehouseModule) Initialize(ctx context.Context, core *Core) error {
@@ -330,7 +330,7 @@ func (m *WarehouseModule) Initialize(ctx context.Context, core *Core) error {
 
 ## Dependency Management
 
-### IModule Dependencies
+### Module Dependencies
 
 ```go
 func (m *MyModule) Dependencies() []string {
@@ -359,7 +359,7 @@ modules:
 
 ## Communication Patterns
 
-### 1. Inter-IModule Events (Async)
+### 1. Inter-Module Events (Async)
 
 ```go
 // Posts module publishes event
@@ -380,7 +380,7 @@ eventBus.Subscribe("post.created", func(e bus.Event) {
 
 ---
 
-### 2. IModule Registry (Sync)
+### 2. Module Registry (Sync)
 
 ```go
 // Get another module
@@ -424,7 +424,7 @@ type V1Router struct {
 
 ---
 
-### IModule Routes
+### Module Routes
 
 ```go
 // Posts module registers its own routes
@@ -447,8 +447,8 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 **Result:**
 
 - Core: `/api/v1/auth/*`, `/api/v1/countries/*`, `/api/v1/admin/*`
-- Posts IModule: `/api/v1/posts/*`, `/api/v1/comments/*`
-- Profiles IModule: `/api/v1/profiles/*`, `/api/v1/contacts/*`
+- Posts Module: `/api/v1/posts/*`, `/api/v1/comments/*`
+- Profiles Module: `/api/v1/profiles/*`, `/api/v1/contacts/*`
 
 **Status:** Clean separation - each module owns its routes
 
@@ -470,7 +470,7 @@ migrations/core/
 └── 000006_core_ref_countries_currencies.up.sql Reference data
 ```
 
-**IModule migrations (namespace-based with module prefixes):**
+Module migrations (namespace-based with module prefixes):**
 
 ```
 migrations/posts/
@@ -512,13 +512,13 @@ internal/
 
 ---
 
-### IModule Tests
+### Module Tests
 
 ```
 internal/modules/posts/
 ├── usecase/*_test.go               Business logic unit tests
 ├── adapter/repository/*_test.go    Repository tests
-└── module_test.go                  IModule integration tests
+└── module_test.go                  Module integration tests
 ```
 
 **Status:** Each module tests its own logic independently
@@ -601,14 +601,14 @@ type PurgeConfig struct {
 | **Database**        | Core     | Infrastructure      | Correct     |
 | **Event IBus**       | Core     | Infrastructure      | Correct     |
 | **Purge Scheduler** | Core     | Infrastructure      | Correct     |
-| **IModule Registry** | Core     | Orchestration       | Correct     |
+| Module Registry | Core     | Orchestration       | Correct     |
 |                     |          |                     |
-| **Posts**           | IModule   | Business logic      | Independent |
-| **Comments**        | IModule   | Business logic      | Independent |
-| **Likes**           | IModule   | Business logic      | Independent |
-| **Profiles**        | IModule   | Business logic      | Independent |
-| **Contacts**        | IModule   | Business logic      | Independent |
-| **Warehouse**       | IModule   | Business logic      | Licensable  |
+| Posts | Module   | Business logic      | Independent |
+| Comments | Module   | Business logic      | Independent |
+| Likes | Module   | Business logic      | Independent |
+| Profiles | Module   | Business logic      | Independent |
+| Contacts | Module   | Business logic      | Independent |
+| Warehouse | Module   | Business logic      | Licensable  |
 
 ---
 
@@ -668,7 +668,7 @@ Architecture supports:
 Promenade successfully implements a **plugin architecture** with:
 
 - Clean separation between Core (infrastructure) and Modules (business logic)
-- IModule independence (no core dependencies)
+- Module independence (no core dependencies)
 - Dynamic module loading with dependency resolution
 - Configuration autonomy (each module owns its config)
 - Licensing support (ready for commercial modules)

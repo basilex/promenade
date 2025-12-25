@@ -175,9 +175,9 @@ This directory contains comprehensive documentation for the Promenade applicatio
 4. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Building features
 5. [TESTING_GUIDE.md](TESTING_GUIDE.md) - Testing your code
 
-### Path 2: Building a New IModule
+### Path 2: Building a New Module
 
-1. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - IModule creation guide
+1. [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Module creation guide
 2. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Design principles
 3. [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) - Configuration
 4. [UUID_V7_GUIDE.md](UUID_V7_GUIDE.md) - Primary keys
@@ -189,7 +189,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 1. [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Current state analysis
 2. [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) - Visual diagrams
 3. [../internal/CORE.md](../internal/CORE.md) - Core boundaries
-4. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - IModule isolation
+4. [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Module isolation
 
 ### Path 4: Security Implementation
 

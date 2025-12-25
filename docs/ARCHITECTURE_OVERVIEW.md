@@ -97,9 +97,9 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-## IModule System
+## Module System
 
-### IModule Registry & Manager
+### Module Registry ### IModule Registry & Manager Manager
 
 **Location:** `pkg/module/`
 
@@ -122,7 +122,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### IModule: Posts
+### Module: Posts
 
 **Location:** `internal/modules/posts/`
 
@@ -148,7 +148,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### IModule: Profiles
+### Module: Profiles
 
 **Location:** `internal/modules/profiles/`
 
@@ -173,7 +173,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-### IModule: Warehouse
+### Module: Warehouse
 
 **Location:** `internal/modules/warehouse/`
 
@@ -190,7 +190,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ---
 
-## Inter-IModule Communication
+## Inter-Module Communication
 
 ### Event IBus
 
@@ -205,7 +205,7 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 **Event Flow:**
 
-1. IModule A publishes event to EventBus
+1. Module A publishes event to EventBus
 2. EventBus fans out to all subscribers
 3. Modules B, C, D process event asynchronously
 
@@ -229,7 +229,7 @@ config/
 └── modules.yaml     - Which modules to load
 ```
 
-### IModule Configuration
+### Module Configuration
 
 ```
 internal/modules/posts/config/
@@ -247,11 +247,11 @@ internal/modules/profiles/config/
 
 ---
 
-## IModule Lifecycle
+## Module Lifecycle
 
 ### 1. Auto-Registration (via init())
 
-IModule registers itself on package import:
+Module registers itself on package import:
 
 ```go
 package posts
@@ -404,7 +404,7 @@ For each module (reverse order):
 - Infrastructure (DB, EventBus, Scheduler, Config, Logger)
 - Security (Auth, RBAC, JWT, Sessions)
 - Reference Data (Countries, Currencies, Timezones, Languages)
-- IModule Management (Registry, Lifecycle, Config Loader)
+- Module Management (Registry, Lifecycle, Config Loader)
 - Purge Orchestration (Registry-based, no entity knowledge)
 
 ### Modules
@@ -434,5 +434,5 @@ For each module (reverse order):
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Architecture compliance audit
 - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference guide
 - [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Creating new modules
-- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - IModule independence principles
+- [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Module independence principles
 - [../internal/CORE.md](../internal/CORE.md) - Core components details

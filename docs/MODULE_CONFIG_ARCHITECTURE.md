@@ -1,4 +1,4 @@
-# IModule Configuration Architecture
+# Module Configuration Architecture
 
 ## Overview
 
@@ -6,7 +6,7 @@ Modules in Promenade are **fully autonomous vertical slices** that manage their 
 
 ## Architecture Principles
 
-### 1. IModule Autonomy
+### 1. Module Autonomy
 
 - Each module is responsible for loading its own configuration
 - Modules store configs in their own directory: `internal/modules/{module_name}/config/`
@@ -19,7 +19,7 @@ Modules in Promenade are **fully autonomous vertical slices** that manage their 
   - `config.dev.yaml` - Development settings
   - `config.test.yaml` - Test settings
   - `config.prod.yaml` - Production settings
-- IModule SDK automatically loads the correct config based on `ENVIRONMENT` variable
+- Module SDK automatically loads the correct config based on `ENVIRONMENT` variable
 
 ### 3. Configuration Loading Flow
 
@@ -30,18 +30,18 @@ Core loads app.{env}.yaml
     ↓
 Core initializes infrastructure (DB, EventBus, etc.)
     ↓
-IModule Registry discovers modules
+Module Registry discovers modules
     ↓
 For each enabled module:
-    IModule.Initialize(ctx, core) is called
+    Module.Initialize(ctx, core) is called
         ↓
-    IModule loads internal/modules/{name}/config/config.{env}.yaml
+    Module loads internal/modules/{name}/config/config.{env}.yaml
         ↓
-    IModule validates settings (license, features, etc.)
+    Module validates settings (license, features, etc.)
         ↓
-    IModule initializes repositories, use cases, handlers
+    Module initializes repositories, use cases, handlers
         ↓
-    IModule.RegisterRoutes() registers HTTP endpoints
+    Module.RegisterRoutes() registers HTTP endpoints
 ```
 
 ## Directory Structure
@@ -51,7 +51,7 @@ config/
 ├── app.dev.yaml          # Core config - development
 ├── app.test.yaml         # Core config - test
 ├── app.prod.yaml         # Core config - production
-└── modules.yaml          # IModule registry (enabled/disabled)
+└── modules.yaml          # Module registry (enabled/disabled)
 
 internal/modules/
 ├── posts/
@@ -243,13 +243,13 @@ internal/modules/posts/config/
 ├── config.test.yaml       IModule-owned
 └── config.prod.yaml       IModule-owned
 
-IModule loads own config  Autonomous
+Module loads own config  Autonomous
 IModule manages own settings  Independent
 ```
 
 ## Benefits
 
-### 1. True IModule Independence
+### 1. True Module Independence
 
 - Modules can be developed, tested, and deployed independently
 - No core changes needed when adding/modifying module configs
@@ -357,6 +357,6 @@ echo $ENVIRONMENT  # Should be: development, test, or production
 ## Related Documentation
 
 - [IModule Development Guide](MODULE_DEVELOPMENT.md)
-- [IModule Independence](MODULE_INDEPENDENCE.md)
+- [Module Independence](MODULE_INDEPENDENCE.md)
 - [Testing Infrastructure](TESTING_INFRASTRUCTURE.md)
 - [Config Migration](CONFIG_MIGRATION.md)

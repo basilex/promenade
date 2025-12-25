@@ -8,7 +8,7 @@ Promenade uses a signature-based licensing system for commercial modules. This d
 
 ### Design Principles
 
-1. **IModule Independence**: Each module manages its own licensing
+1. **Module Independence**: Each module manages its own licensing
 2. **Signature-Based Security**: HMAC-SHA256 prevents tampering
 3. **Graceful Degradation**: Grace periods for expired licenses
 4. **Environment-Specific**: Different validation rules per environment
@@ -29,7 +29,7 @@ PROMENADE-ANALYTICS-PRO-20261231-K8mF3pL9qT2xN7vR4zW6yH1jC5eS8bD0aG3hM6nP9
 Components:
 
 - **Prefix**: Always `PROMENADE`
-- **IModule**: IModule name in UPPERCASE (ANALYTICS, WAREHOUSE, AUDITLOG)
+- **IModule**: Module name in UPPERCASE (ANALYTICS, WAREHOUSE, AUDITLOG)
 - **Tier**: License tier (BASIC, PRO, ENTERPRISE)
 - **Expiry**: Date in YYYYMMDD format
 - **Signature**: HMAC-SHA256 of first 4 parts, base64 URL-encoded
@@ -43,22 +43,22 @@ Components:
 **License Validation Flow:**
 
 1. **Application Startup**
-   - IModule Registry (`pkg/module`) initializes
-2. **For Each Enabled IModule**
-   - `IModule.Initialize()` is called
+   - Module Registry (`pkg/module`) initializes
+2. **For Each Enabled Module**
+   - `Module.Initialize()` is called
 3. **License Validator** (`module/license/`)
    - `Parse()` - Extract license components
    - `Validate()` - Verify signature and expiry
    - `HealthCheck()` - Ongoing validation
 4. **License Status** (result)
-   - Valid - IModule operates normally
+   - Valid - Module operates normally
    - Expired (grace) - Warning issued
-   - Invalid - IModule disabled
+   - Invalid - Module disabled
 
 ### Validation Flow
 
 1. **Parse**: Extract components from license string
-2. **Verify IModule**: Ensure license matches module name
+2. **Verify Module**: Ensure license matches module name
 3. **Verify Signature**: HMAC-SHA256 validation
 4. **Check Expiry**: Validate date + grace period
 5. **Return Status**: Valid, expired (grace), or invalid
@@ -81,7 +81,7 @@ export LICENSE_SECRET="your-production-secret-key"
 
 ## Implementation
 
-### IModule Integration
+### Module Integration
 
 Each commercial module implements license validation in its `Initialize()` method:
 
@@ -203,7 +203,7 @@ grace_period_days: 7 # Limited grace
 validate_on_request: true # Optional per-request validation
 ```
 
-### IModule Configuration
+### Module Configuration
 
 In `config/modules.yaml`:
 
@@ -288,7 +288,7 @@ go test ./internal/modules/analytics/license/... -v
 # - Signature verification
 # - Expiration handling
 # - Grace period logic
-# - IModule mismatch detection
+# - Module mismatch detection
 ```
 
 ### License Generation Tool
@@ -368,9 +368,9 @@ var (
 
 ### Graceful Degradation
 
-1. **Missing License** (dev/test): IModule loads with reduced features
+1. **Missing License** (dev/test): Module loads with reduced features
 2. **Expired License**: Grace period allows continued operation with warnings
-3. **Invalid License**: IModule fails to initialize in production, logs in dev
+3. **Invalid License**: Module fails to initialize in production, logs in dev
 
 ### User-Facing Messages
 
@@ -489,7 +489,7 @@ Test coverage:
 - Signature verification
 - Expiration handling
 - Grace period logic
-- IModule mismatch
+- Module mismatch
 - Tier validation
 
 ### Integration Tests
@@ -552,7 +552,7 @@ Warning: License expired 3 days ago, grace period active
 
 Solution: Renew license before grace period ends (7 days default).
 
-**4. IModule Mismatch**
+4. Module Mismatch
 
 ```
 Error: license module mismatch: expected ANALYTICS, got WAREHOUSE
@@ -614,7 +614,7 @@ go run ./cmd/license-generator/main.go \
 4. **Track license usage**: Monitor which tiers are active
 5. **Plan renewals**: Renew before grace period expires
 
-### For IModule Authors
+### For Module Authors
 
 1. **Follow patterns**: Use existing analytics module as template
 2. **Document features**: Clear tier-based feature documentation
@@ -626,7 +626,7 @@ go run ./cmd/license-generator/main.go \
 
 ## References
 
-- [Analytics IModule README](../internal/modules/analytics/README.md)
+- [Analytics Module README](../internal/modules/analytics/README.md)
 - [License Package](../internal/modules/analytics/license/)
 - [IModule Development Guide](./MODULE_DEVELOPMENT.md)
 - [Configuration Architecture](./MODULE_CONFIG_ARCHITECTURE.md)

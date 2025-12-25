@@ -234,7 +234,7 @@ import (
 - IModule-specific settings → Modules
 - Business logic configuration → Modules
 
-### IModule Configuration
+### Module Configuration
 
 **File:** `internal/modules/{name}/config/config.{dev|test|prod}.yaml`
 
@@ -284,11 +284,11 @@ purge:
 **IModule Registration:**
 
 ```go
-// IModule registers handler
+// Module registers handler
 handler := purge.NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 
-// IModule registers policy
+// Module registers policy
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -390,7 +390,7 @@ type PurgeConfig struct {
 }
 ```
 
-**Fix:** IModule registers retention policy via registry.
+**Fix:** Module registers retention policy via registry.
 
 ---
 
@@ -402,7 +402,7 @@ type PurgeConfig struct {
 - Integration test auth/RBAC
 - Test reference data repositories
 
-### IModule Tests
+### Module Tests
 
 - Unit test business logic (use cases)
 - Integration test repositories

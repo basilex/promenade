@@ -1,4 +1,4 @@
-# IModule Independence Verification
+# Module Independence Verification
 
 ## Posts IModule Structure
 
@@ -14,7 +14,7 @@ internal/modules/posts/
 │   ├── http/           # HTTP handlers & DTOs
 │   └── repository/     # Database implementation
 ├── tests/              # IModule-specific tests
-├── module.go           # IModule integration
+├── module.go           # Module integration
 └── register.go         # Auto-registration
 ```
 

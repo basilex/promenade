@@ -9,7 +9,7 @@ The purge system is designed to automatically clean up soft-deleted records base
 
 ## Architecture Principles
 
-### 1. IModule Independence
+### 1. Module Independence
 
 Each module is responsible for:
 
@@ -26,7 +26,7 @@ Two global registries enable module independence:
 #### Handler Registry (`purge.DefaultRegistry`)
 
 ```go
-// IModule registers handler during initialization
+// Module registers handler during initialization
 handler := NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 ```
@@ -34,7 +34,7 @@ purge.DefaultRegistry.Register(handler)
 #### Policy Registry (`purge.DefaultPolicyRegistry`)
 
 ```go
-// IModule registers retention policy
+// Module registers retention policy
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -273,7 +273,7 @@ purge:
 
 ## Benefits
 
-###  IModule Independence
+### Module Independence
 
 - Modules own their purge logic completely
 - No core dependencies on module entities
@@ -347,6 +347,6 @@ Modules now register their own policies via `purge.DefaultPolicyRegistry`.
 
 ## See Also
 
-- [IModule Independence](MODULE_INDEPENDENCE.md)
+- [Module Independence](MODULE_INDEPENDENCE.md)
 - [IModule Development](MODULE_DEVELOPMENT.md)
 - [Testing Guide](TESTING_GUIDE.md)

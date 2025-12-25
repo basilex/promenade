@@ -140,7 +140,7 @@ func TestSomeUseCase(t *testing.T) {
 }
 ```
 
-## IModule Independence
+## Module Independence
 
 Each module's mocks are **completely independent**:
 

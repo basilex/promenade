@@ -1,14 +1,14 @@
-# IModule Development Guide
+# Module Development Guide
 
 This guide explains how to develop custom modules for Promenade using the Plugin Architecture.
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [IModule Structure](#module-structure)
-- [Creating a IModule](#creating-a-module)
-- [IModule Lifecycle](#module-lifecycle)
-- [Inter-IModule Communication](#inter-module-communication)
+- [Module Structure](#module-structure)
+- [Creating a Module](#creating-a-module)
+- [Module Lifecycle](#module-lifecycle)
+- [Inter-Module Communication](#inter-module-communication)
 - [Best Practices](#best-practices)
 - [Examples](#examples)
 
@@ -44,7 +44,7 @@ Promenade uses a **Plugin Architecture** that allows you to:
 
 ---
 
-## IModule Structure
+## Module Structure
 
 A typical module follows Clean Architecture:
 
@@ -73,14 +73,14 @@ modules/warehouse/
 │   ├── 001_create_warehouse_items.up.sql
 │   └── 001_create_warehouse_items.down.sql
 │
-└── module.go  # IModule registration
+└── module.go  # Module registration
 ```
 
 ---
 
-## Creating a IModule
+## Creating a Module
 
-### Step 1: Define IModule Metadata
+### Step 1: Define Module Metadata
 
 ```go
 // modules/warehouse/module.go
@@ -115,7 +115,7 @@ func New() module.IModule {
 }
 ```
 
-### Step 2: Implement IModule Interface
+### Step 2: Implement Module Interface
 
 ```go
 // Dependencies (optional - return empty slice if none)
@@ -217,7 +217,7 @@ func (m *WarehouseModule) HealthCheck(ctx context.Context) error {
 }
 ```
 
-### Step 3: Register IModule
+### Step 3: Register Module
 
 ```go
 // modules/warehouse/register.go
@@ -231,7 +231,7 @@ func init() {
 }
 ```
 
-### Step 4: Enable IModule
+### Step 4: Enable Module
 
 ```yaml
 # config/modules.yaml
@@ -249,7 +249,7 @@ modules:
 
 ---
 
-## IModule Lifecycle
+## Module Lifecycle
 
 **Startup Sequence:**
 
@@ -266,29 +266,29 @@ modules:
    - JWT manager
    - Logger
 
-3. **IModule.Initialize()** (in dependency order)
+3. **Module.Initialize()** (in dependency order)
 
    - Resolve dependencies
    - Initialize repositories
    - Initialize use cases
 
-4. **IModule.RegisterRoutes()**
+4. **Module.RegisterRoutes()**
 
    - Register HTTP endpoints
 
-5. **IModule.RegisterMigrations()**
+5. **Module.RegisterMigrations()**
 
    - Apply database migrations
 
-6. **IModule.RegisterEventHandlers()**
+6. **Module.RegisterEventHandlers()**
 
    - Subscribe to events
 
-7. **IModule.RegisterPermissions()**
+7. **Module.RegisterPermissions()**
 
    - Insert RBAC permissions
 
-8. **IModule.Start()**
+8. **Module.Start()**
 
    - Start background workers
    - Initialize external connections
@@ -297,14 +297,14 @@ modules:
 
 **Shutdown Sequence:**
 
-10. **IModule.Stop()** (in reverse order)
+10. **Module.Stop()** (in reverse order)
     - Stop workers
     - Close connections
     - Cleanup resources
 
 ---
 
-## Inter-IModule Communication
+## Inter-Module Communication
 
 Modules should communicate via **events** (loose coupling):
 

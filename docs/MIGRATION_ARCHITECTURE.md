@@ -143,7 +143,7 @@ func (m *manager) MigrateAll(ctx context.Context, enabledModules []string) error
 
 ---
 
-### 4. IModule Integration
+### 4. Module Integration
 
 Modules can optionally provide migrations programmatically:
 
@@ -307,7 +307,7 @@ migrations/
 
 ### 8. Benefits
 
-**IModule Independence**
+Module Independence
 
 - Each module owns its migrations
 - Enable/disable modules without migration conflicts
@@ -426,7 +426,7 @@ VALUES
 3. Update main.go to use new manager
 4. Test on staging
 
-**Phase 4: IModule Integration (Week 2)**
+**Phase 4: Module Integration (Week 2)**
 
 1. Add `RegisterMigrations()` to module interface
 2. Update existing modules
