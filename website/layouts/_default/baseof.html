@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+    <meta name="description" content="{{ .Site.Params.description }}" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ .Title }}" />
+    <meta property="og:description" content="{{ .Site.Params.description }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ .Permalink }}" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Syntax highlighting -->
+    {{ if .Params.highlight }}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    />
+    {{ end }}
+  </head>
+  <body>
+    {{ partial "header.html" . }}
+
+    <main>{{ block "main" . }}{{ end }}</main>
+
+    {{ partial "footer.html" . }} {{ if .Params.highlight }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+    {{ end }}
+  </body>
+</html>

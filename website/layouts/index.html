@@ -1,0 +1,38 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="container">
+    <h1>{{ .Title }}</h1>
+    <p>{{ .Params.description }}</p>
+    <div class="hero-buttons">
+      <a href="/docs/" class="btn btn-primary">Get Started →</a>
+      <a href="{{ .Site.Params.github }}" class="btn btn-secondary" target="_blank">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="features-grid">
+    {{ range .Params.features }}
+    <div class="feature-card">
+      <div class="feature-icon">{{ .icon }}</div>
+      <h3 class="feature-title">{{ .title }}</h3>
+      <p class="feature-description">{{ .description }}</p>
+    </div>
+    {{ end }}
+  </div>
+</section>
+
+<section class="container" style="padding: 4rem 0">
+  <div style="text-align: center; max-width: 768px; margin: 0 auto">
+    <h2 style="margin-bottom: 1rem">Ready to Build?</h2>
+    <p style="color: var(--color-gray-600); margin-bottom: 2rem">
+      Start building production-ready APIs with Promenade today.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center">
+      <a href="/docs/" class="btn btn-primary">Read Documentation</a>
+      <a href="{{ .Site.Params.social.discussions }}" class="btn btn-secondary" target="_blank">Join Community</a>
+    </div>
+  </div>
+</section>
+
+{{ end }}

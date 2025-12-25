@@ -1,0 +1,84 @@
+baseURL = 'https://promenade.com.ua/'
+languageCode = 'en-us'
+title = 'Promenade - Production-Ready REST API Framework'
+theme = ''
+
+# Enable Git info for last modified dates
+enableGitInfo = true
+
+# Markup settings
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true  # Allow HTML in markdown
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
+    style = 'monokai'
+
+# Menu configuration
+[menu]
+  [[menu.main]]
+    name = 'Home'
+    url = '/'
+    weight = 1
+  [[menu.main]]
+    name = 'Features'
+    url = '/features/'
+    weight = 2
+  [[menu.main]]
+    name = 'Documentation'
+    url = '/docs/'
+    weight = 3
+  [[menu.main]]
+    name = 'GitHub'
+    url = 'https://github.com/basilex/promenade'
+    weight = 4
+
+# Params
+[params]
+  description = 'Production-ready REST API built with Clean Architecture, modular plugin system, and namespace-based database migrations'
+  author = 'Promenade Team'
+  github = 'https://github.com/basilex/promenade'
+  
+  # Social links
+  [params.social]
+    github = 'https://github.com/basilex/promenade'
+    discussions = 'https://github.com/basilex/promenade/discussions'
+
+# Languages configuration
+[languages]
+  [languages.en]
+    languageName = 'English'
+    weight = 1
+    title = 'Promenade - Production-Ready REST API Framework'
+    [languages.en.params]
+      description = 'Production-ready REST API built with Clean Architecture, modular plugin system, and namespace-based database migrations'
+  
+  [languages.uk]
+    languageName = 'Українська'
+    weight = 2
+    title = 'Promenade - Production-Ready REST API Framework'
+    contentDir = 'content/uk'
+    [languages.uk.params]
+      description = 'Production-ready REST API з Clean Architecture, модульною системою плагінів та namespace-based міграціями бази даних'
+  
+  [languages.de]
+    languageName = 'Deutsch'
+    weight = 3
+    title = 'Promenade - Production-Ready REST API Framework'
+    contentDir = 'content/de'
+    [languages.de.params]
+      description = 'Production-ready REST API mit Clean Architecture, modularem Plugin-System und namespace-basierten Datenbankmigrationen'
+
+# Output formats
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
+  section = ['HTML', 'RSS']
+
+# Permalinks
+[permalinks]
+  posts = '/:year/:month/:title/'

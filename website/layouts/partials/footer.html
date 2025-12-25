@@ -1,0 +1,43 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Promenade</h4>
+        <p>Production-ready REST API built with Clean Architecture.</p>
+      </div>
+
+      <div class="footer-section">
+        <h4>Documentation</h4>
+        <ul class="footer-links">
+          <li><a href="/docs/">Getting Started</a></li>
+          <li><a href="/docs/architecture/">Architecture</a></li>
+          <li><a href="/docs/modules/">Modules</a></li>
+          <li><a href="/docs/guides/">Guides</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Community</h4>
+        <ul class="footer-links">
+          <li><a href="{{ .Site.Params.social.github }}" target="_blank">GitHub</a></li>
+          <li><a href="{{ .Site.Params.social.discussions }}" target="_blank">Discussions</a></li>
+          <li><a href="{{ .Site.Params.social.github }}/issues" target="_blank">Issues</a></li>
+          <li><a href="{{ .Site.Params.social.github }}/pulls" target="_blank">Pull Requests</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>More</h4>
+        <ul class="footer-links">
+          <li><a href="/features/">Features</a></li>
+          <li><a href="{{ .Site.Params.social.github }}/blob/main/LICENSE" target="_blank">License (MIT)</a></li>
+          <li><a href="{{ .Site.Params.social.github }}/releases" target="_blank">Releases</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ now.Year }} Promenade. Built with ❤️ using Hugo and Go.</p>
+    </div>
+  </div>
+</footer>

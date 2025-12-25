@@ -1,0 +1,23 @@
+<header class="site-header">
+    <div class="container">
+        <a href="{{ "/" | relLangURL }}" class="site-logo">
+            🚀 Promenade
+        </a>
+        <nav class="site-nav">
+            {{ range .Site.Menus.main }}
+            <a href="{{ .URL }}">{{ .Name }}</a>
+            {{ end }}
+            
+            <!-- Language switcher -->
+            <div class="language-switcher">
+                {{ range .Site.Languages }}
+                {{ if eq . $.Site.Language }}
+                <a href="#" class="active">{{ .LanguageName }}</a>
+                {{ else }}
+                <a href="{{ $.Site.BaseURL }}{{ .Lang }}/">{{ .LanguageName }}</a>
+                {{ end }}
+                {{ end }}
+            </div>
+        </nav>
+    </div>
+</header>

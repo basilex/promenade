@@ -48,6 +48,11 @@ temp/
 .vscode/
 .idea/
 *.disabled
+
+# Hugo build output
+website/public/
+website/resources/
+website/.hugo_build.lock
 *.code-workspace
 *.sublime-project
 *.sublime-workspace
