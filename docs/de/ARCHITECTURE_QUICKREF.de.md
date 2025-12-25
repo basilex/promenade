@@ -2,7 +2,7 @@
 
 [🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
-## Core vs IModule: Einfache Regel
+## Core vs Module: Einfache Regel
 
 **CORE** = Infrastruktur + Referenzdaten + Auth
 
@@ -64,7 +64,7 @@
 
 ---
 
-## Was Gehört in IModule?
+## Was Gehört in Module?
 
 ### Modul-Struktur
 
@@ -122,7 +122,7 @@ func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My IModule",
+            DisplayName: "My Module",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),
@@ -232,9 +232,9 @@ import (
 
 **Enthält NICHT:**
 
-- Entitätsspezifische Aufbewahrungstage → IModule
-- Modulspezifische Einstellungen → IModule
-- Geschäftslogik-Konfiguration → IModule
+- Entitätsspezifische Aufbewahrungstage → Module
+- Modulspezifische Einstellungen → Module
+- Geschäftslogik-Konfiguration → Module
 
 ### Modul-Konfiguration
 
@@ -489,7 +489,7 @@ Im Zweifel?
 **Merken Sie sich:**
 
 - Core = Infrastruktur + Referenzdaten + Auth
-- IModule = Geschäftslogik (unabhängig, lizenzierbar)
+- Module = Geschäftslogik (unabhängig, lizenzierbar)
 - Registries für lose Kopplung verwenden
 - Events für asynchrone Kommunikation
 - Konfigurations-Autonomie für jedes Modul

@@ -122,7 +122,7 @@ func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My IModule",
+            DisplayName: "My Module",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),
