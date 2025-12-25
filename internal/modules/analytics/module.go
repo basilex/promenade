@@ -153,13 +153,21 @@ func (m *AnalyticsModule) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("/metrics/latest", m.metricsHandler.GetLatestMetric)
 	router.GET("/metrics/:id", m.metricsHandler.GetMetric)
 
-	// TODO: Add reports endpoints
-	// router.POST("/reports", handler.CreateReport)
-	// router.GET("/reports", handler.ListReports)
-
-	// TODO: Add dashboards endpoints
-	// router.POST("/dashboards", handler.CreateDashboard)
-	// router.GET("/dashboards", handler.ListDashboards)
+	// Reports and Dashboards endpoints require full implementation:
+	// - Create Report/Dashboard entities
+	// - Implement ReportRepository and DashboardRepository
+	// - Implement ReportUseCase and DashboardUseCase with business logic
+	// - Create ReportHandler and DashboardHandler with DTOs
+	// - Add database migrations for reports/dashboards tables
+	// Planned routes:
+	// - POST   /reports        -> Create custom report
+	// - GET    /reports        -> List user's reports
+	// - GET    /reports/:id    -> Get report with data
+	// - DELETE /reports/:id    -> Delete report
+	// - POST   /dashboards     -> Create dashboard
+	// - GET    /dashboards     -> List user's dashboards
+	// - GET    /dashboards/:id -> Get dashboard with widgets
+	// - DELETE /dashboards/:id  -> Delete dashboard
 }
 
 // RegisterMigrations returns database migrations
@@ -173,15 +181,20 @@ func (m *AnalyticsModule) RegisterMigrations() []module.Migration {
 func (m *AnalyticsModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	m.logger.Info("Registering analytics event handlers")
 
-	// TODO: Subscribe to user events
-	// eventBus.Subscribe(ctx, bus.TopicUserRegistered, func(event *bus.Event) {
-	//     // Track user registration metric
-	// })
-
-	// TODO: Subscribe to post events
-	// eventBus.Subscribe(ctx, bus.TopicPostCreated, func(event *bus.Event) {
-	//     // Track post creation metric
-	// })
+	// Event handlers will be implemented when metric tracking is ready
+	// Planned metrics to track:
+	// - user.registered        -> Daily/monthly user registrations
+	// - user.logged_in         -> Active users, session duration
+	// - post.created           -> Content creation rate
+	// - post.viewed            -> Popular content, engagement
+	// - comment.created        -> User engagement metrics
+	// - api.request.completed  -> API usage, response times
+	// - api.error.occurred     -> Error rate tracking
+	//
+	// Implementation requires:
+	// - MetricCollector service for async metric collection
+	// - Background worker for metric aggregation
+	// - Metric repository methods for efficient bulk inserts
 
 	return nil
 }
