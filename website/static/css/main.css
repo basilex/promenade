@@ -149,6 +149,23 @@ pre code {
   font-size: 0.9rem;
 }
 
+/* Horizontal rules */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 3rem 0;
+}
+
+/* Better spacing after horizontal rules */
+hr + h1,
+hr + h2,
+hr + h3,
+hr + h4,
+hr + h5,
+hr + h6 {
+  margin-top: 3rem;
+}
+
 /* Layout */
 .container {
   max-width: 1280px;
