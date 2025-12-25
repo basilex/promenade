@@ -1,75 +1,71 @@
 <header class="site-header">
-    <div class="container">
-        <a href="{{ "/" | relLangURL }}" class="site-logo">
-            🚀 Promenade
-        </a>
-        
-        <!-- Desktop Navigation -->
-        <nav class="site-nav">
-            {{ range .Site.Menus.main }}
-            <a href="{{ .URL }}">{{ .Name }}</a>
-            {{ end }}
-            
-            <!-- Language switcher -->
-            <div class="language-switcher">
-                {{ range .Site.Languages }}
-                {{ if eq . $.Site.Language }}
-                <a href="#" class="active">{{ .LanguageName }}</a>
-                {{ else }}
-                <a href="{{ $.Site.BaseURL }}{{ .Lang }}/">{{ .LanguageName }}</a>
-                {{ end }}
-                {{ end }}
-            </div>
-        </nav>
+  <div class="container">
+    <a href="{{ .Site.Home.RelPermalink }}" class="site-logo"> 🚀 Promenade </a>
 
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-button" onclick="toggleMobileMenu()" aria-label="Toggle menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-    </div>
+    <!-- Desktop Navigation -->
+    <nav class="site-nav">
+      {{ range .Site.Menus.main }}
+      <a href="{{ .URL }}">{{ .Name }}</a>
+      {{ end }}
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <nav>
-            {{ range .Site.Menus.main }}
-            <a href="{{ .URL }}">{{ .Name }}</a>
-            {{ end }}
-        </nav>
-        
-        <div class="lang-switcher">
-            {{ range .Site.Languages }}
-            {{ if eq . $.Site.Language }}
-            <a href="#" class="active" style="display: inline-block; margin-right: 1rem;">{{ .LanguageName }}</a>
-            {{ else }}
-            <a href="{{ $.Site.BaseURL }}{{ .Lang }}/" style="display: inline-block; margin-right: 1rem;">{{ .LanguageName }}</a>
-            {{ end }}
-            {{ end }}
-        </div>
+      <!-- Language switcher -->
+      <div class="language-switcher">
+        {{ range .Site.Languages }} {{ if eq . $.Site.Language }}
+        <a href="#" class="active">{{ .LanguageName }}</a>
+        {{ else }}
+        <a href="{{ $.Site.BaseURL }}{{ .Lang }}/">{{ .LanguageName }}</a>
+        {{ end }} {{ end }}
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-button" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav>
+      {{ range .Site.Menus.main }}
+      <a href="{{ .URL }}">{{ .Name }}</a>
+      {{ end }}
+    </nav>
+
+    <div class="lang-switcher">
+      {{ range .Site.Languages }} {{ if eq . $.Site.Language }}
+      <a href="#" class="active" style="display: inline-block; margin-right: 1rem">{{ .LanguageName }}</a>
+      {{ else }}
+      <a href="{{ $.Site.BaseURL }}{{ .Lang }}/" style="display: inline-block; margin-right: 1rem"
+        >{{ .LanguageName }}</a
+      >
+      {{ end }} {{ end }}
     </div>
+  </div>
 </header>
 
 <script>
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('active');
-}
+  function toggleMobileMenu() {
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("active");
+  }
 
-// Close mobile menu when clicking outside
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById('mobileMenu');
-    const button = document.querySelector('.mobile-menu-button');
-    
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", function (event) {
+    const menu = document.getElementById("mobileMenu");
+    const button = document.querySelector(".mobile-menu-button");
+
     if (!menu.contains(event.target) && !button.contains(event.target)) {
-        menu.classList.remove('active');
+      menu.classList.remove("active");
     }
-});
+  });
 
-// Close mobile menu on link click
-document.querySelectorAll('.mobile-menu a').forEach(link => {
-    link.addEventListener('click', () => {
-        document.getElementById('mobileMenu').classList.remove('active');
+  // Close mobile menu on link click
+  document.querySelectorAll(".mobile-menu a").forEach((link) => {
+    link.addEventListener("click", () => {
+      document.getElementById("mobileMenu").classList.remove("active");
     });
-});
+  });
 </script>
