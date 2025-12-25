@@ -10,11 +10,10 @@
 
       <!-- Language switcher -->
       <div class="language-switcher">
-        {{ range .Site.Languages }} {{ if eq . $.Site.Language }}
-        <a href="#" class="active">{{ .LanguageName }}</a>
-        {{ else }}
-        <a href="{{ $.Site.BaseURL }}{{ .Lang }}/">{{ .LanguageName }}</a>
+        {{ if .IsTranslated }} {{ range .Translations }}
+        <a href="{{ .RelPermalink }}">{{ .Language.LanguageName }}</a>
         {{ end }} {{ end }}
+        <a href="{{ .RelPermalink }}" class="active">{{ .Language.LanguageName }}</a>
       </div>
     </nav>
 
@@ -35,13 +34,12 @@
     </nav>
 
     <div class="lang-switcher">
-      {{ range .Site.Languages }} {{ if eq . $.Site.Language }}
-      <a href="#" class="active" style="display: inline-block; margin-right: 1rem">{{ .LanguageName }}</a>
-      {{ else }}
-      <a href="{{ $.Site.BaseURL }}{{ .Lang }}/" style="display: inline-block; margin-right: 1rem"
-        >{{ .LanguageName }}</a
-      >
+      {{ if .IsTranslated }} {{ range .Translations }}
+      <a href="{{ .RelPermalink }}" style="display: inline-block; margin-right: 1rem">{{ .Language.LanguageName }}</a>
       {{ end }} {{ end }}
+      <a href="{{ .RelPermalink }}" class="active" style="display: inline-block; margin-right: 1rem"
+        >{{ .Language.LanguageName }}</a
+      >
     </div>
   </div>
 </header>
