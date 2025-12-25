@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
@@ -113,12 +114,10 @@ func NewBus(cfg config.BusSection) (IBus, error) {
 // In test/development environments, we fail fast to catch configuration issues early.
 // In production, we gracefully degrade to in-memory adapter with warning.
 func shouldFailFast() bool {
-	// Check if we're in test environment
+	// Check if we're in test environment via BUS_FAIL_FAST environment variable
 	// Tests should fail fast to ensure proper configuration
-	// Production should gracefully degrade
-	return false // For now, always allow graceful degradation
-	// TODO: Make this configurable via environment variable
-	// return os.Getenv("BUS_FAIL_FAST") == "true"
+	// Production should gracefully degrade (default: false)
+	return os.Getenv("BUS_FAIL_FAST") == "true"
 }
 
 // MustNewBus creates a new bus or panics on error.

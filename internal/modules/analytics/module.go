@@ -202,8 +202,12 @@ func (m *AnalyticsModule) RegisterPermissions() []module.Permission {
 
 // HealthCheck returns the module's health status
 func (m *AnalyticsModule) HealthCheck(ctx context.Context) error {
-	// TODO: Check database connectivity
-	// TODO: Check background workers status
+	// Check database connectivity by pinging
+	if err := m.core.DB.PingContext(ctx); err != nil {
+		return fmt.Errorf("database connection failed: %w", err)
+	}
+
+	// Note: Background workers health check will be added when workers are implemented
 
 	return nil
 }

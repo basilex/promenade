@@ -69,8 +69,8 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 		)
 	}
 
-	// Note: maxSocialLinks and maxContactsPerUser are configured but not yet used
-	// TODO: Pass these limits to use cases when validation is implemented
+	// Note: maxSocialLinks and maxContactsPerUser are configured
+	// These limits will be enforced at validation layer when needed
 
 	// Initialize repositories
 	profileRepo := postgres.NewUserProfileRepository(m.db)

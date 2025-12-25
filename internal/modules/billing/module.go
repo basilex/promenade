@@ -267,10 +267,12 @@ func (m *BillingModule) RegisterMigrations() []module.Migration {
 func (m *BillingModule) RegisterEventHandlers(eventBus bus.IBus) error {
 	slog.Info("Registering billing module event handlers")
 
-	// TODO: Subscribe to domain events (subscription expiring, payment failed, etc.)
-	// Example:
-	// eventBus.Subscribe(ctx, "billing.subscription.expiring", m.handleSubscriptionExpiring)
-	// eventBus.Subscribe(ctx, "billing.payment.failed", m.handlePaymentFailed)
+	// Event handlers will be implemented when background workers are ready
+	// Planned events:
+	// - billing.subscription.expiring -> Send renewal reminders
+	// - billing.payment.failed -> Handle payment failures
+	// - billing.invoice.generated -> Send invoice emails
+	// - user.deleted -> Cancel subscriptions
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/basilex/promenade/internal/modules/posts/domain/entity"
 	"github.com/basilex/promenade/internal/modules/posts/domain/repository"
+	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/pagination"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -94,7 +95,10 @@ func (uc *commentUseCase) CreateComment(ctx context.Context, postID, userID uuid
 	if parentID != nil {
 		if err := uc.commentRepo.IncrementRepliesCount(ctx, *parentID); err != nil {
 			// Log error but don't fail the operation
-			// TODO: Add logger
+			log := logger.FromContext(ctx)
+			log.Error("Failed to increment parent comment replies count",
+				"parent_id", parentID.String(),
+				"error", err)
 		}
 	}
 
@@ -154,7 +158,11 @@ func (uc *commentUseCase) DeleteComment(ctx context.Context, userID, commentID u
 	if comment.ParentID != nil {
 		if err := uc.commentRepo.DecrementRepliesCount(ctx, *comment.ParentID); err != nil {
 			// Log error but don't fail the operation
-			// TODO: Add logger
+			log := logger.FromContext(ctx)
+			log.Error("Failed to decrement parent comment replies count",
+				"parent_id", comment.ParentID.String(),
+				"comment_id", comment.ID.String(),
+				"error", err)
 		}
 	}
 
