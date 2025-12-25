@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/modules/posts/domain/entity"
-	"github.com/basilex/promenade/internal/modules/posts/domain/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -22,7 +21,7 @@ func TestUserPostUseCase_CreatePost(t *testing.T) {
 
 	t.Run("successful post creation", func(t *testing.T) {
 		// Arrange - create mock with module's own mock
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		title := "My Test Post"
@@ -53,7 +52,7 @@ func TestUserPostUseCase_CreatePost(t *testing.T) {
 
 	t.Run("slug already exists", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		existingPost := &entity.UserPost{
@@ -78,7 +77,7 @@ func TestUserPostUseCase_CreatePost(t *testing.T) {
 
 	t.Run("empty title", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		// Mock для GetBySlug (slug будет пустой строкой из пустого title)
@@ -103,7 +102,7 @@ func TestUserPostUseCase_GetPost(t *testing.T) {
 
 	t.Run("successful retrieval", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		expectedPost := &entity.UserPost{
@@ -127,7 +126,7 @@ func TestUserPostUseCase_GetPost(t *testing.T) {
 
 	t.Run("post not found", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		mockRepo.On("GetByID", ctx, postID).Return(nil, entity.ErrNotFound)
@@ -152,7 +151,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 
 	t.Run("successful update", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		existingPost := &entity.UserPost{
@@ -184,7 +183,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 
 	t.Run("unauthorized - different user", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		differentUserID := uuidv7.New()
@@ -213,7 +212,7 @@ func TestUserPostUseCase_UpdatePost(t *testing.T) {
 
 	t.Run("post not found", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		updates := map[string]any{
@@ -241,7 +240,7 @@ func TestUserPostUseCase_DeletePost(t *testing.T) {
 
 	t.Run("successful deletion", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		existingPost := &entity.UserPost{
@@ -263,7 +262,7 @@ func TestUserPostUseCase_DeletePost(t *testing.T) {
 
 	t.Run("unauthorized - different user", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		differentUserID := uuidv7.New()
@@ -294,7 +293,7 @@ func TestUserPostUseCase_PublishPost(t *testing.T) {
 
 	t.Run("successful publish", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		draftPost := &entity.UserPost{
@@ -321,7 +320,7 @@ func TestUserPostUseCase_PublishPost(t *testing.T) {
 
 	t.Run("unauthorized", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		differentUserID := uuidv7.New()
@@ -353,7 +352,7 @@ func TestUserPostUseCase_UnpublishPost(t *testing.T) {
 
 	t.Run("successful unpublish", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		publishedPost := &entity.UserPost{
@@ -387,7 +386,7 @@ func TestUserPostUseCase_ArchivePost(t *testing.T) {
 
 	t.Run("successful archive", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		publishedPost := &entity.UserPost{
@@ -421,7 +420,7 @@ func TestUserPostUseCase_ToggleFeatured(t *testing.T) {
 
 	t.Run("toggle from false to true", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		post := &entity.UserPost{
@@ -447,7 +446,7 @@ func TestUserPostUseCase_ToggleFeatured(t *testing.T) {
 
 	t.Run("toggle from true to false", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		post := &entity.UserPost{
@@ -480,7 +479,7 @@ func TestUserPostUseCase_SoftDeletePost(t *testing.T) {
 
 	t.Run("successful soft delete", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		existingPost := &entity.UserPost{
@@ -502,7 +501,7 @@ func TestUserPostUseCase_SoftDeletePost(t *testing.T) {
 
 	t.Run("unauthorized", func(t *testing.T) {
 		// Arrange
-		mockRepo := new(mocks.MockIUserPostRepository)
+		mockRepo := new(mockUserPostRepository)
 		uc := NewUserPostUseCase(mockRepo)
 
 		differentUserID := uuidv7.New()

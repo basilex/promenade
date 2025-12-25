@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/modules/billing/domain/entity"
-	"github.com/basilex/promenade/internal/modules/billing/domain/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -25,7 +24,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 		tax            int64
 		currency       string
 		dueDays        int
-		mockSetup      func(*mocks.MockIInvoiceRepository)
+		mockSetup      func(*mockInvoiceRepository)
 		expectError    bool
 		errorContains  string
 	}{
@@ -36,7 +35,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 			tax:            200,
 			currency:       "USD",
 			dueDays:        30,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Invoice")).Return(nil)
 			},
 			expectError: false,
@@ -48,7 +47,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 			tax:            0,
 			currency:       "EUR",
 			dueDays:        14,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Invoice")).Return(nil)
 			},
 			expectError: false,
@@ -60,7 +59,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 			tax:            0,
 			currency:       "USD",
 			dueDays:        30,
-			mockSetup:      func(m *mocks.MockIInvoiceRepository) {},
+			mockSetup:      func(m *mockInvoiceRepository) {},
 			expectError:    true,
 			errorContains:  "subtotal",
 		},
@@ -71,7 +70,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 			tax:            -50,
 			currency:       "USD",
 			dueDays:        30,
-			mockSetup:      func(m *mocks.MockIInvoiceRepository) {},
+			mockSetup:      func(m *mockInvoiceRepository) {},
 			expectError:    true,
 			errorContains:  "tax",
 		},
@@ -82,7 +81,7 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 			tax:            100,
 			currency:       "USD",
 			dueDays:        30,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Invoice")).
 					Return(errors.New("db error"))
 			},
@@ -93,9 +92,9 @@ func TestInvoiceUseCase_CreateInvoice(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -130,14 +129,14 @@ func TestInvoiceUseCase_GetInvoice(t *testing.T) {
 	tests := []struct {
 		name        string
 		invoiceID   uuidv7.UUID
-		mockSetup   func(*mocks.MockIInvoiceRepository)
+		mockSetup   func(*mockInvoiceRepository)
 		expectError bool
 		expectNil   bool
 	}{
 		{
 			name:      "successful retrieval",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:             invoiceID,
 					SubscriptionID: uuidv7.New(),
@@ -155,7 +154,7 @@ func TestInvoiceUseCase_GetInvoice(t *testing.T) {
 		{
 			name:      "invoice not found",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetByID", ctx, invoiceID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -164,7 +163,7 @@ func TestInvoiceUseCase_GetInvoice(t *testing.T) {
 		{
 			name:      "repository error",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetByID", ctx, invoiceID).Return(nil, errors.New("db error"))
 			},
 			expectError: true,
@@ -174,9 +173,9 @@ func TestInvoiceUseCase_GetInvoice(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -207,14 +206,14 @@ func TestInvoiceUseCase_GetInvoiceByNumber(t *testing.T) {
 	tests := []struct {
 		name          string
 		invoiceNumber string
-		mockSetup     func(*mocks.MockIInvoiceRepository)
+		mockSetup     func(*mockInvoiceRepository)
 		expectError   bool
 		expectNil     bool
 	}{
 		{
 			name:          "successful retrieval",
 			invoiceNumber: invoiceNumber,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:             uuidv7.New(),
 					InvoiceNumber:  invoiceNumber,
@@ -229,7 +228,7 @@ func TestInvoiceUseCase_GetInvoiceByNumber(t *testing.T) {
 		{
 			name:          "invoice not found",
 			invoiceNumber: "INV-UNKNOWN",
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetByInvoiceNumber", ctx, "INV-UNKNOWN").Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -239,9 +238,9 @@ func TestInvoiceUseCase_GetInvoiceByNumber(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -273,14 +272,14 @@ func TestInvoiceUseCase_GetSubscriptionInvoices(t *testing.T) {
 	tests := []struct {
 		name           string
 		subscriptionID uuidv7.UUID
-		mockSetup      func(*mocks.MockIInvoiceRepository)
+		mockSetup      func(*mockInvoiceRepository)
 		expectError    bool
 		expectCount    int
 	}{
 		{
 			name:           "successful retrieval - multiple invoices",
 			subscriptionID: subscriptionID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoices := []*entity.Invoice{
 					{ID: uuidv7.New(), SubscriptionID: subscriptionID, Status: entity.InvoiceStatusPaid},
 					{ID: uuidv7.New(), SubscriptionID: subscriptionID, Status: entity.InvoiceStatusOpen},
@@ -293,7 +292,7 @@ func TestInvoiceUseCase_GetSubscriptionInvoices(t *testing.T) {
 		{
 			name:           "no invoices found",
 			subscriptionID: subscriptionID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetBySubscriptionID", ctx, subscriptionID).Return([]*entity.Invoice{}, nil)
 			},
 			expectError: false,
@@ -302,7 +301,7 @@ func TestInvoiceUseCase_GetSubscriptionInvoices(t *testing.T) {
 		{
 			name:           "repository error",
 			subscriptionID: subscriptionID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetBySubscriptionID", ctx, subscriptionID).Return(nil, errors.New("db error"))
 			},
 			expectError: true,
@@ -312,9 +311,9 @@ func TestInvoiceUseCase_GetSubscriptionInvoices(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -341,13 +340,13 @@ func TestInvoiceUseCase_FinalizeInvoice(t *testing.T) {
 	tests := []struct {
 		name        string
 		invoiceID   uuidv7.UUID
-		mockSetup   func(*mocks.MockIInvoiceRepository)
+		mockSetup   func(*mockInvoiceRepository)
 		expectError bool
 	}{
 		{
 			name:      "successful finalization",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:             invoiceID,
 					Status:         entity.InvoiceStatusDraft,
@@ -365,7 +364,7 @@ func TestInvoiceUseCase_FinalizeInvoice(t *testing.T) {
 		{
 			name:      "invoice not found",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetByID", ctx, invoiceID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -373,7 +372,7 @@ func TestInvoiceUseCase_FinalizeInvoice(t *testing.T) {
 		{
 			name:      "update error",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:     invoiceID,
 					Status: entity.InvoiceStatusDraft,
@@ -387,9 +386,9 @@ func TestInvoiceUseCase_FinalizeInvoice(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -414,13 +413,13 @@ func TestInvoiceUseCase_VoidInvoice(t *testing.T) {
 	tests := []struct {
 		name        string
 		invoiceID   uuidv7.UUID
-		mockSetup   func(*mocks.MockIInvoiceRepository)
+		mockSetup   func(*mockInvoiceRepository)
 		expectError bool
 	}{
 		{
 			name:      "successful void",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:             invoiceID,
 					Status:         entity.InvoiceStatusOpen,
@@ -436,7 +435,7 @@ func TestInvoiceUseCase_VoidInvoice(t *testing.T) {
 		{
 			name:      "invoice not found",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("GetByID", ctx, invoiceID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -444,7 +443,7 @@ func TestInvoiceUseCase_VoidInvoice(t *testing.T) {
 		{
 			name:      "update error",
 			invoiceID: invoiceID,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoice := &entity.Invoice{
 					ID:     invoiceID,
 					Status: entity.InvoiceStatusOpen,
@@ -458,9 +457,9 @@ func TestInvoiceUseCase_VoidInvoice(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -488,7 +487,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 		status      *entity.InvoiceStatus
 		limit       int
 		offset      int
-		mockSetup   func(*mocks.MockIInvoiceRepository)
+		mockSetup   func(*mockInvoiceRepository)
 		expectError bool
 		expectCount int
 	}{
@@ -497,7 +496,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoices := []*entity.Invoice{
 					{ID: uuidv7.New(), Status: entity.InvoiceStatusOpen},
 					{ID: uuidv7.New(), Status: entity.InvoiceStatusPaid},
@@ -512,7 +511,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 			status: &openStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoices := []*entity.Invoice{
 					{ID: uuidv7.New(), Status: entity.InvoiceStatusOpen},
 				}
@@ -526,7 +525,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 			status: nil,
 			limit:  5,
 			offset: 10,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				invoices := []*entity.Invoice{
 					{ID: uuidv7.New(), Status: entity.InvoiceStatusOpen},
 				}
@@ -540,7 +539,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 			status: &paidStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("List", ctx, &paidStatus, 10, 0).Return([]*entity.Invoice{}, nil)
 			},
 			expectError: false,
@@ -551,7 +550,7 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("List", ctx, (*entity.InvoiceStatus)(nil), 10, 0).
 					Return(nil, errors.New("db error"))
 			},
@@ -562,9 +561,9 @@ func TestInvoiceUseCase_ListInvoices(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)
@@ -591,14 +590,14 @@ func TestInvoiceUseCase_CountInvoices(t *testing.T) {
 	tests := []struct {
 		name          string
 		status        *entity.InvoiceStatus
-		mockSetup     func(*mocks.MockIInvoiceRepository)
+		mockSetup     func(*mockInvoiceRepository)
 		expectError   bool
 		expectedCount int
 	}{
 		{
 			name:   "count all invoices",
 			status: nil,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Count", ctx, (*entity.InvoiceStatus)(nil)).Return(100, nil)
 			},
 			expectError:   false,
@@ -607,7 +606,7 @@ func TestInvoiceUseCase_CountInvoices(t *testing.T) {
 		{
 			name:   "count open invoices",
 			status: &openStatus,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Count", ctx, &openStatus).Return(25, nil)
 			},
 			expectError:   false,
@@ -616,7 +615,7 @@ func TestInvoiceUseCase_CountInvoices(t *testing.T) {
 		{
 			name:   "zero count",
 			status: nil,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Count", ctx, (*entity.InvoiceStatus)(nil)).Return(0, nil)
 			},
 			expectError:   false,
@@ -625,7 +624,7 @@ func TestInvoiceUseCase_CountInvoices(t *testing.T) {
 		{
 			name:   "repository error",
 			status: nil,
-			mockSetup: func(m *mocks.MockIInvoiceRepository) {
+			mockSetup: func(m *mockInvoiceRepository) {
 				m.On("Count", ctx, (*entity.InvoiceStatus)(nil)).
 					Return(0, errors.New("db error"))
 			},
@@ -636,9 +635,9 @@ func TestInvoiceUseCase_CountInvoices(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
-			mockPaymentRepo := new(mocks.MockIPaymentRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
+			mockPaymentRepo := new(mockPaymentRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockInvoiceRepo)
 
 			uc := NewInvoiceUseCase(mockInvoiceRepo, mockPaymentRepo, mockSubRepo, nil)

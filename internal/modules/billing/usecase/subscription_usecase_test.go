@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/modules/billing/domain/entity"
-	"github.com/basilex/promenade/internal/modules/billing/domain/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -23,14 +22,14 @@ func TestSubscriptionUseCase_CreateSubscription(t *testing.T) {
 		name        string
 		userID      uuidv7.UUID
 		planID      uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository, *mocks.MockIPlanRepository)
+		mockSetup   func(*mockSubscriptionRepository, *mockPlanRepository)
 		expectError bool
 	}{
 		{
 			name:   "successful subscription creation - no trial",
 			userID: userID,
 			planID: planID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository, planRepo *mocks.MockIPlanRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository, planRepo *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:        planID,
 					Name:      "Basic Plan",
@@ -48,7 +47,7 @@ func TestSubscriptionUseCase_CreateSubscription(t *testing.T) {
 			name:   "successful subscription creation - with trial",
 			userID: userID,
 			planID: planID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository, planRepo *mocks.MockIPlanRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository, planRepo *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:        planID,
 					Name:      "Pro Plan",
@@ -66,7 +65,7 @@ func TestSubscriptionUseCase_CreateSubscription(t *testing.T) {
 			name:   "plan not found",
 			userID: userID,
 			planID: planID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository, planRepo *mocks.MockIPlanRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository, planRepo *mockPlanRepository) {
 				planRepo.On("GetByID", ctx, planID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -75,7 +74,7 @@ func TestSubscriptionUseCase_CreateSubscription(t *testing.T) {
 			name:   "repository create error",
 			userID: userID,
 			planID: planID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository, planRepo *mocks.MockIPlanRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository, planRepo *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:        planID,
 					Name:      "Basic Plan",
@@ -91,9 +90,9 @@ func TestSubscriptionUseCase_CreateSubscription(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo, mockPlanRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -123,14 +122,14 @@ func TestSubscriptionUseCase_GetSubscription(t *testing.T) {
 	tests := []struct {
 		name        string
 		subID       uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 		expectNil   bool
 	}{
 		{
 			name:  "successful retrieval",
 			subID: subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     subID,
 					UserID: uuidv7.New(),
@@ -145,7 +144,7 @@ func TestSubscriptionUseCase_GetSubscription(t *testing.T) {
 		{
 			name:  "subscription not found",
 			subID: subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByID", ctx, subID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -154,7 +153,7 @@ func TestSubscriptionUseCase_GetSubscription(t *testing.T) {
 		{
 			name:  "repository error",
 			subID: subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByID", ctx, subID).Return(nil, errors.New("db error"))
 			},
 			expectError: true,
@@ -164,9 +163,9 @@ func TestSubscriptionUseCase_GetSubscription(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -197,14 +196,14 @@ func TestSubscriptionUseCase_GetUserSubscriptions(t *testing.T) {
 	tests := []struct {
 		name        string
 		userID      uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 		expectCount int
 	}{
 		{
 			name:   "successful retrieval - multiple subscriptions",
 			userID: userID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subs := []*entity.Subscription{
 					{ID: uuidv7.New(), UserID: userID, Status: entity.SubscriptionStatusActive},
 					{ID: uuidv7.New(), UserID: userID, Status: entity.SubscriptionStatusCanceled},
@@ -217,7 +216,7 @@ func TestSubscriptionUseCase_GetUserSubscriptions(t *testing.T) {
 		{
 			name:   "no subscriptions found",
 			userID: userID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByUserID", ctx, userID).Return([]*entity.Subscription{}, nil)
 			},
 			expectError: false,
@@ -226,7 +225,7 @@ func TestSubscriptionUseCase_GetUserSubscriptions(t *testing.T) {
 		{
 			name:   "repository error",
 			userID: userID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByUserID", ctx, userID).Return(nil, errors.New("db error"))
 			},
 			expectError: true,
@@ -236,9 +235,9 @@ func TestSubscriptionUseCase_GetUserSubscriptions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -265,14 +264,14 @@ func TestSubscriptionUseCase_GetActiveSubscription(t *testing.T) {
 	tests := []struct {
 		name        string
 		userID      uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 		expectNil   bool
 	}{
 		{
 			name:   "successful retrieval",
 			userID: userID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     uuidv7.New(),
 					UserID: userID,
@@ -286,7 +285,7 @@ func TestSubscriptionUseCase_GetActiveSubscription(t *testing.T) {
 		{
 			name:   "no active subscription",
 			userID: userID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetActiveByUserID", ctx, userID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -296,9 +295,9 @@ func TestSubscriptionUseCase_GetActiveSubscription(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -332,14 +331,14 @@ func TestSubscriptionUseCase_CancelSubscription(t *testing.T) {
 		name        string
 		userID      uuidv7.UUID
 		subID       uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 	}{
 		{
 			name:   "successful cancellation",
 			userID: userID,
 			subID:  subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     subID,
 					UserID: userID,
@@ -357,7 +356,7 @@ func TestSubscriptionUseCase_CancelSubscription(t *testing.T) {
 			name:   "subscription not found",
 			userID: userID,
 			subID:  subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByID", ctx, subID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -366,7 +365,7 @@ func TestSubscriptionUseCase_CancelSubscription(t *testing.T) {
 			name:   "update error",
 			userID: userID,
 			subID:  subID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     subID,
 					UserID: userID,
@@ -381,9 +380,9 @@ func TestSubscriptionUseCase_CancelSubscription(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -413,7 +412,7 @@ func TestSubscriptionUseCase_UpgradeSubscription(t *testing.T) {
 		userID      uuidv7.UUID
 		subID       uuidv7.UUID
 		newPlanID   uuidv7.UUID
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 	}{
 		{
@@ -421,7 +420,7 @@ func TestSubscriptionUseCase_UpgradeSubscription(t *testing.T) {
 			userID:    userID,
 			subID:     subID,
 			newPlanID: newPlanID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     subID,
 					UserID: userID,
@@ -440,7 +439,7 @@ func TestSubscriptionUseCase_UpgradeSubscription(t *testing.T) {
 			userID:    userID,
 			subID:     subID,
 			newPlanID: newPlanID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("GetByID", ctx, subID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -450,7 +449,7 @@ func TestSubscriptionUseCase_UpgradeSubscription(t *testing.T) {
 			userID:    userID,
 			subID:     subID,
 			newPlanID: newPlanID,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				sub := &entity.Subscription{
 					ID:     subID,
 					UserID: userID,
@@ -466,9 +465,9 @@ func TestSubscriptionUseCase_UpgradeSubscription(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -499,7 +498,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 		status      *entity.SubscriptionStatus
 		limit       int
 		offset      int
-		mockSetup   func(*mocks.MockISubscriptionRepository)
+		mockSetup   func(*mockSubscriptionRepository)
 		expectError bool
 		expectCount int
 	}{
@@ -508,7 +507,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subs := []*entity.Subscription{
 					{ID: uuidv7.New(), Status: entity.SubscriptionStatusActive},
 					{ID: uuidv7.New(), Status: entity.SubscriptionStatusCanceled},
@@ -523,7 +522,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 			status: &activeStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subs := []*entity.Subscription{
 					{ID: uuidv7.New(), Status: entity.SubscriptionStatusActive},
 				}
@@ -537,7 +536,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 			status: nil,
 			limit:  5,
 			offset: 10,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subs := []*entity.Subscription{
 					{ID: uuidv7.New(), Status: entity.SubscriptionStatusActive},
 				}
@@ -551,7 +550,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 			status: &cancelledStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("List", ctx, &cancelledStatus, 10, 0).Return([]*entity.Subscription{}, nil)
 			},
 			expectError: false,
@@ -562,7 +561,7 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("List", ctx, (*entity.SubscriptionStatus)(nil), 10, 0).
 					Return(nil, errors.New("db error"))
 			},
@@ -573,9 +572,9 @@ func TestSubscriptionUseCase_ListSubscriptions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)
@@ -602,14 +601,14 @@ func TestSubscriptionUseCase_CountSubscriptions(t *testing.T) {
 	tests := []struct {
 		name          string
 		status        *entity.SubscriptionStatus
-		mockSetup     func(*mocks.MockISubscriptionRepository)
+		mockSetup     func(*mockSubscriptionRepository)
 		expectError   bool
 		expectedCount int
 	}{
 		{
 			name:   "count all subscriptions",
 			status: nil,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("Count", ctx, (*entity.SubscriptionStatus)(nil)).Return(42, nil)
 			},
 			expectError:   false,
@@ -618,7 +617,7 @@ func TestSubscriptionUseCase_CountSubscriptions(t *testing.T) {
 		{
 			name:   "count active subscriptions",
 			status: &activeStatus,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("Count", ctx, &activeStatus).Return(10, nil)
 			},
 			expectError:   false,
@@ -627,7 +626,7 @@ func TestSubscriptionUseCase_CountSubscriptions(t *testing.T) {
 		{
 			name:   "zero count",
 			status: nil,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("Count", ctx, (*entity.SubscriptionStatus)(nil)).Return(0, nil)
 			},
 			expectError:   false,
@@ -636,7 +635,7 @@ func TestSubscriptionUseCase_CountSubscriptions(t *testing.T) {
 		{
 			name:   "repository error",
 			status: nil,
-			mockSetup: func(subRepo *mocks.MockISubscriptionRepository) {
+			mockSetup: func(subRepo *mockSubscriptionRepository) {
 				subRepo.On("Count", ctx, (*entity.SubscriptionStatus)(nil)).
 					Return(0, errors.New("db error"))
 			},
@@ -647,9 +646,9 @@ func TestSubscriptionUseCase_CountSubscriptions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockInvoiceRepo := new(mocks.MockIInvoiceRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockInvoiceRepo := new(mockInvoiceRepository)
 			tt.mockSetup(mockSubRepo)
 
 			uc := NewSubscriptionUseCase(mockSubRepo, mockPlanRepo, mockInvoiceRepo, nil)

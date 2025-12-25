@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/modules/posts/domain/entity"
-	"github.com/basilex/promenade/internal/modules/posts/domain/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -23,8 +22,8 @@ func TestCommentUseCase_CreateComment(t *testing.T) {
 
 	t.Run("successful top-level comment", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		post := &entity.UserPost{
@@ -55,8 +54,8 @@ func TestCommentUseCase_CreateComment(t *testing.T) {
 
 	t.Run("successful reply comment", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		parentCommentID := uuidv7.New()
@@ -97,8 +96,8 @@ func TestCommentUseCase_CreateComment(t *testing.T) {
 
 	t.Run("post not found", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		mockPostRepo.On("GetByID", ctx, postID).Return(nil, entity.ErrNotFound)
@@ -117,8 +116,8 @@ func TestCommentUseCase_CreateComment(t *testing.T) {
 
 	t.Run("parent comment not found", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		parentCommentID := uuidv7.New()
@@ -145,8 +144,8 @@ func TestCommentUseCase_CreateComment(t *testing.T) {
 
 	t.Run("max depth exceeded", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		parentCommentID := uuidv7.New()
@@ -187,8 +186,8 @@ func TestCommentUseCase_GetComment(t *testing.T) {
 
 	t.Run("successful retrieval", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		expectedComment := &entity.Comment{
@@ -211,8 +210,8 @@ func TestCommentUseCase_GetComment(t *testing.T) {
 
 	t.Run("comment not found", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		mockCommentRepo.On("GetByID", ctx, commentID).Return(nil, entity.ErrNotFound)
@@ -235,8 +234,8 @@ func TestCommentUseCase_UpdateComment(t *testing.T) {
 
 	t.Run("successful update", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		existingComment := &entity.Comment{
@@ -262,8 +261,8 @@ func TestCommentUseCase_UpdateComment(t *testing.T) {
 
 	t.Run("unauthorized - different user", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		differentUserID := uuidv7.New()
@@ -296,8 +295,8 @@ func TestCommentUseCase_DeleteComment(t *testing.T) {
 
 	t.Run("successful deletion - top-level comment", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		existingComment := &entity.Comment{
@@ -321,8 +320,8 @@ func TestCommentUseCase_DeleteComment(t *testing.T) {
 
 	t.Run("successful deletion - reply comment", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		parentID := uuidv7.New()
@@ -348,8 +347,8 @@ func TestCommentUseCase_DeleteComment(t *testing.T) {
 
 	t.Run("unauthorized - different user", func(t *testing.T) {
 		// Arrange
-		mockCommentRepo := new(mocks.MockICommentRepository)
-		mockPostRepo := new(mocks.MockIUserPostRepository)
+		mockCommentRepo := new(mockCommentRepository)
+		mockPostRepo := new(mockUserPostRepository)
 		uc := NewCommentUseCase(mockCommentRepo, mockPostRepo)
 
 		differentUserID := uuidv7.New()

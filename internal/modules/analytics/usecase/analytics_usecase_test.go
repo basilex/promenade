@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/basilex/promenade/internal/modules/analytics/domain/entity"
-	"github.com/basilex/promenade/internal/modules/analytics/usecase/mocks"
 )
 
 func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
@@ -21,7 +20,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   *CollectMetricInput
-		mockFn  func(*mocks.MockIMetricRepository)
+		mockFn  func(*mockMetricRepository)
 		wantErr error
 	}{
 		{
@@ -34,7 +33,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeCounter,
 				Value:   1,
 			},
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("Store", mock.Anything, mock.MatchedBy(func(m *entity.Metric) bool {
 					return m.Module == "posts" && m.Name == "post_views" && m.Type == entity.MetricTypeCounter && m.Value == 1
 				})).Return(nil)
@@ -51,7 +50,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeGauge,
 				Value:   75.5,
 			},
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("Store", mock.Anything, mock.MatchedBy(func(m *entity.Metric) bool {
 					return m.Module == "system" && m.Name == "memory_usage" && m.Type == entity.MetricTypeGauge && m.Value == 75.5
 				})).Return(nil)
@@ -73,7 +72,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 					"status":   200,
 				},
 			},
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("Store", mock.Anything, mock.MatchedBy(func(m *entity.Metric) bool {
 					return m.Module == "api" && m.Name == "request_duration" && m.Metadata != nil && len(m.Metadata) == 3
 				})).Return(nil)
@@ -90,7 +89,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeCounter,
 				Value:   1,
 			},
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: entity.ErrInvalidModule,
 		},
 		{
@@ -103,7 +102,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeCounter,
 				Value:   1,
 			},
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: entity.ErrInvalidMetricName,
 		},
 		{
@@ -116,7 +115,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    "invalid",
 				Value:   1,
 			},
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: entity.ErrInvalidMetricType,
 		},
 		{
@@ -129,7 +128,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeCounter,
 				Value:   1,
 			},
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: entity.ErrInvalidMetricScope,
 		},
 		{
@@ -142,7 +141,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 				Type:    entity.MetricTypeCounter,
 				Value:   1,
 			},
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("Store", mock.Anything, mock.Anything).Return(errors.New("database error"))
 			},
 			wantErr: errors.New("failed to collect metric"),
@@ -151,7 +150,7 @@ func TestAnalyticsUseCase_CollectMetric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := new(mocks.MockIMetricRepository)
+			repo := new(mockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -187,13 +186,13 @@ func TestAnalyticsUseCase_GetMetric(t *testing.T) {
 	tests := []struct {
 		name    string
 		id      string
-		mockFn  func(*mocks.MockIMetricRepository)
+		mockFn  func(*mockMetricRepository)
 		wantErr bool
 	}{
 		{
 			name: "successfully get metric",
 			id:   "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("GetByID", mock.Anything, "01936d6a-8f7c-7890-a1b2-c3d4e5f67890").Return(&entity.Metric{
 					ID:        "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 					Module:    "posts",
@@ -208,13 +207,13 @@ func TestAnalyticsUseCase_GetMetric(t *testing.T) {
 		{
 			name:    "empty metric ID",
 			id:      "",
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: true,
 		},
 		{
 			name: "metric not found",
 			id:   "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("GetByID", mock.Anything, "01936d6a-8f7c-7890-a1b2-c3d4e5f67890").Return(nil, errors.New("not found"))
 			},
 			wantErr: true,
@@ -223,7 +222,7 @@ func TestAnalyticsUseCase_GetMetric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := new(mocks.MockIMetricRepository)
+			repo := new(mockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -252,7 +251,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 		scopeID string
 		limit   int
 		offset  int
-		mockFn  func(*mocks.MockIMetricRepository)
+		mockFn  func(*mockMetricRepository)
 		wantErr bool
 	}{
 		{
@@ -261,7 +260,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 			scopeID: "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 			limit:   20,
 			offset:  0,
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				metrics := []*entity.Metric{
 					{
 						ID:      "metric-1",
@@ -292,7 +291,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 			scopeID: "",
 			limit:   20,
 			offset:  0,
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: true,
 		},
 		{
@@ -301,7 +300,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 			scopeID: "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 			limit:   20,
 			offset:  0,
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				repo.On("ListByScope", mock.Anything, "post", "01936d6a-8f7c-7890-a1b2-c3d4e5f67890", 20, 0).Return(nil, int64(0), errors.New("database error"))
 			},
 			wantErr: true,
@@ -310,7 +309,7 @@ func TestAnalyticsUseCase_ListMetricsByScope(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := new(mocks.MockIMetricRepository)
+			repo := new(mockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -339,7 +338,7 @@ func TestAnalyticsUseCase_ListMetricsByModule(t *testing.T) {
 		module  string
 		limit   int
 		offset  int
-		mockFn  func(*mocks.MockIMetricRepository)
+		mockFn  func(*mockMetricRepository)
 		wantErr bool
 	}{
 		{
@@ -347,7 +346,7 @@ func TestAnalyticsUseCase_ListMetricsByModule(t *testing.T) {
 			module: "posts",
 			limit:  20,
 			offset: 0,
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				metrics := []*entity.Metric{
 					{ID: "metric-1", Module: "posts", Name: "post_views", Type: entity.MetricTypeCounter, Value: 100},
 					{ID: "metric-2", Module: "posts", Name: "post_likes", Type: entity.MetricTypeCounter, Value: 50},
@@ -361,14 +360,14 @@ func TestAnalyticsUseCase_ListMetricsByModule(t *testing.T) {
 			module:  "",
 			limit:   20,
 			offset:  0,
-			mockFn:  func(repo *mocks.MockIMetricRepository) {},
+			mockFn:  func(repo *mockMetricRepository) {},
 			wantErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := new(mocks.MockIMetricRepository)
+			repo := new(mockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)
@@ -401,7 +400,7 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 		scope      entity.MetricScope
 		scopeID    string
 		metricName string
-		mockFn     func(*mocks.MockIMetricRepository)
+		mockFn     func(*mockMetricRepository)
 		wantErr    bool
 	}{
 		{
@@ -410,7 +409,7 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 			scope:      entity.MetricScopePost,
 			scopeID:    "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 			metricName: "post_views",
-			mockFn: func(repo *mocks.MockIMetricRepository) {
+			mockFn: func(repo *mockMetricRepository) {
 				metric := &entity.Metric{
 					ID:        "metric-1",
 					Module:    "posts",
@@ -431,7 +430,7 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 			scope:      entity.MetricScopePost,
 			scopeID:    "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 			metricName: "post_views",
-			mockFn:     func(repo *mocks.MockIMetricRepository) {},
+			mockFn:     func(repo *mockMetricRepository) {},
 			wantErr:    true,
 		},
 		{
@@ -440,7 +439,7 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 			scope:      entity.MetricScopePost,
 			scopeID:    "",
 			metricName: "post_views",
-			mockFn:     func(repo *mocks.MockIMetricRepository) {},
+			mockFn:     func(repo *mockMetricRepository) {},
 			wantErr:    true,
 		},
 		{
@@ -449,14 +448,14 @@ func TestAnalyticsUseCase_GetLatestMetric(t *testing.T) {
 			scope:      entity.MetricScopePost,
 			scopeID:    "01936d6a-8f7c-7890-a1b2-c3d4e5f67890",
 			metricName: "",
-			mockFn:     func(repo *mocks.MockIMetricRepository) {},
+			mockFn:     func(repo *mockMetricRepository) {},
 			wantErr:    true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := new(mocks.MockIMetricRepository)
+			repo := new(mockMetricRepository)
 			tt.mockFn(repo)
 
 			uc := NewAnalyticsUseCase(repo, logger)

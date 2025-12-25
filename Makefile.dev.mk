@@ -12,44 +12,7 @@ install: ## Install dependencies and tools
 	go mod tidy
 	go install github.com/swaggo/swag/cmd/swag@latest
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-	go install github.com/vektra/mockery/v2@latest
-	@echo "[OK] All tools installed (including mockery)"
-
-mocks: ## Generate all mocks for all modules (uses .mockery.yaml)
-	@echo " Generating all mocks..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	mockery
-	@echo "[OK] All mocks generated successfully"
-
-mocks-audit: ## Generate mocks for audit module only
-	@echo " Generating audit module mocks..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	mockery --name=AuditEventRepository --dir=internal/modules/audit/domain/repository --output=internal/modules/audit/domain/repository/mocks
-	@echo "[OK] Audit mocks generated"
-
-mocks-posts: ## Generate mocks for posts module only
-	@echo " Generating posts module mocks..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	mockery --name='.*Repository' --dir=internal/modules/posts/domain/repository --output=internal/modules/posts/domain/repository/mocks
-	@echo "[OK] Posts mocks generated"
-
-mocks-profiles: ## Generate mocks for profiles module only
-	@echo " Generating profiles module mocks..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	mockery --name='.*Repository' --dir=internal/modules/profiles/domain/repository --output=internal/modules/profiles/repository/mocks
-	@echo "[OK] Profiles mocks generated"
-
-mocks-analytics: ## Generate mocks for analytics module only
-	@echo " Generating analytics module mocks..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	mockery --name='.*Repository' --dir=internal/modules/analytics/domain/repository --output=internal/modules/analytics/usecase/mocks
-	@echo "[OK] Analytics mocks generated"
-
-mocks-verify: ## Verify all mock files are up to date
-	@echo "🔍 Verifying mocks are up to date..."
-	@which mockery > /dev/null || (echo "[ERROR] mockery not found. Run: make install" && exit 1)
-	@mockery --dry-run || (echo "[WARNING]  Mocks are out of date. Run: make mocks" && exit 1)
-	@echo "[OK] All mocks are up to date"
+	@echo "[OK] All tools installed"
 
 dev: ## Run in development mode
 	@echo "Starting development environment..."

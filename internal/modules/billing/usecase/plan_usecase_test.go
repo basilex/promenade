@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/modules/billing/domain/entity"
-	"github.com/basilex/promenade/internal/modules/billing/domain/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -26,7 +25,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 		amount        int64
 		interval      entity.PlanInterval
 		features      []string
-		mockSetup     func(*mocks.MockIPlanRepository)
+		mockSetup     func(*mockPlanRepository)
 		expectError   bool
 		errorContains string
 	}{
@@ -39,7 +38,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:      999,
 			interval:    entity.PlanIntervalMonthly,
 			features:    []string{"Feature 1", "Feature 2"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Plan")).Return(nil)
 			},
 			expectError: false,
@@ -53,7 +52,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:      9999,
 			interval:    entity.PlanIntervalYearly,
 			features:    []string{"All features", "Priority support"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Plan")).Return(nil)
 			},
 			expectError: false,
@@ -67,7 +66,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:        999,
 			interval:      entity.PlanIntervalMonthly,
 			features:      []string{},
-			mockSetup:     func(m *mocks.MockIPlanRepository) {},
+			mockSetup:     func(m *mockPlanRepository) {},
 			expectError:   true,
 			errorContains: "name",
 		},
@@ -80,7 +79,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:      0,
 			interval:    entity.PlanIntervalMonthly,
 			features:    []string{"Basic feature"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Plan")).Return(nil)
 			},
 			expectError: false,
@@ -94,7 +93,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:        -100,
 			interval:      entity.PlanIntervalMonthly,
 			features:      []string{},
-			mockSetup:     func(m *mocks.MockIPlanRepository) {},
+			mockSetup:     func(m *mockPlanRepository) {},
 			expectError:   true,
 			errorContains: "amount",
 		},
@@ -107,7 +106,7 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 			amount:      999,
 			interval:    entity.PlanIntervalMonthly,
 			features:    []string{},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Create", ctx, mock.AnythingOfType("*entity.Plan")).
 					Return(errors.New("database error"))
 			},
@@ -118,8 +117,8 @@ func TestPlanUseCase_CreatePlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -157,14 +156,14 @@ func TestPlanUseCase_GetPlan(t *testing.T) {
 	tests := []struct {
 		name        string
 		planID      uuidv7.UUID
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 		expectNil   bool
 	}{
 		{
 			name:   "successful retrieval",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:       planID,
 					Name:     "Basic Plan",
@@ -182,7 +181,7 @@ func TestPlanUseCase_GetPlan(t *testing.T) {
 		{
 			name:   "plan not found",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetByID", ctx, planID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -191,7 +190,7 @@ func TestPlanUseCase_GetPlan(t *testing.T) {
 		{
 			name:   "repository error",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetByID", ctx, planID).Return(nil, errors.New("db error"))
 			},
 			expectError: true,
@@ -201,8 +200,8 @@ func TestPlanUseCase_GetPlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -233,14 +232,14 @@ func TestPlanUseCase_GetPlanBySlug(t *testing.T) {
 	tests := []struct {
 		name        string
 		slug        string
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 		expectNil   bool
 	}{
 		{
 			name: "successful retrieval",
 			slug: slug,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:       uuidv7.New(),
 					Name:     "Basic Plan",
@@ -258,7 +257,7 @@ func TestPlanUseCase_GetPlanBySlug(t *testing.T) {
 		{
 			name: "plan not found",
 			slug: "non-existent",
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetBySlug", ctx, "non-existent").Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -268,8 +267,8 @@ func TestPlanUseCase_GetPlanBySlug(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -302,14 +301,14 @@ func TestPlanUseCase_UpdatePlan(t *testing.T) {
 		name        string
 		planID      uuidv7.UUID
 		updates     map[string]any
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 	}{
 		{
 			name:    "successful update",
 			planID:  planID,
 			updates: map[string]any{"name": "Updated Plan"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:       planID,
 					Name:     "Original Plan",
@@ -328,7 +327,7 @@ func TestPlanUseCase_UpdatePlan(t *testing.T) {
 			name:    "plan not found",
 			planID:  planID,
 			updates: map[string]any{"name": "Updated"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetByID", ctx, planID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -337,7 +336,7 @@ func TestPlanUseCase_UpdatePlan(t *testing.T) {
 			name:    "update error",
 			planID:  planID,
 			updates: map[string]any{"name": "Updated"},
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:     planID,
 					Name:   "Original",
@@ -352,8 +351,8 @@ func TestPlanUseCase_UpdatePlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -380,13 +379,13 @@ func TestPlanUseCase_DeletePlan(t *testing.T) {
 	tests := []struct {
 		name        string
 		planID      uuidv7.UUID
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 	}{
 		{
 			name:   "successful deletion",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Delete", ctx, planID).Return(nil)
 			},
 			expectError: false,
@@ -394,7 +393,7 @@ func TestPlanUseCase_DeletePlan(t *testing.T) {
 		{
 			name:   "plan not found",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Delete", ctx, planID).Return(entity.ErrNotFound)
 			},
 			expectError: true,
@@ -402,7 +401,7 @@ func TestPlanUseCase_DeletePlan(t *testing.T) {
 		{
 			name:   "deletion error",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Delete", ctx, planID).Return(errors.New("deletion failed"))
 			},
 			expectError: true,
@@ -411,8 +410,8 @@ func TestPlanUseCase_DeletePlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -440,7 +439,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 		status      *entity.PlanStatus
 		limit       int
 		offset      int
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 		expectCount int
 	}{
@@ -449,7 +448,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plans := []*entity.Plan{
 					{ID: uuidv7.New(), Name: "Plan 1", Status: entity.PlanStatusActive},
 					{ID: uuidv7.New(), Name: "Plan 2", Status: entity.PlanStatusInactive},
@@ -464,7 +463,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 			status: &activeStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plans := []*entity.Plan{
 					{ID: uuidv7.New(), Name: "Active Plan", Status: entity.PlanStatusActive},
 				}
@@ -478,7 +477,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 			status: nil,
 			limit:  5,
 			offset: 10,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plans := []*entity.Plan{
 					{ID: uuidv7.New(), Name: "Plan 11", Status: entity.PlanStatusActive},
 				}
@@ -492,7 +491,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 			status: &inactiveStatus,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("List", ctx, &inactiveStatus, 10, 0).Return([]*entity.Plan{}, nil)
 			},
 			expectError: false,
@@ -503,7 +502,7 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 			status: nil,
 			limit:  10,
 			offset: 0,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("List", ctx, (*entity.PlanStatus)(nil), 10, 0).
 					Return(nil, errors.New("db error"))
 			},
@@ -514,8 +513,8 @@ func TestPlanUseCase_ListPlans(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -542,14 +541,14 @@ func TestPlanUseCase_CountPlans(t *testing.T) {
 	tests := []struct {
 		name          string
 		status        *entity.PlanStatus
-		mockSetup     func(*mocks.MockIPlanRepository)
+		mockSetup     func(*mockPlanRepository)
 		expectError   bool
 		expectedCount int
 	}{
 		{
 			name:   "count all plans",
 			status: nil,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Count", ctx, (*entity.PlanStatus)(nil)).Return(42, nil)
 			},
 			expectError:   false,
@@ -558,7 +557,7 @@ func TestPlanUseCase_CountPlans(t *testing.T) {
 		{
 			name:   "count active plans",
 			status: &activeStatus,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Count", ctx, &activeStatus).Return(10, nil)
 			},
 			expectError:   false,
@@ -567,7 +566,7 @@ func TestPlanUseCase_CountPlans(t *testing.T) {
 		{
 			name:   "zero count",
 			status: nil,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Count", ctx, (*entity.PlanStatus)(nil)).Return(0, nil)
 			},
 			expectError:   false,
@@ -576,7 +575,7 @@ func TestPlanUseCase_CountPlans(t *testing.T) {
 		{
 			name:   "repository error",
 			status: nil,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("Count", ctx, (*entity.PlanStatus)(nil)).
 					Return(0, errors.New("db error"))
 			},
@@ -587,8 +586,8 @@ func TestPlanUseCase_CountPlans(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -614,13 +613,13 @@ func TestPlanUseCase_ActivatePlan(t *testing.T) {
 	tests := []struct {
 		name        string
 		planID      uuidv7.UUID
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 	}{
 		{
 			name:   "successful activation",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:     planID,
 					Name:   "Test Plan",
@@ -636,7 +635,7 @@ func TestPlanUseCase_ActivatePlan(t *testing.T) {
 		{
 			name:   "plan not found",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetByID", ctx, planID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -644,7 +643,7 @@ func TestPlanUseCase_ActivatePlan(t *testing.T) {
 		{
 			name:   "update error",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:     planID,
 					Name:   "Test Plan",
@@ -659,8 +658,8 @@ func TestPlanUseCase_ActivatePlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
@@ -685,13 +684,13 @@ func TestPlanUseCase_DeactivatePlan(t *testing.T) {
 	tests := []struct {
 		name        string
 		planID      uuidv7.UUID
-		mockSetup   func(*mocks.MockIPlanRepository)
+		mockSetup   func(*mockPlanRepository)
 		expectError bool
 	}{
 		{
 			name:   "successful deactivation",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:     planID,
 					Name:   "Test Plan",
@@ -707,7 +706,7 @@ func TestPlanUseCase_DeactivatePlan(t *testing.T) {
 		{
 			name:   "plan not found",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				m.On("GetByID", ctx, planID).Return(nil, entity.ErrNotFound)
 			},
 			expectError: true,
@@ -715,7 +714,7 @@ func TestPlanUseCase_DeactivatePlan(t *testing.T) {
 		{
 			name:   "update error",
 			planID: planID,
-			mockSetup: func(m *mocks.MockIPlanRepository) {
+			mockSetup: func(m *mockPlanRepository) {
 				plan := &entity.Plan{
 					ID:     planID,
 					Name:   "Test Plan",
@@ -730,8 +729,8 @@ func TestPlanUseCase_DeactivatePlan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockPlanRepo := new(mocks.MockIPlanRepository)
-			mockSubRepo := new(mocks.MockISubscriptionRepository)
+			mockPlanRepo := new(mockPlanRepository)
+			mockSubRepo := new(mockSubscriptionRepository)
 			tt.mockSetup(mockPlanRepo)
 
 			uc := NewPlanUseCase(mockPlanRepo, mockSubRepo, nil)
