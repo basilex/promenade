@@ -124,3 +124,28 @@ swagger-v2: ## Generate Swagger docs for API v2
 
 swagger-all: swagger-v1 swagger-v2 ## Generate all Swagger documentation
 	@echo "Swagger documentation generated"
+
+# Stress/Load Testing
+stress-test: ## Run basic stress tests with wrk
+	@echo " Running stress tests..."
+	@which wrk > /dev/null || (echo "[ERROR] wrk not found. Install: brew install wrk" && exit 1)
+	@chmod +x test/stress/stress_test.sh
+	@./test/stress/stress_test.sh
+
+stress-health: ## Stress test health endpoint (10k+ RPS expected)
+	@echo " Stress testing health endpoint..."
+	@wrk -t4 -c100 -d30s http://localhost:8081/api/v1/health
+
+stress-auth: ## Stress test authentication (500+ RPS expected)
+	@echo " Stress testing authentication..."
+	@wrk -t4 -c50 -d30s -s test/stress/scenarios/auth.lua http://localhost:8081
+
+stress-heavy: ## Heavy stress test (find limits)
+	@echo " Running heavy stress test..."
+	@echo "⚠️  This will push the API to its limits"
+	@wrk -t8 -c500 -d60s http://localhost:8081/api/v1/health
+
+stress-install: ## Install wrk (macOS only)
+	@echo " Installing wrk..."
+	@brew install wrk
+	@wrk --version

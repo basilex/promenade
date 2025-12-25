@@ -124,6 +124,27 @@ test-integration-db-stop: ## Stop and remove test database container
 	@docker rm promenade-test-db 2>/dev/null || true
 	@echo "[OK] Test database container stopped"
 
+# Smoke tests (black-box integration tests against running API)
+test-smoke: ## Run smoke tests against running API (requires API on port 8081)
+	@echo " Running smoke tests..."
+	@chmod +x test/smoke/smoke_test.sh
+	@chmod +x test/smoke/tests/*.sh
+	@./test/smoke/smoke_test.sh
+
+test-smoke-ci: ## Run smoke tests in CI (start API, test, stop)
+	@echo " Running smoke tests in CI mode..."
+	@echo "  1. Starting API in background..."
+	@make build > /dev/null 2>&1
+	@./bin/promenade > /tmp/promenade.log 2>&1 &
+	@echo "  2. Waiting for API to be ready..."
+	@sleep 5
+	@echo "  3. Running smoke tests..."
+	@make test-smoke || (pkill promenade && exit 1)
+	@echo "  4. Stopping API..."
+	@pkill promenade || true
+	@echo "[OK] Smoke tests completed in CI mode"
+
 .PHONY: test test-all test-core test-modules test-module-posts test-module-profiles test-module-analytics \
 	test-quick test-coverage test-watch test-verbose test-list \
-	test-integration test-integration-core test-integration-posts test-integration-check test-integration-setup
+	test-integration test-integration-core test-integration-posts test-integration-check test-integration-setup \
+	test-smoke test-smoke-ci
