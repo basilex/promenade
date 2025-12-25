@@ -33,9 +33,13 @@ enableGitInfo = true
     url = '/docs/'
     weight = 3
   [[menu.main]]
+    name = 'Contact'
+    url = '/contact/'
+    weight = 4
+  [[menu.main]]
     name = 'GitHub'
     url = 'https://github.com/basilex/promenade'
-    weight = 4
+    weight = 5
 
 # Params
 [params]
