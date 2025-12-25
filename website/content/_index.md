@@ -1,6 +1,7 @@
 ---
 title: "Production-Ready REST API Framework"
 description: "Built with Clean Architecture, modular plugin system, and namespace-based database migrations. Written in Go."
+date: 2025-12-25
 features:
   - icon: "🏗️"
     title: "Clean Architecture"
