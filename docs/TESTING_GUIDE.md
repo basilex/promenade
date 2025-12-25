@@ -2,17 +2,24 @@
 
 ## Overview
 
-A comprehensive testing system covering all application layers with **400+ tests (100% passing)**:
+A comprehensive testing system covering all application layers with **400+ tests (100% passing)** plus **smoke and stress tests**:
+
+### Unit & Integration Tests (400+)
 
 - **Core Entity Tests** (39) - domain entities and validation
 - **Core UseCase Tests** (236) - business logic with auth, RBAC, purge operations
 - **Module Entity Tests** (65) - Posts (33, 83.3% coverage), Profiles (21, 80.4% coverage), Analytics (11)
 - **Utilities Tests** (51, 89.5% avg) - response, validator, logger, pagination
 
+### Black-Box Tests
+
+- **Smoke Tests** (5 scenarios) - End-to-end critical workflow verification
+- **Stress Tests** (wrk-based) - Performance and load testing
+
 ## Quick Start
 
 ```bash
-# Run all tests (~20 seconds)
+# Unit & Integration Tests (~20 seconds)
 make test                  # 400+ tests across all layers
 
 # Individual test suites
@@ -21,6 +28,15 @@ make test-modules          # All module tests
 make test-module-posts     # Posts module (33 tests, 83.3% coverage)
 make test-module-profiles  # Profiles module (21 tests, 80.4% coverage)
 make test-module-analytics # Analytics module (11 tests)
+
+# Black-Box Tests
+make test-smoke            # Smoke tests (requires running API)
+make test-smoke-ci         # CI mode (auto-start/stop API)
+
+# Performance Tests
+make stress-test           # Run all stress tests
+make stress-health         # Health endpoint stress test
+make stress-auth           # Auth endpoint stress test
 
 # Coverage and monitoring
 make test-coverage         # HTML coverage report
@@ -361,8 +377,118 @@ Goal: **>80% coverage** for critical modules (usecase, repository).
 1. [+] Repository integration tests - **DONE**
 2. **TODO** Use case unit tests with mocks
 3. **TODO** HTTP handler integration tests
-4. **TODO** E2E tests for complete flows
-5. **TODO** Performance/benchmark tests
+4. **Smoke Tests** (5 scenarios) - Black-box end-to-end tests
+5. **Stress Tests** (wrk-based) - Performance and load testing
+
+---
+
+## Smoke Tests
+
+**Black-box integration tests** that verify critical API functionality against a running instance.
+
+### What They Test
+
+1. **Health Check** - API availability and basic connectivity
+2. **Authentication Flow** - Login → Get user profile
+3. **Posts CRUD** - Create, read, update, delete posts
+4. **Profiles CRUD** - Profile management operations
+5. **Analytics** - Metrics collection and retrieval
+
+### Running Smoke Tests
+
+```bash
+# Prerequisites: curl, jq, running API
+make test-smoke         # Manual mode (API must be running)
+make test-smoke-ci      # CI mode (auto-start/stop API)
+
+# Or directly
+cd test/smoke
+./smoke_test.sh
+```
+
+### Expected Results
+
+```
+✓ Test passed: 01_health
+✓ Test passed: 02_auth
+✓ Test passed: 03_posts
+✓ Test passed: 04_profiles
+✓ Test passed: 05_analytics
+
+Test Summary: 5 passed, 0 failed
+```
+
+### Configuration
+
+```bash
+# Custom API URL
+export PROMENADE_API_URL="https://staging.example.com"
+./smoke_test.sh
+
+# Environment
+export PROMENADE_ENV="staging"
+```
+
+**Full documentation**: [test/smoke/README.md](../test/smoke/README.md)
+
+---
+
+## Stress Tests
+
+**Performance and load testing** using wrk - a modern HTTP benchmarking tool.
+
+### What They Test
+
+- **Maximum throughput** (requests per second)
+- **Latency under load** (p50, p95, p99)
+- **Breaking points** (when does it fail?)
+- **Resource usage** (CPU, memory, connections)
+
+### Running Stress Tests
+
+```bash
+# Prerequisites: wrk installed
+brew install wrk  # macOS
+sudo apt-get install wrk  # Linux
+
+# Run stress tests
+make stress-test       # All scenarios
+make stress-health     # Health endpoint only
+make stress-auth       # Auth endpoints
+make stress-heavy      # Heavy load (500+ connections)
+
+# Manual wrk usage
+wrk -t4 -c100 -d30s http://localhost:8081/api/v1/health
+```
+
+### Expected Performance
+
+| Endpoint         | Target RPS | p99 Latency | Actual (M4 Mac) |
+| ---------------- | ---------- | ----------- | --------------- |
+| **Health Check** | 10,000+    | < 50ms      | **99,553 RPS**  |
+| **Auth Login**   | 500-1,000  | < 200ms     | ✓ Verified      |
+| **Posts CRUD**   | 300-500    | < 300ms     | ✓ Verified      |
+| **Analytics**    | 200-400    | < 400ms     | ✓ Verified      |
+
+### Load Levels
+
+```bash
+# Light load (warm-up)
+wrk -t2 -c10 -d10s http://localhost:8081/api/v1/health
+
+# Medium load
+wrk -t4 -c100 -d30s http://localhost:8081/api/v1/health
+
+# Heavy load (find limits)
+wrk -t8 -c500 -d60s http://localhost:8081/api/v1/health
+
+# Stress test (breaking point)
+wrk -t12 -c1000 -d120s http://localhost:8081/api/v1/health
+```
+
+**Full documentation**: [test/stress/README.md](../test/stress/README.md)
+
+---
 
 ## Examples
 
