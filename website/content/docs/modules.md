@@ -105,6 +105,29 @@ Metrics collection and reporting.
 
 <div class="feature-card">
 
+#### Notifications Module 🔔
+
+Multi-channel notification system.
+
+**Features:**
+
+- Multi-channel delivery (Email, SMS, Push, In-App)
+- User preferences (per-channel, per-type)
+- Quiet hours with timezone support
+- Status tracking (sent → delivered → opened → clicked)
+- System notifications bypass quiet hours
+- Flexible JSONB data storage
+
+**Entities:** `Notification`, `UserPreference`
+
+**Coverage:** 48 tests (20 entity + 15 usecase + 13 integration)
+
+[View Source](https://github.com/basilex/promenade/tree/dev/internal/modules/notifications)
+
+</div>
+
+<div class="feature-card">
+
 #### Billing Module 💰
 
 Production-ready subscription management.
@@ -228,6 +251,7 @@ modules:
     - posts
     - profiles
     - analytics
+    - notifications # Requires license
     - billing # Requires license
     - audit # Requires license
     # - warehouse  # Not yet available
@@ -241,6 +265,7 @@ import (
     _ "github.com/basilex/promenade/internal/modules/posts"
     _ "github.com/basilex/promenade/internal/modules/profiles"
     _ "github.com/basilex/promenade/internal/modules/analytics"
+    _ "github.com/basilex/promenade/internal/modules/notifications"
     _ "github.com/basilex/promenade/internal/modules/billing"
 )
 ```

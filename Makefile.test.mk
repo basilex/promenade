@@ -8,7 +8,7 @@ test-core: ## Run core tests (domain + usecase)
 	@go test -v -race -count=1 ./internal/domain/entity/...
 	@go test -v -race -count=1 ./internal/usecase/...
 
-test-modules: test-module-posts test-module-profiles test-module-analytics ## Run all module tests
+test-modules: test-module-posts test-module-profiles test-module-analytics test-module-notifications test-module-billing ## Run all module tests
 
 test-module-posts: ## Run posts module tests
 	@echo " Running posts module tests..."
@@ -22,6 +22,16 @@ test-module-analytics: ## Run analytics module tests
 	@echo " Running analytics module tests..."
 	@go test -v -race -count=1 ./internal/modules/analytics/domain/entity/...
 	@go test -v -race -count=1 ./internal/modules/analytics/usecase/...
+
+test-module-notifications: ## Run notifications module tests (commercial)
+	@echo "🧪 Running notifications module tests..."
+	@go test -v -race -count=1 ./internal/modules/notifications/domain/entity/...
+	@go test -v -race -count=1 ./internal/modules/notifications/usecase/...
+
+test-module-billing: ## Run billing module tests (commercial)
+	@echo "🧪 Running billing module tests..."
+	@go test -v -race -count=1 ./internal/modules/billing/domain/entity/...
+	@go test -v -race -count=1 ./internal/modules/billing/usecase/...
 
 test-quick: ## Quick test run (no race detector, faster)
 	@echo " Quick test run..."
@@ -86,6 +96,10 @@ test-integration-analytics: test-integration-check ## Run analytics module integ
 	@echo "🧪 Running analytics integration tests..."
 	@go test -v -count=1 -tags=integration ./internal/modules/analytics/adapter/repository/postgres/...
 
+test-integration-notifications: test-integration-check ## Run notifications module integration tests
+	@echo "🧪 Running notifications integration tests..."
+	@go test -v -count=1 -tags=integration ./internal/modules/notifications/adapter/repository/postgres/...
+
 test-integration-check: ## Check if test database is ready
 	@echo " Checking test database connection..."
 	@PGPASSWORD=promenade psql -h localhost -p 5432 -U promenade -d promenade_test -c "SELECT 1" > /dev/null 2>&1 || \
@@ -144,7 +158,17 @@ test-smoke-ci: ## Run smoke tests in CI (start API, test, stop)
 	@pkill promenade || true
 	@echo "[OK] Smoke tests completed in CI mode"
 
-.PHONY: test test-all test-core test-modules test-module-posts test-module-profiles test-module-analytics \
+# Stress tests (performance/load tests with wrk)
+test-stress: ## Run stress tests against running API (requires wrk and API on port 8081)
+	@echo " Running stress tests..."
+	@chmod +x test/stress/stress_test.sh
+	@./test/stress/stress_test.sh
+
+test-stress-health: ## Run stress test only for health endpoints
+	@echo " Running health endpoints stress test..."
+	@wrk -t4 -c100 -d30s -s test/stress/scenarios/health.lua http://localhost:8081
+
+.PHONY: test test-all test-core test-modules test-module-posts test-module-profiles test-module-analytics test-module-notifications test-module-billing \
 	test-quick test-coverage test-watch test-verbose test-list \
-	test-integration test-integration-core test-integration-posts test-integration-check test-integration-setup \
-	test-smoke test-smoke-ci
+	test-integration test-integration-core test-integration-posts test-integration-notifications test-integration-check test-integration-setup \
+	test-smoke test-smoke-ci test-stress test-stress-health

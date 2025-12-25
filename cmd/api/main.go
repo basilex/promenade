@@ -42,9 +42,10 @@ import (
 	_ "github.com/basilex/promenade/docs/v2"
 
 	// Import modules for auto-registration
-	_ "github.com/basilex/promenade/internal/modules/analytics" // Commercial module (requires license)
-	_ "github.com/basilex/promenade/internal/modules/audit"     // Commercial module (requires license)
-	_ "github.com/basilex/promenade/internal/modules/billing"   // Commercial module (requires license)
+	_ "github.com/basilex/promenade/internal/modules/analytics"     // Free module
+	_ "github.com/basilex/promenade/internal/modules/audit"         // Commercial module (requires license)
+	_ "github.com/basilex/promenade/internal/modules/billing"       // Commercial module (requires license)
+	_ "github.com/basilex/promenade/internal/modules/notifications" // Commercial module (requires license)
 	_ "github.com/basilex/promenade/internal/modules/posts"
 	_ "github.com/basilex/promenade/internal/modules/profiles"
 	// _ "github.com/basilex/promenade/internal/modules/warehouse" // Commercial module (requires license)

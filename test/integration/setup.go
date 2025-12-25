@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -98,7 +99,10 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
-		// IModule tables (analytics)
+		// Module tables (notifications)
+		"notifications_notifications",
+		"notifications_user_preferences",
+		// Module tables (analytics)
 		"analytics_dashboard_widgets",
 		"analytics_dashboards",
 		"analytics_report_schedules",
@@ -234,7 +238,14 @@ func connectDB(cfg Config) (*sqlx.DB, error) {
 }
 
 func runMigrations(db *sqlx.DB, log *slog.Logger) error {
-	mgr := migration.NewManager(db, "migrations")
+	// Find project root (directory containing go.mod)
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		return fmt.Errorf("failed to find project root: %w", err)
+	}
+
+	migrationsPath := filepath.Join(projectRoot, "migrations")
+	mgr := migration.NewManager(db, migrationsPath)
 	ctx := context.Background()
 
 	// Run core migrations
@@ -243,7 +254,7 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	}
 
 	// Run module migrations (only enabled ones)
-	modules := []string{"posts", "profiles", "analytics"}
+	modules := []string{"posts", "profiles", "analytics", "notifications"}
 	for _, module := range modules {
 		if err := mgr.MigrateNamespace(ctx, module); err != nil {
 			return fmt.Errorf("%s module migrations failed: %w", module, err)
@@ -251,6 +262,28 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	}
 
 	return nil
+}
+
+func findProjectRoot() (string, error) {
+	// Start from current working directory
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	// Walk up until we find go.mod
+	for {
+		goModPath := filepath.Join(dir, "go.mod")
+		if _, err := os.Stat(goModPath); err == nil {
+			return dir, nil
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", fmt.Errorf("go.mod not found")
+		}
+		dir = parent
+	}
 }
 
 func getEnv(key, defaultValue string) string {

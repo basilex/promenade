@@ -240,6 +240,24 @@ make build
 
 **Повна документація**: [internal/modules/billing/README.md](internal/modules/billing/README.md)
 
+#### **Модуль Notifications** (`internal/modules/notifications`) - Комерційний
+
+Багатоканальна система сповіщень з користувацькими налаштуваннями:
+
+- **Статус**: Комерційний - Готова до продакшену система доставки сповіщень
+- **Сутності**: Сповіщення, Налаштування Користувачів
+- **Функції**:
+  - Багатоканальна доставка (Email, SMS, Push, В-додатку)
+  - Управління налаштуваннями користувача (по каналу, по типу)
+  - Години тиші з підтримкою часових поясів
+  - Відстеження життєвого циклу сповіщень (відправлено, доставлено, відкрито, клікнуто)
+  - Подієво-орієнтована архітектура
+- **Міграції**: 2 міграції (namespace: `notifications`)
+- **Тестування**: 35 комплексних тестів (20 entity + 15 usecase покриття)
+- **Призначення**: Транзакційні email, маркетингові кампанії, системні алерти, сповіщення в реальному часі
+
+**Повна документація**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
+
 #### **Модуль Warehouse** (`internal/modules/warehouse`) - Майбутній Модуль
 
 Управління інвентарем та продуктами (в планах):
@@ -369,9 +387,11 @@ make test               # Всі тести (~20с)
 # Запуск за модулями
 make test-core          # Тести ядра (275 тестів: 39 entity + 236 usecase)
 make test-modules       # Всі тести модулів
-make test-module-posts      # Тести модуля Posts (33 тести)
-make test-module-profiles   # Тести модуля Profiles (21 тест)
-make test-module-analytics  # Тести модуля Analytics (11 тестів)
+make test-module-posts         # Тести модуля Posts (33 тести)
+make test-module-profiles      # Тести модуля Profiles (21 тест)
+make test-module-analytics     # Тести модуля Analytics (11 тестів)
+make test-module-notifications # Тести модуля Notifications (48 тестів: 35 unit + 13 integration)
+make test-module-billing       # Тести модуля Billing (163 тести)
 
 # Звіт покриття
 make test-coverage      # HTML звіт покриття
@@ -385,6 +405,8 @@ make test-coverage      # HTML звіт покриття
 - **Модуль Posts**: 33 тести, 83.3% покриття (PostStatus, життєвий цикл UserPost, валідація, генерація slug)
 - **Модуль Profiles**: 21 тест, 80.4% покриття (UserContact, UserProfile, приватність, валідація)
 - **Модуль Analytics**: 11 тестів (Metrics, MetricAggregate, операції usecase)
+- **Модуль Notifications**: 48 тестів (20 entity + 15 usecase + 13 integration) - Багатоканальна доставка, години тиші, preferences
+- **Модуль Billing**: 163 тести (56 entity + 107 usecase) - Сутності Plan, Subscription, Invoice, Payment
 - **Утиліти**: 51 тест, 89.5% середнє покриття (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Час Виконання Тестів
@@ -393,7 +415,8 @@ make test-coverage      # HTML звіт покриття
 - **Модуль Posts**: 1.4с
 - **Модуль Profiles**: 1.5с
 - **Модуль Analytics**: 2.7с (entity 1.4с + usecase 1.4с)
-- **Всього**: ~20 секунд для повного набору тестів
+- **Модуль Notifications**: 1.8с (entity 0.4с + usecase 0.2с + integration 1.2с)
+- **Всього**: ~22 секунди для повного набору тестів
 
 **Гайди з тестування**:
 

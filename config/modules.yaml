@@ -7,6 +7,7 @@ modules:
     - posts # User-generated content: posts + comments + likes
     - profiles # User profiles + contacts (merged into one module)
     - analytics # Analytics & reporting (Free)
+    - notifications # Multi-channel notifications (Commercial)
     - audit # Immutable audit logging (Commercial)
     - billing # Subscription billing & payment processing (Commercial)
 
@@ -39,6 +40,16 @@ modules:
         metrics_retention_days: 90
         max_reports_per_user: 10
         max_dashboards_per_user: 5
+
+    notifications:
+      version: "1.0.0"
+      description: "Multi-channel notification system (Commercial)"
+      license_key: "" # Set via NOTIFICATIONS_LICENSE_KEY environment variable
+      settings:
+        rate_limit_per_day: 50
+        default_channel: "email"
+        enable_sms: false
+        enable_push: false
 
     billing:
       version: "1.0.0"

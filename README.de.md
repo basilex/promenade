@@ -229,6 +229,24 @@ Abonnement-Abrechnung und Zahlungsabwicklung:
 
 **Vollständige Dokumentation**: [internal/modules/billing/README.md](internal/modules/billing/README.md)
 
+#### **Notifications-Modul** (`internal/modules/notifications`) - Kommerziell
+
+Mehrkanaliges Benachrichtigungssystem mit Benutzerpräferenzen:
+
+- **Status**: Kommerziell - Produktionsreifes Benachrichtigungs-Liefersystem
+- **Entitäten**: Benachrichtigungen, Benutzerpräferenzen
+- **Features**:
+  - Mehrkanalige Zustellung (Email, SMS, Push, In-App)
+  - Benutzerpräferenzverwaltung (pro Kanal, pro Typ)
+  - Ruhezeiten mit Zeitzonenunterstützung
+  - Benachrichtigungs-Lebenszyklus-Tracking (gesendet, zugestellt, geöffnet, geklickt)
+  - Ereignisgesteuerte Architektur
+- **Migrationen**: 2 Migrationen (Namespace: `notifications`)
+- **Testing**: 35 umfassende Tests (20 Entity + 15 Usecase-Abdeckung)
+- **Anwendungsfall**: Transaktions-E-Mails, Marketingkampagnen, System-Alerts, Echtzeit-Benachrichtigungen
+
+**Vollständige Dokumentation**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
+
 #### **Warehouse-Modul** (`internal/modules/warehouse`) - Zukünftiges Modul
 
 Lager- und Produktverwaltung (geplant):
@@ -358,9 +376,11 @@ make test               # Alle Tests (~20s)
 # Nach Modul ausführen
 make test-core          # Core-Tests (275 Tests: 39 Entity + 236 Usecase)
 make test-modules       # Alle Modul-Tests
-make test-module-posts      # Posts-Modul Tests (33 Tests)
-make test-module-profiles   # Profiles-Modul Tests (21 Tests)
-make test-module-analytics  # Analytics-Modul Tests (11 Tests)
+make test-module-posts         # Posts-Modul Tests (33 Tests)
+make test-module-profiles      # Profiles-Modul Tests (21 Tests)
+make test-module-analytics     # Analytics-Modul Tests (11 Tests)
+make test-module-notifications # Notifications-Modul Tests (48 Tests: 35 Unit + 13 Integration)
+make test-module-billing       # Billing-Modul Tests (163 Tests)
 
 # Coverage-Bericht
 make test-coverage      # HTML Coverage-Bericht
@@ -374,6 +394,8 @@ make test-coverage      # HTML Coverage-Bericht
 - **Posts-Modul**: 33 Tests, 83.3% Abdeckung (PostStatus, UserPost-Lebenszyklus, Validierung, Slug-Generierung)
 - **Profiles-Modul**: 21 Tests, 80.4% Abdeckung (UserContact, UserProfile, Privatsphäre, Validierung)
 - **Analytics-Modul**: 11 Tests (Metrics, MetricAggregate, Usecase-Operationen)
+- **Notifications-Modul**: 48 Tests (20 Entity + 15 Usecase + 13 Integration) - Mehrkanalige Zustellung, Ruhezeiten, Präferenzen
+- **Billing-Modul**: 163 Tests (56 Entity + 107 Usecase) - Plan, Subscription, Invoice, Payment Entitäten
 - **Utilities**: 51 Tests, 89.5% durchschnittliche Abdeckung (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Test-Ausführungszeit
@@ -382,7 +404,8 @@ make test-coverage      # HTML Coverage-Bericht
 - **Posts-Modul**: 1.4s
 - **Profiles-Modul**: 1.5s
 - **Analytics-Modul**: 2.7s (Entity 1.4s + Usecase 1.4s)
-- **Gesamt**: ~20 Sekunden für die vollständige Test-Suite
+- **Notifications-Modul**: 1.8s (Entity 0.4s + Usecase 0.2s + Integration 1.2s)
+- **Gesamt**: ~22 Sekunden für die vollständige Test-Suite
 
 **Testing-Leitfäden**:
 

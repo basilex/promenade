@@ -241,6 +241,24 @@ Subscription billing and payment processing:
 
 **Full documentation**: [internal/modules/billing/README.md](internal/modules/billing/README.md)
 
+#### **Notifications Module** (`internal/modules/notifications`) - Commercial
+
+Multi-channel notification system with user preferences:
+
+- **Status**: Commercial - Production-ready notification delivery system
+- **Entities**: Notifications, UserPreferences
+- **Features**:
+  - Multi-channel delivery (Email, SMS, Push, In-App)
+  - User preference management (per-channel, per-type)
+  - Quiet hours with timezone support
+  - Notification lifecycle tracking (sent, delivered, opened, clicked)
+  - Event-driven architecture
+- **Migrations**: 2 migrations (namespace: `notifications`)
+- **Testing**: 35 comprehensive tests (20 entity + 15 usecase coverage)
+- **Use Case**: Transactional emails, marketing campaigns, system alerts, real-time notifications
+
+**Full documentation**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
+
 #### **Warehouse Module** (`internal/modules/warehouse`) - Future Module
 
 Inventory and product management (planned):
@@ -275,7 +293,8 @@ modules:
   enabled:
     - posts # User-generated content
     - profiles # User profiles + contacts
-    - analytics # Business analytics (requires license)
+    - analytics # Business analytics (free)
+    - notifications # Notification system (requires license)
     # - warehouse  # Future: Inventory management
 ```
 
@@ -372,9 +391,11 @@ make test               # All tests (~20s)
 # Run by module
 make test-core          # Core tests (275 tests: 39 entity + 236 usecase)
 make test-modules       # All module tests
-make test-module-posts      # Posts module tests (33 tests)
-make test-module-profiles   # Profiles module tests (21 tests)
-make test-module-analytics  # Analytics module tests (11 tests)
+make test-module-posts         # Posts module tests (33 tests)
+make test-module-profiles      # Profiles module tests (21 tests)
+make test-module-analytics     # Analytics module tests (11 tests)
+make test-module-notifications # Notifications module tests (48 tests: 35 unit + 13 integration)
+make test-module-billing       # Billing module tests (163 tests)
 
 # Coverage report
 make test-coverage      # HTML coverage report
@@ -388,6 +409,8 @@ make test-coverage      # HTML coverage report
 - **Posts Module**: 33 tests, 83.3% coverage (PostStatus, UserPost lifecycle, validation, slug generation)
 - **Profiles Module**: 21 tests, 80.4% coverage (UserContact, UserProfile, privacy, validation)
 - **Analytics Module**: 11 tests (Metrics, MetricAggregate, usecase operations)
+- **Notifications Module**: 48 tests (20 entity + 15 usecase + 13 integration) - Multi-channel delivery, quiet hours, preferences
+- **Billing Module**: 163 tests (56 entity + 107 usecase) - Plan, Subscription, Invoice, Payment entities
 - **Utilities**: 51 tests, 89.5% avg coverage (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Test Execution Time
@@ -396,7 +419,8 @@ make test-coverage      # HTML coverage report
 - **Posts Module**: 1.4s
 - **Profiles Module**: 1.5s
 - **Analytics Module**: 2.7s (entity 1.4s + usecase 1.4s)
-- **Total**: ~20 seconds for full test suite
+- **Notifications Module**: 1.8s (entity 0.4s + usecase 0.2s + integration 1.2s)
+- **Total**: ~22 seconds for full test suite
 
 **Testing guides**:
 

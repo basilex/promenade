@@ -105,6 +105,29 @@ aliases:
 
 <div class="feature-card">
 
+#### Notifications Модуль 🔔
+
+Багатоканальна система сповіщень.
+
+**Функції:**
+
+- Багатоканальна доставка (Email, SMS, Push, In-App)
+- Налаштування користувача (по каналах, по типах)
+- Години тиші з підтримкою часових зон
+- Відстеження статусу (відправлено → доставлено → відкрито → клікнуто)
+- Системні сповіщення обходять години тиші
+- Гнучке зберігання даних JSONB
+
+**Сутності:** `Notification`, `UserPreference`
+
+**Покриття:** 48 тестів (20 entity + 15 usecase + 13 integration)
+
+[Подивитись Код](https://github.com/basilex/promenade/tree/dev/internal/modules/notifications)
+
+</div>
+
+<div class="feature-card">
+
 #### Billing Модуль 💰
 
 Готова система управління підписками.
@@ -228,6 +251,7 @@ modules:
     - posts
     - profiles
     - analytics
+    - notifications # Потрібна ліцензія
     - billing # Потрібна ліцензія
     - audit # Потрібна ліцензія
     # - warehouse  # Ще не доступний
@@ -241,6 +265,7 @@ import (
     _ "github.com/basilex/promenade/internal/modules/posts"
     _ "github.com/basilex/promenade/internal/modules/profiles"
     _ "github.com/basilex/promenade/internal/modules/analytics"
+    _ "github.com/basilex/promenade/internal/modules/notifications"
     _ "github.com/basilex/promenade/internal/modules/billing"
 )
 ```

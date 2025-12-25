@@ -1,0 +1,36 @@
+module:
+  name: "notifications"
+  enabled: true
+  version: "1.0.0"
+  license_required: true
+
+notifications:
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    max_per_user_per_minute: 5
+    max_per_user_per_hour: 100
+
+  # Retry policy
+  retry:
+    enabled: true
+    max_attempts: 3
+    backoff_seconds: 60
+
+  # Batch processing
+  batch:
+    size: 100
+    interval_seconds: 10
+
+  # Channel settings
+  channels:
+    email:
+      enabled: true
+      from_address: "noreply@promenade.dev"
+      from_name: "Promenade"
+    sms:
+      enabled: false
+    push:
+      enabled: true
+    in_app:
+      enabled: true
