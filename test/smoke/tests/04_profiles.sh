@@ -35,7 +35,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$create_response" ".status" "success" || return 1
+    assert_json_field "$create_response" ".success" "true" || return 1
     assert_json_field_exists "$create_response" ".data.id" || return 1
     
     PROFILE_ID=$(echo "$create_response" | jq -r '.data.id')
@@ -49,7 +49,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$get_response" ".status" "success" || return 1
+    assert_json_field "$get_response" ".success" "true" || return 1
     assert_json_field_exists "$get_response" ".data.id" || return 1
     
     print_success "Get profile passed"
@@ -72,7 +72,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$update_response" ".status" "success" || return 1
+    assert_json_field "$update_response" ".success" "true" || return 1
     assert_json_field "$update_response" ".data.bio" "Updated smoke test bio" || return 1
     
     print_success "Update profile passed"

@@ -2,9 +2,12 @@
 
 # Smoke Test Helper Functions
 
+# Get script directory (absolute path)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Load config if not already loaded
 if [ -z "$API_BASE" ]; then
-    source "$(dirname "$0")/config.sh"
+    source "$SCRIPT_DIR/config.sh"
 fi
 
 # Print colored output
@@ -41,9 +44,9 @@ http_get() {
     local http_code
     
     if [ -n "$headers" ]; then
-        response=$(curl -s -w "\n%{http_code}" -X GET "$url" -H "$headers" --max-time $CURL_MAX_TIME)
+        response=$(curl -s -w "\n%{http_code}" -X GET "$url" -H "$headers" --max-time "$CURL_MAX_TIME")
     else
-        response=$(curl -s -w "\n%{http_code}" -X GET "$url" --max-time $CURL_MAX_TIME)
+        response=$(curl -s -w "\n%{http_code}" -X GET "$url" --max-time "$CURL_MAX_TIME")
     fi
     
     http_code=$(echo "$response" | tail -n 1)
@@ -73,12 +76,12 @@ http_post() {
             -H "Content-Type: application/json" \
             -H "$headers" \
             -d "$data" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     else
         response=$(curl -s -w "\n%{http_code}" -X POST "$url" \
             -H "Content-Type: application/json" \
             -d "$data" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     fi
     
     http_code=$(echo "$response" | tail -n 1)
@@ -108,12 +111,12 @@ http_put() {
             -H "Content-Type: application/json" \
             -H "$headers" \
             -d "$data" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     else
         response=$(curl -s -w "\n%{http_code}" -X PUT "$url" \
             -H "Content-Type: application/json" \
             -d "$data" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     fi
     
     http_code=$(echo "$response" | tail -n 1)
@@ -140,10 +143,10 @@ http_delete() {
     if [ -n "$headers" ]; then
         response=$(curl -s -w "\n%{http_code}" -X DELETE "$url" \
             -H "$headers" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     else
         response=$(curl -s -w "\n%{http_code}" -X DELETE "$url" \
-            --max-time $CURL_MAX_TIME)
+            --max-time "$CURL_MAX_TIME")
     fi
     
     http_code=$(echo "$response" | tail -n 1)

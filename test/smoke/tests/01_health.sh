@@ -17,10 +17,10 @@ test_health_check() {
     fi
     
     # Verify response structure
-    assert_json_field "$response" ".status" "success" || return 1
+    assert_json_field "$response" ".success" "true" || return 1
     assert_json_field_exists "$response" ".data.status" || return 1
-    assert_json_field_exists "$response" ".data.database" || return 1
-    assert_json_field_exists "$response" ".data.timestamp" || return 1
+    assert_json_field_exists "$response" ".data.service" || return 1
+    assert_json_field_exists "$response" ".timestamp" || return 1
     
     print_success "Health check passed"
     return 0

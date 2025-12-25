@@ -37,7 +37,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$create_response" ".status" "success" || return 1
+    assert_json_field "$create_response" ".success" "true" || return 1
     assert_json_field_exists "$create_response" ".data.id" || return 1
     
     print_success "Metric created successfully"
@@ -50,7 +50,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$list_response" ".status" "success" || return 1
+    assert_json_field "$list_response" ".success" "true" || return 1
     assert_json_field_exists "$list_response" ".data" || return 1
     
     print_success "List metrics passed"

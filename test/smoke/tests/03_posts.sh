@@ -34,7 +34,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$create_response" ".status" "success" || return 1
+    assert_json_field "$create_response" ".success" "true" || return 1
     assert_json_field_exists "$create_response" ".data.id" || return 1
     assert_json_field "$create_response" ".data.title" "$TEST_POST_TITLE" || return 1
     
@@ -49,7 +49,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$get_response" ".status" "success" || return 1
+    assert_json_field "$get_response" ".success" "true" || return 1
     assert_json_field "$get_response" ".data.id" "$POST_ID" || return 1
     assert_json_field "$get_response" ".data.title" "$TEST_POST_TITLE" || return 1
     
@@ -63,7 +63,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$list_response" ".status" "success" || return 1
+    assert_json_field "$list_response" ".success" "true" || return 1
     assert_json_field_exists "$list_response" ".data" || return 1
     
     print_success "List posts passed"
@@ -85,7 +85,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$update_response" ".status" "success" || return 1
+    assert_json_field "$update_response" ".success" "true" || return 1
     assert_json_field "$update_response" ".data.title" "$TEST_POST_TITLE (Updated)" || return 1
     
     print_success "Update post passed"
@@ -98,7 +98,7 @@ EOF
         return 1
     fi
     
-    assert_json_field "$delete_response" ".status" "success" || return 1
+    assert_json_field "$delete_response" ".success" "true" || return 1
     print_success "Delete post passed"
     
     # Clear POST_ID so cleanup doesn't try to delete again
