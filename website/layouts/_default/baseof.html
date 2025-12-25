@@ -13,10 +13,10 @@
     <meta property="og:url" content="{{ .Permalink }}" />
 
     <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="{{ "favicon.svg" | relURL }}" />
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="{{ "css/main.css" | relURL }}" />
 
     <!-- Syntax highlighting -->
     {{ if .Params.highlight }}

@@ -4,7 +4,7 @@
     <h1>{{ .Title }}</h1>
     <p>{{ .Params.description }}</p>
     <div class="hero-buttons">
-      <a href="/docs/" class="btn btn-primary">Get Started →</a>
+      <a href="{{ "docs/" | relURL }}" class="btn btn-primary">Get Started →</a>
       <a href="{{ .Site.Params.github }}" class="btn btn-secondary" target="_blank">View on GitHub</a>
     </div>
   </div>
@@ -29,7 +29,7 @@
       Start building production-ready APIs with Promenade today.
     </p>
     <div style="display: flex; gap: 1rem; justify-content: center">
-      <a href="/docs/" class="btn btn-primary">Read Documentation</a>
+      <a href="{{ "docs/" | relURL }}" class="btn btn-primary">Read Documentation</a>
       <a href="{{ .Site.Params.social.discussions }}" class="btn btn-secondary" target="_blank">Join Community</a>
     </div>
   </div>
