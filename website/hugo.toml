@@ -18,25 +18,71 @@ enableGitInfo = true
     noClasses = false
     style = 'monokai'
 
-# Menu configuration
-[menu]
-  [[menu.main]]
+# Menu configuration - English
+[languages.en.menu]
+  [[languages.en.menu.main]]
     name = 'Home'
-    url = '/'
+    url = '/promenade/'
     weight = 1
-  [[menu.main]]
+  [[languages.en.menu.main]]
     name = 'Features'
-    url = '/features/'
+    url = '/promenade/features/'
     weight = 2
-  [[menu.main]]
+  [[languages.en.menu.main]]
     name = 'Documentation'
-    url = '/docs/'
+    url = '/promenade/docs/'
     weight = 3
-  [[menu.main]]
+  [[languages.en.menu.main]]
     name = 'Contact'
-    url = '/contact/'
+    url = '/promenade/contact/'
     weight = 4
-  [[menu.main]]
+  [[languages.en.menu.main]]
+    name = 'GitHub'
+    url = 'https://github.com/basilex/promenade'
+    weight = 5
+
+# Menu configuration - Ukrainian
+[languages.uk.menu]
+  [[languages.uk.menu.main]]
+    name = 'Головна'
+    url = '/promenade/uk/'
+    weight = 1
+  [[languages.uk.menu.main]]
+    name = 'Можливості'
+    url = '/promenade/uk/features/'
+    weight = 2
+  [[languages.uk.menu.main]]
+    name = 'Документація'
+    url = '/promenade/uk/docs/'
+    weight = 3
+  [[languages.uk.menu.main]]
+    name = 'Контакти'
+    url = '/promenade/uk/contact/'
+    weight = 4
+  [[languages.uk.menu.main]]
+    name = 'GitHub'
+    url = 'https://github.com/basilex/promenade'
+    weight = 5
+
+# Menu configuration - German
+[languages.de.menu]
+  [[languages.de.menu.main]]
+    name = 'Startseite'
+    url = '/promenade/de/'
+    weight = 1
+  [[languages.de.menu.main]]
+    name = 'Features'
+    url = '/promenade/de/features/'
+    weight = 2
+  [[languages.de.menu.main]]
+    name = 'Dokumentation'
+    url = '/promenade/de/docs/'
+    weight = 3
+  [[languages.de.menu.main]]
+    name = 'Kontakt'
+    url = '/promenade/de/contact/'
+    weight = 4
+  [[languages.de.menu.main]]
     name = 'GitHub'
     url = 'https://github.com/basilex/promenade'
     weight = 5
