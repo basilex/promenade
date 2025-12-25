@@ -50,15 +50,15 @@ Step-by-step guide to creating new modules.
 
 - [Getting Started Guide](/docs/getting-started)
 - [Module Development](/docs/module-development)
-- [Testing Guide](/docs/TESTING_GUIDE)
+- [Database Schema](/docs/database-schema)
 - [API Documentation](/api/v1/docs/swagger/index.html)
 
 ### For Architects
 
 - [Architecture Overview](/docs/architecture)
 - [Database Schema](/docs/database-schema)
-- [Module Independence](/docs/MODULE_INDEPENDENCE)
-- [Clean Architecture Principles](/features/clean-architecture)
+- [Module Development](/docs/module-development)
+- [Clean Architecture](/features/clean-architecture)
 
 ### API & Integration
 

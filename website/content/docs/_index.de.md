@@ -50,15 +50,15 @@ Schritt-für-Schritt-Anleitung zum Erstellen neuer Module.
 
 - [Erste Schritte](/docs/getting-started)
 - [Modulentwicklung](/docs/module-development)
-- [Test-Leitfaden](/docs/TESTING_GUIDE)
+- [Datenbankschema](/docs/database-schema)
 - [API-Dokumentation](/api/v1/docs/swagger/index.html)
 
 ### Für Architekten
 
 - [Architektur-Übersicht](/docs/architecture)
 - [Datenbankschema](/docs/database-schema)
-- [Modulunabhängigkeit](/docs/MODULE_INDEPENDENCE)
-- [Clean Architecture Prinzipien](/features/clean-architecture)
+- [Modul-Entwicklung](/docs/module-development)
+- [Clean Architecture](/features/clean-architecture)
 
 ### API & Integration
 

@@ -50,15 +50,15 @@ description: "Повна технічна документація для Promen
 
 - [Посібник Початку Роботи](/docs/getting-started)
 - [Розробка Модулів](/docs/module-development)
-- [Посібник з Тестування](/docs/TESTING_GUIDE)
+- [Схема Бази Даних](/docs/database-schema)
 - [API Документація](/api/v1/docs/swagger/index.html)
 
 ### Для Архітекторів
 
 - [Огляд Архітектури](/docs/architecture)
 - [Схема Бази Даних](/docs/database-schema)
-- [Незалежність Модулів](/docs/MODULE_INDEPENDENCE)
-- [Принципи Clean Architecture](/features/clean-architecture)
+- [Розробка Модулів](/docs/module-development)
+- [Clean Architecture](/features/clean-architecture)
 
 ### API та Інтеграція
 
