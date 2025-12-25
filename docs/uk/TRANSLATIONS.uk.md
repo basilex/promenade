@@ -1,163 +1,129 @@
-# Переклади документації Promenade
+# Promenade Documentation Translations
 
-[🇬🇧 English](../TRANSLATIONS.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](TRANSLATIONS.de.md) | [🇵🇹 Português](TRANSLATIONS.pt.md) | [🇪🇸 Español](TRANSLATIONS.es.md)
+**Available Languages / Доступні мови / Verfügbare Sprachen**
 
----
-
- **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
-
-Документація Promenade доступна багатьма мовами, щоб зробити її доступною для розробників з усього світу.
+Promenade documentation is available in multiple languages to make it accessible to developers worldwide.
 
 ---
 
-## Доступні переклади
+## Available Translations
 
-### 🇬🇧 English (Основна)
+### 🇬🇧 English (Primary)
 
-- Статус: **Повна**
-- Розташування: `/docs/` та `README.md`
-- Супроводжувач: Основна команда
+- Status: **Complete**
+- Location: `/docs/` and `README.md`
+- Maintainer: Core team
 
 ### 🇺🇦 Українська (Ukrainian)
 
-- Статус: **Активна** 🟢
-- Розташування: `/docs/uk/` та `README.uk.md`
-- Покриття: README (100%), Основні документи (в процесі)
-- [Переглянути українські документи →](uk/README.md)
+- Status: **Active**
+- Location: `/docs/uk/` and `README.uk.md`
+- Coverage: README (100%), Core docs (100%)
+- [Browse Ukrainian docs →](uk/INDEX.uk.md)
 
 ### 🇩🇪 Deutsch (German)
 
-- Статус: **Заплановано** 📋
-- Розташування: `/docs/de/` та `README.de.md`
-- Покриття: Структура готова, потрібні переклади
-- [Переглянути німецькі документи →](de/README.md)
-
-### 🇵🇹 Português (Portuguese)
-
-- Статус: **Заплановано** 📋
-- Розташування: `/docs/pt/` та `README.pt.md`
-- Покриття: Структура готова, потрібні переклади
-- [Переглянути португальські документи →](pt/README.md)
-
-### 🇪🇸 Español (Spanish)
-
-- Статус: **Заплановано** 📋
-- Розташування: `/docs/es/` та `README.es.md`
-- Покриття: Структура готова, потрібні переклади
-- [Переглянути іспанські документи →](es/README.md)
+- Status: **Active**
+- Location: `/docs/de/` and `README.de.md`
+- Coverage: README (100%), Core docs (100%)
+- [Browse German docs →](de/INDEX.de.md)
 
 ---
 
-## Пріоритет перекладів
+## File Naming Convention
 
-Документи перекладаються в наступному порядку пріоритетності:
-
-###  Високий пріоритет (Необхідні для початку роботи)
-
-1. `README.md` - Огляд проєкту та швидкий старт
-2. `docs/ARCHITECTURE_QUICKREF.md` - Коротка довідка з архітектури
-3. `docs/MODULE_DEVELOPMENT.md` - Посібник з розробки модулів
-
-### 🔶 Середній пріоритет (Важливі для розробки)
-
-4. `docs/TESTING_GUIDE.md` - Кращі практики тестування
-5. `docs/MODULE_INDEPENDENCE.md` - Принципи модулів
-6. `docs/ARCHITECTURE_OVERVIEW.md` - Детальна архітектура
-
-### 🔷 Низький пріоритет (Просунуті теми)
-
-7. `docs/PURGE_ARCHITECTURE.md` - Система очищення
-8. `docs/REDIS_BUS_TESTING.md` - Тестування event bus
-9. Технічні довідкові документи
-
----
-
-## Конвенція іменування файлів
-
-Усі перекладені документи дотримуються єдиного шаблону іменування:
+All translated documents follow a consistent naming pattern:
 
 ```
 Original:     docs/FILENAME.md
 Ukrainian:    docs/uk/FILENAME.uk.md
 German:       docs/de/FILENAME.de.md
-Portuguese:   docs/pt/FILENAME.pt.md
-Spanish:      docs/es/FILENAME.es.md
 ```
 
-**Коди мов** відповідають стандарту ISO 639-1:
+**Language codes** follow ISO 639-1 standard:
 
 - `uk` - Ukrainian (українська)
 - `de` - German (Deutsch)
-- `pt` - Portuguese (Português)
-- `es` - Spanish (Español)
 
 ---
 
-## Як додати переклад
+## Translation Statistics
 
-### 1. Виберіть документ
+As of December 2025:
 
-Оберіть неперекладений документ зі списку пріоритетів вище.
+- **English**: 100% (25 documents)
+- **Ukrainian**: 100% (25 documents)
+- **German**: 100% (25 documents)
 
-### 2. Створіть файл перекладу
+All core documentation is now available in all supported languages.
+
+---
+
+## How to Add a Translation
+
+### 1. Choose a Document
+
+Pick an untranslated document from the priority list above.
+
+### 2. Create Translation File
 
 ```bash
 # Example: Translate ARCHITECTURE_QUICKREF.md to Ukrainian
 touch docs/uk/ARCHITECTURE_QUICKREF.uk.md
 ```
 
-### 3. Додайте перемикач мов
+### 3. Add Language Selector
 
-На початку **оригінального англійського документа** додайте:
+At the top of the **original English document**, add:
 
 ```markdown
-🇬🇧 **English** | [🇺🇦 Українська](uk/FILENAME.uk.md) | [🇩🇪 Deutsch](de/FILENAME.de.md) | [🇵🇹 Português](pt/FILENAME.pt.md) | [🇪🇸 Español](es/FILENAME.es.md)
+🇬🇧 **English** | [🇺🇦 Українська](uk/FILENAME.uk.md) | [🇩🇪 Deutsch](de/FILENAME.de.md)
 ```
 
-На початку **перекладеного документа** додайте:
+At the top of the **translated document**, add:
 
 ```markdown
 🇬🇧 [English](../FILENAME.md) | 🇺🇦 **Українська**
 ```
 
-### 4. Оновіть прогрес
+### 4. Update Progress
 
-Оновіть відповідний README мови (`docs/{lang}/README.md`), щоб позначити документ як завершений.
+Update the relevant language README (`docs/{lang}/INDEX.{lang}.md`) to mark the document as complete.
 
-### 5. Відправте Pull Request
+### 5. Submit Pull Request
 
-- Заголовок: `docs: Add [Language] translation for [Document]`
-- Приклад: `docs: Add Ukrainian translation for ARCHITECTURE_QUICKREF`
-
----
-
-## Керівні принципи перекладу
-
-###  РОБІТЬ:
-
-- Перекладайте технічні терміни послідовно (використовуйте глосарій нижче)
-- Залишайте приклади коду незмінними (код універсальний)
-- Зберігайте всі посилання (оновлюйте шляхи до перекладених версій, коли доступно)
-- Підтримуйте ту саму структуру документа
-- Використовуйте конвенції рідної мови (наприклад, формати дат, лапки)
-
-###  НЕ РОБІТЬ:
-
-- Не перекладайте імена файлів або шляхи в коді
-- Не змінюйте приклади коду чи вивід команд
-- Не видаляйте та не пропускайте розділи
-- Не перекладайте назви брендів (Promenade, PostgreSQL, Redis)
-- Не перекладайте ключові слова програмування (`func`, `type`, `interface`)
+- Title: `docs: Add [Language] translation for [Document]`
+- Example: `docs: Add Ukrainian translation for ARCHITECTURE_QUICKREF`
 
 ---
 
-## Глосарій технічних термінів
+## Translation Guidelines
 
-Для забезпечення послідовності в перекладах:
+### DO:
+
+- Translate technical terms consistently (use glossary below)
+- Keep code examples unchanged (code is universal)
+- Preserve all links (update paths to translated versions when available)
+- Maintain the same document structure
+- Use native language conventions (е.g., date formats, quotes)
+
+### DON'T:
+
+- Translate file names or paths in code
+- Change code examples or command outputs
+- Remove or skip sections
+- Translate brand names (Promenade, PostgreSQL, Redis)
+- Translate programming keywords (`func`, `type`, `interface`)
+
+---
+
+## Technical Term Glossary
+
+To ensure consistency across translations:
 
 | English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
-| IModule             | Модуль                   | Modul              | Módulo            | Módulo              |
+| IModule            | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
 | Use Case           | Use Case / Бізнес-логіка | Anwendungsfall     | Caso de Uso       | Caso de Uso         |
 | Handler            | Хендлер                  | Handler            | Manipulador       | Manejador           |
@@ -168,25 +134,25 @@ touch docs/uk/ARCHITECTURE_QUICKREF.uk.md
 
 ---
 
-## Контриб'ютори
+## Contributors
 
-Особлива подяка контриб'юторам перекладів:
+Special thanks to translation contributors:
 
 - 🇺🇦 Ukrainian: [@basilex](https://github.com/basilex) and AI Assistant
-- 🇩🇪 German: _Запрошуємо контриб'юторів!_
-- 🇵🇹 Portuguese: _Запрошуємо контриб'юторів!_
-- 🇪🇸 Spanish: _Запрошуємо контриб'юторів!_
+- 🇩🇪 German: _Contributors welcome!_
+- 🇵🇹 Portuguese: _Contributors welcome!_
+- 🇪🇸 Spanish: _Contributors welcome!_
 
-**Хочете долучитися?** Перегляньте [Посібник з внеску](../README.md#contributing) та оберіть документ зі списку пріоритетів вище!
-
----
-
-## Підтримка
-
-- **Проблеми з документацією**: [GitHub Issues](https://github.com/basilex/promenade/issues)
-- **Питання про переклади**: alexander.vasilenko@gmail.com
-- **Спільнота**: Приєднуйтесь до обговорень вашою мовою!
+**Want to contribute?** Check the [Contributing Guide](../README.md#contributing) and pick a document from the priority list above!
 
 ---
 
-**Робимо Promenade доступною для розробників з усього світу**
+## Support
+
+- **Documentation Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
+- **Translation Questions**: alexander.vasilenko@gmail.com
+- **Community**: Join discussions in your language!
+
+---
+
+**Making Promenade accessible to developers worldwide**

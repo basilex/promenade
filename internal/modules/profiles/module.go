@@ -64,33 +64,13 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 	} else {
 		m.config = cfg
 		slog.Info("Profiles module config loaded",
-			"version", cfg.IModule.Version,
-			"enabled", cfg.IModule.Enabled,
+			"version", cfg.Module.Version,
+			"enabled", cfg.Module.Enabled,
 		)
 	}
 
-	// Get module-specific settings from config
-	maxSocialLinks := 10
-	maxContactsPerUser := 5
-
-	if m.config != nil {
-		if profiles, ok := m.config.Settings["profiles"].(map[string]any); ok {
-			if v, ok := profiles["max_social_links"].(int); ok {
-				maxSocialLinks = v
-			}
-		}
-
-		if contacts, ok := m.config.Settings["contacts"].(map[string]any); ok {
-			if v, ok := contacts["max_per_user"].(int); ok {
-				maxContactsPerUser = v
-			}
-		}
-	}
-
-	slog.Info("Profiles module settings",
-		"max_social_links", maxSocialLinks,
-		"max_contacts_per_user", maxContactsPerUser,
-	)
+	// Note: maxSocialLinks and maxContactsPerUser are configured but not yet used
+	// TODO: Pass these limits to use cases when validation is implemented
 
 	// Initialize repositories
 	profileRepo := postgres.NewUserProfileRepository(m.db)

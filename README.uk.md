@@ -1,8 +1,8 @@
 # Promenade
 
-[🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md) | [🇵🇹 Português](README.pt.md) | [🇪🇸 Español](README.es.md)
+[🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md)
 
-> ** Примітка про переклади**: Деякі технічні документи з внутрішніх директорій (migrations/, internal/, pkg/, test/) поки доступні тільки англійською мовою. **Всі документи з docs/ повністю перекладені українською мовою.** Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для повного переліку доступних перекладів.
+> **Примітка про переклади**: Деякі технічні документи з внутрішніх директорій (migrations/, internal/, pkg/, test/) поки доступні тільки англійською мовою. **Всі документи з docs/ повністю перекладені українською мовою.** Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для повного переліку доступних перекладів.
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)

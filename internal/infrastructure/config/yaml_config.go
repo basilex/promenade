@@ -127,8 +127,8 @@ type ModulesSection struct {
 
 // ModuleConfig represents a module's configuration
 type ModuleConfig struct {
-	IModule      ModuleSection          `yaml:"module"`
-	Settings    map[string]any `yaml:",inline"` // IModule-specific settings
+	Module      ModuleSection          `yaml:"module"`
+	Settings    map[string]any `yaml:",inline"` // Module-specific settings
 	Purge       *ModulePurgeSection    `yaml:"purge,omitempty"`
 	Permissions []PermissionSection    `yaml:"permissions,omitempty"`
 	Features    map[string]bool        `yaml:"features,omitempty"`

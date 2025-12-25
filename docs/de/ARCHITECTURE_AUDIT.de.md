@@ -650,7 +650,7 @@ Die Architektur unterstützt:
 - Modul-spezifische Lizenzkonfiguration
 - Abhängigkeitsverwaltung (lizenziertes Modul hängt von freiem Modul ab)
 
-**Maßnahme:** ⏳ Lizenzvalidierung implementieren, wenn kommerzielle IModule bereit sind.
+**Maßnahme:** **TODO** Lizenzvalidierung implementieren, wenn kommerzielle IModule bereit sind.
 
 ---
 

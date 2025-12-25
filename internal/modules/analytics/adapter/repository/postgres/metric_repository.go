@@ -25,7 +25,7 @@ func NewMetricRepository(db *sqlx.DB) repository.IMetricRepository {
 // metricDB is an internal type for scanning from database
 type metricDB struct {
 	ID        string          `db:"id"`
-	IModule    string          `db:"module"`
+	Module    string          `db:"module"`
 	Scope     string          `db:"scope"`
 	ScopeID   string          `db:"scope_id"`
 	Name      string          `db:"name"`
@@ -47,7 +47,7 @@ func (m *metricDB) toEntity() (*entity.Metric, error) {
 
 	return &entity.Metric{
 		ID:        m.ID,
-		IModule:    m.IModule,
+		Module:    m.Module,
 		Scope:     entity.MetricScope(m.Scope),
 		ScopeID:   m.ScopeID,
 		Name:      m.Name,
@@ -77,7 +77,7 @@ func (r *IMetricRepository) Store(ctx context.Context, metric *entity.Metric) er
 		)`
 
 	_, err = r.db.ExecContext(ctx, query,
-		metric.ID, metric.IModule, metric.Scope, metric.ScopeID,
+		metric.ID, metric.Module, metric.Scope, metric.ScopeID,
 		metric.Name, metric.Type, metric.Value, metadataJSON, metric.CreatedAt)
 
 	return err

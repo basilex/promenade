@@ -2,6 +2,7 @@ package analytics
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/basilex/promenade/internal/modules/analytics/adapter/http/handler"
@@ -9,6 +10,7 @@ import (
 	"github.com/basilex/promenade/internal/modules/analytics/usecase"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/module"
+	moduleconfig "github.com/basilex/promenade/pkg/module/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,11 +57,50 @@ func (m *AnalyticsModule) Initialize(ctx context.Context, core *module.Core) err
 	m.core = core
 
 	// Load module-specific configuration
-	// TODO: Load from config/modules/analytics/config.yaml
-	m.config = &Config{
-		MetricsRetention:  90,
-		MaxReportsPerUser: 10,
-		MaxDashboards:     5,
+	cfg, err := moduleconfig.Load("internal/modules/analytics/config", "promenade")
+	if err != nil {
+		m.logger.Error("Failed to load analytics config", "error", err)
+		return fmt.Errorf("failed to load analytics config: %w", err)
+	}
+
+	{
+		// Parse config into our Config struct (all values required)
+		var metricsRetention, maxReportsPerUser, maxDashboards int
+
+		if analytics, ok := cfg.Settings["analytics"].(map[string]any); ok {
+			if metrics, ok := analytics["metrics"].(map[string]any); ok {
+				if v, ok := metrics["retention_days"].(int); ok {
+					metricsRetention = v
+				}
+			}
+			if reports, ok := analytics["reports"].(map[string]any); ok {
+				if v, ok := reports["max_per_user"].(int); ok {
+					maxReportsPerUser = v
+				}
+			}
+			if dashboards, ok := analytics["dashboards"].(map[string]any); ok {
+				if v, ok := dashboards["max_per_user"].(int); ok {
+					maxDashboards = v
+				}
+			}
+		}
+
+		m.config = &Config{
+			MetricsRetention:  metricsRetention,
+			MaxReportsPerUser: maxReportsPerUser,
+			MaxDashboards:     maxDashboards,
+		}
+
+		// Validate required config values
+		if metricsRetention == 0 || maxReportsPerUser == 0 || maxDashboards == 0 {
+			return fmt.Errorf("analytics config incomplete - check config/analytics/config.*.yaml")
+		}
+
+		m.logger.Info("Analytics config loaded",
+			"metrics_retention", metricsRetention,
+			"max_reports_per_user", maxReportsPerUser,
+			"max_dashboards", maxDashboards,
+		)
 	}
 
 	// Initialize repositories

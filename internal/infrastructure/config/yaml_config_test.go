@@ -305,7 +305,7 @@ func TestGetEnvSuffix(t *testing.T) {
 
 func TestModuleConfig_Structure(t *testing.T) {
 	moduleConfig := ModuleConfig{
-		IModule: ModuleSection{
+		Module: ModuleSection{
 			Name:    "posts",
 			Enabled: true,
 			Version: "2.0.0",
@@ -337,9 +337,9 @@ func TestModuleConfig_Structure(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "posts", moduleConfig.IModule.Name)
-	assert.True(t, moduleConfig.IModule.Enabled)
-	assert.Equal(t, "2.0.0", moduleConfig.IModule.Version)
+	assert.Equal(t, "posts", moduleConfig.Module.Name)
+	assert.True(t, moduleConfig.Module.Enabled)
+	assert.Equal(t, "2.0.0", moduleConfig.Module.Version)
 	assert.Equal(t, 5000, moduleConfig.Settings["max_post_length"])
 	assert.True(t, moduleConfig.Settings["allow_comments"].(bool))
 	assert.NotNil(t, moduleConfig.Purge)

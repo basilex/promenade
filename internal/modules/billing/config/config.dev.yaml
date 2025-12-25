@@ -1,0 +1,92 @@
+# Billing Module Configuration - Development Environment
+# This file contains billing module settings for local development
+
+module:
+  name: "billing"
+  display_name: "Billing Management"
+  version: "1.0.0"
+  enabled: true
+  author: "Promenade Team"
+  description: "Subscription billing and payment processing"
+  license: "Commercial"
+
+billing:
+  # Default settings
+  default_currency: "USD"
+  default_trial_days: 14
+
+  # Invoice settings
+  invoice:
+    auto_finalize: false # Don't auto-finalize in dev
+    due_days: 7 # Payment due in 7 days
+    overdue_grace_days: 3 # Grace period before marking overdue
+    auto_number_format: "INV-%Y%m%d-%06d" # Invoice number format
+
+  # Subscription settings
+  subscription:
+    allow_multiple_active: false # Only one active subscription per user
+    auto_renew_enabled: true
+    renewal_reminder_days: 7 # Send reminder N days before renewal
+
+  # Payment providers
+  providers:
+    stripe:
+      enabled: true
+      public_key: "pk_test_51234567890abcdef" # Test key for dev
+      secret_key: "" # Set via STRIPE_SECRET_KEY env var
+      webhook_secret: "" # Set via STRIPE_WEBHOOK_SECRET env var
+
+    liqpay:
+      enabled: true
+      public_key: "sandbox_i12345678" # Sandbox key for dev
+      private_key: "" # Set via LIQPAY_PRIVATE_KEY env var
+      sandbox: true
+
+    paypal:
+      enabled: false # Disabled in dev by default
+      client_id: ""
+      client_secret: ""
+      sandbox: true
+
+  # Limits and validation
+  limits:
+    max_refund_days: 30 # Can refund within 30 days
+    max_subscription_duration_years: 5
+    min_payment_amount: 100 # Minimum 100 cents ($1.00)
+
+  # Notifications
+  notifications:
+    send_invoice_emails: true
+    send_payment_receipts: true
+    send_subscription_reminders: true
+    send_payment_failed_alerts: true
+
+# Data retention policies (for purge system)
+purge:
+  billing_invoices:
+    retention_days: 2555 # 7 years (legal requirement)
+    enabled: true
+
+  billing_payments:
+    retention_days: 2555 # 7 years (legal requirement)
+    enabled: true
+
+  billing_subscriptions:
+    retention_days: 1095 # 3 years for canceled subscriptions
+    enabled: true
+    condition: "status = 'canceled' OR status = 'expired'"
+
+# Licensing (commercial module)
+license:
+  required: false # Not required in dev
+  key: "" # Set via BILLING_LICENSE_KEY env var
+
+# Feature flags
+features:
+  enable_refunds: true
+  enable_upgrades: true
+  enable_downgrades: true
+  enable_proration: true # Prorate when changing plans
+  enable_trial_periods: true
+  enable_coupons: false # Future feature
+  enable_credits: false # Future feature

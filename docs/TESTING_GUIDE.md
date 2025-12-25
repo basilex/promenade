@@ -359,10 +359,10 @@ Goal: **>80% coverage** for critical modules (usecase, repository).
 ## What's Next
 
 1. [+] Repository integration tests - **DONE**
-2. ⏳ Use case unit tests with mocks
-3. ⏳ HTTP handler integration tests
-4. ⏳ E2E tests for complete flows
-5. ⏳ Performance/benchmark tests
+2. **TODO** Use case unit tests with mocks
+3. **TODO** HTTP handler integration tests
+4. **TODO** E2E tests for complete flows
+5. **TODO** Performance/benchmark tests
 
 ## Examples
 

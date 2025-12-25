@@ -1,6 +1,6 @@
 # Promenade Documentation Translations
 
- **Available Languages / Доступні мови / Verfügbare Sprachen / Idiomas Disponíveis**
+**Available Languages / Доступні мови / Verfügbare Sprachen**
 
 Promenade documentation is available in multiple languages to make it accessible to developers worldwide.
 
@@ -16,55 +16,17 @@ Promenade documentation is available in multiple languages to make it accessible
 
 ### 🇺🇦 Українська (Ukrainian)
 
-- Status: **Active** 🟢
+- Status: **Active**
 - Location: `/docs/uk/` and `README.uk.md`
-- Coverage: README (100%), Core docs (in progress)
-- [Browse Ukrainian docs →](uk/README.md)
+- Coverage: README (100%), Core docs (100%)
+- [Browse Ukrainian docs →](uk/INDEX.uk.md)
 
 ### 🇩🇪 Deutsch (German)
 
-- Status: **Planned** 📋
+- Status: **Active**
 - Location: `/docs/de/` and `README.de.md`
-- Coverage: Structure ready, translations needed
-- [Browse German docs →](de/README.md)
-
-### 🇵🇹 Português (Portuguese)
-
-- Status: **Planned** 📋
-- Location: `/docs/pt/` and `README.pt.md`
-- Coverage: Structure ready, translations needed
-- [Browse Portuguese docs →](pt/README.md)
-
-### 🇪🇸 Español (Spanish)
-
-- Status: **Planned** 📋
-- Location: `/docs/es/` and `README.es.md`
-- Coverage: Structure ready, translations needed
-- [Browse Spanish docs →](es/README.md)
-
----
-
-## Translation Priority
-
-Documents are translated in the following priority order:
-
-###  High Priority (Essential for getting started)
-
-1. `README.md` - Project overview and quick start
-2. `docs/ARCHITECTURE_QUICKREF.md` - Architecture quick reference
-3. `docs/MODULE_DEVELOPMENT.md` - IModule development guide
-
-### 🔶 Medium Priority (Important for development)
-
-4. `docs/TESTING_GUIDE.md` - Testing best practices
-5. `docs/MODULE_INDEPENDENCE.md` - IModule principles
-6. `docs/ARCHITECTURE_OVERVIEW.md` - Detailed architecture
-
-### 🔷 Low Priority (Advanced topics)
-
-7. `docs/PURGE_ARCHITECTURE.md` - Purge system
-8. `docs/REDIS_BUS_TESTING.md` - Event bus testing
-9. Technical reference docs
+- Coverage: README (100%), Core docs (100%)
+- [Browse German docs →](de/INDEX.de.md)
 
 ---
 
@@ -76,16 +38,24 @@ All translated documents follow a consistent naming pattern:
 Original:     docs/FILENAME.md
 Ukrainian:    docs/uk/FILENAME.uk.md
 German:       docs/de/FILENAME.de.md
-Portuguese:   docs/pt/FILENAME.pt.md
-Spanish:      docs/es/FILENAME.es.md
 ```
 
 **Language codes** follow ISO 639-1 standard:
 
 - `uk` - Ukrainian (українська)
 - `de` - German (Deutsch)
-- `pt` - Portuguese (Português)
-- `es` - Spanish (Español)
+
+---
+
+## Translation Statistics
+
+As of December 2025:
+
+- **English**: 100% (25 documents)
+- **Ukrainian**: 100% (25 documents)
+- **German**: 100% (25 documents)
+
+All core documentation is now available in all supported languages.
 
 ---
 
@@ -107,7 +77,7 @@ touch docs/uk/ARCHITECTURE_QUICKREF.uk.md
 At the top of the **original English document**, add:
 
 ```markdown
-🇬🇧 **English** | [🇺🇦 Українська](uk/FILENAME.uk.md) | [🇩🇪 Deutsch](de/FILENAME.de.md) | [🇵🇹 Português](pt/FILENAME.pt.md) | [🇪🇸 Español](es/FILENAME.es.md)
+🇬🇧 **English** | [🇺🇦 Українська](uk/FILENAME.uk.md) | [🇩🇪 Deutsch](de/FILENAME.de.md)
 ```
 
 At the top of the **translated document**, add:
@@ -118,7 +88,7 @@ At the top of the **translated document**, add:
 
 ### 4. Update Progress
 
-Update the relevant language README (`docs/{lang}/README.md`) to mark the document as complete.
+Update the relevant language README (`docs/{lang}/INDEX.{lang}.md`) to mark the document as complete.
 
 ### 5. Submit Pull Request
 
@@ -129,7 +99,7 @@ Update the relevant language README (`docs/{lang}/README.md`) to mark the docume
 
 ## Translation Guidelines
 
-###  DO:
+### DO:
 
 - Translate technical terms consistently (use glossary below)
 - Keep code examples unchanged (code is universal)
@@ -137,7 +107,7 @@ Update the relevant language README (`docs/{lang}/README.md`) to mark the docume
 - Maintain the same document structure
 - Use native language conventions (е.g., date formats, quotes)
 
-###  DON'T:
+### DON'T:
 
 - Translate file names or paths in code
 - Change code examples or command outputs
@@ -153,7 +123,7 @@ To ensure consistency across translations:
 
 | English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
-| IModule             | Модуль                   | Modul              | Módulo            | Módulo              |
+| IModule            | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
 | Use Case           | Use Case / Бізнес-логіка | Anwendungsfall     | Caso de Uso       | Caso de Uso         |
 | Handler            | Хендлер                  | Handler            | Manipulador       | Manejador           |

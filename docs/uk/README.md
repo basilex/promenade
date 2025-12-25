@@ -30,7 +30,7 @@ docs/uk/
 - ARCHITECTURE_QUICKREF.uk.md
 - MODULE_DEVELOPMENT.uk.md
 
-### 📋 Заплановано / Planned
+### **Planned** Заплановано / Planned
 
 - ARCHITECTURE_OVERVIEW.uk.md
 - TESTING_GUIDE.uk.md

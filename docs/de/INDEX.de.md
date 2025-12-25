@@ -4,7 +4,7 @@
 
 Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarchitektur, Entwicklungs-Workflows und Best Practices.
 
->  **Neu!** Die Dokumentation ist jetzt in mehreren Sprachen verfügbar. Siehe [TRANSLATIONS.md](../TRANSLATIONS.md) für Übersetzungsstatus und Beitragsrichtlinien.
+> **Neu!** Die Dokumentation ist jetzt in mehreren Sprachen verfügbar. Siehe [TRANSLATIONS.md](../TRANSLATIONS.md) für Übersetzungsstatus und Beitragsrichtlinien.
 
 ---
 
@@ -37,9 +37,9 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 
 | Dokument                                                             | Beschreibung                                       | Wann Lesen                       |
 | -------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------- |
-| [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md)                    | Vollständiger Leitfaden zur Erstellung von Modulen | Neue IModule erstellen            |
+| [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md)                    | Vollständiger Leitfaden zur Erstellung von Modulen | Neue IModule erstellen           |
 | [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.de.md)                  | Prinzipien der Modul-Unabhängigkeit                | Modulg renzen verstehen          |
-| [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.de.md)    | Konfigurationsmanagement für IModule                | Modul-Konfigurationen einrichten |
+| [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.de.md)    | Konfigurationsmanagement für IModule               | Modul-Konfigurationen einrichten |
 | [../../internal/modules/README.md](../../internal/modules/README.md) | Modul-Verzeichnisstruktur                          | Schneller Modul-Überblick        |
 
 ---
@@ -58,16 +58,16 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 | Dokument                                          | Beschreibung                             | Wann Lesen                        |
 | ------------------------------------------------- | ---------------------------------------- | --------------------------------- |
 | [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.de.md) | Design des automatisierten Purge-Systems | Retention-Policies implementieren |
-| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testen mit Redis Event IBus               | Event-gesteuerte Features testen  |
+| [REDIS_BUS_TESTING.md](../REDIS_BUS_TESTING.md)   | Testen mit Redis Event IBus              | Event-gesteuerte Features testen  |
 | [LOGGING.md](../LOGGING.md)                       | Strukturiertes Logging mit Kontext       | Logging zum Code hinzufügen       |
 
 ### Sicherheit & Authentifizierung
 
-| Dokument                                              | Beschreibung                                         | Wann Lesen                         |
-| ----------------------------------------------------- | ---------------------------------------------------- | ---------------------------------- |
-| [AUTH_SCHEMA.md](AUTH_SCHEMA.de.md)                   | Authentifizierungssystem (Registrierung, Login, JWT) | Auth-Flow verstehen                |
-| [AUTHORIZATION.md](AUTHORIZATION.de.md)               | RBAC-Berechtigungssystem                             | Autorisierung implementieren       |
-| [CREDENTIALS.md](../CREDENTIALS.md)                   | Standardbenutzer und Rollen für dev/test             | Tests mit vordefinierten Benutzern |
+| Dokument                                              | Beschreibung                                         | Wann Lesen                          |
+| ----------------------------------------------------- | ---------------------------------------------------- | ----------------------------------- |
+| [AUTH_SCHEMA.md](AUTH_SCHEMA.de.md)                   | Authentifizierungssystem (Registrierung, Login, JWT) | Auth-Flow verstehen                 |
+| [AUTHORIZATION.md](AUTHORIZATION.de.md)               | RBAC-Berechtigungssystem                             | Autorisierung implementieren        |
+| [CREDENTIALS.md](../CREDENTIALS.md)                   | Standardbenutzer und Rollen für dev/test             | Tests mit vordefinierten Benutzern  |
 | [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.de.md) | Modul-Lizenzsystem mit HMAC-SHA256                   | Kommerzielle IModule implementieren |
 
 ---
@@ -260,7 +260,7 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 
 ---
 
-## 🤝 Mitwirken
+## **Contributing** Mitwirken
 
 Beim Hinzufügen neuer Dokumentation:
 
@@ -289,7 +289,7 @@ Beim Hinzufügen neuer Dokumentation:
 
 ---
 
-## 📞 Support
+## Support
 
 - **Fragen zur Architektur?** → Lesen Sie [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.de.md)
 - **Fragen zu Modulen?** → Lesen Sie [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.de.md)

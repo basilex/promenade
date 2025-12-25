@@ -8,6 +8,7 @@ modules:
     - profiles # User profiles + contacts (merged into one module)
     - analytics # Analytics & reporting (Free)
     - audit # Immutable audit logging (Commercial)
+    - billing # Subscription billing & payment processing (Commercial)
 
   # Per-module configuration
   config:
@@ -38,6 +39,17 @@ modules:
         metrics_retention_days: 90
         max_reports_per_user: 10
         max_dashboards_per_user: 5
+
+    billing:
+      version: "1.0.0"
+      description: "Subscription billing and payment processing (Commercial)"
+      license_key: "" # Set via BILLING_LICENSE_KEY environment variable
+      settings:
+        default_currency: "USD"
+        default_trial_days: 14
+        invoice_due_days: 14
+        enable_refunds: true
+        enable_trial_periods: true
 # Future commercial modules (example):
 #
 #   warehouse:

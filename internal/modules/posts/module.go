@@ -3,6 +3,7 @@ package posts
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -67,38 +68,25 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 	} else {
 		m.config = cfg
 		slog.Info("Posts module config loaded",
-			"version", cfg.IModule.Version,
-			"enabled", cfg.IModule.Enabled,
+			"version", cfg.Module.Version,
+			"enabled", cfg.Module.Enabled,
 		)
 	}
 
-	// Get module-specific settings from config (all values come from config files)
-	maxCommentLength := 2000    // Fallback if config missing
-	maxCommentDepth := 10       // Fallback if config missing
-	postsRetentionDays := 90    // Fallback if config missing
-	commentsRetentionDays := 30 // Fallback if config missing
-
-	if m.config != nil {
-		// Read comment settings from posts.comments section
-		if posts, ok := m.config.Settings["posts"].(map[string]any); ok {
-			if comments, ok := posts["comments"].(map[string]any); ok {
-				if v, ok := comments["max_content_length"].(int); ok {
-					maxCommentLength = v
-				}
-				if v, ok := comments["max_depth"].(int); ok {
-					maxCommentDepth = v
-				}
-			}
-		}
-
-		// Read purge retention from purge section (config helper)
-		postsRetentionDays = m.config.GetRetentionDays("posts", 90)
-		commentsRetentionDays = m.config.GetRetentionDays("comments", 30)
+	// Get retention policies from config (for purge system)
+	if m.config == nil {
+		return fmt.Errorf("posts config not loaded - cannot initialize module")
 	}
 
-	slog.Info("Posts module settings",
-		"max_comment_length", maxCommentLength,
-		"max_comment_depth", maxCommentDepth,
+	// Read purge retention days from config (required)
+	postsRetentionDays := m.config.GetRetentionDays("posts", 0)
+	commentsRetentionDays := m.config.GetRetentionDays("comments", 0)
+
+	if postsRetentionDays == 0 || commentsRetentionDays == 0 {
+		return fmt.Errorf("posts retention policies not configured - check config/posts/config.*.yaml")
+	}
+
+	slog.Info("Posts purge policies configured",
 		"posts_retention_days", postsRetentionDays,
 		"comments_retention_days", commentsRetentionDays,
 	)

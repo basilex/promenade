@@ -1,12 +1,10 @@
 # Promenade Documentation Index
 
-🇬🇧 **English** | [🇺🇦 Українська](uk/INDEX.uk.md) | [🇩🇪 Deutsch](de/INDEX.de.md) | [🇵🇹 Português](pt/INDEX.pt.md) | [🇪🇸 Español](es/INDEX.es.md)
+🇬🇧 **English** | [🇺🇦 Українська](uk/INDEX.uk.md) | [🇩🇪 Deutsch](de/INDEX.de.md)
 
 This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
 > **New!** Documentation is now available in multiple languages. See [TRANSLATIONS.md](TRANSLATIONS.md) for translation status and contribution guidelines.
-
-This directory contains comprehensive documentation for the Promenade application architecture, development workflows, and best practices.
 
 ---
 
@@ -272,7 +270,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ---
 
-## 🤝 Contributing
+## **Contributing** Contributing
 
 When adding new documentation:
 
@@ -301,7 +299,7 @@ When adding new documentation:
 
 ---
 
-## 📞 Support
+## Support
 
 - **Questions about architecture?** → Read [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md)
 - **Questions about modules?** → Read [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md)

@@ -25,7 +25,7 @@ docs/de/
 - README.de.md - Hauptseite auf Deutsch
 - INDEX.de.md
 
-### 📋 Geplant / Planned
+### **Planned** Geplant / Planned
 
 - ARCHITECTURE_QUICKREF.de.md
 - MODULE_DEVELOPMENT.de.md

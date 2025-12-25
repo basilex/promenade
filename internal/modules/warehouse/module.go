@@ -114,24 +114,21 @@ func (m *WarehouseModule) verifyLicense() error {
 // loadSettings loads module-specific settings
 func (m *WarehouseModule) loadSettings() error {
 	if m.config == nil {
-		// Use defaults
-		m.maxItems = 10000
-		m.enableBarcodeScanner = true
-		return nil
+		return fmt.Errorf("warehouse config not loaded")
 	}
 
-	// Load settings using config helper methods
-	if maxItems, ok := m.config.GetNestedSetting("settings", "max_items").(int); ok {
-		m.maxItems = maxItems
-	} else {
-		m.maxItems = 10000
+	// Load settings using config helper methods (required)
+	maxItems, ok := m.config.GetNestedSetting("settings", "max_items").(int)
+	if !ok || maxItems == 0 {
+		return fmt.Errorf("max_items not configured - check config/warehouse/config.*.yaml")
 	}
+	m.maxItems = maxItems
 
-	if enableBarcode, ok := m.config.GetNestedSetting("settings", "enable_barcode_scanner").(bool); ok {
-		m.enableBarcodeScanner = enableBarcode
-	} else {
-		m.enableBarcodeScanner = true
+	enableBarcode, ok := m.config.GetNestedSetting("settings", "enable_barcode_scanner").(bool)
+	if !ok {
+		return fmt.Errorf("enable_barcode_scanner not configured - check config/warehouse/config.*.yaml")
 	}
+	m.enableBarcodeScanner = enableBarcode
 
 	return nil
 }

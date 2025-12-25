@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -101,6 +102,13 @@ func (u *User) Reactivate() {
 func (u *User) Validate() error {
 	if u.Email == "" {
 		return fmt.Errorf("%w: email is required", ErrInvalidInput)
+	}
+	// Basic email format validation
+	if !strings.Contains(u.Email, "@") || !strings.Contains(u.Email, ".") {
+		return fmt.Errorf("%w: invalid email format", ErrInvalidInput)
+	}
+	if len(u.Email) > 255 {
+		return fmt.Errorf("%w: email must not exceed 255 characters", ErrInvalidInput)
 	}
 	if u.Name == "" {
 		return fmt.Errorf("%w: name is required", ErrInvalidInput)

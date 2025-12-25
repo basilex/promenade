@@ -35,7 +35,7 @@ func (h *MetricsHandler) CollectMetric(c *gin.Context) {
 	}
 
 	input := &usecase.CollectMetricInput{
-		IModule:   req.IModule,
+		Module:   req.Module,
 		Scope:    entity.MetricScope(req.Scope),
 		ScopeID:  req.ScopeID,
 		Name:     req.Name,

@@ -30,8 +30,22 @@ func (c *City) Validate() error {
 	if c.Name == "" {
 		return errors.New("name is required")
 	}
+	if len(c.Name) < 2 || len(c.Name) > 100 {
+		return errors.New("name must be between 2 and 100 characters")
+	}
 	if c.CountryID == uuidv7.Nil {
 		return errors.New("country_id is required")
+	}
+	// Validate coordinates if provided
+	if c.Latitude != nil && (*c.Latitude < -90 || *c.Latitude > 90) {
+		return errors.New("latitude must be between -90 and 90")
+	}
+	if c.Longitude != nil && (*c.Longitude < -180 || *c.Longitude > 180) {
+		return errors.New("longitude must be between -180 and 180")
+	}
+	// Validate population if provided
+	if c.Population != nil && *c.Population < 0 {
+		return errors.New("population cannot be negative")
 	}
 	return nil
 }

@@ -32,7 +32,7 @@ func NewAnalyticsUseCase(metricRepo repository.IMetricRepository, logger *slog.L
 }
 
 type CollectMetricInput struct {
-	IModule   string
+	Module   string
 	Scope    entity.MetricScope
 	ScopeID  string
 	Name     string
@@ -42,7 +42,7 @@ type CollectMetricInput struct {
 }
 
 func (uc *analyticsUseCase) CollectMetric(ctx context.Context, input *CollectMetricInput) (*entity.Metric, error) {
-	if input.IModule == "" {
+	if input.Module == "" {
 		return nil, entity.ErrInvalidModule
 	}
 	if input.Name == "" {
@@ -50,7 +50,7 @@ func (uc *analyticsUseCase) CollectMetric(ctx context.Context, input *CollectMet
 	}
 
 	metric := &entity.Metric{
-		IModule:    input.IModule,
+		Module:    input.Module,
 		Scope:     input.Scope,
 		ScopeID:   input.ScopeID,
 		Name:      input.Name,
@@ -69,7 +69,7 @@ func (uc *analyticsUseCase) CollectMetric(ctx context.Context, input *CollectMet
 		return nil, fmt.Errorf("failed to collect metric: %w", err)
 	}
 
-	uc.logger.Info("Metric collected", "id", metric.ID, "module", metric.IModule, "name", metric.Name)
+	uc.logger.Info("Metric collected", "id", metric.ID, "module", metric.Module, "name", metric.Name)
 	return metric, nil
 }
 

@@ -24,7 +24,7 @@ const (
 
 type Metric struct {
 	ID        string                 `db:"id" json:"id"`
-	IModule    string                 `db:"module" json:"module"`
+	Module    string                 `db:"module" json:"module"`
 	Scope     MetricScope            `db:"scope" json:"scope"`
 	ScopeID   string                 `db:"scope_id" json:"scope_id"`
 	Name      string                 `db:"name" json:"name"`
@@ -35,7 +35,7 @@ type Metric struct {
 }
 
 func (m *Metric) Validate() error {
-	if m.IModule == "" {
+	if m.Module == "" {
 		return ErrInvalidModule
 	}
 	if m.Name == "" {

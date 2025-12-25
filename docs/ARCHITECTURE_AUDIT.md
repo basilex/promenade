@@ -648,7 +648,7 @@ Architecture supports:
 - Per-module license configuration
 - Dependency management (licensed module depends on free module)
 
-**Action:** ⏳ Implement license validation when commercial modules are ready.
+**Action:** **TODO** Implement license validation when commercial modules are ready.
 
 ---
 

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"path/filepath"
 
 	"github.com/basilex/promenade/internal/modules/audit/adapter/http/handler"
 	"github.com/basilex/promenade/internal/modules/audit/adapter/repository/postgres"
@@ -14,51 +13,19 @@ import (
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/license"
 	"github.com/basilex/promenade/pkg/module"
+	moduleconfig "github.com/basilex/promenade/pkg/module/config"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	"gopkg.in/yaml.v3"
-)
-
-const (
-	ModuleName = "audit"
-	Version    = "1.0.0"
 )
 
 // AuditModule represents the audit module
 type AuditModule struct {
-	config     *Config
+	config     *moduleconfig.Config // Use standard config like other modules
 	db         *sqlx.DB
 	handler    *handler.AuditEventHandler
 	useCase    usecase.IAuditEventUseCase
 	license    *license.License
 	licenseKey string
-}
-
-// Config holds audit module configuration
-type Config struct {
-	IModule struct {
-		Enabled         bool `yaml:"enabled"`
-		LicenseRequired bool `yaml:"license_required"`
-	} `yaml:"module"`
-	Audit struct {
-		SignatureSecret string `yaml:"signature_secret"`
-	} `yaml:"audit"`
-	License struct {
-		Key        string `yaml:"key"`
-		Validation struct {
-			CheckOnStartup bool `yaml:"check_on_startup"`
-			CheckOnRequest bool `yaml:"check_on_request"`
-		} `yaml:"validation"`
-		GracePeriodDays int `yaml:"grace_period_days"`
-	} `yaml:"license"`
-	Retention struct {
-		Enabled bool `yaml:"enabled"`
-		Days    int  `yaml:"days"`
-	} `yaml:"retention"`
-	Purge struct {
-		Enabled  bool   `yaml:"enabled"`
-		Schedule string `yaml:"schedule"`
-	} `yaml:"purge"`
 }
 
 // New creates a new audit module instance
@@ -69,24 +36,14 @@ func New() module.IModule {
 // Metadata returns module information
 func (m *AuditModule) Metadata() module.Metadata {
 	return module.Metadata{
-		Name:        ModuleName,
+		Name:        "audit",
 		DisplayName: "Audit Logging",
-		Version:     Version,
+		Version:     "1.0.0",
 		Description: "Immutable audit logging with cryptographic signatures",
 		Author:      "Promenade Team",
 		License:     "Commercial",
 		Tags:        []string{"audit", "compliance", "security"},
 	}
-}
-
-// Name returns module name
-func (m *AuditModule) Name() string {
-	return ModuleName
-}
-
-// Version returns module version
-func (m *AuditModule) Version() string {
-	return Version
 }
 
 // Dependencies returns module dependencies
@@ -96,18 +53,49 @@ func (m *AuditModule) Dependencies() []string {
 
 // Initialize initializes the audit module
 func (m *AuditModule) Initialize(ctx context.Context, core *module.Core) error {
+	slog.Info("Initializing audit module")
+
 	m.db = core.DB
 
-	if err := m.loadConfig(); err != nil {
+	// Load module's own configuration (standard approach like other modules)
+	cfg, err := moduleconfig.Load("internal/modules/audit/config", "promenade")
+	if err != nil {
+		slog.Warn("Failed to load audit module config, using defaults", "error", err)
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	if !m.config.IModule.Enabled {
+	m.config = cfg
+	slog.Info("Audit module config loaded",
+		"version", cfg.Module.Version,
+		"enabled", cfg.Module.Enabled,
+	)
+
+	// Check if module is enabled
+	if !m.config.Module.Enabled {
 		slog.Info("Audit module is disabled")
 		return nil
 	}
 
-	if m.config.IModule.LicenseRequired {
+	// Validate license if required
+	licenseRequired := false
+	if moduleSettings, ok := m.config.Settings["module"].(map[string]any); ok {
+		if req, ok := moduleSettings["license_required"].(bool); ok {
+			licenseRequired = req
+		}
+	}
+
+	if licenseRequired {
+		// Get license key from env or config
+		licenseKey := os.Getenv("AUDIT_LICENSE_KEY")
+		if licenseKey == "" {
+			if licenseConfig, ok := m.config.Settings["license"].(map[string]any); ok {
+				if key, ok := licenseConfig["key"].(string); ok {
+					licenseKey = key
+				}
+			}
+		}
+		m.licenseKey = licenseKey
+
 		if err := m.validateLicense(); err != nil {
 			return fmt.Errorf("license validation failed: %w", err)
 		}
@@ -117,34 +105,52 @@ func (m *AuditModule) Initialize(ctx context.Context, core *module.Core) error {
 			"days_until_expiry", m.license.DaysUntilExpiry())
 	}
 
+	// Get signature secret from env or config
 	secret := os.Getenv("AUDIT_SECRET")
 	if secret == "" {
-		secret = m.config.Audit.SignatureSecret
+		if audit, ok := m.config.Settings["audit"].(map[string]any); ok {
+			if s, ok := audit["signature_secret"].(string); ok {
+				secret = s
+			}
+		}
 	}
 	if secret == "" {
 		return fmt.Errorf("audit signature secret not configured")
 	}
 
+	// Initialize repository and use case
 	repo := postgres.NewAuditEventRepository(m.db)
 	m.useCase = usecase.NewAuditEventUseCase(repo, secret)
 	m.handler = handler.NewAuditEventHandler(m.useCase)
 
 	// Register purge handler if retention is enabled
-	if m.config.Retention.Enabled && m.config.Retention.Days > 0 {
-		if err := purge.RegisterPurgeHandlers(m.useCase, m.config.Retention.Days); err != nil {
-			slog.Warn("Failed to register audit purge handler", "error", err)
-		} else {
-			slog.Info("Audit purge handler registered", "retention_days", m.config.Retention.Days)
+	var retentionEnabled bool
+	var retentionDays int
+
+	if retention, ok := m.config.Settings["retention"].(map[string]any); ok {
+		if enabled, ok := retention["enabled"].(bool); ok {
+			retentionEnabled = enabled
+		}
+		if days, ok := retention["days"].(int); ok {
+			retentionDays = days
 		}
 	}
 
-	slog.Info("Audit module initialized", "version", Version)
+	if retentionEnabled && retentionDays > 0 {
+		if err := purge.RegisterPurgeHandlers(m.useCase, retentionDays); err != nil {
+			slog.Warn("Failed to register audit purge handler", "error", err)
+		} else {
+			slog.Info("Audit purge handler registered", "retention_days", retentionDays)
+		}
+	}
+
+	slog.Info("Audit module initialized successfully")
 	return nil
 }
 
 // RegisterRoutes registers HTTP routes
 func (m *AuditModule) RegisterRoutes(router *gin.RouterGroup) {
-	if !m.config.IModule.Enabled {
+	if !m.config.Module.Enabled {
 		return
 	}
 	m.registerRoutes(router)
@@ -181,14 +187,29 @@ func (m *AuditModule) Stop(ctx context.Context) error {
 
 // HealthCheck performs module health check
 func (m *AuditModule) HealthCheck(ctx context.Context) error {
-	if !m.config.IModule.Enabled {
+	if !m.config.Module.Enabled {
 		return nil
 	}
 
-	if m.config.IModule.LicenseRequired && m.license != nil {
+	// Check license expiry if required
+	licenseRequired := false
+	if moduleSettings, ok := m.config.Settings["module"].(map[string]any); ok {
+		if req, ok := moduleSettings["license_required"].(bool); ok {
+			licenseRequired = req
+		}
+	}
+
+	gracePeriodDays := 0
+	if licenseConfig, ok := m.config.Settings["license"].(map[string]any); ok {
+		if grace, ok := licenseConfig["grace_period_days"].(int); ok {
+			gracePeriodDays = grace
+		}
+	}
+
+	if licenseRequired && m.license != nil {
 		if m.license.IsExpired() {
 			daysExpired := -m.license.DaysUntilExpiry()
-			if daysExpired > m.config.License.GracePeriodDays {
+			if daysExpired > gracePeriodDays {
 				return fmt.Errorf("license expired %d days ago", daysExpired)
 			}
 		}
@@ -196,41 +217,6 @@ func (m *AuditModule) HealthCheck(ctx context.Context) error {
 
 	if err := m.db.PingContext(ctx); err != nil {
 		return fmt.Errorf("database health check failed: %w", err)
-	}
-
-	return nil
-}
-
-// loadConfig loads module configuration
-func (m *AuditModule) loadConfig() error {
-	env := os.Getenv("ENVIRONMENT")
-	if env == "" {
-		env = "development"
-	}
-
-	configPath := filepath.Join("internal", "modules", ModuleName, "config", fmt.Sprintf("config.%s.yaml", env))
-	if env == "development" {
-		configPath = filepath.Join("internal", "modules", ModuleName, "config", "config.dev.yaml")
-	} else if env == "test" {
-		configPath = filepath.Join("internal", "modules", ModuleName, "config", "config.test.yaml")
-	} else if env == "production" {
-		configPath = filepath.Join("internal", "modules", ModuleName, "config", "config.prod.yaml")
-	}
-
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	m.config = &Config{}
-	if err := yaml.Unmarshal(data, m.config); err != nil {
-		return fmt.Errorf("failed to parse config: %w", err)
-	}
-
-	if key := os.Getenv("AUDIT_LICENSE_KEY"); key != "" {
-		m.licenseKey = key
-	} else {
-		m.licenseKey = m.config.License.Key
 	}
 
 	return nil
@@ -252,7 +238,15 @@ func (m *AuditModule) validateLicense() error {
 		return fmt.Errorf("LICENSE_SECRET environment variable not set")
 	}
 
-	if err := lic.Validate(secret, ModuleName, m.config.License.GracePeriodDays); err != nil {
+	// Get grace period from config
+	gracePeriodDays := 0
+	if licenseConfig, ok := m.config.Settings["license"].(map[string]any); ok {
+		if grace, ok := licenseConfig["grace_period_days"].(int); ok {
+			gracePeriodDays = grace
+		}
+	}
+
+	if err := lic.Validate(secret, m.Metadata().Name, gracePeriodDays); err != nil {
 		return fmt.Errorf("license validation failed: %w", err)
 	}
 

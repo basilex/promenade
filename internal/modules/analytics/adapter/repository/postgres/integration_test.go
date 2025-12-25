@@ -24,7 +24,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 	t.Run("Store and GetByID", func(t *testing.T) {
 		metric := &entity.Metric{
 			ID:        uuidv7.New().String(),
-			IModule:    "posts",
+			Module:    "posts",
 			Scope:     entity.MetricScopePost,
 			ScopeID:   uuidv7.New().String(),
 			Name:      "post_views",
@@ -39,7 +39,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 
 		retrieved, err := repo.GetByID(ctx, metric.ID)
 		require.NoError(t, err)
-		assert.Equal(t, metric.IModule, retrieved.IModule)
+		assert.Equal(t, metric.Module, retrieved.Module)
 		assert.Equal(t, metric.Name, retrieved.Name)
 		assert.Equal(t, metric.Value, retrieved.Value)
 		assert.Equal(t, metric.Scope, retrieved.Scope)
@@ -50,7 +50,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 		for i := 0; i < 3; i++ {
 			metric := &entity.Metric{
 				ID:        uuidv7.New().String(),
-				IModule:    "profiles",
+				Module:    "profiles",
 				Scope:     entity.MetricScopeUser,
 				ScopeID:   uuidv7.New().String(),
 				Name:      "profile_updates",
@@ -73,7 +73,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 		for i := 0; i < 5; i++ {
 			metric := &entity.Metric{
 				ID:        uuidv7.New().String(),
-				IModule:    "analytics",
+				Module:    "analytics",
 				Scope:     entity.MetricScopeSystem,
 				ScopeID:   scopeID,
 				Name:      "api_calls",
@@ -95,7 +95,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 		oldTime := time.Now().Add(-72 * time.Hour)
 		oldMetric := &entity.Metric{
 			ID:        uuidv7.New().String(),
-			IModule:    "test",
+			Module:    "test",
 			Scope:     entity.MetricScopeSystem,
 			ScopeID:   "test",
 			Name:      "old_metric",
@@ -124,7 +124,7 @@ func TestMetricRepository_Integration(t *testing.T) {
 		for i := 0; i < 3; i++ {
 			metric := &entity.Metric{
 				ID:        uuidv7.New().String(),
-				IModule:    module,
+				Module:    module,
 				Scope:     entity.MetricScopeSystem,
 				ScopeID:   scopeID,
 				Name:      metricName,

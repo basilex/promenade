@@ -267,10 +267,10 @@ Ziel: **>80% Coverage** für kritische IModule (usecase, repository).
 ## Was kommt als Nächstes
 
 1. [+] Repository-Integrationstests - **FERTIG**
-2. ⏳ Use-Case-Unit-Tests mit Mocks
-3. ⏳ HTTP-Handler-Integrationstests
-4. ⏳ E2E-Tests für vollständige Flows
-5. ⏳ Performance-/Benchmark-Tests
+2. **TODO** Use-Case-Unit-Tests mit Mocks
+3. **TODO** HTTP-Handler-Integrationstests
+4. **TODO** E2E-Tests für vollständige Flows
+5. **TODO** Performance-/Benchmark-Tests
 
 ## Beispiele
 

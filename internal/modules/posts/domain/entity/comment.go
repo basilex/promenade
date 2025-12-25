@@ -56,8 +56,8 @@ func (c *Comment) Validate() error {
 		return fmt.Errorf("content is required")
 	}
 
-	if len(c.Content) < 1 {
-		return fmt.Errorf("content must be at least 1 character")
+	if len(c.Content) < 2 {
+		return fmt.Errorf("content must be at least 2 characters")
 	}
 
 	if len(c.Content) > 2000 {

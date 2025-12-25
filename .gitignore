@@ -47,6 +47,7 @@ temp/
 # Local settings
 .vscode/
 .idea/
+*.disabled
 *.code-workspace
 *.sublime-project
 *.sublime-workspace
