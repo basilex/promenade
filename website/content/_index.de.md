@@ -1,19 +1,19 @@
 ---
 title: "Production-Ready REST API Framework"
-description: "Gebaut mit Clean Architecture, modularem Plugin-System und namespace-basierten Datenbankmigrationen. Geschrieben in Go."
+description: "Enterprise-Backend-Framework auf Basis von Clean Architecture Prinzipien. Revolutionäres modulares Plugin-System, bei dem Geschäftslogik in unabhängigen, lizenzierbaren Modulen lebt. Keine gemeinsamen Domain-Entitäten, keine enge Kopplung - echte architektonische Autonomie."
 date: 2025-12-25
 features:
   - icon: "🏗️"
     title: "Clean Architecture"
-    description: "Strikte Schichtenarchitektur mit Domain-, Use Case-, Adapter- und Infrastructure-Schichten. Dependency Rule durchgesetzt."
+    description: "Strikte geschichtete Architektur mit Domain-, Use Case-, Adapter- und Infrastructure-Schichten. Abhängigkeitsregel durchgesetzt."
 
   - icon: "🧩"
     title: "Modulares System"
-    description: "Unabhängige Business-Module mit eigenen Entities, Repositories und Use Cases. Dynamisches Aktivieren/Deaktivieren von Modulen."
+    description: "Unabhängige Business-Module mit eigenen Entitäten, Repositories und Use Cases. Dynamisches Aktivieren/Deaktivieren von Modulen."
 
   - icon: "🗄️"
     title: "PostgreSQL + UUID v7"
-    description: "Zeitlich sortierte UUIDs für 2x schnellere Inserts. Reines SQL mit sqlx - kein ORM-Overhead. BaseRepository-Pattern."
+    description: "Zeitbasierte UUIDs für 2x schnellere Einfügungen. Reines SQL mit sqlx - kein ORM. BaseRepository-Pattern."
 
   - icon: "🔐"
     title: "Auth & RBAC"
@@ -25,11 +25,11 @@ features:
 
   - icon: "🔄"
     title: "Namespace-Migrationen"
-    description: "Jedes Modul hat eine unabhängige Migrationshistorie. Echte Modulautonomie ohne Schema-Konflikte."
+    description: "Jedes Modul hat unabhängige Migrationshistorie. Echte Modulautonomie ohne Schema-Konflikte."
 
   - icon: "✅"
     title: "400+ Tests"
-    description: "Umfassende Test-Suite mit Unit-, Integration- und Smoke-Tests. Manual-Mocks-Pattern für Testbarkeit."
+    description: "Umfassende Test-Suite mit Unit-, Integrations- und Smoke-Tests. Manuelle Mocks-Pattern für Testbarkeit."
 
   - icon: "📚"
     title: "20+ Dokumente"
@@ -37,61 +37,67 @@ features:
 
   - icon: "🚀"
     title: "Production-Ready"
-    description: "Wird in realen Anwendungen verwendet. Kommerzielle Module verfügbar (billing, audit, warehouse)."
+    description: "In realen Anwendungen eingesetzt. Kommerzielle Module verfügbar (billing, audit, warehouse)."
 ---
 
 ## Schnellstart
 
 ```bash
-# Repository klonen
 git clone https://github.com/basilex/promenade.git
 cd promenade
-
-# PostgreSQL + Redis starten
 make docker-up
-
-# Migrationen ausführen
 make migrate
-
-# Anwendung starten
 make dev
 ```
 
 Server startet auf **http://localhost:8081**
 
-## Hauptfunktionen
+---
 
-### Modulare Architektur
+## Promenade-Philosophie
 
-Promenade verwendet ein **Plugin-System**, bei dem jedes Modul ein vollständiger vertikaler Slice ist:
+**Promenade ist nicht nur ein weiteres Go-Framework** - es ist ein komplettes Umdenken, wie Backend-Anwendungen strukturiert werden sollten.
 
-- Eigene Domain-Entities
-- Eigene Repositories
-- Eigene Use Cases
-- Eigene HTTP-Handler
-- Eigene Datenbankmigrationen
+🎯 **Core als Orchestrator, Module als Worker** - Core bietet Infrastruktur ohne Geschäftslogik
 
-### Verfügbare Module
+🔌 **Echte Unabhängigkeit** - Module importieren nie aus `internal/domain`
 
-**Kostenlos:**
+📊 **Namespace-Migrationen** - Jedes Modul hat eigene Historie ohne Konflikte
 
-- **Posts** - Benutzergenerierte Inhalte (Posts, Kommentare, Likes)
-- **Profiles** - Benutzerprofile und Kontakte
-- **Analytics** - Metriken, Berichte, Dashboards
+⚡ **Performance** - UUID v7 sorgt für 2x schnellere Einfügungen
 
-**Kommerziell:**
-
-- **Billing** - Abonnementverwaltung, Rechnungen, Zahlungen
-- **Audit** - Unveränderliche Audit-Logs mit kryptografischen Signaturen
-- **Warehouse** - Bestandsverwaltung (demnächst)
-
-## Lernressourcen
-
-- [Architekturübersicht](/docs/ARCHITECTURE_OVERVIEW) - Visuelle Diagramme
-- [Modulentwicklung](/docs/MODULE_DEVELOPMENT) - Neue Module erstellen
-- [Test-Guide](/docs/TESTING_GUIDE) - Test-Strategien
-- [UUID v7 Guide](/docs/UUID_V7_GUIDE) - Zeitlich sortierte Identifikatoren
+🔐 **Sicherheit** - JWT, RBAC, Audit-Logs mit HMAC-Signaturen
 
 ---
 
-**Gebaut mit Clean Architecture und Go**
+## Warum Promenade Wählen?
+
+### Für Startups
+
+✅ Schnelle Markteinführung ✅ Kostenlose Module für MVP ✅ Einzelne Bereitstellung
+
+### Für Enterprise
+
+✅ Wartbarkeit ✅ Auditierbarkeit (SOC 2, GDPR) ✅ Skalierbarkeit
+
+### Für Teams
+
+✅ Keine Migrationskonflikte ✅ Klare Modulgrenzen ✅ Mehrsprachige Docs
+
+### Für Entwickler
+
+✅ Best Practices ✅ Business-Fokus ✅ Fertige Muster
+
+---
+
+## Dokumentation
+
+📖 [Architektur-Überblick](/promenade/de/docs/architecture/) | [DB-Schema](/promenade/de/docs/database-schema/) | [Modul-Entwicklung](/promenade/de/docs/module-development/)
+
+🌐 EN/UK/DE | 📝 [Swagger API](/api/v1/docs/swagger/index.html)
+
+---
+
+**Erstellt mit ❤️ unter Verwendung von Clean Architecture und Go**
+
+[Erste Schritte](/promenade/de/docs/getting-started/) | [Features](/promenade/de/features/) | [GitHub](https://github.com/basilex/promenade)
