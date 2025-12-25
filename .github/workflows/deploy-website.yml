@@ -63,7 +63,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
+            --baseURL "https://basilex.github.io/promenade/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
