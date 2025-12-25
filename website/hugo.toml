@@ -1,7 +1,6 @@
 baseURL = 'https://basilex.github.io/promenade/'  # Change to promenade.com.ua when DNS configured
 languageCode = 'en-us'
 title = 'Promenade - Production-Ready REST API Framework'
-theme = ''
 
 # Enable Git info for last modified dates
 enableGitInfo = true
