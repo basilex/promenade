@@ -253,44 +253,47 @@ import (
 
 ## Правила Системи Очищення
 
-### СТАРИЙ СПОСІБ (Core знає про сутності)
+Система очищення використовує **архітектуру на основі реєстрів**, де Core оркеструє, а Модулі визначають політики зберігання.
 
-```go
-//  НЕПРАВИЛЬНО - Core має конфігурацію для конкретних сутностей
-type PurgeConfig struct {
-    RetentionDaysUserPosts    int
-    RetentionDaysPostComments int
-}
-```
+### Конфігурація Core
 
-### НОВИЙ СПОСІБ (Core тільки оркеструє)
-
-**Конфігурація Core:**
+**Файл:** `config/app.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   enabled: true
-  schedule: "0 2 * * *"
+  schedule: "0 2 * * *" # Щодня о 2:00 ночі
   batch_size: 1000
 ```
 
-**Конфігурація Модуля:**
+Core визначає **тільки налаштування інфраструктури**: коли запускати, розмір пакету.
+
+### Конфігурація Модуля
+
+**Файл:** `internal/modules/{name}/config/config.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   user_posts:
     retention_days: 90
     enabled: true
+  post_comments:
+    retention_days: 60
+    enabled: true
 ```
 
-**Реєстрація Модуля:**
+Модулі визначають **політики зберігання для конкретних сутностей**.
+
+### Реєстрація Модуля
+
+Кожен модуль реєструє свої обробники очищення та політики:
 
 ```go
-// Модуль реєструє обробник
+// Реєстрація обробника очищення
 handler := purge.NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 
-// Модуль реєструє політику
+// Реєстрація політики зберігання
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -299,7 +302,9 @@ policy := purge.RetentionPolicy{
 purge.DefaultPolicyRegistry.RegisterPolicy(policy)
 ```
 
-**Оркестрація Core:**
+### Оркестрація Core
+
+Core збирає всі політики та запускає завдання очищення:
 
 ```go
 // Core отримує ВСІ політики з реєстру
@@ -307,8 +312,8 @@ policies := purge.DefaultPolicyRegistry.GetAllPolicies()
 
 // Core створює сценарій використання
 useCase := usecase.NewPurgeUseCase(
-    purge.DefaultRegistry,  // обробники
-    policies,               // з модулів
+    purge.DefaultRegistry,  // обробники з модулів
+    policies,               // політики з модулів
     batchSize,
     eventBus,
 )
@@ -317,7 +322,7 @@ useCase := usecase.NewPurgeUseCase(
 scheduler.Start(ctx)
 ```
 
-**Результат:** Core нічого не знає про `user_posts` або дні зберігання!
+**Результат:** Core нічого не знає про конкретні сутності (`user_posts`, `post_comments`) або їх періоди зберігання. Це справжня незалежність модулів!
 
 ---
 

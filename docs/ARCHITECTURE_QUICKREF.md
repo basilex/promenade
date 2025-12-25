@@ -251,44 +251,47 @@ import (
 
 ## Purge System Rules
 
-### OLD WAY (Core knows entities)
+Purge system uses **registry-based architecture** where Core orchestrates and Modules define retention policies.
 
-```go
-//  WRONG - Core has entity-specific config
-type PurgeConfig struct {
-    RetentionDaysUserPosts    int
-    RetentionDaysPostComments int
-}
-```
+### Core Configuration
 
-### NEW WAY (Core orchestrates only)
-
-**Core Config:**
+**File:** `config/app.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   enabled: true
-  schedule: "0 2 * * *"
+  schedule: "0 2 * * *" # Daily at 2 AM
   batch_size: 1000
 ```
 
-**Module Config:**
+Core defines **only infrastructure settings**: when to run, batch size.
+
+### Module Configuration
+
+**File:** `internal/modules/{name}/config/config.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   user_posts:
     retention_days: 90
     enabled: true
+  post_comments:
+    retention_days: 60
+    enabled: true
 ```
 
-**Module Registration:**
+Modules define **entity-specific retention policies**.
+
+### Module Registration
+
+Each module registers its purge handlers and policies:
 
 ```go
-// Module registers handler
+// Register purge handler
 handler := purge.NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 
-// Module registers policy
+// Register retention policy
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -297,7 +300,9 @@ policy := purge.RetentionPolicy{
 purge.DefaultPolicyRegistry.RegisterPolicy(policy)
 ```
 
-**Core Orchestration:**
+### Core Orchestration
+
+Core collects all policies and runs purge jobs:
 
 ```go
 // Core gets ALL policies from registry
@@ -305,8 +310,8 @@ policies := purge.DefaultPolicyRegistry.GetAllPolicies()
 
 // Core creates use case
 useCase := usecase.NewPurgeUseCase(
-    purge.DefaultRegistry,  // handlers
-    policies,               // from modules
+    purge.DefaultRegistry,  // handlers from modules
+    policies,               // policies from modules
     batchSize,
     eventBus,
 )
@@ -315,7 +320,7 @@ useCase := usecase.NewPurgeUseCase(
 scheduler.Start(ctx)
 ```
 
-**Result:** Core knows nothing about `user_posts` or retention days!
+**Result:** Core knows nothing about specific entities (`user_posts`, `post_comments`) or their retention periods. This is true module independence!
 
 ---
 

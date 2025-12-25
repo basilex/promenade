@@ -253,44 +253,47 @@ import (
 
 ## Purge-System-Regeln
 
-### ALTER WEG (Core kennt Entitäten)
+Das Purge-System verwendet eine **registry-basierte Architektur**, bei der Core orchestriert und Module Aufbewahrungsrichtlinien definieren.
 
-```go
-//  FALSCH - Core hat entitätsspezifische Config
-type PurgeConfig struct {
-    RetentionDaysUserPosts    int
-    RetentionDaysPostComments int
-}
-```
+### Core-Konfiguration
 
-### NEUER WEG (Core orchestriert nur)
-
-**Core-Config:**
+**Datei:** `config/app.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   enabled: true
-  schedule: "0 2 * * *"
+  schedule: "0 2 * * *" # Täglich um 2 Uhr morgens
   batch_size: 1000
 ```
 
-**Modul-Config:**
+Core definiert **nur Infrastruktur-Einstellungen**: wann ausgeführt wird, Batch-Größe.
+
+### Modul-Konfiguration
+
+**Datei:** `internal/modules/{name}/config/config.{dev|test|prod}.yaml`
 
 ```yaml
 purge:
   user_posts:
     retention_days: 90
     enabled: true
+  post_comments:
+    retention_days: 60
+    enabled: true
 ```
 
-**Modul-Registrierung:**
+Module definieren **entitätsspezifische Aufbewahrungsrichtlinien**.
+
+### Modul-Registrierung
+
+Jedes Modul registriert seine Purge-Handler und Richtlinien:
 
 ```go
-// Modul registriert Handler
+// Purge-Handler registrieren
 handler := purge.NewPostPurgeHandler(db)
 purge.DefaultRegistry.Register(handler)
 
-// Modul registriert Policy
+// Aufbewahrungsrichtlinie registrieren
 policy := purge.RetentionPolicy{
     EntityName:    "user_posts",
     RetentionDays: 90,
@@ -299,16 +302,18 @@ policy := purge.RetentionPolicy{
 purge.DefaultPolicyRegistry.RegisterPolicy(policy)
 ```
 
-**Core-Orchestrierung:**
+### Core-Orchestrierung
+
+Core sammelt alle Richtlinien und führt Purge-Jobs aus:
 
 ```go
-// Core holt ALLE Policies aus der Registry
+// Core holt ALLE Richtlinien aus der Registry
 policies := purge.DefaultPolicyRegistry.GetAllPolicies()
 
 // Core erstellt Use Case
 useCase := usecase.NewPurgeUseCase(
-    purge.DefaultRegistry,  // Handler
-    policies,               // von Modulen
+    purge.DefaultRegistry,  // Handler aus Modulen
+    policies,               // Richtlinien aus Modulen
     batchSize,
     eventBus,
 )
@@ -317,7 +322,7 @@ useCase := usecase.NewPurgeUseCase(
 scheduler.Start(ctx)
 ```
 
-**Ergebnis:** Core weiß nichts über `user_posts` oder Aufbewahrungstage!
+**Ergebnis:** Core weiß nichts über spezifische Entitäten (`user_posts`, `post_comments`) oder deren Aufbewahrungsfristen. Das ist echte Modul-Unabhängigkeit!
 
 ---
 
