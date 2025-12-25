@@ -10,14 +10,13 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/basilex/promenade/internal/modules/profiles/entity"
-	"github.com/basilex/promenade/internal/modules/profiles/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 //  IModule-independent test: imports only module and pkg, no core dependencies
 
 func TestCreateContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -64,7 +63,7 @@ func TestCreateContact(t *testing.T) {
 }
 
 func TestGetContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -131,7 +130,7 @@ func TestGetContact(t *testing.T) {
 }
 
 func TestGetUserContacts(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -166,7 +165,7 @@ func TestGetUserContacts(t *testing.T) {
 }
 
 func TestGetUserContactsByType(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -213,7 +212,7 @@ func TestGetUserContactsByType(t *testing.T) {
 }
 
 func TestGetPrimaryContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -276,7 +275,7 @@ func TestGetPrimaryContact(t *testing.T) {
 }
 
 func TestUpdateContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -347,7 +346,7 @@ func TestUpdateContact(t *testing.T) {
 }
 
 func TestDeleteContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -394,7 +393,7 @@ func TestDeleteContact(t *testing.T) {
 }
 
 func TestSetPrimaryContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -443,7 +442,7 @@ func TestSetPrimaryContact(t *testing.T) {
 }
 
 func TestVerifyContact(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -470,7 +469,7 @@ func TestVerifyContact(t *testing.T) {
 }
 
 func TestToggleContactActive(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	contactID := uuidv7.New()
@@ -537,7 +536,7 @@ func TestToggleContactActive(t *testing.T) {
 }
 
 func TestGetPublicContacts(t *testing.T) {
-	mockRepo := new(mocks.MockIUserContactRepository)
+	mockRepo := new(mockUserContactRepository)
 	uc := NewUserContactUseCase(mockRepo)
 
 	userID := uuidv7.New()

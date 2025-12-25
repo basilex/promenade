@@ -25,7 +25,12 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 - **CRITICAL**: Modules MUST NOT import `internal/domain|usecase|adapter`. Only `pkg/*` allowed.
 - Self-contained: entity → repo → usecase → handler → routes
 - Auto-register via `init()` in `register.go`, import in [cmd/api/main.go](../cmd/api/main.go)
-- Examples: `posts` (posts+comments+likes), `profiles`, `analytics` (free), `audit` (commercial)
+- Examples:
+  - `posts` (posts+comments+likes) - Free
+  - `profiles` (user profiles+contacts) - Free
+  - `analytics` (metrics+reports+dashboards) - Free
+  - `audit` (immutable audit logs) - Commercial
+  - `billing` (subscriptions+invoices+payments) - Commercial, production-ready
 
 **Core orchestrates, modules execute**. Core knows WHEN to call modules, not HOW they work.
 
@@ -81,12 +86,6 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*entity.User, 
 **API**:
 
 - `make swagger-all` - Generate v1 + v2 API docs (run after handler/DTO changes)
-
-**Mocks** (for testing):
-
-- `make mocks` - Generate all mocks for all modules (uses .mockery.yaml)
-- `make mocks-posts` / `make mocks-profiles` / `make mocks-analytics` - Generate module-specific mocks
-- Mock files generated in `{module}/domain/repository/mocks/` or `{module}/usecase/mocks/`
 
 ## API & HTTP Patterns
 
@@ -229,6 +228,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
        - profiles
        - analytics # Free
        - audit # Commercial (requires license)
+       - billing # Commercial (requires license)
        - mymodule # Add here
    ```
 6. **Migrations**: `make migrate-create MODULE=mymodule NAME=init`
@@ -262,6 +262,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
   - Posts module (33 tests, 83.3% coverage) - PostStatus, UserPost lifecycle, validation, slug generation
   - Profiles module (21 tests, 80.4% coverage) - UserContact, UserProfile, privacy, validation
   - Analytics module (11 tests) - Metric validation, MetricAggregate, usecase operations
+  - Billing module (375 tests, 100% coverage) - Plan, Subscription, Invoice, Payment entities + all use cases
 - **Utilities Tests** (51 tests, 89.5% avg) - response (100%), validator (80%), logger (83.8%), pagination (94.1%)
 
 **Test Execution** (~20 seconds total):
@@ -273,6 +274,7 @@ make test-modules              # All module tests
 make test-module-posts         # Posts module (33 tests)
 make test-module-profiles      # Profiles module (21 tests)
 make test-module-analytics     # Analytics module (11 tests)
+make test-module-billing       # Billing module (375 tests)
 make test-coverage             # HTML coverage report
 ```
 
@@ -487,6 +489,7 @@ pageSize := response.GetPageSizeFromQuery(c) //Default: 20, max: 100
 - Examples:
   - `analytics` module (metrics, reports, dashboards) - **FREE** (no license required)
   - `audit` module (immutable audit logs, signatures) - **COMMERCIAL** (requires license)
+  - `billing` module (subscriptions, invoices, payments) - **COMMERCIAL** (requires license)
 
 ## Code Consistency Standards
 
@@ -802,7 +805,7 @@ import (
 - [ ] Unit tests for usecase business logic
 - [ ] Integration tests for repository methods
 - [ ] Test file: `{filename}_test.go` in same directory
-- [ ] Mocks generated: `make mocks` (check `mocks/` directory exists)
+- [ ] Manual mocks created in `mocks_test.go` if needed (inline structs)
 
 **Red Flags** (автоматично reject):
 

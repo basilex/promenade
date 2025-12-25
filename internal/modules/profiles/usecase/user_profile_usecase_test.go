@@ -9,14 +9,13 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/basilex/promenade/internal/modules/profiles/entity"
-	"github.com/basilex/promenade/internal/modules/profiles/repository/mocks"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 //  IModule-independent test: imports only module and pkg, no core dependencies
 
 func TestCreateProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -77,7 +76,7 @@ func TestCreateProfile(t *testing.T) {
 }
 
 func TestGetProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -145,7 +144,7 @@ func TestGetProfile(t *testing.T) {
 }
 
 func TestGetProfileByUserID(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	userID := uuidv7.New()
@@ -180,7 +179,7 @@ func TestGetProfileByUserID(t *testing.T) {
 }
 
 func TestGetProfileByNickname(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	nickname := "testuser"
@@ -216,7 +215,7 @@ func TestGetProfileByNickname(t *testing.T) {
 }
 
 func TestUpdateProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -307,7 +306,7 @@ func TestUpdateProfile(t *testing.T) {
 }
 
 func TestDeleteProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -354,7 +353,7 @@ func TestDeleteProfile(t *testing.T) {
 }
 
 func TestListProfiles(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	t.Run("success - public only", func(t *testing.T) {
@@ -388,7 +387,7 @@ func TestListProfiles(t *testing.T) {
 }
 
 func TestSearchProfiles(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	query := "test"
@@ -408,7 +407,7 @@ func TestSearchProfiles(t *testing.T) {
 }
 
 func TestIncrementViews(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -453,7 +452,7 @@ func TestIncrementViews(t *testing.T) {
 }
 
 func TestBanProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -482,7 +481,7 @@ func TestBanProfile(t *testing.T) {
 }
 
 func TestUnbanProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -498,7 +497,7 @@ func TestUnbanProfile(t *testing.T) {
 }
 
 func TestVerifyProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()
@@ -514,7 +513,7 @@ func TestVerifyProfile(t *testing.T) {
 }
 
 func TestUnverifyProfile(t *testing.T) {
-	mockRepo := new(mocks.MockIUserProfileRepository)
+	mockRepo := new(mockUserProfileRepository)
 	uc := NewUserProfileUseCase(mockRepo)
 
 	profileID := uuidv7.New()

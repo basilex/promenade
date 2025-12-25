@@ -171,7 +171,8 @@ func (uc *authUseCase) Login(ctx context.Context, email, password, userAgent, ip
 			return "", "", nil, fmt.Errorf("failed to get oldest session: %w", err)
 		}
 		if oldestSession != nil {
-			if err := uc.sessionRepo.Delete(ctx, oldestSession.ID); err != nil {
+			// Try to delete oldest session, ignore if already deleted (race condition with concurrent logins)
+			if err := uc.sessionRepo.Delete(ctx, oldestSession.ID); err != nil && !errors.Is(err, entity.ErrNotFound) {
 				return "", "", nil, fmt.Errorf("failed to delete oldest session: %w", err)
 			}
 		}

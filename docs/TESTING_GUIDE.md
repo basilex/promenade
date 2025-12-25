@@ -110,16 +110,36 @@ Located alongside code: `internal/usecase/*_test.go`
 Example:
 
 ```go
+// Manual inline mock
+type mockUserRepository struct {
+    mock.Mock
+}
+
+func (m *mockUserRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+    args := m.Called(ctx, email)
+    if args.Get(0) == nil {
+        return nil, args.Error(1)
+    }
+    return args.Get(0).(*entity.User), args.Error(1)
+}
+
+func (m *mockUserRepository) Create(ctx context.Context, user *entity.User) error {
+    args := m.Called(ctx, user)
+    return args.Error(0)
+}
+
 func TestAuthUseCase_Register(t *testing.T) {
-    mockUserRepo := mocks.NewMockUserRepository(t)
+    mockUserRepo := new(mockUserRepository)
     uc := usecase.NewAuthUseCase(mockUserRepo, nil, jwtManager, eventBus)
 
-    mockUserRepo.EXPECT().GetByEmail(mock.Anything, "new@example.com").Return(nil, entity.ErrNotFound)
-    mockUserRepo.EXPECT().Create(mock.Anything, mock.Anything).Return(nil)
+    mockUserRepo.On("GetByEmail", mock.Anything, "new@example.com").Return(nil, entity.ErrNotFound)
+    mockUserRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
 
     user, err := uc.Register(ctx, "new@example.com", "John Doe", "password123")
     require.NoError(t, err)
     assert.Equal(t, "new@example.com", user.Email)
+
+    mockUserRepo.AssertExpectations(t)
 }
 ```
 
@@ -375,10 +395,10 @@ Goal: **>80% coverage** for critical modules (usecase, repository).
 ## What's Next
 
 1. [+] Repository integration tests - **DONE**
-2. **TODO** Use case unit tests with mocks
+2. [+] Use case unit tests with manual mocks - **DONE**
 3. **TODO** HTTP handler integration tests
-4. **Smoke Tests** (5 scenarios) - Black-box end-to-end tests
-5. **Stress Tests** (wrk-based) - Performance and load testing
+4. [+] **Smoke Tests** (5 scenarios) - Black-box end-to-end tests - **DONE**
+5. [+] **Stress Tests** (wrk-based) - Performance and load testing - **DONE**
 
 ---
 
