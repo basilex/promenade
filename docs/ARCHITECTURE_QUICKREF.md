@@ -44,7 +44,7 @@
    - _Stable, rarely-changing data shared across modules_
 
 4. **Management Interfaces**
-   - IModule registry
+   - Module registry
    - Purge handler registry
    - Purge policy registry
    - Event bus interface
@@ -64,11 +64,11 @@
 
 ## What Goes in Modules?
 
-### IModule Structure
+### Module Structure
 
 ```
 internal/modules/mymodule/
-├── module.go              # IModule implementation
+├── module.go              # Module implementation
 ├── register.go            # Auto-registration via init()
 ├── config/                # Own YAML configs per environment
 │   ├── config.dev.yaml
@@ -82,7 +82,7 @@ internal/modules/mymodule/
     └── purge/             # Purge handlers (if needed)
 ```
 
-### IModule Checklist
+### Module Checklist
 
 - [ ] Has own entity/usecase/adapter structure
 - [ ] Loads own config from `config/config.*.yaml`
@@ -94,15 +94,15 @@ internal/modules/mymodule/
 
 ---
 
-## IModule Development Workflow
+## Module Development Workflow
 
-### 1. Create IModule
+### 1. Create Module
 
 ```bash
 mkdir -p internal/modules/mymodule/{config,entity,usecase,adapter/http/handler}
 ```
 
-### 2. Implement IModule Interface
+### 2. Implement Module Interface
 
 ```go
 // internal/modules/mymodule/module.go
@@ -120,7 +120,7 @@ func New() module.IModule {
     return &MyModule{
         BaseModule: module.NewBaseModule(module.Metadata{
             Name:        "mymodule",
-            DisplayName: "My IModule",
+            DisplayName: "My Module",
             Version:     "1.0.0",
             Description: "Does something useful",
         }),
@@ -231,7 +231,7 @@ import (
 **Does NOT contain:**
 
 - Entity-specific retention days → Modules
-- IModule-specific settings → Modules
+- Module-specific settings → Modules
 - Business logic configuration → Modules
 
 ### Module Configuration
@@ -240,8 +240,8 @@ import (
 
 **Contains:**
 
-- IModule metadata (name, version)
-- IModule-specific settings
+- Module metadata (name, version)
+- Module-specific settings
 - Purge retention policies (if applicable)
 - Feature flags (if applicable)
 
@@ -272,7 +272,7 @@ purge:
   batch_size: 1000
 ```
 
-**IModule Config:**
+**Module Config:**
 
 ```yaml
 purge:
@@ -281,7 +281,7 @@ purge:
     enabled: true
 ```
 
-**IModule Registration:**
+**Module Registration:**
 
 ```go
 // Module registers handler
@@ -324,11 +324,11 @@ scheduler.Start(ctx)
 ### Event-Driven (Preferred)
 
 ```go
-// IModule A publishes
+// Module A publishes
 event := &PostCreatedEvent{PostID: id}
 eventBus.Publish(ctx, "post.created", event)
 
-// IModule B subscribes
+// Module B subscribes
 eventBus.Subscribe("post.created", func(e bus.Event) {
     // Handle async
 })
@@ -381,7 +381,7 @@ const maxCommentLength = 2000
 
 **Fix:** Move to module's `usecase/` package.
 
-### Core Knowing About IModule Entities
+### Core Knowing About Module Entities
 
 ```go
 //  WRONG - Core has retention days for posts
@@ -443,7 +443,7 @@ make migrate-create NAME=add_my_table
 
 ---
 
-## Decision Tree: Core or IModule?
+## Decision Tree: Core or Module?
 
 ```
 Is it infrastructure (DB, logger, event bus)?
@@ -477,7 +477,7 @@ When in doubt?
 
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - Detailed architecture review
 - [ARCHITECTURE_OVERVIEW.md](ARCHITECTURE_OVERVIEW.md) - Visual architecture
-- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - IModule development guide
+- [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Module development guide
 - [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Independence principles
 - [PURGE_ARCHITECTURE.md](PURGE_ARCHITECTURE.md) - Purge system details
 - [internal/CORE.md](../internal/CORE.md) - Core components documentation
