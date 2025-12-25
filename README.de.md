@@ -27,12 +27,13 @@ Promenade folgt einer **strikten Schichtenarchitektur**, bei der der **Core orch
 
 **Modul-Schicht** - Unabhängige Vertikale Slices (Domänen)
 
-| Modul         | Entitäten                        | Beschreibung                        | Status   |
-| ------------- | -------------------------------- | ----------------------------------- | -------- |
-| Posts         | posts, comments, likes           | Benutzergenerierte Inhalte          | Frei     |
-| Profiles      | contacts, profiles               | Benutzerprofile                     | Frei     |
-| **Analytics** | **metrics, reports, dashboards** | **Analytics und Berichterstattung** | **Frei** |
-| Warehouse     | products, inventory              | Lagerverwaltung (zukünftig)         | Geplant  |
+| Modul         | Entitäten                          | Beschreibung                        | Status          |
+| ------------- | ---------------------------------- | ----------------------------------- | --------------- |
+| Posts         | posts, comments, likes             | Benutzergenerierte Inhalte          | Frei            |
+| Profiles      | contacts, profiles                 | Benutzerprofile                     | Frei            |
+| **Analytics** | **metrics, reports, dashboards**   | **Analytics und Berichterstattung** | **Frei**        |
+| **Billing**   | **plans, subscriptions, invoices** | **Abonnement-Abrechnungssystem**    | **Kommerziell** |
+| Warehouse     | products, inventory                | Lagerverwaltung (zukünftig)         | Geplant         |
 
 Jedes Modul ist eigenständig mit:
 
@@ -208,12 +209,34 @@ Analytics, Metriken und Berichterstattung:
 - **Migrationen**: 1 Migration (Namespace: `analytics`)
 - **Anwendungsfall**: Business Intelligence, Performance-Monitoring, Dateneinblicke
 
+**Vollständige Dokumentation**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
+
+#### **Billing-Modul** (`internal/modules/billing`) - Kommerziell
+
+Abonnement-Abrechnung und Zahlungsabwicklung:
+
+- **Status**: Kommerziell - Produktionsreifes Abonnementverwaltungssystem
+- **Entitäten**: Pläne, Abonnements, Rechnungen, Zahlungen
+- **Features**:
+  - Flexible Abrechnungspläne mit Testphasen
+  - Abonnement-Lebenszyklus-Verwaltung (aktiv, pausiert, gekündigt)
+  - Automatische Rechnungserstellung
+  - Zahlungsverfolgung und -abgleich
+  - Mehrere Abrechnungsintervalle (monatlich, vierteljährlich, jährlich)
+- **Migrationen**: 4 Migrationen (Namespace: `billing`)
+- **Testing**: 375 umfassende Tests (100% Entity + Usecase-Abdeckung)
+- **Anwendungsfall**: SaaS-Plattformen, Abonnement-Dienste, wiederkehrende Abrechnung
+
+**Vollständige Dokumentation**: [internal/modules/billing/README.md](internal/modules/billing/README.md)
+
 #### **Warehouse-Modul** (`internal/modules/warehouse`) - Zukünftiges Modul
 
 Lager- und Produktverwaltung (geplant):
 
 - **Status**: Geplant - Struktur existiert als Platzhalter, noch nicht implementiert
 - **Anwendungsfall**: E-Commerce, Lagersysteme, Einzelhandel
+
+**Geplante Dokumentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
 
 ### Modulstruktur
 

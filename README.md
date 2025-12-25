@@ -17,20 +17,21 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 **Core Layer** - Orchestrator + Infrastructure + Shared Services
 
 - Authentication & Authorization (RBAC)
-- Event IBus (Memory/Redis)
+- Event Bus (Memory/Redis)
 - Database & Transactions
 - Logging & Configuration
-- IModule Registry & Lifecycle
+- Module Registry & Lifecycle
 - Reference Data (countries, currencies, regions, cities, timezones, languages, payment methods)
 
-**IModule Layer** - Independent Vertical Slices (Domain Areas)
+**Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| IModule       | Entities                         | Description                   | Status   |
-| ------------- | -------------------------------- | ----------------------------- | -------- |
-| Posts         | posts, comments, likes           | User-generated content        | Free     |
-| Profiles      | contacts, profiles               | User profiles                 | Free     |
-| **Analytics** | **metrics, reports, dashboards** | **Analytics and reporting**   | **Free** |
-| Warehouse     | products, inventory              | Inventory management (future) | Planned  |
+| Module        | Entities                           | Description                     | Status         |
+| ------------- | ---------------------------------- | ------------------------------- | -------------- |
+| Posts         | posts, comments, likes             | User-generated content          | Free           |
+| Profiles      | contacts, profiles                 | User profiles                   | Free           |
+| **Analytics** | **metrics, reports, dashboards**   | **Analytics and reporting**     | **Free**       |
+| **Billing**   | **plans, subscriptions, invoices** | **Subscription billing system** | **Commercial** |
+| Warehouse     | products, inventory                | Inventory management (future)   | Planned        |
 
 Each module is self-contained with:
 
@@ -142,14 +143,14 @@ Server starts on **http://localhost:8081**
 | **[docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**       | Architecture compliance audit, verification checklist           |
 | **[internal/CORE.md](internal/CORE.md)**                           | Core responsibilities and boundaries                            |
 
-### IModule System
+### Module System
 
-| Document                                                                     | Description                                      |
-| ---------------------------------------------------------------------------- | ------------------------------------------------ |
-| **[internal/modules/README.md](internal/modules/README.md)**                 | IModule system overview, structure, registration |
-| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Creating new modules, best practices             |
-| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | IModule autonomy rules, dependency management    |
-| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | IModule configuration system                     |
+| Document                                                                     | Description                                     |
+| ---------------------------------------------------------------------------- | ----------------------------------------------- |
+| **[internal/modules/README.md](internal/modules/README.md)**                 | Module system overview, structure, registration |
+| **[docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)**                 | Creating new modules, best practices            |
+| **[docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)**               | Module autonomy rules, dependency management    |
+| **[docs/MODULE_CONFIG_ARCHITECTURE.md](docs/MODULE_CONFIG_ARCHITECTURE.md)** | Module configuration system                     |
 
 ### Infrastructure & Systems
 
@@ -184,11 +185,11 @@ Server starts on **http://localhost:8081**
 
 ---
 
-## IModule System
+## Module System
 
 ### Available Modules
 
-#### **Posts IModule** (`internal/modules/posts`)
+#### **Posts Module** (`internal/modules/posts`)
 
 User-generated content management:
 
@@ -199,7 +200,7 @@ User-generated content management:
 
 **Full documentation**: [internal/modules/posts/README.md](internal/modules/posts/README.md)
 
-#### **Profiles IModule** (`internal/modules/profiles`)
+#### **Profiles Module** (`internal/modules/profiles`)
 
 User profile and contact management:
 
@@ -210,7 +211,7 @@ User profile and contact management:
 
 **Full documentation**: [internal/modules/profiles/README.md](internal/modules/profiles/README.md)
 
-#### **Analytics IModule** (`internal/modules/analytics`) - Free
+#### **Analytics Module** (`internal/modules/analytics`) - Free
 
 Analytics, metrics, and reporting:
 
@@ -222,7 +223,25 @@ Analytics, metrics, and reporting:
 
 **Full documentation**: [internal/modules/analytics/README.md](internal/modules/analytics/README.md)
 
-#### **Warehouse IModule** (`internal/modules/warehouse`) - Future IModule
+#### **Billing Module** (`internal/modules/billing`) - Commercial
+
+Subscription billing and payment processing:
+
+- **Status**: Commercial - Production-ready subscription management system
+- **Entities**: Plans, Subscriptions, Invoices, Payments
+- **Features**:
+  - Flexible billing plans with trial periods
+  - Subscription lifecycle management (active, paused, cancelled)
+  - Automated invoice generation
+  - Payment tracking and reconciliation
+  - Multiple billing intervals (monthly, quarterly, annual)
+- **Migrations**: 4 migrations (namespace: `billing`)
+- **Testing**: 375 comprehensive tests (100% entity + usecase coverage)
+- **Use Case**: SaaS platforms, subscription services, recurring billing
+
+**Full documentation**: [internal/modules/billing/README.md](internal/modules/billing/README.md)
+
+#### **Warehouse Module** (`internal/modules/warehouse`) - Future Module
 
 Inventory and product management (planned):
 
@@ -231,20 +250,20 @@ Inventory and product management (planned):
 
 **Planned documentation**: [internal/modules/warehouse/README.md](internal/modules/warehouse/README.md)
 
-### IModule Structure
+### Module Structure
 
 Each module follows a consistent structure:
 
 ```
 internal/modules/{module}/
-├── module.go           # IModule registration & lifecycle
+├── module.go           # Module registration & lifecycle
 ├── domain/
 │   └── entity/         # Domain entities
 ├── repository/         # Data access interfaces & implementations
 ├── usecase/            # Business logic
 ├── adapter/
 │   └── handler/        # HTTP handlers & DTOs
-└── README.md           # IModule-specific documentation
+└── README.md           # Module-specific documentation
 ```
 
 ### Enabling/Disabling Modules
@@ -639,7 +658,7 @@ promenade/
 │   ├── jwt/                    # JWT manager
 │   ├── logger/                 # Structured logger
 │   ├── migration/              # Migration manager
-│   ├── module/                 # IModule registry
+│   ├── module/                 # Module registry
 │   ├── purge/                  # Purge registry
 │   ├── response/               # HTTP response helpers
 │   ├── uuidv7/                 # UUID v7 generator
@@ -657,7 +676,7 @@ promenade/
 │   ├── app.dev.yaml            # Dev environment config
 │   ├── app.test.yaml           # Test environment config
 │   ├── app.prod.yaml           # Production config
-│   └── modules.yaml            # IModule enable/disable + settings
+│   └── modules.yaml            # Module enable/disable + settings
 ├── docs/                       # Documentation
 ├── scripts/                    # Helper scripts
 ├── templates/                  # Email templates
@@ -673,7 +692,7 @@ promenade/
 Config priority (YAML first, `.env` fallback):
 
 1. `config/app.{dev|test|prod}.yaml` - Core infrastructure settings
-2. `config/modules.yaml` - IModule enable/disable + module-specific settings
+2. `config/modules.yaml` - Module enable/disable + module-specific settings
 3. `.env.{env}.local` / `.env.{env}` / `.env` - Legacy support
 
 ### Example: `config/app.dev.yaml`
@@ -740,13 +759,13 @@ modules:
 
 ## Creating New Modules
 
-### Step 1: Create IModule Structure
+### Step 1: Create Module Structure
 
 ```bash
 mkdir -p internal/modules/mymodule/{domain/entity,repository,usecase,adapter/handler}
 ```
 
-### Step 2: Implement IModule Interface
+### Step 2: Implement Module Interface
 
 ```go
 // internal/modules/mymodule/module.go
@@ -784,7 +803,7 @@ func init() {
 make migrate-create MODULE=mymodule NAME=create_tables
 ```
 
-### Step 4: Enable IModule
+### Step 4: Enable Module
 
 Add to `config/modules.yaml`:
 
@@ -804,7 +823,7 @@ modules:
 
 1. **Start**: [docs/ARCHITECTURE_QUICKREF.md](docs/ARCHITECTURE_QUICKREF.md) - 15-minute overview
 2. **Core Concepts**: [internal/CORE.md](internal/CORE.md) - Core responsibilities
-3. **IModule System**: [internal/modules/README.md](internal/modules/README.md)
+3. **Module System**: [internal/modules/README.md](internal/modules/README.md)
 4. **Hands-on**: Create a simple module following [docs/MODULE_DEVELOPMENT.md](docs/MODULE_DEVELOPMENT.md)
 
 ### For DevOps/Deployment
@@ -818,7 +837,7 @@ modules:
 
 1. **Architecture Overview**: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
 2. **Audit & Verification**: [docs/ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)
-3. **IModule Independence**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
+3. **Module Independence**: [docs/MODULE_INDEPENDENCE.md](docs/MODULE_INDEPENDENCE.md)
 4. **Migration System**: [docs/MIGRATION_ARCHITECTURE.md](docs/MIGRATION_ARCHITECTURE.md)
 
 **Complete index**: [docs/INDEX.md](docs/INDEX.md)

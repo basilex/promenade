@@ -38,9 +38,9 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | Document                                                       | Description                          | When to Read                    |
 | -------------------------------------------------------------- | ------------------------------------ | ------------------------------- |
 | [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md)                 | Complete guide to creating modules   | Building new modules            |
-| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | IModule independence principles      | Understanding module boundaries |
+| [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md)               | Module independence principles       | Understanding module boundaries |
 | [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) | Configuration management for modules | Setting up module configs       |
-| [../internal/modules/README.md](../internal/modules/README.md) | IModule directory structure          | Quick module overview           |
+| [../internal/modules/README.md](../internal/modules/README.md) | Module directory structure           | Quick module overview           |
 
 ---
 
@@ -68,7 +68,7 @@ This directory contains comprehensive documentation for the Promenade applicatio
 | [AUTH_SCHEMA.md](AUTH_SCHEMA.md)                   | Authentication system (registration, login, JWT) | Understanding auth flow         |
 | [AUTHORIZATION.md](AUTHORIZATION.md)               | RBAC permission system                           | Implementing authorization      |
 | [CREDENTIALS.md](CREDENTIALS.md)                   | Default users and roles for dev/test             | Testing with predefined users   |
-| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | IModule licensing system with HMAC-SHA256        | Implementing commercial modules |
+| [LICENSE_ARCHITECTURE.md](LICENSE_ARCHITECTURE.md) | Module licensing system with HMAC-SHA256         | Implementing commercial modules |
 
 ---
 
@@ -131,12 +131,12 @@ This directory contains comprehensive documentation for the Promenade applicatio
 - [ARCHITECTURE_QUICKREF.md](ARCHITECTURE_QUICKREF.md) - Quick reference
 - [../internal/CORE.md](../internal/CORE.md) - Core components
 
-### IModule System
+### Module System
 
 - [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) - Development guide
 - [MODULE_INDEPENDENCE.md](MODULE_INDEPENDENCE.md) - Independence principles
 - [MODULE_CONFIG_ARCHITECTURE.md](MODULE_CONFIG_ARCHITECTURE.md) - Configuration
-- [../internal/modules/README.md](../internal/modules/README.md) - IModule index
+- [../internal/modules/README.md](../internal/modules/README.md) - Module index
 
 ### Data Management
 
@@ -277,7 +277,7 @@ When adding new documentation:
 1. **Choose the right type:**
 
    - `ARCHITECTURE_*.md` - Architecture and design patterns
-   - `MODULE_*.md` - IModule system documentation
+   - `MODULE_*.md` - Module system documentation
    - `*_GUIDE.md` - How-to guides and tutorials
    - `*_SCHEMA.md` - Data schemas and structures
    - `README.md` - Directory overviews
