@@ -53,6 +53,9 @@ enableGitInfo = true
     discussions = 'https://github.com/basilex/promenade/discussions'
 
 # Languages configuration
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = false
+
 [languages]
   [languages.en]
     languageName = 'English'
@@ -65,7 +68,6 @@ enableGitInfo = true
     languageName = 'Українська'
     weight = 2
     title = 'Promenade - Production-Ready REST API Framework'
-    contentDir = 'content/uk'
     [languages.uk.params]
       description = 'Production-ready REST API з Clean Architecture, модульною системою плагінів та namespace-based міграціями бази даних'
   
@@ -73,7 +75,6 @@ enableGitInfo = true
     languageName = 'Deutsch'
     weight = 3
     title = 'Promenade - Production-Ready REST API Framework'
-    contentDir = 'content/de'
     [languages.de.params]
       description = 'Production-ready REST API mit Clean Architecture, modularem Plugin-System und namespace-basierten Datenbankmigrationen'
 
