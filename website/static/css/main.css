@@ -62,7 +62,12 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1rem;
@@ -167,16 +172,12 @@ pre code {
 .btn-primary {
   background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
   color: white;
-  box-shadow: 
-    0 0 20px rgba(56, 189, 248, 0.3),
-    0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3), 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 0 30px rgba(56, 189, 248, 0.5),
-    0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.5), 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .btn-secondary {
@@ -189,7 +190,6 @@ pre code {
   background-color: var(--color-bg-tertiary);
   border-color: var(--color-primary);
   transform: translateY(-2px);
-}
   padding: 0 1.5rem;
 }
 
@@ -245,7 +245,7 @@ pre code {
 }
 
 .site-nav a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
@@ -296,7 +296,7 @@ pre code {
 }
 
 .hero::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;
@@ -331,7 +331,6 @@ pre code {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
-}
   border-radius: 0.25rem;
   font-size: 0.875rem;
   color: var(--color-gray-500);
@@ -368,7 +367,7 @@ pre code {
 .hero-buttons {
   display: flex;
   gap: 1rem;
-  justify-center;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -391,7 +390,7 @@ pre code {
 }
 
 .feature-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -406,9 +405,7 @@ pre code {
 .feature-card:hover {
   border-color: var(--color-primary);
   transform: translateY(-4px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(56, 189, 248, 0.1);
 }
 
 .feature-card:hover::before {
@@ -431,7 +428,6 @@ pre code {
   color: var(--color-text-muted);
   font-size: 1rem;
   line-height: 1.6;
-}
   border: 1px solid var(--color-gray-300);
 }
 
@@ -533,7 +529,6 @@ pre code {
   color: var(--color-text-muted);
   font-size: 0.875rem;
   margin: 0;
-}
 }
 
 .footer-links li {
