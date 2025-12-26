@@ -97,3 +97,10 @@ func NewPaginatedResponse(items any, page, pageSize, total int) PaginatedRespons
 		Timestamp:  time.Now().Unix(),
 	}
 }
+
+
+// SuccessWithPagination sends a paginated success response
+func SuccessWithPagination(c *gin.Context, code int, items any, total, page, pageSize int) {
+	response := NewPaginatedResponse(items, page, pageSize, total)
+	c.JSON(code, response)
+}

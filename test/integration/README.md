@@ -76,6 +76,9 @@ make test-integration-profiles
 
 # Analytics module
 make test-integration-analytics
+
+# Notifications module
+make test-integration-notifications
 ```
 
 **Posts Module Tests:**
@@ -92,6 +95,11 @@ make test-integration-analytics
 **Analytics Module Tests:**
 
 - `IMetricRepository` - Store metrics, Query, Aggregate, DeleteOlderThan
+
+**Notifications Module Tests:**
+
+- `INotificationRepository` - Notification CRUD, ListByUserID, GetUnreadCount, UpdateStatus
+- `IUserPreferenceRepository` - Preferences CRUD, GetByUserID, quiet hours logic
 
 ### Check Database Status
 

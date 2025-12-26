@@ -138,8 +138,8 @@ func (m *AnalyticsModule) Stop(ctx context.Context) error {
 func (m *AnalyticsModule) RegisterRoutes(router *gin.RouterGroup) {
 	m.logger.Info("Registering analytics routes")
 
-	// Health check
-	router.GET("/health", func(c *gin.Context) {
+	// Health check (must be before parameterized routes)
+	router.GET("/analytics/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "healthy",
 			"module":  m.Metadata().Name,
@@ -147,11 +147,14 @@ func (m *AnalyticsModule) RegisterRoutes(router *gin.RouterGroup) {
 		})
 	})
 
-	// Metrics endpoints
-	router.POST("/metrics", m.metricsHandler.CollectMetric)
-	router.GET("/metrics", m.metricsHandler.ListMetrics)
-	router.GET("/metrics/latest", m.metricsHandler.GetLatestMetric)
-	router.GET("/metrics/:id", m.metricsHandler.GetMetric)
+	analyticsGroup := router.Group("/analytics")
+	{
+		// Metrics endpoints
+		analyticsGroup.POST("/metrics", m.metricsHandler.CollectMetric)
+		analyticsGroup.GET("/metrics", m.metricsHandler.ListMetrics)
+		analyticsGroup.GET("/metrics/latest", m.metricsHandler.GetLatestMetric)
+		analyticsGroup.GET("/metrics/:id", m.metricsHandler.GetMetric)
+	}
 
 	// Reports and Dashboards endpoints require full implementation:
 	// - Create Report/Dashboard entities

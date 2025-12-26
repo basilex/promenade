@@ -147,6 +147,15 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 	slog.Info("Registering posts module routes")
 
+	// Health check (must be before parameterized routes)
+	router.GET("/posts/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "healthy",
+			"module":  m.Metadata().Name,
+			"version": m.Metadata().Version,
+		})
+	})
+
 	// Posts routes
 	postsGroup := router.Group("/posts")
 	{
@@ -160,8 +169,8 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 		postsGroup.DELETE("/:id", m.postHandler.DeletePost)
 
 		// Comment routes under posts
-		postsGroup.GET("/:postId/comments", m.commentHandler.GetPostComments)
-		postsGroup.POST("/:postId/comments", m.commentHandler.CreateComment)
+		postsGroup.GET("/:id/comments", m.commentHandler.GetPostComments)
+		postsGroup.POST("/:id/comments", m.commentHandler.CreateComment)
 	}
 
 	// Comments routes (direct access)
@@ -174,7 +183,7 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 	}
 
 	// User comments route
-	router.GET("/users/:userId/comments", m.commentHandler.GetUserComments)
+	router.GET("/users/:user_id/comments", m.commentHandler.GetUserComments)
 
 	slog.Info("Posts module routes registered successfully")
 }

@@ -72,15 +72,19 @@ run_test() {
 }
 
 # Test 1: Health Check (Baseline)
-run_test "Test 1: Health Check (Baseline)" \
+run_test "Test 1: Core Health Check (Baseline)" \
     "wrk -t4 -c100 -d10s $API_URL/api/v1/health"
 
-# Test 2: Authentication Load
-run_test "Test 2: Authentication Load" \
+# Test 2: All Module Health Endpoints
+run_test "Test 2: All Module Health Endpoints" \
+    "wrk -t4 -c100 -d10s -s $SCRIPT_DIR/scenarios/health.lua $API_URL"
+
+# Test 3: Authentication Load
+run_test "Test 3: Authentication Load" \
     "wrk -t4 -c50 -d10s -s $SCRIPT_DIR/scenarios/auth.lua $API_URL"
 
-# Test 3: Light Load (Reference Data)
-run_test "Test 3: Light Load (Countries)" \
+# Test 4: Light Load (Reference Data)
+run_test "Test 4: Light Load (Countries)" \
     "wrk -t2 -c20 -d10s $API_URL/api/v1/countries"
 
 # Summary

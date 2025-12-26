@@ -101,3 +101,13 @@ purge:
   schedule: "0 0 3 * * *" # 3 AM daily (seconds minutes hours day month weekday)
   dry_run: false
   batch_size: 100
+
+# Enabled modules (in load order)
+modules:
+  enabled:
+    - posts # User-generated content: posts + comments + likes
+    - profiles # User profiles + contacts
+    - analytics # Analytics & reporting (Free)
+    - notifications # Multi-channel notifications (Commercial)
+    # - audit # Immutable audit logging (Commercial) - requires AUDIT_SIGNATURE_SECRET
+    - billing # Subscription billing & payment processing (Commercial)

@@ -71,6 +71,7 @@ run_test "tests/02_auth.sh"
 run_test "tests/03_posts.sh"
 run_test "tests/04_profiles.sh"
 run_test "tests/05_analytics.sh"
+run_test "tests/06_notifications.sh"
 
 # Print summary
 print_section "Test Summary"

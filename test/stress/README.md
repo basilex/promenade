@@ -100,7 +100,21 @@ wrk -t4 -c100 -d30s -s scenarios/posts.lua http://localhost:8081
 - Latency (p99): < 300ms
 - Error rate: < 1%
 
-### 4. Concurrent Users Simulation
+### 4. Notifications Load Test
+
+**Goal:** Test notification delivery and preferences under load
+
+```bash
+wrk -t4 -c100 -d30s -s scenarios/notifications.lua http://localhost:8081
+```
+
+**Expected Results:**
+
+- RPS: 400-600
+- Latency (p99): < 250ms
+- Error rate: < 1%
+
+### 5. Concurrent Users Simulation
 
 **Goal:** Realistic user behavior
 

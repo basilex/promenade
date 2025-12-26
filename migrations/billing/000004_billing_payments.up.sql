@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS billing_payments (
     
     -- Foreign keys
     CONSTRAINT fk_billing_payments_invoice FOREIGN KEY (invoice_id) REFERENCES billing_invoices(id) ON DELETE SET NULL,
-    CONSTRAINT fk_billing_payments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_billing_payments_user FOREIGN KEY (user_id) REFERENCES core_users(id) ON DELETE CASCADE
 );
 
 -- Indexes for performance

@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS billing_subscriptions (
     deleted_at TIMESTAMP, -- Soft delete
     
     -- Foreign keys
-    CONSTRAINT fk_billing_subscriptions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_billing_subscriptions_user FOREIGN KEY (user_id) REFERENCES core_users(id) ON DELETE CASCADE,
     CONSTRAINT fk_billing_subscriptions_plan FOREIGN KEY (plan_id) REFERENCES billing_plans(id) ON DELETE RESTRICT,
     
     -- Business constraints

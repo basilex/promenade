@@ -43,7 +43,7 @@ func (h *CommentHandler) CreateComment(c *gin.Context) {
 	log := logger.FromContext(c.Request.Context())
 
 	// Get post ID from path
-	postIDStr := c.Param("postId")
+	postIDStr := c.Param("id")
 	postID, err := uuidv7.Parse(postIDStr)
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid post ID", err)
@@ -222,7 +222,7 @@ func (h *CommentHandler) GetPostComments(c *gin.Context) {
 	log := logger.FromContext(c.Request.Context())
 
 	// Get post ID from path
-	postIDStr := c.Param("postId")
+	postIDStr := c.Param("id")
 	postID, err := uuidv7.Parse(postIDStr)
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid post ID", err)
@@ -303,7 +303,7 @@ func (h *CommentHandler) GetUserComments(c *gin.Context) {
 	log := logger.FromContext(c.Request.Context())
 
 	// Get user ID from path
-	userIDStr := c.Param("userId")
+	userIDStr := c.Param("user_id")
 	userID, err := uuidv7.Parse(userIDStr)
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid user ID", err)

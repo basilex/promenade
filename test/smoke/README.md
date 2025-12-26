@@ -93,6 +93,7 @@ cd test/smoke
 3. **03_posts.sh** - Posts CRUD operations
 4. **04_profiles.sh** - Profiles CRUD operations
 5. **05_analytics.sh** - Analytics metrics
+6. **06_notifications.sh** - Notifications and user preferences
 
 ### Configuration
 

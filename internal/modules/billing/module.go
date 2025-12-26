@@ -177,6 +177,15 @@ func (m *BillingModule) Initialize(ctx context.Context, core *module.Core) error
 func (m *BillingModule) RegisterRoutes(router *gin.RouterGroup) {
 	slog.Info("Registering billing module routes")
 
+	// Health check (must be before parameterized routes)
+	router.GET("/billing/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "healthy",
+			"module":  m.Metadata().Name,
+			"version": m.Metadata().Version,
+		})
+	})
+
 	// Billing routes
 	billingGroup := router.Group("/billing")
 	{

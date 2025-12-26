@@ -92,6 +92,15 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 func (m *ProfilesModule) RegisterRoutes(router *gin.RouterGroup) {
 	slog.Info("Registering profiles module routes")
 
+	// Health check (must be before parameterized routes)
+	router.GET("/profiles/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "healthy",
+			"module":  m.Metadata().Name,
+			"version": m.Metadata().Version,
+		})
+	})
+
 	// Profile routes
 	profilesGroup := router.Group("/profiles")
 	{

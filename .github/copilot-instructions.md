@@ -29,8 +29,10 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
   - `posts` (posts+comments+likes) - Free
   - `profiles` (user profiles+contacts) - Free
   - `analytics` (metrics+reports+dashboards) - Free
-  - `audit` (immutable audit logs) - Commercial
-  - `billing` (subscriptions+invoices+payments) - Commercial, production-ready
+  - `notifications` (preferences+history+multi-channel) - Commercial (requires license)
+  - `audit` (immutable audit logs+signatures) - Commercial (requires license)
+  - `billing` (subscriptions+invoices+payments) - Commercial (requires license), production-ready
+  - `warehouse` (inventory management) - Commercial (requires license), structure exists but not implemented
 
 **Core orchestrates, modules execute**. Core knows WHEN to call modules, not HOW they work.
 
@@ -262,18 +264,21 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
   - Posts module (33 tests, 83.3% coverage) - PostStatus, UserPost lifecycle, validation, slug generation
   - Profiles module (21 tests, 80.4% coverage) - UserContact, UserProfile, privacy, validation
   - Analytics module (11 tests) - Metric validation, MetricAggregate, usecase operations
+  - Notifications module (48 tests) - 35 unit (20 entity + 15 usecase) + 13 integration tests - Multi-channel delivery, quiet hours, preferences
+  - Audit module (tests planned) - AuditEvent entity, signature verification, immutable logging
   - Billing module (375 tests, 100% coverage) - Plan, Subscription, Invoice, Payment entities + all use cases
 - **Utilities Tests** (51 tests, 89.5% avg) - response (100%), validator (80%), logger (83.8%), pagination (94.1%)
 
 **Test Execution** (~20 seconds total):
 
 ```bash
-make test                      # All tests (400+ tests)
+make test                      # All tests (500+ tests)
 make test-core                 # Core tests (275 tests: 39 entity + 236 usecase)
 make test-modules              # All module tests
 make test-module-posts         # Posts module (33 tests)
 make test-module-profiles      # Profiles module (21 tests)
 make test-module-analytics     # Analytics module (11 tests)
+make test-module-notifications # Notifications module (48 tests: 35 unit + 13 integration)
 make test-module-billing       # Billing module (375 tests)
 make test-coverage             # HTML coverage report
 ```
@@ -486,10 +491,12 @@ pageSize := response.GetPageSizeFromQuery(c) //Default: 20, max: 100
 - Tiers: BASIC, PRO, ENTERPRISE (different features/retention)
 - Generation: `./scripts/generate-license.sh <module> <tier> <days>`
 - Config: Set `{MODULE}_LICENSE_KEY` env var or `license_required: false` for dev
-- Examples:
+- Exanotifications` module (preferences, history, multi-channel delivery, rate limiting) - **COMMERCIAL** (requires license)
+  - `mples:
   - `analytics` module (metrics, reports, dashboards) - **FREE** (no license required)
-  - `audit` module (immutable audit logs, signatures) - **COMMERCIAL** (requires license)
+  - `audit` module (immutable audit logs, cryptographic signatures, tamper detection) - **COMMERCIAL** (requires license)
   - `billing` module (subscriptions, invoices, payments) - **COMMERCIAL** (requires license)
+  - `warehouse` module (inventory management) - **COMMERCIAL** (requires license, not yet implemented)
 
 ## Code Consistency Standards
 

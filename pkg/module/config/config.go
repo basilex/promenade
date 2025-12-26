@@ -10,9 +10,9 @@ import (
 
 // Config represents a module's configuration
 type Config struct {
-	Module   ModuleSection          `yaml:"module"`
-	Settings map[string]any `yaml:"settings"`
-	Purge    PurgeSection           `yaml:"purge"`
+	Module   ModuleSection      `yaml:"module"`
+	Settings map[string]any     `yaml:",inline"` // Inline all other top-level keys
+	Purge    PurgeSection       `yaml:"purge"`
 }
 
 // ModuleSection contains module metadata
@@ -24,9 +24,9 @@ type ModuleSection struct {
 
 // PurgeSection contains purge configuration
 type PurgeSection struct {
-	Enabled  bool                          `yaml:"enabled"`
-	Schedule string                        `yaml:"schedule"`
-	Settings map[string]map[string]any `yaml:"settings"`
+	Enabled  bool                      `yaml:"enabled"`
+	Schedule string                    `yaml:"schedule,omitempty"`
+	Settings map[string]map[string]any `yaml:",inline"` // Inline all entity-specific settings (posts, comments, etc.)
 }
 
 // Load loads module configuration from the specified directory
