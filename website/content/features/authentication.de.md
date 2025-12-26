@@ -80,4 +80,4 @@ user@promenade.com      | passw0rd | User
 ✅ **Skalierbar** - Zustandslose Tokens, optionales Session-Tracking  
 ✅ **Produktionsreif** - In echten Projekten getestet
 
-[Ausführliche Dokumentation →](/docs/AUTHORIZATION)
+[Ausführliche Dokumentation →](/promenade/docs/AUTHORIZATION)

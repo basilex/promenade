@@ -15,15 +15,15 @@ aliases:
 
 <div class="docs-grid">
 
-### [Швидкий Старт](/uk/docs/getting-started)
+### [Швидкий Старт](/promenade/uk/docs/getting-started)
 
 Запустіться за 5 хвилин. Встановіть залежності, запустіть сервіси та перевірте інсталяцію.
 
-### [Огляд Архітектури](/uk/docs/architecture)
+### [Огляд Архітектури](/promenade/uk/docs/architecture)
 
 Зрозумійте основні принципи: Clean Architecture, Core vs Modules, та дизайн системи.
 
-### [Налаштування БД](/uk/docs/database-schema)
+### [Налаштування БД](/promenade/uk/docs/database-schema)
 
 Дізнайтеся про конфігурацію PostgreSQL, UUID v7, міграції та дизайн схеми.
 
@@ -35,11 +35,11 @@ aliases:
 
 <div class="docs-grid">
 
-### [Розробка Модулів](/uk/docs/module-development)
+### [Розробка Модулів](/promenade/uk/docs/module-development)
 
 Повний посібник зі створення власних бізнес-модулів з прикладами та практиками.
 
-### [Стратегія Тестування](/uk/docs/getting-started#testing)
+### [Стратегія Тестування](/promenade/uk/docs/getting-started#testing)
 
 Як писати unit, integration та smoke тести. Вивчіть паттерн ручних моків.
 
@@ -55,15 +55,15 @@ aliases:
 
 <div class="docs-grid">
 
-### [Clean Architecture](/uk/features/clean-architecture)
+### [Clean Architecture](/promenade/uk/features/clean-architecture)
 
 Глибоке занурення в шари Domain, Use Case, Adapter та Infrastructure.
 
-### [Система Модулів](/uk/features/module-system)
+### [Система Модулів](/promenade/uk/features/module-system)
 
 Як працює система модулів: реєстрація, життєвий цикл та паттерни комунікації.
 
-### [Event-Driven Architecture](/uk/features/event-bus)
+### [Event-Driven Architecture](/promenade/uk/features/event-bus)
 
 Використання event bus для асинхронної комунікації між модулями (Memory/Redis адаптери).
 
@@ -75,15 +75,15 @@ aliases:
 
 <div class="docs-grid">
 
-### [Схема Бази Даних](/uk/docs/database-schema)
+### [Схема Бази Даних](/promenade/uk/docs/database-schema)
 
 Повна документація схеми з ER діаграмами для всіх таблиць.
 
-### [UUID v7 Посібник](/uk/features/database#uuid-v7)
+### [UUID v7 Посібник](/promenade/uk/features/database#uuid-v7)
 
 Чому UUID v7 в 2 рази швидший за UUID v4 та як його використовувати.
 
-### [Паттерн Soft Delete](/uk/features/database#soft-delete)
+### [Паттерн Soft Delete](/promenade/uk/features/database#soft-delete)
 
 Реалізація м'якого видалення для контенту користувачів з автоматичними політиками очищення.
 
@@ -95,15 +95,15 @@ aliases:
 
 <div class="docs-grid">
 
-### [RBAC & Дозволи](/uk/features/authentication)
+### [RBAC & Дозволи](/promenade/uk/features/authentication)
 
 Контроль доступу на основі ролей з wildcard дозволами та 4 системними ролями.
 
-### [Довідкові Дані](/uk/docs/database-schema#reference-data)
+### [Довідкові Дані](/promenade/uk/docs/database-schema#reference-data)
 
 145 країн, 124 валюти, 30 регіонів, 17 міст, 40+ методів оплати.
 
-### [Namespace Міграції](/uk/docs/database-schema#migrations)
+### [Namespace Міграції](/promenade/uk/docs/database-schema#migrations)
 
 Незалежна історія міграцій для кожного модуля без конфліктів.
 
@@ -121,6 +121,6 @@ aliases:
 
 ## Потрібна Допомога?
 
-- Перегляньте [Індекс Документації](/uk/docs/) для всіх доступних посібників
+- Перегляньте [Індекс Документації](/promenade/uk/docs/) для всіх доступних посібників
 - Відвідайте [GitHub Discussions](https://github.com/basilex/promenade/discussions) для запитань
 - Повідомляйте про проблеми на [GitHub Issues](https://github.com/basilex/promenade/issues)

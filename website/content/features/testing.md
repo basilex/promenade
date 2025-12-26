@@ -103,4 +103,4 @@ internal/usecase/
 ✅ **Comprehensive** - 100% business logic coverage  
 ✅ **Real DB** - Integration tests use PostgreSQL
 
-[Testing Guide →](/docs/TESTING_GUIDE)
+[Testing Guide →](/promenade/docs/TESTING_GUIDE)

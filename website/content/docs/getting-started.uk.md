@@ -61,6 +61,6 @@ curl http://localhost:8081/api/v1/health
 
 ## Наступні Кроки
 
-- [Архітектура](/docs/architecture)
-- [Розробка Модулів](/docs/module-development)
-- [База Даних](/docs/database-schema)
+- [Архітектура](/promenade/docs/architecture)
+- [Розробка Модулів](/promenade/docs/module-development)
+- [База Даних](/promenade/docs/database-schema)

@@ -61,4 +61,4 @@ func (h *UserHandler) Register(c *gin.Context) {
 ✅ **Skalierbar** - Features hinzufügen ohne Code zu brechen  
 ✅ **Framework-unabhängig** - Geschäftslogik kennt HTTP oder DB nicht
 
-[Mehr erfahren →](/docs/ARCHITECTURE_OVERVIEW)
+[Mehr erfahren →](/promenade/docs/ARCHITECTURE_OVERVIEW)

@@ -13,7 +13,7 @@ description: "Повна технічна документація для Promen
 
 <div class="docs-grid">
 
-### [Огляд Архітектури](/docs/architecture)
+### [Огляд Архітектури](/promenade/docs/architecture)
 
 Повна системна архітектура з діаграмами, шарами та паттернами комунікації.
 
@@ -22,7 +22,7 @@ description: "Повна технічна документація для Promen
 - Подієво-орієнтована комунікація
 - Архітектура розгортання
 
-### [Схема Бази Даних](/docs/database-schema)
+### [Схема Бази Даних](/promenade/docs/database-schema)
 
 Детальна схема бази даних з ER діаграмами та зв'язками.
 
@@ -31,7 +31,7 @@ description: "Повна технічна документація для Promen
 - Таблиці модулів (пости, профілі, аналітика, білінг)
 - Індекси та продуктивність
 
-### [Розробка Модулів](/docs/module-development)
+### [Розробка Модулів](/promenade/docs/module-development)
 
 Покрокова інструкція зі створення нових модулів.
 
@@ -48,22 +48,22 @@ description: "Повна технічна документація для Promen
 
 ### Для Розробників
 
-- [Посібник Початку Роботи](/docs/getting-started)
-- [Розробка Модулів](/docs/module-development)
-- [Схема Бази Даних](/docs/database-schema)
+- [Посібник Початку Роботи](/promenade/docs/getting-started)
+- [Розробка Модулів](/promenade/docs/module-development)
+- [Схема Бази Даних](/promenade/docs/database-schema)
 - [API Документація](/api/v1/docs/swagger/index.html)
 
 ### Для Архітекторів
 
-- [Огляд Архітектури](/docs/architecture)
-- [Схема Бази Даних](/docs/database-schema)
-- [Розробка Модулів](/docs/module-development)
-- [Clean Architecture](/features/clean-architecture)
+- [Огляд Архітектури](/promenade/docs/architecture)
+- [Схема Бази Даних](/promenade/docs/database-schema)
+- [Розробка Модулів](/promenade/docs/module-development)
+- [Clean Architecture](/promenade/features/clean-architecture)
 
 ### API та Інтеграція
 
-- [Автентифікація та RBAC](/features/authentication)
-- [Система Event Bus](/features/event-bus)
+- [Автентифікація та RBAC](/promenade/features/authentication)
+- [Система Event Bus](/promenade/features/event-bus)
 - [REST API v1](/api/v1/docs/swagger/index.html)
 - [REST API v2](/api/v2/docs/swagger/index.html)
 
@@ -75,7 +75,7 @@ description: "Повна технічна документація для Promen
 
 <div class="feature-card">
 
-### [Чиста Архітектура](/features/clean-architecture)
+### [Чиста Архітектура](/promenade/features/clean-architecture)
 
 Строга шарова архітектура з чітким розділенням відповідальності.
 
@@ -83,7 +83,7 @@ description: "Повна технічна документація для Promen
 
 <div class="feature-card">
 
-### [Модульна Система](/features/module-system)
+### [Модульна Система](/promenade/features/module-system)
 
 Незалежні бізнес-модулі з плагін-архітектурою.
 
@@ -91,7 +91,7 @@ description: "Повна технічна документація для Promen
 
 <div class="feature-card">
 
-### [Автентифікація та RBAC](/features/authentication)
+### [Автентифікація та RBAC](/promenade/features/authentication)
 
 JWT автентифікація з рольовим контролем доступу.
 
@@ -99,7 +99,7 @@ JWT автентифікація з рольовим контролем дост
 
 <div class="feature-card">
 
-### [База Даних та Міграції](/features/database)
+### [База Даних та Міграції](/promenade/features/database)
 
 PostgreSQL з UUID v7 та міграції на основі просторів імен.
 
@@ -107,7 +107,7 @@ PostgreSQL з UUID v7 та міграції на основі просторів
 
 <div class="feature-card">
 
-### [Тестова Інфраструктура](/features/testing)
+### [Тестова Інфраструктура](/promenade/features/testing)
 
 400+ тестів з ручним підходом до моків.
 
@@ -115,7 +115,7 @@ PostgreSQL з UUID v7 та міграції на основі просторів
 
 <div class="feature-card">
 
-### [Подієво-Орієнтована Архітектура](/features/event-bus)
+### [Подієво-Орієнтована Архітектура](/promenade/features/event-bus)
 
 Подвійні адаптери event bus для асинхронної комунікації.
 

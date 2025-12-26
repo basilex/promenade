@@ -91,4 +91,4 @@ make test-db-stop
 ✅ **Zuverlässig** - Integrationstests mit echter DB  
 ✅ **Abdeckung** - 89.5% durchschnittliche Code-Abdeckung
 
-[Test-Leitfaden →](/docs/TESTING_GUIDE)
+[Test-Leitfaden →](/promenade/docs/TESTING_GUIDE)

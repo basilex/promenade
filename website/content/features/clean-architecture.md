@@ -61,4 +61,4 @@ func (h *UserHandler) Register(c *gin.Context) {
 ✅ **Scalable** - Add features without breaking existing code  
 ✅ **Framework-independent** - Business logic doesn't know about HTTP or DB
 
-[Learn more →](/docs/ARCHITECTURE_OVERVIEW)
+[Learn more →](/promenade/docs/ARCHITECTURE_OVERVIEW)

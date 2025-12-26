@@ -13,7 +13,7 @@ Comprehensive guides, diagrams, and references for Promenade architecture and de
 
 <div class="docs-grid">
 
-### [Architecture Overview](/docs/architecture)
+### [Architecture Overview](/promenade/docs/architecture)
 
 Complete system architecture with diagrams, layers, and communication patterns.
 
@@ -22,7 +22,7 @@ Complete system architecture with diagrams, layers, and communication patterns.
 - Event-driven communication
 - Deployment architecture
 
-### [Database Schema](/docs/database-schema)
+### [Database Schema](/promenade/docs/database-schema)
 
 Detailed database schema with ER diagrams and relationships.
 
@@ -31,7 +31,7 @@ Detailed database schema with ER diagrams and relationships.
 - Module tables (posts, profiles, analytics, billing)
 - Indexes and performance
 
-### [Module Development](/docs/module-development)
+### [Module Development](/promenade/docs/module-development)
 
 Step-by-step guide to creating new modules.
 
@@ -48,22 +48,22 @@ Step-by-step guide to creating new modules.
 
 ### For Developers
 
-- [Getting Started Guide](/docs/getting-started)
-- [Module Development](/docs/module-development)
-- [Database Schema](/docs/database-schema)
+- [Getting Started Guide](/promenade/docs/getting-started)
+- [Module Development](/promenade/docs/module-development)
+- [Database Schema](/promenade/docs/database-schema)
 - [API Documentation](/api/v1/docs/swagger/index.html)
 
 ### For Architects
 
-- [Architecture Overview](/docs/architecture)
-- [Database Schema](/docs/database-schema)
-- [Module Development](/docs/module-development)
-- [Clean Architecture](/features/clean-architecture)
+- [Architecture Overview](/promenade/docs/architecture)
+- [Database Schema](/promenade/docs/database-schema)
+- [Module Development](/promenade/docs/module-development)
+- [Clean Architecture](/promenade/features/clean-architecture)
 
 ### API & Integration
 
-- [Authentication & RBAC](/features/authentication)
-- [Event Bus System](/features/event-bus)
+- [Authentication & RBAC](/promenade/features/authentication)
+- [Event Bus System](/promenade/features/event-bus)
 - [REST API v1](/api/v1/docs/swagger/index.html)
 - [REST API v2](/api/v2/docs/swagger/index.html)
 
@@ -75,7 +75,7 @@ Step-by-step guide to creating new modules.
 
 <div class="feature-card">
 
-### [Clean Architecture](/features/clean-architecture)
+### [Clean Architecture](/promenade/features/clean-architecture)
 
 Strict layered architecture with clear separation of concerns.
 
@@ -83,7 +83,7 @@ Strict layered architecture with clear separation of concerns.
 
 <div class="feature-card">
 
-### [Modular System](/features/module-system)
+### [Modular System](/promenade/features/module-system)
 
 Independent business modules with plugin architecture.
 
@@ -91,7 +91,7 @@ Independent business modules with plugin architecture.
 
 <div class="feature-card">
 
-### [Authentication & RBAC](/features/authentication)
+### [Authentication & RBAC](/promenade/features/authentication)
 
 JWT authentication with role-based access control.
 
@@ -99,7 +99,7 @@ JWT authentication with role-based access control.
 
 <div class="feature-card">
 
-### [Database & Migrations](/features/database)
+### [Database & Migrations](/promenade/features/database)
 
 PostgreSQL with UUID v7 and namespace-based migrations.
 
@@ -107,7 +107,7 @@ PostgreSQL with UUID v7 and namespace-based migrations.
 
 <div class="feature-card">
 
-### [Testing Infrastructure](/features/testing)
+### [Testing Infrastructure](/promenade/features/testing)
 
 400+ tests with manual mocks pattern.
 
@@ -115,7 +115,7 @@ PostgreSQL with UUID v7 and namespace-based migrations.
 
 <div class="feature-card">
 
-### [Event-Driven Architecture](/features/event-bus)
+### [Event-Driven Architecture](/promenade/features/event-bus)
 
 Dual event bus adapters for async communication.
 

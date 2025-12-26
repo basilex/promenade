@@ -94,5 +94,5 @@ type BaseRepository struct {
 ✅ **Explicit** - No ORM magic, full SQL control  
 ✅ **Transactional** - Context-aware transaction support
 
-[UUID v7 Guide →](/docs/UUID_V7_GUIDE)  
-[Migration Architecture →](/docs/MIGRATION_ARCHITECTURE)
+[UUID v7 Guide →](/promenade/docs/UUID_V7_GUIDE)  
+[Migration Architecture →](/promenade/docs/MIGRATION_ARCHITECTURE)

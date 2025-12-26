@@ -61,4 +61,4 @@ func (h *UserHandler) Register(c *gin.Context) {
 ✅ **Масштабованість** - Додавайте функції без поломки коду  
 ✅ **Незалежність від фреймворків** - Бізнес-логіка не знає про HTTP чи БД
 
-[Дізнатися більше →](/docs/ARCHITECTURE_OVERVIEW)
+[Дізнатися більше →](/promenade/docs/ARCHITECTURE_OVERVIEW)

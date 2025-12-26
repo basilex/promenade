@@ -192,7 +192,7 @@ aliases:
 
 ### Створіть Власний Модуль
 
-Слідуйте нашому [Посібнику з Розробки Модулів](/uk/docs/module-development) для створення власних модулів.
+Слідуйте нашому [Посібнику з Розробки Модулів](/promenade/uk/docs/module-development) для створення власних модулів.
 
 **Швидка Структура:**
 
@@ -311,9 +311,9 @@ modules:
 
 ## Дізнатися Більше
 
-- [Посібник з Розробки Модулів](/uk/docs/module-development) - Повний туторіал
-- [Огляд Архітектури](/uk/docs/architecture) - Дизайн системи
-- [Схема Бази Даних](/uk/docs/database-schema) - Таблиці модулів
+- [Посібник з Розробки Модулів](/promenade/uk/docs/module-development) - Повний туторіал
+- [Огляд Архітектури](/promenade/uk/docs/architecture) - Дизайн системи
+- [Схема Бази Даних](/promenade/uk/docs/database-schema) - Таблиці модулів
 - [Приклади Модулів](https://github.com/basilex/promenade/tree/dev/internal/modules) - Вихідний код
 
 ---

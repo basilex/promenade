@@ -80,4 +80,4 @@ user@promenade.com      | passw0rd | User
 ✅ **Scalable** - Stateless tokens, session tracking optional  
 ✅ **Production-ready** - Rate limiting, session revocation
 
-[Authorization Guide →](/docs/AUTHORIZATION)
+[Authorization Guide →](/promenade/docs/AUTHORIZATION)

@@ -94,4 +94,4 @@ type BaseRepository struct {
 ✅ **Explizit** - Keine ORM-Magie, volle SQL-Kontrolle  
 ✅ **Transaktional** - Kontextbewusste Transaktionsunterstützung
 
-[Ausführlicher Leitfaden →](/docs/UUID_V7_GUIDE)
+[Ausführlicher Leitfaden →](/promenade/docs/UUID_V7_GUIDE)

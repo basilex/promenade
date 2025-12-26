@@ -192,7 +192,7 @@ Inventory and product management (planned).
 
 ### Create Your Own Module
 
-Follow our [Module Development Guide](/docs/module-development) to build custom modules.
+Follow our [Module Development Guide](/promenade/docs/module-development) to build custom modules.
 
 **Quick Structure:**
 
@@ -311,9 +311,9 @@ Contact: alexander.vasilenko@gmail.com for enterprise licensing.
 
 ## Learn More
 
-- [Module Development Guide](/docs/module-development) - Complete tutorial
-- [Architecture Overview](/docs/architecture) - System design
-- [Database Schema](/docs/database-schema) - Module tables
+- [Module Development Guide](/promenade/docs/module-development) - Complete tutorial
+- [Architecture Overview](/promenade/docs/architecture) - System design
+- [Database Schema](/promenade/docs/database-schema) - Module tables
 - [Example Modules](https://github.com/basilex/promenade/tree/dev/internal/modules) - Source code
 
 ---

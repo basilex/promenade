@@ -61,6 +61,6 @@ Open http://localhost:8081/api/v1/docs/swagger/index.html
 
 ## Next Steps
 
-- [Architecture Overview](/docs/architecture)
-- [Module Development](/docs/module-development)
-- [Database Schema](/docs/database-schema)
+- [Architecture Overview](/promenade/docs/architecture)
+- [Module Development](/promenade/docs/module-development)
+- [Database Schema](/promenade/docs/database-schema)

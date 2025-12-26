@@ -357,7 +357,7 @@ graph TB
 
 ## Next Steps
 
-- [Module Development Guide](/docs/MODULE_DEVELOPMENT)
-- [Testing Strategy](/docs/TESTING_GUIDE)
-- [Database Patterns](/features/database)
+- [Module Development Guide](/promenade/docs/MODULE_DEVELOPMENT)
+- [Testing Strategy](/promenade/docs/TESTING_GUIDE)
+- [Database Patterns](/promenade/features/database)
 - [API Documentation](/api/v1/docs/swagger/index.html)

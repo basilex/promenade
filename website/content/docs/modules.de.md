@@ -192,7 +192,7 @@ Inventar- und Produktverwaltung (geplant).
 
 ### Eigenes Modul Erstellen
 
-Folgen Sie unserem [Modul-Entwicklungsleitfaden](/de/docs/module-development) zum Erstellen benutzerdefinierter Module.
+Folgen Sie unserem [Modul-Entwicklungsleitfaden](/promenade/de/docs/module-development) zum Erstellen benutzerdefinierter Module.
 
 **Schnellstruktur:**
 
@@ -311,9 +311,9 @@ Kontakt: alexander.vasilenko@gmail.com für Enterprise-Lizenzierung.
 
 ## Mehr Erfahren
 
-- [Modul-Entwicklungsleitfaden](/de/docs/module-development) - Vollständiges Tutorial
-- [Architekturübersicht](/de/docs/architecture) - Systemdesign
-- [Datenbankschema](/de/docs/database-schema) - Modul-Tabellen
+- [Modul-Entwicklungsleitfaden](/promenade/de/docs/module-development) - Vollständiges Tutorial
+- [Architekturübersicht](/promenade/de/docs/architecture) - Systemdesign
+- [Datenbankschema](/promenade/de/docs/database-schema) - Modul-Tabellen
 - [Beispiel-Module](https://github.com/basilex/promenade/tree/dev/internal/modules) - Quellcode
 
 ---

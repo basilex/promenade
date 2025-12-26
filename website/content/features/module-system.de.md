@@ -66,4 +66,4 @@ modules:
 ✅ **Eigene Migrationen** - Jedes Modul hat unabhängige Schema-Historie  
 ✅ **Lizenzierbar** - Kommerzielle Module separat verkaufen
 
-[Modulentwicklungs-Leitfaden →](/docs/MODULE_DEVELOPMENT)
+[Modulentwicklungs-Leitfaden →](/promenade/docs/MODULE_DEVELOPMENT)

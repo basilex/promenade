@@ -80,4 +80,4 @@ user@promenade.com      | passw0rd | User
 ✅ **Масштабовано** - Stateless токени, опціональне відстеження сесій  
 ✅ **Готово до продакшн** - Тестовано в реальних проектах
 
-[Детальна документація →](/docs/AUTHORIZATION)
+[Детальна документація →](/promenade/docs/AUTHORIZATION)

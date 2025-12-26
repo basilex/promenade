@@ -119,4 +119,4 @@ if err != nil {
 ✅ **Scalable** - Redis for multi-instance  
 ✅ **Simple** - Unified interface for both adapters
 
-[Event Bus Guide →](/docs/pkg/bus/README)
+[Event Bus Guide →](/promenade/docs/pkg/bus/README)

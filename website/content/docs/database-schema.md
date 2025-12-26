@@ -565,7 +565,7 @@ pg_dump -d promenade > full_backup.sql
 
 ## Next Steps
 
-- [UUID v7 Guide](/docs/UUID_V7_GUIDE)
-- [Migration Architecture](/docs/MIGRATION_ARCHITECTURE)
-- [Soft Delete Pattern](/docs/SOFT_DELETE)
-- [Database Feature Page](/features/database)
+- [UUID v7 Guide](/promenade/docs/UUID_V7_GUIDE)
+- [Migration Architecture](/promenade/docs/MIGRATION_ARCHITECTURE)
+- [Soft Delete Pattern](/promenade/docs/SOFT_DELETE)
+- [Database Feature Page](/promenade/features/database)

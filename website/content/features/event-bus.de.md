@@ -101,4 +101,4 @@ Posts Module                Email Module
 ✅ **Skalierbar** - Redis für verteilte Systeme  
 ✅ **Zuverlässig** - Automatische Wiederholungen und Fehlerbehandlung
 
-[Ausführlicher Leitfaden →](/pkg/bus/README.md)
+[Ausführlicher Leitfaden →](https://github.com/basilex/promenade/tree/dev/pkg/bus)

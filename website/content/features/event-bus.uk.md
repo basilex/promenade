@@ -101,4 +101,4 @@ Posts Module                Email Module
 ✅ **Масштабовано** - Redis для розподілених систем  
 ✅ **Надійно** - Автоматичні повтори та обробка помилок
 
-[Детальний посібник →](/pkg/bus/README.md)
+[Детальний посібник →](https://github.com/basilex/promenade/tree/dev/pkg/bus)

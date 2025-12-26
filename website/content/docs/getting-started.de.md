@@ -61,6 +61,6 @@ curl http://localhost:8081/api/v1/health
 
 ## Nächste Schritte
 
-- [Architektur-Übersicht](/docs/architecture)
-- [Modulentwicklung](/docs/module-development)
-- [Datenbankschema](/docs/database-schema)
+- [Architektur-Übersicht](/promenade/docs/architecture)
+- [Modulentwicklung](/promenade/docs/module-development)
+- [Datenbankschema](/promenade/docs/database-schema)

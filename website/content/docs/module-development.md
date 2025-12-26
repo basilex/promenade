@@ -525,7 +525,7 @@ eventBus.Publish(ctx, "test.event", testEvent)
 
 ## Next Steps
 
-- [Architecture Overview](/docs/architecture)
-- [Database Schema](/docs/database-schema)
-- [Testing Guide](/docs/TESTING_GUIDE)
-- [Module Examples in codebase](/internal/modules/)
+- [Architecture Overview](/promenade/docs/architecture)
+- [Database Schema](/promenade/docs/database-schema)
+- [Testing Guide](/promenade/docs/TESTING_GUIDE)
+- [Module Examples in codebase](https://github.com/basilex/promenade/tree/dev/internal/modules)
