@@ -22,14 +22,15 @@
         }
         
         :root {
-            --primary: #4F46E5;
-            --primary-dark: #4338CA;
+            --primary: #475569;
+            --primary-dark: #334155;
             --secondary: #10B981;
             --dark: #1F2937;
             --light: #F9FAFB;
             --border: #E5E7EB;
             --text: #374151;
             --text-light: #6B7280;
+            --accent: #3B82F6;
         }
         
         body {
@@ -106,7 +107,7 @@
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 6rem 0;
+            padding: 5rem 0 4rem 0;
             text-align: center;
         }
         
@@ -198,7 +199,52 @@
         .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-color: var(--primary);
+            border-color: var(--accent);
+        }
+        
+        /* About Section */
+        .about {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        
+        .about-content h2 {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .about-point {
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .about-point h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .about-point p {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
         
         .feature-icon {
@@ -238,7 +284,7 @@
         }
         
         .module-card:hover {
-            border-color: var(--primary);
+            border-color: var(--accent);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
@@ -453,6 +499,32 @@
         </div>
     </section>
 
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <div class="about-content">
+                <h2>{{ i18n "about_title" }}</h2>
+                <p style="text-align: center; color: var(--text-light); max-width: 800px; margin: 0 auto 2rem auto; font-size: 1.05rem;">
+                    {{ i18n "about_intro" }}
+                </p>
+                <div class="about-grid">
+                    <div class="about-point">
+                        <h3>{{ i18n "about_point1_title" }}</h3>
+                        <p>{{ i18n "about_point1_desc" }}</p>
+                    </div>
+                    <div class="about-point">
+                        <h3>{{ i18n "about_point2_title" }}</h3>
+                        <p>{{ i18n "about_point2_desc" }}</p>
+                    </div>
+                    <div class="about-point">
+                        <h3>{{ i18n "about_point3_title" }}</h3>
+                        <p>{{ i18n "about_point3_desc" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
@@ -615,6 +687,9 @@ make dev</pre>
             <p style="margin-top: 0.5rem;">
                 <a href="https://github.com/basilex/promenade" target="_blank">GitHub</a> • 
                 <a href="https://github.com/basilex/promenade/blob/dev/docs/INDEX.md" target="_blank">{{ i18n "footer_docs" }}</a>
+            </p>
+            <p style="margin-top: 1rem; opacity: 0.8; font-size: 0.9rem;">
+                {{ i18n "footer_founder" }} <a href="mailto:alexander.vasilenko@gmail.com" style="color: var(--secondary);">Oleksandr Vasylenko</a> • Senior Golang Developer
             </p>
         </div>
     </footer>
