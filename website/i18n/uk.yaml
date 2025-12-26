@@ -18,6 +18,19 @@ btn_quickstart: "Почати"
 btn_full_documentation: "Повна Документація"
 btn_view_all_modules: "Всі Модулі"
 
+# About Section / Про Проект
+about_title: "Чому Promenade?"
+about_intro: "Створення REST API не має означати написання одного й того ж boilerplate коду знову і знову. Promenade дає вам продакшн-готову основу, щоб ви могли зосередитись на головному: вашій бізнес-логіці."
+
+about_point1_title: "Для Стартапів і SaaS"
+about_point1_desc: "Запускайтесь швидше з вбудованою автентифікацією, RBAC, event-driven архітектурою та підтримкою multi-tenancy. Все необхідне для переходу від MVP до продакшену."
+
+about_point2_title: "Для Enterprise Команд"
+about_point2_desc: "Перевірені архітектурні патерни, комплексне тестування, audit trails та compliance-ready функції. Масштабуйтесь впевнено з модульним дизайном."
+
+about_point3_title: "Для Розробників"
+about_point3_desc: "Чистий, добре задокументований код за найкращими практиками індустрії. Зосередьтесь на функціях, а не на інфраструктурі. Підключайте тільки те, що потрібно."
+
 # Features / Можливості
 features_title: "Ключові Можливості"
 feature_architecture_title: "Clean Architecture"
@@ -72,3 +85,4 @@ form_error: "Упс! Щось пішло не так. Спробуйте ще р
 # Footer / Підвал
 footer_license: "Ліцензія"
 footer_docs: "Документація"
+footer_founder: "Створив"

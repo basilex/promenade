@@ -18,6 +18,19 @@ btn_quickstart: "Get Started"
 btn_full_documentation: "Full Documentation"
 btn_view_all_modules: "View All Modules"
 
+# About Section
+about_title: "Why Promenade?"
+about_intro: "Building REST APIs shouldn't mean writing the same boilerplate code over and over. Promenade gives you a production-ready foundation so you can focus on what matters: your business logic."
+
+about_point1_title: "For Startups & SaaS"
+about_point1_desc: "Launch faster with built-in authentication, RBAC, event-driven architecture, and multi-tenancy support. Everything you need to go from MVP to production."
+
+about_point2_title: "For Enterprise Teams"
+about_point2_desc: "Proven architecture patterns, comprehensive testing, audit trails, and compliance-ready features. Scale confidently with modular design that grows with your needs."
+
+about_point3_title: "For Developers"
+about_point3_desc: "Clean, well-documented code following industry best practices. Focus on features, not infrastructure. Plug in only what you need."
+
 # Features
 features_title: "Key Features"
 feature_architecture_title: "Clean Architecture"
@@ -72,3 +85,4 @@ form_error: "Oops! Something went wrong. Please try again."
 # Footer
 footer_license: "Licensed under"
 footer_docs: "Documentation"
+footer_founder: "Created by"

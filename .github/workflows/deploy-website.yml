@@ -54,8 +54,7 @@ jobs:
           cd website
           hugo \
             --gc \
-            --minify \
-            --baseURL "https://basilex.github.io/promenade/"
+            --minify
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
