@@ -162,21 +162,21 @@ make test-db-stop
 
 ```
 promenade/
-├── test/
-│   ├── helpers/
-│   │   ├── database.go          # [+] Хелпер БД
-│   │   └── fixtures.go          # [+] Тестові фікстури
-│   ├── integration/             # TODO
-│   ├── e2e/                     # TODO
-│   └── mocks/                   # TODO
-├── internal/adapter/repository/postgres/
-│   ├── user_repository_test.go         # [+] 8 тестів
-│   └── session_repository_test.go      # [+] 5 тестів
-├── docker/
-│   └── docker-compose.test.yml  # [+] Тестова БД
-├── Makefile.test.mk             # [+] Команди тестування
-└── docs/
-    └── TESTING_GUIDE.md         # [+] Документація
+ test/
+    helpers/
+       database.go          # [+] Хелпер БД
+       fixtures.go          # [+] Тестові фікстури
+    integration/             # TODO
+    e2e/                     # TODO
+    mocks/                   # TODO
+ internal/adapter/repository/postgres/
+    user_repository_test.go         # [+] 8 тестів
+    session_repository_test.go      # [+] 5 тестів
+ docker/
+    docker-compose.test.yml  # [+] Тестова БД
+ Makefile.test.mk             # [+] Команди тестування
+ docs/
+     TESTING_GUIDE.md         # [+] Документація
 ```
 
 ## Метрики

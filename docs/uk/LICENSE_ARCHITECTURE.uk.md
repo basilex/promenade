@@ -394,7 +394,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 | posts         | Безкоштовний     | N/A                | Основні соціальні функції          |
 | profiles      | Безкоштовний     | N/A                | Основні функції користувача        |
 | **analytics** | ** Комерційний** | **PRO/ENTERPRISE** | **Активний: Аналітика як преміум** |
-| warehouse     | 🔮 Запланований  | TBD                | Майбутнє: Управління інвентарем    |
+| warehouse     |  Запланований  | TBD                | Майбутнє: Управління інвентарем    |
 
 ### Дорожня Карта
 

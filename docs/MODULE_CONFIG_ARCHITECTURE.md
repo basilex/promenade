@@ -48,36 +48,36 @@ For each enabled module:
 
 ```
 config/
-├── app.dev.yaml          # Core config - development
-├── app.test.yaml         # Core config - test
-├── app.prod.yaml         # Core config - production
-└── modules.yaml          # Module registry (enabled/disabled)
+ app.dev.yaml          # Core config - development
+ app.test.yaml         # Core config - test
+ app.prod.yaml         # Core config - production
+ modules.yaml          # Module registry (enabled/disabled)
 
 internal/modules/
-├── posts/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Posts module dev config
-│   │   ├── config.test.yaml  # Posts module test config
-│   │   └── config.prod.yaml  # Posts module prod config
-│   ├── entity/
-│   ├── repository/
-│   ├── usecase/
-│   ├── handler/
-│   └── module.go            # Loads own config in Initialize()
-│
-├── warehouse/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Warehouse module dev config
-│   │   ├── config.test.yaml  # Warehouse module test config
-│   │   └── config.prod.yaml  # Warehouse module prod config
-│   └── module.go            # Loads own config in Initialize()
-│
-└── profiles/
-    ├── config/
-    │   ├── config.dev.yaml   # Profiles module dev config
-    │   ├── config.test.yaml  # Profiles module test config
-    │   └── config.prod.yaml  # Profiles module prod config
-    └── ...
+ posts/
+    config/
+       config.dev.yaml   # Posts module dev config
+       config.test.yaml  # Posts module test config
+       config.prod.yaml  # Posts module prod config
+    entity/
+    repository/
+    usecase/
+    handler/
+    module.go            # Loads own config in Initialize()
+
+ warehouse/
+    config/
+       config.dev.yaml   # Warehouse module dev config
+       config.test.yaml  # Warehouse module test config
+       config.prod.yaml  # Warehouse module prod config
+    module.go            # Loads own config in Initialize()
+
+ profiles/
+     config/
+        config.dev.yaml   # Profiles module dev config
+        config.test.yaml  # Profiles module test config
+        config.prod.yaml  # Profiles module prod config
+     ...
 ```
 
 ## Configuration Scopes
@@ -226,10 +226,10 @@ value := config.GetNestedSetting("settings", "max_content_length")
 
 ```
 config/modules/
-├── posts.dev.yaml         Centralized
-├── posts.test.yaml        Centralized
-├── posts.prod.yaml        Centralized
-└── ...
+ posts.dev.yaml         Centralized
+ posts.test.yaml        Centralized
+ posts.prod.yaml        Centralized
+ ...
 
 Core loads all module configs  Tight coupling
 Core passes configs to modules  Dependency
@@ -239,9 +239,9 @@ Core passes configs to modules  Dependency
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml        IModule-owned
-├── config.test.yaml       IModule-owned
-└── config.prod.yaml       IModule-owned
+ config.dev.yaml        IModule-owned
+ config.test.yaml       IModule-owned
+ config.prod.yaml       IModule-owned
 
 Module loads own config  Autonomous
 IModule manages own settings  Independent

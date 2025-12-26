@@ -6,16 +6,16 @@ The `posts` module demonstrates complete independence from the core system, impl
 
 ```
 internal/modules/posts/
-├── domain/
-│   ├── entity/          # Post entity + domain errors
-│   └── repository/      # Repository interface
-├── usecase/             # Business logic layer
-├── adapter/
-│   ├── http/           # HTTP handlers & DTOs
-│   └── repository/     # Database implementation
-├── tests/              # IModule-specific tests
-├── module.go           # Module integration
-└── register.go         # Auto-registration
+ domain/
+    entity/          # Post entity + domain errors
+    repository/      # Repository interface
+ usecase/             # Business logic layer
+ adapter/
+    http/           # HTTP handlers & DTOs
+    repository/     # Database implementation
+ tests/              # IModule-specific tests
+ module.go           # Module integration
+ register.go         # Auto-registration
 ```
 
 ## Independence Analysis
@@ -64,15 +64,15 @@ To create a new independent module:
 
    ```
    internal/modules/{name}/
-   ├── domain/entity/
-   ├── domain/repository/
-   ├── usecase/
-   ├── adapter/http/handler/
-   ├── adapter/http/dto/
-   ├── adapter/repository/postgres/
-   ├── tests/
-   ├── module.go
-   └── register.go
+    domain/entity/
+    domain/repository/
+    usecase/
+    adapter/http/handler/
+    adapter/http/dto/
+    adapter/repository/postgres/
+    tests/
+    module.go
+    register.go
    ```
 
 2. Copy implementation from core or write from scratch

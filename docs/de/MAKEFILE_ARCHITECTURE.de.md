@@ -1,4 +1,4 @@
-[🇬🇧 English](../MAKEFILE_ARCHITECTURE.md) | [🇺🇦 Українська](../uk/MAKEFILE_ARCHITECTURE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](MAKEFILE_ARCHITECTURE.pt.md) | [🇪🇸 Español](MAKEFILE_ARCHITECTURE.es.md)
+[ English](../MAKEFILE_ARCHITECTURE.md) | [ Українська](../uk/MAKEFILE_ARCHITECTURE.uk.md) |  **Deutsch** | [ Português](MAKEFILE_ARCHITECTURE.pt.md) | [ Español](MAKEFILE_ARCHITECTURE.es.md)
 
 ---
 

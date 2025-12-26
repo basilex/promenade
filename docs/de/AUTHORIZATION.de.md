@@ -51,9 +51,9 @@ Berechtigungen folgen dem `resource:action` Muster:
 
 ```
 resource:action
-   │       │
-   │       └─ Aktion: create, read, update, delete, manage, *
-   └───────── Ressource: posts, users, comments, roles, *
+          
+           Aktion: create, read, update, delete, manage, *
+    Ressource: posts, users, comments, roles, *
 ```
 
 ### Beispiele

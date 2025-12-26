@@ -50,30 +50,30 @@ A typical module follows Clean Architecture:
 
 ```
 modules/warehouse/
-├── domain/
-│   ├── entity/
-│   │   └── item.go
-│   └── repository/
-│       └── item_repository.go
-│
-├── usecase/
-│   └── item_usecase.go
-│
-├── adapter/
-│   ├── http/
-│   │   ├── handler/
-│   │   │   └── item_handler.go
-│   │   └── dto/
-│   │       └── item_dto.go
-│   └── repository/
-│       └── postgres/
-│           └── item_repository.go
-│
-├── migrations/
-│   ├── 001_create_warehouse_items.up.sql
-│   └── 001_create_warehouse_items.down.sql
-│
-└── module.go  # Module registration
+ domain/
+    entity/
+       item.go
+    repository/
+        item_repository.go
+
+ usecase/
+    item_usecase.go
+
+ adapter/
+    http/
+       handler/
+          item_handler.go
+       dto/
+           item_dto.go
+    repository/
+        postgres/
+            item_repository.go
+
+ migrations/
+    001_create_warehouse_items.up.sql
+    001_create_warehouse_items.down.sql
+
+ module.go  # Module registration
 ```
 
 ---

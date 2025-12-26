@@ -394,7 +394,7 @@ logger.Warn("Analytics license validation failed, continuing in dev mode",
 | posts         | Kostenlos        | N/A                | Kern-Social-Features             |
 | profiles      | Kostenlos        | N/A                | Kern-Benutzer-Features           |
 | **analytics** | ** Kommerziell** | **PRO/ENTERPRISE** | **Aktiv: Analytics als Premium** |
-| warehouse     | 🔮 Geplant       | TBD                | Zukunft: Bestandsverwaltung      |
+| warehouse     |  Geplant       | TBD                | Zukunft: Bestandsverwaltung      |
 
 ### Roadmap
 

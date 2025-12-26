@@ -1,4 +1,4 @@
-[🇬🇧 English](../VALIDATION.md) | [🇺🇦 Українська](../uk/VALIDATION.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/VALIDATION.pt.md) | [🇪🇸 Español](../es/VALIDATION.es.md)
+[ English](../VALIDATION.md) | [ Українська](../uk/VALIDATION.uk.md) |  **Deutsch** | [ Português](../pt/VALIDATION.pt.md) | [ Español](../es/VALIDATION.es.md)
 
 # Validierungsstrategie
 

@@ -1,4 +1,4 @@
-[🇬🇧 English](../LOGGING.md) | [🇺🇦 Українська](../uk/LOGGING.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/LOGGING.pt.md) | [🇪🇸 Español](../es/LOGGING.es.md)
+[ English](../LOGGING.md) | [ Українська](../uk/LOGGING.uk.md) |  **Deutsch** | [ Português](../pt/LOGGING.pt.md) | [ Español](../es/LOGGING.es.md)
 
 # Leitfaden für strukturiertes Logging
 

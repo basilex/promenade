@@ -1,6 +1,6 @@
 # Promenade
 
-[🇬🇧 English](README.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](README.de.md)
+[ English](README.md) |  **Українська** | [ Deutsch](README.de.md)
 
 > **Примітка про переклади**: Деякі технічні документи з внутрішніх директорій (migrations/, internal/, pkg/, test/) поки доступні тільки англійською мовою. **Всі документи з docs/ повністю перекладені українською мовою.** Див. [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md) для повного переліку доступних перекладів.
 
@@ -147,7 +147,7 @@ make build
 | **[docs/uk/ARCHITECTURE_QUICKREF.uk.md](docs/uk/ARCHITECTURE_QUICKREF.uk.md)** | Швидкий довідник, дерева рішень, поширені помилки      |
 | **[docs/uk/ARCHITECTURE_AUDIT.uk.md](docs/uk/ARCHITECTURE_AUDIT.uk.md)**       | Аудит відповідності архітектури, чеклист перевірки     |
 
-> 📖 **Додаткова документація**: internal/CORE.md та інші технічні документи доступні в [англійській версії](README.md).
+>  **Додаткова документація**: internal/CORE.md та інші технічні документи доступні в [англійській версії](README.md).
 
 ### Система Модулів
 
@@ -157,7 +157,7 @@ make build
 | **[docs/uk/MODULE_INDEPENDENCE.uk.md](docs/uk/MODULE_INDEPENDENCE.uk.md)**               | Правила автономії модулів, управління залежностями |
 | **[docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)** | Система конфігурації модулів                       |
 
-> 📖 **Додаткова документація**: internal/modules/ та інші технічні модулі описані в [англійській версії](README.md).
+>  **Додаткова документація**: internal/modules/ та інші технічні модулі описані в [англійській версії](README.md).
 
 ### Інфраструктура та Системи
 
@@ -165,7 +165,7 @@ make build
 | ------------------------------------------------------------------------ | ------------------------------------------------------ |
 | **[docs/uk/PURGE_ARCHITECTURE.uk.md](docs/uk/PURGE_ARCHITECTURE.uk.md)** | Автоматизована система очищення даних (registry-based) |
 
-> 📖 **Технічна документація**: migrations/, pkg/bus/, test/ та інші технічні компоненти описані в [англійській версії](README.md).
+>  **Технічна документація**: migrations/, pkg/bus/, test/ та інші технічні компоненти описані в [англійській версії](README.md).
 
 ### Гайди для Розробників
 
@@ -175,7 +175,7 @@ make build
 | **[docs/uk/TESTING_INFRASTRUCTURE.uk.md](docs/uk/TESTING_INFRASTRUCTURE.uk.md)** | Налаштування тестової інфраструктури    |
 | **[docs/uk/MAKEFILE_ARCHITECTURE.uk.md](docs/uk/MAKEFILE_ARCHITECTURE.uk.md)**   | Система Makefile (модульна архітектура) |
 
-> 📖 **Технічна документація**: test/ та інші інструменти розробки описані в [англійській версії](README.md).
+>  **Технічна документація**: test/ та інші інструменти розробки описані в [англійській версії](README.md).
 
 ### Технічні Довідники
 
@@ -313,14 +313,14 @@ make build
 
 ```
 internal/modules/{module}/
-├── module.go           # Реєстрація модуля та життєвий цикл
-├── domain/
-│   └── entity/         # Domain сутності
-├── repository/         # Інтерфейси доступу до даних та реалізації
-├── usecase/            # Бізнес-логіка
-├── adapter/
-│   └── handler/        # HTTP хендлери та DTO
-└── README.md           # Документація модуля
+ module.go           # Реєстрація модуля та життєвий цикл
+ domain/
+    entity/         # Domain сутності
+ repository/         # Інтерфейси доступу до даних та реалізації
+ usecase/            # Бізнес-логіка
+ adapter/
+    handler/        # HTTP хендлери та DTO
+ README.md           # Документація модуля
 ```
 
 ### Увімкнення/Вимкнення Модулів
@@ -348,39 +348,39 @@ modules:
 
 ```
 migrations/
-├── core/               # Core інфраструктура (завжди виконується першою)
-│   ├── 000001_core_init_uuid_v7.up.sql
-│   ├── 000002_core_auth_full.up.sql
-│   ├── 000003_core_rbac_full.up.sql
-│   ├── 000004_core_ref_timezones.up.sql
-│   ├── 000005_core_ref_languages.up.sql
-│   ├── 000006_core_ref_countries_currencies.up.sql    # 145 країн, 124 валюти
-│   ├── 000007_core_ref_regions_cities.up.sql          # 30 регіонів, 17 міст
-│   └── 000008_core_ref_payment_methods.up.sql         # 40+ способів оплати
-├── posts/              # Міграції модуля Posts
-│   ├── 000001_posts_posts.up.sql
-│   ├── 000002_posts_comments.up.sql
-│   └── 000003_posts_comment_likes.up.sql
-├── profiles/           # Міграції модуля Profiles
-│   ├── 000001_profiles_contacts.up.sql
-│   └── 000002_profiles_profiles.up.sql
-├── analytics/          # Міграції модуля Analytics
-│   └── 000001_analytics_tables.up.sql
-├── billing/            # Міграції модуля Billing (комерційний)
-│   ├── 000001_billing_plans.up.sql
-│   ├── 000002_billing_subscriptions.up.sql
-│   ├── 000003_billing_invoices.up.sql
-│   └── 000004_billing_payments.up.sql
-├── workflows/          # Міграції модуля Workflows (комерційний)
-│   ├── 000001_workflows_definitions.up.sql
-│   ├── 000002_workflows_instances.up.sql
-│   ├── 000003_workflows_steps.up.sql
-│   └── 000004_workflows_variables.up.sql
-├── notifications/      # Міграції модуля Notifications (комерційний)
-│   ├── 000001_notifications_tables.up.sql
-│   └── 000002_notifications_preferences.up.sql
-└── audit/              # Міграції модуля Audit (комерційний)
-    └── 000001_audit_tables.up.sql
+ core/               # Core інфраструктура (завжди виконується першою)
+    000001_core_init_uuid_v7.up.sql
+    000002_core_auth_full.up.sql
+    000003_core_rbac_full.up.sql
+    000004_core_ref_timezones.up.sql
+    000005_core_ref_languages.up.sql
+    000006_core_ref_countries_currencies.up.sql    # 145 країн, 124 валюти
+    000007_core_ref_regions_cities.up.sql          # 30 регіонів, 17 міст
+    000008_core_ref_payment_methods.up.sql         # 40+ способів оплати
+ posts/              # Міграції модуля Posts
+    000001_posts_posts.up.sql
+    000002_posts_comments.up.sql
+    000003_posts_comment_likes.up.sql
+ profiles/           # Міграції модуля Profiles
+    000001_profiles_contacts.up.sql
+    000002_profiles_profiles.up.sql
+ analytics/          # Міграції модуля Analytics
+    000001_analytics_tables.up.sql
+ billing/            # Міграції модуля Billing (комерційний)
+    000001_billing_plans.up.sql
+    000002_billing_subscriptions.up.sql
+    000003_billing_invoices.up.sql
+    000004_billing_payments.up.sql
+ workflows/          # Міграції модуля Workflows (комерційний)
+    000001_workflows_definitions.up.sql
+    000002_workflows_instances.up.sql
+    000003_workflows_steps.up.sql
+    000004_workflows_variables.up.sql
+ notifications/      # Міграції модуля Notifications (комерційний)
+    000001_notifications_tables.up.sql
+    000002_notifications_preferences.up.sql
+ audit/              # Міграції модуля Audit (комерційний)
+     000001_audit_tables.up.sql
 ```
 
 ### Команди Міграцій
@@ -706,7 +706,7 @@ curl http://localhost:8081/api/v1/health
 
 4. **Конфігурація**: [docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md](docs/uk/MODULE_CONFIG_ARCHITECTURE.uk.md)
 
-> 📖 **Додаткові шляхи навчання**: Технічні шляхи (DevOps, інфраструктура, інструменти) описані в [англійській версії](README.md).
+>  **Додаткові шляхи навчання**: Технічні шляхи (DevOps, інфраструктура, інструменти) описані в [англійській версії](README.md).
 
 ### Для Архітекторів
 
@@ -716,7 +716,7 @@ curl http://localhost:8081/api/v1/health
 
 **Повний індекс**: [docs/uk/INDEX.uk.md](docs/uk/INDEX.uk.md)
 
-> 📖 **Додаткова інформація**: Технічні деталі (міграції, Docker, інфраструктура) доступні в [англійській версії](README.md).
+>  **Додаткова інформація**: Технічні деталі (міграції, Docker, інфраструктура) доступні в [англійській версії](README.md).
 
 ---
 
@@ -746,4 +746,4 @@ curl http://localhost:8081/api/v1/health
 
 ---
 
-**Побудовано з Clean Architecture та Go** 🇺🇦
+**Побудовано з Clean Architecture та Go** 

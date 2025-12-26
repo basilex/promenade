@@ -162,21 +162,21 @@ make test-db-stop
 
 ```
 promenade/
-├── test/
-│   ├── helpers/
-│   │   ├── database.go          # [+] DB helper
-│   │   └── fixtures.go          # [+] Test fixtures
-│   ├── integration/             # TODO
-│   ├── e2e/                     # TODO
-│   └── mocks/                   # TODO
-├── internal/adapter/repository/postgres/
-│   ├── user_repository_test.go         # [+] 8 tests
-│   └── session_repository_test.go      # [+] 5 tests
-├── docker/
-│   └── docker-compose.test.yml  # [+] Test DB
-├── Makefile.test.mk             # [+] Test commands
-└── docs/
-    └── TESTING_GUIDE.md         # [+] Documentation
+ test/
+    helpers/
+       database.go          # [+] DB helper
+       fixtures.go          # [+] Test fixtures
+    integration/             # TODO
+    e2e/                     # TODO
+    mocks/                   # TODO
+ internal/adapter/repository/postgres/
+    user_repository_test.go         # [+] 8 tests
+    session_repository_test.go      # [+] 5 tests
+ docker/
+    docker-compose.test.yml  # [+] Test DB
+ Makefile.test.mk             # [+] Test commands
+ docs/
+     TESTING_GUIDE.md         # [+] Documentation
 ```
 
 ## Metrics

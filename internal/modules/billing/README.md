@@ -1,6 +1,6 @@
 # Billing Module - Commercial
 
-🇬🇧 **English** | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md)
+ **English** | [ Українська](README.uk.md) | [ Deutsch](README.de.md)
 
 **Status**: Commercial - Production-ready subscription billing system  
 **License**: Requires commercial license key  

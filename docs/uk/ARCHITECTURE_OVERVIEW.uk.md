@@ -1,6 +1,6 @@
 # Огляд архітектури Promenade
 
-[🇬🇧 English](../ARCHITECTURE_OVERVIEW.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
+[ English](../ARCHITECTURE_OVERVIEW.md) |  **Українська** | [ Deutsch](../de/ARCHITECTURE_OVERVIEW.de.md) | [ Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [ Español](../es/ARCHITECTURE_OVERVIEW.es.md)
 
 Цей документ надає високорівневий огляд архітектури Promenade, організованої навколо **принципів Clean Architecture** та **системи модулів на основі плагінів**.
 
@@ -225,24 +225,24 @@
 
 ```
 config/
-├── app.dev.yaml     - Основна інфраструктура (dev)
-├── app.test.yaml    - Основна інфраструктура (test)
-├── app.prod.yaml    - Основна інфраструктура (prod)
-└── modules.yaml     - Які модулі завантажувати
+ app.dev.yaml     - Основна інфраструктура (dev)
+ app.test.yaml    - Основна інфраструктура (test)
+ app.prod.yaml    - Основна інфраструктура (prod)
+ modules.yaml     - Які модулі завантажувати
 ```
 
 ### Конфігурація модулів
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml  - Налаштування модуля Posts (dev)
-├── config.test.yaml - Налаштування модуля Posts (test)
-└── config.prod.yaml - Налаштування модуля Posts (prod)
+ config.dev.yaml  - Налаштування модуля Posts (dev)
+ config.test.yaml - Налаштування модуля Posts (test)
+ config.prod.yaml - Налаштування модуля Posts (prod)
 
 internal/modules/profiles/config/
-├── config.dev.yaml  - Налаштування модуля Profiles (dev)
-├── config.test.yaml - Налаштування модуля Profiles (test)
-└── config.prod.yaml - Налаштування модуля Profiles (prod)
+ config.dev.yaml  - Налаштування модуля Profiles (dev)
+ config.test.yaml - Налаштування модуля Profiles (test)
+ config.prod.yaml - Налаштування модуля Profiles (prod)
 ```
 
 **Перевизначення середовища:** `.env.example` (опціонально)

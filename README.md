@@ -1,6 +1,6 @@
 # Promenade
 
-🇬🇧 **English** | [🇺🇦 Українська](README.uk.md) | [🇩🇪 Deutsch](README.de.md)
+ **English** | [ Українська](README.uk.md) | [ Deutsch](README.de.md)
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -314,14 +314,14 @@ Each module follows a consistent structure:
 
 ```
 internal/modules/{module}/
-├── module.go           # Module registration & lifecycle
-├── domain/
-│   └── entity/         # Domain entities
-├── repository/         # Data access interfaces & implementations
-├── usecase/            # Business logic
-├── adapter/
-│   └── handler/        # HTTP handlers & DTOs
-└── README.md           # Module-specific documentation
+ module.go           # Module registration & lifecycle
+ domain/
+    entity/         # Domain entities
+ repository/         # Data access interfaces & implementations
+ usecase/            # Business logic
+ adapter/
+    handler/        # HTTP handlers & DTOs
+ README.md           # Module-specific documentation
 ```
 
 ### Enabling/Disabling Modules
@@ -350,39 +350,39 @@ Each namespace maintains **independent version history**:
 
 ```
 migrations/
-├── core/               # Core infrastructure (always runs first)
-│   ├── 000001_core_init_uuid_v7.up.sql
-│   ├── 000002_core_auth_full.up.sql
-│   ├── 000003_core_rbac_full.up.sql
-│   ├── 000004_core_ref_timezones.up.sql
-│   ├── 000005_core_ref_languages.up.sql
-│   ├── 000006_core_ref_countries_currencies.up.sql    # 145 countries, 124 currencies
-│   ├── 000007_core_ref_regions_cities.up.sql          # 30 regions, 17 cities
-│   └── 000008_core_ref_payment_methods.up.sql         # 40+ payment methods
-├── posts/              # Posts module migrations
-│   ├── 000001_posts_posts.up.sql
-│   ├── 000002_posts_comments.up.sql
-│   └── 000003_posts_comment_likes.up.sql
-├── profiles/           # Profiles module migrations
-│   ├── 000001_profiles_contacts.up.sql
-│   └── 000002_profiles_profiles.up.sql
-├── analytics/          # Analytics module migrations
-│   └── 000001_analytics_tables.up.sql
-├── billing/            # Billing module migrations (commercial)
-│   ├── 000001_billing_plans.up.sql
-│   ├── 000002_billing_subscriptions.up.sql
-│   ├── 000003_billing_invoices.up.sql
-│   └── 000004_billing_payments.up.sql
-├── workflows/          # Workflows module migrations (commercial)
-│   ├── 000001_workflows_definitions.up.sql
-│   ├── 000002_workflows_instances.up.sql
-│   ├── 000003_workflows_steps.up.sql
-│   └── 000004_workflows_variables.up.sql
-├── notifications/      # Notifications module migrations (commercial)
-│   ├── 000001_notifications_tables.up.sql
-│   └── 000002_notifications_preferences.up.sql
-└── audit/              # Audit module migrations (commercial)
-    └── 000001_audit_tables.up.sql
+ core/               # Core infrastructure (always runs first)
+    000001_core_init_uuid_v7.up.sql
+    000002_core_auth_full.up.sql
+    000003_core_rbac_full.up.sql
+    000004_core_ref_timezones.up.sql
+    000005_core_ref_languages.up.sql
+    000006_core_ref_countries_currencies.up.sql    # 145 countries, 124 currencies
+    000007_core_ref_regions_cities.up.sql          # 30 regions, 17 cities
+    000008_core_ref_payment_methods.up.sql         # 40+ payment methods
+ posts/              # Posts module migrations
+    000001_posts_posts.up.sql
+    000002_posts_comments.up.sql
+    000003_posts_comment_likes.up.sql
+ profiles/           # Profiles module migrations
+    000001_profiles_contacts.up.sql
+    000002_profiles_profiles.up.sql
+ analytics/          # Analytics module migrations
+    000001_analytics_tables.up.sql
+ billing/            # Billing module migrations (commercial)
+    000001_billing_plans.up.sql
+    000002_billing_subscriptions.up.sql
+    000003_billing_invoices.up.sql
+    000004_billing_payments.up.sql
+ workflows/          # Workflows module migrations (commercial)
+    000001_workflows_definitions.up.sql
+    000002_workflows_instances.up.sql
+    000003_workflows_steps.up.sql
+    000004_workflows_variables.up.sql
+ notifications/      # Notifications module migrations (commercial)
+    000001_notifications_tables.up.sql
+    000002_notifications_preferences.up.sql
+ audit/              # Audit module migrations (commercial)
+     000001_audit_tables.up.sql
 ```
 
 ### Migration Commands
@@ -710,58 +710,58 @@ Both versions have:
 
 ```
 promenade/
-├── cmd/
-│   ├── api/                    # Main application entry point
-│   └── migrate/                # Migration CLI tool
-├── internal/
-│   ├── domain/                 # Core domain (entities, interfaces)
-│   │   ├── entity/             # Domain entities (User, Session)
-│   │   ├── event/              # Domain events (UserRegistered, etc.)
-│   │   └── repository/         # Repository interfaces
-│   ├── usecase/                # Core use cases (auth, RBAC)
-│   ├── adapter/                # Adapters (HTTP, repositories)
-│   │   ├── http/
-│   │   │   ├── v1/             # API v1 (handlers, DTOs, routes)
-│   │   │   └── v2/             # API v2
-│   │   └── repository/postgres/ # PostgreSQL implementations
-│   ├── infrastructure/         # Infrastructure (DB, config, scheduler)
-│   │   ├── database/
-│   │   ├── config/
-│   │   ├── notification/
-│   │   └── scheduler/
-│   └── modules/                # Business modules (plugins)
-│       ├── posts/              # Posts + comments + likes
-│       ├── profiles/           # User profiles + contacts
-│       ├── analytics/          # Analytics + reports (Commercial, active)
-│       └── warehouse/          # Inventory management (future)
-├── pkg/                        # Shared packages (reusable)
-│   ├── bus/                    # Event bus (memory/redis)
-│   ├── jwt/                    # JWT manager
-│   ├── logger/                 # Structured logger
-│   ├── migration/              # Migration manager
-│   ├── module/                 # Module registry
-│   ├── purge/                  # Purge registry
-│   ├── response/               # HTTP response helpers
-│   ├── uuidv7/                 # UUID v7 generator
-│   └── validator/              # Request validation
-├── migrations/                 # Namespace-based migrations
-│   ├── core/                   # Core migrations (auth, RBAC, ref data)
-│   ├── posts/                  # Posts module migrations
-│   └── profiles/               # Profiles module migrations
-├── test/                       # Test infrastructure
-│   ├── helpers/                # Test helpers (fixtures, DB setup)
-│   ├── integration/            # Integration tests
-│   ├── smoke/                  # Smoke tests
-│   └── mocks/                  # Mock implementations
-├── config/                     # Configuration files
-│   ├── app.dev.yaml            # Dev environment config
-│   ├── app.test.yaml           # Test environment config
-│   ├── app.prod.yaml           # Production config
-│   └── modules.yaml            # Module enable/disable + settings
-├── docs/                       # Documentation
-├── scripts/                    # Helper scripts
-├── templates/                  # Email templates
-└── docker/                     # Docker configs
+ cmd/
+    api/                    # Main application entry point
+    migrate/                # Migration CLI tool
+ internal/
+    domain/                 # Core domain (entities, interfaces)
+       entity/             # Domain entities (User, Session)
+       event/              # Domain events (UserRegistered, etc.)
+       repository/         # Repository interfaces
+    usecase/                # Core use cases (auth, RBAC)
+    adapter/                # Adapters (HTTP, repositories)
+       http/
+          v1/             # API v1 (handlers, DTOs, routes)
+          v2/             # API v2
+       repository/postgres/ # PostgreSQL implementations
+    infrastructure/         # Infrastructure (DB, config, scheduler)
+       database/
+       config/
+       notification/
+       scheduler/
+    modules/                # Business modules (plugins)
+        posts/              # Posts + comments + likes
+        profiles/           # User profiles + contacts
+        analytics/          # Analytics + reports (Commercial, active)
+        warehouse/          # Inventory management (future)
+ pkg/                        # Shared packages (reusable)
+    bus/                    # Event bus (memory/redis)
+    jwt/                    # JWT manager
+    logger/                 # Structured logger
+    migration/              # Migration manager
+    module/                 # Module registry
+    purge/                  # Purge registry
+    response/               # HTTP response helpers
+    uuidv7/                 # UUID v7 generator
+    validator/              # Request validation
+ migrations/                 # Namespace-based migrations
+    core/                   # Core migrations (auth, RBAC, ref data)
+    posts/                  # Posts module migrations
+    profiles/               # Profiles module migrations
+ test/                       # Test infrastructure
+    helpers/                # Test helpers (fixtures, DB setup)
+    integration/            # Integration tests
+    smoke/                  # Smoke tests
+    mocks/                  # Mock implementations
+ config/                     # Configuration files
+    app.dev.yaml            # Dev environment config
+    app.test.yaml           # Test environment config
+    app.prod.yaml           # Production config
+    modules.yaml            # Module enable/disable + settings
+ docs/                       # Documentation
+ scripts/                    # Helper scripts
+ templates/                  # Email templates
+ docker/                     # Docker configs
 ```
 
 ---

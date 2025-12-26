@@ -1,6 +1,6 @@
 # Архітектура Конфігурації Модулів
 
-🇬🇧 [English](../MODULE_CONFIG_ARCHITECTURE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_CONFIG_ARCHITECTURE.de.md) | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
+ [English](../MODULE_CONFIG_ARCHITECTURE.md) |  **Українська** | [ Deutsch](../de/MODULE_CONFIG_ARCHITECTURE.de.md) | [ Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [ Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
 
 ## Огляд
 
@@ -50,36 +50,36 @@
 
 ```
 config/
-├── app.dev.yaml          # Конфігурація ядра - розробка
-├── app.test.yaml         # Конфігурація ядра - тести
-├── app.prod.yaml         # Конфігурація ядра - продакшен
-└── modules.yaml          # Реєстр модулів (увімкнено/вимкнено)
+ app.dev.yaml          # Конфігурація ядра - розробка
+ app.test.yaml         # Конфігурація ядра - тести
+ app.prod.yaml         # Конфігурація ядра - продакшен
+ modules.yaml          # Реєстр модулів (увімкнено/вимкнено)
 
 internal/modules/
-├── posts/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Конфігурація модуля posts для розробки
-│   │   ├── config.test.yaml  # Конфігурація модуля posts для тестів
-│   │   └── config.prod.yaml  # Конфігурація модуля posts для продакшену
-│   ├── entity/
-│   ├── repository/
-│   ├── usecase/
-│   ├── handler/
-│   └── module.go            # Завантажує власну конфігурацію в Initialize()
-│
-├── warehouse/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Конфігурація модуля warehouse для розробки
-│   │   ├── config.test.yaml  # Конфігурація модуля warehouse для тестів
-│   │   └── config.prod.yaml  # Конфігурація модуля warehouse для продакшену
-│   └── module.go            # Завантажує власну конфігурацію в Initialize()
-│
-└── profiles/
-    ├── config/
-    │   ├── config.dev.yaml   # Конфігурація модуля profiles для розробки
-    │   ├── config.test.yaml  # Конфігурація модуля profiles для тестів
-    │   └── config.prod.yaml  # Конфігурація модуля profiles для продакшену
-    └── ...
+ posts/
+    config/
+       config.dev.yaml   # Конфігурація модуля posts для розробки
+       config.test.yaml  # Конфігурація модуля posts для тестів
+       config.prod.yaml  # Конфігурація модуля posts для продакшену
+    entity/
+    repository/
+    usecase/
+    handler/
+    module.go            # Завантажує власну конфігурацію в Initialize()
+
+ warehouse/
+    config/
+       config.dev.yaml   # Конфігурація модуля warehouse для розробки
+       config.test.yaml  # Конфігурація модуля warehouse для тестів
+       config.prod.yaml  # Конфігурація модуля warehouse для продакшену
+    module.go            # Завантажує власну конфігурацію в Initialize()
+
+ profiles/
+     config/
+        config.dev.yaml   # Конфігурація модуля profiles для розробки
+        config.test.yaml  # Конфігурація модуля profiles для тестів
+        config.prod.yaml  # Конфігурація модуля profiles для продакшену
+     ...
 ```
 
 ## Області Конфігурації
@@ -228,10 +228,10 @@ value := config.GetNestedSetting("settings", "max_content_length")
 
 ```
 config/modules/
-├── posts.dev.yaml          Централізовано
-├── posts.test.yaml         Централізовано
-├── posts.prod.yaml         Централізовано
-└── ...
+ posts.dev.yaml          Централізовано
+ posts.test.yaml         Централізовано
+ posts.prod.yaml         Централізовано
+ ...
 
 Ядро завантажує всі конфігурації модулів   Тісний зв'язок
 Ядро передає конфігурації модулям   Залежність
@@ -241,9 +241,9 @@ config/modules/
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml         Належить модулю
-├── config.test.yaml        Належить модулю
-└── config.prod.yaml        Належить модулю
+ config.dev.yaml         Належить модулю
+ config.test.yaml        Належить модулю
+ config.prod.yaml        Належить модулю
 
 Модуль завантажує власну конфігурацію   Автономний
 Модуль керує власними налаштуваннями   Незалежний

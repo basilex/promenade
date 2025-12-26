@@ -29,11 +29,11 @@ The contact form uses **Formspree** - a free service for handling form submissio
 
 ## Features Included
 
-✅ Spam protection (reCAPTCHA)  
-✅ Email notifications  
-✅ Auto-reply to sender  
-✅ File uploads (optional)  
-✅ Custom thank you page
+ Spam protection (reCAPTCHA)  
+ Email notifications  
+ Auto-reply to sender  
+ File uploads (optional)  
+ Custom thank you page
 
 ## Free Plan Limits
 

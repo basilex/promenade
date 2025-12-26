@@ -1,6 +1,6 @@
 # Посібник з тестування Redis IBus
 
-[🇬🇧 English](../REDIS_BUS_TESTING.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](REDIS_BUS_TESTING.de.md) | [🇵🇹 Português](REDIS_BUS_TESTING.pt.md) | [🇪🇸 Español](REDIS_BUS_TESTING.es.md)
+[ English](../REDIS_BUS_TESTING.md) |  **Українська** | [ Deutsch](REDIS_BUS_TESTING.de.md) | [ Português](REDIS_BUS_TESTING.pt.md) | [ Español](REDIS_BUS_TESTING.es.md)
 
 ---
 

@@ -51,9 +51,9 @@ Permissions follow the `resource:action` pattern:
 
 ```
 resource:action
-   │       │
-   │       └─ Action: create, read, update, delete, manage, *
-   └───────── Resource: posts, users, comments, roles, *
+          
+           Action: create, read, update, delete, manage, *
+    Resource: posts, users, comments, roles, *
 ```
 
 ### Examples

@@ -1,6 +1,6 @@
 # Індекс Документації Promenade
 
-[🇬🇧 English](../INDEX.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/INDEX.de.md) | [🇵🇹 Português](../pt/INDEX.pt.md) | [🇪🇸 Español](../es/INDEX.es.md)
+[ English](../INDEX.md) |  **Українська** | [ Deutsch](../de/INDEX.de.md) | [ Português](../pt/INDEX.pt.md) | [ Español](../es/INDEX.es.md)
 
 Ця тека містить вичерпну документацію щодо архітектури додатку Promenade, робочих процесів розробки та найкращих практик.
 

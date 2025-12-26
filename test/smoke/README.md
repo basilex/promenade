@@ -6,17 +6,17 @@ Smoke tests verify that critical API functionality works correctly in a running 
 
 Smoke tests are quick, essential tests that verify the application's core functionality:
 
-- ✅ Can the API start?
-- ✅ Are endpoints accessible?
-- ✅ Do critical workflows work end-to-end?
-- ✅ Is the database connected?
+-  Can the API start?
+-  Are endpoints accessible?
+-  Do critical workflows work end-to-end?
+-  Is the database connected?
 
 **Not covered by smoke tests:**
 
-- ❌ Edge cases
-- ❌ Performance/load testing
-- ❌ Unit test logic
-- ❌ Error handling details
+-  Edge cases
+-  Performance/load testing
+-  Unit test logic
+-  Error handling details
 
 ## Quick Start
 
@@ -48,40 +48,39 @@ cd test/smoke
 ### Expected Output
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
    Promenade API - Smoke Tests
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 
   API:         http://localhost:8081
   Environment: dev
   Date:        2025-12-25 14:30:00
 
 ℹ Checking required tools...
-✓ All required tools found
+ All required tools found
 ℹ Waiting for API to be ready...
-✓ API is ready!
+ API is ready!
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Running Smoke Tests
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Health Check
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ℹ Testing GET /health...
-✓ Health check passed
-✓ Test passed: 01_health
+ Health check passed
+ Test passed: 01_health
 
 ...
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Test Summary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Total tests:  5
   Passed:       5
   Failed:       0
 
-✓ All smoke tests passed!
+ All smoke tests passed!
 ```
 
 ## Test Structure

@@ -20,10 +20,10 @@ This audit confirms the architecture is **correctly implemented** with proper se
 
 ```
 internal/infrastructure/
-├── config/         Configuration loading (YAML + env)
-├── database/       Database connection + transactions
-├── email/          Email service
-└── scheduler/      Cron scheduler
+ config/         Configuration loading (YAML + env)
+ database/       Database connection + transactions
+ email/          Email service
+ scheduler/      Cron scheduler
 ```
 
 **Status:** Correct - Core provides infrastructure as a service to modules.
@@ -34,10 +34,10 @@ internal/infrastructure/
 
 ```
 internal/domain/entity/
-├── country.go      Countries (ISO2/3, regions) - 195+ entries
-├── timezone.go     Timezones (IANA) - 500+ entries
-├── language.go     Languages (ISO 639) - 180+ entries
-└── (currency via repository)  Currencies (ISO 4217) - 170+ entries
+ country.go      Countries (ISO2/3, regions) - 195+ entries
+ timezone.go     Timezones (IANA) - 500+ entries
+ language.go     Languages (ISO 639) - 180+ entries
+ (currency via repository)  Currencies (ISO 4217) - 170+ entries
 ```
 
 **Purpose:** Stable, rarely-changing data shared across modules.
@@ -48,8 +48,8 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── country_usecase.go   CRUD for countries
-└── currency_usecase.go  CRUD for currencies
+ country_usecase.go   CRUD for countries
+ currency_usecase.go  CRUD for currencies
 ```
 
 ---
@@ -58,10 +58,10 @@ internal/usecase/
 
 ```
 internal/domain/entity/
-├── user.go         Core user entity (auth only: email, password, roles)
-├── session.go      JWT sessions
-├── role.go         RBAC roles (5 system roles)
-└── permission.go   RBAC permissions (resource:action)
+ user.go         Core user entity (auth only: email, password, roles)
+ session.go      JWT sessions
+ role.go         RBAC roles (5 system roles)
+ permission.go   RBAC permissions (resource:action)
 ```
 
 **Purpose:** Security and access control - fundamental to all modules.
@@ -72,9 +72,9 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── auth_usecase.go        Registration, login, password management
-├── role_usecase.go        Role management
-└── permission_usecase.go  Permission management
+ auth_usecase.go        Registration, login, password management
+ role_usecase.go        Role management
+ permission_usecase.go  Permission management
 ```
 
 ---
@@ -83,10 +83,10 @@ internal/usecase/
 
 ```
 pkg/module/
-├── module.go       Module interface
-├── registry.go     Module registry + dependency resolution
-├── config/         Module config loader
-└── base.go         BaseModule helper
+ module.go       Module interface
+ registry.go     Module registry + dependency resolution
+ config/         Module config loader
+ base.go         BaseModule helper
 ```
 
 **Purpose:** Orchestration - discover, initialize, start/stop modules.
@@ -106,10 +106,10 @@ pkg/module/
 
 ```
 pkg/bus/
-├── bus.go          Event bus interface
-├── memory/         In-memory adapter (dev/test)
-├── redis/          Redis adapter (production)
-└── factory.go      Adapter factory with fallback
+ bus.go          Event bus interface
+ memory/         In-memory adapter (dev/test)
+ redis/          Redis adapter (production)
+ factory.go      Adapter factory with fallback
 ```
 
 **Purpose:** Inter-module communication infrastructure.
@@ -122,13 +122,13 @@ pkg/bus/
 
 ```
 pkg/purge/
-├── handler.go      Handler registry (modules register handlers)
-└── (NEW) Policy registry (modules register retention policies)
+ handler.go      Handler registry (modules register handlers)
+ (NEW) Policy registry (modules register retention policies)
 ```
 
 ```
 internal/usecase/
-└── purge_usecase.go  Orchestration only (gets policies from registry)
+ purge_usecase.go  Orchestration only (gets policies from registry)
 ```
 
 **Purpose:** Scheduler infrastructure - modules define what/when to purge.
@@ -145,17 +145,17 @@ internal/usecase/
 
 ```
 posts/
-├── module.go               Module implementation
-├── register.go             Auto-registration via init()
-├── config/                 Own YAML configs (dev, test, prod)
-│   └── config.*.yaml
-├── domain/entity/          Post, Comment, Like entities
-├── usecase/                Business logic
-├── adapter/
-│   ├── http/               Handlers, DTOs, routes
-│   ├── repository/         Postgres implementations
-│   └── purge/              Purge handlers for posts+comments
-└── README.md
+ module.go               Module implementation
+ register.go             Auto-registration via init()
+ config/                 Own YAML configs (dev, test, prod)
+    config.*.yaml
+ domain/entity/          Post, Comment, Like entities
+ usecase/                Business logic
+ adapter/
+    http/               Handlers, DTOs, routes
+    repository/         Postgres implementations
+    purge/              Purge handlers for posts+comments
+ README.md
 ```
 
 **Features:**
@@ -173,15 +173,15 @@ posts/
 
 ```
 profiles/
-├── module.go               Module implementation
-├── register.go             Auto-registration
-├── config/                 Own YAML configs
-│   └── config.*.yaml
-├── entity/                 UserProfile, UserContact entities
-├── usecase/                Business logic
-└── adapter/
-    ├── http/               Handlers, DTOs, routes
-    └── repository/         Postgres implementations
+ module.go               Module implementation
+ register.go             Auto-registration
+ config/                 Own YAML configs
+    config.*.yaml
+ entity/                 UserProfile, UserContact entities
+ usecase/                Business logic
+ adapter/
+     http/               Handlers, DTOs, routes
+     repository/         Postgres implementations
 ```
 
 **Features:**
@@ -462,25 +462,25 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 
 ```
 migrations/core/
-├── 000001_core_init_uuid_v7.up.sql            UUID v7 + triggers
-├── 000002_core_auth_full.up.sql               Auth tables (users, sessions, tokens)
-├── 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
-├── 000004_core_ref_timezones.up.sql           Reference data
-├── 000005_core_ref_languages.up.sql           Reference data
-└── 000006_core_ref_countries_currencies.up.sql Reference data
+ 000001_core_init_uuid_v7.up.sql            UUID v7 + triggers
+ 000002_core_auth_full.up.sql               Auth tables (users, sessions, tokens)
+ 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
+ 000004_core_ref_timezones.up.sql           Reference data
+ 000005_core_ref_languages.up.sql           Reference data
+ 000006_core_ref_countries_currencies.up.sql Reference data
 ```
 
 Module migrations (namespace-based with module prefixes):**
 
 ```
 migrations/posts/
-├── 000001_posts_posts.up.sql                  Posts table
-├── 000002_posts_comments.up.sql               Comments table
-└── 000003_posts_comment_likes.up.sql          Comment likes
+ 000001_posts_posts.up.sql                  Posts table
+ 000002_posts_comments.up.sql               Comments table
+ 000003_posts_comment_likes.up.sql          Comment likes
 
 migrations/profiles/
-├── 000001_profiles_contacts.up.sql            User contacts
-└── 000002_profiles_profiles.up.sql            User profiles
+ 000001_profiles_contacts.up.sql            User contacts
+ 000002_profiles_profiles.up.sql            User profiles
 ```
 
 **Future:** Modules can register migrations programmatically:
@@ -503,9 +503,9 @@ func (m *MyModule) RegisterMigrations() []module.Migration {
 
 ```
 internal/
-├── domain/entity/*_test.go         Entity unit tests
-├── usecase/*_test.go               Use case unit tests
-└── adapter/repository/*_test.go    Repository integration tests
+ domain/entity/*_test.go         Entity unit tests
+ usecase/*_test.go               Use case unit tests
+ adapter/repository/*_test.go    Repository integration tests
 ```
 
 **Focus:** Auth, RBAC, reference data, infrastructure.
@@ -516,9 +516,9 @@ internal/
 
 ```
 internal/modules/posts/
-├── usecase/*_test.go               Business logic unit tests
-├── adapter/repository/*_test.go    Repository tests
-└── module_test.go                  Module integration tests
+ usecase/*_test.go               Business logic unit tests
+ adapter/repository/*_test.go    Repository tests
+ module_test.go                  Module integration tests
 ```
 
 **Status:** Each module tests its own logic independently
@@ -529,10 +529,10 @@ internal/modules/posts/
 
 ```
 test/smoke/
-├── auth_smoke_test.go              Core auth flows
-├── rbac_smoke_test.go              Core RBAC flows
-├── user_post_smoke_test.go         Posts module (needs update)
-└── user_profile_smoke_test.go      Profiles module (needs update)
+ auth_smoke_test.go              Core auth flows
+ rbac_smoke_test.go              Core RBAC flows
+ user_post_smoke_test.go         Posts module (needs update)
+ user_profile_smoke_test.go      Profiles module (needs update)
 ```
 
 **Status:** Smoke tests need import path updates after module migration

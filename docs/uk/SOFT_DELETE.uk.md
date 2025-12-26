@@ -1,4 +1,4 @@
-[🇬🇧 English](../SOFT_DELETE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](SOFT_DELETE.de.md) | [🇵🇹 Português](SOFT_DELETE.pt.md) | [🇪🇸 Español](SOFT_DELETE.es.md)
+[ English](../SOFT_DELETE.md) |  **Українська** | [ Deutsch](SOFT_DELETE.de.md) | [ Português](SOFT_DELETE.pt.md) | [ Español](SOFT_DELETE.es.md)
 
 ---
 

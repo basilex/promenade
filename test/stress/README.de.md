@@ -6,10 +6,10 @@ Performance- und Lasttests für Promenade API mit **wrk** - einem modernen HTTP-
 
 Stresstests bringen die API an ihre Grenzen, um Folgendes zu finden:
 
-- 🎯 **Maximaler Durchsatz** (Anfragen pro Sekunde)
-- 🎯 **Latenz unter Last** (p50, p95, p99)
-- 🎯 **Schwachstellen** (wann versagt es?)
-- 🎯 **Ressourcennutzung** (CPU, Speicher, Verbindungen)
+-  **Maximaler Durchsatz** (Anfragen pro Sekunde)
+-  **Latenz unter Last** (p50, p95, p99)
+-  **Schwachstellen** (wann versagt es?)
+-  **Ressourcennutzung** (CPU, Speicher, Verbindungen)
 
 ## Voraussetzungen
 
@@ -157,10 +157,10 @@ wrk -t12 -c1000 -d120s http://localhost:8081/api/v1/health
 ```bash
 wrk -t4 -c100 -d30s -s script.lua http://localhost:8081/api/v1/endpoint
     ↑    ↑    ↑      ↑
-    │    │    │      └─ Lua-Skript für komplexe Szenarien
-    │    │    └─ Dauer (10s, 30s, 1m, 2h)
-    │    └─ Verbindungen (gleichzeitige Anfragen)
-    └─ Threads (zu verwendende CPU-Kerne)
+                   Lua-Skript für komplexe Szenarien
+             Dauer (10s, 30s, 1m, 2h)
+         Verbindungen (gleichzeitige Anfragen)
+     Threads (zu verwendende CPU-Kerne)
 ```
 
 **Empfohlen:**
@@ -239,7 +239,7 @@ Transfer/sec:      4.11MB
 | **p99 Latenz**      | <100ms   | <500ms   | >1s      |
 | **Fehlerrate**      | 0%       | <1%      | >5%      |
 
-### Warnsignale 🚨
+### Warnsignale 
 
 - **Hoher Stdev:** Inkonsistente Performance (untersuchen)
 - **Max >> Avg:** Gelegentlich sehr langsame Anfragen (Caching-Problem?)

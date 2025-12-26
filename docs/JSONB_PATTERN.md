@@ -1,10 +1,10 @@
 # PostgreSQL JSONB Pattern - MUST HAVE
 
-🇬🇧 **English** | [🇺🇦 Українська](uk/JSONB_PATTERN.uk.md) | [🇩🇪 Deutsch](de/JSONB_PATTERN.de.md)
+ **English** | [ Українська](uk/JSONB_PATTERN.uk.md) | [ Deutsch](de/JSONB_PATTERN.de.md)
 
 ---
 
-## ⚠️ CRITICAL: This is the ONLY correct way to work with JSONB in Promenade
+##  CRITICAL: This is the ONLY correct way to work with JSONB in Promenade
 
 **DO NOT** invent new patterns, use manual marshaling, or create dual fields (struct + []byte).
 
@@ -18,7 +18,7 @@ PostgreSQL JSONB columns cannot directly map to Go structs. We **MUST** implemen
 
 ### What Went Wrong Before
 
-❌ **Profiles Module** (old pattern - DO NOT COPY):
+ **Profiles Module** (old pattern - DO NOT COPY):
 
 ```go
 // BAD: Dual fields + manual marshaling
@@ -42,7 +42,7 @@ func (r *Repository) Create(ctx context.Context, profile *UserProfile) error {
 - NULL handling inconsistent
 - Hard to maintain
 
-❌ **Billing Module** (untested pattern):
+ **Billing Module** (untested pattern):
 
 ```go
 // UNKNOWN: No Scanner/Valuer, no integration tests
@@ -57,7 +57,7 @@ type Plan struct {
 - Relies on undefined sqlx behavior
 - Breaks on complex types
 
-❌ **Workflows Module** (broken pattern that started this):
+ **Workflows Module** (broken pattern that started this):
 
 ```go
 // BROKEN: Mixed pattern
@@ -81,7 +81,7 @@ type WorkflowSchema struct {
 
 ## The Correct Pattern: pkg/jsonb
 
-✅ **Notifications Module** (reference implementation):
+ **Notifications Module** (reference implementation):
 
 ```go
 import "github.com/basilex/promenade/pkg/jsonb"
@@ -680,7 +680,7 @@ make test-module-mymodule
 
 ## Common Mistakes
 
-### ❌ Using map[string]interface{} directly
+###  Using map[string]interface{} directly
 
 ```go
 // WRONG - no Scanner/Valuer
@@ -691,7 +691,7 @@ type Entity struct {
 
 Fix: Use `jsonb.Map`
 
-### ❌ Creating custom JSONB types in modules
+###  Creating custom JSONB types in modules
 
 ```go
 // WRONG - reinventing the wheel
@@ -701,7 +701,7 @@ func (m MyJSONB) Value() (driver.Value, error) { ... }
 
 Fix: Use `pkg/jsonb.Map` or `pkg/jsonb.JSON[T]`
 
-### ❌ Manual marshaling in repository
+###  Manual marshaling in repository
 
 ```go
 // WRONG - unnecessary manual work
@@ -711,7 +711,7 @@ _, err := db.Exec(query, data)
 
 Fix: Pass `entity.Data` directly, let sqlx handle it
 
-### ❌ Forgetting to check Valid for nullable fields
+###  Forgetting to check Valid for nullable fields
 
 ```go
 // WRONG - panic if NULL
@@ -793,4 +793,4 @@ If you're unsure how to implement JSONB for your use case:
 2. Read [pkg/jsonb/jsonb_test.go](../pkg/jsonb/jsonb_test.go) - Test examples
 3. Ask in team chat or create an issue
 
-**Remember:** This is the ONLY pattern. No exceptions. No "but in my case...". Use `pkg/jsonb`. 🚀
+**Remember:** This is the ONLY pattern. No exceptions. No "but in my case...". Use `pkg/jsonb`. 

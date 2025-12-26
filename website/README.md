@@ -15,14 +15,14 @@ Simple, single-page landing site for Promenade REST API Framework.
 
 ```
 website/
-├── hugo.toml              # Hugo config with multi-language support
-├── layouts/
-│   └── index.html         # Single-page landing (EN/UK/DE)
-├── i18n/                  # Translations
-│   ├── en.yaml            # English
-│   ├── uk.yaml            # Ukrainian
-│   └── de.yaml            # German
-└── static/                # Assets (images, favicon, etc.)
+ hugo.toml              # Hugo config with multi-language support
+ layouts/
+    index.html         # Single-page landing (EN/UK/DE)
+ i18n/                  # Translations
+    en.yaml            # English
+    uk.yaml            # Ukrainian
+    de.yaml            # German
+ static/                # Assets (images, favicon, etc.)
 ```
 
 ## Features
@@ -39,8 +39,8 @@ website/
 ### Multi-Language
 
 - English (EN) - Primary
-- Ukrainian (🇺🇦) - Full translation
-- German (🇩🇪) - Full translation
+- Ukrainian () - Full translation
+- German () - Full translation
 - Language switcher in navigation
 
 ### Links to GitHub

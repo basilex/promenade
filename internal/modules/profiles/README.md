@@ -460,35 +460,35 @@ make test-integration
 
 ```
 internal/modules/profiles/
-├── module.go                          # IModule registration & lifecycle
-│
-├── domain/
-│   └── entity/
-│       ├── user_profile.go            # UserProfile entity with validation
-│       └── user_contact.go            # UserContact entity
-│
-├── repository/
-│   ├── profile_repository.go          # Repository interface
-│   ├── contact_repository.go
-│   └── postgres/
-│       ├── profile_repository.go      # PostgreSQL implementation
-│       └── contact_repository.go
-│
-├── usecase/
-│   ├── profile_usecase.go             # Profile business logic
-│   ├── profile_usecase_test.go
-│   ├── contact_usecase.go             # Contact business logic
-│   └── contact_usecase_test.go
-│
-└── adapter/
-    └── handler/
-        ├── profile_handler.go         # HTTP handlers
-        ├── contact_handler.go
-        ├── dto/
-        │   ├── profile_dto.go         # Request/Response DTOs
-        │   └── contact_dto.go
-        └── router/
-            └── profiles_router.go     # Route registration
+ module.go                          # IModule registration & lifecycle
+
+ domain/
+    entity/
+        user_profile.go            # UserProfile entity with validation
+        user_contact.go            # UserContact entity
+
+ repository/
+    profile_repository.go          # Repository interface
+    contact_repository.go
+    postgres/
+        profile_repository.go      # PostgreSQL implementation
+        contact_repository.go
+
+ usecase/
+    profile_usecase.go             # Profile business logic
+    profile_usecase_test.go
+    contact_usecase.go             # Contact business logic
+    contact_usecase_test.go
+
+ adapter/
+     handler/
+         profile_handler.go         # HTTP handlers
+         contact_handler.go
+         dto/
+            profile_dto.go         # Request/Response DTOs
+            contact_dto.go
+         router/
+             profiles_router.go     # Route registration
 ```
 
 ---
@@ -594,7 +594,7 @@ Potential features (not yet implemented):
 
 ---
 
-## 📚 Related Documentation
+##  Related Documentation
 
 - **[../README.md](../README.md)** - IModule system overview
 - **[../../README.md](../../README.md)** - Main project README

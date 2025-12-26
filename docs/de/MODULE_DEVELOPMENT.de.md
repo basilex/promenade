@@ -1,6 +1,6 @@
 # Modul-Entwicklungs-Leitfaden
 
-[🇬🇧 English](../MODULE_DEVELOPMENT.md) | [🇺🇦 Українська](../uk/MODULE_DEVELOPMENT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[ English](../MODULE_DEVELOPMENT.md) | [ Українська](../uk/MODULE_DEVELOPMENT.uk.md) |  **Deutsch** | [ Português](../pt/MODULE_DEVELOPMENT.pt.md) | [ Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Dieser Leitfaden erklärt, wie man benutzerdefinierte IModule für Promenade unter Verwendung der Plugin-Architektur entwickelt.
 
@@ -52,30 +52,30 @@ Ein typisches Modul folgt Clean Architecture:
 
 ```
 modules/warehouse/
-├── domain/
-│   ├── entity/
-│   │   └── item.go
-│   └── repository/
-│       └── item_repository.go
-│
-├── usecase/
-│   └── item_usecase.go
-│
-├── adapter/
-│   ├── http/
-│   │   ├── handler/
-│   │   │   └── item_handler.go
-│   │   └── dto/
-│   │       └── item_dto.go
-│   └── repository/
-│       └── postgres/
-│           └── item_repository.go
-│
-├── migrations/
-│   ├── 001_create_warehouse_items.up.sql
-│   └── 001_create_warehouse_items.down.sql
-│
-└── module.go  # Modul-Registrierung
+ domain/
+    entity/
+       item.go
+    repository/
+        item_repository.go
+
+ usecase/
+    item_usecase.go
+
+ adapter/
+    http/
+       handler/
+          item_handler.go
+       dto/
+           item_dto.go
+    repository/
+        postgres/
+            item_repository.go
+
+ migrations/
+    001_create_warehouse_items.up.sql
+    001_create_warehouse_items.down.sql
+
+ module.go  # Modul-Registrierung
 ```
 
 ---

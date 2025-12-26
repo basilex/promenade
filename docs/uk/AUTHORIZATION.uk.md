@@ -51,9 +51,9 @@ Middleware Авторизації надає **гнучкий, детальни�
 
 ```
 resource:action
-   │       │
-   │       └─ Дія: create, read, update, delete, manage, *
-   └───────── Ресурс: posts, users, comments, roles, *
+          
+           Дія: create, read, update, delete, manage, *
+    Ресурс: posts, users, comments, roles, *
 ```
 
 ### Приклади

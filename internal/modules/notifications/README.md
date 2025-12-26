@@ -49,30 +49,30 @@ Multi-channel notification system with user preferences, quiet hours, and delive
 
 ```
 notifications/
-├── domain/
-│   ├── entity/                       # Domain entities
-│   │   ├── notification.go           # Notification entity with status machine
-│   │   └── user_preference.go        # User preferences entity
-│   └── repository/                   # Repository interfaces
-│       ├── notification_repository.go
-│       └── user_preference_repository.go
-├── usecase/                          # Business logic
-│   ├── notification_usecase.go       # INotificationUseCase implementation
-│   └── events.go                     # Domain events
-├── adapter/
-│   ├── http/handler/                 # HTTP handlers
-│   │   └── notification_handler.go   # REST API endpoints
-│   └── repository/postgres/          # PostgreSQL implementations
-│       ├── base_repository.go
-│       ├── notification_repository.go
-│       └── user_preference_repository.go
-├── config/                           # Configuration files
-│   ├── config.dev.yaml
-│   ├── config.test.yaml
-│   └── config.prod.yaml
-├── module.go                         # IModule implementation
-├── register.go                       # Auto-registration
-└── README.md                         # This file
+ domain/
+    entity/                       # Domain entities
+       notification.go           # Notification entity with status machine
+       user_preference.go        # User preferences entity
+    repository/                   # Repository interfaces
+        notification_repository.go
+        user_preference_repository.go
+ usecase/                          # Business logic
+    notification_usecase.go       # INotificationUseCase implementation
+    events.go                     # Domain events
+ adapter/
+    http/handler/                 # HTTP handlers
+       notification_handler.go   # REST API endpoints
+    repository/postgres/          # PostgreSQL implementations
+        base_repository.go
+        notification_repository.go
+        user_preference_repository.go
+ config/                           # Configuration files
+    config.dev.yaml
+    config.test.yaml
+    config.prod.yaml
+ module.go                         # IModule implementation
+ register.go                       # Auto-registration
+ README.md                         # This file
 ```
 
 ## Database Schema

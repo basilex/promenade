@@ -1,6 +1,6 @@
 # Архітектура IModule Migration
 
-[🇬🇧 English](../MIGRATION_ARCHITECTURE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](MIGRATION_ARCHITECTURE.de.md) | [🇵🇹 Português](MIGRATION_ARCHITECTURE.pt.md) | [🇪🇸 Español](MIGRATION_ARCHITECTURE.es.md)
+[ English](../MIGRATION_ARCHITECTURE.md) |  **Українська** | [ Deutsch](MIGRATION_ARCHITECTURE.de.md) | [ Português](MIGRATION_ARCHITECTURE.pt.md) | [ Español](MIGRATION_ARCHITECTURE.es.md)
 
 ---
 
@@ -19,22 +19,22 @@
 
 ```
 migrations/
-├── core/                          # Core infrastructure migrations
-│   ├── 000001_init_schema.up.sql
-│   ├── 000001_init_schema.down.sql
-│   ├── 000002_auth_tables.up.sql
-│   ├── 000002_auth_tables.down.sql
-│   └── ...
-│
-├── posts/                         # Posts module migrations
-│   ├── 000001_create_posts.up.sql
-│   ├── 000001_create_posts.down.sql
-│   ├── 000002_create_comments.up.sql
-│   └── ...
-│
-└── profiles/                      # Profiles module migrations
-    ├── 000001_create_profiles.up.sql
-    └── ...
+ core/                          # Core infrastructure migrations
+    000001_init_schema.up.sql
+    000001_init_schema.down.sql
+    000002_auth_tables.up.sql
+    000002_auth_tables.down.sql
+    ...
+
+ posts/                         # Posts module migrations
+    000001_create_posts.up.sql
+    000001_create_posts.down.sql
+    000002_create_comments.up.sql
+    ...
+
+ profiles/                      # Profiles module migrations
+     000001_create_profiles.up.sql
+     ...
 ```
 
 **Кожен namespace має незалежну версійність:**
@@ -261,50 +261,50 @@ migrate-status:
 
 ```
 migrations/
-├── 000001_init_schema_deps.up.sql         # core
-├── 000002_create_auth_schema.up.sql       # core
-├── 000003_create_countries_currencies.up.sql  # core
-├── 000004_create_user_contacts.up.sql     # profiles module
-├── 000005_create_user_profiles.up.sql     # profiles module
-├── 000006_create_user_posts.up.sql        # posts module
-├── 000007_create_post_comments.up.sql     # posts module
-├── 000008_create_comment_likes_table.up.sql  # posts module
-├── 000009_create_rbac_tables.up.sql       # core
-├── 000014_create_timezones_table.up.sql   # core
-└── 000015_create_languages_table.up.sql   # core
+ 000001_init_schema_deps.up.sql         # core
+ 000002_create_auth_schema.up.sql       # core
+ 000003_create_countries_currencies.up.sql  # core
+ 000004_create_user_contacts.up.sql     # profiles module
+ 000005_create_user_profiles.up.sql     # profiles module
+ 000006_create_user_posts.up.sql        # posts module
+ 000007_create_post_comments.up.sql     # posts module
+ 000008_create_comment_likes_table.up.sql  # posts module
+ 000009_create_rbac_tables.up.sql       # core
+ 000014_create_timezones_table.up.sql   # core
+ 000015_create_languages_table.up.sql   # core
 ```
 
 **Нова структура (namespace з описовими назвами):**
 
 ```
 migrations/
-├── core/
-│   ├── 000001_core_init_uuid_v7.up.sql
-│   ├── 000001_core_init_uuid_v7.down.sql
-│   ├── 000002_core_auth_full.up.sql
-│   ├── 000002_core_auth_full.down.sql
-│   ├── 000003_core_rbac_full.up.sql            # was 000009
-│   ├── 000003_core_rbac_full.down.sql
-│   ├── 000004_core_ref_timezones.up.sql        # was 000014
-│   ├── 000004_core_ref_timezones.down.sql
-│   ├── 000005_core_ref_languages.up.sql        # was 000015
-│   ├── 000005_core_ref_languages.down.sql
-│   ├── 000006_core_ref_countries_currencies.up.sql  # was 000003
-│   └── 000006_core_ref_countries_currencies.down.sql
-│
-├── posts/
-│   ├── 000001_posts_posts.up.sql               # was 000006_create_user_posts
-│   ├── 000001_posts_posts.down.sql
-│   ├── 000002_posts_comments.up.sql            # was 000007_create_post_comments
-│   ├── 000002_posts_comments.down.sql
-│   ├── 000003_create_comment_likes.up.sql    # was 000008
-│   └── 000003_create_comment_likes.down.sql
-│
-└── profiles/
-    ├── 000001_create_user_contacts.up.sql    # was 000004
-    ├── 000001_create_user_contacts.down.sql
-    ├── 000002_create_user_profiles.up.sql    # was 000005
-    └── 000002_create_user_profiles.down.sql
+ core/
+    000001_core_init_uuid_v7.up.sql
+    000001_core_init_uuid_v7.down.sql
+    000002_core_auth_full.up.sql
+    000002_core_auth_full.down.sql
+    000003_core_rbac_full.up.sql            # was 000009
+    000003_core_rbac_full.down.sql
+    000004_core_ref_timezones.up.sql        # was 000014
+    000004_core_ref_timezones.down.sql
+    000005_core_ref_languages.up.sql        # was 000015
+    000005_core_ref_languages.down.sql
+    000006_core_ref_countries_currencies.up.sql  # was 000003
+    000006_core_ref_countries_currencies.down.sql
+
+ posts/
+    000001_posts_posts.up.sql               # was 000006_create_user_posts
+    000001_posts_posts.down.sql
+    000002_posts_comments.up.sql            # was 000007_create_post_comments
+    000002_posts_comments.down.sql
+    000003_create_comment_likes.up.sql    # was 000008
+    000003_create_comment_likes.down.sql
+
+ profiles/
+     000001_create_user_contacts.up.sql    # was 000004
+     000001_create_user_contacts.down.sql
+     000002_create_user_profiles.up.sql    # was 000005
+     000002_create_user_profiles.down.sql
 ```
 
 ---
@@ -353,8 +353,8 @@ make migrate-create MODULE=posts NAME=add_post_views
 
 ```
 migrations/posts/
-├── 000004_add_post_views.up.sql    # Auto-incremented
-└── 000004_add_post_views.down.sql
+ 000004_add_post_views.up.sql    # Auto-incremented
+ 000004_add_post_views.down.sql
 ```
 
 #### Застосування Migration

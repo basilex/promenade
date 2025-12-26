@@ -1,6 +1,6 @@
 # Посібник з Розробки Модулів
 
-[🇬🇧 English](../MODULE_DEVELOPMENT.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [🇵🇹 Português](../pt/MODULE_DEVELOPMENT.pt.md) | [🇪🇸 Español](../es/MODULE_DEVELOPMENT.es.md)
+[ English](../MODULE_DEVELOPMENT.md) |  **Українська** | [ Deutsch](../de/MODULE_DEVELOPMENT.de.md) | [ Português](../pt/MODULE_DEVELOPMENT.pt.md) | [ Español](../es/MODULE_DEVELOPMENT.es.md)
 
 Цей посібник пояснює, як розробляти власні модулі для Promenade, використовуючи Плагінну Архітектуру.
 
@@ -52,30 +52,30 @@ Promenade використовує **Плагінну Архітектуру**, 
 
 ```
 modules/warehouse/
-├── domain/
-│   ├── entity/
-│   │   └── item.go
-│   └── repository/
-│       └── item_repository.go
-│
-├── usecase/
-│   └── item_usecase.go
-│
-├── adapter/
-│   ├── http/
-│   │   ├── handler/
-│   │   │   └── item_handler.go
-│   │   └── dto/
-│   │       └── item_dto.go
-│   └── repository/
-│       └── postgres/
-│           └── item_repository.go
-│
-├── migrations/
-│   ├── 001_create_warehouse_items.up.sql
-│   └── 001_create_warehouse_items.down.sql
-│
-└── module.go  # Реєстрація модуля
+ domain/
+    entity/
+       item.go
+    repository/
+        item_repository.go
+
+ usecase/
+    item_usecase.go
+
+ adapter/
+    http/
+       handler/
+          item_handler.go
+       dto/
+           item_dto.go
+    repository/
+        postgres/
+            item_repository.go
+
+ migrations/
+    001_create_warehouse_items.up.sql
+    001_create_warehouse_items.down.sql
+
+ module.go  # Реєстрація модуля
 ```
 
 ---

@@ -6,17 +6,17 @@ Smoke Tests überprüfen, ob die kritische API-Funktionalität in einer laufende
 
 Smoke Tests sind schnelle, wesentliche Tests, die die Kernfunktionalität der Anwendung überprüfen:
 
-- ✅ Kann die API starten?
-- ✅ Sind die Endpoints erreichbar?
-- ✅ Funktionieren kritische Workflows End-to-End?
-- ✅ Ist die Datenbank verbunden?
+-  Kann die API starten?
+-  Sind die Endpoints erreichbar?
+-  Funktionieren kritische Workflows End-to-End?
+-  Ist die Datenbank verbunden?
 
 **Nicht von Smoke Tests abgedeckt:**
 
-- ❌ Grenzfälle
-- ❌ Performance-/Lasttests
-- ❌ Unit-Test-Logik
-- ❌ Fehlerbehandlungsdetails
+-  Grenzfälle
+-  Performance-/Lasttests
+-  Unit-Test-Logik
+-  Fehlerbehandlungsdetails
 
 ## Schnellstart
 
@@ -48,40 +48,39 @@ cd test/smoke
 ### Erwartete Ausgabe
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
    Promenade API - Smoke Tests
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 
   API:         http://localhost:8081
   Environment: dev
   Date:        2025-12-25 14:30:00
 
 ℹ Erforderliche Tools prüfen...
-✓ Alle erforderlichen Tools gefunden
+ Alle erforderlichen Tools gefunden
 ℹ Warte auf API-Bereitschaft...
-✓ API ist bereit!
+ API ist bereit!
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Smoke Tests ausführen
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Gesundheitsprüfung
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ℹ Teste GET /health...
-✓ Gesundheitsprüfung bestanden
-✓ Test bestanden: 01_health
+ Gesundheitsprüfung bestanden
+ Test bestanden: 01_health
 
 ...
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Test-Zusammenfassung
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Gesamt:     5
   Bestanden:  5
   Fehlerhaft: 0
 
-✓ Alle Smoke Tests bestanden!
+ Alle Smoke Tests bestanden!
 ```
 
 ## Test-Struktur

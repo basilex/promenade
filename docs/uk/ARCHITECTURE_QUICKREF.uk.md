@@ -1,6 +1,6 @@
 # Архітектура Promenade - Швидка Довідка
 
-[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[ English](../ARCHITECTURE_QUICKREF.md) |  **Українська** | [ Deutsch](../de/ARCHITECTURE_QUICKREF.de.md) | [ Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [ Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Модулі: Просте Правило
 
@@ -70,18 +70,18 @@
 
 ```
 internal/modules/mymodule/
-├── module.go              # Реалізація модуля
-├── register.go            # Автореєстрація через init()
-├── config/                # Власні YAML конфіги для кожного середовища
-│   ├── config.dev.yaml
-│   ├── config.test.yaml
-│   └── config.prod.yaml
-├── entity/                # Доменні сутності
-├── usecase/               # Бізнес-логіка
-└── adapter/
-    ├── http/              # Обробники, DTO, маршрути
-    ├── repository/        # Реалізації для Postgres
-    └── purge/             # Обробники очищення (якщо потрібно)
+ module.go              # Реалізація модуля
+ register.go            # Автореєстрація через init()
+ config/                # Власні YAML конфіги для кожного середовища
+    config.dev.yaml
+    config.test.yaml
+    config.prod.yaml
+ entity/                # Доменні сутності
+ usecase/               # Бізнес-логіка
+ adapter/
+     http/              # Обробники, DTO, маршрути
+     repository/        # Реалізації для Postgres
+     purge/             # Обробники очищення (якщо потрібно)
 ```
 
 ### Чек-лист Модуля
@@ -454,28 +454,28 @@ make migrate-create NAME=add_my_table
 
 ```
 Це інфраструктура (БД, логер, event bus)?
-└─> ТАК → CORE
+> ТАК → CORE
 
 Це безпека (auth, RBAC)?
-└─> ТАК → CORE
+> ТАК → CORE
 
 Це довідкові дані (країни, валюти, регіони, міста, методи оплати)?
-└─> ТАК → CORE
+> ТАК → CORE
 
 Це стабільне і використовується кількома модулями?
-└─> ТАК → Розглянути CORE (або спільний pkg)
+> ТАК → Розглянути CORE (або спільний pkg)
 
 Це бізнес-логіка?
-└─> ТАК → МОДУЛЬ
+> ТАК → МОДУЛЬ
 
 Це можна продати окремо?
-└─> ТАК → МОДУЛЬ
+> ТАК → МОДУЛЬ
 
 Це специфічне для сутності?
-└─> ТАК → МОДУЛЬ
+> ТАК → МОДУЛЬ
 
 Якщо сумніви?
-└─> МОДУЛЬ (легше перемістити в core пізніше, ніж навпаки)
+> МОДУЛЬ (легше перемістити в core пізніше, ніж навпаки)
 ```
 
 ---

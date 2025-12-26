@@ -1,4 +1,4 @@
-[🇬🇧 English](../CREDENTIALS.md) | [🇺🇦 Українська](../uk/CREDENTIALS.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](CREDENTIALS.pt.md) | [🇪🇸 Español](CREDENTIALS.es.md)
+[ English](../CREDENTIALS.md) | [ Українська](../uk/CREDENTIALS.uk.md) |  **Deutsch** | [ Português](CREDENTIALS.pt.md) | [ Español](CREDENTIALS.es.md)
 
 ---
 

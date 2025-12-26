@@ -1,6 +1,6 @@
 # Modul-Konfigurationsarchitektur
 
-🇬🇧 [English](../MODULE_CONFIG_ARCHITECTURE.md) | [🇺🇦 Українська](../uk/MODULE_CONFIG_ARCHITECTURE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [🇪🇸 Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
+ [English](../MODULE_CONFIG_ARCHITECTURE.md) | [ Українська](../uk/MODULE_CONFIG_ARCHITECTURE.uk.md) |  **Deutsch** | [ Português](../pt/MODULE_CONFIG_ARCHITECTURE.pt.md) | [ Español](../es/MODULE_CONFIG_ARCHITECTURE.es.md)
 
 ## Überblick
 
@@ -50,36 +50,36 @@ Für jedes aktivierte Modul:
 
 ```
 config/
-├── app.dev.yaml          # Kern-Konfiguration - Entwicklung
-├── app.test.yaml         # Kern-Konfiguration - Test
-├── app.prod.yaml         # Kern-Konfiguration - Produktion
-└── modules.yaml          # Modul-Registry (aktiviert/deaktiviert)
+ app.dev.yaml          # Kern-Konfiguration - Entwicklung
+ app.test.yaml         # Kern-Konfiguration - Test
+ app.prod.yaml         # Kern-Konfiguration - Produktion
+ modules.yaml          # Modul-Registry (aktiviert/deaktiviert)
 
 internal/modules/
-├── posts/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Posts-Modul Dev-Konfiguration
-│   │   ├── config.test.yaml  # Posts-Modul Test-Konfiguration
-│   │   └── config.prod.yaml  # Posts-Modul Prod-Konfiguration
-│   ├── entity/
-│   ├── repository/
-│   ├── usecase/
-│   ├── handler/
-│   └── module.go            # Lädt eigene Konfiguration in Initialize()
-│
-├── warehouse/
-│   ├── config/
-│   │   ├── config.dev.yaml   # Warehouse-Modul Dev-Konfiguration
-│   │   ├── config.test.yaml  # Warehouse-Modul Test-Konfiguration
-│   │   └── config.prod.yaml  # Warehouse-Modul Prod-Konfiguration
-│   └── module.go            # Lädt eigene Konfiguration in Initialize()
-│
-└── profiles/
-    ├── config/
-    │   ├── config.dev.yaml   # Profiles-Modul Dev-Konfiguration
-    │   ├── config.test.yaml  # Profiles-Modul Test-Konfiguration
-    │   └── config.prod.yaml  # Profiles-Modul Prod-Konfiguration
-    └── ...
+ posts/
+    config/
+       config.dev.yaml   # Posts-Modul Dev-Konfiguration
+       config.test.yaml  # Posts-Modul Test-Konfiguration
+       config.prod.yaml  # Posts-Modul Prod-Konfiguration
+    entity/
+    repository/
+    usecase/
+    handler/
+    module.go            # Lädt eigene Konfiguration in Initialize()
+
+ warehouse/
+    config/
+       config.dev.yaml   # Warehouse-Modul Dev-Konfiguration
+       config.test.yaml  # Warehouse-Modul Test-Konfiguration
+       config.prod.yaml  # Warehouse-Modul Prod-Konfiguration
+    module.go            # Lädt eigene Konfiguration in Initialize()
+
+ profiles/
+     config/
+        config.dev.yaml   # Profiles-Modul Dev-Konfiguration
+        config.test.yaml  # Profiles-Modul Test-Konfiguration
+        config.prod.yaml  # Profiles-Modul Prod-Konfiguration
+     ...
 ```
 
 ## Konfigurationsbereiche
@@ -228,10 +228,10 @@ value := config.GetNestedSetting("settings", "max_content_length")
 
 ```
 config/modules/
-├── posts.dev.yaml          Zentralisiert
-├── posts.test.yaml         Zentralisiert
-├── posts.prod.yaml         Zentralisiert
-└── ...
+ posts.dev.yaml          Zentralisiert
+ posts.test.yaml         Zentralisiert
+ posts.prod.yaml         Zentralisiert
+ ...
 
 Kern lädt alle Modulkonfigurationen   Enge Kopplung
 Kern übergibt Konfigurationen an IModule   Abhängigkeit
@@ -241,9 +241,9 @@ Kern übergibt Konfigurationen an IModule   Abhängigkeit
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml         Modul-eigentum
-├── config.test.yaml        Modul-eigentum
-└── config.prod.yaml        Modul-eigentum
+ config.dev.yaml         Modul-eigentum
+ config.test.yaml        Modul-eigentum
+ config.prod.yaml        Modul-eigentum
 
 Modul lädt eigene Konfiguration   Autonom
 Modul verwaltet eigene Einstellungen   Unabhängig

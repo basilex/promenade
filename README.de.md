@@ -1,6 +1,6 @@
 # Promenade
 
-[🇬🇧 English](README.md) | [🇺🇦 Українська](README.uk.md) | 🇩🇪 **Deutsch**
+[ English](README.md) | [ Українська](README.uk.md) |  **Deutsch**
 
 > **Hinweis zu Übersetzungen**: Einige technische Dokumente aus internen Verzeichnissen (migrations/, internal/, pkg/, test/) sind derzeit nur auf Englisch verfügbar. **Alle Dokumente aus docs/ sind vollständig auf Deutsch übersetzt.** Siehe [docs/de/INDEX.de.md](docs/de/INDEX.de.md) für die vollständige Liste der verfügbaren Übersetzungen.
 
@@ -302,14 +302,14 @@ Jedes Modul folgt einer konsistenten Struktur:
 
 ```
 internal/modules/{module}/
-├── module.go           # Modulregistrierung & Lebenszyklus
-├── domain/
-│   └── entity/         # Domain-Entitäten
-├── repository/         # Datenzugriffs-Interfaces & Implementierungen
-├── usecase/            # Geschäftslogik
-├── adapter/
-│   └── handler/        # HTTP-Handler & DTOs
-└── README.md           # Modulspezifische Dokumentation
+ module.go           # Modulregistrierung & Lebenszyklus
+ domain/
+    entity/         # Domain-Entitäten
+ repository/         # Datenzugriffs-Interfaces & Implementierungen
+ usecase/            # Geschäftslogik
+ adapter/
+    handler/        # HTTP-Handler & DTOs
+ README.md           # Modulspezifische Dokumentation
 ```
 
 ### IModule Aktivieren/Deaktivieren
@@ -337,39 +337,39 @@ Jeder Namespace verwaltet **unabhängige Versionsgeschichte**:
 
 ```
 migrations/
-├── core/               # Core-Infrastruktur (läuft immer zuerst)
-│   ├── 000001_core_init_uuid_v7.up.sql
-│   ├── 000002_core_auth_full.up.sql
-│   ├── 000003_core_rbac_full.up.sql
-│   ├── 000004_core_ref_timezones.up.sql
-│   ├── 000005_core_ref_languages.up.sql
-│   ├── 000006_core_ref_countries_currencies.up.sql    # 145 Länder, 124 Währungen
-│   ├── 000007_core_ref_regions_cities.up.sql          # 30 Regionen, 17 Städte
-│   └── 000008_core_ref_payment_methods.up.sql         # 40+ Zahlungsmethoden
-├── posts/              # Posts-Modul-Migrationen
-│   ├── 000001_posts_posts.up.sql
-│   ├── 000002_posts_comments.up.sql
-│   └── 000003_posts_comment_likes.up.sql
-├── profiles/           # Profiles-Modul-Migrationen
-│   ├── 000001_profiles_contacts.up.sql
-│   └── 000002_profiles_profiles.up.sql
-├── analytics/          # Analytics-Modul-Migrationen (kostenlos)
-│   └── 000001_analytics_tables.up.sql
-├── billing/            # Billing-Modul-Migrationen (kommerziell)
-│   ├── 000001_billing_plans.up.sql
-│   ├── 000002_billing_subscriptions.up.sql
-│   ├── 000003_billing_invoices.up.sql
-│   └── 000004_billing_payments.up.sql
-├── workflows/          # Workflows-Modul-Migrationen (kommerziell)
-│   ├── 000001_workflows_definitions.up.sql
-│   ├── 000002_workflows_instances.up.sql
-│   ├── 000003_workflows_steps.up.sql
-│   └── 000004_workflows_variables.up.sql
-├── notifications/      # Notifications-Modul-Migrationen (kommerziell)
-│   ├── 000001_notifications_tables.up.sql
-│   └── 000002_notifications_preferences.up.sql
-└── audit/              # Audit-Modul-Migrationen (kommerziell)
-    └── 000001_audit_tables.up.sql
+ core/               # Core-Infrastruktur (läuft immer zuerst)
+    000001_core_init_uuid_v7.up.sql
+    000002_core_auth_full.up.sql
+    000003_core_rbac_full.up.sql
+    000004_core_ref_timezones.up.sql
+    000005_core_ref_languages.up.sql
+    000006_core_ref_countries_currencies.up.sql    # 145 Länder, 124 Währungen
+    000007_core_ref_regions_cities.up.sql          # 30 Regionen, 17 Städte
+    000008_core_ref_payment_methods.up.sql         # 40+ Zahlungsmethoden
+ posts/              # Posts-Modul-Migrationen
+    000001_posts_posts.up.sql
+    000002_posts_comments.up.sql
+    000003_posts_comment_likes.up.sql
+ profiles/           # Profiles-Modul-Migrationen
+    000001_profiles_contacts.up.sql
+    000002_profiles_profiles.up.sql
+ analytics/          # Analytics-Modul-Migrationen (kostenlos)
+    000001_analytics_tables.up.sql
+ billing/            # Billing-Modul-Migrationen (kommerziell)
+    000001_billing_plans.up.sql
+    000002_billing_subscriptions.up.sql
+    000003_billing_invoices.up.sql
+    000004_billing_payments.up.sql
+ workflows/          # Workflows-Modul-Migrationen (kommerziell)
+    000001_workflows_definitions.up.sql
+    000002_workflows_instances.up.sql
+    000003_workflows_steps.up.sql
+    000004_workflows_variables.up.sql
+ notifications/      # Notifications-Modul-Migrationen (kommerziell)
+    000001_notifications_tables.up.sql
+    000002_notifications_preferences.up.sql
+ audit/              # Audit-Modul-Migrationen (kommerziell)
+     000001_audit_tables.up.sql
 ```
 
 ### Migrationsbefehle
@@ -690,58 +690,58 @@ Beide Versionen haben:
 
 ```
 promenade/
-├── cmd/
-│   ├── api/                    # Hauptanwendungs-Einstiegspunkt
-│   └── migrate/                # Migrations-CLI-Tool
-├── internal/
-│   ├── domain/                 # Core-Domain (Entitäten, Interfaces)
-│   │   ├── entity/             # Domain-Entitäten (User, Session)
-│   │   ├── event/              # Domain-Events (UserRegistered, etc.)
-│   │   └── repository/         # Repository-Interfaces
-│   ├── usecase/                # Core Use Cases (Auth, RBAC)
-│   ├── adapter/                # Adapter (HTTP, Repositories)
-│   │   ├── http/
-│   │   │   ├── v1/             # API v1 (Handler, DTOs, Routen)
-│   │   │   └── v2/             # API v2
-│   │   └── repository/postgres/ # PostgreSQL-Implementierungen
-│   ├── infrastructure/         # Infrastruktur (DB, Config, Scheduler)
-│   │   ├── database/
-│   │   ├── config/
-│   │   ├── notification/
-│   │   └── scheduler/
-│   └── modules/                # Geschäftsmodule (Plugins)
-│       ├── posts/              # Posts + Kommentare + Likes
-│       ├── profiles/           # Benutzerprofile + Kontakte
-│       ├── analytics/          # Analytics + Berichte (Kommerziell, aktiv)
-│       └── warehouse/          # Lagerverwaltung (zukünftig)
-├── pkg/                        # Gemeinsame Pakete (wiederverwendbar)
-│   ├── bus/                    # Event IBus (memory/redis)
-│   ├── jwt/                    # JWT-Manager
-│   ├── logger/                 # Strukturierter Logger
-│   ├── migration/              # Migrations-Manager
-│   ├── module/                 # Modul-Registry
-│   ├── purge/                  # Purge-Registry
-│   ├── response/               # HTTP-Response-Helfer
-│   ├── uuidv7/                 # UUID v7 Generator
-│   └── validator/              # Request-Validierung
-├── migrations/                 # Namespace-basierte Migrationen
-│   ├── core/                   # Core-Migrationen (Auth, RBAC, Ref-Daten)
-│   ├── posts/                  # Posts-Modul-Migrationen
-│   └── profiles/               # Profiles-Modul-Migrationen
-├── test/                       # Test-Infrastruktur
-│   ├── helpers/                # Test-Helfer (Fixtures, DB-Setup)
-│   ├── integration/            # Integrationstests
-│   ├── smoke/                  # Smoke-Tests
-│   └── mocks/                  # Mock-Implementierungen
-├── config/                     # Konfigurationsdateien
-│   ├── app.dev.yaml            # Dev-Umgebungskonfiguration
-│   ├── app.test.yaml           # Test-Umgebungskonfiguration
-│   ├── app.prod.yaml           # Produktionskonfiguration
-│   └── modules.yaml            # Modul aktivieren/deaktivieren + Einstellungen
-├── docs/                       # Dokumentation
-├── scripts/                    # Hilfs-Skripte
-├── templates/                  # E-Mail-Vorlagen
-└── docker/                     # Docker-Konfigurationen
+ cmd/
+    api/                    # Hauptanwendungs-Einstiegspunkt
+    migrate/                # Migrations-CLI-Tool
+ internal/
+    domain/                 # Core-Domain (Entitäten, Interfaces)
+       entity/             # Domain-Entitäten (User, Session)
+       event/              # Domain-Events (UserRegistered, etc.)
+       repository/         # Repository-Interfaces
+    usecase/                # Core Use Cases (Auth, RBAC)
+    adapter/                # Adapter (HTTP, Repositories)
+       http/
+          v1/             # API v1 (Handler, DTOs, Routen)
+          v2/             # API v2
+       repository/postgres/ # PostgreSQL-Implementierungen
+    infrastructure/         # Infrastruktur (DB, Config, Scheduler)
+       database/
+       config/
+       notification/
+       scheduler/
+    modules/                # Geschäftsmodule (Plugins)
+        posts/              # Posts + Kommentare + Likes
+        profiles/           # Benutzerprofile + Kontakte
+        analytics/          # Analytics + Berichte (Kommerziell, aktiv)
+        warehouse/          # Lagerverwaltung (zukünftig)
+ pkg/                        # Gemeinsame Pakete (wiederverwendbar)
+    bus/                    # Event IBus (memory/redis)
+    jwt/                    # JWT-Manager
+    logger/                 # Strukturierter Logger
+    migration/              # Migrations-Manager
+    module/                 # Modul-Registry
+    purge/                  # Purge-Registry
+    response/               # HTTP-Response-Helfer
+    uuidv7/                 # UUID v7 Generator
+    validator/              # Request-Validierung
+ migrations/                 # Namespace-basierte Migrationen
+    core/                   # Core-Migrationen (Auth, RBAC, Ref-Daten)
+    posts/                  # Posts-Modul-Migrationen
+    profiles/               # Profiles-Modul-Migrationen
+ test/                       # Test-Infrastruktur
+    helpers/                # Test-Helfer (Fixtures, DB-Setup)
+    integration/            # Integrationstests
+    smoke/                  # Smoke-Tests
+    mocks/                  # Mock-Implementierungen
+ config/                     # Konfigurationsdateien
+    app.dev.yaml            # Dev-Umgebungskonfiguration
+    app.test.yaml           # Test-Umgebungskonfiguration
+    app.prod.yaml           # Produktionskonfiguration
+    modules.yaml            # Modul aktivieren/deaktivieren + Einstellungen
+ docs/                       # Dokumentation
+ scripts/                    # Hilfs-Skripte
+ templates/                  # E-Mail-Vorlagen
+ docker/                     # Docker-Konfigurationen
 ```
 
 ---

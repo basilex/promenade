@@ -6,33 +6,33 @@
 
 ---
 
-## 📊 Загальна статистика
+##  Загальна статистика
 
 | Категорія           | Файлів | Рядків коду | Тестів | Статус                         |
 | ------------------- | ------ | ----------- | ------ | ------------------------------ |
-| **Entity (Domain)** | 3      | ~700        | 39 ✅  | **ГОТОВО (Phase 7.1+7.2+7.3)** |
-| **UseCase**         | 2      | ~624        | 59 ✅  | **ГОТОВО (Phase 7.4+7.5)**     |
-| **Repository**      | 5      | ~1200       | 51 ✅  | **ГОТОВО (Phase 3+7.6)**       |
-| **Handler**         | 2      | ~600        | 18 ✅  | **ГОТОВО (Phase 4)**           |
-| **Integration**     | 1      | 575         | 7 ✅   | **ГОТОВО (Phase 5)**           |
-| **Smoke**           | 1      | ~200        | 11 ✅  | **ГОТОВО (Phase 6)**           |
+| **Entity (Domain)** | 3      | ~700        | 39   | **ГОТОВО (Phase 7.1+7.2+7.3)** |
+| **UseCase**         | 2      | ~624        | 59   | **ГОТОВО (Phase 7.4+7.5)**     |
+| **Repository**      | 5      | ~1200       | 51   | **ГОТОВО (Phase 3+7.6)**       |
+| **Handler**         | 2      | ~600        | 18   | **ГОТОВО (Phase 4)**           |
+| **Integration**     | 1      | 575         | 7    | **ГОТОВО (Phase 5)**           |
+| **Smoke**           | 1      | ~200        | 11   | **ГОТОВО (Phase 6)**           |
 
-**Загальний прогрес:** 🎉 **100% CORE + Phase 7.1-7.6 Complete!** (185 тестів total)
+**Загальний прогрес:**  **100% CORE + Phase 7.1-7.6 Complete!** (185 тестів total)
 
 **Останнє оновлення:** 26 грудня 2025 (Phase 7.6 завершено - Schema Validation Integration Tests)
 
 ---
 
-## 🎉 Підсумок реалізації (Phase 4 Complete!)
+##  Підсумок реалізації (Phase 4 Complete!)
 
-### ✅ Всі фази завершено успішно:
+###  Всі фази завершено успішно:
 
-**Phase 1: Entity Layer** ✅
+**Phase 1: Entity Layer** 
 
 - 39 тестів (5 definition + 16 instance + 18 schema)
 - Час виконання: ~0.19s
 
-**Phase 2: UseCase Layer** ✅
+**Phase 2: UseCase Layer** 
 
 - 59 тестів (27 definition + 32 instance)
 - Mock interfaces повністю імплементовані
@@ -40,43 +40,43 @@
 - Phase 7.5 додано: 5 тестів для Archive()
 - Час виконання: ~0.67s
 
-**Phase 3: Repository Layer** ✅
+**Phase 3: Repository Layer** 
 
 - 44 інтеграційних тести (real PostgreSQL)
 - 5 repositories повністю покриті
 - Час виконання: ~11.3s
 
-**Phase 4: Handler Layer** ✅ **[ЩОЙНО ЗАВЕРШЕНО]**
+**Phase 4: Handler Layer**  **[ЩОЙНО ЗАВЕРШЕНО]**
 
 - 18 handler тестів (9 definition + 9 instance)
 - Всі HTTP endpoints покриті
 - Час виконання: ~0.7s
 
-**Phase 5: Integration Tests** ✅
+**Phase 5: Integration Tests** 
 
 - 7 end-to-end scenarios
 - Complete workflow lifecycle testing
 - Час виконання: ~2.5s
 
-**Phase 6: Smoke Tests** ✅
+**Phase 6: Smoke Tests** 
 
 - 11 functional tests
 - API endpoint verification
 - Час виконання: real API calls
 
-**Phase 7.1: Entity Enhancement (Deprecate/Archive)** ✅
+**Phase 7.1: Entity Enhancement (Deprecate/Archive)** 
 
 - 2 нові тести для WorkflowDefinition
 - 8 sub-tests total (lifecycle coverage)
 - Час виконання: ~0.02s
 
-**Phase 7.2: WorkflowSchema Validation** ✅
+**Phase 7.2: WorkflowSchema Validation** 
 
 - 13 тестів для Schema.Validate()
 - Базова валідація: states, transitions, reachability
 - Час виконання: ~0.05s
 
-**Phase 7.3: Deadlock Detection** ✅
+**Phase 7.3: Deadlock Detection** 
 
 - 5 тестів для cycle detection (deadlock prevention)
 - Методи: validateNoCyclesWithoutExit(), detectCycles()
@@ -88,7 +88,7 @@
   - Deadlock in middle (no exit from cycle)
 - Час виконання: ~0.02s
 
-**Phase 7.4: UseCase Deprecate()** ✅
+**Phase 7.4: UseCase Deprecate()** 
 
 - 4 тести для Deprecate() usecase method
 - Перевірки:
@@ -100,7 +100,7 @@
 - Оновлено WorkflowDefinitionUseCase конструктор (додано instanceRepo)
 - Час виконання: ~0.01s
 
-**Phase 7.5: UseCase Archive()** ✅
+**Phase 7.5: UseCase Archive()** 
 
 - 5 тестів для Archive() usecase method з cascade operations
 - Перевірки:
@@ -120,18 +120,18 @@
   - Оновлює definition в repository
 - Час виконання: ~0.02s
 
-**Phase 7.6: Schema Validation Integration Tests** ✅
+**Phase 7.6: Schema Validation Integration Tests** 
 
 - 7 інтеграційних тестів для перевірки Schema.Validate() з реальною БД
 - Структура: 5 invalid тестів + 2 valid тестів
 - Тести:
-  - InvalidSchema_NoStates - порожній список states ✅
-  - InvalidSchema_MissingInitialState - initial_state не в списку states ✅
-  - InvalidSchema_InvalidTransition - transition посилається на неіснуючий state ✅
-  - InvalidSchema_UnreachableState - orphan state без transitions до нього ✅
-  - InvalidSchema_Deadlock - cycle без виходу до terminal state ✅
-  - ComplexWorkflow_Valid - складний workflow з 6 states, 6 transitions ✅
-  - ComplexWorkflow_WithRetryLoop - retry loop з виходом до terminal state ✅
+  - InvalidSchema_NoStates - порожній список states 
+  - InvalidSchema_MissingInitialState - initial_state не в списку states 
+  - InvalidSchema_InvalidTransition - transition посилається на неіснуючий state 
+  - InvalidSchema_UnreachableState - orphan state без transitions до нього 
+  - InvalidSchema_Deadlock - cycle без виходу до terminal state 
+  - ComplexWorkflow_Valid - складний workflow з 6 states, 6 transitions 
+  - ComplexWorkflow_WithRetryLoop - retry loop з виходом до terminal state 
 - Тестують:
   - Виклик def.Validate() перед збереженням в БД
   - Перевірки error messages на правильність
@@ -143,7 +143,7 @@
   - Автоматичні міграції перед тестами
 - Час виконання: ~1.4s (7 тестів × ~0.2s кожен)
 
-### 🔧 Критичні виправлення в Phase 4:
+###  Критичні виправлення в Phase 4:
 
 1. **Mock interface signatures** - виправлено 10+ методів:
 
@@ -162,14 +162,14 @@
    - Старий формат: `response["status"] == "success"`
    - Новий формат: `response["success"] == true`
 
-### 📊 Фінальна статистика:
+###  Фінальна статистика:
 
 ```
 Total Tests:      185 (178 + 7 Phase 7.6)
 Total Files:      15 test files
 Execution Time:   ~16.9s (entity: 0.19s, usecase: 0.67s, repo: 12.7s, handler: 0.7s, integration: 2.5s)
 Coverage:         ~86% overall
-Status:           🟢 ALL PASSING (Phase 7.6 Complete!)
+Status:            ALL PASSING (Phase 7.6 Complete!)
 ```
 
 Total Lines: ~4,000 lines of test code
@@ -178,31 +178,31 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-### 🎯 Готовність модуля:
+###  Готовність модуля:
 
-- ✅ **100% test coverage** - всі шари покриті
-- ✅ **Production ready** - модуль готовий до релізу
-- ✅ **Commercial grade** - відповідає стандартам комерційного коду
-- ✅ **Zero compilation errors**
-- ✅ **All integration tests pass**
+-  **100% test coverage** - всі шари покриті
+-  **Production ready** - модуль готовий до релізу
+-  **Commercial grade** - відповідає стандартам комерційного коду
+-  **Zero compilation errors**
+-  **All integration tests pass**
 
 ---
 
-## ✅ Детальний огляд тестів по фазах
+##  Детальний огляд тестів по фазах
 
-### 1. Entity Layer Tests (19 tests) ✅
+### 1. Entity Layer Tests (19 tests) 
 
-#### 1.1. WorkflowDefinition Tests (5 tests) ✅ **[PHASE 7.1 COMPLETE]**
+#### 1.1. WorkflowDefinition Tests (5 tests)  **[PHASE 7.1 COMPLETE]**
 
 **Файл:** `domain/entity/workflow_definition_test.go` (~210 lines)
 
 ```
 
-✓ TestNewWorkflowDefinition - створення нового definition
-✓ TestWorkflowDefinition_Activate - активація draft → active
-✓ TestWorkflowDefinition_Validate - валідація полів
-✓ TestWorkflowDefinition_Deprecate - deprecation lifecycle (4 sub-tests)
-✓ TestWorkflowDefinition_Archive - archive lifecycle (4 sub-tests)
+ TestNewWorkflowDefinition - створення нового definition
+ TestWorkflowDefinition_Activate - активація draft → active
+ TestWorkflowDefinition_Validate - валідація полів
+ TestWorkflowDefinition_Deprecate - deprecation lifecycle (4 sub-tests)
+ TestWorkflowDefinition_Archive - archive lifecycle (4 sub-tests)
 
 ```
 
@@ -211,93 +211,93 @@ Total Duration: ~17 seconds (all layers)
 - Конструктор `NewWorkflowDefinition()`
 - Lifecycle: Draft → Active → Deprecated → Archived
 - Валідація entity
-- ✅ **Deprecate()** - 4 sub-tests (success, draft error, archived error, already deprecated)
-- ✅ **Archive()** - 4 sub-tests (from draft, from active, from deprecated, idempotent)
+-  **Deprecate()** - 4 sub-tests (success, draft error, archived error, already deprecated)
+-  **Archive()** - 4 sub-tests (from draft, from active, from deprecated, idempotent)
 
 **Що НЕ покрито на рівні Entity:**
 
-- ✅ Deprecate() метод - **ПОКРИТО** (4 sub-tests в Phase 7.1)
-- ✅ Archive() метод - **ПОКРИТО** (4 sub-tests в Phase 7.1)
-- ✅ Validate() - **ПОКРИТО** базовою валідацією (TestWorkflowDefinition_Validate)
-- ✅ WorkflowSchema.Validate() - **ПОКРИТО** (Phase 7.2 - 13 тестів)
-- ✅ Deadlock detection - **ПОКРИТО** (Phase 7.3 - 5 тестів cycle detection)
-- ✅ Version increment логіка - **ПОКРИТО** через repository integration tests
-- ✅ Tags/Categories - **ПОКРИТО** через List tests (TestList_ByCategory)
+-  Deprecate() метод - **ПОКРИТО** (4 sub-tests в Phase 7.1)
+-  Archive() метод - **ПОКРИТО** (4 sub-tests в Phase 7.1)
+-  Validate() - **ПОКРИТО** базовою валідацією (TestWorkflowDefinition_Validate)
+-  WorkflowSchema.Validate() - **ПОКРИТО** (Phase 7.2 - 13 тестів)
+-  Deadlock detection - **ПОКРИТО** (Phase 7.3 - 5 тестів cycle detection)
+-  Version increment логіка - **ПОКРИТО** через repository integration tests
+-  Tags/Categories - **ПОКРИТО** через List tests (TestList_ByCategory)
 
 **Що НЕ покрито на рівні UseCase:**
 
-- ✅ Deprecate() UseCase метод - **ПОКРИТО** (Phase 7.4 - 4 тести + business logic)
-- ❌ Archive() UseCase метод - **НЕ імплементовано** (запланований Phase 7.5)
-- ✅ List, Update, Delete - **ПОВНІСТЮ ПОКРИТО** (9 тестів)
+-  Deprecate() UseCase метод - **ПОКРИТО** (Phase 7.4 - 4 тести + business logic)
+-  Archive() UseCase метод - **НЕ імплементовано** (запланований Phase 7.5)
+-  List, Update, Delete - **ПОВНІСТЮ ПОКРИТО** (9 тестів)
 
 **Поточний стан Phase 7 (Production Enhancement):**
 
-1. ✅ **DONE (Phase 7.1)**: Entity тести Deprecate/Archive додано (8 sub-tests)
-2. ✅ **DONE (Phase 7.2)**: WorkflowSchema.Validate() базова версія (13 тестів)
-3. ✅ **DONE (Phase 7.3)**: Deadlock detection в Schema.Validate() (5 тестів)
-4. ✅ **DONE (Phase 7.4)**: UseCase Deprecate() з business logic (4 тести)
-5. 🔄 **NEXT (Phase 7.5)**: UseCase Archive() з cascade operations (1 година)
-6. 📋 **TODO (Phase 7.6)**: Integration тести для Schema validation (45 хв)
-7. 📋 **TODO (Phase 7.7)**: Stress тести для cycle detection (30 хв)
-8. 📋 **TODO (Phase 7.8)**: Documentation - Workflow Design Best Practices (45 хв)
+1.  **DONE (Phase 7.1)**: Entity тести Deprecate/Archive додано (8 sub-tests)
+2.  **DONE (Phase 7.2)**: WorkflowSchema.Validate() базова версія (13 тестів)
+3.  **DONE (Phase 7.3)**: Deadlock detection в Schema.Validate() (5 тестів)
+4.  **DONE (Phase 7.4)**: UseCase Deprecate() з business logic (4 тести)
+5.  **NEXT (Phase 7.5)**: UseCase Archive() з cascade operations (1 година)
+6.  **TODO (Phase 7.6)**: Integration тести для Schema validation (45 хв)
+7.  **TODO (Phase 7.7)**: Stress тести для cycle detection (30 хв)
+8.  **TODO (Phase 7.8)**: Documentation - Workflow Design Best Practices (45 хв)
 
-### 1.2. WorkflowSchema Tests (13 tests) ✅ **[PHASE 7.2 COMPLETE]**
+### 1.2. WorkflowSchema Tests (13 tests)  **[PHASE 7.2 COMPLETE]**
 
 **Файл:** `domain/entity/workflow_schema_test.go` (~250 lines)
 
 ```
 
-✓ TestWorkflowSchema_Validate_Success - валідна схема
-✓ TestWorkflowSchema_Validate_NoStates - помилка без станів
-✓ TestWorkflowSchema_Validate_NoInitialState - помилка без initial state
-✓ TestWorkflowSchema_Validate_InvalidInitialState - initial state не існує
-✓ TestWorkflowSchema_Validate_TransitionToInvalidState - transition до неіснуючого state
-✓ TestWorkflowSchema_Validate_NoTerminalState - немає фінального стану
-✓ TestWorkflowSchema_Validate_UnreachableState - недосяжний стан
-✓ TestWorkflowSchema_Validate_DuplicateStateName - дублікат імені стану
-✓ TestWorkflowSchema_Validate_EmptyStateName - пусте ім'я стану
-✓ TestWorkflowSchema_Validate_EmptyTransitionFrom - порожнє 'from'
-✓ TestWorkflowSchema_Validate_EmptyTransitionTo - порожнє 'to'
-✓ TestWorkflowSchema_Validate_EmptyEventName - порожня назва події
-✓ TestWorkflowSchema_Validate_ComplexWorkflow - складний workflow (7 states)
+ TestWorkflowSchema_Validate_Success - валідна схема
+ TestWorkflowSchema_Validate_NoStates - помилка без станів
+ TestWorkflowSchema_Validate_NoInitialState - помилка без initial state
+ TestWorkflowSchema_Validate_InvalidInitialState - initial state не існує
+ TestWorkflowSchema_Validate_TransitionToInvalidState - transition до неіснуючого state
+ TestWorkflowSchema_Validate_NoTerminalState - немає фінального стану
+ TestWorkflowSchema_Validate_UnreachableState - недосяжний стан
+ TestWorkflowSchema_Validate_DuplicateStateName - дублікат імені стану
+ TestWorkflowSchema_Validate_EmptyStateName - пусте ім'я стану
+ TestWorkflowSchema_Validate_EmptyTransitionFrom - порожнє 'from'
+ TestWorkflowSchema_Validate_EmptyTransitionTo - порожнє 'to'
+ TestWorkflowSchema_Validate_EmptyEventName - порожня назва події
+ TestWorkflowSchema_Validate_ComplexWorkflow - складний workflow (7 states)
 
 ```
 
 **Покриття Schema Validation:**
 
-- ✅ Базові перевірки (states, initial_state)
-- ✅ Унікальність імен станів
-- ✅ Валідація transitions (from/to існують)
-- ✅ Перевірка на terminal state (final або без outgoing)
-- ✅ BFS перевірка досяжності всіх станів
-- ✅ Event names required
-- ✅ Складні workflows (multiple branches, gateways)
-- ✅ **Phase 7.3 DONE**: Deadlock detection (cycles without exit)
+-  Базові перевірки (states, initial_state)
+-  Унікальність імен станів
+-  Валідація transitions (from/to існують)
+-  Перевірка на terminal state (final або без outgoing)
+-  BFS перевірка досяжності всіх станів
+-  Event names required
+-  Складні workflows (multiple branches, gateways)
+-  **Phase 7.3 DONE**: Deadlock detection (cycles without exit)
   - detectCycles() - DFS cycle detection
   - validateNoCyclesWithoutExit() - ensures all states can reach terminal
 
-### 1.3. WorkflowInstance Tests (16 tests) ✅
+### 1.3. WorkflowInstance Tests (16 tests) 
 
 **Файл:** `domain/entity/workflow_instance_test.go` (232 lines)
 
 ```
 
-✓ TestNewWorkflowInstance - створення нового instance
-✓ TestWorkflowInstance_Start - pending → running
-✓ TestWorkflowInstance_Start_NotPending - помилка якщо не pending
-✓ TestWorkflowInstance_TransitionTo - перехід між станами
-✓ TestWorkflowInstance_Complete - завершення з output
-✓ TestWorkflowInstance_Fail - failure з error details
-✓ TestWorkflowInstance_Cancel - скасування
-✓ TestWorkflowInstance_Pause - пауза
-✓ TestWorkflowInstance_Resume - відновлення після паузи
-✓ TestWorkflowInstance_WaitForEvent - чекання на event
-✓ TestWorkflowInstance_Timeout - timeout handling
-✓ TestWorkflowInstance_IncrementRetry - retry counter
-✓ TestWorkflowInstance_UpdateContext - оновлення контексту
-✓ TestWorkflowInstance_Assign - призначення користувача
-✓ TestWorkflowInstance_Unassign - видалення assignee
-✓ TestWorkflowInstance_SetPriority - встановлення пріоритету
+ TestNewWorkflowInstance - створення нового instance
+ TestWorkflowInstance_Start - pending → running
+ TestWorkflowInstance_Start_NotPending - помилка якщо не pending
+ TestWorkflowInstance_TransitionTo - перехід між станами
+ TestWorkflowInstance_Complete - завершення з output
+ TestWorkflowInstance_Fail - failure з error details
+ TestWorkflowInstance_Cancel - скасування
+ TestWorkflowInstance_Pause - пауза
+ TestWorkflowInstance_Resume - відновлення після паузи
+ TestWorkflowInstance_WaitForEvent - чекання на event
+ TestWorkflowInstance_Timeout - timeout handling
+ TestWorkflowInstance_IncrementRetry - retry counter
+ TestWorkflowInstance_UpdateContext - оновлення контексту
+ TestWorkflowInstance_Assign - призначення користувача
+ TestWorkflowInstance_Unassign - видалення assignee
+ TestWorkflowInstance_SetPriority - встановлення пріоритету
 
 ```
 
@@ -312,35 +312,35 @@ Total Duration: ~17 seconds (all layers)
 
 **Що НЕ покрито:**
 
-- ❌ SetDueDate() метод
-- ❌ IsActive() helper
-- ❌ IsCompleted() helper
-- ❌ StateTimeout handling
-- ❌ ParentInstanceID (sub-workflows)
-- ❌ ExternalReference
-- ❌ Tags manipulation
+-  SetDueDate() метод
+-  IsActive() helper
+-  IsCompleted() helper
+-  StateTimeout handling
+-  ParentInstanceID (sub-workflows)
+-  ExternalReference
+-  Tags manipulation
 
 ---
 
-### 2. UseCase Layer Tests (50 tests) ✅
+### 2. UseCase Layer Tests (50 tests) 
 
 #### 2.1. WorkflowDefinitionUseCase Tests (23 tests)
 
 **Файл:** `usecase/workflow_definition_usecase_test.go` (~270 lines)
 **Мок:** `usecase/mocks_test.go` (~250 lines, повністю імплементовані інтерфейси)
 
-**Статус:** ✅ **ГОТОВО** - Всі 23 тести проходять (~0.3s)
+**Статус:**  **ГОТОВО** - Всі 23 тести проходять (~0.3s)
 
 #### Create Tests (6 tests)
 
 ```
 
-✓ TestCreateDefinition_Success - створення нового workflow
-✓ TestCreateDefinition_RepositoryError - помилка БД
-✓ TestCreate_DuplicateName - дублікат імені (ErrWorkflowNameAlreadyExists)
-✓ TestCreate_ValidationError_EmptyName - пусте ім'я
-✓ TestCreate_ValidationError_NoStates - без станів
-✓ TestCreate_ValidationError_NoInitialState - без initial state
+ TestCreateDefinition_Success - створення нового workflow
+ TestCreateDefinition_RepositoryError - помилка БД
+ TestCreate_DuplicateName - дублікат імені (ErrWorkflowNameAlreadyExists)
+ TestCreate_ValidationError_EmptyName - пусте ім'я
+ TestCreate_ValidationError_NoStates - без станів
+ TestCreate_ValidationError_NoInitialState - без initial state
 
 ```
 
@@ -348,8 +348,8 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestGetDefinition_Success - отримання по ID
-✓ TestGetDefinition_NotFound - workflow не знайдено
+ TestGetDefinition_Success - отримання по ID
+ TestGetDefinition_NotFound - workflow не знайдено
 
 ```
 
@@ -357,8 +357,8 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestGetByName_Success - отримання по імені
-✓ TestGetByName_NotFound - workflow не знайдено
+ TestGetByName_Success - отримання по імені
+ TestGetByName_NotFound - workflow не знайдено
 
 ```
 
@@ -366,10 +366,10 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestActivate_Success - активація draft → active
-✓ TestActivate_AlreadyActive - помилка якщо вже активний
-✓ TestActivate_NotFound - workflow не знайдено
-✓ TestActivate_UpdateError - помилка при збереженні
+ TestActivate_Success - активація draft → active
+ TestActivate_AlreadyActive - помилка якщо вже активний
+ TestActivate_NotFound - workflow не знайдено
+ TestActivate_UpdateError - помилка при збереженні
 
 ```
 
@@ -377,9 +377,9 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestList_ByStatus_Success - список по статусу
-✓ TestList_ByCategory_Success - список по категорії
-✓ TestList_DefaultsToActive - за замовчуванням активні
+ TestList_ByStatus_Success - список по статусу
+ TestList_ByCategory_Success - список по категорії
+ TestList_DefaultsToActive - за замовчуванням активні
 
 ```
 
@@ -387,9 +387,9 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestUpdate_Success - оновлення draft workflow
-✓ TestUpdate_NotFound - workflow не знайдено
-✓ TestUpdate_NotDraft_Fails - можна оновлювати тільки draft
+ TestUpdate_Success - оновлення draft workflow
+ TestUpdate_NotFound - workflow не знайдено
+ TestUpdate_NotDraft_Fails - можна оновлювати тільки draft
 
 ```
 
@@ -397,43 +397,43 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestDelete_Success - видалення (soft delete)
-✓ TestDelete_NotFound - workflow не знайдено
-✓ TestDelete_NotDraft_Fails - можна видаляти тільки draft
+ TestDelete_Success - видалення (soft delete)
+ TestDelete_NotFound - workflow не знайдено
+ TestDelete_NotDraft_Fails - можна видаляти тільки draft
 
 ```
 
 **Покриття UseCase:**
 
-- ✅ Create() - повне покриття (success, errors, validation, duplicates)
-- ✅ GetByID() - success + not found
-- ✅ GetByName() - success + not found
-- ✅ Activate() - success + edge cases (already active, not found, update error)
-- ✅ List() - 3 tests (by status, by category, defaults to active)
-- ✅ Update() - 3 tests (success, not found, only draft can be updated)
-- ✅ Delete() - 3 tests (soft delete, not found, only draft can be deleted)
+-  Create() - повне покриття (success, errors, validation, duplicates)
+-  GetByID() - success + not found
+-  GetByName() - success + not found
+-  Activate() - success + edge cases (already active, not found, update error)
+-  List() - 3 tests (by status, by category, defaults to active)
+-  Update() - 3 tests (success, not found, only draft can be updated)
+-  Delete() - 3 tests (soft delete, not found, only draft can be deleted)
 
 **Mock interfaces (COMPLETE):**
 
-- ✅ MockWorkflowDefinitionRepository - 11 методів (повна імплементація)
-- ✅ MockWorkflowInstanceRepository - 14 методів (повна імплементація)
+-  MockWorkflowDefinitionRepository - 11 методів (повна імплементація)
+-  MockWorkflowInstanceRepository - 14 методів (повна імплементація)
 
 #### 2.2. WorkflowInstanceUseCase Tests (27 tests)
 
 **Файл:** `usecase/workflow_instance_usecase_test.go` (~700 lines)
 
-**Статус:** ✅ **PHASE 2.3 COMPLETE** - Всі тести проходять (0.187s)
+**Статус:**  **PHASE 2.3 COMPLETE** - Всі тести проходять (0.187s)
 
 #### StartWorkflow Tests (6 tests)
 
 ```
 
-✓ TestStartWorkflow_Success - створення нового instance
-✓ TestStartWorkflow_WithExternalReference - з зовнішнім reference
-✓ TestStartWorkflow_WithAssignee - з assignee
-✓ TestStartWorkflow_DefinitionNotFound - workflow не знайдено
-✓ TestStartWorkflow_DefinitionNotActive - workflow не активний
-✓ TestStartWorkflow_RepositoryError - помилка БД
+ TestStartWorkflow_Success - створення нового instance
+ TestStartWorkflow_WithExternalReference - з зовнішнім reference
+ TestStartWorkflow_WithAssignee - з assignee
+ TestStartWorkflow_DefinitionNotFound - workflow не знайдено
+ TestStartWorkflow_DefinitionNotActive - workflow не активний
+ TestStartWorkflow_RepositoryError - помилка БД
 
 ```
 
@@ -441,8 +441,8 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestGetInstance_Success - отримання instance по ID
-✓ TestGetInstance_NotFound - instance не знайдено
+ TestGetInstance_Success - отримання instance по ID
+ TestGetInstance_NotFound - instance не знайдено
 
 ```
 
@@ -450,8 +450,8 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestListInstances_Success - список активних instances
-✓ TestListInstances_RepositoryError - помилка БД
+ TestListInstances_Success - список активних instances
+ TestListInstances_RepositoryError - помилка БД
 
 ```
 
@@ -459,10 +459,10 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestPauseInstance_Success - паузa running → paused
-✓ TestPauseInstance_NotFound - instance не знайдено
-✓ TestPauseInstance_InvalidState - неможливо призупинити completed
-✓ TestPauseInstance_UpdateError - помилка при збереженні
+ TestPauseInstance_Success - паузa running → paused
+ TestPauseInstance_NotFound - instance не знайдено
+ TestPauseInstance_InvalidState - неможливо призупинити completed
+ TestPauseInstance_UpdateError - помилка при збереженні
 
 ```
 
@@ -470,10 +470,10 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestResumeInstance_Success - відновлення paused → running
-✓ TestResumeInstance_NotFound - instance не знайдено
-✓ TestResumeInstance_NotPaused - помилка якщо не paused
-✓ TestResumeInstance_UpdateError - помилка при збереженні
+ TestResumeInstance_Success - відновлення paused → running
+ TestResumeInstance_NotFound - instance не знайдено
+ TestResumeInstance_NotPaused - помилка якщо не paused
+ TestResumeInstance_UpdateError - помилка при збереженні
 
 ```
 
@@ -481,30 +481,30 @@ Total Duration: ~17 seconds (all layers)
 
 ```
 
-✓ TestCancelInstance_Success - скасування з причиною
-✓ TestCancelInstance_WithoutReason - скасування без причини
-✓ TestCancelInstance_NotFound - instance не знайдено
-✓ TestCancelInstance_UpdateError - помилка при збереженні
+ TestCancelInstance_Success - скасування з причиною
+ TestCancelInstance_WithoutReason - скасування без причини
+ TestCancelInstance_NotFound - instance не знайдено
+ TestCancelInstance_UpdateError - помилка при збереженні
 
 ````
 
 **Покриття UseCase:**
 
-- ✅ StartWorkflow() - повне покриття (success, external ref, assignee, errors)
-- ✅ GetInstance() - success + not found
-- ✅ ListInstances() - success + error
-- ✅ PauseInstance() - success + edge cases (invalid state, not found, update error)
-- ✅ ResumeInstance() - success + edge cases (not paused, not found, update error)
-- ✅ CancelInstance() - success + edge cases (with/without reason, not found, update error)
+-  StartWorkflow() - повне покриття (success, external ref, assignee, errors)
+-  GetInstance() - success + not found
+-  ListInstances() - success + error
+-  PauseInstance() - success + edge cases (invalid state, not found, update error)
+-  ResumeInstance() - success + edge cases (not paused, not found, update error)
+-  CancelInstance() - success + edge cases (with/without reason, not found, update error)
 
 ---
 
-### 3. Repository Integration Tests (44 tests) ✅
+### 3. Repository Integration Tests (44 tests) 
 
 **Завершено:** 26 грудня 2025
 **Статус:** 44/44 тести PASS (~11.3 секунди)
 
-#### 3.1. WorkflowDefinitionRepository (19 тестів ✅)
+#### 3.1. WorkflowDefinitionRepository (19 тестів )
 
 **Файл:** `adapter/repository/postgres/workflow_definition_repository_test.go`
 **Покриття:** Повне CRUD + складні запити + статистика
@@ -518,7 +518,7 @@ Total Duration: ~17 seconds (all layers)
 - ExistsByKey, GetExecutionStats
 - GetActiveDefinitions, Archive, Deprecate
 
-#### 3.2. WorkflowInstanceRepository (4 тести ✅)
+#### 3.2. WorkflowInstanceRepository (4 тести )
 
 **Файл:** `adapter/repository/postgres/workflow_instance_repository_test.go`
 **Покриття:** Базові CRUD операції
@@ -528,7 +528,7 @@ Total Duration: ~17 seconds (all layers)
 - Create, GetByID, Update
 - ListByDefinition
 
-#### 3.3. WorkflowStepRepository (6 тестів ✅)
+#### 3.3. WorkflowStepRepository (6 тестів )
 
 **Файл:** `adapter/repository/postgres/workflow_step_repository_test.go`
 **Покриття:** CRUD + execution tracking
@@ -544,7 +544,7 @@ Total Duration: ~17 seconds (all layers)
 - json.RawMessage NULL: використання `json.RawMessage(\`{}\`)` для порожніх JSONB
 - Поля: `state_name`, `type`, `duration`, `error_details`
 
-#### 3.4. WorkflowVariableRepository (7 тестів ✅)
+#### 3.4. WorkflowVariableRepository (7 тестів )
 
 **Файл:** `adapter/repository/postgres/workflow_variable_repository_test.go`
 **Покриття:** CRUD + variable scoping
@@ -559,7 +559,7 @@ Total Duration: ~17 seconds (all layers)
 - Поля: `state_name` (не `state`), `type`, `set_by`, `set_at`
 - Видалено `is_encrypted`
 
-#### 3.5. WorkflowEventRepository (8 тестів ✅)
+#### 3.5. WorkflowEventRepository (8 тестів )
 
 **Файл:** `adapter/repository/postgres/workflow_event_repository_test.go`
 **Покриття:** CRUD + event processing
@@ -577,20 +577,20 @@ Total Duration: ~17 seconds (all layers)
 - Entity WorkflowEvent в `workflow_variable.go`
 
 **Технічні досягнення Phase 3:**
-✅ json.RawMessage pattern для JSONB полів
-✅ Всі запити приведені до схеми міграцій
-✅ Real PostgreSQL integration tests
-✅ 44 тести виконуються за 11.3 секунди
-✅ Zero compilation errors
+ json.RawMessage pattern для JSONB полів
+ Всі запити приведені до схеми міграцій
+ Real PostgreSQL integration tests
+ 44 тести виконуються за 11.3 секунди
+ Zero compilation errors
 
 ---
 
-### Phase 4: Handler Tests ✅ ГОТОВО
+### Phase 4: Handler Tests  ГОТОВО
 
 **Завершено:** 26 грудня 2025
 **Статус:** 18/18 тести PASS (~0.7 секунди)
 
-#### 4.1. WorkflowDefinitionHandler (9 тестів ✅)
+#### 4.1. WorkflowDefinitionHandler (9 тестів )
 
 **Файл:** `adapter/http/handler/workflow_definition_handler_test.go` (~411 lines)
 **Покриття:** Всі CRUD операції + validation
@@ -604,11 +604,11 @@ Total Duration: ~17 seconds (all layers)
 
 **Виправлення:**
 
-- ✅ Mock signatures (додано `List()`, виправлено `Update()`)
-- ✅ Автентифікація: `authMiddleware(userID uuidv7.UUID)` замість string
-- ✅ Response format: `response["success"]` замість `response["status"]`
+-  Mock signatures (додано `List()`, виправлено `Update()`)
+-  Автентифікація: `authMiddleware(userID uuidv7.UUID)` замість string
+-  Response format: `response["success"]` замість `response["status"]`
 
-#### 4.2. WorkflowInstanceHandler (9 тестів ✅)
+#### 4.2. WorkflowInstanceHandler (9 тестів )
 
 **Файл:** `adapter/http/handler/workflow_instance_handler_test.go` (~373 lines)
 **Покриття:** Instance lifecycle + state management
@@ -621,9 +621,9 @@ Total Duration: ~17 seconds (all layers)
 
 **Виправлення:**
 
-- ✅ Mock signatures (додано `UpdateInstance()`, виправлено `StartWorkflow()`)
-- ✅ Автентифікація: передача UUID напряму без `.String()`
-- ✅ Response assertions виправлені для нового API формату
+-  Mock signatures (додано `UpdateInstance()`, виправлено `StartWorkflow()`)
+-  Автентифікація: передача UUID напряму без `.String()`
+-  Response assertions виправлені для нового API формату
 
 #### 4.3. Test Helpers (1 файл)
 
@@ -636,18 +636,18 @@ Total Duration: ~17 seconds (all layers)
 - `addAuthContext(c, userID uuidv7.UUID)` - legacy helper
 
 **Критичне виправлення:**
-🔧 **Type mismatch fix**: `middleware.GetUserID()` очікує `uuidv7.UUID`, не `string`!
+ **Type mismatch fix**: `middleware.GetUserID()` очікує `uuidv7.UUID`, не `string`!
 
 **Технічні досягнення Phase 4:**
-✅ Всі mock interfaces відповідають usecase інтерфейсам
-✅ Автентифікація в тестах працює коректно
-✅ Response format перевірки виправлені
-✅ 18 тестів виконуються за 0.7 секунди
-✅ Zero compilation errors
+ Всі mock interfaces відповідають usecase інтерфейсам
+ Автентифікація в тестах працює коректно
+ Response format перевірки виправлені
+ 18 тестів виконуються за 0.7 секунди
+ Zero compilation errors
 
 ---
 
-### Phase 5: Integration Tests ✅ ГОТОВО
+### Phase 5: Integration Tests  ГОТОВО
 
 **Duration**: ~2.5 hours
 **Tests**: 7/7 PASS (100%)
@@ -656,13 +656,13 @@ Total Duration: ~17 seconds (all layers)
 
 #### Tests Created
 
-1. ✅ TestCompleteWorkflowLifecycle_Integration - Create → Activate → Start → Transition → Complete
-2. ✅ TestWorkflowPauseResume_Integration - Pause/Resume workflow
-3. ✅ TestWorkflowCancellation_Integration - Cancel with reason
-4. ✅ TestWorkflowFailure_Integration - Fail with error details
-5. ✅ TestMultipleInstances_Integration - Multiple instances from same definition
-6. ✅ TestGetByExternalReference_Integration - External reference lookup
-7. ✅ TestDefinitionVersioning_Integration - v1/v2 versioning
+1.  TestCompleteWorkflowLifecycle_Integration - Create → Activate → Start → Transition → Complete
+2.  TestWorkflowPauseResume_Integration - Pause/Resume workflow
+3.  TestWorkflowCancellation_Integration - Cancel with reason
+4.  TestWorkflowFailure_Integration - Fail with error details
+5.  TestMultipleInstances_Integration - Multiple instances from same definition
+6.  TestGetByExternalReference_Integration - External reference lookup
+7.  TestDefinitionVersioning_Integration - v1/v2 versioning
 
 **Features:**
 
@@ -678,7 +678,7 @@ Total Duration: ~17 seconds (all layers)
 
 ### Phase 6: Smoke Tests
 
-**Status**: 🔄 In Progress
+**Status**:  In Progress
 **Priority**: HIGH
 
 - Module loads successfully
@@ -689,7 +689,7 @@ Total Duration: ~17 seconds (all layers)
 
 ---
 
-## 🔧 Immediate Next Steps
+##  Immediate Next Steps
 
 ### Крок 1: Виправити UseCase тести
 
@@ -762,21 +762,21 @@ Total Duration: ~17 seconds (all layers)
 
 ---
 
-## 📈 Оцінка часу
+##  Оцінка часу
 
 | Phase               | Estimated Time  | Priority  |
 | ------------------- | --------------- | --------- |
-| Fix UseCase Tests   | 1-2 hours       | 🔴 HIGH   |
-| Extend Entity Tests | 30 min          | 🟡 MEDIUM |
-| Repository Tests    | 3-4 hours       | 🔴 HIGH   |
-| Handler Tests       | 2-3 hours       | 🟡 MEDIUM |
-| Integration Tests   | 2 hours         | 🟢 LOW    |
-| Smoke Tests         | 1 hour          | 🟢 LOW    |
+| Fix UseCase Tests   | 1-2 hours       |  HIGH   |
+| Extend Entity Tests | 30 min          |  MEDIUM |
+| Repository Tests    | 3-4 hours       |  HIGH   |
+| Handler Tests       | 2-3 hours       |  MEDIUM |
+| Integration Tests   | 2 hours         |  LOW    |
+| Smoke Tests         | 1 hour          |  LOW    |
 | **TOTAL**           | **10-13 hours** | -         |
 
 ---
 
-## 🎯 Рекомендації
+##  Рекомендації
 
 ### Для комерційного модуля потрібно:
 
@@ -788,24 +788,24 @@ Total Duration: ~17 seconds (all layers)
 
 ### Пріоритет тестування:
 
-1. 🔴 **CRITICAL:** UseCase layer (state machine logic, transitions)
-2. 🔴 **CRITICAL:** Repository layer (data integrity)
-3. 🟡 **HIGH:** Handler layer (API contracts)
-4. 🟢 **MEDIUM:** Extended entity tests
-5. 🟢 **LOW:** Smoke tests
+1.  **CRITICAL:** UseCase layer (state machine logic, transitions)
+2.  **CRITICAL:** Repository layer (data integrity)
+3.  **HIGH:** Handler layer (API contracts)
+4.  **MEDIUM:** Extended entity tests
+5.  **LOW:** Smoke tests
 
 ### Поточна готовність:
 
-- ❌ **НЕ готово для production** (10% coverage)
-- ❌ **НЕ готово для комерційного релізу**
-- ✅ **Базова структура entity layer готова**
-- ✅ **UseCase tests структура створена** (потребує fixes)
+-  **НЕ готово для production** (10% coverage)
+-  **НЕ готово для комерційного релізу**
+-  **Базова структура entity layer готова**
+-  **UseCase tests структура створена** (потребує fixes)
 
 ---
 
-## 📝 Висновок
+##  Висновок
 
-**Статус:** 🟡 Early Development Stage
+**Статус:**  Early Development Stage
 
 **Що працює:** Entity layer повністю протестований (19 tests pass)
 

@@ -171,10 +171,10 @@ wrk -t12 -c1000 -d120s http://localhost:8081/api/v1/health
 ```bash
 wrk -t4 -c100 -d30s -s script.lua http://localhost:8081/api/v1/endpoint
     ↑    ↑    ↑      ↑
-    │    │    │      └─ Lua script for complex scenarios
-    │    │    └─ Duration (10s, 30s, 1m, 2h)
-    │    └─ Connections (concurrent requests)
-    └─ Threads (CPU cores to use)
+                   Lua script for complex scenarios
+             Duration (10s, 30s, 1m, 2h)
+         Connections (concurrent requests)
+     Threads (CPU cores to use)
 ```
 
 **Recommended:**
@@ -253,7 +253,7 @@ Transfer/sec:      4.11MB
 | **p99 Latency**     | <100ms   | <500ms   | >1s      |
 | **Error rate**      | 0%       | <1%      | >5%      |
 
-### Red Flags 🚨
+### Red Flags 
 
 - **High Stdev:** Inconsistent performance (investigate)
 - **Max >> Avg:** Occasional very slow requests (caching issue?)

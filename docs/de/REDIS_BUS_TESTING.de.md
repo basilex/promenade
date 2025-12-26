@@ -1,6 +1,6 @@
 # Redis IBus Testing Leitfaden
 
-[🇬🇧 English](../REDIS_BUS_TESTING.md) | [🇺🇦 Українська](../uk/REDIS_BUS_TESTING.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/REDIS_BUS_TESTING.pt.md) | [🇪🇸 Español](../es/REDIS_BUS_TESTING.es.md)
+[ English](../REDIS_BUS_TESTING.md) | [ Українська](../uk/REDIS_BUS_TESTING.uk.md) |  **Deutsch** | [ Português](../pt/REDIS_BUS_TESTING.pt.md) | [ Español](../es/REDIS_BUS_TESTING.es.md)
 
 ---
 

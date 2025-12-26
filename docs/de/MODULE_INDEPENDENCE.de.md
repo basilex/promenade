@@ -1,6 +1,6 @@
 # Modul-Unabhängigkeitsverifizierung
 
-[🇬🇧 English](../MODULE_INDEPENDENCE.md) | [🇺🇦 Українська](../uk/MODULE_INDEPENDENCE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
+[ English](../MODULE_INDEPENDENCE.md) | [ Українська](../uk/MODULE_INDEPENDENCE.uk.md) |  **Deutsch** | [ Português](../pt/MODULE_INDEPENDENCE.pt.md) | [ Español](../es/MODULE_INDEPENDENCE.es.md)
 
 ## Posts-Modulstruktur
 
@@ -8,16 +8,16 @@ Das `posts`-Modul demonstriert vollständige Unabhängigkeit vom Kernsystem und 
 
 ```
 internal/modules/posts/
-├── domain/
-│   ├── entity/          # Post-Entity + Domain-Fehler
-│   └── repository/      # Repository-Interface
-├── usecase/             # Geschäftslogik-Ebene
-├── adapter/
-│   ├── http/           # HTTP-Handler & DTOs
-│   └── repository/     # Datenbankimplementierung
-├── tests/              # Modulspezifische Tests
-├── module.go           # Modulintegration
-└── register.go         # Auto-Registrierung
+ domain/
+    entity/          # Post-Entity + Domain-Fehler
+    repository/      # Repository-Interface
+ usecase/             # Geschäftslogik-Ebene
+ adapter/
+    http/           # HTTP-Handler & DTOs
+    repository/     # Datenbankimplementierung
+ tests/              # Modulspezifische Tests
+ module.go           # Modulintegration
+ register.go         # Auto-Registrierung
 ```
 
 ## Unabhängigkeitsanalyse
@@ -66,15 +66,15 @@ Um ein neues unabhängiges Modul zu erstellen:
 
    ```
    internal/modules/{name}/
-   ├── domain/entity/
-   ├── domain/repository/
-   ├── usecase/
-   ├── adapter/http/handler/
-   ├── adapter/http/dto/
-   ├── adapter/repository/postgres/
-   ├── tests/
-   ├── module.go
-   └── register.go
+    domain/entity/
+    domain/repository/
+    usecase/
+    adapter/http/handler/
+    adapter/http/dto/
+    adapter/repository/postgres/
+    tests/
+    module.go
+    register.go
    ```
 
 2. Implementierung aus Core kopieren oder von Grund auf neu schreiben

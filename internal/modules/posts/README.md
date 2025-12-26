@@ -515,40 +515,40 @@ make test-integration
 
 ```
 internal/modules/posts/
-├── module.go                          # IModule registration & lifecycle
-│
-├── domain/
-│   └── entity/
-│       ├── post.go                    # Post entity with validation
-│       ├── comment.go                 # Comment entity with threading
-│       └── like.go                    # Like entity
-│
-├── repository/
-│   ├── post_repository.go             # Repository interface
-│   ├── comment_repository.go
-│   ├── like_repository.go
-│   └── postgres/
-│       ├── post_repository.go         # PostgreSQL implementation
-│       ├── comment_repository.go
-│       └── like_repository.go
-│
-├── usecase/
-│   ├── post_usecase.go                # Post business logic
-│   ├── post_usecase_test.go
-│   ├── comment_usecase.go             # Comment business logic
-│   └── like_usecase.go                # Like business logic
-│
-└── adapter/
-    └── handler/
-        ├── post_handler.go            # HTTP handlers
-        ├── comment_handler.go
-        ├── like_handler.go
-        ├── dto/
-        │   ├── post_dto.go            # Request/Response DTOs
-        │   ├── comment_dto.go
-        │   └── like_dto.go
-        └── router/
-            └── posts_router.go        # Route registration
+ module.go                          # IModule registration & lifecycle
+
+ domain/
+    entity/
+        post.go                    # Post entity with validation
+        comment.go                 # Comment entity with threading
+        like.go                    # Like entity
+
+ repository/
+    post_repository.go             # Repository interface
+    comment_repository.go
+    like_repository.go
+    postgres/
+        post_repository.go         # PostgreSQL implementation
+        comment_repository.go
+        like_repository.go
+
+ usecase/
+    post_usecase.go                # Post business logic
+    post_usecase_test.go
+    comment_usecase.go             # Comment business logic
+    like_usecase.go                # Like business logic
+
+ adapter/
+     handler/
+         post_handler.go            # HTTP handlers
+         comment_handler.go
+         like_handler.go
+         dto/
+            post_dto.go            # Request/Response DTOs
+            comment_dto.go
+            like_dto.go
+         router/
+             posts_router.go        # Route registration
 ```
 
 ---
@@ -650,7 +650,7 @@ Potential features (not yet implemented):
 
 ---
 
-## 📚 Related Documentation
+##  Related Documentation
 
 - **[../README.md](../README.md)** - IModule system overview
 - **[../../README.md](../../README.md)** - Main project README

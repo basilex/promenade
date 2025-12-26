@@ -1,6 +1,6 @@
 # Soft Delete Implementierungsleitfaden
 
-[🇬🇧 English](../SOFT_DELETE.md) | [🇺🇦 Українська](../uk/SOFT_DELETE.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/SOFT_DELETE.pt.md) | [🇪🇸 Español](../es/SOFT_DELETE.es.md)
+[ English](../SOFT_DELETE.md) | [ Українська](../uk/SOFT_DELETE.uk.md) |  **Deutsch** | [ Português](../pt/SOFT_DELETE.pt.md) | [ Español](../es/SOFT_DELETE.es.md)
 
 ## Übersicht
 

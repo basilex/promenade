@@ -1,6 +1,6 @@
 # Архітектурний Аудит - Core vs Modules
 
-[🇬🇧 English](../ARCHITECTURE_AUDIT.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/ARCHITECTURE_AUDIT.de.md) | [🇵🇹 Português](../pt/ARCHITECTURE_AUDIT.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_AUDIT.es.md)
+[ English](../ARCHITECTURE_AUDIT.md) |  **Українська** | [ Deutsch](../de/ARCHITECTURE_AUDIT.de.md) | [ Português](../pt/ARCHITECTURE_AUDIT.pt.md) | [ Español](../es/ARCHITECTURE_AUDIT.es.md)
 
 **Дата:** 22 грудня 2025
 **Статус:** Відповідає архітектурі
@@ -22,10 +22,10 @@ Promenade використовує **плагінну архітектуру**, 
 
 ```
 internal/infrastructure/
-├── config/         Завантаження конфігурації (YAML + env)
-├── database/       Підключення до БД + транзакції
-├── email/          Email-сервіс
-└── scheduler/      Cron-планувальник
+ config/         Завантаження конфігурації (YAML + env)
+ database/       Підключення до БД + транзакції
+ email/          Email-сервіс
+ scheduler/      Cron-планувальник
 ```
 
 **Статус:** Правильно - Core надає інфраструктуру як сервіс для модулів.
@@ -36,10 +36,10 @@ internal/infrastructure/
 
 ```
 internal/domain/entity/
-├── country.go      Країни (ISO2/3, регіони) - 195+ записів
-├── timezone.go     Часові пояси (IANA) - 500+ записів
-├── language.go     Мови (ISO 639) - 180+ записів
-└── (currency via repository)  Валюти (ISO 4217) - 170+ записів
+ country.go      Країни (ISO2/3, регіони) - 195+ записів
+ timezone.go     Часові пояси (IANA) - 500+ записів
+ language.go     Мови (ISO 639) - 180+ записів
+ (currency via repository)  Валюти (ISO 4217) - 170+ записів
 ```
 
 **Призначення:** Стабільні, рідко змінювані дані, спільні для всіх модулів.
@@ -50,8 +50,8 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── country_usecase.go   CRUD для країн
-└── currency_usecase.go  CRUD для валют
+ country_usecase.go   CRUD для країн
+ currency_usecase.go  CRUD для валют
 ```
 
 ---
@@ -60,10 +60,10 @@ internal/usecase/
 
 ```
 internal/domain/entity/
-├── user.go         Core-сутність користувача (тільки auth: email, пароль, ролі)
-├── session.go      JWT-сесії
-├── role.go         RBAC-ролі (5 системних ролей)
-└── permission.go   RBAC-дозволи (ресурс:дія)
+ user.go         Core-сутність користувача (тільки auth: email, пароль, ролі)
+ session.go      JWT-сесії
+ role.go         RBAC-ролі (5 системних ролей)
+ permission.go   RBAC-дозволи (ресурс:дія)
 ```
 
 **Призначення:** Безпека та контроль доступу - фундаментальні для всіх модулів.
@@ -74,9 +74,9 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── auth_usecase.go        Реєстрація, вхід, управління паролями
-├── role_usecase.go        Управління ролями
-└── permission_usecase.go  Управління дозволами
+ auth_usecase.go        Реєстрація, вхід, управління паролями
+ role_usecase.go        Управління ролями
+ permission_usecase.go  Управління дозволами
 ```
 
 ---
@@ -85,10 +85,10 @@ internal/usecase/
 
 ```
 pkg/module/
-├── module.go       Інтерфейс модуля
-├── registry.go     Реєстр модулів + вирішення залежностей
-├── config/         Завантажувач конфігурації модуля
-└── base.go         Допоміжний BaseModule
+ module.go       Інтерфейс модуля
+ registry.go     Реєстр модулів + вирішення залежностей
+ config/         Завантажувач конфігурації модуля
+ base.go         Допоміжний BaseModule
 ```
 
 **Призначення:** Оркестрація - виявлення, ініціалізація, запуск/зупинка модулів.
@@ -108,10 +108,10 @@ pkg/module/
 
 ```
 pkg/bus/
-├── bus.go          Інтерфейс event bus
-├── memory/         In-memory адаптер (dev/test)
-├── redis/          Redis-адаптер (production)
-└── factory.go      Фабрика адаптерів з fallback
+ bus.go          Інтерфейс event bus
+ memory/         In-memory адаптер (dev/test)
+ redis/          Redis-адаптер (production)
+ factory.go      Фабрика адаптерів з fallback
 ```
 
 **Призначення:** Інфраструктура міжмодульної комунікації.
@@ -124,13 +124,13 @@ pkg/bus/
 
 ```
 pkg/purge/
-├── handler.go      Реєстр handler'ів (модулі реєструють handler'и)
-└── (NEW) Реєстр політик (модулі реєструють політики збереження)
+ handler.go      Реєстр handler'ів (модулі реєструють handler'и)
+ (NEW) Реєстр політик (модулі реєструють політики збереження)
 ```
 
 ```
 internal/usecase/
-└── purge_usecase.go  Тільки оркестрація (отримує політики з реєстру)
+ purge_usecase.go  Тільки оркестрація (отримує політики з реєстру)
 ```
 
 **Призначення:** Інфраструктура планувальника - модулі визначають що/коли очищати.
@@ -147,17 +147,17 @@ internal/usecase/
 
 ```
 posts/
-├── module.go               Реалізація модуля
-├── register.go             Авто-реєстрація через init()
-├── config/                 Власні YAML-конфіги (dev, test, prod)
-│   └── config.*.yaml
-├── domain/entity/          Entity Post, Comment, Like
-├── usecase/                Бізнес-логіка
-├── adapter/
-│   ├── http/               Handler'и, DTO, маршрути
-│   ├── repository/         Реалізації Postgres
-│   └── purge/              Purge-handler'и для posts+comments
-└── README.md
+ module.go               Реалізація модуля
+ register.go             Авто-реєстрація через init()
+ config/                 Власні YAML-конфіги (dev, test, prod)
+    config.*.yaml
+ domain/entity/          Entity Post, Comment, Like
+ usecase/                Бізнес-логіка
+ adapter/
+    http/               Handler'и, DTO, маршрути
+    repository/         Реалізації Postgres
+    purge/              Purge-handler'и для posts+comments
+ README.md
 ```
 
 **Функції:**
@@ -175,15 +175,15 @@ posts/
 
 ```
 profiles/
-├── module.go               Реалізація модуля
-├── register.go             Авто-реєстрація
-├── config/                 Власні YAML-конфіги
-│   └── config.*.yaml
-├── entity/                 Entity UserProfile, UserContact
-├── usecase/                Бізнес-логіка
-└── adapter/
-    ├── http/               Handler'и, DTO, маршрути
-    └── repository/         Реалізації Postgres
+ module.go               Реалізація модуля
+ register.go             Авто-реєстрація
+ config/                 Власні YAML-конфіги
+    config.*.yaml
+ entity/                 Entity UserProfile, UserContact
+ usecase/                Бізнес-логіка
+ adapter/
+     http/               Handler'и, DTO, маршрути
+     repository/         Реалізації Postgres
 ```
 
 **Функції:**
@@ -464,25 +464,25 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 
 ```
 migrations/core/
-├── 000001_core_init_uuid_v7.up.sql            UUID v7 + тригери
-├── 000002_core_auth_full.up.sql               Auth-таблиці (users, sessions, tokens)
-├── 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
-├── 000004_core_ref_timezones.up.sql           Довідкові дані
-├── 000005_core_ref_languages.up.sql           Довідкові дані
-└── 000006_core_ref_countries_currencies.up.sql Довідкові дані
+ 000001_core_init_uuid_v7.up.sql            UUID v7 + тригери
+ 000002_core_auth_full.up.sql               Auth-таблиці (users, sessions, tokens)
+ 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
+ 000004_core_ref_timezones.up.sql           Довідкові дані
+ 000005_core_ref_languages.up.sql           Довідкові дані
+ 000006_core_ref_countries_currencies.up.sql Довідкові дані
 ```
 
 **Міграції модулів (з namespace та префіксами модулів):**
 
 ```
 migrations/posts/
-├── 000001_posts_posts.up.sql                  Таблиця Posts
-├── 000002_posts_comments.up.sql               Таблиця Comments
-└── 000003_posts_comment_likes.up.sql          Comment likes
+ 000001_posts_posts.up.sql                  Таблиця Posts
+ 000002_posts_comments.up.sql               Таблиця Comments
+ 000003_posts_comment_likes.up.sql          Comment likes
 
 migrations/profiles/
-├── 000001_profiles_contacts.up.sql            User contacts
-└── 000002_profiles_profiles.up.sql            User profiles
+ 000001_profiles_contacts.up.sql            User contacts
+ 000002_profiles_profiles.up.sql            User profiles
 ```
 
 **Майбутнє:** Модулі можуть реєструвати міграції програмно:
@@ -505,9 +505,9 @@ func (m *MyModule) RegisterMigrations() []module.Migration {
 
 ```
 internal/
-├── domain/entity/*_test.go         Юніт-тести entity
-├── usecase/*_test.go               Юніт-тести use case
-└── adapter/repository/*_test.go    Інтеграційні тести repository
+ domain/entity/*_test.go         Юніт-тести entity
+ usecase/*_test.go               Юніт-тести use case
+ adapter/repository/*_test.go    Інтеграційні тести repository
 ```
 
 **Фокус:** Auth, RBAC, довідкові дані, інфраструктура.
@@ -518,9 +518,9 @@ internal/
 
 ```
 internal/modules/posts/
-├── usecase/*_test.go               Юніт-тести бізнес-логіки
-├── adapter/repository/*_test.go    Тести repository
-└── module_test.go                  Інтеграційні тести модуля
+ usecase/*_test.go               Юніт-тести бізнес-логіки
+ adapter/repository/*_test.go    Тести repository
+ module_test.go                  Інтеграційні тести модуля
 ```
 
 **Статус:** Кожен модуль тестує власну логіку незалежно
@@ -531,10 +531,10 @@ internal/modules/posts/
 
 ```
 test/smoke/
-├── auth_smoke_test.go              Core auth-потоки
-├── rbac_smoke_test.go              Core RBAC-потоки
-├── user_post_smoke_test.go         Модуль Posts (потребує оновлення)
-└── user_profile_smoke_test.go      Модуль Profiles (потребує оновлення)
+ auth_smoke_test.go              Core auth-потоки
+ rbac_smoke_test.go              Core RBAC-потоки
+ user_post_smoke_test.go         Модуль Posts (потребує оновлення)
+ user_profile_smoke_test.go      Модуль Profiles (потребує оновлення)
 ```
 
 **Статус:** Smoke-тести потребують оновлення import-шляхів після міграції модулів

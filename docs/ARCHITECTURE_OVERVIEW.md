@@ -223,24 +223,24 @@ This document provides a high-level overview of the Promenade architecture, orga
 
 ```
 config/
-├── app.dev.yaml     - Core infrastructure (dev)
-├── app.test.yaml    - Core infrastructure (test)
-├── app.prod.yaml    - Core infrastructure (prod)
-└── modules.yaml     - Which modules to load
+ app.dev.yaml     - Core infrastructure (dev)
+ app.test.yaml    - Core infrastructure (test)
+ app.prod.yaml    - Core infrastructure (prod)
+ modules.yaml     - Which modules to load
 ```
 
 ### Module Configuration
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml  - Posts module settings (dev)
-├── config.test.yaml - Posts module settings (test)
-└── config.prod.yaml - Posts module settings (prod)
+ config.dev.yaml  - Posts module settings (dev)
+ config.test.yaml - Posts module settings (test)
+ config.prod.yaml - Posts module settings (prod)
 
 internal/modules/profiles/config/
-├── config.dev.yaml  - Profiles module settings (dev)
-├── config.test.yaml - Profiles module settings (test)
-└── config.prod.yaml - Profiles module settings (prod)
+ config.dev.yaml  - Profiles module settings (dev)
+ config.test.yaml - Profiles module settings (test)
+ config.prod.yaml - Profiles module settings (prod)
 ```
 
 **Environment Overrides:** `.env.example` (optional)

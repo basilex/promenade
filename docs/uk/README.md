@@ -1,4 +1,4 @@
-# Українська Документація / Ukrainian Documentation 🇺🇦
+# Українська Документація / Ukrainian Documentation 
 
 Ця папка містить українські переклади документації Promenade.
 
@@ -10,10 +10,10 @@ This folder contains Ukrainian translations of Promenade documentation.
 
 ```
 docs/uk/
-├── INDEX.uk.md                          # Індекс документації українською
-├── ARCHITECTURE_QUICKREF.uk.md          # Швидкий довідник з архітектури
-├── MODULE_DEVELOPMENT.uk.md             # Розробка модулів
-└── ... (більше перекладів буде додано)
+ INDEX.uk.md                          # Індекс документації українською
+ ARCHITECTURE_QUICKREF.uk.md          # Швидкий довідник з архітектури
+ MODULE_DEVELOPMENT.uk.md             # Розробка модулів
+ ... (більше перекладів буде додано)
 ```
 
 ---
@@ -25,7 +25,7 @@ docs/uk/
 - [README.uk.md](../../README.uk.md) - Головна сторінка українською
 - INDEX.uk.md - (в процесі)
 
-### 🚧 В процесі / In Progress
+###  В процесі / In Progress
 
 - ARCHITECTURE_QUICKREF.uk.md
 - MODULE_DEVELOPMENT.uk.md
@@ -45,11 +45,11 @@ docs/uk/
 
 1. Виберіть документ з папки `docs/` який ще не перекладений
 2. Створіть переклад у `docs/uk/` з суфіксом `.uk.md`
-3. Додайте лінк у англійський документ: `🇬🇧 English | [🇺🇦 Українська](uk/filename.uk.md)`
+3. Додайте лінк у англійський документ: ` English | [ Українська](uk/filename.uk.md)`
 4. Оновіть список вище
 5. Створіть Pull Request
 
-**Дякуємо за допомогу у створенні української документації!** 🇺🇦
+**Дякуємо за допомогу у створенні української документації!** 
 
 ---
 
@@ -60,4 +60,4 @@ docs/uk/
 
 ---
 
-**Слава Україні! 🇺🇦**
+**Слава Україні! **

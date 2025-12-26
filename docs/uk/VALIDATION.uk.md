@@ -1,4 +1,4 @@
-[🇬🇧 English](../VALIDATION.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/VALIDATION.de.md) | [🇵🇹 Português](../pt/VALIDATION.pt.md) | [🇪🇸 Español](../es/VALIDATION.es.md)
+[ English](../VALIDATION.md) |  **Українська** | [ Deutsch](../de/VALIDATION.de.md) | [ Português](../pt/VALIDATION.pt.md) | [ Español](../es/VALIDATION.es.md)
 
 # Стратегія валідації
 

@@ -8,25 +8,25 @@ Promenade uses a **namespace-based migration system** where each module maintain
 
 ```
 migrations/
-├── core/           # Core infrastructure (auth, RBAC, reference data)
-│   ├── 000001_init_schema_deps.up.sql
-│   ├── 000001_init_schema_deps.down.sql
-│   ├── 000002_create_auth_schema.up.sql
-│   ├── 000003_create_rbac_tables.up.sql
-│   ├── 000004_create_timezones_table.up.sql
-│   ├── 000005_create_languages_table.up.sql
-│   ├── 000006_create_countries_currencies.up.sql
-│   ├── 000007_create_regions_cities.up.sql
-│   ├── 000008_create_payment_methods.up.sql
-│   └── ...
-├── posts/          # Posts module (posts + comments + likes)
-│   ├── 000001_create_user_posts.up.sql
-│   ├── 000001_create_user_posts.down.sql
-│   └── ...
-└── profiles/       # Profiles module (user contacts + profiles)
-    ├── 000001_create_user_contacts.up.sql
-    ├── 000002_create_user_profiles.up.sql
-    └── ...
+ core/           # Core infrastructure (auth, RBAC, reference data)
+    000001_init_schema_deps.up.sql
+    000001_init_schema_deps.down.sql
+    000002_create_auth_schema.up.sql
+    000003_create_rbac_tables.up.sql
+    000004_create_timezones_table.up.sql
+    000005_create_languages_table.up.sql
+    000006_create_countries_currencies.up.sql
+    000007_create_regions_cities.up.sql
+    000008_create_payment_methods.up.sql
+    ...
+ posts/          # Posts module (posts + comments + likes)
+    000001_create_user_posts.up.sql
+    000001_create_user_posts.down.sql
+    ...
+ profiles/       # Profiles module (user contacts + profiles)
+     000001_create_user_contacts.up.sql
+     000002_create_user_profiles.up.sql
+     ...
 ```
 
 ## Key Features

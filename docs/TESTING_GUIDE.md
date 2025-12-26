@@ -429,11 +429,11 @@ cd test/smoke
 ### Expected Results
 
 ```
-✓ Test passed: 01_health
-✓ Test passed: 02_auth
-✓ Test passed: 03_posts
-✓ Test passed: 04_profiles
-✓ Test passed: 05_analytics
+ Test passed: 01_health
+ Test passed: 02_auth
+ Test passed: 03_posts
+ Test passed: 04_profiles
+ Test passed: 05_analytics
 
 Test Summary: 5 passed, 0 failed
 ```
@@ -486,9 +486,9 @@ wrk -t4 -c100 -d30s http://localhost:8081/api/v1/health
 | Endpoint         | Target RPS | p99 Latency | Actual (M4 Mac) |
 | ---------------- | ---------- | ----------- | --------------- |
 | **Health Check** | 10,000+    | < 50ms      | **99,553 RPS**  |
-| **Auth Login**   | 500-1,000  | < 200ms     | ✓ Verified      |
-| **Posts CRUD**   | 300-500    | < 300ms     | ✓ Verified      |
-| **Analytics**    | 200-400    | < 400ms     | ✓ Verified      |
+| **Auth Login**   | 500-1,000  | < 200ms     |  Verified      |
+| **Posts CRUD**   | 300-500    | < 300ms     |  Verified      |
+| **Analytics**    | 200-400    | < 400ms     |  Verified      |
 
 ### Load Levels
 

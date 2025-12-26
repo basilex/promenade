@@ -24,7 +24,7 @@
 
 **Each state should represent ONE clear business stage.**
 
-✅ **GOOD:**
+ **GOOD:**
 
 ```json
 {
@@ -32,7 +32,7 @@
 }
 ```
 
-❌ **BAD:**
+ **BAD:**
 
 ```json
 {
@@ -56,7 +56,7 @@
 
 **State names should explain themselves without documentation.**
 
-✅ **GOOD:**
+ **GOOD:**
 
 ```json
 {
@@ -70,7 +70,7 @@
 }
 ```
 
-❌ **BAD:**
+ **BAD:**
 
 ```json
 {
@@ -96,7 +96,7 @@
 
 **Always have clear end states where workflow completes.**
 
-✅ **GOOD:**
+ **GOOD:**
 
 ```json
 {
@@ -128,7 +128,7 @@
 
 **Find the right level of detail for your use case.**
 
-**Too Fine-Grained (❌):**
+**Too Fine-Grained ():**
 
 ```json
 {
@@ -145,7 +145,7 @@
 }
 ```
 
-**Too Coarse-Grained (❌):**
+**Too Coarse-Grained ():**
 
 ```json
 {
@@ -153,7 +153,7 @@
 }
 ```
 
-**Just Right (✅):**
+**Just Right ():**
 
 ```json
 {
@@ -265,9 +265,9 @@ draft → submitted → processing → completed
 
 ```
 draft → manager_approval → director_approval → finance_approval → approved
-            │                    │                    │
-            └─────────────┬──────┴────────────────────┘
-                          ▼
+                                                    
+            
+                          
                       rejected
 ```
 
@@ -296,15 +296,15 @@ draft → manager_approval → director_approval → finance_approval → approv
 **Visual:**
 
 ```
-              ┌──────────────────┐
-              │                  │
-pending → processing ─────> completed
-              │     │
-              │     └──> retry ──┘
-              │           │
-              │           └──> failed
-              │
-              └──> (direct failure possible)
+              
+                                
+pending → processing > completed
+                   
+                   > retry 
+                         
+                         > failed
+              
+              > (direct failure possible)
 ```
 
 **Key Points:**
@@ -387,7 +387,7 @@ auto_approved manager director
     |         /  \    /  \
   finalize   /    \  /    \
     |       /      \/      \
-    └─> approved   rejected
+    > approved   rejected
 ```
 
 **Implementation:** Application logic determines which event to trigger based on amount.
@@ -396,7 +396,7 @@ auto_approved manager director
 
 ## Anti-Patterns to Avoid
 
-### 1. Unreachable States ❌
+### 1. Unreachable States 
 
 **Problem:** States with no path from initial state
 
@@ -425,7 +425,7 @@ state 'orphaned' is unreachable from initial state 'start'
 
 ---
 
-### 2. Dead-End States (Except Terminals) ❌
+### 2. Dead-End States (Except Terminals) 
 
 **Problem:** Non-terminal states with no exit
 
@@ -450,7 +450,7 @@ state 'orphaned' is unreachable from initial state 'start'
 
 ---
 
-### 3. Cycles Without Exits ❌
+### 3. Cycles Without Exits 
 
 **Problem:** Infinite loops with no escape
 
@@ -486,7 +486,7 @@ cycle detected without exit: state_a -> state_b -> state_a
 
 ---
 
-### 4. Ambiguous State Names ❌
+### 4. Ambiguous State Names 
 
 **Problem:** States that don't clearly indicate status
 
@@ -512,7 +512,7 @@ cycle detected without exit: state_a -> state_b -> state_a
 
 ---
 
-### 5. Too Many States ❌
+### 5. Too Many States 
 
 **Problem:** Overly complex workflows
 
@@ -535,14 +535,14 @@ cycle detected without exit: state_a -> state_b -> state_a
 
 ```
 Main Workflow (5 states)
-  ├─> Sub-Workflow A (10 states)
-  ├─> Sub-Workflow B (15 states)
-  └─> Sub-Workflow C (8 states)
+  > Sub-Workflow A (10 states)
+  > Sub-Workflow B (15 states)
+  > Sub-Workflow C (8 states)
 ```
 
 ---
 
-### 6. Generic Event Names ❌
+### 6. Generic Event Names 
 
 **Problem:** Events that don't describe the action
 
@@ -713,7 +713,7 @@ Main Workflow (5 states)
 
 Before activating a workflow, verify:
 
-### ✅ Structure
+###  Structure
 
 - [ ] Has at least 2 states (initial + terminal)
 - [ ] Initial state is defined
@@ -722,7 +722,7 @@ Before activating a workflow, verify:
 - [ ] No duplicate state names
 - [ ] State names follow naming convention
 
-### ✅ Graph Integrity
+###  Graph Integrity
 
 - [ ] All states reachable from initial state
 - [ ] At least one terminal state exists
@@ -730,7 +730,7 @@ Before activating a workflow, verify:
 - [ ] No dead-end non-terminal states
 - [ ] Clear path to completion
 
-### ✅ Business Logic
+###  Business Logic
 
 - [ ] States represent meaningful business stages
 - [ ] Transitions have descriptive event names
@@ -738,14 +738,14 @@ Before activating a workflow, verify:
 - [ ] Cancellation paths exist where needed
 - [ ] Approvers clearly identified in state names
 
-### ✅ Performance
+###  Performance
 
 - [ ] States count: < 200 (recommended)
 - [ ] Transitions count: < 1000 (recommended)
 - [ ] No deeply nested cycles (> 10 levels)
 - [ ] Tested with validation endpoint
 
-### ✅ Testing
+###  Testing
 
 - [ ] Happy path tested (initial → terminal)
 - [ ] Error paths tested (initial → error → recovery)

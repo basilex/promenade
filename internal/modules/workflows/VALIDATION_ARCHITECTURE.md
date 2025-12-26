@@ -33,20 +33,20 @@ The Workflow Validation system ensures workflow schemas are **structurally sound
 
 ```
 Schema JSON
-    │
-    ▼
-┌─────────────────────────────────┐
-│ Stage 1: Structural Validation  │  ← JSON structure, required fields
-├─────────────────────────────────┤
-│ Stage 2: Reference Validation   │  ← States/transitions integrity
-├─────────────────────────────────┤
-│ Stage 3: Graph Analysis         │  ← Reachability, cycles, deadlocks
-├─────────────────────────────────┤
-│ Stage 4: Business Rules         │  ← Terminal states, initial state
-└─────────────────────────────────┘
-    │
-    ▼
-[VALID ✅] or [ERROR ❌ with details]
+    
+    
+
+ Stage 1: Structural Validation    ← JSON structure, required fields
+
+ Stage 2: Reference Validation     ← States/transitions integrity
+
+ Stage 3: Graph Analysis           ← Reachability, cycles, deadlocks
+
+ Stage 4: Business Rules           ← Terminal states, initial state
+
+    
+    
+[VALID ] or [ERROR  with details]
 ```
 
 ---
@@ -370,7 +370,7 @@ Step 2: path = ["start", "processing"], visited = {"start", "processing"}, recSt
 Step 3: path = ["start", "processing", "retry"], visited = {"start", "processing", "retry"}, recStack = {"start", "processing", "retry"}
 Step 4: Back to "processing" (already in recStack) → CYCLE DETECTED
 Check:  Cycle = ["processing", "retry"]
-        Exit check: "retry" → "done" (outside cycle) → HAS EXIT ✅
+        Exit check: "retry" → "done" (outside cycle) → HAS EXIT 
 Result: VALID
 ```
 
@@ -394,7 +394,7 @@ Step 1: path = ["start", "state_a", "state_b"]
 Step 2: Back to "state_a" (in recStack) → CYCLE DETECTED
 Check:  Cycle = ["state_a", "state_b"]
         Exit check: No transitions outside cycle
-Result: INVALID ❌
+Result: INVALID 
 ```
 
 **Error:**
@@ -668,7 +668,7 @@ Test scalability with large graphs:
 }
 ```
 
-**Validation:** ✅ VALID
+**Validation:**  VALID
 
 - Has state
 - Initial state exists
@@ -691,7 +691,7 @@ Test scalability with large graphs:
 }
 ```
 
-**Validation:** ❌ INVALID
+**Validation:**  INVALID
 
 - No terminal state
 - Infinite loop without exit
@@ -724,7 +724,7 @@ Test scalability with large graphs:
 }
 ```
 
-**Validation:** ❌ INVALID
+**Validation:**  INVALID
 
 - States `isolated_1` and `isolated_2` unreachable from `start`
 
@@ -751,7 +751,7 @@ Test scalability with large graphs:
 }
 ```
 
-**Validation:** ✅ VALID
+**Validation:**  VALID
 
 - Both cycles have exits (A → C, C → end)
 
@@ -780,26 +780,26 @@ Test scalability with large graphs:
 **Good Error Messages:**
 
 ```
-✅ "workflow schema validation failed: state 'orphaned_state' is unreachable from initial state 'start'"
+ "workflow schema validation failed: state 'orphaned_state' is unreachable from initial state 'start'"
    → Clear: which state is the problem, why it's a problem
 
-✅ "workflow schema validation failed: transition[5]: 'from' state 'unknown' not found in states"
+ "workflow schema validation failed: transition[5]: 'from' state 'unknown' not found in states"
    → Specific: which transition (index 5), which field (from), which state (unknown)
 
-✅ "workflow schema validation failed: cycle detected without exit: processing -> retry -> processing"
+ "workflow schema validation failed: cycle detected without exit: processing -> retry -> processing"
    → Actionable: shows the cycle path, implies need for exit transition
 ```
 
 **Bad Error Messages:**
 
 ```
-❌ "invalid workflow"
+ "invalid workflow"
    → Not specific
 
-❌ "validation failed"
+ "validation failed"
    → Not actionable
 
-❌ "error in state"
+ "error in state"
    → Missing context
 ```
 

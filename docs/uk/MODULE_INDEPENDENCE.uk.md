@@ -1,6 +1,6 @@
 # Верифікація незалежності модулів
 
-[🇬🇧 English](../MODULE_INDEPENDENCE.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/MODULE_INDEPENDENCE.de.md) | [🇵🇹 Português](../pt/MODULE_INDEPENDENCE.pt.md) | [🇪🇸 Español](../es/MODULE_INDEPENDENCE.es.md)
+[ English](../MODULE_INDEPENDENCE.md) |  **Українська** | [ Deutsch](../de/MODULE_INDEPENDENCE.de.md) | [ Português](../pt/MODULE_INDEPENDENCE.pt.md) | [ Español](../es/MODULE_INDEPENDENCE.es.md)
 
 ## Структура модуля Posts
 
@@ -8,16 +8,16 @@
 
 ```
 internal/modules/posts/
-├── domain/
-│   ├── entity/          # Сутність Post + доменні помилки
-│   └── repository/      # Інтерфейс репозиторію
-├── usecase/             # Рівень бізнес-логіки
-├── adapter/
-│   ├── http/           # HTTP обробники та DTO
-│   └── repository/     # Реалізація бази даних
-├── tests/              # Тести специфічні для модуля
-├── module.go           # Інтеграція модуля
-└── register.go         # Авто-реєстрація
+ domain/
+    entity/          # Сутність Post + доменні помилки
+    repository/      # Інтерфейс репозиторію
+ usecase/             # Рівень бізнес-логіки
+ adapter/
+    http/           # HTTP обробники та DTO
+    repository/     # Реалізація бази даних
+ tests/              # Тести специфічні для модуля
+ module.go           # Інтеграція модуля
+ register.go         # Авто-реєстрація
 ```
 
 ## Аналіз незалежності
@@ -66,15 +66,15 @@ internal/modules/posts/
 
    ```
    internal/modules/{name}/
-   ├── domain/entity/
-   ├── domain/repository/
-   ├── usecase/
-   ├── adapter/http/handler/
-   ├── adapter/http/dto/
-   ├── adapter/repository/postgres/
-   ├── tests/
-   ├── module.go
-   └── register.go
+    domain/entity/
+    domain/repository/
+    usecase/
+    adapter/http/handler/
+    adapter/http/dto/
+    adapter/repository/postgres/
+    tests/
+    module.go
+    register.go
    ```
 
 2. Скопіювати реалізацію з core або написати з нуля

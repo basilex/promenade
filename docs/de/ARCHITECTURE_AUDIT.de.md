@@ -1,6 +1,6 @@
 # Architektur-Audit - Core vs IModule
 
-[🇬🇧 English](../ARCHITECTURE_AUDIT.md) | [🇺🇦 Українська](../ARCHITECTURE_AUDIT.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../ARCHITECTURE_AUDIT.pt.md) | [🇪🇸 Español](../ARCHITECTURE_AUDIT.es.md)
+[ English](../ARCHITECTURE_AUDIT.md) | [ Українська](../ARCHITECTURE_AUDIT.uk.md) |  **Deutsch** | [ Português](../ARCHITECTURE_AUDIT.pt.md) | [ Español](../ARCHITECTURE_AUDIT.es.md)
 
 **Datum:** 22. Dezember 2025
 **Status:** Architekturkonform
@@ -22,10 +22,10 @@ Dieses Audit bestätigt, dass die Architektur **korrekt implementiert** ist mit 
 
 ```
 internal/infrastructure/
-├── config/         Konfigurationsverwaltung (YAML + env)
-├── database/       Datenbankverbindung + Transaktionen
-├── email/          E-Mail-Service
-└── scheduler/      Cron-Scheduler
+ config/         Konfigurationsverwaltung (YAML + env)
+ database/       Datenbankverbindung + Transaktionen
+ email/          E-Mail-Service
+ scheduler/      Cron-Scheduler
 ```
 
 **Status:** Korrekt - Core stellt Infrastruktur als Service für IModule bereit.
@@ -36,10 +36,10 @@ internal/infrastructure/
 
 ```
 internal/domain/entity/
-├── country.go      Länder (ISO2/3, Regionen) - 195+ Einträge
-├── timezone.go     Zeitzonen (IANA) - 500+ Einträge
-├── language.go     Sprachen (ISO 639) - 180+ Einträge
-└── (currency via repository)  Währungen (ISO 4217) - 170+ Einträge
+ country.go      Länder (ISO2/3, Regionen) - 195+ Einträge
+ timezone.go     Zeitzonen (IANA) - 500+ Einträge
+ language.go     Sprachen (ISO 639) - 180+ Einträge
+ (currency via repository)  Währungen (ISO 4217) - 170+ Einträge
 ```
 
 **Zweck:** Stabile, selten sich ändernde Daten, die modulübergreifend genutzt werden.
@@ -50,8 +50,8 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── country_usecase.go   CRUD für Länder
-└── currency_usecase.go  CRUD für Währungen
+ country_usecase.go   CRUD für Länder
+ currency_usecase.go  CRUD für Währungen
 ```
 
 ---
@@ -60,10 +60,10 @@ internal/usecase/
 
 ```
 internal/domain/entity/
-├── user.go         Core-User-Entity (nur Auth: E-Mail, Passwort, Rollen)
-├── session.go      JWT-Sessions
-├── role.go         RBAC-Rollen (5 Systemrollen)
-└── permission.go   RBAC-Berechtigungen (resource:action)
+ user.go         Core-User-Entity (nur Auth: E-Mail, Passwort, Rollen)
+ session.go      JWT-Sessions
+ role.go         RBAC-Rollen (5 Systemrollen)
+ permission.go   RBAC-Berechtigungen (resource:action)
 ```
 
 **Zweck:** Sicherheit und Zugriffskontrolle - grundlegend für alle IModule.
@@ -74,9 +74,9 @@ internal/domain/entity/
 
 ```
 internal/usecase/
-├── auth_usecase.go        Registrierung, Login, Passwortverwaltung
-├── role_usecase.go        Rollenverwaltung
-└── permission_usecase.go  Berechtigungsverwaltung
+ auth_usecase.go        Registrierung, Login, Passwortverwaltung
+ role_usecase.go        Rollenverwaltung
+ permission_usecase.go  Berechtigungsverwaltung
 ```
 
 ---
@@ -85,10 +85,10 @@ internal/usecase/
 
 ```
 pkg/module/
-├── module.go       Modul-Interface
-├── registry.go     Modul-Registry + Abhängigkeitsauflösung
-├── config/         Modul-Config-Loader
-└── base.go         BaseModule-Helfer
+ module.go       Modul-Interface
+ registry.go     Modul-Registry + Abhängigkeitsauflösung
+ config/         Modul-Config-Loader
+ base.go         BaseModule-Helfer
 ```
 
 **Zweck:** Orchestrierung - IModule entdecken, initialisieren, starten/stoppen.
@@ -108,10 +108,10 @@ pkg/module/
 
 ```
 pkg/bus/
-├── bus.go          Event IBus-Interface
-├── memory/         In-Memory-Adapter (dev/test)
-├── redis/          Redis-Adapter (production)
-└── factory.go      Adapter-Factory mit Fallback
+ bus.go          Event IBus-Interface
+ memory/         In-Memory-Adapter (dev/test)
+ redis/          Redis-Adapter (production)
+ factory.go      Adapter-Factory mit Fallback
 ```
 
 **Zweck:** Modul-übergreifende Kommunikationsinfrastruktur.
@@ -124,13 +124,13 @@ pkg/bus/
 
 ```
 pkg/purge/
-├── handler.go      Handler-Registry (IModule registrieren Handler)
-└── (NEU) Policy-Registry (IModule registrieren Aufbewahrungsrichtlinien)
+ handler.go      Handler-Registry (IModule registrieren Handler)
+ (NEU) Policy-Registry (IModule registrieren Aufbewahrungsrichtlinien)
 ```
 
 ```
 internal/usecase/
-└── purge_usecase.go  Nur Orchestrierung (holt Policies aus Registry)
+ purge_usecase.go  Nur Orchestrierung (holt Policies aus Registry)
 ```
 
 **Zweck:** Scheduler-Infrastruktur - IModule definieren was/wann zu löschen ist.
@@ -147,17 +147,17 @@ internal/usecase/
 
 ```
 posts/
-├── module.go               Modul-Implementierung
-├── register.go             Auto-Registrierung via init()
-├── config/                 Eigene YAML-Configs (dev, test, prod)
-│   └── config.*.yaml
-├── domain/entity/          Post-, Comment-, Like-Entities
-├── usecase/                Geschäftslogik
-├── adapter/
-│   ├── http/               Handler, DTOs, Routes
-│   ├── repository/         Postgres-Implementierungen
-│   └── purge/              Purge-Handler für Posts+Comments
-└── README.md
+ module.go               Modul-Implementierung
+ register.go             Auto-Registrierung via init()
+ config/                 Eigene YAML-Configs (dev, test, prod)
+    config.*.yaml
+ domain/entity/          Post-, Comment-, Like-Entities
+ usecase/                Geschäftslogik
+ adapter/
+    http/               Handler, DTOs, Routes
+    repository/         Postgres-Implementierungen
+    purge/              Purge-Handler für Posts+Comments
+ README.md
 ```
 
 **Funktionen:**
@@ -175,15 +175,15 @@ posts/
 
 ```
 profiles/
-├── module.go               Modul-Implementierung
-├── register.go             Auto-Registrierung
-├── config/                 Eigene YAML-Configs
-│   └── config.*.yaml
-├── entity/                 UserProfile-, UserContact-Entities
-├── usecase/                Geschäftslogik
-└── adapter/
-    ├── http/               Handler, DTOs, Routes
-    └── repository/         Postgres-Implementierungen
+ module.go               Modul-Implementierung
+ register.go             Auto-Registrierung
+ config/                 Eigene YAML-Configs
+    config.*.yaml
+ entity/                 UserProfile-, UserContact-Entities
+ usecase/                Geschäftslogik
+ adapter/
+     http/               Handler, DTOs, Routes
+     repository/         Postgres-Implementierungen
 ```
 
 **Funktionen:**
@@ -464,25 +464,25 @@ func (m *PostsModule) RegisterRoutes(router *gin.RouterGroup) {
 
 ```
 migrations/core/
-├── 000001_core_init_uuid_v7.up.sql            UUID v7 + Trigger
-├── 000002_core_auth_full.up.sql               Auth-Tabellen (users, sessions, tokens)
-├── 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
-├── 000004_core_ref_timezones.up.sql           Referenzdaten
-├── 000005_core_ref_languages.up.sql           Referenzdaten
-└── 000006_core_ref_countries_currencies.up.sql Referenzdaten
+ 000001_core_init_uuid_v7.up.sql            UUID v7 + Trigger
+ 000002_core_auth_full.up.sql               Auth-Tabellen (users, sessions, tokens)
+ 000003_core_rbac_full.up.sql               RBAC (roles, permissions)
+ 000004_core_ref_timezones.up.sql           Referenzdaten
+ 000005_core_ref_languages.up.sql           Referenzdaten
+ 000006_core_ref_countries_currencies.up.sql Referenzdaten
 ```
 
 **Modul-Migrationen (namespace-basiert mit Modul-Präfixen):**
 
 ```
 migrations/posts/
-├── 000001_posts_posts.up.sql                  Posts-Tabelle
-├── 000002_posts_comments.up.sql               Comments-Tabelle
-└── 000003_posts_comment_likes.up.sql          Comment-Likes
+ 000001_posts_posts.up.sql                  Posts-Tabelle
+ 000002_posts_comments.up.sql               Comments-Tabelle
+ 000003_posts_comment_likes.up.sql          Comment-Likes
 
 migrations/profiles/
-├── 000001_profiles_contacts.up.sql            Benutzerkontakte
-└── 000002_profiles_profiles.up.sql            Benutzerprofile
+ 000001_profiles_contacts.up.sql            Benutzerkontakte
+ 000002_profiles_profiles.up.sql            Benutzerprofile
 ```
 
 **Zukünftig:** IModule können Migrationen programmatisch registrieren:
@@ -505,9 +505,9 @@ func (m *MyModule) RegisterMigrations() []module.Migration {
 
 ```
 internal/
-├── domain/entity/*_test.go         Entity-Unit-Tests
-├── usecase/*_test.go               Use Case-Unit-Tests
-└── adapter/repository/*_test.go    Repository-Integrationstests
+ domain/entity/*_test.go         Entity-Unit-Tests
+ usecase/*_test.go               Use Case-Unit-Tests
+ adapter/repository/*_test.go    Repository-Integrationstests
 ```
 
 **Fokus:** Auth, RBAC, Referenzdaten, Infrastruktur.
@@ -518,9 +518,9 @@ internal/
 
 ```
 internal/modules/posts/
-├── usecase/*_test.go               Geschäftslogik-Unit-Tests
-├── adapter/repository/*_test.go    Repository-Tests
-└── module_test.go                  Modul-Integrationstests
+ usecase/*_test.go               Geschäftslogik-Unit-Tests
+ adapter/repository/*_test.go    Repository-Tests
+ module_test.go                  Modul-Integrationstests
 ```
 
 **Status:** Jedes Modul testet seine eigene Logik unabhängig
@@ -531,10 +531,10 @@ internal/modules/posts/
 
 ```
 test/smoke/
-├── auth_smoke_test.go              Core-Auth-Flows
-├── rbac_smoke_test.go              Core-RBAC-Flows
-├── user_post_smoke_test.go         Posts-Modul (benötigt Update)
-└── user_profile_smoke_test.go      Profiles-Modul (benötigt Update)
+ auth_smoke_test.go              Core-Auth-Flows
+ rbac_smoke_test.go              Core-RBAC-Flows
+ user_post_smoke_test.go         Posts-Modul (benötigt Update)
+ user_profile_smoke_test.go      Profiles-Modul (benötigt Update)
 ```
 
 **Status:** Smoke-Tests benötigen Import-Pfad-Updates nach Modul-Migration

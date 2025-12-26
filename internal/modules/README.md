@@ -4,7 +4,7 @@
 
 ---
 
-## 🧩 IModule Philosophy
+##  IModule Philosophy
 
 ### Core Principles
 
@@ -164,70 +164,70 @@ Every module follows this structure:
 
 ```
 internal/modules/{module}/
-├── module.go                    # IModule registration & lifecycle
-│
-├── domain/                      # Domain layer (pure business logic)
-│   └── entity/                  # Domain entities
-│       ├── {entity}.go
-│       └── {entity}_test.go
-│
-├── repository/                  # Data access layer
-│   ├── {entity}_repository.go   # Interface
-│   ├── postgres/                # PostgreSQL implementation
-│   │   └── {entity}_repository.go
-│   └── mock/                    # Mock implementation (for tests)
-│       └── {entity}_repository.go
-│
-├── usecase/                     # Business logic layer
-│   ├── {entity}_usecase.go
-│   └── {entity}_usecase_test.go
-│
-├── adapter/                     # Adapters layer
-│   └── handler/                 # HTTP handlers
-│       ├── {entity}_handler.go  # HTTP handler
-│       ├── dto/                 # Request/Response DTOs
-│       │   └── {entity}_dto.go
-│       └── router/              # Route registration
-│           └── {module}_router.go
-│
-└── README.md                    # IModule-specific documentation
+ module.go                    # IModule registration & lifecycle
+
+ domain/                      # Domain layer (pure business logic)
+    entity/                  # Domain entities
+        {entity}.go
+        {entity}_test.go
+
+ repository/                  # Data access layer
+    {entity}_repository.go   # Interface
+    postgres/                # PostgreSQL implementation
+       {entity}_repository.go
+    mock/                    # Mock implementation (for tests)
+        {entity}_repository.go
+
+ usecase/                     # Business logic layer
+    {entity}_usecase.go
+    {entity}_usecase_test.go
+
+ adapter/                     # Adapters layer
+    handler/                 # HTTP handlers
+        {entity}_handler.go  # HTTP handler
+        dto/                 # Request/Response DTOs
+           {entity}_dto.go
+        router/              # Route registration
+            {module}_router.go
+
+ README.md                    # IModule-specific documentation
 ```
 
 ### Example: Posts Module
 
 ```
 internal/modules/posts/
-├── module.go                    # RegisterModule(), Initialize(), Start(), Stop()
-│
-├── domain/
-│   └── entity/
-│       ├── post.go              # Post entity
-│       ├── comment.go           # Comment entity
-│       └── like.go              # Like entity
-│
-├── repository/
-│   ├── post_repository.go       # Interface: GetByID(), Create(), Update(), etc.
-│   └── postgres/
-│       ├── post_repository.go   # Implements using sqlx
-│       ├── comment_repository.go
-│       └── like_repository.go
-│
-├── usecase/
-│   ├── post_usecase.go          # CreatePost(), PublishPost(), DeletePost()
-│   ├── comment_usecase.go       # AddComment(), UpdateComment()
-│   └── like_usecase.go          # ToggleLike(), GetLikeCount()
-│
-└── adapter/
-    └── handler/
-        ├── post_handler.go      # HandleCreatePost(), HandleGetPost()
-        ├── comment_handler.go
-        ├── like_handler.go
-        ├── dto/
-        │   ├── post_dto.go      # CreatePostRequest, PostResponse
-        │   ├── comment_dto.go
-        │   └── like_dto.go
-        └── router/
-            └── posts_router.go  # Register routes: POST /posts, GET /posts/:id
+ module.go                    # RegisterModule(), Initialize(), Start(), Stop()
+
+ domain/
+    entity/
+        post.go              # Post entity
+        comment.go           # Comment entity
+        like.go              # Like entity
+
+ repository/
+    post_repository.go       # Interface: GetByID(), Create(), Update(), etc.
+    postgres/
+        post_repository.go   # Implements using sqlx
+        comment_repository.go
+        like_repository.go
+
+ usecase/
+    post_usecase.go          # CreatePost(), PublishPost(), DeletePost()
+    comment_usecase.go       # AddComment(), UpdateComment()
+    like_usecase.go          # ToggleLike(), GetLikeCount()
+
+ adapter/
+     handler/
+         post_handler.go      # HandleCreatePost(), HandleGetPost()
+         comment_handler.go
+         like_handler.go
+         dto/
+            post_dto.go      # CreatePostRequest, PostResponse
+            comment_dto.go
+            like_dto.go
+         router/
+             posts_router.go  # Register routes: POST /posts, GET /posts/:id
 ```
 
 ---
@@ -531,7 +531,7 @@ import "github.com/basilex/promenade/internal/domain"           // Core domain
 
 ---
 
-## 🔗 Inter-IModule Communication
+##  Inter-IModule Communication
 
 Modules communicate **asynchronously** via the event bus:
 
@@ -562,7 +562,7 @@ eventBus.Publish(ctx, "post.create.requested", &PostCreateEvent{...})
 
 ---
 
-## 📖 Documentation Requirements
+##  Documentation Requirements
 
 Each module should have a `README.md` with:
 
@@ -620,7 +620,7 @@ See [test/README.md](../../test/README.md) for testing infrastructure.
 
 ---
 
-## 📚 Related Documentation
+##  Related Documentation
 
 - **[README.md](../../README.md)** - Main project README
 - **[internal/CORE.md](../CORE.md)** - Core responsibilities

@@ -8,8 +8,8 @@ This document describes all test types available for the Notifications module.
 
 | Test Type             | Location                       | Purpose                      | Duration | Status     |
 | --------------------- | ------------------------------ | ---------------------------- | -------- | ---------- |
-| **Unit Tests**        | `domain/entity/`, `usecase/`   | Business logic validation    | ~0.6s    | ✅ 35 PASS |
-| **Integration Tests** | `adapter/repository/postgres/` | Database operations          | ~1.2s    | ✅ 13 PASS |
+| **Unit Tests**        | `domain/entity/`, `usecase/`   | Business logic validation    | ~0.6s    |  35 PASS |
+| **Integration Tests** | `adapter/repository/postgres/` | Database operations          | ~1.2s    |  13 PASS |
 | **Smoke Tests**       | `test/smoke/`                  | End-to-end API validation    | ~10s     | ⏳ Ready   |
 | **Stress Tests**      | `test/stress/`                 | Load and performance testing | 30s+     | ⏳ Ready   |
 
@@ -20,7 +20,7 @@ This document describes all test types available for the Notifications module.
 ## Latest Test Results
 
 **Date:** December 25, 2025  
-**Status:** ✅ ALL TESTS PASSING (48/48)
+**Status:**  ALL TESTS PASSING (48/48)
 
 ---
 
@@ -30,11 +30,11 @@ This document describes all test types available for the Notifications module.
 
 ```
 internal/modules/notifications/
-├── domain/entity/
-│   ├── notification_test.go (20 tests)
-│   └── user_preference_test.go (15 tests)
-└── usecase/
-    └── notification_usecase_test.go (15 tests)
+ domain/entity/
+    notification_test.go (20 tests)
+    user_preference_test.go (15 tests)
+ usecase/
+     notification_usecase_test.go (15 tests)
 ```
 
 ### Running Unit Tests
@@ -102,7 +102,7 @@ go test -v -tags=integration ./internal/modules/notifications/adapter/repository
 
 ```
 internal/modules/notifications/adapter/repository/postgres/
-└── integration_test.go
+ integration_test.go
 ```
 
 ### Running Integration Tests
@@ -124,29 +124,29 @@ go test -v -tags=integration \
 
 1. **TestNotificationRepository_Integration** (7 tests)
 
-   - ✅ Create and GetByID
-   - ✅ GetByUserID returns user notifications
-   - ✅ Update notification status
-   - ✅ CountByUserID returns correct count
-   - ✅ GetUnreadCount returns pending notifications
-   - ✅ GetPendingNotifications returns pending only
-   - ✅ Delete notification
+   -  Create and GetByID
+   -  GetByUserID returns user notifications
+   -  Update notification status
+   -  CountByUserID returns correct count
+   -  GetUnreadCount returns pending notifications
+   -  GetPendingNotifications returns pending only
+   -  Delete notification
 
 2. **TestUserPreferenceRepository_Integration** (5 tests)
 
-   - ✅ Create and GetByUserID
-   - ✅ Update user preference
-   - ✅ Exists returns true for existing preference
-   - ✅ Delete user preference
-   - ✅ Exists returns false for deleted preference
+   -  Create and GetByUserID
+   -  Update user preference
+   -  Exists returns true for existing preference
+   -  Delete user preference
+   -  Exists returns false for deleted preference
 
 3. **TestNotificationWorkflow_Integration** (1 test)
 
-   - ✅ Complete workflow: preferences → notification → tracking
+   -  Complete workflow: preferences → notification → tracking
    - Tests real-world scenario with multiple operations
 
 4. **TestQuietHoursLogic_Integration** (1 test)
-   - ✅ Quiet hours logic with timezone
+   -  Quiet hours logic with timezone
    - Tests TimeOfDay storage and IsInQuietHours logic
 
 ### Database Features Tested
@@ -197,24 +197,24 @@ cd test/smoke
 ### Expected Results
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Notifications Tests
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ℹ Testing GET /notifications/preferences...
-✓ Get preferences passed
+ Get preferences passed
 ℹ Testing PUT /notifications/preferences...
-✓ Update preferences passed
+ Update preferences passed
 ℹ Testing POST /notifications...
-✓ Send notification passed
+ Send notification passed
 ℹ Testing GET /notifications...
-✓ List notifications passed
+ List notifications passed
 ℹ Testing GET /notifications/:id...
-✓ Get notification passed
+ Get notification passed
 ℹ Testing GET /notifications/unread-count...
-✓ Get unread count passed
+ Get unread count passed
 ℹ Testing POST /notifications/:id/opened...
-✓ Mark as opened passed
-✓ Test passed: 06_notifications
+ Mark as opened passed
+ Test passed: 06_notifications
 ```
 
 ---
@@ -507,10 +507,10 @@ make test  # Runs unit + integration tests
 
 ## Coverage Goals
 
-- ✅ **Unit Tests**: 80%+ coverage (currently 35 tests)
-- ✅ **Integration Tests**: All repository methods covered (4 test suites)
-- ✅ **Smoke Tests**: All API endpoints covered (7 scenarios)
-- ✅ **Stress Tests**: All operations under load (4 operation types)
+-  **Unit Tests**: 80%+ coverage (currently 35 tests)
+-  **Integration Tests**: All repository methods covered (4 test suites)
+-  **Smoke Tests**: All API endpoints covered (7 scenarios)
+-  **Stress Tests**: All operations under load (4 operation types)
 
 ---
 

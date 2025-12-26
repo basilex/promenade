@@ -112,35 +112,35 @@ const (
 
 ```
                     Register()
-                        │
-                        ▼
-                 ──────────────
-                 │  unverified  │  ──────────────
-                 └──────────────                │
-                        │                        │
+                        
+                        
+                 
+                   unverified    
+                                 
+                                                
                  VerifyEmail()              Login() allowed
-                        │                        │
-                        ▼                        ▼
-                 ──────────────         User can login
-                 │    active    │         (unverified or active)
-                 └──────────────
-                    │   │   │
-        ───────────   │   └───────────
+                                                
+                                                
+                          User can login
+                     active             (unverified or active)
+                 
+                          
+              
    Suspend()      Ban()           Deactivate()
-        │               │                │
-        ▼               ▼                ▼
- ───────────   ──────────    ─────────────
- │ suspended │   │  banned  │    │  inactive   │
- └───────────   └──────────    └─────────────
-        │                              │
+                                       
+                                       
+        
+  suspended      banned        inactive   
+        
+                                      
    Reactivate()                   Reactivate()
-        │                              │
-        └─────────────────────────────
-                     │
-                     ▼
-              ──────────────
-              │    active    │
-              └──────────────
+                                      
+        
+                     
+                     
+              
+                  active    
+              
 ```
 
 ### CanLogin() Logic
@@ -170,30 +170,30 @@ func (u *User) CanLogin() bool {
 
 ```
 Client                  API                    UseCase                Database           Event IBus
-  │                      │                        │                        │                 │
-  │  POST /auth/register │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │                      │  Register(email, name, pwd)                     │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  GetByEmail(email)     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  (not found - OK)      │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  bcrypt.Hash(pwd)      │                 │
-  │                      │                        │  user.Status = "unverified"              │
-  │                      │                        │                        │                 │
-  │                      │                        │  Create(user)          │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Publish(UserRegisteredEvent)            │
-  │                      │                        │─────────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  201 Created         │                        │                        │  EmailWorker    │
-  │<─────────────────────│                        │                        │  sends welcome  │
-  │  {id, email, name}   │                        │                        │  email (async)  │
+                                                                                         
+    POST /auth/register                                                                  
+  >                                                                 
+                          Register(email, name, pwd)                                      
+                        >                                         
+                                                  GetByEmail(email)                      
+                                                >                 
+                                                <                 
+                                                  (not found - OK)                       
+                                                                                         
+                                                  bcrypt.Hash(pwd)                       
+                                                  user.Status = "unverified"              
+                                                                                         
+                                                  Create(user)                           
+                                                >                 
+                                                <                 
+                                                                                         
+                                                  Publish(UserRegisteredEvent)            
+                                                >
+                                                                                         
+                        <                                         
+    201 Created                                                           EmailWorker    
+  <                                                  sends welcome  
+    {id, email, name}                                                     email (async)  
 ```
 
 **Key Points:**
@@ -210,49 +210,49 @@ Client                  API                    UseCase                Database  
 
 ```
 Client                  API                    UseCase                Database           Session
-  │                      │                        │                        │                 │
-  │  POST /auth/login    │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │  {email, password}   │  Login(email, pwd, ua, ip)                      │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  GetByEmail(email)     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  user found            │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  bcrypt.Compare(pwd, hash)               │
-  │                      │                        │  OK                   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  YES                  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  JWTManager.GenerateAccessToken()        │
-  │                      │                        │  crypto/rand 32 bytes for refresh token  │
-  │                      │                        │  SHA-256(refresh_token)                  │
-  │                      │                        │                        │                 │
-  │                      │                        │  CountUserSessions(user_id)              │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  count = 5 (limit!)    │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetOldestSession()    │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  Delete(oldest)        │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Create(new session)   │                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │                        │  UpdateLastLogin()     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  200 OK              │  (access_token, refresh_token, user)            │                 │
-  │<─────────────────────│                        │                        │                 │
-  │  {access_token,      │                        │                        │                 │
-  │   refresh_token,     │                        │                        │                 │
-  │   user: {...}}       │                        │                        │                 │
+                                                                                         
+    POST /auth/login                                                                     
+  >                                                                 
+    {email, password}     Login(email, pwd, ua, ip)                                       
+                        >                                         
+                                                  GetByEmail(email)                      
+                                                >                 
+                                                <                 
+                                                  user found                             
+                                                                                         
+                                                  bcrypt.Compare(pwd, hash)               
+                                                  OK                                    
+                                                                                         
+                                                  user.CanLogin()?                       
+                                                  YES                                   
+                                                                                         
+                                                  JWTManager.GenerateAccessToken()        
+                                                  crypto/rand 32 bytes for refresh token  
+                                                  SHA-256(refresh_token)                  
+                                                                                         
+                                                  CountUserSessions(user_id)              
+                                                >                 
+                                                <                 
+                                                  count = 5 (limit!)                     
+                                                                                         
+                                                  GetOldestSession()                     
+                                                >                 
+                                                <                 
+                                                  Delete(oldest)                         
+                                                >                 
+                                                                                         
+                                                  Create(new session)                    
+                                                >
+                                                                                         
+                                                  UpdateLastLogin()                      
+                                                >                 
+                                                                                         
+                        <                                         
+    200 OK                (access_token, refresh_token, user)                             
+  <                                                                 
+    {access_token,                                                                       
+     refresh_token,                                                                      
+     user: {...}}                                                                        
 ```
 
 **Key Points:**
@@ -272,43 +272,43 @@ Client                  API                    UseCase                Database  
 
 ```
 Client                  API                    UseCase                Database           Session
-  │                      │                        │                        │                 │
-  │  POST /auth/refresh  │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │  {refresh_token}     │  RefreshToken(token)   │                        │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  SHA-256(token)        │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetByRefreshToken(hash)                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │<───────────────────────────────────────│
-  │                      │                        │  session found         │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  session.IsExpired()?  │                 │
-  │                      │                        │  NO                   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetByID(session.user_id)                │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  user found            │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  YES                  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GenerateAccessToken() │                 │
-  │                      │                        │  crypto/rand new refresh                 │
-  │                      │                        │  SHA-256(new_refresh)  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Update(session)       │  ← TOKEN ROTATION
-  │                      │                        │  - new refresh hash    │                 │
-  │                      │                        │  - new expires_at      │                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  200 OK              │  (new_access, new_refresh)                      │                 │
-  │<─────────────────────│                        │                        │                 │
-  │  {access_token,      │                        │                        │                 │
-  │   refresh_token}     │                        │                        │                 │
+                                                                                         
+    POST /auth/refresh                                                                   
+  >                                                                 
+    {refresh_token}       RefreshToken(token)                                            
+                        >                                         
+                                                  SHA-256(token)                         
+                                                                                         
+                                                  GetByRefreshToken(hash)                 
+                                                >
+                                                <
+                                                  session found                          
+                                                                                         
+                                                  session.IsExpired()?                   
+                                                  NO                                    
+                                                                                         
+                                                  GetByID(session.user_id)                
+                                                >                 
+                                                <                 
+                                                  user found                             
+                                                                                         
+                                                  user.CanLogin()?                       
+                                                  YES                                   
+                                                                                         
+                                                  GenerateAccessToken()                  
+                                                  crypto/rand new refresh                 
+                                                  SHA-256(new_refresh)                   
+                                                                                         
+                                                  Update(session)         ← TOKEN ROTATION
+                                                  - new refresh hash                     
+                                                  - new expires_at                       
+                                                >
+                                                                                         
+                        <                                         
+    200 OK                (new_access, new_refresh)                                       
+  <                                                                 
+    {access_token,                                                                       
+     refresh_token}                                                                      
 ```
 
 **Key Points:**
@@ -325,25 +325,25 @@ Client                  API                    UseCase                Database  
 
 ```
 Client                  API                    UseCase                Session
-  │                      │                        │                        │
-  │  POST /auth/logout   │                        │                        │
-  │─────────────────────>│                        │                        │
-  │  {refresh_token}     │  Logout(token)         │                        │
-  │                      │───────────────────────>│                        │
-  │                      │                        │  SHA-256(token)        │
-  │                      │                        │                        │
-  │                      │                        │  GetByRefreshToken(hash)
-  │                      │                        │───────────────────────>│
-  │                      │                        │<───────────────────────│
-  │                      │                        │  session found         │
-  │                      │                        │                        │
-  │                      │                        │  Delete(session.id)    │
-  │                      │                        │───────────────────────>│
-  │                      │                        │                        │
-  │                      │<───────────────────────│                        │
-  │  200 OK              │                        │                        │
-  │<─────────────────────│                        │                        │
-  │  {message: "success"}│                        │                        │
+                                                                        
+    POST /auth/logout                                                   
+  >                                                
+    {refresh_token}       Logout(token)                                 
+                        >                        
+                                                  SHA-256(token)        
+                                                                        
+                                                  GetByRefreshToken(hash)
+                                                >
+                                                <
+                                                  session found         
+                                                                        
+                                                  Delete(session.id)    
+                                                >
+                                                                        
+                        <                        
+    200 OK                                                              
+  <                                                
+    {message: "success"}                                                
 ```
 
 **Key Points:**

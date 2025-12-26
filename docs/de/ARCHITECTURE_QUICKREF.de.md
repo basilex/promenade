@@ -1,6 +1,6 @@
 # Promenade Architektur - Schnellreferenz
 
-[🇬🇧 English](../ARCHITECTURE_QUICKREF.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_QUICKREF.es.md)
+[ English](../ARCHITECTURE_QUICKREF.md) | [ Українська](../uk/ARCHITECTURE_QUICKREF.uk.md) |  **Deutsch** | [ Português](../pt/ARCHITECTURE_QUICKREF.pt.md) | [ Español](../es/ARCHITECTURE_QUICKREF.es.md)
 
 ## Core vs Module: Einfache Regel
 
@@ -70,18 +70,18 @@
 
 ```
 internal/modules/mymodule/
-├── module.go              # Modul-Implementierung
-├── register.go            # Auto-Registrierung via init()
-├── config/                # Eigene YAML-Configs pro Umgebung
-│   ├── config.dev.yaml
-│   ├── config.test.yaml
-│   └── config.prod.yaml
-├── entity/                # Domain-Entitäten
-├── usecase/               # Geschäftslogik
-└── adapter/
-    ├── http/              # Handler, DTOs, Routen
-    ├── repository/        # Postgres-Implementierungen
-    └── purge/             # Purge-Handler (falls benötigt)
+ module.go              # Modul-Implementierung
+ register.go            # Auto-Registrierung via init()
+ config/                # Eigene YAML-Configs pro Umgebung
+    config.dev.yaml
+    config.test.yaml
+    config.prod.yaml
+ entity/                # Domain-Entitäten
+ usecase/               # Geschäftslogik
+ adapter/
+     http/              # Handler, DTOs, Routen
+     repository/        # Postgres-Implementierungen
+     purge/             # Purge-Handler (falls benötigt)
 ```
 
 ### Modul-Checkliste
@@ -454,28 +454,28 @@ make migrate-create NAME=add_my_table
 
 ```
 Ist es Infrastruktur (DB, Logger, Event IBus)?
-└─> JA → CORE
+> JA → CORE
 
 Ist es Sicherheit (Auth, RBAC)?
-└─> JA → CORE
+> JA → CORE
 
 Sind es Referenzdaten (Länder, Währungen, Regionen, Städte, Zahlungsmethoden)?
-└─> JA → CORE
+> JA → CORE
 
 Ist es stabil und wird von mehreren Modulen verwendet?
-└─> JA → CORE erwägen (oder gemeinsames pkg)
+> JA → CORE erwägen (oder gemeinsames pkg)
 
 Ist es Geschäftslogik?
-└─> JA → MODUL
+> JA → MODUL
 
 Kann es separat verkauft werden?
-└─> JA → MODUL
+> JA → MODUL
 
 Ist es entitätsspezifisch?
-└─> JA → MODUL
+> JA → MODUL
 
 Im Zweifel?
-└─> MODUL (einfacher später zu Core zu verschieben als umgekehrt)
+> MODUL (einfacher später zu Core zu verschieben als umgekehrt)
 ```
 
 ---

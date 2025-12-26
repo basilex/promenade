@@ -1,6 +1,6 @@
 # Архітектура Системи Автентифікації
 
-🇬🇧 [English](../AUTH_SCHEMA.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/AUTH_SCHEMA.de.md) | [🇵🇹 Português](../pt/AUTH_SCHEMA.pt.md) | [🇪🇸 Español](../es/AUTH_SCHEMA.es.md)
+ [English](../AUTH_SCHEMA.md) |  **Українська** | [ Deutsch](../de/AUTH_SCHEMA.de.md) | [ Português](../pt/AUTH_SCHEMA.pt.md) | [ Español](../es/AUTH_SCHEMA.es.md)
 
 Повний довідник системи автентифікації в Promenade. Охоплює реєстрацію користувачів, вхід, управління сесіями, обробку токенів та механізми безпеки.
 
@@ -114,35 +114,35 @@ const (
 
 ```
                     Register()
-                        │
-                        ▼
-                 ──────────────
-                 │  unverified  │  ──────────────
-                 └──────────────                │
-                        │                        │
+                        
+                        
+                 
+                   unverified    
+                                 
+                                                
                  VerifyEmail()              Login() дозволено
-                        │                        │
-                        ▼                        ▼
-                 ──────────────         Користувач може увійти
-                 │    active    │         (unverified або active)
-                 └──────────────
-                    │   │   │
-        ───────────   │   └───────────
+                                                
+                                                
+                          Користувач може увійти
+                     active             (unverified або active)
+                 
+                          
+              
    Suspend()      Ban()           Deactivate()
-        │               │                │
-        ▼               ▼                ▼
- ───────────   ──────────    ─────────────
- │ suspended │   │  banned  │    │  inactive   │
- └───────────   └──────────    └─────────────
-        │                              │
+                                       
+                                       
+        
+  suspended      banned        inactive   
+        
+                                      
    Reactivate()                   Reactivate()
-        │                              │
-        └─────────────────────────────
-                     │
-                     ▼
-              ──────────────
-              │    active    │
-              └──────────────
+                                      
+        
+                     
+                     
+              
+                  active    
+              
 ```
 
 ### Логіка CanLogin()
@@ -172,30 +172,30 @@ func (u *User) CanLogin() bool {
 
 ```
 Клієнт                  API                    UseCase                База Даних         Шина Подій
-  │                      │                        │                        │                 │
-  │  POST /auth/register │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │                      │  Register(email, name, pwd)                     │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  GetByEmail(email)     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  (не знайдено - OK)    │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  bcrypt.Hash(pwd)      │                 │
-  │                      │                        │  user.Status = "unverified"              │
-  │                      │                        │                        │                 │
-  │                      │                        │  Create(user)          │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Publish(UserRegisteredEvent)            │
-  │                      │                        │─────────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  201 Created         │                        │                        │  EmailWorker    │
-  │<─────────────────────│                        │                        │  надсилає       │
-  │  {id, email, name}   │                        │                        │  welcome email  │
+                                                                                         
+    POST /auth/register                                                                  
+  >                                                                 
+                          Register(email, name, pwd)                                      
+                        >                                         
+                                                  GetByEmail(email)                      
+                                                >                 
+                                                <                 
+                                                  (не знайдено - OK)                     
+                                                                                         
+                                                  bcrypt.Hash(pwd)                       
+                                                  user.Status = "unverified"              
+                                                                                         
+                                                  Create(user)                           
+                                                >                 
+                                                <                 
+                                                                                         
+                                                  Publish(UserRegisteredEvent)            
+                                                >
+                                                                                         
+                        <                                         
+    201 Created                                                           EmailWorker    
+  <                                                  надсилає       
+    {id, email, name}                                                     welcome email  
 ```
 
 **Ключові Моменти:**
@@ -212,49 +212,49 @@ func (u *User) CanLogin() bool {
 
 ```
 Клієнт                  API                    UseCase                База Даних         Сесія
-  │                      │                        │                        │                 │
-  │  POST /auth/login    │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │  {email, password}   │  Login(email, pwd, ua, ip)                      │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  GetByEmail(email)     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  користувач знайдено   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  bcrypt.Compare(pwd, hash)               │
-  │                      │                        │  OK                   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  YES                  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  JWTManager.GenerateAccessToken()        │
-  │                      │                        │  crypto/rand 32 байти для refresh токену │
-  │                      │                        │  SHA-256(refresh_token)                  │
-  │                      │                        │                        │                 │
-  │                      │                        │  CountUserSessions(user_id)              │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  count = 5 (ліміт!)    │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetOldestSession()    │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  Delete(oldest)        │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Create(new session)   │                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │                        │  UpdateLastLogin()     │                 │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  200 OK              │  (access_token, refresh_token, user)            │                 │
-  │<─────────────────────│                        │                        │                 │
-  │  {access_token,      │                        │                        │                 │
-  │   refresh_token,     │                        │                        │                 │
-  │   user: {...}}       │                        │                        │                 │
+                                                                                         
+    POST /auth/login                                                                     
+  >                                                                 
+    {email, password}     Login(email, pwd, ua, ip)                                       
+                        >                                         
+                                                  GetByEmail(email)                      
+                                                >                 
+                                                <                 
+                                                  користувач знайдено                    
+                                                                                         
+                                                  bcrypt.Compare(pwd, hash)               
+                                                  OK                                    
+                                                                                         
+                                                  user.CanLogin()?                       
+                                                  YES                                   
+                                                                                         
+                                                  JWTManager.GenerateAccessToken()        
+                                                  crypto/rand 32 байти для refresh токену 
+                                                  SHA-256(refresh_token)                  
+                                                                                         
+                                                  CountUserSessions(user_id)              
+                                                >                 
+                                                <                 
+                                                  count = 5 (ліміт!)                     
+                                                                                         
+                                                  GetOldestSession()                     
+                                                >                 
+                                                <                 
+                                                  Delete(oldest)                         
+                                                >                 
+                                                                                         
+                                                  Create(new session)                    
+                                                >
+                                                                                         
+                                                  UpdateLastLogin()                      
+                                                >                 
+                                                                                         
+                        <                                         
+    200 OK                (access_token, refresh_token, user)                             
+  <                                                                 
+    {access_token,                                                                       
+     refresh_token,                                                                      
+     user: {...}}                                                                        
 ```
 
 **Ключові Моменти:**
@@ -274,43 +274,43 @@ func (u *User) CanLogin() bool {
 
 ```
 Клієнт                  API                    UseCase                База Даних         Сесія
-  │                      │                        │                        │                 │
-  │  POST /auth/refresh  │                        │                        │                 │
-  │─────────────────────>│                        │                        │                 │
-  │  {refresh_token}     │  RefreshToken(token)   │                        │                 │
-  │                      │───────────────────────>│                        │                 │
-  │                      │                        │  SHA-256(token)        │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetByRefreshToken(hash)                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │<───────────────────────────────────────│
-  │                      │                        │  сесія знайдена        │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  session.IsExpired()?  │                 │
-  │                      │                        │  NO                   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GetByID(session.user_id)                │
-  │                      │                        │───────────────────────>│                 │
-  │                      │                        │<───────────────────────│                 │
-  │                      │                        │  користувач знайдено   │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  user.CanLogin()?      │                 │
-  │                      │                        │  YES                  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  GenerateAccessToken() │                 │
-  │                      │                        │  crypto/rand новий refresh               │
-  │                      │                        │  SHA-256(new_refresh)  │                 │
-  │                      │                        │                        │                 │
-  │                      │                        │  Update(session)       │  ← РОТАЦІЯ ТОКЕНА
-  │                      │                        │  - новий refresh hash  │                 │
-  │                      │                        │  - нова expires_at     │                 │
-  │                      │                        │───────────────────────────────────────>│
-  │                      │                        │                        │                 │
-  │                      │<───────────────────────│                        │                 │
-  │  200 OK              │  (new_access, new_refresh)                      │                 │
-  │<─────────────────────│                        │                        │                 │
-  │  {access_token,      │                        │                        │                 │
-  │   refresh_token}     │                        │                        │                 │
+                                                                                         
+    POST /auth/refresh                                                                   
+  >                                                                 
+    {refresh_token}       RefreshToken(token)                                            
+                        >                                         
+                                                  SHA-256(token)                         
+                                                                                         
+                                                  GetByRefreshToken(hash)                 
+                                                >
+                                                <
+                                                  сесія знайдена                         
+                                                                                         
+                                                  session.IsExpired()?                   
+                                                  NO                                    
+                                                                                         
+                                                  GetByID(session.user_id)                
+                                                >                 
+                                                <                 
+                                                  користувач знайдено                    
+                                                                                         
+                                                  user.CanLogin()?                       
+                                                  YES                                   
+                                                                                         
+                                                  GenerateAccessToken()                  
+                                                  crypto/rand новий refresh               
+                                                  SHA-256(new_refresh)                   
+                                                                                         
+                                                  Update(session)         ← РОТАЦІЯ ТОКЕНА
+                                                  - новий refresh hash                   
+                                                  - нова expires_at                      
+                                                >
+                                                                                         
+                        <                                         
+    200 OK                (new_access, new_refresh)                                       
+  <                                                                 
+    {access_token,                                                                       
+     refresh_token}                                                                      
 ```
 
 **Ключові Моменти:**
@@ -327,25 +327,25 @@ func (u *User) CanLogin() bool {
 
 ```
 Клієнт                  API                    UseCase                Сесія
-  │                      │                        │                        │
-  │  POST /auth/logout   │                        │                        │
-  │─────────────────────>│                        │                        │
-  │  {refresh_token}     │  Logout(token)         │                        │
-  │                      │───────────────────────>│                        │
-  │                      │                        │  SHA-256(token)        │
-  │                      │                        │                        │
-  │                      │                        │  GetByRefreshToken(hash)
-  │                      │                        │───────────────────────>│
-  │                      │                        │<───────────────────────│
-  │                      │                        │  сесія знайдена        │
-  │                      │                        │                        │
-  │                      │                        │  Delete(session.id)    │
-  │                      │                        │───────────────────────>│
-  │                      │                        │                        │
-  │                      │<───────────────────────│                        │
-  │  200 OK              │                        │                        │
-  │<─────────────────────│                        │                        │
-  │  {message: "success"}│                        │                        │
+                                                                        
+    POST /auth/logout                                                   
+  >                                                
+    {refresh_token}       Logout(token)                                 
+                        >                        
+                                                  SHA-256(token)        
+                                                                        
+                                                  GetByRefreshToken(hash)
+                                                >
+                                                <
+                                                  сесія знайдена        
+                                                                        
+                                                  Delete(session.id)    
+                                                >
+                                                                        
+                        <                        
+    200 OK                                                              
+  <                                                
+    {message: "success"}                                                
 ```
 
 **Ключові Моменти:**

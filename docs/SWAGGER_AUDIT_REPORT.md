@@ -223,7 +223,7 @@ userIDInterface, exists := c.Get("user_id")
 3. **Verified HTTP Methods** - All @Router annotations match handler logic
 4. **Verified DTOs** - All request/response types match handler code
 
-### 🔄 Future Improvements
+###  Future Improvements
 
 1. **Add API Examples** - Consider adding `@Example` annotations for complex DTOs
 2. **Add Response Headers** - Document pagination headers in list endpoints

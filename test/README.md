@@ -12,46 +12,46 @@ Tests are organized **per component** - each module and core component has its o
 
 ```
 internal/
-├── domain/
-│   └── entity/              # Core entity tests (39 tests)
-│       ├── user.go
-│       ├── user_test.go     # ← Tests here
-│       ├── session.go
-│       ├── session_test.go  # ← Tests here
-│       ├── role.go
-│       ├── role_test.go
-│       ├── permission.go
-│       └── permission_test.go
-└── usecase/                 # Core usecase tests (236 tests)
-    ├── auth_usecase.go
-    ├── auth_usecase_test.go
-    ├── role_usecase.go
-    └── role_usecase_test.go
+ domain/
+    entity/              # Core entity tests (39 tests)
+        user.go
+        user_test.go     # ← Tests here
+        session.go
+        session_test.go  # ← Tests here
+        role.go
+        role_test.go
+        permission.go
+        permission_test.go
+ usecase/                 # Core usecase tests (236 tests)
+     auth_usecase.go
+     auth_usecase_test.go
+     role_usecase.go
+     role_usecase_test.go
 ```
 
 ### Module Tests
 
 ```
 internal/modules/
-├── posts/
-│   └── domain/
-│       └── entity/
-│           ├── post.go
-│           ├── post_test.go      # ← 33 tests, 83.3% coverage
-│           ├── comment.go
-│           └── comment_test.go
-├── profiles/
-│   └── entity/
-│       ├── user_profile.go
-│       ├── user_profile_test.go  # ← 21 tests, 80.4% coverage
-│       ├── user_contact.go
-│       └── user_contact_test.go
-└── analytics/
-    └── domain/
-        └── entity/
-            ├── metric.go
-            ├── metric_test.go    # ← 11 tests
-            └── metric_aggregate_test.go
+ posts/
+    domain/
+        entity/
+            post.go
+            post_test.go      # ← 33 tests, 83.3% coverage
+            comment.go
+            comment_test.go
+ profiles/
+    entity/
+        user_profile.go
+        user_profile_test.go  # ← 21 tests, 80.4% coverage
+        user_contact.go
+        user_contact_test.go
+ analytics/
+     domain/
+         entity/
+             metric.go
+             metric_test.go    # ← 11 tests
+             metric_aggregate_test.go
 ```
 
 ---
@@ -274,7 +274,7 @@ Located in `test/helpers/`:
 
 ---
 
-## 📖 Writing New Tests
+##  Writing New Tests
 
 ### 1. Create Test File
 
@@ -326,7 +326,7 @@ go test -v ./internal/domain/entity/
 
 ---
 
-## 🔄 Continuous Testing
+##  Continuous Testing
 
 ### Watch Mode
 
@@ -346,7 +346,7 @@ make test-quick || exit 1
 
 ---
 
-## 🚫 What We Don't Test (Yet)
+##  What We Don't Test (Yet)
 
 - **Integration tests**: Database operations, external services
 - **E2E tests**: Full application workflows
@@ -358,7 +358,7 @@ make test-quick || exit 1
 
 ---
 
-## 📚 Resources
+##  Resources
 
 - [Go Testing Package](https://pkg.go.dev/testing)
 - [Testify Documentation](https://github.com/stretchr/testify)

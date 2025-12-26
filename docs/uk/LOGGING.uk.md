@@ -1,4 +1,4 @@
-[🇬🇧 English](../LOGGING.md) | 🇺🇦 **Українська** | [🇩🇪 Deutsch](../de/LOGGING.de.md) | [🇵🇹 Português](../pt/LOGGING.pt.md) | [🇪🇸 Español](../es/LOGGING.es.md)
+[ English](../LOGGING.md) |  **Українська** | [ Deutsch](../de/LOGGING.de.md) | [ Português](../pt/LOGGING.pt.md) | [ Español](../es/LOGGING.es.md)
 
 # Посібник зі структурованого логування
 

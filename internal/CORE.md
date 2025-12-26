@@ -242,7 +242,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 ---
 
-## 🚫 Core Does NOT Do
+##  Core Does NOT Do
 
 ### Business Logic
 
@@ -296,57 +296,57 @@ import "github.com/basilex/promenade/pkg/module"  // Interface only
 
 ```
 internal/
-├── domain/                    # Core domain (auth, RBAC entities)
-│   ├── entity/
-│   │   ├── user.go            # User entity
-│   │   ├── session.go         # Session entity
-│   │   ├── role.go            # RBAC role
-│   │   ├── permission.go      # RBAC permission
-│   │   └── reference/         # Reference data entities
-│   │       ├── country.go
-│   │       ├── currency.go
-│   │       ├── timezone.go
-│   │       └── language.go
-│   ├── event/                 # Domain events
-│   │   ├── user_events.go
-│   │   └── auth_events.go
-│   └── repository/            # Repository interfaces
-│       ├── user_repository.go
-│       ├── session_repository.go
-│       └── rbac_repository.go
-│
-├── usecase/                   # Core use cases
-│   ├── auth_usecase.go        # Authentication logic
-│   ├── rbac_usecase.go        # Authorization logic
-│   └── user_usecase.go        # User management
-│
-├── adapter/                   # Adapters
-│   ├── http/                  # HTTP handlers
-│   │   ├── v1/
-│   │   │   ├── handler/       # Core API handlers
-│   │   │   │   ├── auth_handler.go
-│   │   │   │   ├── user_handler.go
-│   │   │   │   └── health_handler.go
-│   │   │   └── router/        # Route registration
-│   │   │       ├── router.go  # Main router (orchestrates)
-│   │   │       ├── init_auth.go
-│   │   │       └── init_purge.go
-│   │   └── v2/                # API v2
-│   └── repository/postgres/   # PostgreSQL implementations
-│       ├── user_repository.go
-│       ├── session_repository.go
-│       └── rbac_repository.go
-│
-└── infrastructure/            # Infrastructure services
-    ├── config/                # Configuration loading
-    ├── database/              # DB connection & transactions
-    ├── scheduler/             # Cron scheduler
-    └── notification/          # Email service
+ domain/                    # Core domain (auth, RBAC entities)
+    entity/
+       user.go            # User entity
+       session.go         # Session entity
+       role.go            # RBAC role
+       permission.go      # RBAC permission
+       reference/         # Reference data entities
+           country.go
+           currency.go
+           timezone.go
+           language.go
+    event/                 # Domain events
+       user_events.go
+       auth_events.go
+    repository/            # Repository interfaces
+        user_repository.go
+        session_repository.go
+        rbac_repository.go
+
+ usecase/                   # Core use cases
+    auth_usecase.go        # Authentication logic
+    rbac_usecase.go        # Authorization logic
+    user_usecase.go        # User management
+
+ adapter/                   # Adapters
+    http/                  # HTTP handlers
+       v1/
+          handler/       # Core API handlers
+             auth_handler.go
+             user_handler.go
+             health_handler.go
+          router/        # Route registration
+              router.go  # Main router (orchestrates)
+              init_auth.go
+              init_purge.go
+       v2/                # API v2
+    repository/postgres/   # PostgreSQL implementations
+        user_repository.go
+        session_repository.go
+        rbac_repository.go
+
+ infrastructure/            # Infrastructure services
+     config/                # Configuration loading
+     database/              # DB connection & transactions
+     scheduler/             # Cron scheduler
+     notification/          # Email service
 ```
 
 ---
 
-## 🔄 Request Flow Example
+##  Request Flow Example
 
 ### Authentication Flow
 
@@ -378,7 +378,7 @@ When working on core, ensure:
 
 ---
 
-## 🔗 Related Documentation
+##  Related Documentation
 
 - **[README.md](../README.md)** - Architecture overview
 - **[docs/ARCHITECTURE_OVERVIEW.md](../docs/ARCHITECTURE_OVERVIEW.md)** - Visual diagrams

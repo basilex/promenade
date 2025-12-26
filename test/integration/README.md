@@ -191,26 +191,26 @@ func TestUserRepository_Integration(t *testing.T) {
 
 ```
 internal/
-├── adapter/
-│   └── repository/
-│       └── postgres/
-│           ├── user_repository.go
-│           ├── integration_test.go              # ← Core repository tests
-│           └── reference_integration_test.go    # ← Reference data tests
-│
-└── modules/
-    ├── posts/
-    │   └── adapter/
-    │       └── repository/
-    │           └── postgres/
-    │               ├── post_repository.go
-    │               └── integration_test.go       # ← Posts module tests
-    │
-    └── profiles/
-        └── adapter/
-            └── repository/
-                └── postgres/
-                    └── integration_test.go       # ← Profiles module tests
+ adapter/
+    repository/
+        postgres/
+            user_repository.go
+            integration_test.go              # ← Core repository tests
+            reference_integration_test.go    # ← Reference data tests
+
+ modules/
+     posts/
+        adapter/
+            repository/
+                postgres/
+                    post_repository.go
+                    integration_test.go       # ← Posts module tests
+    
+     profiles/
+         adapter/
+             repository/
+                 postgres/
+                     integration_test.go       # ← Profiles module tests
 ```
 
 ---

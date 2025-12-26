@@ -68,18 +68,18 @@
 
 ```
 internal/modules/mymodule/
-├── module.go              # Module implementation
-├── register.go            # Auto-registration via init()
-├── config/                # Own YAML configs per environment
-│   ├── config.dev.yaml
-│   ├── config.test.yaml
-│   └── config.prod.yaml
-├── entity/                # Domain entities
-├── usecase/               # Business logic
-└── adapter/
-    ├── http/              # Handlers, DTOs, routes
-    ├── repository/        # Postgres implementations
-    └── purge/             # Purge handlers (if needed)
+ module.go              # Module implementation
+ register.go            # Auto-registration via init()
+ config/                # Own YAML configs per environment
+    config.dev.yaml
+    config.test.yaml
+    config.prod.yaml
+ entity/                # Domain entities
+ usecase/               # Business logic
+ adapter/
+     http/              # Handlers, DTOs, routes
+     repository/        # Postgres implementations
+     purge/             # Purge handlers (if needed)
 ```
 
 ### Module Checklist
@@ -456,28 +456,28 @@ make migrate-create NAME=add_my_table
 
 ```
 Is it infrastructure (DB, logger, event bus)?
-└─> YES → CORE
+> YES → CORE
 
 Is it security (auth, RBAC)?
-└─> YES → CORE
+> YES → CORE
 
 Is it reference data (countries, currencies, regions, cities, payment methods)?
-└─> YES → CORE
+> YES → CORE
 
 Is it stable and used by multiple modules?
-└─> YES → Consider CORE (or shared pkg)
+> YES → Consider CORE (or shared pkg)
 
 Is it business logic?
-└─> YES → MODULE
+> YES → MODULE
 
 Can it be sold separately?
-└─> YES → MODULE
+> YES → MODULE
 
 Is it entity-specific?
-└─> YES → MODULE
+> YES → MODULE
 
 When in doubt?
-└─> MODULE (easier to move to core later than vice versa)
+> MODULE (easier to move to core later than vice versa)
 ```
 
 ---

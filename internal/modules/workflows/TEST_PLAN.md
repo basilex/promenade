@@ -1,6 +1,6 @@
 # Workflows Module - Test Implementation Plan
 
-## 🎯 Мета
+##  Мета
 
 Досягти 80%+ test coverage для комерційного workflows модуля через поетапне тестування всіх layers.
 
@@ -134,26 +134,26 @@ ListByExternalRef(ctx, ref) ([]*entity.WorkflowInstance, error)
 
 ```go
 // CREATE операції
-TestCreate_Success                          // ✅ вже є, виправити назву
+TestCreate_Success                          //  вже є, виправити назву
 TestCreate_DuplicateName                    // NEW - перевірка на duplicate
 TestCreate_ValidationError                  // NEW - invalid schema
-TestCreate_RepositoryError                  // ✅ вже є
+TestCreate_RepositoryError                  //  вже є
 
 // READ операції
-TestGetByID_Success                         // ✅ вже є
-TestGetByID_NotFound                        // ✅ вже є
+TestGetByID_Success                         //  вже є
+TestGetByID_NotFound                        //  вже є
 TestGetByName_Success                       // NEW
 TestGetByName_NotFound                      // NEW
 
 // UPDATE операції
-TestActivate_Success                        // ✅ вже є
+TestActivate_Success                        //  вже є
 TestActivate_AlreadyActive                  // NEW
 TestActivate_NotFound                       // NEW
 TestUpdate_Success                          // NEW
 TestUpdate_NotFound                         // NEW
 
 // DELETE операції
-TestDelete_Success                          // ✅ вже є
+TestDelete_Success                          //  вже є
 TestDelete_NotFound                         // NEW
 TestDelete_HasActiveInstances               // NEW - business rule
 
@@ -521,7 +521,7 @@ TestEventBusConnectivity
 
 ---
 
-## 📊 Підсумок по phases
+##  Підсумок по phases
 
 | Phase                        | Time            | Tests          | Coverage Goal    |
 | ---------------------------- | --------------- | -------------- | ---------------- |
@@ -535,68 +535,68 @@ TestEventBusConnectivity
 
 ---
 
-## 🎯 Milestone Goals
+##  Milestone Goals
 
 ### Milestone 1: UseCase Layer Complete (3 hours)
 
-- ✅ All mocks implement full interfaces
-- ✅ All UseCase methods tested
-- ✅ 80%+ UseCase coverage
-- 🎉 **Ready for:** Code review
+-  All mocks implement full interfaces
+-  All UseCase methods tested
+-  80%+ UseCase coverage
+-  **Ready for:** Code review
 
 ### Milestone 2: Repository Layer Complete (6-7 hours)
 
-- ✅ All repositories tested
-- ✅ Transaction scenarios covered
-- ✅ 70%+ Repository coverage
-- 🎉 **Ready for:** Integration testing
+-  All repositories tested
+-  Transaction scenarios covered
+-  70%+ Repository coverage
+-  **Ready for:** Integration testing
 
 ### Milestone 3: Handler Layer Complete (8-10 hours)
 
-- ✅ All endpoints tested
-- ✅ Validation scenarios covered
-- ✅ 75%+ Handler coverage
-- 🎉 **Ready for:** API documentation
+-  All endpoints tested
+-  Validation scenarios covered
+-  75%+ Handler coverage
+-  **Ready for:** API documentation
 
 ### Milestone 4: Full Coverage (10-13 hours)
 
-- ✅ Integration tests pass
-- ✅ Smoke tests pass
-- ✅ 80%+ overall coverage
-- 🎉 **Ready for:** Commercial release
+-  Integration tests pass
+-  Smoke tests pass
+-  80%+ overall coverage
+-  **Ready for:** Commercial release
 
 ---
 
-## ⚠️ Critical Tests (Must Have)
+##  Critical Tests (Must Have)
 
 ### State Machine Logic
 
-- ✅ All valid transitions tested
-- ✅ All invalid transitions rejected
-- ✅ Concurrent state updates handled
+-  All valid transitions tested
+-  All invalid transitions rejected
+-  Concurrent state updates handled
 
 ### Data Integrity
 
-- ✅ Foreign key constraints validated
-- ✅ Soft deletes work correctly
-- ✅ Transactions rollback properly
+-  Foreign key constraints validated
+-  Soft deletes work correctly
+-  Transactions rollback properly
 
 ### Business Rules
 
-- ✅ Can't start instance from inactive definition
-- ✅ Can't delete definition with active instances
-- ✅ Retry limits enforced
-- ✅ Timeout handling works
+-  Can't start instance from inactive definition
+-  Can't delete definition with active instances
+-  Retry limits enforced
+-  Timeout handling works
 
 ### Security
 
-- ✅ Authorization checked on all endpoints
-- ✅ User can only see their workflows
-- ✅ Admin can see all workflows
+-  Authorization checked on all endpoints
+-  User can only see their workflows
+-  Admin can see all workflows
 
 ---
 
-## 📝 Next Immediate Action
+##  Next Immediate Action
 
 **Розпочати з Phase 2.1:**
 
@@ -614,12 +614,12 @@ go test ./internal/modules/workflows/usecase -v -count=1
 
 **Очікуваний результат:**
 
-- ✅ Компіляція успішна
-- ✅ 9-15 тестів проходять
-- ✅ UseCase layer базово покрито
+-  Компіляція успішна
+-  9-15 тестів проходять
+-  UseCase layer базово покрито
 
 ---
 
 **Створено:** 26 грудня 2025  
 **Оновлено:** Never  
-**Статус:** 📋 Planning Complete, Ready to Execute
+**Статус:**  Planning Complete, Ready to Execute

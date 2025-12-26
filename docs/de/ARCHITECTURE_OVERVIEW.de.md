@@ -1,6 +1,6 @@
 # Promenade Architektur-Überblick
 
-[🇬🇧 English](../ARCHITECTURE_OVERVIEW.md) | [🇺🇦 Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) | 🇩🇪 **Deutsch** | [🇵🇹 Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [🇪🇸 Español](../es/ARCHITECTURE_OVERVIEW.es.md)
+[ English](../ARCHITECTURE_OVERVIEW.md) | [ Українська](../uk/ARCHITECTURE_OVERVIEW.uk.md) |  **Deutsch** | [ Português](../pt/ARCHITECTURE_OVERVIEW.pt.md) | [ Español](../es/ARCHITECTURE_OVERVIEW.es.md)
 
 Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organisiert um **Clean Architecture-Prinzipien** und ein **Plugin-basiertes Modulsystem**.
 
@@ -225,24 +225,24 @@ Dieses Dokument bietet einen Überblick über die Promenade-Architektur, organis
 
 ```
 config/
-├── app.dev.yaml     - Core-Infrastruktur (dev)
-├── app.test.yaml    - Core-Infrastruktur (test)
-├── app.prod.yaml    - Core-Infrastruktur (prod)
-└── modules.yaml     - Welche IModule zu laden sind
+ app.dev.yaml     - Core-Infrastruktur (dev)
+ app.test.yaml    - Core-Infrastruktur (test)
+ app.prod.yaml    - Core-Infrastruktur (prod)
+ modules.yaml     - Welche IModule zu laden sind
 ```
 
 ### Modul-Konfiguration
 
 ```
 internal/modules/posts/config/
-├── config.dev.yaml  - Posts-Moduleinstellungen (dev)
-├── config.test.yaml - Posts-Moduleinstellungen (test)
-└── config.prod.yaml - Posts-Moduleinstellungen (prod)
+ config.dev.yaml  - Posts-Moduleinstellungen (dev)
+ config.test.yaml - Posts-Moduleinstellungen (test)
+ config.prod.yaml - Posts-Moduleinstellungen (prod)
 
 internal/modules/profiles/config/
-├── config.dev.yaml  - Profiles-Moduleinstellungen (dev)
-├── config.test.yaml - Profiles-Moduleinstellungen (test)
-└── config.prod.yaml - Profiles-Moduleinstellungen (prod)
+ config.dev.yaml  - Profiles-Moduleinstellungen (dev)
+ config.test.yaml - Profiles-Moduleinstellungen (test)
+ config.prod.yaml - Profiles-Moduleinstellungen (prod)
 ```
 
 **Umgebungsüberschreibungen:** `.env.example` (optional)

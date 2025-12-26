@@ -8,20 +8,20 @@ Promenade documentation is available in multiple languages to make it accessible
 
 ## Available Translations
 
-### 🇬🇧 English (Primary)
+###  English (Primary)
 
 - Status: **Complete**
 - Location: `/docs/` and `README.md`
 - Maintainer: Core team
 
-### 🇺🇦 Українська (Ukrainian)
+###  Українська (Ukrainian)
 
 - Status: **Active**
 - Location: `/docs/uk/` and `README.uk.md`
 - Coverage: README (100%), Core docs (100%)
 - [Browse Ukrainian docs →](uk/INDEX.uk.md)
 
-### 🇩🇪 Deutsch (German)
+###  Deutsch (German)
 
 - Status: **Active**
 - Location: `/docs/de/` and `README.de.md`
@@ -77,13 +77,13 @@ touch docs/uk/ARCHITECTURE_QUICKREF.uk.md
 At the top of the **original English document**, add:
 
 ```markdown
-🇬🇧 **English** | [🇺🇦 Українська](uk/FILENAME.uk.md) | [🇩🇪 Deutsch](de/FILENAME.de.md)
+ **English** | [ Українська](uk/FILENAME.uk.md) | [ Deutsch](de/FILENAME.de.md)
 ```
 
 At the top of the **translated document**, add:
 
 ```markdown
-🇬🇧 [English](../FILENAME.md) | 🇺🇦 **Українська**
+ [English](../FILENAME.md) |  **Українська**
 ```
 
 ### 4. Update Progress
@@ -121,7 +121,7 @@ Update the relevant language README (`docs/{lang}/INDEX.{lang}.md`) to mark the 
 
 To ensure consistency across translations:
 
-| English            | 🇺🇦 Українська            | 🇩🇪 Deutsch         | 🇵🇹 Português      | 🇪🇸 Español          |
+| English            |  Українська            |  Deutsch         |  Português      |  Español          |
 | ------------------ | ------------------------ | ------------------ | ----------------- | ------------------- |
 | IModule            | Модуль                   | Modul              | Módulo            | Módulo              |
 | Repository         | Репозиторій              | Repository         | Repositório       | Repositorio         |
@@ -138,10 +138,10 @@ To ensure consistency across translations:
 
 Special thanks to translation contributors:
 
-- 🇺🇦 Ukrainian: [@basilex](https://github.com/basilex) and AI Assistant
-- 🇩🇪 German: _Contributors welcome!_
-- 🇵🇹 Portuguese: _Contributors welcome!_
-- 🇪🇸 Spanish: _Contributors welcome!_
+-  Ukrainian: [@basilex](https://github.com/basilex) and AI Assistant
+-  German: _Contributors welcome!_
+-  Portuguese: _Contributors welcome!_
+-  Spanish: _Contributors welcome!_
 
 **Want to contribute?** Check the [Contributing Guide](../README.md#contributing) and pick a document from the priority list above!
 

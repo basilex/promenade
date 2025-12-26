@@ -1,7 +1,7 @@
 # Workflows Module - Quick Start Guide
 
-**Time to First Workflow:** 5 minutes ⏱️  
-**Difficulty:** Beginner 🟢
+**Time to First Workflow:** 5 minutes ⏱  
+**Difficulty:** Beginner 
 
 ---
 
@@ -17,9 +17,9 @@ A simple **document approval workflow** with 3 states:
 
 ## Prerequisites
 
-✅ Promenade server running (`make dev`)  
-✅ Valid authentication token  
-✅ Workflows module enabled and licensed
+ Promenade server running (`make dev`)  
+ Valid authentication token  
+ Workflows module enabled and licensed
 
 ---
 
@@ -101,7 +101,7 @@ curl -X POST http://localhost:8081/api/v1/workflows/definitions \
 }
 ```
 
-**📝 Save the workflow ID for next steps!**
+** Save the workflow ID for next steps!**
 
 ```bash
 WORKFLOW_ID="019b4bbf-86b5-7a4d-a943-7a3ea3c322f9"  # Use your actual ID
@@ -129,7 +129,7 @@ curl -X POST http://localhost:8081/api/v1/workflows/definitions/$WORKFLOW_ID/act
 }
 ```
 
-**✅ Your workflow is now ready to use!**
+** Your workflow is now ready to use!**
 
 ---
 
@@ -174,7 +174,7 @@ curl -X POST http://localhost:8081/api/v1/workflows/instances \
 }
 ```
 
-**📝 Save the instance ID!**
+** Save the instance ID!**
 
 ```bash
 INSTANCE_ID="019b4bc0-1111-7111-9111-111111111111"  # Use your actual ID
@@ -224,7 +224,7 @@ curl -X POST http://localhost:8081/api/v1/workflows/instances/$INSTANCE_ID/trans
 }
 ```
 
-**🎉 Congratulations! You've completed your first workflow!**
+** Congratulations! You've completed your first workflow!**
 
 ---
 
@@ -265,23 +265,23 @@ curl -X GET http://localhost:8081/api/v1/workflows/instances/$INSTANCE_ID \
 ## Visual Workflow Diagram
 
 ```
-┌───────┐
-│ draft │
-└───┬───┘
-    │ submit
-    ▼
-┌─────────────────┐
-│ pending_approval│
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    │         │
+
+ draft 
+
+     submit
+    
+
+ pending_approval
+
+         
+    
+             
  approve   reject
-    │         │
-    ▼         ▼
-┌─────────┐ ┌──────────┐
-│approved │ │ rejected │
-└─────────┘ └──────────┘
+             
+             
+ 
+approved   rejected 
+ 
 ```
 
 ---
@@ -393,7 +393,7 @@ curl -X POST http://localhost:8081/api/v1/workflows/instances/$INSTANCE_ID/cance
 
 **Next:** [Design Best Practices →](DESIGN_GUIDE.md)
 
-**Time spent:** ~5 minutes ✅  
-**Workflows created:** 1 ✅  
-**Instances executed:** 1 ✅  
-**Ready for production:** Let's go! 🚀
+**Time spent:** ~5 minutes   
+**Workflows created:** 1   
+**Instances executed:** 1   
+**Ready for production:** Let's go! 
