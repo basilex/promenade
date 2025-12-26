@@ -31,6 +31,9 @@ about_point2_desc: "Перевірені архітектурні патерни
 about_point3_title: "Для Розробників"
 about_point3_desc: "Чистий, добре задокументований код за найкращими практиками індустрії. Зосередьтесь на функціях, а не на інфраструктурі. Підключайте тільки те, що потрібно."
 
+about_point4_title: "Для DevOps і Operations"
+about_point4_desc: "Docker-ready, автоматичні міграції, health checks та observability з коробки. Протестовано в продакшені з комплексним логуванням та моніторингом. Деплойте впевнено."
+
 # Features / Можливості
 features_title: "Ключові Можливості"
 feature_architecture_title: "Clean Architecture"

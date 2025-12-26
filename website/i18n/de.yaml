@@ -31,6 +31,9 @@ about_point2_desc: "Bewährte Architekturmuster, umfassendes Testen, Audit-Trail
 about_point3_title: "Für Entwickler"
 about_point3_desc: "Sauberer, gut dokumentierter Code nach Best Practices der Branche. Konzentrieren Sie sich auf Features, nicht auf Infrastruktur. Integrieren Sie nur das, was Sie brauchen."
 
+about_point4_title: "Für DevOps & Operations"
+about_point4_desc: "Docker-ready, automatische Migrationen, Health-Checks und Observability integriert. Production-getestet mit umfassendem Logging und Monitoring. Deployen Sie mit Vertrauen."
+
 # Features / Funktionen
 features_title: "Hauptmerkmale"
 feature_architecture_title: "Clean Architecture"
