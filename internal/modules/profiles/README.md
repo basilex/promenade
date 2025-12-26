@@ -4,18 +4,18 @@ User profile and contact information management.
 
 ---
 
-##  Overview
+## Overview
 
 The **profiles** module extends core user authentication with rich profile information and multiple contact methods. It demonstrates how modules can build upon core entities (auth.users) while maintaining independence.
 
 **Key Features**:
 
--  Rich user profiles with bio, avatar, location
--  Multiple contact methods per user (phone, email, social, website)
--  Location with country/timezone references
--  Privacy settings for profile visibility
--  Social media integration
--  Profile completeness tracking
+- Rich user profiles with bio, avatar, location
+- Multiple contact methods per user (phone, email, social, website)
+- Location with country/timezone references
+- Privacy settings for profile visibility
+- Social media integration
+- Profile completeness tracking
 
 **Status**: Enabled by default
 
@@ -23,7 +23,7 @@ The **profiles** module extends core user authentication with rich profile infor
 
 ---
 
-##  Entities
+## Entities
 
 ### UserProfile
 
@@ -106,7 +106,7 @@ Multiple contact methods for a user.
 
 ---
 
-##  Database Schema
+## Database Schema
 
 ### Tables
 
@@ -158,7 +158,7 @@ CREATE INDEX idx_user_profiles_timezone ON user_profiles(timezone_id);
 
 ---
 
-## 🔄 Migrations
+## Migrations
 
 **Namespace**: `profiles`
 
@@ -185,7 +185,7 @@ make migrate-rollback MODULE=profiles STEPS=1
 
 ---
 
-##  Configuration
+## Configuration
 
 Configuration in `config/modules.yaml`:
 
@@ -211,7 +211,7 @@ modules:
 
 ---
 
-##  API Endpoints
+## API Endpoints
 
 ### Profiles
 
@@ -364,7 +364,7 @@ Content-Type: application/json
 
 ---
 
-##  Events
+## Events
 
 ### Published Events
 
@@ -423,7 +423,7 @@ type ContactVerifiedEvent struct {
 
 ---
 
-##  Purge Policy
+## Purge Policy
 
 **No automatic purge** - Profiles are not soft-deleted.
 
@@ -431,7 +431,7 @@ When a user is deleted from `auth.users`, profiles and contacts are **hard delet
 
 ---
 
-##  Testing
+## Testing
 
 ### Unit Tests
 
@@ -456,7 +456,7 @@ make test-integration
 
 ---
 
-##  File Structure
+## File Structure
 
 ```
 internal/modules/profiles/
@@ -493,7 +493,7 @@ internal/modules/profiles/
 
 ---
 
-##  Usage Examples
+## Usage Examples
 
 ### Creating a Profile
 
@@ -562,7 +562,7 @@ func (u *ProfileUseCase) CalculateCompleteness(profile *entity.UserProfile) int 
 
 ---
 
-##  Permissions
+## Permissions
 
 **RBAC Permissions** (if enabled):
 
@@ -579,7 +579,7 @@ func (u *ProfileUseCase) CalculateCompleteness(profile *entity.UserProfile) int 
 
 ---
 
-##  Future Enhancements
+## Future Enhancements
 
 Potential features (not yet implemented):
 
@@ -604,4 +604,4 @@ Potential features (not yet implemented):
 
 ---
 
-**IModule Status**:  Production-ready |  Tested |  2 migrations |  RBAC-enabled
+**IModule Status**: Production-ready | Tested | 2 migrations | RBAC-enabled

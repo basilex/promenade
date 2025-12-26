@@ -4,18 +4,18 @@ User-generated content management system with posts, threaded comments, and like
 
 ---
 
-##  Overview
+## Overview
 
 The **posts** module provides a complete content management system for user-generated posts with threaded comments and a like system. It demonstrates vertical slicing - one module containing multiple related entities (posts, comments, likes) that work together.
 
 **Key Features**:
 
--  Create, edit, publish, and delete posts
--  Threaded comments with configurable depth limit
--  Like system for comments
--  Soft delete with automated purge
--  Draft/Published status workflow
--  Rich text content support
+- Create, edit, publish, and delete posts
+- Threaded comments with configurable depth limit
+- Like system for comments
+- Soft delete with automated purge
+- Draft/Published status workflow
+- Rich text content support
 
 **Status**: Enabled by default
 
@@ -23,7 +23,7 @@ The **posts** module provides a complete content management system for user-gene
 
 ---
 
-##  Entities
+## Entities
 
 ### Post
 
@@ -115,7 +115,7 @@ Like system for comments (not posts directly).
 
 ---
 
-##  Database Schema
+## Database Schema
 
 ### Tables
 
@@ -175,7 +175,7 @@ CREATE INDEX idx_comment_likes_user_id ON comment_likes(user_id);
 
 ---
 
-## 🔄 Migrations
+## Migrations
 
 **Namespace**: `posts`
 
@@ -199,7 +199,7 @@ make migrate-rollback MODULE=posts STEPS=1
 
 ---
 
-##  Configuration
+## Configuration
 
 Configuration in `config/modules.yaml`:
 
@@ -224,7 +224,7 @@ modules:
 
 ---
 
-##  API Endpoints
+## API Endpoints
 
 ### Posts
 
@@ -388,7 +388,7 @@ GET /api/v1/comments/{comment_id}/likes
 
 ---
 
-##  Events
+## Events
 
 ### Published Events
 
@@ -449,7 +449,7 @@ type LikeToggledEvent struct {
 
 ---
 
-##  Purge Policy
+## Purge Policy
 
 **Retention**: 90 days for soft-deleted records
 
@@ -485,7 +485,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 ---
 
-##  Testing
+## Testing
 
 ### Unit Tests
 
@@ -511,7 +511,7 @@ make test-integration
 
 ---
 
-##  File Structure
+## File Structure
 
 ```
 internal/modules/posts/
@@ -553,7 +553,7 @@ internal/modules/posts/
 
 ---
 
-##  Usage Examples
+## Usage Examples
 
 ### Creating a Post Programmatically
 
@@ -617,7 +617,7 @@ if liked {
 
 ---
 
-##  Permissions
+## Permissions
 
 **RBAC Permissions** (if enabled):
 
@@ -635,7 +635,7 @@ if liked {
 
 ---
 
-##  Future Enhancements
+## Future Enhancements
 
 Potential features (not yet implemented):
 
@@ -660,4 +660,4 @@ Potential features (not yet implemented):
 
 ---
 
-**IModule Status**:  Production-ready |  120+ tests |  3 migrations |  RBAC-enabled
+**IModule Status**: Production-ready | 120+ tests | 3 migrations | RBAC-enabled

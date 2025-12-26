@@ -113,7 +113,7 @@ profiles:
 
 **Domain**: Business analytics, metrics, reports, and dashboards
 
-**Status**:  Enabled - Requires license key (BASIC/PRO/ENTERPRISE tiers)
+**Status**: Enabled - Requires license key (BASIC/PRO/ENTERPRISE tiers)
 
 **Entities**:
 
@@ -140,11 +140,11 @@ See [analytics/README.md](analytics/README.md) for full details.
 
 ---
 
-### **Warehouse** (`internal/modules/warehouse/`) - _🔮 Future Module_
+### **Warehouse** (`internal/modules/warehouse/`) - Future Module
 
 **Domain**: Inventory and product management
 
-**Status**: 🔮 Planned - Not yet implemented (commercial module)
+**Status**: Planned - Not yet implemented (commercial module)
 
 **Planned Entities**:
 
@@ -158,7 +158,7 @@ _This module is in design phase. Structure exists as placeholder._
 
 ---
 
-## IModule Structure
+## Module Structure
 
 Every module follows this structure:
 
@@ -193,7 +193,7 @@ internal/modules/{module}/
 └── README.md                    # IModule-specific documentation
 ```
 
-### Example: Posts IModule
+### Example: Posts Module
 
 ```
 internal/modules/posts/
@@ -232,7 +232,7 @@ internal/modules/posts/
 
 ---
 
-## 🔄 IModule Lifecycle
+## Module Lifecycle
 
 ### 1. Registration (Auto-Discovery)
 

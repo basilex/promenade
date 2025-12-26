@@ -27,13 +27,16 @@ Promenade використовує **сувору шарову архітект�
 
 **Module Layer** - Незалежні Вертикальні Зрізи (Бізнес-Домени)
 
-| Модуль        | Сутності                     | Опис                             | Статус          |
-| ------------- | ---------------------------- | -------------------------------- | --------------- |
-| Posts         | пости, коментарі, лайки      | Контент створений користувачами  | Безкоштовно     |
-| Profiles      | контакти, профілі            | Профілі користувачів             | Безкоштовно     |
-| **Analytics** | **метрики, звіти, дашборди** | **Аналітика та звітність**       | **Безкоштовно** |
-| **Billing**   | **плани, підписки, рахунки** | **Система підписок та платежів** | **Комерційний** |
-| Warehouse     | продукти, інвентар           | Управління складом (майбутнє)    | В планах        |
+| Модуль            | Сутності                        | Опис                             | Статус          |
+| ----------------- | ------------------------------- | -------------------------------- | --------------- |
+| Posts             | пости, коментарі, лайки         | Контент створений користувачами  | Безкоштовно     |
+| Profiles          | контакти, профілі               | Профілі користувачів             | Безкоштовно     |
+| **Analytics**     | **метрики, звіти, дашборди**    | **Аналітика та звітність**       | **Безкоштовно** |
+| **Billing**       | **плани, підписки, рахунки**    | **Система підписок та платежів** | **Комерційний** |
+| **Workflows**     | **визначення, інстанси, кроки** | **Оркестрація бізнес-процесів**  | **Комерційний** |
+| **Notifications** | **сповіщення, налаштування**    | **Багатоканальні сповіщення**    | **Комерційний** |
+| **Audit**         | **логи, події, підписи**        | **Незмінний аудит**              | **Комерційний** |
+| Warehouse         | продукти, інвентар              | Управління складом (майбутнє)    | В планах        |
 
 Кожен модуль є самодостатнім з:
 
@@ -258,6 +261,43 @@ make build
 
 **Повна документація**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
 
+#### **Модуль Workflows** (`internal/modules/workflows`) - Комерційний
+
+Оркестрація бізнес-процесів та управління workflow:
+
+- **Статус**: Комерційний - Готовий до продакшену workflow engine з state machine
+- **Сутності**: Визначення Workflow, Інстанси Workflow, Кроки Workflow, Змінні Workflow
+- **Функції**:
+  - State machine з переходами та умовами
+  - Подієво-орієнтоване виконання workflow
+  - Паралельні та послідовні патерни виконання
+  - Повний аудит трейл та історія виконання
+  - Версіонування та застаріння workflow
+  - Розширена валідація графів (виявлення циклів, аналіз досяжності)
+- **Міграції**: 4 міграції (namespace: `workflows`)
+- **Тестування**: 183 комплексних тести (55 entity + 59 usecase + 51 repository + 18 handler)
+- **Продуктивність**: Валідація workflow з 200 станів < 2мс
+- **Документація**: Швидкий старт, патерни дизайну, архітектура валідації
+- **Призначення**: Workflow затвердження, автоматизація бізнес-процесів, багатокрокові операції
+
+**Повна документація**: [internal/modules/workflows/README.md](internal/modules/workflows/README.md)
+
+#### **Модуль Audit** (`internal/modules/audit`) - Комерційний
+
+Незмінне логування аудиту з криптографічними підписами:
+
+- **Статус**: Комерційний - Готова до продакшену система аудит трейлів
+- **Сутності**: Події Аудиту, Підписи Аудиту
+- **Функції**:
+  - Незмінні логи аудиту
+  - Криптографічні підписи для виявлення підробок
+  - Повне відстеження змін
+  - Аудит трейли готові для compliance
+- **Міграції**: 1 міграція (namespace: `audit`)
+- **Призначення**: Compliance, аудити безпеки, регуляторні вимоги
+
+**Повна документація**: [internal/modules/audit/README.md](internal/modules/audit/README.md)
+
 #### **Модуль Warehouse** (`internal/modules/warehouse`) - Майбутній Модуль
 
 Управління інвентарем та продуктами (в планах):
@@ -324,8 +364,23 @@ migrations/
 ├── profiles/           # Міграції модуля Profiles
 │   ├── 000001_profiles_contacts.up.sql
 │   └── 000002_profiles_profiles.up.sql
-└── analytics/          # Міграції модуля Analytics
-    └── 000001_analytics_tables.up.sql
+├── analytics/          # Міграції модуля Analytics
+│   └── 000001_analytics_tables.up.sql
+├── billing/            # Міграції модуля Billing (комерційний)
+│   ├── 000001_billing_plans.up.sql
+│   ├── 000002_billing_subscriptions.up.sql
+│   ├── 000003_billing_invoices.up.sql
+│   └── 000004_billing_payments.up.sql
+├── workflows/          # Міграції модуля Workflows (комерційний)
+│   ├── 000001_workflows_definitions.up.sql
+│   ├── 000002_workflows_instances.up.sql
+│   ├── 000003_workflows_steps.up.sql
+│   └── 000004_workflows_variables.up.sql
+├── notifications/      # Міграції модуля Notifications (комерційний)
+│   ├── 000001_notifications_tables.up.sql
+│   └── 000002_notifications_preferences.up.sql
+└── audit/              # Міграції модуля Audit (комерційний)
+    └── 000001_audit_tables.up.sql
 ```
 
 ### Команди Міграцій
@@ -378,11 +433,11 @@ make migrate-create-core NAME=add_audit_log
 
 ## Тестування
 
-**400+ тестів** на всіх шарах (100% успішно, ~20 секунд):
+**500+ тестів** на всіх шарах (100% успішно, ~25 секунд):
 
 ```bash
 # Запуск всіх тестів
-make test               # Всі тести (~20с)
+make test               # Всі тести (~25с)
 
 # Запуск за модулями
 make test-core          # Тести ядра (275 тестів: 39 entity + 236 usecase)
@@ -392,6 +447,7 @@ make test-module-profiles      # Тести модуля Profiles (21 тест)
 make test-module-analytics     # Тести модуля Analytics (11 тестів)
 make test-module-notifications # Тести модуля Notifications (48 тестів: 35 unit + 13 integration)
 make test-module-billing       # Тести модуля Billing (163 тести)
+make test-module-workflows     # Тести модуля Workflows (183 тести)
 
 # Звіт покриття
 make test-coverage      # HTML звіт покриття
@@ -407,6 +463,7 @@ make test-coverage      # HTML звіт покриття
 - **Модуль Analytics**: 11 тестів (Metrics, MetricAggregate, операції usecase)
 - **Модуль Notifications**: 48 тестів (20 entity + 15 usecase + 13 integration) - Багатоканальна доставка, години тиші, preferences
 - **Модуль Billing**: 163 тести (56 entity + 107 usecase) - Сутності Plan, Subscription, Invoice, Payment
+- **Модуль Workflows**: 183 тести (55 entity + 59 usecase + 51 repository + 18 handler) - State machine, валідація графів, життєвий цикл workflow
 - **Утиліти**: 51 тест, 89.5% середнє покриття (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Час Виконання Тестів

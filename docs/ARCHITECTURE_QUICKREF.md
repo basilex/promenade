@@ -198,6 +198,8 @@ modules:
   enabled:
     - posts
     - profiles
+    - analytics
+    - workflows # Commercial
     - mymodule # Add here
 ```
 
@@ -208,6 +210,8 @@ modules:
 import (
     _ "github.com/basilex/promenade/internal/modules/posts"
     _ "github.com/basilex/promenade/internal/modules/profiles"
+    _ "github.com/basilex/promenade/internal/modules/analytics"
+    _ "github.com/basilex/promenade/internal/modules/workflows"
     _ "github.com/basilex/promenade/internal/modules/mymodule"  // Add here
 )
 ```

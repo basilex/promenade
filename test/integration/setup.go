@@ -41,8 +41,8 @@ func DefaultConfig() Config {
 	return Config{
 		Host:     getEnv("TEST_DB_HOST", "localhost"),
 		Port:     getEnv("TEST_DB_PORT", "5433"), // Use dedicated test container port
-		User:     getEnv("TEST_DB_USER", "promenade"),
-		Password: getEnv("TEST_DB_PASSWORD", "promenade"),
+		User:     getEnv("TEST_DB_USER", "system"),
+		Password: getEnv("TEST_DB_PASSWORD", "passw0rd"),
 		DBName:   getEnv("TEST_DB_NAME", "promenade_test"),
 		SSLMode:  getEnv("TEST_DB_SSLMODE", "disable"),
 	}
@@ -99,6 +99,10 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
+		// Module tables (workflows)
+		"workflows_executions",
+		"workflows_instances",
+		"workflows_definitions",
 		// Module tables (notifications)
 		"notifications_notifications",
 		"notifications_user_preferences",
@@ -254,7 +258,7 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	}
 
 	// Run module migrations (only enabled ones)
-	modules := []string{"posts", "profiles", "analytics", "notifications"}
+	modules := []string{"posts", "profiles", "analytics", "notifications", "workflows"}
 	for _, module := range modules {
 		if err := mgr.MigrateNamespace(ctx, module); err != nil {
 			return fmt.Errorf("%s module migrations failed: %w", module, err)

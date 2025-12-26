@@ -25,13 +25,16 @@ Promenade follows a **strict layered architecture** where the **Core orchestrate
 
 **Module Layer** - Independent Vertical Slices (Domain Areas)
 
-| Module        | Entities                           | Description                     | Status         |
-| ------------- | ---------------------------------- | ------------------------------- | -------------- |
-| Posts         | posts, comments, likes             | User-generated content          | Free           |
-| Profiles      | contacts, profiles                 | User profiles                   | Free           |
-| **Analytics** | **metrics, reports, dashboards**   | **Analytics and reporting**     | **Free**       |
-| **Billing**   | **plans, subscriptions, invoices** | **Subscription billing system** | **Commercial** |
-| Warehouse     | products, inventory                | Inventory management (future)   | Planned        |
+| Module            | Entities                           | Description                       | Status         |
+| ----------------- | ---------------------------------- | --------------------------------- | -------------- |
+| Posts             | posts, comments, likes             | User-generated content            | Free           |
+| Profiles          | contacts, profiles                 | User profiles                     | Free           |
+| **Analytics**     | **metrics, reports, dashboards**   | **Analytics and reporting**       | **Free**       |
+| **Billing**       | **plans, subscriptions, invoices** | **Subscription billing system**   | **Commercial** |
+| **Workflows**     | **definitions, instances, steps**  | **Workflow orchestration engine** | **Commercial** |
+| **Notifications** | **notifications, preferences**     | **Multi-channel notifications**   | **Commercial** |
+| **Audit**         | **logs, events, signatures**       | **Immutable audit logging**       | **Commercial** |
+| Warehouse         | products, inventory                | Inventory management (future)     | Planned        |
 
 Each module is self-contained with:
 
@@ -259,6 +262,43 @@ Multi-channel notification system with user preferences:
 
 **Full documentation**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
 
+#### **Workflows Module** (`internal/modules/workflows`) - Commercial
+
+Business process orchestration and workflow management:
+
+- **Status**: Commercial - Production-ready workflow engine with state machine
+- **Entities**: WorkflowDefinitions, WorkflowInstances, WorkflowSteps, WorkflowVariables
+- **Features**:
+  - State machine with transitions and conditions
+  - Event-driven workflow execution
+  - Parallel and sequential execution patterns
+  - Complete audit trail and execution history
+  - Workflow versioning and deprecation
+  - Advanced graph validation (cycle detection, reachability analysis)
+- **Migrations**: 4 migrations (namespace: `workflows`)
+- **Testing**: 183 comprehensive tests (55 entity + 59 usecase + 51 repository + 18 handler)
+- **Performance**: Validates 200-state workflows in < 2ms
+- **Documentation**: Quick start guide, design patterns, validation architecture
+- **Use Case**: Approval workflows, business process automation, multi-step operations
+
+**Full documentation**: [internal/modules/workflows/README.md](internal/modules/workflows/README.md)
+
+#### **Audit Module** (`internal/modules/audit`) - Commercial
+
+Immutable audit logging with cryptographic signatures:
+
+- **Status**: Commercial - Production-ready audit trail system
+- **Entities**: AuditEvents, AuditSignatures
+- **Features**:
+  - Immutable audit logs
+  - Cryptographic signatures for tamper detection
+  - Complete change tracking
+  - Compliance-ready audit trails
+- **Migrations**: 1 migration (namespace: `audit`)
+- **Use Case**: Compliance, security audits, regulatory requirements
+
+**Full documentation**: [internal/modules/audit/README.md](internal/modules/audit/README.md)
+
 #### **Warehouse Module** (`internal/modules/warehouse`) - Future Module
 
 Inventory and product management (planned):
@@ -326,8 +366,23 @@ migrations/
 ├── profiles/           # Profiles module migrations
 │   ├── 000001_profiles_contacts.up.sql
 │   └── 000002_profiles_profiles.up.sql
-└── analytics/          # Analytics module migrations (commercial)
-    └── 000001_analytics_tables.up.sql
+├── analytics/          # Analytics module migrations
+│   └── 000001_analytics_tables.up.sql
+├── billing/            # Billing module migrations (commercial)
+│   ├── 000001_billing_plans.up.sql
+│   ├── 000002_billing_subscriptions.up.sql
+│   ├── 000003_billing_invoices.up.sql
+│   └── 000004_billing_payments.up.sql
+├── workflows/          # Workflows module migrations (commercial)
+│   ├── 000001_workflows_definitions.up.sql
+│   ├── 000002_workflows_instances.up.sql
+│   ├── 000003_workflows_steps.up.sql
+│   └── 000004_workflows_variables.up.sql
+├── notifications/      # Notifications module migrations (commercial)
+│   ├── 000001_notifications_tables.up.sql
+│   └── 000002_notifications_preferences.up.sql
+└── audit/              # Audit module migrations (commercial)
+    └── 000001_audit_tables.up.sql
 ```
 
 ### Migration Commands
@@ -382,11 +437,11 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**400+ tests** across all layers (100% passing, ~20 seconds):
+**500+ tests** across all layers (100% passing, ~25 seconds):
 
 ```bash
 # Run all tests
-make test               # All tests (~20s)
+make test               # All tests (~25s)
 
 # Run by module
 make test-core          # Core tests (275 tests: 39 entity + 236 usecase)
@@ -396,6 +451,7 @@ make test-module-profiles      # Profiles module tests (21 tests)
 make test-module-analytics     # Analytics module tests (11 tests)
 make test-module-notifications # Notifications module tests (48 tests: 35 unit + 13 integration)
 make test-module-billing       # Billing module tests (163 tests)
+make test-module-workflows     # Workflows module tests (183 tests)
 
 # Coverage report
 make test-coverage      # HTML coverage report
@@ -411,6 +467,7 @@ make test-coverage      # HTML coverage report
 - **Analytics Module**: 11 tests (Metrics, MetricAggregate, usecase operations)
 - **Notifications Module**: 48 tests (20 entity + 15 usecase + 13 integration) - Multi-channel delivery, quiet hours, preferences
 - **Billing Module**: 163 tests (56 entity + 107 usecase) - Plan, Subscription, Invoice, Payment entities
+- **Workflows Module**: 183 tests (55 entity + 59 usecase + 51 repository + 18 handler) - State machine, graph validation, workflow lifecycle
 - **Utilities**: 51 tests, 89.5% avg coverage (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Test Execution Time

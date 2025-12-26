@@ -3,6 +3,7 @@ package profiles
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -60,13 +61,20 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 	// Load module's own configuration
 	cfg, err := moduleconfig.Load("internal/modules/profiles/config", "promenade")
 	if err != nil {
-		slog.Warn("Failed to load profiles module config, using defaults", "error", err)
+		slog.Warn("Failed to load profiles module config, using fallback defaults", "error", err)
+		m.config = getDefaultProfilesConfig()
+		slog.Info("Using fallback profiles configuration")
 	} else {
 		m.config = cfg
 		slog.Info("Profiles module config loaded",
 			"version", cfg.Module.Version,
 			"enabled", cfg.Module.Enabled,
 		)
+	}
+
+	// Ensure config is not nil
+	if m.config == nil {
+		return fmt.Errorf("profiles config not loaded - cannot initialize module")
 	}
 
 	// Note: maxSocialLinks and maxContactsPerUser are configured
@@ -86,6 +94,25 @@ func (m *ProfilesModule) Initialize(ctx context.Context, core *module.Core) erro
 
 	slog.Info("Profiles module initialized successfully")
 	return nil
+}
+
+// getDefaultProfilesConfig returns fallback configuration with safe defaults
+func getDefaultProfilesConfig() *moduleconfig.Config {
+	return &moduleconfig.Config{
+		Module: moduleconfig.ModuleSection{
+			Name:    "profiles",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		Settings: map[string]any{
+			"allow_public_profiles": true,
+			"max_social_links":      10,
+			"max_contacts_per_user": 20,
+		},
+		Purge: moduleconfig.PurgeSection{
+			Enabled: false, // No purge for profiles
+		},
+	}
 }
 
 // RegisterRoutes registers HTTP routes for this module

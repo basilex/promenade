@@ -1,266 +1,137 @@
 # Promenade Website
 
-Static website built with [Hugo](https://gohugo.io/) - Fast, modern static site generator written in Go.
+Simple, single-page landing site for Promenade REST API Framework.
 
-## 🚀 Features
+## Approach
 
-- **Tailwind-inspired design** - Clean, minimal, and responsive
-- **Multilingual** - English, Ukrainian (Українська), German (Deutsch)
-- **Fast** - Static HTML generation, ~2ms per page
-- **Documentation integration** - Auto-syncs from `../docs/`
-- **GitHub Discussions** - Community testimonials and feedback
-- **Zero config deployment** - GitHub Actions + GitHub Pages
+**Single Source of Truth** = GitHub Repository
 
-## 📁 Structure
+- All detailed documentation lives on GitHub
+- Website is a beautiful business card with links to GitHub
+- No content duplication = no synchronization issues
+- Easy to maintain during active development
+
+## Structure
 
 ```
 website/
-├── content/           # Page content (Markdown)
-│   ├── _index.md      # Homepage
-│   ├── features/      # Features pages
-│   └── docs/          # Documentation (linked from ../docs/)
-├── layouts/           # HTML templates
-│   ├── _default/      # Default layouts
-│   │   ├── baseof.html    # Base template
-│   │   ├── list.html      # List pages
-│   │   └── single.html    # Single pages
-│   ├── partials/      # Reusable components
-│   │   ├── header.html    # Site header
-│   │   └── footer.html    # Site footer
-│   └── index.html     # Homepage layout
-├── static/            # Static assets
-│   ├── css/           # Stylesheets
-│   │   └── main.css   # Main stylesheet
-│   ├── js/            # JavaScript (if needed)
-│   └── favicon.svg    # Site icon
-├── hugo.toml          # Hugo configuration
-└── README.md          # This file
+├── hugo.toml              # Hugo config with multi-language support
+├── layouts/
+│   └── index.html         # Single-page landing (EN/UK/DE)
+├── i18n/                  # Translations
+│   ├── en.yaml            # English
+│   ├── uk.yaml            # Ukrainian
+│   └── de.yaml            # German
+└── static/                # Assets (images, favicon, etc.)
 ```
 
-## 🛠️ Development
+## Features
 
-### Prerequisites
+### One-Page Design
 
-- **Hugo Extended** v0.153.2+ ([install](https://gohugo.io/installation/))
-- **Go** 1.21+ (optional, for Hugo modules)
+- **Hero Section** - Eye-catching title + CTA buttons
+- **Features** - Key highlights (6 cards)
+- **Stats** - 500+ tests, 8 modules, 100% passing
+- **Modules** - Available modules (Free/Commercial)
+- **Quick Start** - Code snippet + link to GitHub
+- **Contact Form** - Simple contact form at bottom
 
-### Quick Start
+### Multi-Language
+
+- English (EN) - Primary
+- Ukrainian (🇺🇦) - Full translation
+- German (🇩🇪) - Full translation
+- Language switcher in navigation
+
+### Links to GitHub
+
+- All "Learn More" → GitHub README
+- Documentation → GitHub docs/
+- Module details → GitHub internal/modules/
+
+## Development
 
 ```bash
-# Navigate to website directory
+# Install Hugo
+brew install hugo
+
+# Start dev server
 cd website
-
-# Start development server
-hugo server --buildDrafts
-
-# Or use the shorthand
 hugo server -D
 
-# Server will be available at http://localhost:1313
-```
-
-### Build for Production
-
-```bash
 # Build static site
-hugo --gc --minify
-
-# Output will be in public/ directory
+hugo
 ```
 
-### Adding Content
+## Deployment
 
-```bash
-# Create new feature page
-hugo new content features/my-feature.md
+Site is built automatically on push to `dev` branch via GitHub Actions.
 
-# Create new documentation page
-hugo new content docs/my-guide.md
-```
+**GitHub Pages URL:** https://basilex.github.io/promenade/
 
-## 🌍 Multilingual Support
+## Contact Form Setup
 
-The site supports three languages:
+Form uses [Formspree](https://formspree.io/) for handling submissions.
 
-- **English (en)** - Default language
-- **Ukrainian (uk)** - Content in `content/uk/`
-- **German (de)** - Content in `content/de/`
-
-### Adding Translated Content
-
-1. Create language-specific content directory:
-
-   ```bash
-   mkdir -p content/uk/features
-   mkdir -p content/de/features
+1. Create free Formspree account
+2. Get form endpoint ID
+3. Update `layouts/index.html`:
+   ```javascript
+   fetch('https://formspree.io/f/YOUR_FORM_ID', {
    ```
 
-2. Add translated content:
+## Design Principles
 
-   ```bash
-   cp content/features/my-feature.md content/uk/features/my-feature.md
-   # Edit content/uk/features/my-feature.md with Ukrainian translation
-   ```
+1. **Simple & Fast** - Single HTML page, no complex navigation
+2. **Visual Appeal** - Modern gradient hero, hover effects
+3. **Mobile-First** - Responsive design for all devices
+4. **Performance** - Minimal JS, inline CSS, fast loading
+5. **SEO Ready** - Proper meta tags, semantic HTML
 
-3. Hugo will automatically detect and link translations
+## Why This Approach?
 
-## 📚 Documentation Integration
+### Problem (Old Site)
 
-Documentation is sourced from the main `docs/` directory:
+- Internal links constantly breaking
+- Content duplication between site/GitHub
+- Hard to maintain during active development
+- Inconsistent information
 
-```bash
-# Option 1: Symbolic link (development)
-ln -s ../../docs content/docs
+### Solution (New Site)
 
-# Option 2: Copy files (production build)
-cp -r ../docs content/docs
+- Single landing page (візитка)
+- Links to GitHub for details
+- Easy to maintain
+- Always consistent (GitHub is source of truth)
+- Beautiful and functional
 
-# Option 3: Hugo mount (in hugo.toml)
-[module]
-  [[module.mounts]]
-    source = "../docs"
-    target = "content/docs"
-```
+## What Changed?
 
-Currently using **Option 3** for seamless integration.
+**Removed:**
 
-## 🎨 Styling
+- `/features/` page - now cards on homepage
+- `/modules/` page - now cards on homepage
+- `/docs/` section - links to GitHub
+- `/blog/` section - not needed yet
+- Complex navigation - single page scroll
 
-The site uses a custom Tailwind-inspired CSS framework:
+**Kept:**
 
-- **No build step** - Pure CSS, no Tailwind CLI needed
-- **CSS variables** - Easy theming via `static/css/main.css`
-- **Responsive** - Mobile-first design
-- **Minimal** - ~8KB CSS (gzipped: ~2KB)
+- Beautiful hero section
+- Feature highlights
+- Module showcase
+- Contact form
+- Multi-language support
 
-### Customizing Colors
+## Future Enhancements
 
-Edit `static/css/main.css`:
+- Add customer testimonials section
+- Add use cases / case studies
+- Blog when ready (separate Hugo content)
+- Integration examples (after modules stabilize)
 
-```css
-:root {
-  --color-primary: #0ea5e9; /* Sky blue */
-  --color-secondary: #8b5cf6; /* Purple */
-  /* ... more variables ... */
-}
-```
+---
 
-## 🚀 Deployment
-
-### GitHub Pages (Automatic)
-
-1. **Enable GitHub Pages**:
-
-   - Go to repository Settings → Pages
-   - Source: GitHub Actions
-
-2. **Push to `main` or `dev`**:
-
-   ```bash
-   git add website/
-   git commit -m "feat: add website"
-   git push origin dev
-   ```
-
-3. **GitHub Actions** will build and deploy automatically
-4. Site will be live at `https://<username>.github.io/<repo>/`
-
-### Custom Domain
-
-1. Add `CNAME` file:
-
-   ```bash
-   echo "promenade.com.ua" > static/CNAME
-   ```
-
-2. Configure DNS:
-
-   - Add CNAME record: `promenade.com.ua` → `<username>.github.io`
-   - Or A records for apex domain
-
-3. Update `hugo.toml`:
-   ```toml
-   baseURL = 'https://promenade.com.ua/'
-   ```
-
-### Other Hosting
-
-**Netlify:**
-
-```bash
-# netlify.toml
-[build]
-  command = "cd website && hugo --gc --minify"
-  publish = "website/public"
-```
-
-**Vercel:**
-
-```json
-{
-  "buildCommand": "cd website && hugo --gc --minify",
-  "outputDirectory": "website/public"
-}
-```
-
-**Cloudflare Pages:**
-
-- Build command: `cd website && hugo --gc --minify`
-- Build output: `website/public`
-
-## 🔧 Configuration
-
-Main configuration in `hugo.toml`:
-
-```toml
-baseURL = 'https://promenade.com.ua/'
-title = 'Promenade - Production-Ready REST API Framework'
-
-[params]
-  description = 'Production-ready REST API...'
-  github = 'https://github.com/basilex/promenade'
-
-[languages]
-  [languages.en]
-    weight = 1
-  [languages.uk]
-    weight = 2
-  [languages.de]
-    weight = 3
-```
-
-## 📊 Analytics (Optional)
-
-Add analytics in `layouts/partials/analytics.html`:
-
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-
-<!-- Plausible (privacy-friendly) -->
-<script defer data-domain="promenade.com.ua" src="https://plausible.io/js/script.js"></script>
-```
-
-Then include in `layouts/_default/baseof.html`:
-
-```html
-{{ partial "analytics.html" . }}
-```
-
-## 🤝 Contributing
-
-1. Make changes in `website/` directory
-2. Test locally: `hugo server -D`
-3. Commit and push
-4. GitHub Actions will deploy automatically
-
-## 📝 License
-
-Same as Promenade - MIT License
-
-## 🔗 Links
-
-- **Live Site**: https://promenade.com.ua (after deployment)
-- **Hugo Docs**: https://gohugo.io/documentation/
-- **GitHub**: https://github.com/basilex/promenade
-- **Discussions**: https://github.com/basilex/promenade/discussions
+**Built with:** Hugo + Custom HTML/CSS
+**Hosted on:** GitHub Pages
+**Updated:** December 26, 2025

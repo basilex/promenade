@@ -248,6 +248,22 @@
 
 ## Останні Оновлення
 
+### 26 Грудня 2025
+
+- **Реліз Модуля Workflows до Продакшену:**
+  - [../../internal/modules/workflows/README.md](../../internal/modules/workflows/README.md) - Комплексна документація модуля
+  - [../../internal/modules/workflows/QUICK_START.md](../../internal/modules/workflows/QUICK_START.md) - 5-хвилинний туторіал
+  - [../../internal/modules/workflows/DESIGN_GUIDE.md](../../internal/modules/workflows/DESIGN_GUIDE.md) - Посібник з кращих практик
+  - [../../internal/modules/workflows/VALIDATION_ARCHITECTURE.md](../../internal/modules/workflows/VALIDATION_ARCHITECTURE.md) - Технічний deep dive
+  - 183 комплексних тести (55 entity + 59 usecase + 51 repository + 18 handler)
+  - Готовий до продакшену workflow engine з state machine
+  - Розширена валідація графів (BFS досяжність, DFS виявлення циклів)
+  - Валідована продуктивність: < 2мс для 200-станових workflow
+- **Оновлена Документація Модулів:**
+  - Всі таблиці модулів оновлені з інформацією про модуль Workflows
+  - Оновлені метрики покриття тестами (500+ тестів загалом)
+  - Оновлена структура міграцій з namespace workflows
+
 ### 22 Грудня 2025
 
 - Створено вичерпну архітектурну документацію:
@@ -298,6 +314,6 @@
 
 ---
 
-**Версія Документації:** 2.0
-**Останнє Оновлення:** 22 Грудня 2025
+**Версія Документації:** 2.1
+**Останнє Оновлення:** 26 Грудня 2025
 **Підтримується:** Командою Розробки Promenade

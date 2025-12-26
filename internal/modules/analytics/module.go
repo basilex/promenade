@@ -59,8 +59,14 @@ func (m *AnalyticsModule) Initialize(ctx context.Context, core *module.Core) err
 	// Load module-specific configuration
 	cfg, err := moduleconfig.Load("internal/modules/analytics/config", "promenade")
 	if err != nil {
-		m.logger.Error("Failed to load analytics config", "error", err)
-		return fmt.Errorf("failed to load analytics config: %w", err)
+		m.logger.Warn("Failed to load analytics config, using fallback defaults", "error", err)
+		cfg = getDefaultAnalyticsConfig()
+		m.logger.Info("Using fallback analytics configuration")
+	}
+
+	// Ensure config is not nil
+	if cfg == nil {
+		return fmt.Errorf("analytics config not loaded - cannot initialize module")
 	}
 
 	{
@@ -226,4 +232,34 @@ func (m *AnalyticsModule) HealthCheck(ctx context.Context) error {
 	// Note: Background workers health check will be added when workers are implemented
 
 	return nil
+}
+
+// getDefaultAnalyticsConfig returns fallback configuration with safe defaults
+func getDefaultAnalyticsConfig() *moduleconfig.Config {
+	return &moduleconfig.Config{
+		Module: moduleconfig.ModuleSection{
+			Name:    "analytics",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		Settings: map[string]any{
+			"analytics": map[string]any{
+				"metrics": map[string]any{
+					"retention_days": 90,
+				},
+				"reports": map[string]any{
+					"max_per_user": 50,
+				},
+				"dashboards": map[string]any{
+					"max_per_user": 10,
+				},
+			},
+		},
+		Purge: moduleconfig.PurgeSection{
+			Enabled: true,
+			Settings: map[string]map[string]any{
+				"metrics": {"retention_days": 90},
+			},
+		},
+	}
 }

@@ -60,8 +60,14 @@ func (m *AuditModule) Initialize(ctx context.Context, core *module.Core) error {
 	// Load module's own configuration (standard approach like other modules)
 	cfg, err := moduleconfig.Load("internal/modules/audit/config", "promenade")
 	if err != nil {
-		slog.Warn("Failed to load audit module config, using defaults", "error", err)
-		return fmt.Errorf("failed to load config: %w", err)
+		slog.Warn("Failed to load audit module config, using fallback defaults", "error", err)
+		cfg = getDefaultAuditConfig()
+		slog.Info("Using fallback audit configuration")
+	}
+
+	// Ensure config is not nil
+	if cfg == nil {
+		return fmt.Errorf("audit config not loaded - cannot initialize module")
 	}
 
 	m.config = cfg
@@ -263,5 +269,33 @@ func (m *AuditModule) registerRoutes(router *gin.RouterGroup) {
 		auditGroup.GET("/events/:id", m.handler.GetAuditEvent)
 		auditGroup.GET("/events/:id/verify", m.handler.VerifyAuditEvent)
 		auditGroup.GET("/events/entity/:entity_type/:entity_id", m.handler.GetAuditEventsByEntity)
+	}
+}
+
+// getDefaultAuditConfig returns fallback configuration with safe defaults
+func getDefaultAuditConfig() *moduleconfig.Config {
+	return &moduleconfig.Config{
+		Module: moduleconfig.ModuleSection{
+			Name:    "audit",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		Settings: map[string]any{
+			"module": map[string]any{
+				"license_required": false,
+				"license_key":      "",
+			},
+			"signature": map[string]any{
+				"algorithm": "sha256",
+				"secret":    "", // Must be set via AUDIT_SIGNATURE_SECRET env var
+			},
+			"license": map[string]any{
+				"secret":            "",
+				"grace_period_days": 30,
+			},
+		},
+		Purge: moduleconfig.PurgeSection{
+			Enabled: false, // Audit logs should NEVER be purged (compliance)
+		},
 	}
 }

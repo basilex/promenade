@@ -27,13 +27,16 @@ Promenade folgt einer **strikten Schichtenarchitektur**, bei der der **Core orch
 
 **Modul-Schicht** - Unabhängige Vertikale Slices (Domänen)
 
-| Modul         | Entitäten                          | Beschreibung                        | Status          |
-| ------------- | ---------------------------------- | ----------------------------------- | --------------- |
-| Posts         | posts, comments, likes             | Benutzergenerierte Inhalte          | Frei            |
-| Profiles      | contacts, profiles                 | Benutzerprofile                     | Frei            |
-| **Analytics** | **metrics, reports, dashboards**   | **Analytics und Berichterstattung** | **Frei**        |
-| **Billing**   | **plans, subscriptions, invoices** | **Abonnement-Abrechnungssystem**    | **Kommerziell** |
-| Warehouse     | products, inventory                | Lagerverwaltung (zukünftig)         | Geplant         |
+| Modul             | Entitäten                          | Beschreibung                        | Status          |
+| ----------------- | ---------------------------------- | ----------------------------------- | --------------- |
+| Posts             | posts, comments, likes             | Benutzergenerierte Inhalte          | Frei            |
+| Profiles          | contacts, profiles                 | Benutzerprofile                     | Frei            |
+| **Analytics**     | **metrics, reports, dashboards**   | **Analytics und Berichterstattung** | **Frei**        |
+| **Billing**       | **plans, subscriptions, invoices** | **Abonnement-Abrechnungssystem**    | **Kommerziell** |
+| **Workflows**     | **definitions, instances, steps**  | **Workflow-Orchestrierungsengine**  | **Kommerziell** |
+| **Notifications** | **notifications, preferences**     | **Multi-Kanal-Benachrichtigungen**  | **Kommerziell** |
+| **Audit**         | **logs, events, signatures**       | **Unveränderliches Audit-Logging**  | **Kommerziell** |
+| Warehouse         | products, inventory                | Lagerverwaltung (zukünftig)         | Geplant         |
 
 Jedes Modul ist eigenständig mit:
 
@@ -247,6 +250,43 @@ Mehrkanaliges Benachrichtigungssystem mit Benutzerpräferenzen:
 
 **Vollständige Dokumentation**: [internal/modules/notifications/README.md](internal/modules/notifications/README.md)
 
+#### **Workflows-Modul** (`internal/modules/workflows`) - Kommerziell
+
+Geschäftsprozess-Orchestrierung und Workflow-Management:
+
+- **Status**: Kommerziell - Produktionsreife Workflow-Engine mit State Machine
+- **Entitäten**: Workflow-Definitionen, Workflow-Instanzen, Workflow-Schritte, Workflow-Variablen
+- **Features**:
+  - State Machine mit Übergängen und Bedingungen
+  - Ereignisgesteuerte Workflow-Ausführung
+  - Parallele und sequentielle Ausführungsmuster
+  - Vollständiger Audit-Trail und Ausführungshistorie
+  - Workflow-Versionierung und Deprecation
+  - Erweiterte Graph-Validierung (Zyklenerkennung, Erreichbarkeitsanalyse)
+- **Migrationen**: 4 Migrationen (Namespace: `workflows`)
+- **Testing**: 183 umfassende Tests (55 Entity + 59 Usecase + 51 Repository + 18 Handler)
+- **Performance**: Validiert 200-Zustands-Workflows in < 2ms
+- **Dokumentation**: Schnellstart-Guide, Design-Patterns, Validierungsarchitektur
+- **Anwendungsfall**: Genehmigungsworkflows, Geschäftsprozessautomatisierung, mehrstufige Operationen
+
+**Vollständige Dokumentation**: [internal/modules/workflows/README.md](internal/modules/workflows/README.md)
+
+#### **Audit-Modul** (`internal/modules/audit`) - Kommerziell
+
+Unveränderliches Audit-Logging mit kryptografischen Signaturen:
+
+- **Status**: Kommerziell - Produktionsreifes Audit-Trail-System
+- **Entitäten**: Audit-Events, Audit-Signaturen
+- **Features**:
+  - Unveränderliche Audit-Logs
+  - Kryptografische Signaturen zur Manipulationserkennung
+  - Vollständige Änderungsverfolgung
+  - Compliance-bereite Audit-Trails
+- **Migrationen**: 1 Migration (Namespace: `audit`)
+- **Anwendungsfall**: Compliance, Sicherheits-Audits, regulatorische Anforderungen
+
+**Vollständige Dokumentation**: [internal/modules/audit/README.md](internal/modules/audit/README.md)
+
 #### **Warehouse-Modul** (`internal/modules/warehouse`) - Zukünftiges Modul
 
 Lager- und Produktverwaltung (geplant):
@@ -313,8 +353,23 @@ migrations/
 ├── profiles/           # Profiles-Modul-Migrationen
 │   ├── 000001_profiles_contacts.up.sql
 │   └── 000002_profiles_profiles.up.sql
-└── analytics/          # Analytics-Modul-Migrationen (kommerziell)
-    └── 000001_analytics_tables.up.sql
+├── analytics/          # Analytics-Modul-Migrationen (kostenlos)
+│   └── 000001_analytics_tables.up.sql
+├── billing/            # Billing-Modul-Migrationen (kommerziell)
+│   ├── 000001_billing_plans.up.sql
+│   ├── 000002_billing_subscriptions.up.sql
+│   ├── 000003_billing_invoices.up.sql
+│   └── 000004_billing_payments.up.sql
+├── workflows/          # Workflows-Modul-Migrationen (kommerziell)
+│   ├── 000001_workflows_definitions.up.sql
+│   ├── 000002_workflows_instances.up.sql
+│   ├── 000003_workflows_steps.up.sql
+│   └── 000004_workflows_variables.up.sql
+├── notifications/      # Notifications-Modul-Migrationen (kommerziell)
+│   ├── 000001_notifications_tables.up.sql
+│   └── 000002_notifications_preferences.up.sql
+└── audit/              # Audit-Modul-Migrationen (kommerziell)
+    └── 000001_audit_tables.up.sql
 ```
 
 ### Migrationsbefehle
@@ -367,11 +422,11 @@ make migrate-create-core NAME=add_audit_log
 
 ## Testing
 
-**400+ Tests** über alle Schichten (100% bestanden, ~20 Sekunden):
+**500+ Tests** über alle Schichten (100% bestanden, ~25 Sekunden):
 
 ```bash
 # Alle Tests ausführen
-make test               # Alle Tests (~20s)
+make test               # Alle Tests (~25s)
 
 # Nach Modul ausführen
 make test-core          # Core-Tests (275 Tests: 39 Entity + 236 Usecase)
@@ -381,6 +436,7 @@ make test-module-profiles      # Profiles-Modul Tests (21 Tests)
 make test-module-analytics     # Analytics-Modul Tests (11 Tests)
 make test-module-notifications # Notifications-Modul Tests (48 Tests: 35 Unit + 13 Integration)
 make test-module-billing       # Billing-Modul Tests (163 Tests)
+make test-module-workflows     # Workflows-Modul Tests (183 Tests)
 
 # Coverage-Bericht
 make test-coverage      # HTML Coverage-Bericht
@@ -396,6 +452,7 @@ make test-coverage      # HTML Coverage-Bericht
 - **Analytics-Modul**: 11 Tests (Metrics, MetricAggregate, Usecase-Operationen)
 - **Notifications-Modul**: 48 Tests (20 Entity + 15 Usecase + 13 Integration) - Mehrkanalige Zustellung, Ruhezeiten, Präferenzen
 - **Billing-Modul**: 163 Tests (56 Entity + 107 Usecase) - Plan, Subscription, Invoice, Payment Entitäten
+- **Workflows-Modul**: 183 Tests (55 Entity + 59 Usecase + 51 Repository + 18 Handler) - State Machine, Graph-Validierung, Workflow-Lebenszyklus
 - **Utilities**: 51 Tests, 89.5% durchschnittliche Abdeckung (response 100%, validator 80%, logger 83.8%, pagination 94.1%)
 
 ### Test-Ausführungszeit
@@ -405,7 +462,7 @@ make test-coverage      # HTML Coverage-Bericht
 - **Profiles-Modul**: 1.5s
 - **Analytics-Modul**: 2.7s (Entity 1.4s + Usecase 1.4s)
 - **Notifications-Modul**: 1.8s (Entity 0.4s + Usecase 0.2s + Integration 1.2s)
-- **Gesamt**: ~22 Sekunden für die vollständige Test-Suite
+- **Gesamt**: ~25 Sekunden für die vollständige Test-Suite
 
 **Testing-Leitfäden**:
 

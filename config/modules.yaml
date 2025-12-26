@@ -7,9 +7,10 @@ modules:
     - posts # User-generated content: posts + comments + likes
     - profiles # User profiles + contacts (merged into one module)
     - analytics # Analytics & reporting (Free)
-    - notifications # Multi-channel notifications (Commercial)
-    - audit # Immutable audit logging (Commercial)
-    - billing # Subscription billing & payment processing (Commercial)
+    # - notifications # Multi-channel notifications (Commercial) - disabled, requires license
+    # - audit # Immutable audit logging (Commercial) - disabled, requires license
+    # - billing # Subscription billing & payment processing (Commercial) - disabled, requires license
+    - workflows # Workflow engine with BPMN-inspired state machine (Commercial)
 
   # Per-module configuration
   config:

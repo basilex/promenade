@@ -608,6 +608,191 @@ definitions:
       user_id:
         type: string
     type: object
+  github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.CreateDefinitionRequest:
+    properties:
+      description:
+        maxLength: 1000
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        maxLength: 200
+        minLength: 3
+        type: string
+      schema:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowSchema'
+      tags:
+        items:
+          type: string
+        type: array
+      version:
+        description: Ignored - version is auto-incremented
+        type: string
+    required:
+    - name
+    - schema
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.StartInstanceRequest:
+    properties:
+      assigned_to:
+        type: string
+      context:
+        additionalProperties: true
+        type: object
+      definition_id:
+        type: string
+      external_reference:
+        type: string
+      priority:
+        maximum: 100
+        minimum: 0
+        type: integer
+    required:
+    - definition_id
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.UpdateInstanceRequest:
+    properties:
+      assigned_to:
+        type: string
+      priority:
+        maximum: 100
+        minimum: 0
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      display_name:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      schema:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowSchema'
+      status:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      version:
+        description: int, not string
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse:
+    properties:
+      assigned_to:
+        type: string
+      completed_at:
+        type: string
+      context:
+        additionalProperties: true
+        type: object
+      created_at:
+        type: string
+      current_state:
+        type: string
+      definition_id:
+        type: string
+      definition_version:
+        type: integer
+      error_message:
+        type: string
+      external_reference:
+        type: string
+      id:
+        type: string
+      priority:
+        type: integer
+      retry_count:
+        type: integer
+      started_at:
+        description: Pointer in entity
+        type: string
+      started_by:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_domain_entity.RetryPolicy:
+    properties:
+      backoff_factor:
+        type: number
+      initial_delay:
+        description: milliseconds
+        type: integer
+      max_attempts:
+        type: integer
+      max_delay:
+        description: milliseconds
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowSchema:
+    properties:
+      activities:
+        additionalProperties: true
+        type: object
+      initial_state:
+        type: string
+      retry_policy:
+        $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_domain_entity.RetryPolicy'
+      states:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowState'
+        type: array
+      transitions:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowTransition'
+        type: array
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowState:
+    properties:
+      activities:
+        items:
+          type: string
+        type: array
+      is_final:
+        type: boolean
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      timeout:
+        type: integer
+      type:
+        description: activity, gateway, event, final
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_modules_workflows_domain_entity.WorkflowTransition:
+    properties:
+      condition:
+        type: string
+      event:
+        type: string
+      from:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      to:
+        type: string
+    type: object
   github_com_basilex_promenade_pkg_response.ErrorResponse:
     properties:
       error:
@@ -730,6 +915,125 @@ definitions:
       valid:
         type: boolean
       verified_at:
+        type: string
+    type: object
+  internal_modules_notifications_adapter_http_handler.NotificationResponse:
+    properties:
+      channel:
+        type: string
+      clicked_at:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      data:
+        additionalProperties: {}
+        type: object
+      id:
+        type: string
+      opened_at:
+        type: string
+      sent_at:
+        type: string
+      status:
+        type: string
+      subject:
+        type: string
+      template:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_modules_notifications_adapter_http_handler.PreferenceResponse:
+    properties:
+      email_enabled:
+        type: boolean
+      id:
+        type: string
+      in_app_enabled:
+        type: boolean
+      marketing_enabled:
+        type: boolean
+      product_enabled:
+        type: boolean
+      push_enabled:
+        type: boolean
+      quiet_hours_end:
+        type: string
+      quiet_hours_start:
+        type: string
+      security_enabled:
+        type: boolean
+      sms_enabled:
+        type: boolean
+      social_enabled:
+        type: boolean
+      system_enabled:
+        type: boolean
+      timezone:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_modules_notifications_adapter_http_handler.SendNotificationRequest:
+    properties:
+      channel:
+        enum:
+        - email
+        - sms
+        - push
+        - in_app
+        type: string
+      content:
+        type: string
+      data:
+        additionalProperties: {}
+        type: object
+      subject:
+        type: string
+      template:
+        type: string
+      type:
+        enum:
+        - system
+        - security
+        - marketing
+        - product
+        - social
+        type: string
+    required:
+    - channel
+    - content
+    - type
+    type: object
+  internal_modules_notifications_adapter_http_handler.UpdatePreferencesRequest:
+    properties:
+      email_enabled:
+        type: boolean
+      in_app_enabled:
+        type: boolean
+      marketing_enabled:
+        type: boolean
+      product_enabled:
+        type: boolean
+      push_enabled:
+        type: boolean
+      quiet_hours_end:
+        type: string
+      quiet_hours_start:
+        type: string
+      security_enabled:
+        type: boolean
+      sms_enabled:
+        type: boolean
+      social_enabled:
+        type: boolean
+      system_enabled:
+        type: boolean
+      timezone:
         type: string
     type: object
 info:
@@ -1134,6 +1438,270 @@ paths:
       summary: Get replies to a comment
       tags:
       - comments
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of notifications for authenticated user
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.NotificationResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user notifications
+      tags:
+      - Notifications
+    post:
+      consumes:
+      - application/json
+      description: Send a notification to the authenticated user
+      parameters:
+      - description: Notification data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.SendNotificationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.NotificationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Send a notification
+      tags:
+      - Notifications
+  /notifications/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a specific notification by ID
+      parameters:
+      - description: Notification ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.NotificationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get notification by ID
+      tags:
+      - Notifications
+  /notifications/{id}/opened:
+    post:
+      consumes:
+      - application/json
+      description: Mark a notification as opened
+      parameters:
+      - description: Notification ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Mark notification as opened
+      tags:
+      - Notifications
+  /notifications/preferences:
+    get:
+      consumes:
+      - application/json
+      description: Get notification preferences for authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.PreferenceResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user notification preferences
+      tags:
+      - Notifications
+    put:
+      consumes:
+      - application/json
+      description: Update notification preferences for authenticated user
+      parameters:
+      - description: Preference data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.UpdatePreferencesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_notifications_adapter_http_handler.PreferenceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user notification preferences
+      tags:
+      - Notifications
+  /notifications/unread-count:
+    get:
+      consumes:
+      - application/json
+      description: Get count of unread notifications for authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get unread notification count
+      tags:
+      - Notifications
   /posts:
     post:
       consumes:
@@ -2817,6 +3385,596 @@ paths:
       summary: Get contacts by type
       tags:
       - user-contacts
+  /workflows/definitions:
+    get:
+      consumes:
+      - application/json
+      description: List workflow definitions with pagination and optional filters
+      parameters:
+      - description: Filter by status (draft, active, deprecated, archived)
+        in: query
+        name: status
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List workflow definitions
+      tags:
+      - workflows
+    post:
+      consumes:
+      - application/json
+      description: Create a new workflow definition with schema and metadata
+      parameters:
+      - description: Workflow definition data
+        in: body
+        name: definition
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.CreateDefinitionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new workflow definition
+      tags:
+      - workflows
+  /workflows/definitions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a workflow definition (only in draft status)
+      parameters:
+      - description: Workflow definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a workflow definition
+      tags:
+      - workflows
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a workflow definition by its ID
+      parameters:
+      - description: Workflow definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get workflow definition by ID
+      tags:
+      - workflows
+    put:
+      consumes:
+      - application/json
+      description: Update an existing workflow definition (only in draft status)
+      parameters:
+      - description: Workflow definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated definition data
+        in: body
+        name: definition
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.CreateDefinitionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a workflow definition
+      tags:
+      - workflows
+  /workflows/definitions/{id}/activate:
+    post:
+      consumes:
+      - application/json
+      description: Activate a workflow definition to make it available for use
+      parameters:
+      - description: Workflow definition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Activate workflow definition
+      tags:
+      - workflows
+  /workflows/definitions/name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the latest active workflow definition by name
+      parameters:
+      - description: Workflow name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowDefinitionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get workflow definition by name
+      tags:
+      - workflows
+  /workflows/instances:
+    get:
+      consumes:
+      - application/json
+      description: List workflow instances with optional filters
+      parameters:
+      - description: Filter by workflow definition ID
+        in: query
+        name: definition_id
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by assigned user ID
+        in: query
+        name: assigned_to
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List workflow instances
+      tags:
+      - workflows
+    post:
+      consumes:
+      - application/json
+      description: Create and start a new workflow instance from a definition
+      parameters:
+      - description: Workflow instance data
+        in: body
+        name: instance
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.StartInstanceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Start a new workflow instance
+      tags:
+      - workflows
+  /workflows/instances/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a workflow instance by its ID
+      parameters:
+      - description: Workflow instance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get workflow instance by ID
+      tags:
+      - workflows
+    put:
+      consumes:
+      - application/json
+      description: Update priority or assignee of a workflow instance
+      parameters:
+      - description: Workflow instance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: update
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.UpdateInstanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a workflow instance
+      tags:
+      - workflows
+  /workflows/instances/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a workflow instance with optional reason
+      parameters:
+      - description: Workflow instance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cancellation reason
+        in: query
+        name: reason
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Cancel a workflow instance
+      tags:
+      - workflows
+  /workflows/instances/{id}/pause:
+    post:
+      consumes:
+      - application/json
+      description: Pause a running workflow instance
+      parameters:
+      - description: Workflow instance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Pause a workflow instance
+      tags:
+      - workflows
+  /workflows/instances/{id}/resume:
+    post:
+      consumes:
+      - application/json
+      description: Resume a paused workflow instance
+      parameters:
+      - description: Workflow instance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_modules_workflows_adapter_http_dto.WorkflowInstanceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Resume a paused workflow instance
+      tags:
+      - workflows
 schemes:
 - http
 - https

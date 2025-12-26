@@ -63,8 +63,9 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 	// Load module's own configuration
 	cfg, err := moduleconfig.Load("internal/modules/posts/config", "promenade")
 	if err != nil {
-		slog.Warn("Failed to load posts module config, using defaults", "error", err)
-		// Continue with defaults
+		slog.Warn("Failed to load posts module config, using fallback defaults", "error", err)
+		m.config = getDefaultPostsConfig()
+		slog.Info("Using fallback posts configuration")
 	} else {
 		m.config = cfg
 		slog.Info("Posts module config loaded",
@@ -73,7 +74,7 @@ func (m *PostsModule) Initialize(ctx context.Context, core *module.Core) error {
 		)
 	}
 
-	// Get retention policies from config (for purge system)
+	// Ensure config is not nil
 	if m.config == nil {
 		return fmt.Errorf("posts config not loaded - cannot initialize module")
 	}
@@ -260,4 +261,29 @@ func (m *PostsModule) HealthCheck(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// getDefaultPostsConfig returns fallback configuration with safe defaults
+func getDefaultPostsConfig() *moduleconfig.Config {
+	return &moduleconfig.Config{
+		Module: moduleconfig.ModuleSection{
+			Name:    "posts",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		Settings: map[string]any{
+			"max_post_length":    10000,
+			"max_comment_length": 2000,
+			"max_comment_depth":  10,
+			"allow_media":        true,
+		},
+		Purge: moduleconfig.PurgeSection{
+			Enabled: true,
+			Settings: map[string]map[string]any{
+				"posts":           {"retention_days": 90},
+				"comments":        {"retention_days": 90},
+				"comment_likes":   {"retention_days": 90},
+			},
+		},
+	}
 }

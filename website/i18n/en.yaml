@@ -1,0 +1,74 @@
+# English translations
+site_title: "Promenade"
+site_description: "Production-ready REST API built with Clean Architecture, modular plugin system, and PostgreSQL with UUID v7"
+
+# Navigation
+nav_features: "Features"
+nav_modules: "Modules"
+nav_quickstart: "Quick Start"
+nav_contact: "Contact"
+
+# Hero Section
+hero_title: "Production-Ready REST API"
+hero_description: "Built with Clean Architecture, modular plugin system, and PostgreSQL with UUID v7. Enterprise-grade features with 500+ tests."
+
+# Buttons
+btn_github: "View on GitHub"
+btn_quickstart: "Get Started"
+btn_full_documentation: "Full Documentation"
+btn_view_all_modules: "View All Modules"
+
+# Features
+features_title: "Key Features"
+feature_architecture_title: "Clean Architecture"
+feature_architecture_desc: "Strict layered architecture with Domain → Use Case → Adapter → Infrastructure. True separation of concerns."
+
+feature_modules_title: "Plugin Modules"
+feature_modules_desc: "Independent vertical slices with own entities, migrations, and lifecycle. Enable/disable without affecting core."
+
+feature_database_title: "PostgreSQL + UUID v7"
+feature_database_desc: "Time-ordered UUIDs for 2x faster inserts. Namespace-based migrations for true module autonomy."
+
+feature_auth_title: "Security Built-in"
+feature_auth_desc: "JWT authentication, RBAC with wildcard permissions, session management, and audit logging."
+
+feature_events_title: "Event-Driven"
+feature_events_desc: "Dual-adapter event bus (Memory/Redis) for async operations and inter-module communication."
+
+feature_testing_title: "Comprehensive Testing"
+feature_testing_desc: "500+ tests across all layers. Unit, integration, and smoke tests. 100% passing in under 25 seconds."
+
+# Stats
+stat_tests: "Tests"
+stat_modules: "Modules"
+stat_passing: "Test Pass Rate"
+stat_runtime: "Test Runtime"
+
+# Modules
+modules_title: "Available Modules"
+badge_free: "Free"
+badge_commercial: "Commercial"
+
+module_posts_desc: "User-generated content with posts, comments, and likes"
+module_profiles_desc: "User profiles and contact management"
+module_analytics_desc: "Business analytics, metrics, and dashboards"
+module_billing_desc: "Subscription billing with plans, invoices, and payments"
+module_workflows_desc: "Business process orchestration with state machine"
+module_notifications_desc: "Multi-channel notifications (Email, SMS, Push, In-App)"
+module_audit_desc: "Immutable audit logs with cryptographic signatures"
+
+# Quick Start
+quickstart_title: "Get Started in 60 Seconds"
+
+# Contact
+contact_title: "Get in Touch"
+form_name: "Name"
+form_email: "Email"
+form_message: "Message"
+form_submit: "Send Message"
+form_success: "Thank you! Your message has been sent successfully."
+form_error: "Oops! Something went wrong. Please try again."
+
+# Footer
+footer_license: "Licensed under"
+footer_docs: "Documentation"

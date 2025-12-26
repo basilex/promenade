@@ -48,6 +48,8 @@ import (
 	_ "github.com/basilex/promenade/internal/modules/notifications" // Commercial module (requires license)
 	_ "github.com/basilex/promenade/internal/modules/posts"
 	_ "github.com/basilex/promenade/internal/modules/profiles"
+	_ "github.com/basilex/promenade/internal/modules/workflows" // Commercial module (requires license)
+	_ "github.com/basilex/promenade/internal/modules/workflows" // Commercial module (requires license)
 	// _ "github.com/basilex/promenade/internal/modules/warehouse" // Commercial module (requires license)
 )
 

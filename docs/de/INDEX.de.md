@@ -248,6 +248,22 @@ Dieses Verzeichnis enthält umfassende Dokumentation zur Promenade-Anwendungsarc
 
 ## Letzte Updates
 
+### 26. Dezember 2025
+
+- **Workflows-Modul Production Release:**
+  - [../../internal/modules/workflows/README.md](../../internal/modules/workflows/README.md) - Umfassende Modul-Dokumentation
+  - [../../internal/modules/workflows/QUICK_START.md](../../internal/modules/workflows/QUICK_START.md) - 5-Minuten-Tutorial
+  - [../../internal/modules/workflows/DESIGN_GUIDE.md](../../internal/modules/workflows/DESIGN_GUIDE.md) - Best-Practices-Guide
+  - [../../internal/modules/workflows/VALIDATION_ARCHITECTURE.md](../../internal/modules/workflows/VALIDATION_ARCHITECTURE.md) - Technische Tiefenanalyse
+  - 183 umfassende Tests (55 Entity + 59 Usecase + 51 Repository + 18 Handler)
+  - Produktionsreife Workflow-Engine mit State Machine
+  - Erweiterte Graph-Validierung (BFS-Erreichbarkeit, DFS-Zyklenerkennung)
+  - Performance validiert: < 2ms für 200-Zustands-Workflows
+- **Aktualisierte Modul-Dokumentation:**
+  - Alle Modul-Tabellen mit Workflows-Modul-Informationen aktualisiert
+  - Test-Coverage-Metriken aktualisiert (500+ Tests gesamt)
+  - Migrations-Struktur mit workflows-Namespace aktualisiert
+
 ### 22. Dezember 2025
 
 - Umfassende Architektur-Dokumentation erstellt:
@@ -298,6 +314,6 @@ Beim Hinzufügen neuer Dokumentation:
 
 ---
 
-**Dokumentationsversion:** 2.0
-**Zuletzt aktualisiert:** 22. Dezember 2025
+**Dokumentationsversion:** 2.1
+**Zuletzt aktualisiert:** 26. Dezember 2025
 **Gewartet von:** Promenade-Entwicklungsteam

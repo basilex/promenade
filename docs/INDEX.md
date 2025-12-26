@@ -251,6 +251,22 @@ This directory contains comprehensive documentation for the Promenade applicatio
 
 ## Recent Updates
 
+### December 26, 2025
+
+- **Workflows Module Production Release:**
+  - [../internal/modules/workflows/README.md](../internal/modules/workflows/README.md) - Comprehensive module documentation
+  - [../internal/modules/workflows/QUICK_START.md](../internal/modules/workflows/QUICK_START.md) - 5-minute tutorial
+  - [../internal/modules/workflows/DESIGN_GUIDE.md](../internal/modules/workflows/DESIGN_GUIDE.md) - Best practices guide
+  - [../internal/modules/workflows/VALIDATION_ARCHITECTURE.md](../internal/modules/workflows/VALIDATION_ARCHITECTURE.md) - Technical deep dive
+  - 183 comprehensive tests (55 entity + 59 usecase + 51 repository + 18 handler)
+  - Production-ready workflow engine with state machine
+  - Advanced graph validation (BFS reachability, DFS cycle detection)
+  - Performance validated: < 2ms for 200-state workflows
+- **Updated Module Documentation:**
+  - All module tables updated with Workflows module information
+  - Test coverage metrics updated (500+ tests total)
+  - Migration structure updated with workflows namespace
+
 ### December 22, 2025
 
 - **Swagger Annotations Audit:**
@@ -306,6 +322,6 @@ When adding new documentation:
 
 ---
 
-**Documentation Version:** 2.0
-**Last Updated:** December 22, 2025
+**Documentation Version:** 2.1
+**Last Updated:** December 26, 2025
 **Maintained by:** Promenade Development Team

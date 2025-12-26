@@ -1,0 +1,45 @@
+workflows:
+  enabled: true
+  version: "1.0.0"
+
+  # Commercial license (required)
+  license_key: "" # Set via WORKFLOWS_LICENSE_KEY env var
+  license_required: false # Set to true in production
+
+  # Execution settings
+  execution:
+    max_concurrent_instances: 1000
+    step_timeout_default: "5m"
+    instance_timeout_default: "24h"
+    enable_parallel_execution: true
+    worker_pool_size: 10
+
+  # Retry policy defaults
+  retry:
+    max_attempts: 3
+    initial_interval: "1s"
+    multiplier: 2.0
+    max_interval: "1m"
+
+  # Activity settings
+  activities:
+    http_timeout: "30s"
+    email_enabled: true
+    script_engine: "javascript" # javascript, lua
+    script_timeout: "10s"
+
+  # Monitoring
+  monitoring:
+    enable_metrics: true
+    enable_tracing: true
+    slow_step_threshold: "10s"
+
+  # Cleanup
+  purge:
+    enabled: true
+    completed_instances_days: 90
+    failed_instances_days: 180
+    steps_retention_days: 90
+    variables_retention_days: 90
+    events_retention_days: 60
+    run_schedule: "0 3 * * *" # Daily at 3 AM

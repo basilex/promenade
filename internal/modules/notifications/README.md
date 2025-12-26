@@ -467,7 +467,7 @@ go test -cover github.com/basilex/promenade/internal/modules/notifications/...
 
 ### Test Coverage
 
-**Status:** ✅ ALL TESTS PASSING
+**Status:** ALL TESTS PASSING
 
 | Test Type      | Tests  | Duration | Coverage             |
 | -------------- | ------ | -------- | -------------------- |
@@ -478,15 +478,15 @@ go test -cover github.com/basilex/promenade/internal/modules/notifications/...
 
 **Key Features Tested:**
 
-- ✅ Multi-channel delivery (Email, SMS, Push, In-App)
-- ✅ User preferences (per-channel, per-type)
-- ✅ Quiet hours with timezone support
-- ✅ Status tracking (pending → opened → clicked)
-- ✅ System notifications bypass quiet hours
-- ✅ Auto-create preferences on first use
-- ✅ JSONB data storage
-- ✅ UUID v7 primary keys
-- ✅ Soft delete for notifications
+- Multi-channel delivery (Email, SMS, Push, In-App)
+- User preferences (per-channel, per-type)
+- Quiet hours with timezone support
+- Status tracking (pending → opened → clicked)
+- System notifications bypass quiet hours
+- Auto-create preferences on first use
+- JSONB data storage
+- UUID v7 primary keys
+- Soft delete for notifications
 
 See [TESTING.md](TESTING.md) for detailed testing guide.
 

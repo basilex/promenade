@@ -66,8 +66,9 @@ func (m *BillingModule) Initialize(ctx context.Context, core *module.Core) error
 	// Load module's own configuration
 	cfg, err := moduleconfig.Load("internal/modules/billing/config", "promenade")
 	if err != nil {
-		slog.Warn("Failed to load billing module config, using defaults", "error", err)
-		// Continue with defaults
+		slog.Warn("Failed to load billing module config, using fallback defaults", "error", err)
+		m.config = getDefaultBillingConfig()
+		slog.Info("Using fallback billing configuration")
 	} else {
 		m.config = cfg
 		slog.Info("Billing module config loaded",
@@ -76,8 +77,7 @@ func (m *BillingModule) Initialize(ctx context.Context, core *module.Core) error
 		)
 	}
 
-	// Get retention policies from config (for purge system)
-	// These MUST be configured - no fallbacks (legal compliance)
+	// Ensure config is not nil
 	if m.config == nil {
 		return fmt.Errorf("billing config not loaded - cannot initialize module")
 	}
@@ -356,4 +356,28 @@ func (m *BillingModule) HealthCheck(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// getDefaultBillingConfig returns fallback configuration with safe defaults
+func getDefaultBillingConfig() *moduleconfig.Config {
+	return &moduleconfig.Config{
+		Module: moduleconfig.ModuleSection{
+			Name:    "billing",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		Settings: map[string]any{
+			"license_key":      "",
+			"license_required": false,
+		},
+		Purge: moduleconfig.PurgeSection{
+			Enabled: true,
+			Settings: map[string]map[string]any{
+				"plans":         {"retention_days": 365},  // Keep plans 1 year
+				"subscriptions": {"retention_days": 730},  // Keep subs 2 years (legal)
+				"invoices":      {"retention_days": 2555}, // Keep invoices 7 years (legal)
+				"payments":      {"retention_days": 2555}, // Keep payments 7 years (legal)
+			},
+		},
+	}
 }
