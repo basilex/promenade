@@ -14,33 +14,38 @@
 
 ## 🎯 Test Organization
 
-Promenade follows **industry best practices** with two test locations:
+Promenade follows **industry best practices** with **in-place testing**:
 
-### 1. Unit Tests (In-Place)
+### Unit & Integration Tests (In-Place)
 
 **Location**: Same directory as production code  
-**Purpose**: Fast, isolated testing of individual components
+**Purpose**: Test components where they live
 
 ```
-internal/contexts/identity/contact/usecase/
-├── contact_usecase.go
-└── contact_usecase_test.go     # ✅ Unit tests here
+internal/contexts/identity/contact/
+├── entity.go
+├── entity_test.go              # ✅ Entity tests
+├── usecase.go
+├── usecase_test.go             # ✅ UseCase tests
+└── adapter/
+    ├── http/handler/
+    │   ├── contact_handler.go
+    │   └── contact_handler_test.go  # ✅ HTTP handler tests
+    └── repository/postgres/
+        ├── contact_repository.go
+        └── contact_repository_test.go  # ✅ DB integration tests
 ```
 
-### 2. Integration Tests (Mirror Path)
+### Shared Test Utilities
 
-**Location**: `test/integration/` with **mirror path** structure  
-**Purpose**: Test component interactions (HTTP, DB, Redis, etc.)
+**Location**: `test/integration/`  
+**Purpose**: Shared test helpers (DB setup, fixtures, etc.)
 
 ```
 test/integration/
 ├── testutils.go                # Shared test utilities
-├── contexts/                   # ⭐ Mirror: internal/contexts/
-│   └── identity/
-│       └── contact/            # ⭐ Mirror: internal/contexts/identity/contact/
-│           └── contact_api_test.go
-└── pkg/                        # ⭐ Mirror: pkg/
-    └── bus/                    # ⭐ Mirror: pkg/bus/
+└── pkg/                        # Pkg-level integration tests
+    └── bus/
         └── bus_integration_test.go
 ```
 
@@ -54,11 +59,16 @@ test/integration/
 # All unit tests (fast, < 5 seconds)
 go test ./... -short -v
 
-# All integration tests (slower, requires DB)
-go test ./test/integration/... -v
+# All tests including integration
+go test ./... -v
 
-# Specific integration test
-go test ./test/integration/contexts/identity/contact -v
+# Context-specific tests
+go test ./internal/contexts/identity/... -v
+go test ./internal/contexts/shared/... -v
+
+# Package tests
+go test ./pkg/bus/... -v
+go test ./pkg/uuidv7/... -v
 
 # With coverage
 go test ./... -cover -coverprofile=coverage.out
