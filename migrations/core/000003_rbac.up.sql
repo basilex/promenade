@@ -181,17 +181,6 @@ WHERE r.name = 'viewer' AND (
     (p.resource = 'profiles' AND p.action IN ('read', 'list'))
 );
 
--- Assign permissions to moderator
-INSERT INTO core_role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM core_roles r, core_permissions p
-WHERE r.name = 'moderator' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'posts' AND p.action IN ('read', 'update', 'delete', 'list')) OR
-    (p.resource = 'comments' AND p.action = '*') OR
-    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
-);
-
 -- Assign permissions to user
 INSERT INTO core_role_permissions (role_id, permission_id)
 SELECT r.id, p.id

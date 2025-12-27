@@ -31,4 +31,6 @@ lint:  ## Run linters
 	@echo "Running linters..."
 	golangci-lint run ./...
 
-dev: docker-up migrate-core migrate-identity run  ## Start full development environment
+dev: docker-up migrate run  ## Start full development environment (Docker + migrations + API)
+
+dev-fresh: docker-up db-fresh run  ## Fresh start with clean database

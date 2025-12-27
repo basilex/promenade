@@ -3,7 +3,8 @@
 # ============================================================================
 
 .PHONY: docker-build docker-up docker-down docker-logs docker-ps docker-clean
-.PHONY: migrate-core migrate-identity migrate-context migrate-status migrate-create-core migrate-create-context
+.PHONY: db-create db-drop db-reset db-fresh
+.PHONY: migrate migrate-core migrate-identity migrate-status migrate-new
 
 # Docker commands
 docker-build:  ## Build Docker image
@@ -33,39 +34,49 @@ docker-clean:  ## Remove all containers and volumes
 	@echo "Removing Docker images..."
 	docker rmi $(APP_NAME):$(DOCKER_IMAGE_TAG) 2>/dev/null || true
 
-# Migration commands (context-based, no modules)
-migrate-core:  ## Run core migrations (uuid, auth, RBAC, reference data)
+# Database management commands
+db-create:  ## Create database (development)
+	@echo "Creating database $(DB_NAME)..."
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
+
+db-drop:  ## Drop database (WARNING: destructive!)
+	@echo "⚠️  Dropping database $(DB_NAME)..."
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+	@echo "✓ Database dropped"
+
+db-reset:  ## Drop and recreate database (WARNING: all data will be lost!)
+	@echo "⚠️  Resetting database $(DB_NAME)..."
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);"
+	@echo "✓ Database reset complete"
+
+db-fresh: db-reset migrate  ## Fresh database with all migrations
+	@echo "✓ Fresh database ready with all migrations!"
+
+# Migration commands
+migrate:  ## Run all migrations (core + identity)
+	@echo "Running all migrations..."
+	@$(MAKE) migrate-core
+	@$(MAKE) migrate-identity
+	@echo "✓ All migrations completed"
+
+migrate-core:  ## Run core migrations only (uuid, auth, RBAC)
 	@echo "Running core migrations..."
-	@go run cmd/migrate/main.go --namespace core
+	@go run cmd/migrate/main.go --cmd=up --namespace=core
 
-migrate-identity:  ## Run Identity context migrations (users, contacts)
-	@echo "Running Identity context migrations..."
-	@go run cmd/migrate/main.go --namespace identity
+migrate-identity:  ## Run identity context migrations only
+	@echo "Running identity context migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=identity
 
-migrate-context:  ## Run specific context migrations (Usage: make migrate-context CONTEXT=customer-mgmt)
-	@if [ -z "$(CONTEXT)" ]; then \
-		echo "Error: CONTEXT is required. Usage: make migrate-context CONTEXT=customer-mgmt"; \
-		exit 1; \
-	fi
-	@echo "Running $(CONTEXT) context migrations..."
-	@go run cmd/migrate/main.go --namespace $(CONTEXT)
-
-migrate-status:  ## Show migration status
+migrate-status:  ## Show migration status for all contexts
 	@echo "Migration status:"
-	@go run cmd/migrate/main.go --status
+	@go run cmd/migrate/main.go --cmd=status
 
-migrate-create-core:  ## Create new core migration (Usage: make migrate-create-core NAME=add_new_table)
-	@if [ -z "$(NAME)" ]; then \
-		echo "Error: NAME is required. Usage: make migrate-create-core NAME=add_new_table"; \
-		exit 1; \
-	fi
-	@echo "Creating core migration: $(NAME)"
-	@./scripts/create-migration.sh core $(NAME)
-
-migrate-create-context:  ## Create new context migration (Usage: make migrate-create-context CONTEXT=identity NAME=add_contacts)
+migrate-new:  ## Create new migration (Usage: make migrate-new CONTEXT=core NAME=add_table)
 	@if [ -z "$(CONTEXT)" ] || [ -z "$(NAME)" ]; then \
 		echo "Error: CONTEXT and NAME are required."; \
-		echo "Usage: make migrate-create-context CONTEXT=identity NAME=add_contacts"; \
+		echo "Usage: make migrate-new CONTEXT=core NAME=add_new_table"; \
+		echo "       make migrate-new CONTEXT=identity NAME=add_contacts"; \
 		exit 1; \
 	fi
 	@echo "Creating $(CONTEXT) migration: $(NAME)"
