@@ -257,6 +257,11 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("core migrations failed: %w", err)
 	}
 
+	// Run identity context migrations
+	if err := mgr.MigrateNamespace(ctx, "identity"); err != nil {
+		return fmt.Errorf("identity migrations failed: %w", err)
+	}
+
 	// Run module migrations (only enabled ones)
 	modules := []string{"posts", "profiles", "analytics", "notifications", "workflows"}
 	for _, module := range modules {
