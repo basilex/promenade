@@ -1,76 +1,74 @@
 package reference
-package reference
 
 import (
 	"fmt"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}	return fmt.Sprintf("UTC%s%02d:%02d", sign, hours, minutes)	}		hours = -hours		sign = "-"	if hours < 0 {	sign := "+"	minutes := (t.UTCOffset % 3600) / 60	hours := t.UTCOffset / 3600func (t Timezone) FormatOffset() string {// FormatOffset returns the UTC offset in human-readable format (+01:00, -05:00, etc.)}	return t.Name == other.Namefunc (t Timezone) Equals(other Timezone) bool {// Equals checks if two timezones are the same (by IANA name).}	return t.Namefunc (t Timezone) String() string {// String returns the timezone name.}	}, nil		IsActive:     true,		UTCOffset:    offset,		Abbreviation: abbreviation,		Name:         name,		ID:           uuidv7.New(),	return Timezone{	}		abbreviation = name	if abbreviation == "" {	_, offset := time.Now().In(loc).Zone()	// Calculate current UTC offset	}		return Timezone{}, fmt.Errorf("invalid timezone name: %w", err)	if err != nil {	loc, err := time.LoadLocation(name)	// Validate that timezone name exists in IANA database	}		return Timezone{}, fmt.Errorf("timezone name is required")	if name == "" {	abbreviation = strings.ToUpper(strings.TrimSpace(abbreviation))	name = strings.TrimSpace(name)func NewTimezone(name, abbreviation string) (Timezone, error) {// NewTimezone creates a new Timezone value object with validation.}	IsActive     bool        // Whether timezone is active in system	UTCOffset    int         // UTC offset in seconds	Abbreviation string      // Common abbreviation (EST, EET, CET, etc.)	Name         string      // IANA timezone name (America/New_York, Europe/Kyiv, etc.)	ID           uuidv7.UUID // Unique identifiertype Timezone struct {// This is a Value Object shared across all contexts.// Timezone represents an IANA timezone.)	"github.com/basilex/promenade/pkg/uuidv7"	"time"	"strings"
+	"strings"
+	"time"
+
+	"github.com/basilex/promenade/pkg/uuidv7"
+)
+
+// Timezone represents an IANA timezone.
+// This is a Value Object shared across all contexts.
+type Timezone struct {
+	ID           uuidv7.UUID `db:"id"`
+	Name         string      `db:"name"`
+	Abbreviation string      `db:"abbreviation"`
+	UTCOffset    int         `db:"utc_offset"`
+	IsActive     bool        `db:"is_active"`
+}
+
+// NewTimezone creates a new Timezone value object with validation.
+func NewTimezone(name, abbreviation string) (Timezone, error) {
+	name = strings.TrimSpace(name)
+	abbreviation = strings.ToUpper(strings.TrimSpace(abbreviation))
+
+	if name == "" {
+		return Timezone{}, fmt.Errorf("timezone name is required")
+	}
+
+	// Validate that timezone name exists in IANA database
+	loc, err := time.LoadLocation(name)
+	if err != nil {
+		return Timezone{}, fmt.Errorf("invalid timezone name: %w", err)
+	}
+
+	// Calculate current UTC offset
+	_, offset := time.Now().In(loc).Zone()
+
+	if abbreviation == "" {
+		abbreviation = name
+	}
+
+	return Timezone{
+		ID:           uuidv7.New(),
+		Name:         name,
+		Abbreviation: abbreviation,
+		UTCOffset:    offset,
+		IsActive:     true,
+	}, nil
+}
+
+// String returns the timezone name.
+func (t Timezone) String() string {
+	return t.Name
+}
+
+// Equals checks if two timezones are the same (by IANA name).
+func (t Timezone) Equals(other Timezone) bool {
+	return t.Name == other.Name
+}
+
+// FormatOffset returns the UTC offset in human-readable format (+01:00, -05:00, etc.)
+func (t Timezone) FormatOffset() string {
+	hours := t.UTCOffset / 3600
+	minutes := (t.UTCOffset % 3600) / 60
+
+	sign := "+"
+	if hours < 0 {
+		sign = "-"
+		hours = -hours
+	}
+
+	return fmt.Sprintf("UTC%s%02d:%02d", sign, hours, minutes)
+}

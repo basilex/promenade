@@ -14,6 +14,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/contexts/identity"
+	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/logger"
@@ -121,8 +122,9 @@ func main() {
 		})
 	})
 
-	// Initialize Identity context router
-	identityRouter := identity.NewRouter(db)
+	// Initialize context routers
+	sharedRouter := shared.NewRouter(db)     // Shared Context (Reference Data)
+	identityRouter := identity.NewRouter(db) // Identity Context (User, Contact)
 
 	// API routes
 	api := r.Group("/api")
@@ -136,7 +138,10 @@ func main() {
 				})
 			})
 
-			// Register Identity context routes (Contact aggregate)
+			// Register Shared Context routes (Countries, Currencies, Languages, Timezones)
+			sharedRouter.RegisterRoutes(v1)
+
+			// Register Identity Context routes (User, Contact aggregates)
 			identityRouter.RegisterRoutes(v1)
 
 			// TODO: Register additional context routers here:
