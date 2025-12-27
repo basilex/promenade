@@ -97,7 +97,7 @@ func ToContactResponse(c *contact.Contact) ContactResponse {
 	if c.Phone != nil {
 		resp.Phone = &PhoneResponse{
 			CountryCode: c.Phone.CountryCode(),
-			Number:      c.Phone.Value(),
+			Number:      c.Phone.String(),
 			Formatted:   c.Phone.Formatted(),
 		}
 	}

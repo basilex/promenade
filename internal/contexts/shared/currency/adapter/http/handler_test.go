@@ -73,8 +73,8 @@ func TestHandler_ListCurrencies(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		currencies := []*currency.Currency{
-			{ID: uuidv7.New(), Code: "USD", Name: "US Dollar", Symbol: "$", DecimalDigits: 2, IsActive: true},
-			{ID: uuidv7.New(), Code: "EUR", Name: "Euro", Symbol: "€", DecimalDigits: 2, IsActive: true},
+			{ID: uuidv7.New(), Code: "USD", Name: "US Dollar", Symbol: "$", DecimalPlaces: 2, IsActive: true},
+			{ID: uuidv7.New(), Code: "EUR", Name: "Euro", Symbol: "€", DecimalPlaces: 2, IsActive: true},
 		}
 		mockUC.On("List", mock.Anything).Return(currencies, nil).Once()
 
@@ -83,12 +83,12 @@ func TestHandler_ListCurrencies(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err := json.NewDecoder(w.Body).Decode(&response)
 		assert.NoError(t, err)
 		assert.Equal(t, "success", response["status"])
-		
+
 		mockUC.AssertExpectations(t)
 	})
 
@@ -116,7 +116,7 @@ func TestHandler_GetCurrencyByCode(t *testing.T) {
 			Code:          "USD",
 			Name:          "US Dollar",
 			Symbol:        "$",
-			DecimalDigits: 2,
+			DecimalPlaces: 2,
 			IsActive:      true,
 		}
 		mockUC.On("GetByCode", mock.Anything, "USD").Return(c, nil).Once()
@@ -126,12 +126,12 @@ func TestHandler_GetCurrencyByCode(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err := json.NewDecoder(w.Body).Decode(&response)
 		assert.NoError(t, err)
 		assert.Equal(t, "success", response["status"])
-		
+
 		mockUC.AssertExpectations(t)
 	})
 
@@ -158,7 +158,7 @@ func TestHandler_CreateCurrency(t *testing.T) {
 			Code:          "USD",
 			Name:          "US Dollar",
 			Symbol:        "$",
-			DecimalDigits: 2,
+			DecimalPlaces: 2,
 		}
 		mockUC.On("Create", mock.Anything, mock.AnythingOfType("*currency.Currency")).Return(nil).Once()
 
@@ -202,7 +202,7 @@ func TestHandler_UpdateCurrency(t *testing.T) {
 			Name:   "US Dollar",
 			Symbol: "$",
 		}
-		
+
 		mockUC.On("GetByID", mock.Anything, id).Return(existing, nil).Once()
 		mockUC.On("Update", mock.Anything, mock.AnythingOfType("*currency.Currency")).Return(nil).Once()
 

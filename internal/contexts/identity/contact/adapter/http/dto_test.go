@@ -63,13 +63,13 @@ func TestToContactResponse(t *testing.T) {
 		assert.Equal(t, "Mobile", resp.Label)
 		assert.Nil(t, resp.Email)
 		require.NotNil(t, resp.Phone)
-		assert.Equal(t, "+380", resp.Phone.CountryCode)
+		assert.Equal(t, "380", resp.Phone.CountryCode)
 		assert.Equal(t, "+380501234567", resp.Phone.Number)
 		assert.Nil(t, resp.Address)
 	})
 
 	t.Run("address contact", func(t *testing.T) {
-		addr, _ := valueobject.NewAddress("123 Main St", "Kyiv", "Ukraine", "01001")
+		addr, _ := valueobject.NewAddress("123 Main St", "Kyiv", "01001", "UA")
 		c := &contact.Contact{
 			ID:         contactID,
 			UserID:     userID,
@@ -90,7 +90,7 @@ func TestToContactResponse(t *testing.T) {
 		require.NotNil(t, resp.Address)
 		assert.Equal(t, "123 Main St", resp.Address.Street)
 		assert.Equal(t, "Kyiv", resp.Address.City)
-		assert.Equal(t, "Ukraine", resp.Address.Country)
+		assert.Equal(t, "UA", resp.Address.Country)
 		assert.Equal(t, "01001", resp.Address.PostalCode)
 	})
 }
@@ -292,7 +292,7 @@ func TestCreateContactFromRequest(t *testing.T) {
 				Street:     "123 Main St",
 				City:       "Kyiv",
 				PostalCode: "01001",
-				Country:    "Ukraine",
+				Country:    "UA",
 			},
 		}
 
