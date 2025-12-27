@@ -579,7 +579,7 @@ func setupTestRouter(db *sqlx.DB) *gin.Engine {
 func createTestUser(t *testing.T, db *sqlx.DB) string {
 	userID := uuidv7.New()
 	_, err := db.Exec(`
-		INSERT INTO core_users (id, email, name, password, status)
+		INSERT INTO identity_users (id, email, name, password, status)
 		VALUES ($1, $2, $3, $4, $5)
 	`, userID, fmt.Sprintf("test_%s@example.com", userID), "Test User", "hash", "active")
 	require.NoError(t, err)

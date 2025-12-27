@@ -56,7 +56,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 		name := "tx_commit_user"
 
 		err := tm.WithTransaction(ctx, func(txCtx context.Context) error {
-			query := `INSERT INTO core_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
+			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
 			
 			executor, ok := database.GetTx(txCtx)
 			if !ok || executor == nil {
@@ -71,7 +71,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		// Verify user was committed
 		var count int
-		err = db.Get(&count, "SELECT COUNT(*) FROM core_users WHERE id = $1", userID)
+		err = db.Get(&count, "SELECT COUNT(*) FROM identity_users WHERE id = $1", userID)
 		require.NoError(t, err)
 		assert.Equal(t, 1, count)
 	})
@@ -81,7 +81,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 		name := "tx_rollback_user"
 
 		err := tm.WithTransaction(ctx, func(txCtx context.Context) error {
-			query := `INSERT INTO core_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
+			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
 			
 			executor, ok := database.GetTx(txCtx)
 			if !ok || executor == nil {
@@ -101,7 +101,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		// Verify user was NOT committed
 		var count int
-		err = db.Get(&count, "SELECT COUNT(*) FROM core_users WHERE id = $1", userID)
+		err = db.Get(&count, "SELECT COUNT(*) FROM identity_users WHERE id = $1", userID)
 		require.NoError(t, err)
 		assert.Equal(t, 0, count)
 	})
@@ -117,14 +117,14 @@ func TestTransactionManager_Integration(t *testing.T) {
 			}
 
 			// First insert
-			query1 := `INSERT INTO core_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
+			query1 := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
 			_, err := executor.ExecContext(txCtx, query1, userID, name, "nested@test.com", "hash")
 			if err != nil {
 				return err
 			}
 
 			// Second operation in same transaction
-			query2 := `UPDATE core_users SET email = $1 WHERE id = $2`
+			query2 := `UPDATE identity_users SET email = $1 WHERE id = $2`
 			_, err = executor.ExecContext(txCtx, query2, "updated_nested@test.com", userID)
 			return err
 		})
@@ -133,7 +133,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		// Verify both operations committed
 		var email string
-		err = db.Get(&email, "SELECT email FROM core_users WHERE id = $1", userID)
+		err = db.Get(&email, "SELECT email FROM identity_users WHERE id = $1", userID)
 		require.NoError(t, err)
 		assert.Equal(t, "updated_nested@test.com", email)
 	})
@@ -145,7 +145,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 		// Transaction 1 - succeeds
 		err1 := tm.WithTransaction(ctx, func(txCtx context.Context) error {
 			executor, _ := database.GetTx(txCtx)
-			query := `INSERT INTO core_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
+			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
 			_, err := executor.ExecContext(txCtx, query, user1ID, "user1", "user1@test.com", "hash")
 			return err
 		})
@@ -153,7 +153,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 		// Transaction 2 - fails
 		err2 := tm.WithTransaction(ctx, func(txCtx context.Context) error {
 			executor, _ := database.GetTx(txCtx)
-			query := `INSERT INTO core_users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)`
+			query := `INSERT INTO identity_users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)`
 			_, err := executor.ExecContext(txCtx, query, user2ID, "user2", "user2@test.com", "hash")
 			if err != nil {
 				return err
@@ -166,7 +166,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		// Verify only first transaction committed
 		var count int
-		err := db.Get(&count, "SELECT COUNT(*) FROM core_users WHERE id IN ($1, $2)", user1ID, user2ID)
+		err := db.Get(&count, "SELECT COUNT(*) FROM identity_users WHERE id IN ($1, $2)", user1ID, user2ID)
 		require.NoError(t, err)
 		assert.Equal(t, 1, count) // Only user1 committed
 	})
@@ -180,7 +180,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 			assert.True(t, ok, "Transaction should be in context")
 			assert.NotNil(t, tx, "Transaction should not be nil")
 
-			query := `INSERT INTO core_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
+			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
 			_, err := tx.ExecContext(txCtx, query, userID, "ctx_prop_user", "ctx@test.com", "hash")
 			return err
 		})
@@ -198,7 +198,7 @@ func cleanupTestData(t *testing.T, db *sqlx.DB) {
 	t.Helper()
 	
 	// Clean up test users created during tests
-	_, err := db.Exec("DELETE FROM core_users WHERE email LIKE '%@test.com'")
+	_, err := db.Exec("DELETE FROM identity_users WHERE email LIKE '%@test.com'")
 	if err != nil {
 		t.Logf("Warning: failed to cleanup test data: %v", err)
 	}

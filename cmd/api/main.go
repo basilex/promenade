@@ -83,12 +83,12 @@ func main() {
 	migrationManager := migration.NewManager(db, "migrations")
 	migrationsCtx := context.Background()
 
-	// Run core migrations (uuid, users, auth, rbac, reference data)
+	// Run core migrations (extensions: uuid_v7, pgcrypto)
 	if err := migrationManager.MigrateNamespace(migrationsCtx, "core"); err != nil {
 		logger.Fatal("Failed to run core migrations", slog.Any("error", err))
 	}
 
-	// Run Identity context migrations
+	// Run identity context migrations (users, authentication, authorization, contacts)
 	if err := migrationManager.MigrateNamespace(migrationsCtx, "identity"); err != nil {
 		logger.Fatal("Failed to run identity migrations", slog.Any("error", err))
 	}

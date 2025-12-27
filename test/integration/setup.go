@@ -122,23 +122,17 @@ func (tdb *TestDB) CleanAllTables() {
 		"posts_posts",
 
 		// Core tables
-		"core_user_sessions",
-		"core_user_roles",
-		"core_role_permissions",
-		"core_permissions",
-		"core_roles",
-		"core_login_attempts",
-		"core_password_reset_tokens",
-		"core_email_verification_tokens",
-		"core_users",
-		"core_cities",
-		"core_regions",
-		"core_country_currencies",
-		"core_currencies",
-		"core_countries",
-		"core_timezones",
-		"core_languages",
-		"core_payment_methods",
+		"identity_user_sessions",
+		"identity_user_roles",
+		"identity_role_permissions",
+		"identity_permissions",
+		"identity_roles",
+		"identity_login_attempts",
+		"identity_password_reset_tokens",
+		"identity_email_verification_tokens",
+		"identity_users",
+		// TODO: Add shared reference data tables when shared namespace is created
+		// "shared_countries", "shared_currencies", "shared_languages", etc.
 	}
 
 	for _, table := range tables {
