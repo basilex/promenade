@@ -88,6 +88,11 @@ func main() {
 		logger.Fatal("Failed to run core migrations", slog.Any("error", err))
 	}
 
+	// Run shared kernel migrations (reference data: countries, currencies, languages, timezones)
+	if err := migrationManager.MigrateNamespace(migrationsCtx, "shared"); err != nil {
+		logger.Fatal("Failed to run shared migrations", slog.Any("error", err))
+	}
+
 	// Run identity context migrations (users, authentication, authorization, contacts)
 	if err := migrationManager.MigrateNamespace(migrationsCtx, "identity"); err != nil {
 		logger.Fatal("Failed to run identity migrations", slog.Any("error", err))

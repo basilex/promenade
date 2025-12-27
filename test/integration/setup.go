@@ -99,29 +99,8 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
-		// Module tables (workflows)
-		"workflows_executions",
-		"workflows_instances",
-		"workflows_definitions",
-		// Module tables (notifications)
-		"notifications_notifications",
-		"notifications_user_preferences",
-		// Module tables (analytics)
-		"analytics_dashboard_widgets",
-		"analytics_dashboards",
-		"analytics_report_schedules",
-		"analytics_reports",
-		"analytics_metric_aggregates",
-		"analytics_metrics",
-		// IModule tables (profiles)
-		"profiles_contacts",
-		"profiles_profiles",
-		// IModule tables (posts)
-		"posts_comment_likes",
-		"posts_comments",
-		"posts_posts",
-
-		// Core tables
+		// Identity Context tables
+		"identity_contacts",
 		"identity_user_sessions",
 		"identity_user_roles",
 		"identity_role_permissions",
@@ -131,8 +110,12 @@ func (tdb *TestDB) CleanAllTables() {
 		"identity_password_reset_tokens",
 		"identity_email_verification_tokens",
 		"identity_users",
-		// TODO: Add shared reference data tables when shared namespace is created
-		// "shared_countries", "shared_currencies", "shared_languages", etc.
+
+		// TODO: Add Bounded Context tables here as they are created
+		// Examples: customer_mgmt_*, order_mgmt_*, etc.
+
+		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
+		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
 	}
 
 	for _, table := range tables {
@@ -251,18 +234,18 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("core migrations failed: %w", err)
 	}
 
+	// Run shared kernel migrations (reference data)
+	if err := mgr.MigrateNamespace(ctx, "shared"); err != nil {
+		return fmt.Errorf("shared migrations failed: %w", err)
+	}
+
 	// Run identity context migrations
 	if err := mgr.MigrateNamespace(ctx, "identity"); err != nil {
 		return fmt.Errorf("identity migrations failed: %w", err)
 	}
 
-	// Run module migrations (only enabled ones)
-	modules := []string{"posts", "profiles", "analytics", "notifications", "workflows"}
-	for _, module := range modules {
-		if err := mgr.MigrateNamespace(ctx, module); err != nil {
-			return fmt.Errorf("%s module migrations failed: %w", module, err)
-		}
-	}
+	// TODO: Add additional Bounded Context migrations here as they are created
+	// Examples: customer-mgmt, order-mgmt, etc.
 
 	return nil
 }
