@@ -24,3 +24,20 @@ logging:
   level: "info"
   format: "json"
   add_source: false
+
+# Event Bus - Redis adapter for production (distributed, persistent)
+bus:
+  adapter: "redis"
+  worker_pool_size: 20
+  buffer_size: 5000
+  retry_attempts: 5
+  retry_delay: 2s
+  retry_max_delay: 30s
+  retry_multiplier: 2.0
+  redis:
+    host: "${REDIS_HOST:-localhost}"
+    port: 6379
+    password: "${REDIS_PASSWORD}"
+    db: 0
+    max_retries: 3
+    pool_size: 20

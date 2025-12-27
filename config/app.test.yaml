@@ -24,3 +24,20 @@ logging:
   level: "info"
   format: "text"
   add_source: false
+
+# Event Bus - Memory adapter for tests (fast, isolated)
+bus:
+  adapter: "memory"
+  worker_pool_size: 5
+  buffer_size: 100
+  retry_attempts: 1
+  retry_delay: 100ms
+  retry_max_delay: 1s
+  retry_multiplier: 2.0
+  redis:
+    host: "localhost"
+    port: 6379
+    password: ""
+    db: 1
+    max_retries: 1
+    pool_size: 5

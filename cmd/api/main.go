@@ -17,6 +17,8 @@ import (
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/pkg/bus"
+	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 )
@@ -100,6 +102,19 @@ func main() {
 	}
 
 	logger.Info("Database migrations completed successfully")
+
+	// Initialize Event Bus
+	eventBus, err := bus.NewBus(cfg.Bus)
+	if err != nil {
+		logger.Fatal("Failed to initialize event bus", slog.Any("error", err))
+	}
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := eventBus.Close(ctx); err != nil {
+			logger.Error("Failed to close event bus", slog.Any("error", err))
+		}
+	}()
 
 	// Setup HTTP server
 	if cfg.App.Environment == "production" {

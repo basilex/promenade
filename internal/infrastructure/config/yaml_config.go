@@ -16,7 +16,7 @@ type AppConfig struct {
 	JWT       JWTSection       `yaml:"jwt"`
 	Logging   LoggingSection   `yaml:"logging"`
 	CORS      CORSSection      `yaml:"cors"`
-	IBus       BusSection       `yaml:"bus"`
+	Bus       BusSection       `yaml:"bus"`
 	RateLimit RateLimitSection `yaml:"rate_limit"`
 	Email     EmailSection     `yaml:"email"`
 	Purge     PurgeSection     `yaml:"purge"`
@@ -75,14 +75,14 @@ type CORSSection struct {
 }
 
 type BusSection struct {
-	Adapter          string        `yaml:"adapter"`
-	WorkerPoolSize   int           `yaml:"worker_pool_size"`
-	BufferSize       int           `yaml:"buffer_size"`
-	RetryAttempts    int           `yaml:"retry_attempts"`
-	RetryDelay       time.Duration `yaml:"retry_delay"`
-	RetryMaxDelay    time.Duration `yaml:"retry_max_delay"`
-	RetryMultiplier  float64       `yaml:"retry_multiplier"`
-	Redis            RedisSection  `yaml:"redis"`
+	Adapter         string        `yaml:"adapter"`
+	WorkerPoolSize  int           `yaml:"worker_pool_size"`
+	BufferSize      int           `yaml:"buffer_size"`
+	RetryAttempts   int           `yaml:"retry_attempts"`
+	RetryDelay      time.Duration `yaml:"retry_delay"`
+	RetryMaxDelay   time.Duration `yaml:"retry_max_delay"`
+	RetryMultiplier float64       `yaml:"retry_multiplier"`
+	Redis           RedisSection  `yaml:"redis"`
 }
 
 type RedisSection struct {
@@ -127,11 +127,11 @@ type ModulesSection struct {
 
 // ModuleConfig represents a module's configuration
 type ModuleConfig struct {
-	Module      ModuleSection          `yaml:"module"`
-	Settings    map[string]any `yaml:",inline"` // Module-specific settings
-	Purge       *ModulePurgeSection    `yaml:"purge,omitempty"`
-	Permissions []PermissionSection    `yaml:"permissions,omitempty"`
-	Features    map[string]bool        `yaml:"features,omitempty"`
+	Module      ModuleSection       `yaml:"module"`
+	Settings    map[string]any      `yaml:",inline"` // Module-specific settings
+	Purge       *ModulePurgeSection `yaml:"purge,omitempty"`
+	Permissions []PermissionSection `yaml:"permissions,omitempty"`
+	Features    map[string]bool     `yaml:"features,omitempty"`
 }
 
 type ModuleSection struct {
@@ -141,7 +141,7 @@ type ModuleSection struct {
 }
 
 type ModulePurgeSection struct {
-	Enabled  bool                   `yaml:"enabled"`
+	Enabled  bool           `yaml:"enabled"`
 	Settings map[string]any `yaml:",inline"` // Entity-specific purge settings
 }
 
@@ -243,8 +243,8 @@ func applyEnvOverrides(cfg *AppConfig) {
 		cfg.App.Environment = v
 	}
 
-	// IBus adapter override
+	// Bus adapter override
 	if v := os.Getenv("BUS_ADAPTER"); v != "" {
-		cfg.IBus.Adapter = v
+		cfg.Bus.Adapter = v
 	}
 }
