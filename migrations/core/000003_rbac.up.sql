@@ -63,7 +63,7 @@ VALUES (
     uuid_v7(),
     '*',
     '*',
-    'Full access to all resources and actions',
+    'Full access to all resources and actions (superadmin)',
     NOW()
 );
 
@@ -113,18 +113,73 @@ VALUES
     (uuid_v7(), 'roles', '*', 'All role operations', NOW());
 
 -- Create system roles (no superadmin - system user has admin role with full permissions)
+-- Insert system roles (immutable)
 INSERT INTO core_roles (id, name, display_name, description, is_system, created_at, updated_at)
 VALUES
-    (uuid_v7(), 'admin', 'Administrator', 'Full system access with all permissions', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'system', 'System Administrator', 'Full system access with all permissions (superadmin)', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'admin', 'Administrator', 'Full administrative access', TRUE, NOW(), NOW()),
     (uuid_v7(), 'moderator', 'Moderator', 'Can moderate user content and comments', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'developer', 'Developer', 'Development and debugging access', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'support', 'Support Agent', 'Customer support access', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'viewer', 'Viewer', 'Read-only access for reporting', TRUE, NOW(), NOW()),
     (uuid_v7(), 'user', 'User', 'Regular user with basic permissions', TRUE, NOW(), NOW()),
     (uuid_v7(), 'guest', 'Guest', 'Limited read-only access', TRUE, NOW(), NOW());
+
+-- Assign permissions to system role (superadmin with wildcard)
+INSERT INTO core_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM core_roles r, core_permissions p
+WHERE r.name = 'system' AND p.resource = '*' AND p.action = '*';
 
 -- Assign permissions to admin (all permissions via wildcard)
 INSERT INTO core_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM core_roles r, core_permissions p
 WHERE r.name = 'admin' AND p.resource = '*' AND p.action = '*';
+
+-- Assign permissions to moderator (content moderation)
+INSERT INTO core_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM core_roles r, core_permissions p
+WHERE r.name = 'moderator' AND (
+    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'posts' AND p.action IN ('read', 'update', 'delete', 'list')) OR
+    (p.resource = 'comments' AND p.action = '*') OR
+    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
+);
+
+-- Assign permissions to developer (full read + debug access)
+INSERT INTO core_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM core_roles r, core_permissions p
+WHERE r.name = 'developer' AND (
+    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'posts' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'comments' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
+);
+
+-- Assign permissions to support (customer support access)
+INSERT INTO core_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM core_roles r, core_permissions p
+WHERE r.name = 'support' AND (
+    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'posts' AND p.action = 'read') OR
+    (p.resource = 'comments' AND p.action = 'read') OR
+    (p.resource = 'profiles' AND p.action = 'read')
+);
+
+-- Assign permissions to viewer (read-only analytics)
+INSERT INTO core_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM core_roles r, core_permissions p
+WHERE r.name = 'viewer' AND (
+    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'posts' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'comments' AND p.action IN ('read', 'list')) OR
+    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
+);
 
 -- Assign permissions to moderator
 INSERT INTO core_role_permissions (role_id, permission_id)
@@ -158,25 +213,25 @@ WHERE r.name = 'guest' AND (
 );
 
 -- ============================================================================
--- Assign default roles to existing users
+-- Assign default roles to users created in migration 000002
 -- ============================================================================
--- Maps users created in migration 2 to their appropriate roles.
--- This enables RBAC testing and demonstration with realistic permission sets.
+-- Maps users to their appropriate roles for RBAC testing and demonstration.
+-- All assignments are performed by system@promenade.com (bootstrap admin).
 -- ============================================================================
 
--- 1. Assign admin role to system@promenade.com (bootstrap user with full access)
+-- 1. System Administrator (superadmin with wildcard permissions)
 INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
     r.id,
     NOW(),
-    u.id  -- Self-assigned during initial setup
+    u.id  -- Self-assigned during bootstrap
 FROM core_users u
 CROSS JOIN core_roles r
-WHERE u.email = 'system@promenade.com' AND r.name = 'admin'
+WHERE u.email = 'system@promenade.com' AND r.name = 'system'
 ON CONFLICT DO NOTHING;
 
--- 2. Assign admin role to admin@promenade.com
+-- 2. Main Administrator (full admin access)
 INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
@@ -188,7 +243,7 @@ CROSS JOIN core_roles r
 WHERE u.email = 'admin@promenade.com' AND r.name = 'admin'
 ON CONFLICT DO NOTHING;
 
--- 4. Assign moderator role to moderator@promenade.com
+-- 3. Content Moderator (moderation permissions)
 INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
@@ -200,7 +255,43 @@ CROSS JOIN core_roles r
 WHERE u.email = 'moderator@promenade.com' AND r.name = 'moderator'
 ON CONFLICT DO NOTHING;
 
--- 5. Assign user role to alexander.vasilenko@gmail.com (regular user)
+-- 4. Developer (development and debugging access)
+INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM core_users WHERE email = 'system@promenade.com')
+FROM core_users u
+CROSS JOIN core_roles r
+WHERE u.email = 'developer@promenade.com' AND r.name = 'developer'
+ON CONFLICT DO NOTHING;
+
+-- 5. Support Agent (customer support access)
+INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM core_users WHERE email = 'system@promenade.com')
+FROM core_users u
+CROSS JOIN core_roles r
+WHERE u.email = 'support@promenade.com' AND r.name = 'support'
+ON CONFLICT DO NOTHING;
+
+-- 6. Report Viewer (read-only analytics)
+INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
+SELECT 
+    u.id,
+    r.id,
+    NOW(),
+    (SELECT id FROM core_users WHERE email = 'system@promenade.com')
+FROM core_users u
+CROSS JOIN core_roles r
+WHERE u.email = 'viewer@promenade.com' AND r.name = 'viewer'
+ON CONFLICT DO NOTHING;
+
+-- 7. Project Owner (regular user with full access to own data)
 INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
@@ -212,7 +303,7 @@ CROSS JOIN core_roles r
 WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'user'
 ON CONFLICT DO NOTHING;
 
--- 6. Assign user role to any other existing users (default fallback)
+-- 8. Assign default user role to any other existing users (fallback)
 INSERT INTO core_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT 
     u.id,
@@ -225,6 +316,9 @@ WHERE u.email NOT IN (
     'system@promenade.com',
     'admin@promenade.com',
     'moderator@promenade.com',
+    'developer@promenade.com',
+    'support@promenade.com',
+    'viewer@promenade.com',
     'alexander.vasilenko@gmail.com'
 ) AND r.name = 'user'
 ON CONFLICT DO NOTHING;

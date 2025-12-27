@@ -7,7 +7,11 @@
 -- 3. Password reset tokens
 -- 4. Email verification tokens
 -- 5. Login attempts tracking (security)
+-- 6. Default users with bcrypt passwords (using pgcrypto)
 -- ============================================================================
+
+-- Enable pgcrypto extension for bcrypt password hashing
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- ----------------------------------------------------------------------------
 -- 1. USER STATUS ENUM
@@ -152,59 +156,119 @@ CREATE INDEX idx_core_login_attempts_attempted_at ON core_login_attempts(attempt
 COMMENT ON TABLE core_login_attempts IS 'Login attempts log for security monitoring and rate limiting';
 COMMENT ON COLUMN core_login_attempts.success IS 'True if login succeeded, false if failed';
 
--- ----------------------------------------------------------------------------
--- DEFAULT USERS FOR RBAC TESTING
--- ----------------------------------------------------------------------------
--- These users are created for development, testing, and RBAC demonstration.
--- Each user will be assigned appropriate roles in migration 9 (RBAC tables).
+-- ============================================================================
+-- 7. DEFAULT USERS (for development and RBAC setup)
+-- ============================================================================
+-- These users are created with predefined UUID v7 IDs for consistency.
+-- Roles will be assigned in migration 000003_rbac.up.sql
+-- 
+-- USER HIERARCHY (by access level):
+-- 1. system       → SuperAdmin (unrestricted system access)
+-- 2. admin        → Admin (full application management)
+-- 3. moderator    → Moderator (content moderation)
+-- 4. developer    → Developer (API access, debugging)
+-- 5. support      → Support (customer help, read-only user data)
+-- 6. viewer       → Viewer (read-only analytics/reports)
+-- 7. owner        → User (project owner - Alexander Vasilenko)
 --
--- IMPORTANT: Change passwords before production deployment!
--- All users have password 'passw0rd' except alexander.vasilenko@gmail.com
--- ----------------------------------------------------------------------------
+-- SECURITY:
+-- - Passwords hashed using pgcrypto crypt() with bcrypt (cost 10)
+-- - Default password: "Promenade2025!"
+-- - ⚠️  CHANGE ALL PASSWORDS IN PRODUCTION!
+-- ============================================================================
 
--- System administrator (main admin like Oracle's SYSTEM user)
-INSERT INTO core_users (email, name, password, status, email_verified_at)
-VALUES (
-    'system@promenade.com',
-    'System Administrator',
-    crypt('passw0rd', gen_salt('bf', 10)),
-    'active',
-    NOW()
-);
+INSERT INTO core_users (id, email, name, password, status, email_verified_at, created_at, updated_at)
+VALUES
+    -- System Administrator (super admin, all permissions)
+    (
+        '019b5eb7-b592-768e-b687-5519410c6852'::uuid,
+        'system@promenade.com',
+        'System Administrator',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Main Administrator (full admin access)
+    (
+        '019b5eb7-b5bf-749a-8eec-a9d707486a07'::uuid,
+        'admin@promenade.com',
+        'Administrator',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Content Moderator (content management)
+    (
+        '019b5eb7-b5eb-7768-ae5c-08a88ee29757'::uuid,
+        'moderator@promenade.com',
+        'Content Moderator',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Developer (API access, debugging)
+    (
+        '019b5eb7-b610-709f-b0db-ca7f3feef2e6'::uuid,
+        'developer@promenade.com',
+        'API Developer',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Support Agent (customer help)
+    (
+        '019b5eb7-b632-78f6-bb46-3f1d2870faf3'::uuid,
+        'support@promenade.com',
+        'Customer Support',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Analytics Viewer (read-only reports)
+    (
+        '019b5eb7-b658-7e67-8a45-e7af4bf0b3b3'::uuid,
+        'viewer@promenade.com',
+        'Analytics Viewer',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    ),
+    
+    -- Project Owner (full access to own data)
+    (
+        '019b5eb7-b614-7d30-bb16-aeceaadd1374'::uuid,
+        'alexander.vasilenko@gmail.com',
+        'Alexander Vasilenko',
+        crypt('Promenade2025!', gen_salt('bf', 10)),
+        'active',
+        NOW(),
+        NOW(),
+        NOW()
+    );
 
--- Admin user for testing (will get admin role via migration 9)
-INSERT INTO core_users (email, name, password, status, email_verified_at)
-VALUES (
-    'admin@promenade.com',
-    'Administrator',
-    crypt('passw0rd', gen_salt('bf', 10)),
-    'active',
-    NOW()
-);
+COMMENT ON COLUMN core_users.password IS 
+    'Bcrypt hashed password (cost 10). Default: "Promenade2025!" - CHANGE IN PRODUCTION!';
 
--- Moderator user for testing (will get moderator role via migration 9)
-INSERT INTO core_users (email, name, password, status, email_verified_at)
-VALUES (
-    'moderator@promenade.com',
-    'Content Moderator',
-    crypt('passw0rd', gen_salt('bf', 10)),
-    'active',
-    NOW()
-);
-
--- Regular user (project owner) - will get user role via migration 9
-INSERT INTO core_users (email, name, password, status, email_verified_at)
-VALUES (
-    'alexander.vasilenko@gmail.com',
-    'Alexander Vasilenko',
-    crypt('03041965', gen_salt('bf', 10)),
-    'active',
-    NOW()
-);
-
--- ----------------------------------------------------------------------------
--- CLEANUP FUNCTIONS
--- ----------------------------------------------------------------------------
+-- ============================================================================
+-- 8. CLEANUP FUNCTIONS
+-- ============================================================================
 
 -- Function to cleanup expired tokens (call via cron/scheduler)
 CREATE OR REPLACE FUNCTION cleanup_expired_tokens()
@@ -236,3 +300,4 @@ $$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION cleanup_expired_tokens() IS 
     'Cleanup expired/used tokens and old login attempts. Run daily via cron.';
+
