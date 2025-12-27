@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: system
       POSTGRES_PASSWORD: passw0rd
-      POSTGRES_DB: promenade_prod
+      POSTGRES_DB: promenade_dev
     ports:
       - "5432:5432"
     volumes:

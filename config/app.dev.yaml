@@ -18,7 +18,7 @@ database:
   user: "system"
   password: "passw0rd"
   database: "promenade_dev"
-  ssl_mode: "disable"
+  sslmode: "disable"
 
 logging:
   level: "debug"
