@@ -432,41 +432,6 @@ err := db.Get(&contact, `
 
 ---
 
-### 10. pkg/reference - Reference Data Utilities
-
-**Helpers for working with reference data** from Shared Context (countries, currencies, etc.).
-
-**Features**:
-
-- ✅ Country code validation
-- ✅ Currency code validation
-- ✅ Language code validation
-- ✅ Timezone name validation
-
-**Usage**:
-
-```go
-import "github.com/basilex/promenade/pkg/reference"
-
-// Validate country code
-if !reference.IsValidCountryCode("US") {
-    return errors.New("invalid country code")
-}
-
-// Validate currency code
-if !reference.IsValidCurrencyCode("USD") {
-    return errors.New("invalid currency code")
-}
-
-// Get country name
-name := reference.GetCountryName("US")  // "United States"
-
-// List all currencies
-currencies := reference.ListCurrencies()
-```
-
----
-
 ## 🧪 Testing
 
 ### Run All Package Tests
@@ -497,7 +462,6 @@ go tool cover -html=coverage.out
 | valueobject | 25    | 95%      | ✅ Passing |
 | aggregate   | 5     | 90%      | ✅ Passing |
 | jsonb       | 8     | 85%      | ✅ Passing |
-| reference   | 6     | 80%      | ✅ Passing |
 
 ---
 

@@ -1,3 +1,8 @@
+// Package integration provides test utilities for integration testing with PostgreSQL.
+// This file contains helpers used by repository tests across the codebase.
+//
+// Note: VS Code may show errors when editing this file standalone, but it compiles
+// correctly when used by actual test files. This is a known IDE limitation.
 package integration
 
 import (

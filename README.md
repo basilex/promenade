@@ -259,11 +259,10 @@ make test-coverage          # Generate HTML coverage report
 | **pkg/valueobject**  | 25    | 95%      | <1s      |
 | **pkg/aggregate**    | 5     | 90%      | <1s      |
 | **pkg/jsonb**        | 8     | 85%      | <1s      |
-| **pkg/reference**    | 6     | 80%      | <1s      |
 | **Identity Context** | TBD   | -        | -        |
 | **Shared Context**   | TBD   | -        | -        |
 
-**Total**: 156+ tests, 90%+ average coverage
+**Total**: 150+ tests, 90%+ average coverage
 
 ### Test Database
 
@@ -493,7 +492,6 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **valueobject** | DDD Value Objects                     | 25    | ✅ Production | -                           |
 | **aggregate**   | Base Aggregate pattern                | 5     | ✅ Production | -                           |
 | **jsonb**       | PostgreSQL JSONB utilities            | 8     | ✅ Production | -                           |
-| **reference**   | Reference data validation             | 6     | ✅ Production | -                           |
 | **saga**        | Distributed transaction orchestration | -     | 📋 Planned    | Coming Q1 2026              |
 
 **Total**: 156+ tests across all packages
