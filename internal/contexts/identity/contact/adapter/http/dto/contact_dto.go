@@ -151,8 +151,9 @@ func CreateContactFromRequest(userID string, req CreateContactRequest) (*contact
 		if req.Phone == nil {
 			return nil, fmt.Errorf("phone is required for phone contact type")
 		}
-		// Phone number should already have + from request
-		return contact.NewPhoneContact(userUUID, req.Phone.Number, req.Label)
+		// Combine country code and number for E.164 format
+		phoneNumber := req.Phone.CountryCode + req.Phone.Number
+		return contact.NewPhoneContact(userUUID, phoneNumber, req.Label)
 
 	case contact.ContactTypeAddress:
 		if req.Address == nil {
