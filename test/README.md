@@ -1,12 +1,82 @@
 # Testing Guide
 
-Unit tests for Promenade project - tests are located alongside the code they test.
+**Promenade Testing Infrastructure** - Professional test organization with mirror path structure.
 
 ---
 
-## Test Structure
+## 📂 Quick Navigation
 
-Tests are organized **per component** - each module and core component has its own tests in the same directory:
+- **[Testing Structure Guide](TESTING_STRUCTURE.md)** - Complete guide (recommended read)
+- **[Migration Summary](MIGRATION_SUMMARY.md)** - Changes from old structure
+- **[Bus Test Coverage](../docs/BUS_TEST_COVERAGE.md)** - Event bus test report
+
+---
+
+## 🎯 Test Organization
+
+Promenade follows **industry best practices** with two test locations:
+
+### 1. Unit Tests (In-Place)
+
+**Location**: Same directory as production code  
+**Purpose**: Fast, isolated testing of individual components
+
+```
+internal/contexts/identity/contact/usecase/
+├── contact_usecase.go
+└── contact_usecase_test.go     # ✅ Unit tests here
+```
+
+### 2. Integration Tests (Mirror Path)
+
+**Location**: `test/integration/` with **mirror path** structure  
+**Purpose**: Test component interactions (HTTP, DB, Redis, etc.)
+
+```
+test/integration/
+├── testutils.go                # Shared test utilities
+├── contexts/                   # ⭐ Mirror: internal/contexts/
+│   └── identity/
+│       └── contact/            # ⭐ Mirror: internal/contexts/identity/contact/
+│           └── contact_api_test.go
+└── pkg/                        # ⭐ Mirror: pkg/
+    └── bus/                    # ⭐ Mirror: pkg/bus/
+        └── bus_integration_test.go
+```
+
+---
+
+## 🚀 Running Tests
+
+### Quick Commands
+
+```bash
+# All unit tests (fast, < 5 seconds)
+go test ./... -short -v
+
+# All integration tests (slower, requires DB)
+go test ./test/integration/... -v
+
+# Specific integration test
+go test ./test/integration/contexts/identity/contact -v
+
+# With coverage
+go test ./... -cover -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
+
+### Makefile Targets
+
+```bash
+make test-unit             # Unit tests only
+make test-integration      # Integration tests (requires test DB)
+make test                  # All tests
+make test-coverage         # HTML coverage report
+```
+
+---
+
+## 📊 Test Coverage Overview
 
 ### Core Tests
 
@@ -274,7 +344,7 @@ Located in `test/helpers/`:
 
 ---
 
-##  Writing New Tests
+## Writing New Tests
 
 ### 1. Create Test File
 
@@ -326,7 +396,7 @@ go test -v ./internal/domain/entity/
 
 ---
 
-##  Continuous Testing
+## Continuous Testing
 
 ### Watch Mode
 
@@ -346,7 +416,7 @@ make test-quick || exit 1
 
 ---
 
-##  What We Don't Test (Yet)
+## What We Don't Test (Yet)
 
 - **Integration tests**: Database operations, external services
 - **E2E tests**: Full application workflows
@@ -358,7 +428,7 @@ make test-quick || exit 1
 
 ---
 
-##  Resources
+## Resources
 
 - [Go Testing Package](https://pkg.go.dev/testing)
 - [Testify Documentation](https://github.com/stretchr/testify)

@@ -1,4 +1,4 @@
-package integration
+package contact_test
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity"
 	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/test/integration"
 )
 
 // TestContactAPI_FullWorkflow tests complete Contact API lifecycle with real database
@@ -23,7 +24,7 @@ func TestContactAPI_FullWorkflow(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	testDB := SetupTestDB(t)
+	testDB := integration.SetupTestDB(t)
 	db := testDB.DB
 
 	// Create test user
@@ -284,7 +285,7 @@ func TestContactAPI_Validation(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	testDB := SetupTestDB(t)
+	testDB := integration.SetupTestDB(t)
 	db := testDB.DB
 
 	userID := createTestUser(t, db)
@@ -410,7 +411,7 @@ func TestContactAPI_EdgeCases(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	testDB := SetupTestDB(t)
+	testDB := integration.SetupTestDB(t)
 	router := setupTestRouter(testDB.DB)
 
 	t.Run("Get Non-Existent Contact", func(t *testing.T) {
@@ -501,7 +502,7 @@ func TestContactAPI_FilterByType(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	testDB := SetupTestDB(t)
+	testDB := integration.SetupTestDB(t)
 	db := testDB.DB
 
 	userID := createTestUser(t, db)

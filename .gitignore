@@ -1,3 +1,7 @@
+# ============================================================================
+# Promenade - .gitignore
+# ============================================================================
+
 # Binaries
 api
 main
@@ -12,51 +16,104 @@ bin/
 *_demo
 !examples/*_demo/
 
-# Test binaries (Go test executables)
+# Test binaries & outputs
 *.test
 *.out
 test_output.txt
+*.test.json
 
 # Go workspace file
 go.work
+go.work.sum
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
 
-# IDE
+# IDE & Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.iml
+.project
+.classpath
+.settings/
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Coverage
+# Coverage & Reports
 coverage.out
 coverage.html
+coverage.txt
+*.cover
+*.coverprofile
 
 # Temporary files
 tmp/
 temp/
+*.tmp
 
-# Local settings
-.vscode/
-.idea/
+# Backup & Old files
 *.disabled
 *.backup
 *.bak
 *.old
+*~
+\#*\#
+.#*
 
-# Hugo build output
+# Logs
+*.log
+logs/
+*.log.*
+
+# Hugo build output (website)
 website/public/
 website/resources/
 website/.hugo_build.lock
+
+# Project-specific
 *.code-workspace
 *.sublime-project
 *.sublime-workspace
+
+# Test scripts (use make test instead)
+test_*.sh
+*_test.sh
+
+# Database dumps
+*.sql.gz
+*.dump
+pg_dump_*
+
+# API documentation (auto-generated)
+docs/swagger_v1.json
+docs/swagger_v2.json
+docs/swagger_v1.yaml
+docs/swagger_v2.yaml
+
+# Node modules (if any JS tooling)
+node_modules/
+package-lock.json
+
+# Vendor (if used)
+vendor/
+
+# Air live reload (if used)
+.air.toml
+tmp/
 

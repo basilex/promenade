@@ -1,30 +1,34 @@
-# Identity Context
+# Identity Context (Bounded Context)
 
 **Domain:** User authentication, profiles, and contact information  
 **Ubiquitous Language:** User, Profile, Contact, Session, Credentials  
-**Status:** 🚧 Under Development (Contact aggregate ready for implementation)
+**Status:** ✅ Production-ready (User, Contact aggregates) | 🚧 Profile aggregate in progress
 
 ---
 
-## Overview
+## 📌 Overview
 
-The **Identity Context** manages everything related to user identity, authentication, and personal information. It is the **Core Domain** for user management.
+The **Identity Context** manages everything related to user identity, authentication, authorization (RBAC), and personal contact information. This is the **Core Domain** for user management in Promenade CRM, following **Domain-Driven Design (DDD)** principles with clear bounded context separation.
 
-### Responsibilities
+### 🎯 Bounded Context Responsibilities
 
 ✅ **What Identity Context DOES:**
 
-- User registration and authentication
-- Session management (JWT tokens)
-- User profile management (personal, business)
-- Contact information (email, phone, address)
-- User credentials and password management
+- ✅ User registration and authentication (login/logout)
+- ✅ Session management (JWT tokens, token refresh)
+- ✅ Role-Based Access Control (RBAC) - users, roles, permissions
+- ✅ Contact information management (email, phone, address)
+- ✅ User profile management (display name, bio, avatar, timezone, language)
+- ✅ User credentials and password management (bcrypt hashing)
+- ✅ Contact verification (email confirmation, phone OTP)
 
 ❌ **What Identity Context DOES NOT DO:**
 
-- Billing and subscriptions → **Billing Context**
-- Customer relationships (CRM) → **Customer Management Context**
-- Orders and contracts → **Order Management Context**
+- ❌ Billing and subscriptions → **Billing Context**
+- ❌ Customer relationships (CRM) → **Customer Management Context**
+- ❌ Orders and contracts → **Order Management Context**
+- ❌ Business analytics → **Analytics Context**
+- ❌ Notifications → **Notification Context** (Identity publishes events only)
 
 ---
 
