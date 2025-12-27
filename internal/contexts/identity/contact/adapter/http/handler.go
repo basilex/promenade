@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"errors"
@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
-	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http/dto"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -25,7 +24,7 @@ func NewContactHandler(usecase contact.IUseCase) *ContactHandler {
 
 // Create handles POST /contacts
 func (h *ContactHandler) Create(c *gin.Context) {
-	var req dto.CreateContactRequest
+	var req CreateContactRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -40,7 +39,7 @@ func (h *ContactHandler) Create(c *gin.Context) {
 	}
 
 	// Convert DTO to entity
-	contactEntity, err := dto.CreateContactFromRequest(userID, req)
+	contactEntity, err := CreateContactFromRequest(userID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -86,7 +85,7 @@ func (h *ContactHandler) Create(c *gin.Context) {
 		return
 	}
 
-	response.Created(c, dto.ToContactResponse(created))
+	response.Created(c, ToContactResponse(created))
 }
 
 // GetByID handles GET /contacts/:id
@@ -113,7 +112,7 @@ func (h *ContactHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.ToContactResponse(contactEntity))
+	response.Success(c, ToContactResponse(contactEntity))
 }
 
 // Update handles PUT /contacts/:id
@@ -130,7 +129,7 @@ func (h *ContactHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var req dto.UpdateContactRequest
+	var req UpdateContactRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -190,7 +189,7 @@ func (h *ContactHandler) Update(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.ToContactResponse(existing))
+	response.Success(c, ToContactResponse(existing))
 }
 
 // Delete handles DELETE /contacts/:id
@@ -253,7 +252,7 @@ func (h *ContactHandler) List(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.ToContactListResponse(contacts))
+	response.Success(c, ToContactListResponse(contacts))
 }
 
 // Verify handles PUT /contacts/:id/verify
@@ -287,7 +286,7 @@ func (h *ContactHandler) Verify(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.ToContactResponse(contactEntity))
+	response.Success(c, ToContactResponse(contactEntity))
 }
 
 // SetPrimary handles PUT /contacts/:id/primary
@@ -321,5 +320,5 @@ func (h *ContactHandler) SetPrimary(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.ToContactResponse(contactEntity))
+	response.Success(c, ToContactResponse(contactEntity))
 }

@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"bytes"
@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
-	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http/dto"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -109,7 +108,7 @@ func TestContactHandler_Create_Success(t *testing.T) {
 	userID := uuidv7.New()
 	email := "test@example.com"
 
-	reqBody := dto.CreateContactRequest{
+	reqBody := CreateContactRequest{
 		Type:  "email",
 		Label: "Work",
 		Email: &email,
@@ -137,7 +136,7 @@ func TestContactHandler_Create_MissingUserID(t *testing.T) {
 	router := setupTestRouter()
 
 	email := "test@example.com"
-	reqBody := dto.CreateContactRequest{
+	reqBody := CreateContactRequest{
 		Type:  "email",
 		Label: "Work",
 		Email: &email,

@@ -5,13 +5,13 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
-	contactHandler "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http/handler"
+	contactHTTP "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http"
 	contactRepo "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
 )
 
 // Router manages routes for Identity context
 type Router struct {
-	contactHandler *contactHandler.ContactHandler
+	contactHandler *contactHTTP.ContactHandler
 }
 
 // NewRouter creates a new Identity router with all dependencies
@@ -19,7 +19,7 @@ func NewRouter(db *sqlx.DB) *Router {
 	// Initialize Contact aggregate
 	contactRepository := contactRepo.NewContactRepository(db)
 	contactUseCase := contact.NewUseCase(contactRepository)
-	handler := contactHandler.NewContactHandler(contactUseCase)
+	handler := contactHTTP.NewContactHandler(contactUseCase)
 
 	return &Router{
 		contactHandler: handler,
