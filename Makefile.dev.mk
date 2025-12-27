@@ -41,7 +41,7 @@ lint:  ## Run linters
 # Docker local development
 docker-up:  ## Start local Docker containers (PostgreSQL + Redis)
 	@echo "Starting Docker containers..."
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE_DEV) up -d
 	@echo "Waiting for PostgreSQL..."
 	@sleep 3
 	@echo "✓ PostgreSQL ready on localhost:5432"
@@ -49,17 +49,17 @@ docker-up:  ## Start local Docker containers (PostgreSQL + Redis)
 
 docker-down:  ## Stop Docker containers
 	@echo "Stopping Docker containers..."
-	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE_DEV) down
 
 docker-logs:  ## Show Docker logs
-	$(DOCKER_COMPOSE) logs -f
+	$(DOCKER_COMPOSE_DEV) logs -f
 
 docker-ps:  ## Show running containers
-	$(DOCKER_COMPOSE) ps
+	$(DOCKER_COMPOSE_DEV) ps
 
 docker-clean:  ## Remove all containers and volumes (clean slate)
 	@echo "⚠️  Removing containers and volumes..."
-	$(DOCKER_COMPOSE) down -v
+	$(DOCKER_COMPOSE_DEV) down -v
 	@echo "✓ Clean slate ready"
 
 # Database management

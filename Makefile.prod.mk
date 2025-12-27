@@ -4,7 +4,7 @@
 # Production commands: Docker image builds, registry push, deployment
 # ============================================================================
 
-.PHONY: docker-build docker-push docker-run docker-prod
+.PHONY: docker-build docker-push docker-prod-up docker-prod-down docker-prod-logs
 
 # Production Docker image
 docker-build:  ## Build production Docker image
@@ -27,15 +27,15 @@ docker-push:  ## Push Docker image to registry (requires DOCKER_REGISTRY)
 	docker push $(DOCKER_REGISTRY)/$(APP_NAME):latest
 	@echo "✓ Pushed to registry"
 
-docker-run:  ## Run production Docker container
-	@echo "Running production container..."
-	docker run -d \
-		--name $(APP_NAME) \
-		-p 8080:8080 \
-		-e ENVIRONMENT=production \
-		--restart unless-stopped \
-		$(APP_NAME):$(VERSION)
-	@echo "✓ Container started on port 8080"
+docker-prod-up:  ## Start production stack (PostgreSQL + Redis + App)
+	@echo "Starting production stack..."
+	$(DOCKER_COMPOSE_PROD) up -d
+	@echo "✓ Production stack running"
 
-docker-prod: docker-build docker-run  ## Build and run production container
+docker-prod-down:  ## Stop production stack
+	@echo "Stopping production stack..."
+	$(DOCKER_COMPOSE_PROD) down
+
+docker-prod-logs:  ## Show production logs
+	$(DOCKER_COMPOSE_PROD) logs -f
 

@@ -15,7 +15,11 @@ APP_NAME=promenade
 VERSION?=0.1.0
 ENV?=dev
 DOCKER_IMAGE_TAG=$(VERSION)-$(ENV)
-DOCKER_COMPOSE=docker-compose -f docker/docker-compose.yml
+
+# Docker Compose files per environment
+DOCKER_COMPOSE_DEV=docker-compose -f docker/docker-compose.dev.yml
+DOCKER_COMPOSE_TEST=docker-compose -f docker/docker-compose.test.yml
+DOCKER_COMPOSE_PROD=docker-compose -f docker/docker-compose.prod.yml
 
 # Database connection defaults (can be overridden)
 # Note: Application uses config/app.{env}.yaml for runtime configuration

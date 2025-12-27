@@ -1,31 +1,31 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: promenade_postgres
+    container_name: promenade_postgres_prod
     environment:
-      POSTGRES_USER: system
-      POSTGRES_PASSWORD: passw0rd
-      POSTGRES_DB: promenade_dev
+      POSTGRES_USER: ${DB_USER:-system}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-passw0rd}
+      POSTGRES_DB: ${DB_NAME:-promenade_prod}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - postgres_prod_data:/var/lib/postgresql/data
     networks:
       - promenade-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U system"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-system}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    container_name: promenade_redis
+    container_name: promenade_redis_prod
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - redis_prod_data:/data
     networks:
       - promenade-network
     healthcheck:
@@ -33,21 +33,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  migrate:
-    image: migrate/migrate
-    container_name: promenade_migrate
-    volumes:
-      - ../migrations:/migrations
-    command:
-      - "-path=/migrations"
-      - "-database=postgresql://system:passw0rd@postgres:5432/promenade_prod?sslmode=disable"
-      - "up"
-    networks:
-      - promenade-network
-    depends_on:
-      postgres:
-        condition: service_healthy
+    restart: unless-stopped
 
   app:
     image: promenade:latest
@@ -59,12 +45,12 @@ services:
       # Database
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=system
-      - DB_PASSWORD=passw0rd
-      - DB_NAME=promenade_prod
+      - DB_USER=${DB_USER:-system}
+      - DB_PASSWORD=${DB_PASSWORD:-passw0rd}
+      - DB_NAME=${DB_NAME:-promenade_prod}
       - DB_SSLMODE=disable
       # JWT
-      - JWT_SECRET=xTV/YnVTg4aoOiNLrLipZZMQfLwZDgDaEMBxzSz6l1s=
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_ACCESS_TTL_MINUTES=15
       - JWT_REFRESH_TTL_HOURS=168
       # Event Bus
@@ -79,11 +65,6 @@ services:
       - REDIS_PASSWORD=
       - REDIS_DB=0
       - REDIS_POOL_SIZE=20
-      # Email
-      - EMAIL_FROM_ADDRESS=noreply@promenade.com
-      - EMAIL_FROM_NAME=Promenade Team
-      - APP_URL=http://localhost:8080
-      - APP_NAME=Promenade
     ports:
       - "8080:8080"
     networks:
@@ -93,13 +74,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     restart: unless-stopped
 
 volumes:
-  postgres_data:
-  redis_data:
+  postgres_prod_data:
+  redis_prod_data:
 
 networks:
   promenade-network:
