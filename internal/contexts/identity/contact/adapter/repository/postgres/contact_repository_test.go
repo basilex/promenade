@@ -9,7 +9,6 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -21,7 +20,7 @@ func setupTestDB(t *testing.T) contact.IRepository {
 	db := integration.SetupTestDB(t)
 
 	// Create identity_contacts table
-	_, err := db.Exec(`
+	_, err := db.DB.Exec(`
 		CREATE TABLE IF NOT EXISTS identity_contacts (
 			id UUID PRIMARY KEY DEFAULT uuid_v7(),
 			user_id UUID NOT NULL,
@@ -45,14 +44,14 @@ func setupTestDB(t *testing.T) contact.IRepository {
 	require.NoError(t, err)
 
 	// Create partial unique index for primary contacts
-	_, err = db.Exec(`
+	_, err = db.DB.Exec(`
 		CREATE UNIQUE INDEX IF NOT EXISTS idx_identity_contacts_user_type_primary 
 		ON identity_contacts(user_id, contact_type) 
 		WHERE is_primary = true
 	`)
 	require.NoError(t, err)
 
-	return postgres.NewContactRepository(db)
+	return postgres.NewContactRepository(db.DB)
 }
 
 func TestContactRepository_Create(t *testing.T) {
@@ -300,14 +299,17 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 		// For this test, we just verify repo operations work with regular context
 		repo := setupTestDB(t)
 		userID := uuidv7.New()
-		
+
 		c, err := contact.NewEmailContact(userID, "tx@example.com", "Transaction Test")
 		require.NoError(t, err)
-		
-		// Create within "transaction context" (regular context for this test)
-		txCtx := database.SetTx(ctx, nil) // Simulates transaction context
-		err = repo.Create(txCtx, c)
-		// Should work even with nil transaction in context (falls back to db)
+
+		// Create contact
+		err = repo.Create(ctx, c)
 		require.NoError(t, err)
+
+		// Verify it was created
+		retrieved, err := repo.GetByID(ctx, c.ID)
+		require.NoError(t, err)
+		assert.Equal(t, c.ID, retrieved.ID)
 	})
 }

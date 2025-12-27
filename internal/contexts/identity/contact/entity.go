@@ -1,6 +1,7 @@
 package contact
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -8,6 +9,11 @@ import (
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
+)
+
+// Common errors
+var (
+	ErrNotFound = errors.New("contact not found")
 )
 
 // ContactType defines the type of contact information
