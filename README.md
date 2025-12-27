@@ -216,7 +216,7 @@ Configuration uses YAML files per environment:
 app:
   name: "Promenade CRM"
   environment: "development"
-  version: "2.0.0"
+  version: "0.1.0"
 
 server:
   host: "0.0.0.0"
