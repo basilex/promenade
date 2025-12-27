@@ -48,6 +48,9 @@ temp/
 .vscode/
 .idea/
 *.disabled
+*.backup
+*.bak
+*.old
 
 # Hugo build output
 website/public/

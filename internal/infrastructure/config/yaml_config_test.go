@@ -158,20 +158,20 @@ purge:
 	assert.True(t, cfg.CORS.AllowCredentials)
 	assert.Equal(t, 6*time.Hour, cfg.CORS.MaxAge)
 
-	// Verify IBus section
-	assert.Equal(t, "redis", cfg.IBus.Adapter)
-	assert.Equal(t, 6, cfg.IBus.WorkerPoolSize)
-	assert.Equal(t, 150, cfg.IBus.BufferSize)
-	assert.Equal(t, 5, cfg.IBus.RetryAttempts)
-	assert.Equal(t, 3*time.Second, cfg.IBus.RetryDelay)
+	// Verify Bus section
+	assert.Equal(t, "redis", cfg.Bus.Adapter)
+	assert.Equal(t, 6, cfg.Bus.WorkerPoolSize)
+	assert.Equal(t, 150, cfg.Bus.BufferSize)
+	assert.Equal(t, 5, cfg.Bus.RetryAttempts)
+	assert.Equal(t, 3*time.Second, cfg.Bus.RetryDelay)
 
 	// Verify Redis section
-	assert.Equal(t, "redis.test.local", cfg.IBus.Redis.Host)
-	assert.Equal(t, 6380, cfg.IBus.Redis.Port)
-	assert.Equal(t, "redis-test-pass", cfg.IBus.Redis.Password)
-	assert.Equal(t, 2, cfg.IBus.Redis.DB)
-	assert.Equal(t, 4, cfg.IBus.Redis.MaxRetries)
-	assert.Equal(t, 15, cfg.IBus.Redis.PoolSize)
+	assert.Equal(t, "redis.test.local", cfg.Bus.Redis.Host)
+	assert.Equal(t, 6380, cfg.Bus.Redis.Port)
+	assert.Equal(t, "redis-test-pass", cfg.Bus.Redis.Password)
+	assert.Equal(t, 2, cfg.Bus.Redis.DB)
+	assert.Equal(t, 4, cfg.Bus.Redis.MaxRetries)
+	assert.Equal(t, 15, cfg.Bus.Redis.PoolSize)
 
 	// Verify RateLimit section
 	assert.True(t, cfg.RateLimit.Enabled)
@@ -239,7 +239,7 @@ func TestApplyEnvOverrides(t *testing.T) {
 		App: AppSection{
 			Environment: "development",
 		},
-		IBus: BusSection{
+		Bus: BusSection{
 			Adapter: "memory",
 		},
 	}
@@ -277,7 +277,7 @@ func TestApplyEnvOverrides(t *testing.T) {
 	assert.Equal(t, 9000, cfg.Server.Port)
 	assert.Equal(t, "env-jwt-secret", cfg.JWT.Secret)
 	assert.Equal(t, "production", cfg.App.Environment)
-	assert.Equal(t, "redis", cfg.IBus.Adapter)
+	assert.Equal(t, "redis", cfg.Bus.Adapter)
 }
 
 func TestGetEnvSuffix(t *testing.T) {

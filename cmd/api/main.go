@@ -19,6 +19,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
+	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 )
