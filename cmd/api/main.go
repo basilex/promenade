@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
+	"github.com/basilex/promenade/internal/contexts/identity"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/logger"
@@ -115,7 +116,10 @@ func main() {
 		})
 	})
 
-	// API routes (будуть додані пізніше при створенні contexts)
+	// Initialize Identity context router
+	identityRouter := identity.NewRouter(db)
+
+	// API routes
 	api := r.Group("/api")
 	{
 		v1 := api.Group("/v1")
@@ -127,8 +131,10 @@ func main() {
 				})
 			})
 
-			// TODO: Register context routers here:
-			// - Identity context (User, Contact)
+			// Register Identity context routes (Contact aggregate)
+			identityRouter.RegisterRoutes(v1)
+
+			// TODO: Register additional context routers here:
 			// - Customer Management context (Customer, Company, Deal, Interaction)
 			// - Order Management context (Order, OrderItem, Fulfillment)
 		}
