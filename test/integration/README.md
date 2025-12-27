@@ -1,85 +1,56 @@
-# Integration Tests
+# Test Integration Utilities
 
-Integration tests for Promenade - testing repositories with real PostgreSQL database.
+**Shared test utilities** for Promenade - helpers for setting up test databases, fixtures, and common test scenarios.
 
 ---
 
 ## Overview
 
-Integration tests verify that repositories correctly interact with the database, including:
+This directory contains **shared test utilities**, not tests themselves. All tests are located **in-place** alongside the code they test.
 
-- **CRUD operations** - Create, Read, Update, Delete
-- **Complex queries** - Joins, filters, pagination
-- **Transactions** - Multi-step operations
-- **Constraints** - Foreign keys, unique constraints
-- **Soft deletes** - Proper filtering of deleted records
+### What's Here
 
----
+- **`testutils.go`** - Database setup helpers, test fixtures, common assertions
+- **`README.md`** - This documentation
 
-## Setup
+### What's NOT Here
 
-### 1. Start Test Database
-
-```bash
-# Start PostgreSQL via Docker
-make docker-up
-
-# Create test database (one-time setup)
-make test-integration-setup
-```
-
-### 2. Environment Variables (Optional)
-
-```bash
-export TEST_DB_HOST=localhost
-export TEST_DB_PORT=5432
-export TEST_DB_USER=promenade
-export TEST_DB_PASSWORD=promenade
-export TEST_DB_NAME=promenade_test
-```
+❌ Actual test files (they live in-place with production code)  
+❌ Integration tests (moved to `*_test.go` files alongside repositories)  
+❌ Unit tests (always in-place with code)
 
 ---
 
-## Running Tests
+## In-Place Testing
 
-### All Integration Tests
+All tests now follow **in-place testing** pattern:
 
-```bash
-make test-integration
+```
+pkg/bus/
+├── bus.go
+├── bus_test.go                 # ✅ Unit tests
+├── bus_integration_test.go     # ✅ Integration tests
+└── memory/
+    ├── memory_bus.go
+    └── memory_bus_test.go      # ✅ Adapter tests
+
+internal/contexts/shared/country/
+├── entity.go
+├── entity_test.go              # ✅ Entity tests
+├── usecase.go
+├── usecase_test.go             # ✅ UseCase tests
+└── adapter/repository/postgres/
+    ├── country_repository.go
+    └── country_repository_test.go  # ✅ DB integration tests
 ```
 
-### Core Repository Tests
+---
 
-```bash
-make test-integration-core
-```
+## Using Test Utilities
 
-Tests:
-
-- `IUserRepository` - User CRUD, GetByEmail, ExistsByEmail
-- `IRoleRepository` - Role management, GetUserRoles
-- `IPermissionRepository` - Permissions, GetRolePermissions
-- `ISessionRepository` - Sessions, GetByRefreshToken, CountUserSessions
-- `ICountryRepository` - Countries, ListByRegion
-- `ICurrencyRepository` - Currencies
-- `ILanguageRepository` - Languages, ListActive
-- `ITimezoneRepository` - Timezones
-
-### Module Repository Tests
-
-```bash
-# Posts module
-make test-integration-posts
-
-# Profiles module
-make test-integration-profiles
-
-# Analytics module
-make test-integration-analytics
-
-# Notifications module
 make test-integration-notifications
-```
+
+````
 
 **Posts Module Tests:**
 
@@ -105,24 +76,25 @@ make test-integration-notifications
 
 ```bash
 make test-integration-check
-```
+````
 
 ---
 
-## Test Structure
+## Using Test Utilities
 
-### Setup Helper
+### Import in Your Tests
 
-`test/integration/setup.go` provides:
+```go
+import "github.com/basilex/promenade/test/integration"
+```
+
+### Setup Test Database
 
 ```go
 // Setup test database with migrations
 testDB := integration.SetupTestDB(t)
 
-// Setup with clean tables
-testDB := integration.SetupTestDBWithCleanTables(t)
-
-// Clean all tables manually
+// Clean all tables
 testDB.CleanAllTables()
 
 // Run code in transaction (auto-rollback)
@@ -130,59 +102,85 @@ testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
     // Test code here
 })
 
-// Execute query that must succeed
-testDB.MustExec(t, "INSERT INTO ...", args...)
-
 // Get context with logger
 ctx := testDB.GetContext()
 ```
 
-### Fixtures Helper
-
-`test/integration/fixtures.go` provides data creation:
+### Example: Repository Integration Test
 
 ```go
-fixtures := integration.NewFixtures(testDB.DB)
+package postgres
 
-// Create test user
-user := fixtures.CreateUser(t, "test@example.com", "password123")
+import (
+    "testing"
+    "github.com/basilex/promenade/test/integration"
+)
 
-// Create role and assign to user
-role := fixtures.CreateRole(t, "admin", "Admin Role", false)
-fixtures.AssignRoleToUser(t, user.ID, role.ID)
+func TestCountryRepository_Integration(t *testing.T) {
+    if testing.Short() {
+        t.Skip("Skipping integration test in short mode")
+    }
 
-// Create permission and assign to role
-perm := fixtures.CreatePermission(t, "posts", "create", "Create posts")
-fixtures.AssignPermissionToRole(t, role.ID, perm.ID)
+    testDB := integration.SetupTestDB(t)
+    defer testDB.CleanAllTables()
 
-// Create session
-session := fixtures.CreateSession(t, user.ID)
-
-// Create reference data
-country := fixtures.CreateCountry(t, "USA", "US", "US", "USA", "north_america")
-currency := fixtures.CreateCurrency(t, "US Dollar", "USD", "$")
-language := fixtures.CreateLanguage(t, "English", "English", "en", "eng")
-timezone := fixtures.CreateTimezone(t, "America/New_York", "EST", "-05:00")
-```
-
-### Example Test
-
-```go
-func TestUserRepository_Integration(t *testing.T) {
-    testDB := integration.SetupTestDBWithCleanTables(t)
-    fixtures := integration.NewFixtures(testDB.DB)
-
-    repo := postgres.NewUserRepository(testDB.DB)
+    repo := NewCountryRepository(testDB.DB)
     ctx := testDB.GetContext()
 
     t.Run("Create and GetByID", func(t *testing.T) {
-        user := fixtures.CreateUser(t, "test@example.com", "password123")
+        country, err := repo.Create(ctx, &Country{...})
+        assert.NoError(t, err)
 
-        retrieved, err := repo.GetByID(ctx, user.ID)
+        retrieved, err := repo.GetByID(ctx, country.ID)
+        assert.NoError(t, err)
+        assert.Equal(t, country.Name, retrieved.Name)
+    })
+}
+```
+
+---
+
+## Running Integration Tests
+
+### All Tests
+
+```bash
+go test ./... -v
+```
+
+### Context-Specific
+
+```bash
+go test ./internal/contexts/shared/... -v
+go test ./internal/contexts/identity/... -v
+```
+
+### Skip Integration Tests
+
+```bash
+go test ./... -short  # Skips tests with testing.Short() check
+```
+
+---
+
+## Database Requirements
+
+Integration tests require PostgreSQL:
+
+```bash
+# Start test database
+make docker-up
+
+# Run migrations
+make migrate
+```
+
         require.NoError(t, err)
         assert.Equal(t, user.Email, retrieved.Email)
     })
+
 }
+
 ```
 
 ---
@@ -190,28 +188,30 @@ func TestUserRepository_Integration(t *testing.T) {
 ## Test Organization
 
 ```
-internal/
- adapter/
-    repository/
-        postgres/
-            user_repository.go
-            integration_test.go              # ← Core repository tests
-            reference_integration_test.go    # ← Reference data tests
 
- modules/
-     posts/
-        adapter/
-            repository/
-                postgres/
-                    post_repository.go
-                    integration_test.go       # ← Posts module tests
-    
+internal/
+adapter/
+repository/
+postgres/
+user_repository.go
+integration_test.go # ← Core repository tests
+reference_integration_test.go # ← Reference data tests
+
+modules/
+posts/
+adapter/
+repository/
+postgres/
+post_repository.go
+integration_test.go # ← Posts module tests
+
      profiles/
          adapter/
              repository/
                  postgres/
                      integration_test.go       # ← Profiles module tests
-```
+
+````
 
 ---
 
@@ -260,7 +260,7 @@ Always start with clean tables:
 
 ```go
 testDB := integration.SetupTestDBWithCleanTables(t)
-```
+````
 
 ### 2. Use Fixtures
 
