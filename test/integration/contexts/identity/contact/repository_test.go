@@ -2,6 +2,7 @@ package contact_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,34 +14,22 @@ import (
 	"github.com/basilex/promenade/test/integration"
 )
 
-func setupTestDB(t *testing.T) contact.IRepository {
-	t.Helper()
-
-	// Setup test database (migrations already run via SetupTestDB)
-	db := integration.SetupTestDB(t)
-
-	// Tables identity_users and identity_contacts are created by migrations
-	// Just return repository
-
-	return postgres.NewContactRepository(db.DB)
-}
-
-// createTestUser creates a test user in the database and returns its ID
+// createTestUser creates a test user in the database for contact tests
 func createTestUser(t *testing.T, db *integration.TestDB, userID uuidv7.UUID) {
 	t.Helper()
 
-	// Create unique email using UUID to avoid conflicts
-	uniqueEmail := "test_" + userID.String() + "@example.com"
+	// Generate unique email for each user (needed when multiple users created in one test function)
+	uniqueEmail := fmt.Sprintf("testuser_%s@example.com", userID.String())
 
 	_, err := db.DB.Exec(`
-		INSERT INTO identity_users (id, email, name, password, status)
-		VALUES ($1, $2, $3, $4, 'active')
-	`, userID, uniqueEmail, "Test User", "password_hash")
+		INSERT INTO identity_users (id, email, password_hash, status)
+		VALUES ($1, $2, $3, $4)
+	`, userID, uniqueEmail, "password_hash", "active")
 	require.NoError(t, err)
 }
 
 func TestContactRepository_Create(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -98,7 +87,7 @@ func TestContactRepository_Create(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserID(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -122,7 +111,7 @@ func TestContactRepository_GetByUserID(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserIDAndType(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -149,7 +138,7 @@ func TestContactRepository_GetByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_Update(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -189,7 +178,7 @@ func TestContactRepository_Update(t *testing.T) {
 }
 
 func TestContactRepository_Delete(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -212,7 +201,7 @@ func TestContactRepository_Delete(t *testing.T) {
 }
 
 func TestContactRepository_SetPrimary(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -242,7 +231,7 @@ func TestContactRepository_SetPrimary(t *testing.T) {
 }
 
 func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -274,7 +263,7 @@ func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -300,7 +289,7 @@ func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
 }
 
 func TestContactRepository_WithTransaction(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()

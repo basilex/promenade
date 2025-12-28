@@ -4,15 +4,16 @@
 
 ---
 
-##  Quick Navigation
+## Quick Navigation
 
-- **[Testing Structure Guide](TESTING_STRUCTURE.md)** - Complete guide (recommended read)
+- **[Testing Patterns Guide](../docs/TESTING_PATTERNS.md)** - **COMPREHENSIVE** testing patterns (RECOMMENDED) (~800 lines)
+- **[Testing Structure Guide](TESTING_STRUCTURE.md)** - Directory organization
 - **[Migration Summary](MIGRATION_SUMMARY.md)** - Changes from old structure
 - **[Bus Test Coverage](../docs/BUS_TEST_COVERAGE.md)** - Event bus test report
 
 ---
 
-##  Test Organization
+## Test Organization
 
 Promenade uses **three-tier testing strategy** with clear separation:
 
@@ -75,7 +76,7 @@ test/integration/
 
 ---
 
-##  Running Tests
+## Running Tests
 
 ### Quick Commands
 
@@ -95,11 +96,11 @@ make test
 
 ### Test Comparison
 
-| Type            | Location                      | Database      | Speed            | Run When     |
-| --------------- | ----------------------------- | ------------- | ---------------- | ------------ |
-| **Unit**        | In-place (`*_test.go`)        |  No (mocks) |  Fast (~5s)    | Every save   |
-| **Smoke**       | `/test/smoke/contexts/`       |  No (mocks) |  Fast (~0.35s) | Every commit |
-| **Integration** | `/test/integration/contexts/` |  Real DB    |  Slow (~30s)   | Before merge |
+| Type            | Location                      | Database   | Speed         | Run When     |
+| --------------- | ----------------------------- | ---------- | ------------- | ------------ |
+| **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save   |
+| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~0.35s) | Every commit |
+| **Integration** | `/test/integration/contexts/` | Real DB    | Slow (~30s)   | Before merge |
 
 # Context-specific tests
 
@@ -130,7 +131,7 @@ make test-coverage        # HTML coverage report
 
 ---
 
-##  Test Coverage Overview
+## Test Coverage Overview
 
 ### Identity Context
 
@@ -491,12 +492,12 @@ make test-unit || exit 1
 
 ## What We Test
 
- **Unit Tests**: Entities, use cases, value objects  
+**Unit Tests**: Entities, use cases, value objects  
  **Smoke Tests**: HTTP handlers with mocks  
  **Integration Tests**: Repositories with real database  
  **Package Tests**: Shared utilities (bus, logger, uuidv7)
 
- **Not Yet**: End-to-end tests, UI tests, load tests
+**Not Yet**: End-to-end tests, UI tests, load tests
 
 ---
 

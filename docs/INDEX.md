@@ -4,13 +4,15 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ---
 
-##  Quick Navigation
+## Quick Navigation
 
 ### Getting Started
 
 - [Main README](../README.md) - Project overview, quick start, architecture
 - [AI Instructions](.github/copilot-instructions.md) - Essential guide for AI coding agents
 - [Testing Guide](../test/README.md) - Three-tier testing strategy
+- [Testing Patterns](TESTING_PATTERNS.md) - **Comprehensive testing patterns guide** (unit, smoke, integration)
+- [Testing Quick Reference](TESTING_QUICK_REFERENCE.md) - One-page cheat sheet
 
 ### Architecture & Design
 
@@ -21,14 +23,14 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ### Bounded Contexts
 
-| Context                 | Status        | Documentation                                                  |
-| ----------------------- | ------------- | -------------------------------------------------------------- |
-| **Shared**              |  Production | [README](../internal/contexts/shared/README.md) (~450 lines)   |
-| **Identity**            |  Production | [README](../internal/contexts/identity/README.md) (~550 lines) |
-| **Customer Management** |  Planned    | [README](../internal/contexts/customer-mgmt/README.md)         |
-| **Order Management**    |  Planned    | [README](../internal/contexts/order-mgmt/README.md)            |
-| **Billing**             |  Planned    | [README](../internal/contexts/billing/README.md)               |
-| **Warehouse**           |  Planned    | [README](../internal/contexts/warehouse/README.md)             |
+| Context                 | Status     | Documentation                                                  |
+| ----------------------- | ---------- | -------------------------------------------------------------- |
+| **Shared**              | Production | [README](../internal/contexts/shared/README.md) (~450 lines)   |
+| **Identity**            | Production | [README](../internal/contexts/identity/README.md) (~550 lines) |
+| **Customer Management** | Planned    | [README](../internal/contexts/customer-mgmt/README.md)         |
+| **Order Management**    | Planned    | [README](../internal/contexts/order-mgmt/README.md)            |
+| **Billing**             | Planned    | [README](../internal/contexts/billing/README.md)               |
+| **Warehouse**           | Planned    | [README](../internal/contexts/warehouse/README.md)             |
 
 ### Package Library
 
@@ -56,7 +58,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ---
 
-##  By Task
+## By Task
 
 ### I want to...
 
@@ -68,9 +70,13 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 **Write tests**:
 
-1. Read [test/README.md](../test/README.md) - Three-tier testing strategy
-2. Check [test/TESTING_STRUCTURE.md](../test/TESTING_STRUCTURE.md) - Detailed guide
-3. See examples: `internal/contexts/identity/contact/*_test.go`
+1. Read [docs/TESTING_PATTERNS.md](TESTING_PATTERNS.md) - **ЕТАЛОННІ ПАТЕРНИ** (unit/smoke/integration)
+2. Check [test/README.md](../test/README.md) - Three-tier testing strategy overview
+3. Check [test/TESTING_STRUCTURE.md](../test/TESTING_STRUCTURE.md) - Directory structure
+4. See examples:
+   - Unit: `internal/contexts/identity/user/*_test.go`
+   - Smoke: `test/smoke/contexts/identity/user/handler_test.go`
+   - Integration: `test/integration/contexts/identity/user/repository_test.go`
 
 **Add domain events**:
 
@@ -92,19 +98,22 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ---
 
-##  Documentation Statistics
+## Documentation Statistics
 
-- **Total guides**: 8 core documents
+- **Total guides**: 9 core documents
 - **Context READMEs**: 6 bounded contexts
 - **Package docs**: 10+ packages with documentation
-- **Total lines**: ~3000+ lines of documentation
-- **Code examples**: 50+ working examples
-- **Test coverage**: 150+ tests documented
+- **Total lines**: ~15,000+ lines of documentation
+- **Code examples**: 100+ working examples
+- **Test coverage**: 260+ tests documented
 
 ---
 
-##  Recently Updated
+## Recently Updated
 
+- **2025-12-28**: Created TESTING_PATTERNS.md - comprehensive testing guide (~800 lines)
+- **2025-12-28**: User smoke tests completed (11 tests passing)
+- **2025-12-28**: Standardized integration tests (Contact, Profile, User)
 - **2025-12-28**: Updated AI instructions (removed module references)
 - **2025-12-28**: Fixed Identity Context status (Contact ready, User/Profile planned)
 - **2025-12-28**: Created INDEX.md for navigation
@@ -113,7 +122,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ---
 
-##  Contributing
+## Contributing
 
 When adding documentation:
 

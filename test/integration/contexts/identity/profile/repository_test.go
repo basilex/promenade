@@ -15,21 +15,22 @@ import (
 	"github.com/basilex/promenade/test/integration"
 )
 
-// createTestUser creates a test user in the database and returns its ID
+// createTestUser creates a test user in the database for profile tests
 func createTestUser(t *testing.T, db *integration.TestDB, userID uuidv7.UUID) {
 	t.Helper()
 
-	uniqueEmail := "test_" + userID.String() + "@example.com"
+	// Generate unique email for each user (needed when multiple users created in one test function)
+	uniqueEmail := fmt.Sprintf("testuser_%s@example.com", userID.String())
 
 	_, err := db.DB.Exec(`
-		INSERT INTO identity_users (id, email, name, password, status)
-		VALUES ($1, $2, $3, $4, 'active')
-	`, userID, uniqueEmail, "Test User", "password_hash")
+		INSERT INTO identity_users (id, email, password_hash, status)
+		VALUES ($1, $2, $3, $4)
+	`, userID, uniqueEmail, "password_hash", "active")
 	require.NoError(t, err)
 }
 
 func TestProfileRepository_Create(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -83,7 +84,7 @@ func TestProfileRepository_Create(t *testing.T) {
 }
 
 func TestProfileRepository_GetByID(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -110,7 +111,7 @@ func TestProfileRepository_GetByID(t *testing.T) {
 }
 
 func TestProfileRepository_GetByUserID(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -138,7 +139,7 @@ func TestProfileRepository_GetByUserID(t *testing.T) {
 }
 
 func TestProfileRepository_Update(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 
@@ -328,7 +329,7 @@ func TestProfileRepository_Update(t *testing.T) {
 }
 
 func TestProfileRepository_Delete(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
@@ -349,7 +350,7 @@ func TestProfileRepository_Delete(t *testing.T) {
 }
 
 func TestProfileRepository_ListPublicProfiles(t *testing.T) {
-	db := integration.SetupTestDB(t)
+	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
 
