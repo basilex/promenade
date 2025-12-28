@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-960+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-240+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
@@ -317,19 +317,20 @@ test/integration/contexts/
 ### Running Tests
 
 ```bash
-# All tests (150+ tests, ~40 seconds with race detector)
+# All tests (240+ tests, ~40 seconds with race detector)
 make test
 
 # By type
 make test-unit              # Unit tests only (~5 seconds)
-make test-smoke             # Smoke tests (mock-based, ~0.3 seconds)
-make test-integration       # Integration tests with real DB (~5 seconds)
+make test-smoke             # Smoke tests (mock-based, ~0.4 seconds)
+make test-integration       # Integration tests with real DB (~14 seconds)
 
 # By context
 go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/identity/... -v
 
 # By package
+go test ./pkg/jwt/... -v
 go test ./pkg/bus/... -v
 go test ./pkg/logger/... -v
 
@@ -341,18 +342,24 @@ make test-coverage          # Generate HTML coverage report
 
 | Component                  | Tests | Coverage | Duration | Type        |
 | -------------------------- | ----- | -------- | -------- | ----------- |
+| **pkg/jwt**                | 18    | 87%      | cached   | Unit        |
 | **pkg/bus**                | 67    | 100%     | ~2s      | Unit        |
-| **pkg/logger**             | 15    | 95%      | <1s      | Unit        |
-| **pkg/uuidv7**             | 10    | 100%     | <1s      | Unit        |
-| **pkg/response**           | 12    | 100%     | <1s      | Unit        |
-| **pkg/migration**          | 8     | 90%      | ~1s      | Unit        |
-| **pkg/valueobject**        | 25    | 95%      | <1s      | Unit        |
-| **Identity Contact**       | 87    | 83.5%    | <1s      | Unit        |
-| **Identity Profile**       | 87    | 83.5%    | <1s      | Unit        |
-| **Smoke Tests (handlers)** | 35    | -        | ~0.4s    | Smoke       |
-| **Integration (repos)**    | 50    | -        | ~6s      | Integration |
+| **pkg/logger**             | 12    | 95%      | cached   | Unit        |
+| **pkg/uuidv7**             | 7     | 100%     | cached   | Unit        |
+| **pkg/response**           | 13    | 100%     | cached   | Unit        |
+| **pkg/saga**               | 28    | 100%     | cached   | Unit        |
+| **pkg/migration**          | 4     | 90%      | cached   | Unit        |
+| **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
+| **Identity User**          | 15    | 85%      | ~2.1s    | Smoke       |
+| **Identity Contact**       | 7     | -        | cached   | Smoke       |
+| **Identity Profile**       | 8     | -        | cached   | Smoke       |
+| **Customer Management**    | 18    | -        | ~1.6s    | Smoke       |
+| **Shared (all contexts)**  | 20    | -        | cached   | Smoke       |
+| **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
+| **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
+| **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
 
-**Total**: 240+ tests across 34 packages, 90%+ average coverage
+**Total**: 240+ tests across 40+ packages, 90%+ average coverage
 
 ### Test Database
 
