@@ -54,8 +54,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 	// Identity group
 	identity := api.Group("/identity")
 	{
-		// Contact routes
+		// Contact routes (protected with JWT)
 		contacts := identity.Group("/contacts")
+		contacts.Use(jwt.AuthMiddleware(r.jwtManager))
 		{
 			contacts.POST("", r.contactHandler.Create)                // Create new contact
 			contacts.GET("", r.contactHandler.List)                   // List contacts (filter by user_id, type)
@@ -66,24 +67,31 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			contacts.PUT("/:id/primary", r.contactHandler.SetPrimary) // Set as primary
 		}
 
-		// Profile routes
+		// Profile routes (mixed: public + protected)
 		profiles := identity.Group("/profiles")
 		{
-			profiles.POST("", r.profileHandler.Create)                              // Create new profile
-			profiles.GET("/:id", r.profileHandler.GetByID)                          // Get profile by ID
-			profiles.GET("/user/:user_id", r.profileHandler.GetByUserID)            // Get profile by user ID
-			profiles.DELETE("/:id", r.profileHandler.Delete)                        // Delete profile
+			// Public routes (no JWT required)
 			profiles.GET("", r.profileHandler.ListPublic)                           // List public profiles
-			profiles.PUT("/:id/display-name", r.profileHandler.UpdateDisplayName)   // Update display name
-			profiles.PUT("/:id/bio", r.profileHandler.UpdateBio)                    // Update bio
-			profiles.PUT("/:id/avatar", r.profileHandler.UpdateAvatar)              // Update avatar
-			profiles.PUT("/:id/personal-info", r.profileHandler.UpdatePersonalInfo) // Update personal info
-			profiles.PUT("/:id/gender", r.profileHandler.UpdateGender)              // Update gender
-			profiles.PUT("/:id/date-of-birth", r.profileHandler.UpdateDateOfBirth)  // Update date of birth
-			profiles.PUT("/:id/localization", r.profileHandler.UpdateLocalization)  // Update localization
-			profiles.PUT("/:id/social-links", r.profileHandler.UpdateSocialLinks)   // Update social links
-			profiles.PUT("/:id/public", r.profileHandler.SetPublic)                 // Set profile public
-			profiles.PUT("/:id/private", r.profileHandler.SetPrivate)               // Set profile private
+			profiles.GET("/:id", r.profileHandler.GetByID)                          // Get profile by ID (public profiles)
+			profiles.GET("/user/:user_id", r.profileHandler.GetByUserID)            // Get profile by user ID
+
+			// Protected routes (JWT required)
+			protected := profiles.Group("")
+			protected.Use(jwt.AuthMiddleware(r.jwtManager))
+			{
+				protected.POST("", r.profileHandler.Create)                                  // Create new profile
+				protected.DELETE("/:id", r.profileHandler.Delete)                            // Delete profile
+				protected.PUT("/:id/display-name", r.profileHandler.UpdateDisplayName)       // Update display name
+				protected.PUT("/:id/bio", r.profileHandler.UpdateBio)                        // Update bio
+				protected.PUT("/:id/avatar", r.profileHandler.UpdateAvatar)                  // Update avatar
+				protected.PUT("/:id/personal-info", r.profileHandler.UpdatePersonalInfo)     // Update personal info
+				protected.PUT("/:id/gender", r.profileHandler.UpdateGender)                  // Update gender
+				protected.PUT("/:id/date-of-birth", r.profileHandler.UpdateDateOfBirth)      // Update date of birth
+				protected.PUT("/:id/localization", r.profileHandler.UpdateLocalization)      // Update localization
+				protected.PUT("/:id/social-links", r.profileHandler.UpdateSocialLinks)       // Update social links
+				protected.PUT("/:id/public", r.profileHandler.SetPublic)                     // Set profile public
+				protected.PUT("/:id/private", r.profileHandler.SetPrivate)                   // Set profile private
+			}
 		}
 
 		// User routes
@@ -107,6 +115,12 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 				protected.POST("/:id/unlock", r.userHandler.Unlock)                  // Unlock user account
 				protected.GET("", r.userHandler.List)                                // List users with pagination
 			}
+		}
+
+		// Auth routes
+		auth := identity.Group("/auth")
+		{
+			auth.POST("/refresh", r.userHandler.RefreshToken) // Refresh access token
 		}
 	}
 }

@@ -25,6 +25,11 @@ type ChangePasswordRequest struct {
 	NewPassword string `json:"new_password" binding:"required,min=8,max=72"`
 }
 
+// RefreshTokenRequest represents a token refresh request
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
 // UserResponse represents a user in API responses
 type UserResponse struct {
 	ID              string     `json:"id"`

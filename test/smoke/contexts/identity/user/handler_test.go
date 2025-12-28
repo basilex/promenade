@@ -17,6 +17,7 @@ import (
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/pkg/valueobject"
 )
 
 // MockUserUseCase is a mock implementation of user.IUseCase for smoke tests
@@ -356,6 +357,109 @@ func TestUserHandler_Smoke(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code, "List should return 200")
+		mockUC.AssertExpectations(t)
+	})
+}
+
+// TestUserHandler_RefreshToken tests the RefreshToken endpoint
+func TestUserHandler_RefreshToken(t *testing.T) {
+	router := setupUserRouter()
+	mockUC := new(MockUserUseCase)
+	
+	// Create JWT manager
+	jwtManager := jwt.NewManager(jwt.Config{
+		SecretKey:            "test-secret-key",
+		AccessTokenDuration:  15 * time.Minute,
+		RefreshTokenDuration: 7 * 24 * time.Hour,
+		Issuer:               "promenade-test",
+	})
+	
+	handler := userHTTP.NewUserHandler(mockUC, jwtManager)
+	router.POST("/auth/refresh", handler.RefreshToken)
+
+	userID := uuidv7.New()
+	email := "test@example.com"
+
+	t.Run("RefreshToken returns 200 with valid token", func(t *testing.T) {
+		// Generate valid refresh token
+		tokenPair, err := jwtManager.GenerateTokenPair(userID, email, []string{})
+		assert.NoError(t, err)
+
+		emailVO, _ := valueobject.NewEmail(email)
+		u := &user.User{
+			ID:              userID,
+			Email:           emailVO,
+			Status:          user.UserStatusActive,
+			EmailVerified:   true,
+		}
+
+		mockUC.On("GetUser", mock.Anything, userID).Return(u, nil).Once()
+
+		reqBody := map[string]string{
+			"refresh_token": tokenPair.RefreshToken,
+		}
+		body, _ := json.Marshal(reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/auth/refresh", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code, "RefreshToken should return 200 with valid token")
+		
+		var response map[string]interface{}
+		err = json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Equal(t, "success", response["status"])
+		
+		data := response["data"].(map[string]interface{})
+		assert.NotEmpty(t, data["access_token"])
+		assert.NotEmpty(t, data["refresh_token"])
+		assert.Equal(t, "Bearer", data["token_type"])
+		
+		mockUC.AssertExpectations(t)
+	})
+
+	t.Run("RefreshToken returns 400 with missing token", func(t *testing.T) {
+		reqBody := map[string]string{}
+		body, _ := json.Marshal(reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/auth/refresh", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code, "RefreshToken should return 400 with missing token")
+	})
+
+	t.Run("RefreshToken returns 401 with invalid token", func(t *testing.T) {
+		reqBody := map[string]string{
+			"refresh_token": "invalid.token.here",
+		}
+		body, _ := json.Marshal(reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/auth/refresh", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code, "RefreshToken should return 401 with invalid token")
+	})
+
+	t.Run("RefreshToken returns 401 when user not found", func(t *testing.T) {
+		// Generate valid refresh token
+		tokenPair, err := jwtManager.GenerateTokenPair(userID, email, []string{})
+		assert.NoError(t, err)
+
+		mockUC.On("GetUser", mock.Anything, userID).Return(nil, user.ErrUserNotFound).Once()
+
+		reqBody := map[string]string{
+			"refresh_token": tokenPair.RefreshToken,
+		}
+		body, _ := json.Marshal(reqBody)
+		req := httptest.NewRequest(http.MethodPost, "/auth/refresh", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code, "RefreshToken should return 401 when user not found")
 		mockUC.AssertExpectations(t)
 	})
 }

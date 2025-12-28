@@ -499,34 +499,179 @@ WHERE is_primary = true;
 
 ## API Endpoints
 
-### User Management
+### Authentication (Public)
 
 ```
-POST   /api/v1/identity/register        # Register new user
-POST   /api/v1/identity/login           # Login
-POST   /api/v1/identity/logout          # Logout
-POST   /api/v1/identity/refresh         # Refresh token
-GET    /api/v1/identity/me              # Get current user
-PUT    /api/v1/identity/password        # Change password
+POST   /api/v1/identity/users/register       # Register new user
+POST   /api/v1/identity/users/login          # Login (returns JWT tokens)
+POST   /api/v1/identity/auth/refresh         # Refresh access token
 ```
+
+**Example: User Registration**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/users/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "name": "John Doe",
+    "password": "SecurePass123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "019b65dc-ec43-740e-a1bd-bbac7179cbd3",
+    "email": "user@example.com",
+    "status": "active",
+    "email_verified": false,
+    "created_at": "2025-12-28T18:48:55Z",
+    "updated_at": "2025-12-28T18:48:55Z"
+  }
+}
+```
+
+**Example: User Login**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/users/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "SecurePass123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_at": "2025-12-28T19:04:06Z",
+    "token_type": "Bearer",
+    "user": {
+      "id": "019b65dc-ec43-740e-a1bd-bbac7179cbd3",
+      "email": "user@example.com",
+      "status": "active",
+      "email_verified": false,
+      "last_login_at": "2025-12-28T18:49:06Z"
+    }
+  }
+}
+```
+
+**Example: Refresh Access Token**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }'
+```
+
+**Response:** Same as login response with new token pair.
+
+---
+
+### User Management (Protected with JWT)
+
+All endpoints below require `Authorization: Bearer <access_token>` header.
+
+```
+GET    /api/v1/identity/users                 # List users
+GET    /api/v1/identity/users/:id             # Get user by ID
+GET    /api/v1/identity/users/email/:email    # Get user by email
+POST   /api/v1/identity/users/:id/verify-email      # Verify email
+POST   /api/v1/identity/users/:id/change-password   # Change password
+POST   /api/v1/identity/users/:id/suspend           # Suspend user
+POST   /api/v1/identity/users/:id/ban               # Ban user
+POST   /api/v1/identity/users/:id/activate          # Activate user
+POST   /api/v1/identity/users/:id/unlock            # Unlock user
+```
+
+**Example: Get User with JWT**
+
+```bash
+curl -X GET http://localhost:8081/api/v1/identity/users/:id \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "019b65dc-ec43-740e-a1bd-bbac7179cbd3",
+    "email": "user@example.com",
+    "status": "active",
+    "email_verified": false,
+    "last_login_at": "2025-12-28T18:49:06Z"
+  }
+}
+```
+
+---
 
 ### Profile Management
 
+**Public Routes:**
 ```
-GET    /api/v1/identity/profile         # Get own profile
-PUT    /api/v1/identity/profile         # Update profile
-GET    /api/v1/identity/profiles/:id    # Get public profile
+GET    /api/v1/identity/profiles              # List public profiles
+GET    /api/v1/identity/profiles/:id          # Get profile by ID (public)
+GET    /api/v1/identity/profiles/user/:user_id # Get profile by user ID
 ```
 
-### Contact Management  (Day 3)
+**Protected Routes (JWT required):**
+```
+POST   /api/v1/identity/profiles              # Create profile
+DELETE /api/v1/identity/profiles/:id          # Delete profile
+PUT    /api/v1/identity/profiles/:id/display-name    # Update display name
+PUT    /api/v1/identity/profiles/:id/bio             # Update bio
+PUT    /api/v1/identity/profiles/:id/avatar          # Update avatar
+PUT    /api/v1/identity/profiles/:id/personal-info   # Update personal info
+PUT    /api/v1/identity/profiles/:id/gender          # Update gender
+PUT    /api/v1/identity/profiles/:id/date-of-birth   # Update date of birth
+PUT    /api/v1/identity/profiles/:id/localization    # Update localization
+PUT    /api/v1/identity/profiles/:id/social-links    # Update social links
+PUT    /api/v1/identity/profiles/:id/public          # Set profile public
+PUT    /api/v1/identity/profiles/:id/private         # Set profile private
+```
+
+---
+
+### Contact Management (Protected with JWT)
+
+All contact endpoints require JWT authentication.
 
 ```
-GET    /api/v1/identity/contacts        # List own contacts
-POST   /api/v1/identity/contacts        # Create contact
-GET    /api/v1/identity/contacts/:id    # Get contact
-PUT    /api/v1/identity/contacts/:id    # Update contact
-DELETE /api/v1/identity/contacts/:id    # Delete contact
-POST   /api/v1/identity/contacts/:id/primary  # Set as primary
+POST   /api/v1/identity/contacts              # Create contact
+GET    /api/v1/identity/contacts              # List contacts
+GET    /api/v1/identity/contacts/:id          # Get contact
+PUT    /api/v1/identity/contacts/:id          # Update contact
+DELETE /api/v1/identity/contacts/:id          # Delete contact
+PUT    /api/v1/identity/contacts/:id/verify   # Verify contact
+PUT    /api/v1/identity/contacts/:id/primary  # Set as primary
+```
+
+**Example: Create Contact**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/contacts \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "019b65dc-ec43-740e-a1bd-bbac7179cbd3",
+    "type": "email",
+    "email": "work@example.com",
+    "label": "Work",
+    "is_primary": false
+  }'
 ```
 
 ---

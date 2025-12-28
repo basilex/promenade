@@ -125,6 +125,66 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
+// RefreshToken handles POST /auth/refresh
+// @Summary Refresh access token
+// @Description Generate new access token using refresh token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body RefreshTokenRequest true "Refresh token request"
+// @Success 200 {object} AuthResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /auth/refresh [post]
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	// Validate and refresh the token
+	tokenPair, err := h.jwtManager.RefreshAccessToken(req.RefreshToken)
+	if err != nil {
+		response.Unauthorized(c, "invalid or expired refresh token")
+		return
+	}
+
+	// Get user info from token claims
+	claims, err := h.jwtManager.ValidateAccessToken(tokenPair.AccessToken)
+	if err != nil {
+		response.InternalError(c, "failed to extract user info")
+		return
+	}
+
+	// Parse user ID from claims
+	userID, err := uuidv7.Parse(claims.UserID)
+	if err != nil {
+		response.InternalError(c, "invalid user ID in token")
+		return
+	}
+
+	// Get user from database
+	userEntity, err := h.usecase.GetUser(c.Request.Context(), userID)
+	if err != nil {
+		if errors.Is(err, user.ErrUserNotFound) {
+			response.Unauthorized(c, "user not found")
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.Success(c, AuthResponse{
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
+		ExpiresAt:    tokenPair.ExpiresAt,
+		TokenType:    tokenPair.TokenType,
+		User:         ToUserResponse(userEntity),
+	})
+}
+
 // GetByID handles GET /users/:id
 // @Summary Get user by ID
 // @Description Get user details by ID

@@ -174,6 +174,73 @@ Server starts on **http://localhost:8081**
 curl http://localhost:8081/health
 ```
 
+### 5. API Authentication
+
+Promenade uses **JWT (JSON Web Tokens)** for authentication with access and refresh tokens.
+
+**Register a new user:**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/users/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "name": "John Doe",
+    "password": "SecurePass123"
+  }'
+```
+
+**Login to get JWT tokens:**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/users/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "SecurePass123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_at": "2025-12-28T19:04:06Z",
+    "token_type": "Bearer",
+    "user": { ... }
+  }
+}
+```
+
+**Use access token for protected endpoints:**
+
+```bash
+curl -X GET http://localhost:8081/api/v1/identity/users \
+  -H "Authorization: Bearer <access_token>"
+```
+
+**Refresh expired access token:**
+
+```bash
+curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh_token": "<refresh_token>"
+  }'
+```
+
+**Token Configuration:**
+- **Access Token**: 15 minutes (for API requests)
+- **Refresh Token**: 7 days (to generate new access tokens)
+- **Algorithm**: HS256 (HMAC with SHA-256)
+
+**See**: [pkg/jwt/README.md](pkg/jwt/README.md) for detailed JWT documentation
+
+---
+
 ### Available Make Commands
 
 ```bash

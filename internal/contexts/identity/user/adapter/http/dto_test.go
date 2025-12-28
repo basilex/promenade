@@ -133,21 +133,31 @@ func TestAuthResponse_JSON(t *testing.T) {
 		u, err := user.NewUser("test@example.com", "hashedPassword123")
 		require.NoError(t, err)
 
+		expiresAt := time.Now().Add(15 * time.Minute)
 		authResp := AuthResponse{
-			Token: "jwt.token.here",
-			User:  ToUserResponse(u),
+			AccessToken:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+			RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...",
+			ExpiresAt:    expiresAt,
+			TokenType:    "Bearer",
+			User:         ToUserResponse(u),
 		}
 
 		jsonData, err := json.Marshal(authResp)
 
 		require.NoError(t, err)
-		assert.Contains(t, string(jsonData), "jwt.token.here")
+		assert.Contains(t, string(jsonData), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+		assert.Contains(t, string(jsonData), "Bearer")
 		assert.Contains(t, string(jsonData), "test@example.com")
+		assert.Contains(t, string(jsonData), "access_token")
+		assert.Contains(t, string(jsonData), "refresh_token")
 	})
 
 	t.Run("unmarshaling", func(t *testing.T) {
 		jsonData := `{
-			"token":"jwt.token.here",
+			"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+			"refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...",
+			"expires_at":"2025-12-28T19:00:00Z",
+			"token_type":"Bearer",
 			"user":{
 				"id":"019b64f7-24f6-7e22-a85e-c6614c03b11f",
 				"email":"test@example.com",
@@ -162,7 +172,9 @@ func TestAuthResponse_JSON(t *testing.T) {
 		err := json.Unmarshal([]byte(jsonData), &authResp)
 
 		require.NoError(t, err)
-		assert.Equal(t, "jwt.token.here", authResp.Token)
+		assert.Equal(t, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", authResp.AccessToken)
+		assert.Equal(t, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...", authResp.RefreshToken)
+		assert.Equal(t, "Bearer", authResp.TokenType)
 		assert.Equal(t, "test@example.com", authResp.User.Email)
 	})
 }
