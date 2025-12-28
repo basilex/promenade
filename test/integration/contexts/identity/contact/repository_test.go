@@ -1,4 +1,4 @@
-package postgres_test
+package contact_test
 
 import (
 	"context"
@@ -16,48 +16,37 @@ import (
 func setupTestDB(t *testing.T) contact.IRepository {
 	t.Helper()
 
-	// Setup test database
+	// Setup test database (migrations already run via SetupTestDB)
 	db := integration.SetupTestDB(t)
 
-	// Create identity_contacts table
-	_, err := db.DB.Exec(`
-		CREATE TABLE IF NOT EXISTS identity_contacts (
-			id UUID PRIMARY KEY DEFAULT uuid_v7(),
-			user_id UUID NOT NULL,
-			contact_type VARCHAR(20) NOT NULL CHECK (contact_type IN ('email', 'phone', 'address')),
-			label VARCHAR(100) NOT NULL,
-			email VARCHAR(255),
-			phone VARCHAR(50),
-			address_street VARCHAR(255),
-			address_street2 VARCHAR(255),
-			address_city VARCHAR(100),
-			address_state VARCHAR(100),
-			address_postal_code VARCHAR(20),
-			address_country CHAR(2),
-			is_primary BOOLEAN NOT NULL DEFAULT FALSE,
-			is_verified BOOLEAN NOT NULL DEFAULT FALSE,
-			is_public BOOLEAN NOT NULL DEFAULT FALSE,
-			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-		)
-	`)
-	require.NoError(t, err)
-
-	// Create partial unique index for primary contacts
-	_, err = db.DB.Exec(`
-		CREATE UNIQUE INDEX IF NOT EXISTS idx_identity_contacts_user_type_primary 
-		ON identity_contacts(user_id, contact_type) 
-		WHERE is_primary = true
-	`)
-	require.NoError(t, err)
+	// Tables identity_users and identity_contacts are created by migrations
+	// Just return repository
 
 	return postgres.NewContactRepository(db.DB)
 }
 
+// createTestUser creates a test user in the database and returns its ID
+func createTestUser(t *testing.T, db *integration.TestDB, userID uuidv7.UUID) {
+	t.Helper()
+
+	// Create unique email using UUID to avoid conflicts
+	uniqueEmail := "test_" + userID.String() + "@example.com"
+
+	_, err := db.DB.Exec(`
+		INSERT INTO identity_users (id, email, name, password, status)
+		VALUES ($1, $2, $3, $4, 'active')
+	`, userID, uniqueEmail, "Test User", "password_hash")
+	require.NoError(t, err)
+}
+
 func TestContactRepository_Create(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	t.Run("create email contact", func(t *testing.T) {
 		c, err := contact.NewEmailContact(userID, "test@example.com", "Work")
@@ -109,9 +98,13 @@ func TestContactRepository_Create(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserID(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	// Create multiple contacts for user
 	email, _ := contact.NewEmailContact(userID, "work@example.com", "Work")
@@ -129,9 +122,13 @@ func TestContactRepository_GetByUserID(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserIDAndType(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	// Create contacts of different types
 	email1, _ := contact.NewEmailContact(userID, "work@example.com", "Work")
@@ -152,9 +149,13 @@ func TestContactRepository_GetByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_Update(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	t.Run("update email contact", func(t *testing.T) {
 		c, err := contact.NewEmailContact(userID, "old@example.com", "Work")
@@ -188,9 +189,13 @@ func TestContactRepository_Update(t *testing.T) {
 }
 
 func TestContactRepository_Delete(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	c, err := contact.NewEmailContact(userID, "delete@example.com", "Temp")
 	require.NoError(t, err)
@@ -207,9 +212,13 @@ func TestContactRepository_Delete(t *testing.T) {
 }
 
 func TestContactRepository_SetPrimary(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	// Create two email contacts
 	email1, _ := contact.NewEmailContact(userID, "first@example.com", "First")
@@ -233,9 +242,13 @@ func TestContactRepository_SetPrimary(t *testing.T) {
 }
 
 func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	t.Run("returns primary contact", func(t *testing.T) {
 		email1, _ := contact.NewEmailContact(userID, "first@example.com", "First")
@@ -261,9 +274,13 @@ func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
-	repo := setupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
 	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	t.Run("returns false when no primary exists", func(t *testing.T) {
 		exists, err := repo.ExistsPrimaryForUserAndType(ctx, userID, contact.ContactTypeEmail)
@@ -283,8 +300,13 @@ func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
 }
 
 func TestContactRepository_WithTransaction(t *testing.T) {
-	integration.SetupTestDB(t)
+	db := integration.SetupTestDB(t)
+	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
+	userID := uuidv7.New()
+
+	// Create test user
+	createTestUser(t, db, userID)
 
 	// This test demonstrates transaction support via context
 	// The actual transaction would be managed by TransactionManager
@@ -297,9 +319,6 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 		// })
 
 		// For this test, we just verify repo operations work with regular context
-		repo := setupTestDB(t)
-		userID := uuidv7.New()
-
 		c, err := contact.NewEmailContact(userID, "tx@example.com", "Transaction Test")
 		require.NoError(t, err)
 

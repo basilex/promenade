@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 Architecture Overview
+##  Architecture Overview
 
 Promenade follows **strict Domain-Driven Design** principles with clear **Bounded Context** separation and **Event-Driven Architecture** at its core.
 
@@ -22,7 +22,7 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 5. **Sagas** - Distributed transactions coordination (planned)
 6. **CQRS** - Separate read/write models for complex queries (planned)
 
-### Event-Driven Architecture 🚀
+### Event-Driven Architecture 
 
 **Event Bus** is the central nervous system of Promenade:
 
@@ -36,78 +36,81 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 
 ### Bounded Contexts
 
-| Context                 | Aggregates                            | Description                    | Status        | Documentation                                  |
-| ----------------------- | ------------------------------------- | ------------------------------ | ------------- | ---------------------------------------------- |
-| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)     | ✅ Production | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | User, Contact, Profile                | Authentication & authorization | ✅ Production | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer, Company, Deal, Interaction  | CRM core functionality         | 📋 Planned    | Coming Q1 2026                                 |
-| **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking  | 📋 Planned    | Coming Q2 2026                                 |
-| **Billing**             | Invoice, Payment, Subscription        | Billing and payments           | 📋 Planned    | Coming Q2 2026                                 |
-| **Analytics**           | Report, Dashboard, Metric             | Business intelligence          | 📋 Planned    | Coming Q3 2026                                 |
+| Context                 | Aggregates                            | Description                   | Status        | Documentation                                  |
+| ----------------------- | ------------------------------------- | ----------------------------- | ------------- | ---------------------------------------------- |
+| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    |  Production | [README](internal/contexts/shared/README.md)   |
+| **Identity**            | Contact (User, Profile planned)       | Contact management            |  Production | [README](internal/contexts/identity/README.md) |
+| **Customer Management** | Customer, Company, Deal, Interaction  | CRM core functionality        |  Planned    | Coming Q1 2026                                 |
+| **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking |  Planned    | Coming Q2 2026                                 |
+| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          |  Planned    | Coming Q2 2026                                 |
+| **Analytics**           | Report, Dashboard, Metric             | Business intelligence         |  Planned    | Coming Q3 2026                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 ---
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 promenade/
-├── cmd/
-│   ├── api/                    # HTTP server entry point (211 lines)
-│   │   └── main.go            # Bootstrap: Config → Logger → DB → Migrations → Event Bus → Server
-│   └── migrate/                # Migration CLI tool
-├── internal/
-│   ├── contexts/               # Bounded Contexts (DDD)
-│   │   ├── shared/            # ✅ Shared Context (Reference Data: Country, Currency, Language, Timezone)
-│   │   │   ├── README.md      # Complete documentation (~450 lines)
-│   │   │   ├── domain/entity/ # 4 aggregates (Country, Currency, Language, Timezone)
-│   │   │   ├── domain/repository/ # Repository interfaces
-│   │   │   ├── usecase/       # Business logic (GetCountries, GetCurrencies, etc.)
-│   │   │   ├── adapter/http/  # HTTP handlers (Gin)
-│   │   │   └── adapter/repository/postgres/ # PostgreSQL implementation
-│   │   ├── identity/          # ✅ Identity Context (User, Contact, Profile)
-│   │   │   ├── README.md      # Complete documentation (~550 lines)
-│   │   │   ├── user/          # User Aggregate (authentication, RBAC)
-│   │   │   ├── contact/       # Contact Aggregate (email, phone, address)
-│   │   │   └── profile/       # Profile Aggregate (🚧 in progress)
-│   │   ├── customer-mgmt/     # 📋 Customer Management Context (planned)
-│   │   ├── order-mgmt/        # 📋 Order Management Context (planned)
-│   │   ├── billing/           # 📋 Billing Context (planned)
-│   │   └── README.md          # Contexts overview
-│   └── infrastructure/         # Cross-cutting concerns
-│       ├── config/            # Configuration management (YAML + env vars)
-│       └── database/          # Database connection & transactions
-├── pkg/                        # Shared Domain Primitives & Utilities
-│   ├── README.md              # ✅ Complete package overview (~400 lines)
-│   ├── bus/                   # ✅ Event Bus (Memory/Redis, 67 tests, 377K/sec)
-│   │   └── README.md          # ✅ Complete documentation (~600 lines)
-│   ├── aggregate/             # Base Aggregate pattern (DDD)
-│   ├── valueobject/           # Value Objects (Email, Phone, Money, Address)
-│   ├── saga/                  # Saga orchestration (🚧 planned Q1 2026)
-│   ├── uuidv7/               # Time-ordered UUIDs (RFC 9562, 2x faster inserts)
-│   ├── logger/               # Structured logging (slog wrapper, context-aware)
-│   ├── migration/            # Namespace-based database migrations
-│   ├── response/             # Standard HTTP responses & pagination
-│   ├── jsonb/                # PostgreSQL JSONB utilities
-│   └── reference/            # Reference data validation helpers
-├── migrations/                 # Database migrations (namespace-based)
-│   ├── core/                 # Core infrastructure (UUID v7, auth, RBAC)
-│   ├── shared/               # Shared context migrations (reference data)
-│   └── identity/             # Identity context migrations (users, contacts)
-├── test/                       # Testing infrastructure
-│   ├── README.md             # Testing structure documentation
-│   ├── integration/          # Integration test helpers
-│   └── smoke/                # Smoke tests
-├── config/                     # Configuration files
-│   ├── app.dev.yaml          # Development (Memory bus, localhost DB)
-│   ├── app.test.yaml         # Testing
-│   └── app.prod.yaml         # Production (Redis bus)
-└── docs/                       # Architecture documentation (20+ guides)
-    ├── INDEX.md              # Documentation index
-    ├── ARCHITECTURE_OVERVIEW.md # High-level architecture
-    ├── ARCHITECTURE_QUICKREF.md # Quick reference guide
-    └── ...                   # 20+ detailed guides
+ cmd/
+    api/                    # HTTP server entry point (211 lines)
+       main.go            # Bootstrap: Config → Logger → DB → Migrations → Event Bus → Server
+    migrate/                # Migration CLI tool
+ internal/
+    contexts/               # Bounded Contexts (DDD)
+       shared/            #  Shared Context (Reference Data: Country, Currency, Language, Timezone)
+          README.md      # Complete documentation (~450 lines)
+          domain/entity/ # 4 aggregates (Country, Currency, Language, Timezone)
+          domain/repository/ # Repository interfaces
+          usecase/       # Business logic (GetCountries, GetCurrencies, etc.)
+          adapter/http/  # HTTP handlers (Gin)
+          adapter/repository/postgres/ # PostgreSQL implementation
+       identity/          #  Identity Context (Contact ready, User/Profile planned)
+          README.md      # Complete documentation (~550 lines)
+          contact/       #  Contact Aggregate (email, phone, address)
+          user/          #  User Aggregate (authentication, RBAC) - planned
+          profile/       #  Profile Aggregate (display name, bio, avatar) - planned
+       customer-mgmt/     #  Customer Management Context (planned)
+       order-mgmt/        #  Order Management Context (planned)
+       billing/           #  Billing Context (planned)
+       README.md          # Contexts overview
+    infrastructure/         # Cross-cutting concerns
+        config/            # Configuration management (YAML + env vars)
+        database/          # Database connection & transactions
+ pkg/                        # Shared Domain Primitives & Utilities
+    README.md              #  Complete package overview (~400 lines)
+    bus/                   #  Event Bus (Memory/Redis, 67 tests, 377K/sec)
+       README.md          #  Complete documentation (~600 lines)
+    aggregate/             # Base Aggregate pattern (DDD)
+    valueobject/           # Value Objects (Email, Phone, Money, Address)
+    saga/                  # Saga orchestration ( planned Q1 2026)
+    uuidv7/               # Time-ordered UUIDs (RFC 9562, 2x faster inserts)
+    logger/               # Structured logging (slog wrapper, context-aware)
+    migration/            # Namespace-based database migrations
+    response/             # Standard HTTP responses & pagination
+    jsonb/                # PostgreSQL JSONB utilities
+    reference/            # Reference data validation helpers
+ migrations/                 # Database migrations (namespace-based)
+    core/                 # Core infrastructure (UUID v7, auth, RBAC)
+    shared/               # Shared context migrations (reference data)
+    identity/             # Identity context migrations (users, contacts)
+ test/                       # Testing infrastructure
+    README.md             # Testing structure documentation
+    smoke/                # Smoke tests (mock-based, no DB)
+       contexts/         # Mirror path: handlers smoke tests
+    integration/          # Integration tests (real DB)
+        testutils.go      # Shared test utilities
+        contexts/         # Mirror path: repository integration tests
+ config/                     # Configuration files
+    app.dev.yaml          # Development (Memory bus, localhost DB)
+    app.test.yaml         # Testing
+    app.prod.yaml         # Production (Redis bus)
+ docs/                       # Architecture documentation (20+ guides)
+     INDEX.md              # Documentation index
+     ARCHITECTURE_OVERVIEW.md # High-level architecture
+     ARCHITECTURE_QUICKREF.md # Quick reference guide
+     ...                   # 20+ detailed guides
 ```
 
 ### Key Directories Explained
@@ -116,12 +119,12 @@ promenade/
 - **internal/contexts/**: Bounded contexts (autonomous, isolated)
 - **pkg/**: Shared packages (context-agnostic, reusable across all contexts)
 - **migrations/**: Namespace-based migrations (run in order: core → shared → identity)
-- **test/**: Mirror path testing structure (unit + integration tests)
+- **test/**: Three-tier testing (unit in-place, smoke/integration in mirror path)
 - **config/**: Environment-specific YAML configs (dev/test/prod)
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -180,9 +183,10 @@ make fmt               # Format code
 make lint              # Run linters
 
 # Testing
-make test              # Run all tests (156+ tests, ~25 seconds)
+make test              # Run all tests (150+ tests, ~40 seconds with race detector)
 make test-unit         # Unit tests only (~5 seconds)
-make test-integration  # Integration tests with real DB
+make test-smoke        # Smoke tests (~0.3 seconds)
+make test-integration  # Integration tests with real DB (~5 seconds)
 make test-coverage     # HTML coverage report
 
 # Database
@@ -197,47 +201,61 @@ make swagger-all       # Generate API documentation
 
 ---
 
-## 🧪 Testing
+##  Testing
 
-Promenade uses a **mirror path testing structure** where tests live alongside code:
+Promenade uses a **three-tier testing strategy** with clear separation of concerns:
 
 ### Test Organization
 
-```
-pkg/
-├── bus/
-│   ├── bus.go
-│   ├── bus_test.go         # Unit tests (67 tests)
-│   ├── memory/
-│   │   ├── memory.go
-│   │   └── memory_test.go
-│   └── redis/
-│       ├── redis.go
-│       └── redis_test.go
+**Three-tier architecture**:
 
-internal/contexts/identity/
-├── user/
-│   ├── entity/
-│   │   ├── user.go
-│   │   └── user_test.go
-│   └── usecase/
-│       ├── user_usecase.go
-│       └── user_usecase_test.go
+1. **Unit Tests** (in-place) - Fast feedback, test individual components
+2. **Smoke Tests** (`test/smoke/contexts/`) - Mock-based handler validation, no DB
+3. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
+
+```
+# Unit tests - alongside production code
+internal/contexts/identity/contact/
+ entity.go
+ entity_test.go              #  Entity unit tests
+ usecase.go
+ usecase_test.go             #  UseCase unit tests
+
+# Smoke tests - mirror path structure (mock-based)
+test/smoke/contexts/
+ shared/
+    country/handler_test.go    # 5 handler smoke tests
+    currency/handler_test.go   # 5 handler smoke tests
+    ...
+ identity/
+     contact/handler_test.go    # 7 handler smoke tests
+     profile/handler_test.go    # 8 handler smoke tests
+
+# Integration tests - mirror path structure (real DB)
+test/integration/contexts/
+ shared/
+    country/repository_test.go     # 6 repository integration tests
+    currency/repository_test.go    # 6 repository integration tests
+    ...
+ identity/
+     contact/repository_test.go     # 9 repository integration tests
+     profile/repository_test.go     # 17 repository integration subtests
 ```
 
 ### Running Tests
 
 ```bash
-# All tests (156+ tests, ~25 seconds)
+# All tests (150+ tests, ~40 seconds with race detector)
 make test
 
-# By category
+# By type
 make test-unit              # Unit tests only (~5 seconds)
-make test-integration       # Integration tests with real DB (~36 seconds)
+make test-smoke             # Smoke tests (mock-based, ~0.3 seconds)
+make test-integration       # Integration tests with real DB (~5 seconds)
 
 # By context
-go test ./internal/contexts/identity/... -v
-go test ./internal/contexts/shared/... -v
+go test ./test/smoke/contexts/shared/... -v
+go test ./test/integration/contexts/identity/... -v
 
 # By package
 go test ./pkg/bus/... -v
@@ -249,40 +267,50 @@ make test-coverage          # Generate HTML coverage report
 
 ### Test Statistics
 
-| Component            | Tests | Coverage | Duration |
-| -------------------- | ----- | -------- | -------- |
-| **pkg/bus**          | 67    | 100%     | ~2s      |
-| **pkg/logger**       | 15    | 95%      | <1s      |
-| **pkg/uuidv7**       | 10    | 100%     | <1s      |
-| **pkg/response**     | 12    | 100%     | <1s      |
-| **pkg/migration**    | 8     | 90%      | ~1s      |
-| **pkg/valueobject**  | 25    | 95%      | <1s      |
-| **pkg/aggregate**    | 5     | 90%      | <1s      |
-| **pkg/jsonb**        | 8     | 85%      | <1s      |
-| **Identity Context** | TBD   | -        | -        |
-| **Shared Context**   | TBD   | -        | -        |
+| Component                  | Tests | Coverage | Duration | Type        |
+| -------------------------- | ----- | -------- | -------- | ----------- |
+| **pkg/bus**                | 67    | 100%     | ~2s      | Unit        |
+| **pkg/logger**             | 15    | 95%      | <1s      | Unit        |
+| **pkg/uuidv7**             | 10    | 100%     | <1s      | Unit        |
+| **pkg/response**           | 12    | 100%     | <1s      | Unit        |
+| **pkg/migration**          | 8     | 90%      | ~1s      | Unit        |
+| **pkg/valueobject**        | 25    | 95%      | <1s      | Unit        |
+| **Identity Contact**       | 87    | 83.5%    | <1s      | Unit        |
+| **Identity Profile**       | 87    | 83.5%    | <1s      | Unit        |
+| **Smoke Tests (handlers)** | 35    | -        | ~0.4s    | Smoke       |
+| **Integration (repos)**    | 50    | -        | ~6s      | Integration |
 
-**Total**: 150+ tests, 90%+ average coverage
+**Total**: 240+ tests across 34 packages, 90%+ average coverage
 
 ### Test Database
 
-Integration tests use a separate database on port 5433:
+Integration tests use a separate test database (automatically started):
 
 ```bash
-# Start test database
+# Start test database (PostgreSQL on 5433, Redis on 6380)
 make test-db-start
+
+# Run integration tests (starts DB automatically)
+make test-integration
 
 # Stop test database
 make test-db-stop
 ```
 
+**Mirror Path Navigation**: Tests mirror production code structure for easy discovery
+
+- `internal/contexts/shared/country/` → `test/smoke/contexts/shared/country/`
+- `internal/contexts/shared/country/` → `test/integration/contexts/shared/country/`
+
 **See**: [test/README.md](test/README.md) for complete testing documentation
 
 ---
 
-## 📊 Domain Model Example: Identity Context
+##  Domain Model Examples
 
-### Contact Aggregate
+### Identity Context
+
+#### Contact Aggregate
 
 ```go
 // Contact is an aggregate root for user contact information
@@ -326,7 +354,60 @@ func NewEmailContact(userID uuid.UUID, email, label string) (*Contact, error) {
 }
 ```
 
-### Value Object Example
+#### Profile Aggregate
+
+```go
+// Profile is an aggregate root for user profile information
+type Profile struct {
+    aggregate.BaseAggregate
+
+    ID          uuidv7.UUID
+    UserID      uuidv7.UUID // 1:1 with User
+    DisplayName string      // public name (required)
+
+    // Personal Info
+    FirstName   string
+    LastName    string
+    Gender      Gender // male, female, other, not_specify
+    DateOfBirth *time.Time
+
+    // Business Info
+    Bio       string // max 500 chars
+    AvatarURL string
+
+    // Localization
+    Timezone string // IANA (e.g., "Europe/Kyiv")
+    Language string // ISO 639-1 (e.g., "uk")
+    Country  string // ISO 3166-1 (e.g., "UA")
+
+    // Social Links (all require https://)
+    Website, LinkedIn, Twitter, GitHub string
+
+    // Status
+    IsPublic   bool // profile visibility
+    IsActive   bool // activation status
+    IsBanned   bool // moderation flag
+    IsVerified bool // verified badge
+}
+
+// Factory method
+func NewProfile(userID uuidv7.UUID, displayName string) (*Profile, error) {
+    if displayName == "" {
+        return nil, fmt.Errorf("display name is required")
+    }
+
+    return &Profile{
+        BaseAggregate: aggregate.NewBase(),
+        ID:            uuidv7.New(),
+        UserID:        userID,
+        DisplayName:   displayName,
+        IsPublic:      false,
+        IsActive:      true,
+    }, nil
+}
+```
+
+### Value Objects
 
 ```go
 // Email is a value object for email addresses
@@ -357,7 +438,7 @@ func (e Email) Value() string {
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 Promenade uses **YAML configuration files** per environment with **environment variable overrides**:
 
@@ -365,9 +446,9 @@ Promenade uses **YAML configuration files** per environment with **environment v
 
 ```
 config/
-├── app.dev.yaml        # Development (Memory bus, localhost DB)
-├── app.test.yaml       # Testing (isolated test DB)
-└── app.prod.yaml       # Production (Redis bus, production DB)
+ app.dev.yaml        # Development (Memory bus, localhost DB)
+ app.test.yaml       # Testing (isolated test DB)
+ app.prod.yaml       # Production (Redis bus, production DB)
 ```
 
 ### Development Configuration
@@ -476,7 +557,7 @@ ENVIRONMENT=test ./bin/promenade        # Loads app.test.yaml
 
 ---
 
-## 📚 Key Concepts
+##  Key Concepts
 
 ### Package Library
 
@@ -484,17 +565,17 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 
 | Package         | Purpose                               | Tests | Status        | Documentation               |
 | --------------- | ------------------------------------- | ----- | ------------- | --------------------------- |
-| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | ✅ Production | [README](pkg/bus/README.md) |
-| **logger**      | Structured logging (slog wrapper)     | 15    | ✅ Production | -                           |
-| **migration**   | Namespace-based DB migrations         | 8     | ✅ Production | -                           |
-| **response**    | Standard HTTP responses               | 12    | ✅ Production | -                           |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | ✅ Production | -                           |
-| **valueobject** | DDD Value Objects                     | 25    | ✅ Production | -                           |
-| **aggregate**   | Base Aggregate pattern                | 5     | ✅ Production | -                           |
-| **jsonb**       | PostgreSQL JSONB utilities            | 8     | ✅ Production | -                           |
-| **saga**        | Distributed transaction orchestration | -     | 📋 Planned    | Coming Q1 2026              |
+| **bus**         | Event Bus (Memory/Redis adapters)     | 67    |  Production | [README](pkg/bus/README.md) |
+| **logger**      | Structured logging (slog wrapper)     | 15    |  Production | -                           |
+| **migration**   | Namespace-based DB migrations         | 8     |  Production | -                           |
+| **response**    | Standard HTTP responses               | 12    |  Production | -                           |
+| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    |  Production | -                           |
+| **valueobject** | DDD Value Objects                     | 25    |  Production | -                           |
+| **aggregate**   | Base Aggregate pattern                | 5     |  Production | -                           |
+| **jsonb**       | PostgreSQL JSONB utilities            | 8     |  Production | -                           |
+| **saga**        | Distributed transaction orchestration | -     |  Planned    | Coming Q1 2026              |
 
-**Total**: 156+ tests across all packages
+**Total**: 150+ tests across 32 packages
 
 **Key Highlights**:
 
@@ -507,7 +588,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 
 ---
 
-## 📊 Domain Model Example: Identity Context
+##  Domain Model Example: Identity Context
 
 ### Aggregates
 
@@ -553,7 +634,7 @@ type OrderFulfillmentSaga struct {
 
 ---
 
-## 🗄️ Database
+##  Database
 
 ### Migrations
 
@@ -561,12 +642,12 @@ Migrations are namespace-based for context isolation:
 
 ```
 migrations/
-├── core/                        # Core infrastructure
-│   ├── 000001_core_init_uuid_v7.up.sql
-│   ├── 000002_core_auth_full.up.sql
-│   └── 000003_core_rbac_full.up.sql
-└── identity/                    # Identity context
-    └── 000001_identity_contacts.up.sql
+ core/                        # Core infrastructure
+    000001_core_init_uuid_v7.up.sql
+    000002_core_auth_full.up.sql
+    000003_core_rbac_full.up.sql
+ identity/                    # Identity context
+     000001_identity_contacts.up.sql
 ```
 
 ### UUID v7
@@ -583,24 +664,35 @@ id := uuidv7.New()  // Time-ordered UUID
 
 ---
 
-## 🛣️ Roadmap
+##  Roadmap
 
-### Phase 1: Foundation ✅ (Completed)
+### Phase 1: Foundation  (Completed)
 
 - [x] DDD primitives (Aggregate, Value Objects, Saga)
 - [x] Project structure (Bounded Contexts)
-- [x] Identity Context: Contact aggregate
+- [x] Event Bus (Memory + Redis adapters)
 - [x] Database migrations system
-- [x] Testing infrastructure
+- [x] Testing infrastructure (three-tier strategy)
 
-### Phase 2: Identity Context (Current - Week 1)
+### Phase 2: Identity Context  (Completed - Days 1-3)
+
+- [x] Contact aggregate (email, phone, address)
+- [x] Profile aggregate (personal info, social links, localization)
+- [x] Repository implementations (PostgreSQL)
+- [x] HTTP API (REST with Gin)
+- [x] Unit tests (87 tests per aggregate, 83.5% coverage)
+- [x] Smoke tests (7 Contact + 8 Profile tests)
+- [x] Integration tests (9 Contact + 17 Profile subtests)
+
+### Phase 3: Identity Context - User Aggregate (Week 2)
 
 - [ ] User aggregate (registration, authentication)
-- [ ] Contact aggregate (email, phone, address)
-- [ ] Integration tests
-- [ ] HTTP API (REST)
+- [ ] JWT authentication
+- [ ] Password policies
+- [ ] Email verification workflow
+- [ ] User-Contact-Profile relationships
 
-### Phase 3: Customer Management Context (Week 2-3)
+### Phase 4: Customer Management Context (Week 2-3)
 
 - [ ] Customer aggregate (lifecycle, segmentation)
 - [ ] Company aggregate (B2B)
@@ -621,7 +713,7 @@ id := uuidv7.New()  // Time-ordered UUID
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 This is a learning project focused on DDD architecture. Contributions welcome!
 
@@ -635,13 +727,13 @@ This is a learning project focused on DDD architecture. Contributions welcome!
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📧 Support
+##  Support
 
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
@@ -649,9 +741,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## **Built with Domain-Driven Design and Go** 🚀
+## **Built with Domain-Driven Design and Go** 
 
-## 📖 Documentation
+##  Documentation
 
 ### Complete Documentation Library
 
@@ -659,13 +751,13 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 **Core Documentation**:
 
+- [Documentation Index](docs/INDEX.md) - Complete documentation catalog with quick navigation
 - [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) - High-level architecture and design principles
 - [Architecture Quick Reference](docs/ARCHITECTURE_QUICKREF.md) - Quick reference for common patterns
-- [Documentation Index](docs/INDEX.md) - Complete documentation catalog
 
 **Bounded Contexts**:
 
-- [Identity Context](internal/contexts/identity/README.md) - User, Contact, Profile aggregates (~550 lines)
+- [Identity Context](internal/contexts/identity/README.md) - Contact aggregate (User, Profile planned) (~550 lines)
 - [Shared Context](internal/contexts/shared/README.md) - Reference data (Country, Currency, Language, Timezone) (~450 lines)
 
 **Package Library**:
@@ -683,7 +775,7 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 - [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test organization and execution
 - Mirror path testing structure (tests alongside code)
-- 156+ tests with 90%+ average coverage
+- 150+ tests with 90%+ average coverage
 
 **Total Documentation**: 20+ comprehensive guides with examples, best practices, and architecture decisions
 

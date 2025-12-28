@@ -29,6 +29,14 @@ func Success(c *gin.Context, data interface{}) {
 	})
 }
 
+// SuccessWithMessage sends a successful response with a message
+func SuccessWithMessage(c *gin.Context, message string) {
+	c.JSON(http.StatusOK, Response{
+		Status:  "success",
+		Message: message,
+	})
+}
+
 // Created sends a 201 Created response
 func Created(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusCreated, Response{

@@ -1,34 +1,36 @@
-package postgres
+package currency_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/shared/country"
+	"github.com/basilex/promenade/internal/contexts/shared/currency"
+	"github.com/basilex/promenade/internal/contexts/shared/currency/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
-func TestCountryRepository_Create(t *testing.T) {
+func TestCurrencyRepository_Create(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
-			c := &country.Country{
-				ID:          uuidv7.New(),
-				Code:        "TS",
-				Code3:       "TST",
-				NumericCode: "999",
-				Name:        "Test Country",
-				NameLocal:   "Test Country Local",
-				PhoneCode:   "+999",
-				IsActive:    true,
+			uniqueID := uuidv7.New().String()[:4]
+			c := &currency.Currency{
+				ID:            uuidv7.New(),
+				Code:          fmt.Sprintf("T%s", uniqueID[:2]),
+				NumericCode:   fmt.Sprintf("9%s", uniqueID[2:4]),
+				Name:          "Test Currency",
+				Symbol:        "Ŧ",
+				DecimalPlaces: 2,
+				IsActive:      true,
 			}
 
 			err := repo.Create(ctx, c)
@@ -37,72 +39,70 @@ func TestCountryRepository_Create(t *testing.T) {
 			found, err := repo.GetByID(ctx, c.ID)
 			require.NoError(t, err)
 			assert.Equal(t, c.ID, found.ID)
-			assert.Equal(t, "TS", found.Code)
-			assert.Equal(t, "Test Country", found.Name)
+			assert.NotEmpty(t, found.Code)
+			assert.Equal(t, 2, found.DecimalPlaces)
 		})
 	})
 }
 
-func TestCountryRepository_GetByID(t *testing.T) {
+func TestCurrencyRepository_GetByID(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			nonExistentID := uuidv7.New()
 			found, err := repo.GetByID(ctx, nonExistentID)
 			assert.Error(t, err)
-			assert.Equal(t, country.ErrNotFound, err)
+			assert.Equal(t, currency.ErrNotFound, err)
 			assert.Nil(t, found)
 		})
 	})
 }
 
-func TestCountryRepository_GetByCode(t *testing.T) {
+func TestCurrencyRepository_GetByCode(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
-			c := &country.Country{
-				ID:          uuidv7.New(),
-				Code:        "GC",
-				Code3:       "GCT",
-				NumericCode: "994",
-				Name:        "GetByCode Test",
-				NameLocal:   "GetByCode Test Local",
-				PhoneCode:   "+994",
-				IsActive:    true,
+			c := &currency.Currency{
+				ID:            uuidv7.New(),
+				Code:          "GBC",
+				NumericCode:   "994",
+				Name:          "GetByCode Test",
+				Symbol:        "Ģ",
+				DecimalPlaces: 2,
+				IsActive:      true,
 			}
 
 			err := repo.Create(ctx, c)
 			require.NoError(t, err)
 
-			found, err := repo.GetByCode(ctx, "GC")
+			found, err := repo.GetByCode(ctx, "GBC")
 			require.NoError(t, err)
-			assert.Equal(t, "GC", found.Code)
+			assert.Equal(t, "GBC", found.Code)
 		})
 	})
 }
 
-func TestCountryRepository_List(t *testing.T) {
+func TestCurrencyRepository_List(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("returns_active_only", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
-			c1 := &country.Country{
-				ID:          uuidv7.New(),
-				Code:        "L1",
-				Code3:       "LS1",
-				NumericCode: "989",
-				Name:        "List Test Alpha",
-				NameLocal:   "List Alpha Local",
-				PhoneCode:   "+989",
-				IsActive:    true,
+			c1 := &currency.Currency{
+				ID:            uuidv7.New(),
+				Code:          "LS1",
+				NumericCode:   "989",
+				Name:          "List Test",
+				Symbol:        "Ł",
+				DecimalPlaces: 2,
+				IsActive:      true,
 			}
 
 			err := repo.Create(ctx, c1)
@@ -119,54 +119,54 @@ func TestCountryRepository_List(t *testing.T) {
 	})
 }
 
-func TestCountryRepository_Update(t *testing.T) {
+func TestCurrencyRepository_Update(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
-			c := &country.Country{
-				ID:          uuidv7.New(),
-				Code:        "UP",
-				Code3:       "UPD",
-				NumericCode: "992",
-				Name:        "Update Test",
-				NameLocal:   "Update Test Local",
-				PhoneCode:   "+992",
-				IsActive:    true,
+			c := &currency.Currency{
+				ID:            uuidv7.New(),
+				Code:          "UPD",
+				NumericCode:   "992",
+				Name:          "Update Test",
+				Symbol:        "Ü",
+				DecimalPlaces: 2,
+				IsActive:      true,
 			}
 
 			err := repo.Create(ctx, c)
 			require.NoError(t, err)
 
 			c.Name = "Updated Name"
+			c.DecimalPlaces = 3
 			err = repo.Update(ctx, c)
 			require.NoError(t, err)
 
 			found, err := repo.GetByID(ctx, c.ID)
 			require.NoError(t, err)
 			assert.Equal(t, "Updated Name", found.Name)
+			assert.Equal(t, 3, found.DecimalPlaces)
 		})
 	})
 }
 
-func TestCountryRepository_Delete(t *testing.T) {
+func TestCurrencyRepository_Delete(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("soft_delete", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
-			c := &country.Country{
-				ID:          uuidv7.New(),
-				Code:        "DL",
-				Code3:       "DEL",
-				NumericCode: "990",
-				Name:        "Delete Test Country",
-				NameLocal:   "Delete Test Local",
-				PhoneCode:   "+990",
-				IsActive:    true,
+			c := &currency.Currency{
+				ID:            uuidv7.New(),
+				Code:          "DEL",
+				NumericCode:   "990",
+				Name:          "Delete Test",
+				Symbol:        "Ð",
+				DecimalPlaces: 2,
+				IsActive:      true,
 			}
 
 			err := repo.Create(ctx, c)
@@ -177,7 +177,7 @@ func TestCountryRepository_Delete(t *testing.T) {
 
 			found, err := repo.GetByID(ctx, c.ID)
 			assert.Error(t, err)
-			assert.Equal(t, country.ErrNotFound, err)
+			assert.Equal(t, currency.ErrNotFound, err)
 			assert.Nil(t, found)
 		})
 	})

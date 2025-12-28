@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS shared_languages (
     code VARCHAR(2) NOT NULL UNIQUE,           -- ISO 639-1 alpha-2 (en, uk, de)
     code3 VARCHAR(3) NOT NULL UNIQUE,          -- ISO 639-2/T alpha-3 (eng, ukr, deu)
     name VARCHAR(100) NOT NULL,                -- English name
-    native_name VARCHAR(100) NOT NULL,         -- Native name (English, Українська, Deutsch)
+    native_name VARCHAR(100) NOT NULL,         -- Native name (English, Ukrainian, Deutsch)
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -2,7 +2,7 @@
 
 **Domain:** CRM, customer relationships, sales pipeline  
 **Ubiquitous Language:** Customer, Company, Deal, Interaction, Lead, Opportunity  
-**Status:** 📋 Planned (Phase 2 implementation)
+**Status:**  Planned (Phase 2 implementation)
 
 ---
 
@@ -12,7 +12,7 @@ The **Customer Management Context** handles all CRM (Customer Relationship Manag
 
 ### Responsibilities
 
-✅ **What Customer Management Context DOES:**
+ **What Customer Management Context DOES:**
 
 - Customer lifecycle management (Lead → Customer → Churned)
 - Company management (B2B organizations)
@@ -20,7 +20,7 @@ The **Customer Management Context** handles all CRM (Customer Relationship Manag
 - Interaction history (calls, emails, meetings, notes)
 - Customer segmentation and tier management
 
-❌ **What Customer Management Context DOES NOT DO:**
+ **What Customer Management Context DOES NOT DO:**
 
 - User authentication → **Identity Context**
 - Orders and contracts → **Order Management Context**
@@ -519,6 +519,6 @@ DELETE /api/v1/crm/interactions/:id       # Delete interaction
 
 ---
 
-**Status:** 📋 Planned for Phase 2  
+**Status:**  Planned for Phase 2  
 **Dependencies:** Phase 1 complete (Foundation packages + Identity context)  
 **Next:** Wait for Phase 1 completion, then implement Customer aggregate

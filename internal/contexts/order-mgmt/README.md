@@ -2,7 +2,7 @@
 
 **Domain:** Order processing, contracts, fulfillment  
 **Ubiquitous Language:** Order, Contract, Fulfillment, OrderLine, Shipment  
-**Status:** 📋 Planned (Phase 3 implementation)
+**Status:**  Planned (Phase 3 implementation)
 
 ---
 
@@ -12,7 +12,7 @@ The **Order Management Context** handles the complete order lifecycle from creat
 
 ### Responsibilities
 
-✅ **What Order Management Context DOES:**
+ **What Order Management Context DOES:**
 
 - Order creation and lifecycle management
 - Contract generation and management
@@ -20,7 +20,7 @@ The **Order Management Context** handles the complete order lifecycle from creat
 - Order status updates and notifications
 - Order history and audit trail
 
-❌ **What Order Management Context DOES NOT DO:**
+ **What Order Management Context DOES NOT DO:**
 
 - Payment processing → **Billing Context**
 - Inventory management → **Warehouse Context**
@@ -351,6 +351,6 @@ POST   /api/v1/fulfillments/:id/ship  # Add shipment
 
 ---
 
-**Status:** 📋 Planned for Phase 3  
+**Status:**  Planned for Phase 3  
 **Dependencies:** Customer Management, Billing, Warehouse contexts  
 **Next:** Implement after Customer Management context

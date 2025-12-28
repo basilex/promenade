@@ -1,4 +1,4 @@
-package postgres
+package timezone_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/contexts/shared/timezone"
+	"github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -18,7 +19,7 @@ func TestTimezoneRepository_Create(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			tz := &timezone.Timezone{
 				ID:           uuidv7.New(),
@@ -45,7 +46,7 @@ func TestTimezoneRepository_GetByID(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			nonExistentID := uuidv7.New()
 			found, err := repo.GetByID(ctx, nonExistentID)
@@ -61,7 +62,7 @@ func TestTimezoneRepository_GetByName(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			tz := &timezone.Timezone{
 				ID:           uuidv7.New(),
@@ -86,7 +87,7 @@ func TestTimezoneRepository_List(t *testing.T) {
 
 	t.Run("returns_active_only", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			tz1 := &timezone.Timezone{
 				ID:           uuidv7.New(),
@@ -115,7 +116,7 @@ func TestTimezoneRepository_Update(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			tz := &timezone.Timezone{
 				ID:           uuidv7.New(),
@@ -146,7 +147,7 @@ func TestTimezoneRepository_Delete(t *testing.T) {
 
 	t.Run("soft_delete", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			tz := &timezone.Timezone{
 				ID:           uuidv7.New(),

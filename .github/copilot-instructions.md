@@ -29,7 +29,7 @@ Each context is autonomous with:
 **Available Contexts**:
 
 - **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only)
-- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile aggregates (authentication, contacts)
+- **Identity** (`internal/contexts/identity/`) - Contact aggregate (authentication, contacts) | User, Profile planned
 - **Customer Management** (planned) - Customer, Company, Deal, Interaction
 - **Order Management** (planned) - Order, OrderItem, Fulfillment
 - **Billing** (planned) - Invoice, Payment, Subscription
@@ -43,38 +43,38 @@ Each context is autonomous with:
 
 ```
 internal/contexts/{context}/{aggregate}/
-├── entity.go                     # Domain entity (aggregate root)
-├── entity_test.go                # Entity tests
-├── repository.go                 # Repository interface
-├── usecase.go                    # Business logic (use cases)
-├── usecase_test.go               # Use case tests
-└── adapter/
-    ├── http/handler/
-    │   ├── {aggregate}_handler.go    # HTTP handlers
-    │   └── dto/
-    │       └── {aggregate}_dto.go    # Data transfer objects
-    └── repository/postgres/
-        ├── base_repository.go        # BaseRepository (per context)
-        └── {aggregate}_repository.go # PostgreSQL implementation
+ entity.go                     # Domain entity (aggregate root)
+ entity_test.go                # Entity tests
+ repository.go                 # Repository interface
+ usecase.go                    # Business logic (use cases)
+ usecase_test.go               # Use case tests
+ adapter/
+     http/handler/
+        {aggregate}_handler.go    # HTTP handlers
+        dto/
+            {aggregate}_dto.go    # Data transfer objects
+     repository/postgres/
+         base_repository.go        # BaseRepository (per context)
+         {aggregate}_repository.go # PostgreSQL implementation
 ```
 
 **Example - Identity Contact Aggregate**:
 
 ```
 internal/contexts/identity/contact/
-├── entity.go                     # Contact aggregate (Email, Phone, Address)
-├── entity_test.go
-├── repository.go                 # IRepository interface
-├── usecase.go                    # IUseCase interface + implementation
-├── usecase_test.go
-└── adapter/
-    ├── http/handler/
-    │   ├── contact_handler.go
-    │   └── dto/
-    │       └── contact_dto.go
-    └── repository/postgres/
-        ├── base_repository.go
-        └── contact_repository.go
+ entity.go                     # Contact aggregate (Email, Phone, Address)
+ entity_test.go
+ repository.go                 # IRepository interface
+ usecase.go                    # IUseCase interface + implementation
+ usecase_test.go
+ adapter/
+     http/handler/
+        contact_handler.go
+        dto/
+            contact_dto.go
+     repository/postgres/
+         base_repository.go
+         contact_repository.go
 ```
 
 ### 4. Key Patterns
@@ -146,13 +146,14 @@ eventBus.Publish(ctx, event)
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
-**Testing** (tests live alongside code in `*_test.go`):
+**Testing** (three-tier strategy):
 
-- `make test` - All tests
-- `make test-unit` - Unit tests only
-- `make test-integration` - Integration tests with real DB
+- `make test` - All tests with race detector (~40s)
+- `make test-unit` - Unit tests only (fast, ~5s)
+- `make test-smoke` - Smoke tests (mock-based, ~0.3s)
+- `make test-integration` - Integration tests with real DB (~5s, auto-starts test DB)
 - `make test-coverage` - HTML coverage report
-- Test DB: `make test-db-start` / `make test-db-stop`
+- Test DB: `make test-db-start` / `make test-db-stop` (auto-managed by test-integration)
 
 **Migrations** (namespace-based per context):
 
@@ -268,19 +269,19 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 1. **Structure** in `internal/contexts/{context}/{aggregate}/`:
 
    ```
-   ├── entity.go              # Domain entity (aggregate root)
-   ├── entity_test.go         # Entity tests
-   ├── repository.go          # IRepository interface
-   ├── usecase.go             # IUseCase interface + implementation
-   ├── usecase_test.go        # Use case tests
-   └── adapter/
-       ├── http/handler/
-       │   ├── {aggregate}_handler.go
-       │   └── dto/
-       │       └── {aggregate}_dto.go
-       └── repository/postgres/
-           ├── base_repository.go  # If first aggregate in context
-           └── {aggregate}_repository.go
+    entity.go              # Domain entity (aggregate root)
+    entity_test.go         # Entity tests
+    repository.go          # IRepository interface
+    usecase.go             # IUseCase interface + implementation
+    usecase_test.go        # Use case tests
+    adapter/
+        http/handler/
+           {aggregate}_handler.go
+           dto/
+               {aggregate}_dto.go
+        repository/postgres/
+            base_repository.go  # If first aggregate in context
+            {aggregate}_repository.go
    ```
 
 2. **entity.go** - Define aggregate root with factory methods:
@@ -351,37 +352,45 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 **Config Loading**:
 
 - Core: `config/app.{env}.yaml` (ENVIRONMENT=dev/test/prod)
-- Modules: `internal/modules/{name}/config/config.{env}.yaml`
-- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET)
+- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET, REDIS_ADDR)
 - Access: `logger.FromContext(ctx)`, `database.GetTx(ctx)`
 
 ## Testing Strategy
 
-**Test Organization**: Tests live alongside code (`*_test.go` in same directory)
+**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional smoke/integration tests in mirror path structure
 
-**Test Types**:
+**Three-Tier Test Strategy**:
 
-- **Entity Tests** - Domain entity validation, factory methods, state transitions
-- **UseCase Tests** - Business logic with mocked repositories
-- **Repository Tests** - Database integration tests (requires test DB)
-- **Handler Tests** - HTTP endpoint testing
+1. **Unit Tests** (in-place): Fast feedback, test individual components
+   - Location: Same directory as production code (`entity_test.go`, `usecase_test.go`)
+   - Run: `make test-unit` (~5s)
+2. **Smoke Tests** (`test/smoke/contexts/`): Mock-based handler validation, no DB
+   - Location: Mirror path structure (e.g., `test/smoke/contexts/shared/country/handler_test.go`)
+   - Run: `make test-smoke` (~0.3s)
+3. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
+   - Location: Mirror path structure (e.g., `test/integration/contexts/identity/contact/repository_test.go`)
+   - Run: `make test-integration` (~5s, auto-starts test DB)
 
 **Running Tests**:
 
 ```bash
-make test                      # All tests
-make test-unit                 # Unit tests (fast, no DB)
-make test-integration          # Integration tests (with test DB)
+make test                      # All tests with race detector (~40s)
+make test-unit                 # Unit tests only (~5s)
+make test-smoke                # Smoke tests (~0.3s)
+make test-integration          # Integration tests with real DB (~5s)
 make test-coverage             # HTML coverage report
 
 # Context-specific tests
 go test ./internal/contexts/identity/... -v
-go test ./internal/contexts/shared/... -v
+go test ./test/smoke/contexts/shared/... -v
+go test ./test/integration/contexts/identity/... -v
 
 # Package tests
 go test ./pkg/bus/... -v
 go test ./pkg/uuidv7/... -v
 ```
+
+**Test Statistics**: 150+ tests across 32 packages, 90%+ average coverage
 
 **Example Entity Test**:
 
@@ -602,8 +611,7 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 **Config Loading**:
 
 - Core: `config/app.{env}.yaml` (ENVIRONMENT=dev/test/prod)
-- Modules: `internal/modules/{name}/config/config.{env}.yaml`
-- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET)
+- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET, REDIS_ADDR)
 - Access: `logger.FromContext(ctx)`, `database.GetTx(ctx)`
 
 ## Critical Gotchas
@@ -612,19 +620,18 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 1. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
 2. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
-3. **Module Dependencies**: No `internal/domain|usecase|adapter` imports in modules. Only `pkg/*`
+3. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
 4. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
 5. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
-6. **Migration Namespaces**: Core migrations run first. Wrong namespace breaks history
+6. **Migration Namespaces**: Migrations run in order: core → shared → identity
 
 **Debugging Quick Reference**:
 
 - **DB Connection**: `make docker-ps` → check Postgres on 5432, test DB on 5433
-- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~36s)
-- **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `posts/`, etc.)
-- **Module Won't Load**: Verify import in `cmd/api/main.go` + enabled in `config/modules.yaml`
-- **API 404s**: Run `make swagger-all` after handler changes
-- **License Errors**: Check `{MODULE}_LICENSE_KEY` env var or set `license_required: false`
+- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~5s)
+- **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `shared/`, `identity/`)
+- **Context Won't Load**: Verify router imported and registered in `cmd/api/main.go`
+- **Event Bus Issues**: Check adapter config (`memory` for dev, `redis` for prod) in `config/app.{env}.yaml`
 
 ## Code Review Checklist
 
@@ -690,20 +697,21 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 ## Key Files
 
-| File                                                                | Purpose                        |
-| ------------------------------------------------------------------- | ------------------------------ |
-| [cmd/api/main.go](../cmd/api/main.go)                               | Entry point, module loading    |
-| [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk)      | All workflows (modular)        |
-| [pkg/module/module.go](../pkg/module/module.go)                     | Module interface & registry    |
-| [pkg/uuidv7/uuidv7.go](../pkg/uuidv7/uuidv7.go)                     | Time-ordered UUIDs             |
-| [internal/infrastructure/database/transaction.go][tx]               | Transaction management         |
-| [internal/adapter/repository/postgres/base_repository.go][baserepo] | Core BaseRepository            |
-| [scripts/generate-license.sh](../scripts/generate-license.sh)       | Commercial license generation  |
-| [docs/](../docs/)                                                   | Architecture guides (20+ docs) |
-| [test/integration/](../test/integration/)                           | Test utilities & fixtures      |
+| File                                                           | Purpose                           |
+| -------------------------------------------------------------- | --------------------------------- |
+| [cmd/api/main.go](../cmd/api/main.go)                          | Entry point, context registration |
+| [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk) | All workflows (modular)           |
+| [pkg/uuidv7/uuidv7.go](../pkg/uuidv7/uuidv7.go)                | Time-ordered UUIDs                |
+| [pkg/bus/README.md](../pkg/bus/README.md)                      | Event Bus documentation           |
+| [internal/infrastructure/database/transaction.go][tx]          | Transaction management            |
+| [internal/contexts/shared/router.go][shared]                   | Shared context router             |
+| [internal/contexts/identity/router.go][identity]               | Identity context router           |
+| [docs/](../docs/)                                              | Architecture guides (20+ docs)    |
+| [test/README.md](../test/README.md)                            | Testing guide                     |
 
 [tx]: ../internal/infrastructure/database/transaction.go
-[baserepo]: ../internal/adapter/repository/postgres/base_repository.go
+[shared]: ../internal/contexts/shared/router.go
+[identity]: ../internal/contexts/identity/router.go
 
 ---
 

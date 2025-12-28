@@ -2,33 +2,34 @@
 
 **Domain:** User authentication, profiles, and contact information  
 **Ubiquitous Language:** User, Profile, Contact, Session, Credentials  
-**Status:** ✅ Production-ready (User, Contact aggregates) | 🚧 Profile aggregate in progress
+**Status:**  Production-ready (Contact & Profile aggregates) |  User aggregate planned
 
 ---
 
-## 📌 Overview
+##  Overview
 
 The **Identity Context** manages everything related to user identity, authentication, authorization (RBAC), and personal contact information. This is the **Core Domain** for user management in Promenade CRM, following **Domain-Driven Design (DDD)** principles with clear bounded context separation.
 
-### 🎯 Bounded Context Responsibilities
+###  Bounded Context Responsibilities
 
-✅ **What Identity Context DOES:**
+ **What Identity Context DOES:**
 
-- ✅ User registration and authentication (login/logout)
-- ✅ Session management (JWT tokens, token refresh)
-- ✅ Role-Based Access Control (RBAC) - users, roles, permissions
-- ✅ Contact information management (email, phone, address)
-- ✅ User profile management (display name, bio, avatar, timezone, language)
-- ✅ User credentials and password management (bcrypt hashing)
-- ✅ Contact verification (email confirmation, phone OTP)
+-  Contact information management (email, phone, address)
+-  Contact verification (email confirmation, phone OTP)
+-  User profile management (display name, bio, avatar, personal info, social links)
+-  Profile visibility control (public/private profiles)
+-  User registration and authentication (login/logout) - planned
+-  Session management (JWT tokens, token refresh) - planned
+-  Role-Based Access Control (RBAC) - users, roles, permissions - planned
+-  User credentials and password management (bcrypt hashing) - planned
 
-❌ **What Identity Context DOES NOT DO:**
+ **What Identity Context DOES NOT DO:**
 
-- ❌ Billing and subscriptions → **Billing Context**
-- ❌ Customer relationships (CRM) → **Customer Management Context**
-- ❌ Orders and contracts → **Order Management Context**
-- ❌ Business analytics → **Analytics Context**
-- ❌ Notifications → **Notification Context** (Identity publishes events only)
+-  Billing and subscriptions → **Billing Context**
+-  Customer relationships (CRM) → **Customer Management Context**
+-  Orders and contracts → **Order Management Context**
+-  Business analytics → **Analytics Context**
+-  Notifications → **Notification Context** (Identity publishes events only)
 
 ---
 
@@ -89,10 +90,11 @@ func (u *User) HasPermission(permission string) bool
 
 ---
 
-### 2. Profile Aggregate
+### 2. Profile Aggregate 
 
 **Aggregate Root:** `Profile`  
-**Purpose:** User profile information (personal and business)
+**Purpose:** User profile information (personal and business)  
+**Status:**  **Production-ready** (Day 3)
 
 **Entity Structure:**
 
@@ -101,55 +103,124 @@ type Profile struct {
     aggregate.BaseAggregate
 
     // Identity
-    ID        uuidv7.UUID
-    UserID    uuidv7.UUID // references User aggregate
+    ID          uuidv7.UUID
+    UserID      uuidv7.UUID // references User aggregate
+    DisplayName string      // public display name
 
     // Personal Info
-    FirstName string
-    LastName  string
-    FullName  string // computed
+    FirstName  string
+    LastName   string
+    MiddleName string
+    Gender     Gender // male, female, other, not_specify
+    DateOfBirth *time.Time
 
     // Business Info
-    Company   string
-    Position  string
-    Bio       string
+    Bio       string // max 500 characters
+    AvatarURL string // profile picture
 
-    // Avatar
-    AvatarURL string
+    // Localization
+    Timezone string // IANA timezone (e.g., "Europe/Kyiv")
+    Language string // ISO 639-1 code (e.g., "uk", "en")
+    Country  string // ISO 3166-1 alpha-2 (e.g., "UA", "GB")
 
-    // Privacy
-    IsPublic  bool
+    // Social Links
+    Website   string
+    LinkedIn  string
+    Twitter   string
+    GitHub    string
+    Facebook  string
+    Instagram string
+
+    // Status Flags
+    IsPublic   bool // profile visibility
+    IsActive   bool // profile activation status
+    IsBanned   bool // moderation flag
+    IsVerified bool // verified profile badge
 
     // Lifecycle
     CreatedAt time.Time
     UpdatedAt time.Time
+    DeletedAt *time.Time // soft delete
 }
 ```
 
 **Business Rules:**
 
-- One profile per user
-- Full name is computed: `FirstName + LastName`
+- One profile per user (1:1 relationship with User)
+- Display name is required (1-100 characters)
 - Bio limited to 500 characters
-- Avatar URL must be valid HTTPS URL
+- Social links must be valid HTTPS URLs
+- Gender enum: male, female, other, not_specify
+- Public profiles visible to all, private only to owner
+- Banned profiles hidden from public listings
+- Soft delete preserves audit trail
 
 **Methods:**
 
 ```go
-func (p *Profile) UpdatePersonalInfo(firstName, lastName string) error
-func (p *Profile) UpdateBusinessInfo(company, position string) error
-func (p *Profile) SetAvatar(url string) error
-func (p *Profile) MakePublic() error
-func (p *Profile) MakePrivate() error
+// Creation
+func NewProfile(userID uuidv7.UUID, displayName string) (*Profile, error)
+
+// Updates
+func (p *Profile) UpdateDisplayName(displayName string) error
+func (p *Profile) UpdateBio(bio string) error
+func (p *Profile) UpdateAvatar(avatarURL string) error
+func (p *Profile) UpdatePersonalInfo(firstName, lastName, middleName string) error
+func (p *Profile) UpdateGender(gender Gender) error
+func (p *Profile) UpdateDateOfBirth(dateOfBirth *time.Time) error
+func (p *Profile) UpdateLocalization(timezone, language, country string) error
+func (p *Profile) UpdateSocialLinks(website, linkedin, twitter, github, facebook, instagram string) error
+
+// Visibility
+func (p *Profile) SetPublic()
+func (p *Profile) SetPrivate()
+
+// Status
+func (p *Profile) Activate()
+func (p *Profile) Deactivate()
+
+// Validation
+func (p *Profile) Validate() error
 ```
+
+**HTTP Endpoints:**
+
+- `POST /api/v1/identity/profiles` - Create profile
+- `GET /api/v1/identity/profiles/:id` - Get profile by ID
+- `GET /api/v1/identity/profiles/user/:user_id` - Get profile by user ID
+- `GET /api/v1/identity/profiles` - List public profiles (paginated)
+- `PUT /api/v1/identity/profiles/:id/display-name` - Update display name
+- `PUT /api/v1/identity/profiles/:id/bio` - Update bio
+- `PUT /api/v1/identity/profiles/:id/avatar` - Update avatar
+- `PUT /api/v1/identity/profiles/:id/personal-info` - Update personal info
+- `PUT /api/v1/identity/profiles/:id/gender` - Update gender
+- `PUT /api/v1/identity/profiles/:id/date-of-birth` - Update date of birth
+- `PUT /api/v1/identity/profiles/:id/localization` - Update localization
+- `PUT /api/v1/identity/profiles/:id/social-links` - Update social links
+- `PUT /api/v1/identity/profiles/:id/public` - Set public
+- `PUT /api/v1/identity/profiles/:id/private` - Set private
+- `DELETE /api/v1/identity/profiles/:id` - Soft delete profile
+
+**Database:**
+
+- Table: `identity_profiles`
+- Migration: `migrations/identity/000005_profiles.up.sql`
+- Indexes: user_id, is_public, created_at
+
+**Tests:**
+
+-  Unit tests: `entity_test.go` (35 tests, 96% coverage)
+-  Unit tests: `usecase_test.go` (52 tests, 70% coverage)
+-  Smoke tests: `test/smoke/contexts/identity/profile/handler_test.go` (8 tests)
+-  Integration tests: `test/integration/contexts/identity/profile/repository_test.go` (6 test functions, 17 subtests)
 
 ---
 
-### 3. Contact Aggregate ⭐
+### 3. Contact Aggregate 
 
 **Aggregate Root:** `Contact`  
 **Purpose:** Contact information management  
-**Status:** 🎯 **Ready for implementation (Day 3)**
+**Status:**  **Production-ready** (Day 2)
 
 **Entity Structure:**
 
@@ -158,44 +229,66 @@ type Contact struct {
     aggregate.BaseAggregate
 
     // Identity
-    ID        uuidv7.UUID
-    UserID    uuidv7.UUID // references User aggregate
+    ID     uuidv7.UUID
+    UserID uuidv7.UUID // references User aggregate
 
     // Contact Type
-    Type      ContactType // primary, home, work, other
-    Label     string      // e.g., "Home Phone", "Work Email"
+    Type  ContactType // email, phone, address
+    Label string      // e.g., "Home Phone", "Work Email"
 
-    // Contact Details (value objects)
-    Email     *valueobject.Email   // optional
-    Phone     *valueobject.Phone   // optional
-    Address   *valueobject.Address // optional
+    // Contact Details (value objects - only one populated based on Type)
+    Email   *valueobject.Email   // for email contacts
+    Phone   *valueobject.Phone   // for phone contacts
+    Address *valueobject.Address // for address contacts
 
     // Flags
-    IsPrimary bool // only one primary contact per user
-    IsPublic  bool // visible to other users
+    IsPrimary  bool // only one primary contact per user per type
+    IsVerified bool // email confirmed, phone OTP verified
+    IsPublic   bool // visible to other users
 
     // Lifecycle
     CreatedAt time.Time
     UpdatedAt time.Time
+    DeletedAt *time.Time // soft delete
 }
 ```
 
 **Business Rules:**
 
-- At least one of Email, Phone, or Address must be present
+- Exactly ONE of Email, Phone, or Address must be present (enforced by factory methods)
 - Only ONE primary contact per user per type
 - Primary contacts cannot be deleted (must set another as primary first)
 - Public contacts visible to all users, private only to owner
+- Email contacts require verification
+- Phone contacts support OTP verification
 
 **Methods:**
 
 ```go
-func (c *Contact) SetAsPrimary() error
-func (c *Contact) UpdateEmail(email valueobject.Email) error
-func (c *Contact) UpdatePhone(phone valueobject.Phone) error
-func (c *Contact) UpdateAddress(address valueobject.Address) error
-func (c *Contact) MakePublic() error
-func (c *Contact) MakePrivate() error
+// Factory methods (enforce one contact type rule)
+func NewEmailContact(userID uuidv7.UUID, email, label string) (*Contact, error)
+func NewPhoneContact(userID uuidv7.UUID, phone, label string) (*Contact, error)
+func NewAddressContact(userID uuidv7.UUID, street, city, country, postalCode, label string) (*Contact, error)
+
+// Updates
+func (c *Contact) SetEmail(email string) error
+func (c *Contact) SetPhone(phone string) error
+func (c *Contact) SetAddress(street, city, country, postalCode string) error
+func (c *Contact) UpdateLabel(label string)
+
+// Primary flag
+func (c *Contact) SetAsPrimary()
+func (c *Contact) UnsetPrimary()
+
+// Verification
+func (c *Contact) Verify()
+func (c *Contact) Unverify()
+
+// Visibility
+func (c *Contact) SetPublic()
+func (c *Contact) SetPrivate()
+
+// Validation
 func (c *Contact) Validate() error
 ```
 
@@ -258,7 +351,7 @@ func (uc *UpdateProfileUseCase) Execute(ctx context.Context, req UpdateProfileRe
 }
 ```
 
-### Contact Management ⭐
+### Contact Management 
 
 ```go
 type CreateContactUseCase struct {
@@ -375,7 +468,7 @@ CREATE TABLE user_profiles (
 CREATE INDEX idx_profiles_user_id ON user_profiles(user_id);
 ```
 
-### Contacts Table ⭐
+### Contacts Table 
 
 ```sql
 CREATE TABLE user_contacts (
@@ -424,7 +517,7 @@ PUT    /api/v1/identity/profile         # Update profile
 GET    /api/v1/identity/profiles/:id    # Get public profile
 ```
 
-### Contact Management ⭐ (Day 3)
+### Contact Management  (Day 3)
 
 ```
 GET    /api/v1/identity/contacts        # List own contacts
@@ -483,10 +576,10 @@ Current module structure:
 
 ```
 internal/modules/profiles/
-  ├── entity/
-  │   ├── user_profile.go
-  │   └── user_contact.go    ← Will migrate to contexts/identity/contact/
-  └── ...
+   entity/
+      user_profile.go
+      user_contact.go    ← Will migrate to contexts/identity/contact/
+   ...
 ```
 
 Migration plan:
@@ -546,6 +639,6 @@ Migration plan:
 
 ---
 
-**Status:** 🎯 Ready for Contact aggregate implementation  
+**Status:**  Ready for Contact aggregate implementation  
 **Next:** Day 3 - Implement Contact aggregate with 40 tests  
 **Documentation:** See `docs/BOUNDED_CONTEXTS_GUIDE.md` for complete DDD guide

@@ -1,431 +1,109 @@
-# Test Integration Utilities
+# Integration Tests
 
-**Shared test utilities** for Promenade - helpers for setting up test databases, fixtures, and common test scenarios.
+Integration tests with **real database** organized by **mirror path** structure.
 
----
-
-## Overview
-
-This directory contains **shared test utilities**, not tests themselves. All tests are located **in-place** alongside the code they test.
-
-### What's Here
-
-- **`testutils.go`** - Database setup helpers, test fixtures, common assertions
-- **`README.md`** - This documentation
-
-### What's NOT Here
-
-❌ Actual test files (they live in-place with production code)  
-❌ Integration tests (moved to `*_test.go` files alongside repositories)  
-❌ Unit tests (always in-place with code)
-
----
-
-## In-Place Testing
-
-All tests now follow **in-place testing** pattern:
+## Structure
 
 ```
-pkg/bus/
-├── bus.go
-├── bus_test.go                 # ✅ Unit tests
-├── bus_integration_test.go     # ✅ Integration tests
-└── memory/
-    ├── memory_bus.go
-    └── memory_bus_test.go      # ✅ Adapter tests
-
-internal/contexts/shared/country/
-├── entity.go
-├── entity_test.go              # ✅ Entity tests
-├── usecase.go
-├── usecase_test.go             # ✅ UseCase tests
-└── adapter/repository/postgres/
-    ├── country_repository.go
-    └── country_repository_test.go  # ✅ DB integration tests
+test/integration/
+ testutils.go              # Shared test utilities
+ contexts/                 # Mirror: internal/contexts/
+    shared/               # Mirror: internal/contexts/shared/
+       country/
+          repository_test.go  #  Repository integration tests
+       currency/
+          repository_test.go  #  Repository integration tests
+       language/
+          repository_test.go  #  Repository integration tests
+       timezone/
+           repository_test.go  #  Repository integration tests
+    identity/             # Mirror: internal/contexts/identity/
+        contact/
+            repository_test.go  #  Repository integration tests
+ pkg/
+     bus/
+         bus_integration_test.go
 ```
 
----
+## Coverage
 
-## Using Test Utilities
+### Repository Integration Tests (5 aggregates, ~30 tests)
 
-make test-integration-notifications
+-  **Country** (6 tests) - Create, GetByID, GetByCode, Update, Delete, List
+-  **Currency** (6 tests) - Create, GetByID, GetByCode, Update, Delete, List
+-  **Language** (6 tests) - Create, GetByID, GetByCode, Update, Delete, List
+-  **Timezone** (6 tests) - Create, GetByID, GetByName, Update, Delete, List
+-  **Contact** (TBD tests) - Repository CRUD operations
 
-````
+All tests use real PostgreSQL database via `testutils.SetupTestDB()`.
 
-**Posts Module Tests:**
+## Purpose
 
-- `PostRepository` - Post CRUD, ListByUserID, ListByStatus, soft delete
-- `ICommentRepository` - Comment CRUD, ListByPostID, nested comments
-- `LikeRepository` - Like/Unlike, CountByPostID
+Integration tests validate **full functionality** with real external dependencies:
 
-**Profiles Module Tests:**
+-  Real PostgreSQL database
+-  Real Redis (Event Bus)
+-  Full HTTP request/response cycle
+-  Database transactions and rollbacks
+-  End-to-end workflows
 
-- `IUserProfileRepository` - Profile CRUD, GetByUserID, IncrementProfileViews
-- `IUserContactRepository` - Contact CRUD, GetByUserID
-
-**Analytics Module Tests:**
-
-- `IMetricRepository` - Store metrics, Query, Aggregate, DeleteOlderThan
-
-**Notifications Module Tests:**
-
-- `INotificationRepository` - Notification CRUD, ListByUserID, GetUnreadCount, UpdateStatus
-- `IUserPreferenceRepository` - Preferences CRUD, GetByUserID, quiet hours logic
-
-### Check Database Status
+## Usage
 
 ```bash
-make test-integration-check
-````
+# All integration tests (starts test DB automatically)
+make test-integration
 
----
+# Specific context
+go test ./test/integration/contexts/shared/... -v
+go test ./test/integration/contexts/identity/... -v
 
-## Using Test Utilities
-
-### Import in Your Tests
-
-```go
-import "github.com/basilex/promenade/test/integration"
+# Single aggregate
+go test ./test/integration/contexts/shared/country -v
 ```
 
-### Setup Test Database
+## Difference from Smoke Tests
 
-```go
-// Setup test database with migrations
-testDB := integration.SetupTestDB(t)
+| Aspect   | Smoke Tests             | Integration Tests             |
+| -------- | ----------------------- | ----------------------------- |
+| Location | `/test/smoke/contexts/` | `/test/integration/contexts/` |
+| Database |  No (mocks)           |  Yes (real)                 |
+| Speed    |  Fast (~0.35s)        |  Slower (~30s)              |
+| Purpose  | Quick validation        | Full E2E testing              |
+| When     | Every commit            | Before merge/deploy           |
 
-// Clean all tables
-testDB.CleanAllTables()
+## Writing Integration Tests
 
-// Run code in transaction (auto-rollback)
-testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-    // Test code here
-})
+1. Create test file:
 
-// Get context with logger
-ctx := testDB.GetContext()
-```
+   ```bash
+   touch test/integration/contexts/{context}/{aggregate}/handler_integration_test.go
+   ```
 
-### Example: Repository Integration Test
+2. Use real database:
 
-```go
-package postgres
+   ```go
+   package country_test
 
-import (
-    "testing"
-    "github.com/basilex/promenade/test/integration"
-)
+   func TestCountryHandler_Integration(t *testing.T) {
+       // Setup real database
+       db := testutils.SetupTestDB(t)
+       defer testutils.CleanupTestDB(t, db)
 
-func TestCountryRepository_Integration(t *testing.T) {
-    if testing.Short() {
-        t.Skip("Skipping integration test in short mode")
-    }
+       // Create real repository (not mock)
+       repo := repository.NewCountryRepository(db)
+       usecase := country.NewUseCase(repo)
+       handler := handler.NewHandler(usecase)
 
-    testDB := integration.SetupTestDB(t)
-    defer testDB.CleanAllTables()
+       // Test real HTTP → DB flow
+   }
+   ```
 
-    repo := NewCountryRepository(testDB.DB)
-    ctx := testDB.GetContext()
+3. Clean up after each test to ensure isolation
 
-    t.Run("Create and GetByID", func(t *testing.T) {
-        country, err := repo.Create(ctx, &Country{...})
-        assert.NoError(t, err)
+## Future Integration Tests
 
-        retrieved, err := repo.GetByID(ctx, country.ID)
-        assert.NoError(t, err)
-        assert.Equal(t, country.Name, retrieved.Name)
-    })
-}
-```
-
----
-
-## Running Integration Tests
-
-### All Tests
-
-```bash
-go test ./... -v
-```
-
-### Context-Specific
-
-```bash
-go test ./internal/contexts/shared/... -v
-go test ./internal/contexts/identity/... -v
-```
-
-### Skip Integration Tests
-
-```bash
-go test ./... -short  # Skips tests with testing.Short() check
-```
-
----
-
-## Database Requirements
-
-Integration tests require PostgreSQL:
-
-```bash
-# Start test database
-make docker-up
-
-# Run migrations
-make migrate
-```
-
-        require.NoError(t, err)
-        assert.Equal(t, user.Email, retrieved.Email)
-    })
-
-}
-
-```
-
----
-
-## Test Organization
-
-```
-
-internal/
-adapter/
-repository/
-postgres/
-user_repository.go
-integration_test.go # ← Core repository tests
-reference_integration_test.go # ← Reference data tests
-
-modules/
-posts/
-adapter/
-repository/
-postgres/
-post_repository.go
-integration_test.go # ← Posts module tests
-
-     profiles/
-         adapter/
-             repository/
-                 postgres/
-                     integration_test.go       # ← Profiles module tests
-
-````
-
----
-
-## Test Coverage
-
-### Core Repositories
-
-- [x] **IUserRepository** - 7 tests
-  - Create, GetByID, GetByEmail, Update, Delete, ExistsByEmail, List
-- [x] **IRoleRepository** - 5 tests
-  - GetByID, GetByName, List, ExistsByName, GetUserRoles
-- [x] **IPermissionRepository** - 5 tests
-  - GetByID, GetByResourceAction, List, FindByResource, GetRolePermissions
-- [x] **ISessionRepository** - 5 tests
-  - GetByID, GetByRefreshToken, GetUserSessions, CountUserSessions, Delete
-
-### Reference Data Repositories
-
-- [x] **ICountryRepository** - 5 tests
-  - GetByID, GetByCode, List, ListByRegion, ExistsByCode
-- [x] **ICurrencyRepository** - 4 tests
-  - GetByID, GetByCode, List, ExistsByCode
-- [x] **ILanguageRepository** - 5 tests
-  - GetByID, GetByCode, List, ListActive, ExistsByCode
-- [x] **ITimezoneRepository** - 5 tests
-  - GetByID, GetByName, List, ListActive, ExistsByName
-
-### Module Repositories
-
-- [x] **PostRepository** (posts module) - 7 tests
-  - Create, GetByID, Update, Delete (soft), ListByUserID, ListByStatus, CountByUserID
-- [x] **ICommentRepository** (posts module) - 7 tests
-  - Create, GetByID, Create reply, ListByPostID, ListByUserID, CountByPostID, Delete (soft)
-- [x] **LikeRepository** (posts module) - 4 tests
-  - Create, GetByID, UserHasLikedPost, CountByPostID, Delete
-
-**Total**: 54 integration tests across all repositories
-
----
-
-## Best Practices
-
-### 1. Clean State
-
-Always start with clean tables:
-
-```go
-testDB := integration.SetupTestDBWithCleanTables(t)
-````
-
-### 2. Use Fixtures
-
-Don't manually insert test data - use fixtures:
-
-```go
-//  Don't do this
-testDB.MustExec(t, "INSERT INTO users ...", ...)
-
-//  Do this instead
-user := fixtures.CreateUser(t, "test@example.com", "password123")
-```
-
-### 3. Test Real Scenarios
-
-Test realistic data flows:
-
-```go
-t.Run("User with roles and permissions", func(t *testing.T) {
-    user := fixtures.CreateUser(t, "admin@example.com", "password123")
-    role := fixtures.CreateRole(t, "admin", "Admin", false)
-    perm := fixtures.CreatePermission(t, "posts", "delete", "Delete posts")
-
-    fixtures.AssignRoleToUser(t, user.ID, role.ID)
-    fixtures.AssignPermissionToRole(t, role.ID, perm.ID)
-
-    // Now test permission checking
-    perms, err := repo.GetUserPermissions(ctx, user.ID)
-    require.NoError(t, err)
-    assert.Len(t, perms, 1)
-})
-```
-
-### 4. Soft Delete Testing
-
-Always verify soft delete behavior:
-
-```go
-t.Run("Soft deleted records not returned", func(t *testing.T) {
-    post := createTestPost(t)
-    repo.Delete(ctx, post.ID)
-
-    // Should not be found
-    _, err := repo.GetByID(ctx, post.ID)
-    assert.Error(t, err)
-
-    // Should not appear in lists
-    posts, _, _ := repo.List(ctx, 1, 10)
-    for _, p := range posts {
-        assert.NotEqual(t, post.ID, p.ID)
-    }
-})
-```
-
-### 5. Pagination Testing
-
-Test edge cases:
-
-```go
-t.Run("Pagination edge cases", func(t *testing.T) {
-    // Page 0 should return page 1
-    posts, _, err := repo.List(ctx, 0, 10)
-    require.NoError(t, err)
-
-    // Large page size should be limited
-    posts, _, err = repo.List(ctx, 1, 10000)
-    require.NoError(t, err)
-    assert.LessOrEqual(t, len(posts), 100) // max page size
-})
-```
-
----
-
-## Troubleshooting
-
-### Test Database Not Available
-
-```bash
- Test database not available. Run 'make docker-up' first
-```
-
-**Solution**:
-
-```bash
-make docker-up
-make test-integration-setup
-```
-
-### Migration Errors
-
-```bash
-Failed to run migrations: ...
-```
-
-**Solution**:
-
-```bash
-# Check migration files
-ls -la migrations/core/
-ls -la migrations/posts/
-
-# Verify database connection
-psql -h localhost -U promenade -d promenade_test -c "\dt"
-```
-
-### Dirty Database State
-
-Tests fail due to leftover data.
-
-**Solution**:
-
-```go
-// Use clean tables setup
-testDB := integration.SetupTestDBWithCleanTables(t)
-
-// Or manually clean specific tables
-testDB.CleanAllTables()
-```
-
-### Foreign Key Violations
-
-```bash
-ERROR: insert or update on table violates foreign key constraint
-```
-
-**Solution**:
-Create parent records first using fixtures:
-
-```go
-//  Wrong order
-post := createPost(t, "nonexistent-user-id")
-
-//  Correct order
-user := fixtures.CreateUser(t, "test@example.com", "password123")
-post := createPost(t, user.ID)
-```
-
----
-
-## CI/CD Integration
-
-### GitHub Actions Example
-
-```yaml
-- name: Run integration tests
-  run: |
-    docker-compose up -d postgres
-    sleep 5
-    make test-integration-setup
-    make test-integration
-  env:
-    TEST_DB_HOST: localhost
-    TEST_DB_PORT: 5432
-    TEST_DB_USER: promenade
-    TEST_DB_PASSWORD: promenade
-    TEST_DB_NAME: promenade_test
-```
-
----
-
-## Next Steps
-
-- [ ] Add profiles module integration tests
-- [ ] Add analytics module integration tests
-- [ ] Add warehouse module integration tests
-- [ ] Transaction rollback tests
-- [ ] Concurrent access tests
-- [ ] Performance benchmarks
+- Real database schema validation
+- Transaction rollback testing
+- Foreign key constraints
+- Database triggers
+- Full CRUD workflows with persistence

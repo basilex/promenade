@@ -2,7 +2,7 @@
 
 **Domain:** Subscriptions, invoicing, payments  
 **Ubiquitous Language:** Subscription, Invoice, Payment, Plan, Billing Cycle  
-**Status:** ⚠️ Migration in Progress (from modules/billing)
+**Status:**  Migration in Progress (from modules/billing)
 
 ---
 
@@ -12,7 +12,7 @@ The **Billing Context** handles all financial transactions, subscriptions, and p
 
 ### Responsibilities
 
-✅ **What Billing Context DOES:**
+ **What Billing Context DOES:**
 
 - Subscription lifecycle management
 - Invoice generation and management
@@ -21,7 +21,7 @@ The **Billing Context** handles all financial transactions, subscriptions, and p
 - Revenue recognition
 - Payment method management
 
-❌ **What Billing Context DOES NOT DO:**
+ **What Billing Context DOES NOT DO:**
 
 - Customer relationships → **Customer Management Context**
 - Order fulfillment → **Order Management Context**
@@ -33,7 +33,7 @@ The **Billing Context** handles all financial transactions, subscriptions, and p
 
 **Location:** `internal/modules/billing/`
 
-**Status:** ✅ Production-ready (375 tests, 100% passing)
+**Status:**  Production-ready (375 tests, 100% passing)
 
 **Entities:**
 
@@ -50,25 +50,25 @@ The **Billing Context** handles all financial transactions, subscriptions, and p
 
 ### Phase 1: Keep Module Working
 
-- ✅ Module fully functional
-- ✅ 375 comprehensive tests
-- ✅ Production-ready
+-  Module fully functional
+-  375 comprehensive tests
+-  Production-ready
 
 ### Phase 2: Context Structure (Future)
 
 ```
 internal/contexts/billing/
-  ├── subscription/
-  │   ├── entity.go           # Subscription aggregate
-  │   ├── repository.go
-  │   ├── usecase.go
-  │   └── handler.go
-  ├── invoice/
-  │   ├── entity.go           # Invoice aggregate
-  │   └── ...
-  └── payment/
-      ├── entity.go           # Payment aggregate
-      └── ...
+   subscription/
+      entity.go           # Subscription aggregate
+      repository.go
+      usecase.go
+      handler.go
+   invoice/
+      entity.go           # Invoice aggregate
+      ...
+   payment/
+       entity.go           # Payment aggregate
+       ...
 ```
 
 ### Phase 3: Gradual Route Migration
@@ -254,31 +254,31 @@ POST   /api/v1/billing/payments/:id/refund
 
 ## Migration Timeline
 
-**Phase 1: Current (Complete)** ✅
+**Phase 1: Current (Complete)** 
 
 - Module fully functional
 - Production-ready
 - Comprehensive tests
 
-**Phase 2: Context Planning (Q1 2026)** 📋
+**Phase 2: Context Planning (Q1 2026)** 
 
 - Design context structure
 - Plan migration strategy
 - Create migration guide
 
-**Phase 3: Parallel Implementation (Q2 2026)** 🚧
+**Phase 3: Parallel Implementation (Q2 2026)** 
 
 - Implement context structure
 - Keep module working
 - Route both to same logic
 
-**Phase 4: Gradual Migration (Q3 2026)** 🔄
+**Phase 4: Gradual Migration (Q3 2026)** 
 
 - Migrate routes to context
 - Module as facade
 - Deprecation warnings
 
-**Phase 5: Cleanup (Q4 2026)** 🗑️
+**Phase 5: Cleanup (Q4 2026)** 
 
 - Remove module code
 - Update documentation
@@ -286,7 +286,7 @@ POST   /api/v1/billing/payments/:id/refund
 
 ---
 
-**Status:** ⚠️ Module-based (migration planned)  
+**Status:**  Module-based (migration planned)  
 **Current Location:** `internal/modules/billing/`  
 **Future Location:** `internal/contexts/billing/`  
 **Tests:** 375 tests (100% passing)  

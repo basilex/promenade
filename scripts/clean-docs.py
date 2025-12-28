@@ -36,7 +36,7 @@ EMOJI_PATTERN = re.compile(
 def should_process_file(filepath):
     """Check if file should be processed"""
     # Skip certain directories
-    skip_dirs = {'.git', 'node_modules', 'vendor', 'public', 'tmp'}
+    skip_dirs = {'node_modules', 'vendor', 'public', 'tmp'}
     
     parts = Path(filepath).parts
     for skip in skip_dirs:
@@ -52,26 +52,8 @@ def clean_box_drawing(text):
     return text
 
 def clean_emoji(text, filepath):
-    """Remove emoji except in specific allowed contexts"""
-    # Allow emoji in website i18n files and specific sections
-    if '/website/i18n/' in filepath or '/i18n/' in filepath:
-        return text
-    
-    # Allow emoji in hero/features sections of certain docs
-    if any(x in filepath for x in ['README.md', 'INDEX.md']):
-        # Keep emoji in specific markdown contexts (list items with emoji bullets)
-        lines = text.split('\n')
-        cleaned_lines = []
-        for line in lines:
-            # Keep lines that start with list markers and emoji
-            if re.match(r'^[\s]*[-*+]\s+[\U0001F300-\U0001FAFF]\s+', line):
-                cleaned_lines.append(line)
-            else:
-                # Remove other emoji
-                cleaned_lines.append(EMOJI_PATTERN.sub('', line))
-        return '\n'.join(cleaned_lines)
-    
-    # Remove all emoji from other files
+    """Remove ALL emoji from documentation"""
+    # Remove all emoji without exceptions
     return EMOJI_PATTERN.sub('', text)
 
 def clean_file(filepath):
@@ -112,8 +94,8 @@ def main():
     modified = 0
     
     for root, dirs, files in os.walk(root_dir):
-        # Skip hidden directories
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        # Skip hidden directories except .github
+        dirs[:] = [d for d in dirs if not d.startswith('.') or d == '.github']
         
         for file in files:
             filepath = os.path.join(root, file)

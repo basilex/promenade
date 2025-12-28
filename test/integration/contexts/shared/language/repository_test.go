@@ -1,4 +1,4 @@
-package postgres
+package language_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/contexts/shared/language"
+	"github.com/basilex/promenade/internal/contexts/shared/language/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -18,7 +19,7 @@ func TestRepository_Create(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -46,7 +47,7 @@ func TestRepository_Create(t *testing.T) {
 
 	t.Run("duplicate_code", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l1 := &language.Language{
 				ID:         uuidv7.New(),
@@ -77,7 +78,7 @@ func TestRepository_Create(t *testing.T) {
 
 	t.Run("optional_code3", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -103,7 +104,7 @@ func TestRepository_GetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -127,7 +128,7 @@ func TestRepository_GetByID(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			nonExistentID := uuidv7.New()
 			found, err := repo.GetByID(ctx, nonExistentID)
@@ -139,7 +140,7 @@ func TestRepository_GetByID(t *testing.T) {
 
 	t.Run("inactive_not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -171,7 +172,7 @@ func TestRepository_GetByCode(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -195,7 +196,7 @@ func TestRepository_GetByCode(t *testing.T) {
 
 	t.Run("case_sensitive", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -224,7 +225,7 @@ func TestRepository_GetByCode(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			found, err := repo.GetByCode(ctx, "zz")
 			assert.Error(t, err)
@@ -235,7 +236,7 @@ func TestRepository_GetByCode(t *testing.T) {
 
 	t.Run("inactive_not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -267,7 +268,7 @@ func TestRepository_Update(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -306,7 +307,7 @@ func TestRepository_Update(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -329,7 +330,7 @@ func TestRepository_Delete(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			l := &language.Language{
 				ID:         uuidv7.New(),
@@ -364,7 +365,7 @@ func TestRepository_Delete(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			nonExistentID := uuidv7.New()
 			err := repo.Delete(ctx, nonExistentID)
@@ -378,7 +379,7 @@ func TestRepository_List(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			// Create test languages
 			languages := []*language.Language{
@@ -434,7 +435,7 @@ func TestRepository_List(t *testing.T) {
 
 	t.Run("empty_list", func(t *testing.T) {
 		testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := NewRepository(tx)
+			repo := postgres.NewRepository(tx)
 
 			// In a fresh transaction, no test data exists yet
 			found, err := repo.List(ctx)

@@ -6,11 +6,11 @@ Docker setup for Promenade with environment-specific configurations.
 
 ```
 docker/
-├── docker-compose.dev.yml   # Development (local)
-├── docker-compose.test.yml  # Testing (CI/CD)
-├── docker-compose.prod.yml  # Production (deployment)
-├── Dockerfile               # Production image build
-└── init-db.sh              # Database initialization script
+ docker-compose.dev.yml   # Development (local)
+ docker-compose.test.yml  # Testing (CI/CD)
+ docker-compose.prod.yml  # Production (deployment)
+ Dockerfile               # Production image build
+ init-db.sh              # Database initialization script
 ```
 
 ## Environment Files

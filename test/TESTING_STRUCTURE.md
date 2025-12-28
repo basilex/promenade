@@ -1,58 +1,58 @@
 # Testing Structure Guide
 
-## 🎯 Testing Philosophy
+##  Testing Philosophy
 
 Promenade follows industry best practices with **mirror path structure** for integration tests, inspired by Java testing conventions.
 
-## 📂 Directory Structure
+##  Directory Structure
 
 ```
 promenade/
-├── internal/                       # Production code
-│   ├── contexts/
-│   │   ├── identity/
-│   │   │   ├── contact/           # Contact aggregate
-│   │   │   │   ├── entity/
-│   │   │   │   ├── repository/
-│   │   │   │   ├── usecase/
-│   │   │   │   └── *_test.go     # ✅ Unit tests (in-place)
-│   │   │   └── user/              # User aggregate
-│   │   └── shared/
-│   └── infrastructure/
-│
-├── pkg/                            # Shared packages
-│   ├── bus/
-│   │   ├── bus.go
-│   │   ├── bus_test.go            # ✅ Unit tests (in-place)
-│   │   ├── memory/
-│   │   │   ├── memory_bus.go
-│   │   │   └── memory_bus_test.go # ✅ Unit tests (in-place)
-│   │   └── redis/
-│   │       ├── redis_bus.go
-│   │       └── redis_bus_test.go  # ✅ Unit tests (in-place)
-│   └── logger/
-│
-└── test/                           # Test infrastructure
-    ├── integration/                # Integration tests (MIRROR PATH)
-    │   ├── testutils.go           # Shared test utilities
-    │   ├── contexts/               # ⭐ Mirror: internal/contexts/
-    │   │   └── identity/
-    │   │       └── contact/        # ⭐ Mirror: internal/contexts/identity/contact/
-    │   │           └── contact_api_test.go  # HTTP API integration tests
-    │   └── pkg/                    # ⭐ Mirror: pkg/
-    │       └── bus/                # ⭐ Mirror: pkg/bus/
-    │           └── bus_integration_test.go  # Event bus integration tests
-    │
-    ├── smoke/                      # Smoke tests (quick production checks)
-    │   └── health_check_test.go
-    │
-    └── stress/                     # Load/stress tests
-        └── bus_load_test.go
+ internal/                       # Production code
+    contexts/
+       identity/
+          contact/           # Contact aggregate
+             entity/
+             repository/
+             usecase/
+             *_test.go     #  Unit tests (in-place)
+          user/              # User aggregate
+       shared/
+    infrastructure/
+
+ pkg/                            # Shared packages
+    bus/
+       bus.go
+       bus_test.go            #  Unit tests (in-place)
+       memory/
+          memory_bus.go
+          memory_bus_test.go #  Unit tests (in-place)
+       redis/
+           redis_bus.go
+           redis_bus_test.go  #  Unit tests (in-place)
+    logger/
+
+ test/                           # Test infrastructure
+     integration/                # Integration tests (MIRROR PATH)
+        testutils.go           # Shared test utilities
+        contexts/               #  Mirror: internal/contexts/
+           identity/
+               contact/        #  Mirror: internal/contexts/identity/contact/
+                   contact_api_test.go  # HTTP API integration tests
+        pkg/                    #  Mirror: pkg/
+            bus/                #  Mirror: pkg/bus/
+                bus_integration_test.go  # Event bus integration tests
+    
+     smoke/                      # Smoke tests (quick production checks)
+        health_check_test.go
+    
+     stress/                     # Load/stress tests
+         bus_load_test.go
 ```
 
 ---
 
-## 🧪 Test Types
+##  Test Types
 
 ### 1. Unit Tests (In-Place)
 
@@ -65,16 +65,16 @@ promenade/
 
 ```
 internal/contexts/identity/contact/usecase/
-├── contact_usecase.go
-└── contact_usecase_test.go     # ✅ Unit test
+ contact_usecase.go
+ contact_usecase_test.go     #  Unit test
 ```
 
 **Characteristics:**
 
-- ✅ Fast (< 1 second)
-- ✅ No external dependencies
-- ✅ Pure logic testing
-- ✅ Mock repositories/dependencies
+-  Fast (< 1 second)
+-  No external dependencies
+-  Pure logic testing
+-  Mock repositories/dependencies
 
 **Run:**
 
@@ -109,10 +109,10 @@ go test ./... -cover -coverprofile=coverage.out
 **Characteristics:**
 
 - ⏱ Slower (1-30 seconds)
-- 🐘 Requires PostgreSQL
-- 🔴 Requires Redis (optional, can skip)
-- 🌐 Tests real HTTP endpoints
-- 💾 Tests real database queries
+-  Requires PostgreSQL
+-  Requires Redis (optional, can skip)
+-  Tests real HTTP endpoints
+-  Tests real database queries
 
 **Run:**
 
@@ -175,7 +175,7 @@ go test ./test/stress -v -timeout 30m
 
 ---
 
-## 🔧 Test Utilities
+##  Test Utilities
 
 ### Shared Test Utilities
 
@@ -212,7 +212,7 @@ func TestContactAPI_Create(t *testing.T) {
 
 ---
 
-## 📝 Naming Conventions
+##  Naming Conventions
 
 ### Test Functions
 
@@ -238,7 +238,7 @@ func TestContactAPI_Create(t *testing.T) {
 
 ---
 
-## 🚀 Running Tests
+##  Running Tests
 
 ### Development Workflow
 
@@ -296,7 +296,7 @@ jobs:
 
 ---
 
-## 📊 Test Coverage
+##  Test Coverage
 
 ### Generate Coverage Report
 
@@ -321,29 +321,29 @@ go test ./... -cover
 
 ---
 
-## 🎯 Best Practices
+##  Best Practices
 
-### ✅ DO
+###  DO
 
-- ✅ **Unit tests in-place** next to production code
-- ✅ **Integration tests mirror path** in `test/integration/`
-- ✅ **Skip expensive tests** with `testing.Short()`
-- ✅ **Use testify** for assertions (`assert`, `require`)
-- ✅ **Clean up resources** with `defer testDB.Cleanup()`
-- ✅ **Test error paths** not just happy path
-- ✅ **Use table-driven tests** for multiple scenarios
+-  **Unit tests in-place** next to production code
+-  **Integration tests mirror path** in `test/integration/`
+-  **Skip expensive tests** with `testing.Short()`
+-  **Use testify** for assertions (`assert`, `require`)
+-  **Clean up resources** with `defer testDB.Cleanup()`
+-  **Test error paths** not just happy path
+-  **Use table-driven tests** for multiple scenarios
 
-### ❌ DON'T
+###  DON'T
 
-- ❌ **DON'T mix unit and integration tests** in same file
-- ❌ **DON'T share state** between tests (use `t.Parallel()` safely)
-- ❌ **DON'T use production database** for tests
-- ❌ **DON'T ignore test cleanup** (resource leaks)
-- ❌ **DON'T skip flaky tests** (fix them!)
+-  **DON'T mix unit and integration tests** in same file
+-  **DON'T share state** between tests (use `t.Parallel()` safely)
+-  **DON'T use production database** for tests
+-  **DON'T ignore test cleanup** (resource leaks)
+-  **DON'T skip flaky tests** (fix them!)
 
 ---
 
-## 📚 Examples
+##  Examples
 
 ### Unit Test Example
 
@@ -402,7 +402,7 @@ func TestContactAPI_Create(t *testing.T) {
 
 ---
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -442,7 +442,7 @@ go test ./test/integration/... -timeout 30m
 
 ---
 
-## 📖 Additional Resources
+##  Additional Resources
 
 - [Go Testing Documentation](https://pkg.go.dev/testing)
 - [Testify Package](https://github.com/stretchr/testify)
@@ -451,14 +451,14 @@ go test ./test/integration/... -timeout 30m
 
 ---
 
-## 🎓 Summary
+##  Summary
 
 | Test Type       | Location       | Speed     | Dependencies | When         |
 | --------------- | -------------- | --------- | ------------ | ------------ |
-| **Unit**        | In-place       | ⚡ Fast   | None         | Always       |
-| **Integration** | Mirror path    | 🐢 Slower | DB, Redis    | Before merge |
-| **Smoke**       | `test/smoke/`  | ⚡ Fast   | Production   | After deploy |
-| **Stress**      | `test/stress/` | 🐌 Slow   | Load testing | Pre-release  |
+| **Unit**        | In-place       |  Fast   | None         | Always       |
+| **Integration** | Mirror path    |  Slower | DB, Redis    | Before merge |
+| **Smoke**       | `test/smoke/`  |  Fast   | Production   | After deploy |
+| **Stress**      | `test/stress/` |  Slow   | Load testing | Pre-release  |
 
 **Testing Pyramid:**
 

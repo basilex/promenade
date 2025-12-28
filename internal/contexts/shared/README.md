@@ -1,76 +1,76 @@
 # Shared Context (Bounded Context)
 
-## 📌 Overview
+##  Overview
 
 **Shared Context** (also known as **Shared Kernel**) manages **reference data** used across all bounded contexts in Promenade CRM. This context provides **read-only, globally consistent data** such as countries, currencies, languages, timezones, and payment methods.
 
-**Status**: ✅ Production-ready
+**Status**:  Production-ready
 
 ---
 
-## 🎯 Bounded Context Responsibilities
+##  Bounded Context Responsibilities
 
 ### Core Domain
 
 **Reference Data Management**:
 
-- ✅ **Countries**: ISO 3166-1 alpha-2 codes, names, regions
-- ✅ **Currencies**: ISO 4217 codes, symbols, decimal digits
-- ✅ **Languages**: ISO 639-1 codes, native names, text direction (LTR/RTL)
-- ✅ **Timezones**: IANA database identifiers, UTC offsets, DST support
-- ✅ **Regions**: Geographic regions (Europe, Asia, Americas, etc.)
-- ✅ **Cities**: Major world cities (optional, for address autocomplete)
-- ✅ **Payment Methods**: Credit cards, bank transfers, e-wallets
+-  **Countries**: ISO 3166-1 alpha-2 codes, names, regions
+-  **Currencies**: ISO 4217 codes, symbols, decimal digits
+-  **Languages**: ISO 639-1 codes, native names, text direction (LTR/RTL)
+-  **Timezones**: IANA database identifiers, UTC offsets, DST support
+-  **Regions**: Geographic regions (Europe, Asia, Americas, etc.)
+-  **Cities**: Major world cities (optional, for address autocomplete)
+-  **Payment Methods**: Credit cards, bank transfers, e-wallets
 
 ### Characteristics
 
-- 📖 **Read-only for applications**: Data changes via migrations only
-- 🌍 **Globally consistent**: All contexts use same reference data
-- 🔄 **Rarely updated**: Changes 1-2 times per year (ISO standard updates)
-- 🚀 **High performance**: Heavy caching (Redis/in-memory)
-- 🌐 **Multi-language**: Countries, languages, regions support i18n
+-  **Read-only for applications**: Data changes via migrations only
+-  **Globally consistent**: All contexts use same reference data
+-  **Rarely updated**: Changes 1-2 times per year (ISO standard updates)
+-  **High performance**: Heavy caching (Redis/in-memory)
+-  **Multi-language**: Countries, languages, regions support i18n
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Directory Structure
 
 ```
 shared/
-├── README.md                  # This file
-├── router.go                  # HTTP routes registration
-├── country/                   # Country Aggregate
-│   ├── aggregate/
-│   │   └── country.go
-│   ├── repository/
-│   │   └── country_repository.go
-│   ├── usecase/
-│   │   └── country_usecase.go
-│   └── handler/
-│       └── country_handler.go
-├── currency/                  # Currency Aggregate
-│   ├── aggregate/
-│   ├── repository/
-│   ├── usecase/
-│   └── handler/
-├── language/                  # Language Aggregate
-│   ├── aggregate/
-│   ├── repository/
-│   ├── usecase/
-│   └── handler/
-├── timezone/                  # Timezone Aggregate
-│   ├── aggregate/
-│   ├── repository/
-│   ├── usecase/
-│   └── handler/
-├── region/                    # Region Aggregate (planned)
-└── payment_method/            # Payment Method Aggregate (planned)
+ README.md                  # This file
+ router.go                  # HTTP routes registration
+ country/                   # Country Aggregate
+    aggregate/
+       country.go
+    repository/
+       country_repository.go
+    usecase/
+       country_usecase.go
+    handler/
+        country_handler.go
+ currency/                  # Currency Aggregate
+    aggregate/
+    repository/
+    usecase/
+    handler/
+ language/                  # Language Aggregate
+    aggregate/
+    repository/
+    usecase/
+    handler/
+ timezone/                  # Timezone Aggregate
+    aggregate/
+    repository/
+    usecase/
+    handler/
+ region/                    # Region Aggregate (planned)
+ payment_method/            # Payment Method Aggregate (planned)
 ```
 
 ---
 
-## 📦 Aggregates
+##  Aggregates
 
 ### 1. Country Aggregate
 
@@ -300,7 +300,7 @@ GET /api/v1/shared/timezones/dst       # List timezones with DST
 
 ---
 
-## 💾 Database Schema
+##  Database Schema
 
 ### Tables (namespace: `shared_`)
 
@@ -375,7 +375,7 @@ CREATE INDEX idx_timezones_active ON shared_timezones(is_active);
 
 ---
 
-## 📊 Data Population
+##  Data Population
 
 ### Initial Data (via migrations)
 
@@ -395,15 +395,15 @@ CREATE INDEX idx_timezones_active ON shared_timezones(is_active);
 
 ```
 migrations/shared/
-├── 000001_shared_seed_currencies.up.sql      # 170+ currencies
-├── 000002_shared_seed_countries.up.sql       # 195 countries
-├── 000003_shared_seed_languages.up.sql       # 50+ languages
-└── 000004_shared_seed_timezones.up.sql       # 400+ timezones
+ 000001_shared_seed_currencies.up.sql      # 170+ currencies
+ 000002_shared_seed_countries.up.sql       # 195 countries
+ 000003_shared_seed_languages.up.sql       # 50+ languages
+ 000004_shared_seed_timezones.up.sql       # 400+ timezones
 ```
 
 ---
 
-## 🔄 Updates
+##  Updates
 
 ### How to update reference data
 
@@ -436,7 +436,7 @@ make migrate
 
 ---
 
-## 🚀 Caching Strategy
+##  Caching Strategy
 
 ### Application-Level Caching
 
@@ -520,7 +520,7 @@ func (h *CacheInvalidationHandler) HandleCountryUpdated(ctx context.Context, e b
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Test Coverage
 
@@ -550,7 +550,7 @@ go test ./internal/contexts/shared/country/... -v
 
 ---
 
-## 🎯 Use Cases
+##  Use Cases
 
 ### 1. Country Dropdown (Address Form)
 
@@ -608,7 +608,7 @@ profile.TimezoneID = timezone.ID
 
 ---
 
-## 📚 Dependencies
+##  Dependencies
 
 ### Internal
 
@@ -624,7 +624,7 @@ profile.TimezoneID = timezone.ID
 
 ---
 
-## 🛣️ Future Enhancements
+##  Future Enhancements
 
 ### Planned Features
 
@@ -639,13 +639,13 @@ profile.TimezoneID = timezone.ID
 
 ### Not Planned (belongs elsewhere)
 
-- ❌ User-specific data → Identity Context
-- ❌ Customer data → Customer Management Context
-- ❌ Financial transactions → Billing Context
+-  User-specific data → Identity Context
+-  Customer data → Customer Management Context
+-  Financial transactions → Billing Context
 
 ---
 
-## 📖 Related Documentation
+##  Related Documentation
 
 - [Architecture Overview](../../../docs/ARCHITECTURE_OVERVIEW.md)
 - [Database Migrations](../../../docs/MIGRATION_ARCHITECTURE.md)
@@ -655,6 +655,6 @@ profile.TimezoneID = timezone.ID
 ---
 
 **Last Updated**: 2025-12-27  
-**Status**: ✅ Production-ready  
+**Status**:  Production-ready  
 **Data Sources**: ISO standards, IANA database  
 **Maintainer**: Promenade Team

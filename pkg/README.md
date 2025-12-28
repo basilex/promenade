@@ -1,53 +1,53 @@
 # Package Library Overview
 
-## 📌 Overview
+##  Overview
 
 The `pkg/` directory contains **shared, reusable packages** used across all bounded contexts in Promenade CRM. These packages are **context-agnostic** and implement common patterns, utilities, and domain primitives.
 
 ---
 
-## 📦 Package Inventory
+##  Package Inventory
 
 ### Core Infrastructure
 
 | Package       | Purpose                                         | Status        | Tests |
 | ------------- | ----------------------------------------------- | ------------- | ----- |
-| **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      | ✅ Production | 67    |
-| **logger**    | Structured logging (slog wrapper)               | ✅ Production | 15    |
-| **migration** | Database migration management (namespace-based) | ✅ Production | 8     |
-| **response**  | Standard HTTP response formatting               | ✅ Production | 12    |
+| **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      |  Production | 67    |
+| **logger**    | Structured logging (slog wrapper)               |  Production | 15    |
+| **migration** | Database migration management (namespace-based) |  Production | 8     |
+| **response**  | Standard HTTP response formatting               |  Production | 12    |
 
 ### Domain Primitives
 
 | Package         | Purpose                                         | Status        | Tests |
 | --------------- | ----------------------------------------------- | ------------- | ----- |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)                   | ✅ Production | 10    |
-| **valueobject** | Immutable value objects (Email, Phone, Money)   | ✅ Production | 25    |
-| **aggregate**   | Base aggregate pattern (DDD)                    | ✅ Production | 5     |
-| **saga**        | Saga orchestration for distributed transactions | 🚧 Planned    | -     |
+| **uuidv7**      | Time-ordered UUIDs (RFC 9562)                   |  Production | 10    |
+| **valueobject** | Immutable value objects (Email, Phone, Money)   |  Production | 25    |
+| **aggregate**   | Base aggregate pattern (DDD)                    |  Production | 5     |
+| **saga**        | Saga orchestration for distributed transactions |  Planned    | -     |
 
 ### Utilities
 
 | Package       | Purpose                      | Status        | Tests |
 | ------------- | ---------------------------- | ------------- | ----- |
-| **jsonb**     | JSONB helpers for PostgreSQL | ✅ Production | 8     |
-| **reference** | Reference data utilities     | ✅ Production | 6     |
+| **jsonb**     | JSONB helpers for PostgreSQL |  Production | 8     |
+| **reference** | Reference data utilities     |  Production | 6     |
 
 ---
 
-## 🎯 Package Descriptions
+##  Package Descriptions
 
-### 1. pkg/bus - Event Bus 🌟
+### 1. pkg/bus - Event Bus 
 
 **Central communication hub** for asynchronous, decoupled event-driven architecture.
 
 **Key Features**:
 
-- ✅ Multiple adapters (Memory, Redis)
-- ✅ Retry policy with exponential backoff
-- ✅ Panic recovery in handlers
-- ✅ Graceful shutdown
-- ✅ 30+ predefined topic constants
+-  Multiple adapters (Memory, Redis)
+-  Retry policy with exponential backoff
+-  Panic recovery in handlers
+-  Graceful shutdown
+-  30+ predefined topic constants
 
 **Performance**:
 
@@ -64,11 +64,11 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 
 **Features**:
 
-- ✅ Structured JSON/text output
-- ✅ Context propagation (`logger.FromContext(ctx)`)
-- ✅ Request ID tracking
-- ✅ Log levels (debug, info, warn, error)
-- ✅ Source code location (file:line)
+-  Structured JSON/text output
+-  Context propagation (`logger.FromContext(ctx)`)
+-  Request ID tracking
+-  Log levels (debug, info, warn, error)
+-  Source code location (file:line)
 
 **Usage**:
 
@@ -108,25 +108,25 @@ logging:
 
 **Features**:
 
-- ✅ Namespace isolation (`core`, `shared`, `identity`, etc.)
-- ✅ Up/down migrations
-- ✅ Version tracking per namespace
-- ✅ Automatic migration on startup
-- ✅ Manual migration CLI
+-  Namespace isolation (`core`, `shared`, `identity`, etc.)
+-  Up/down migrations
+-  Version tracking per namespace
+-  Automatic migration on startup
+-  Manual migration CLI
 
 **Directory Structure**:
 
 ```
 migrations/
-├── core/                    # Core infrastructure
-│   ├── 000001_init_uuid_v7.up.sql
-│   └── 000001_init_uuid_v7.down.sql
-├── shared/                  # Reference data
-│   ├── 000001_seed_currencies.up.sql
-│   └── 000002_seed_countries.up.sql
-└── identity/                # Identity context
-    ├── 000001_create_users.up.sql
-    └── 000002_create_contacts.up.sql
+ core/                    # Core infrastructure
+    000001_init_uuid_v7.up.sql
+    000001_init_uuid_v7.down.sql
+ shared/                  # Reference data
+    000001_seed_currencies.up.sql
+    000002_seed_countries.up.sql
+ identity/                # Identity context
+     000001_create_users.up.sql
+     000002_create_contacts.up.sql
 ```
 
 **Usage**:
@@ -206,10 +206,10 @@ response.Paginated(c, http.StatusOK, users, total, page, pageSize)
 
 **Why UUIDv7?**
 
-- ✅ **Time-ordered**: Naturally sorts by creation time
-- ✅ **B-tree friendly**: 2x faster inserts than UUIDv4
-- ✅ **Reduced fragmentation**: Better index locality
-- ✅ **Extractable timestamp**: `ExtractTime(uuid)`
+-  **Time-ordered**: Naturally sorts by creation time
+-  **B-tree friendly**: 2x faster inserts than UUIDv4
+-  **Reduced fragmentation**: Better index locality
+-  **Extractable timestamp**: `ExtractTime(uuid)`
 
 **Usage**:
 
@@ -292,10 +292,10 @@ addr, err := valueobject.NewAddress(
 
 **Characteristics**:
 
-- ✅ **Immutable**: No setters, create new instance to change
-- ✅ **Value equality**: Compared by value, not identity
-- ✅ **Self-validating**: Validation in constructor
-- ✅ **Encapsulation**: Business rules inside value object
+-  **Immutable**: No setters, create new instance to change
+-  **Value equality**: Compared by value, not identity
+-  **Self-validating**: Validation in constructor
+-  **Encapsulation**: Business rules inside value object
 
 ---
 
@@ -305,10 +305,10 @@ addr, err := valueobject.NewAddress(
 
 **Features**:
 
-- ✅ Event collection (uncommitted events)
-- ✅ Version tracking (optimistic locking)
-- ✅ Created/Updated timestamps
-- ✅ Aggregate ID (UUIDv7)
+-  Event collection (uncommitted events)
+-  Version tracking (optimistic locking)
+-  Created/Updated timestamps
+-  Aggregate ID (UUIDv7)
 
 **Usage**:
 
@@ -383,7 +383,7 @@ saga.
     Execute(ctx)
 ```
 
-**Status**: 🚧 Planned for Q1 2026
+**Status**:  Planned for Q1 2026
 
 ---
 
@@ -393,10 +393,10 @@ saga.
 
 **Features**:
 
-- ✅ Marshal/unmarshal Go structs
-- ✅ Null handling
-- ✅ Query builders for JSONB operators
-- ✅ Index creation helpers
+-  Marshal/unmarshal Go structs
+-  Null handling
+-  Query builders for JSONB operators
+-  Index creation helpers
 
 **Usage**:
 
@@ -432,7 +432,7 @@ err := db.Get(&contact, `
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Run All Package Tests
 
@@ -454,67 +454,67 @@ go tool cover -html=coverage.out
 
 | Package     | Tests | Coverage | Status     |
 | ----------- | ----- | -------- | ---------- |
-| bus         | 67    | 100%     | ✅ Passing |
-| logger      | 15    | 95%      | ✅ Passing |
-| migration   | 8     | 90%      | ✅ Passing |
-| response    | 12    | 100%     | ✅ Passing |
-| uuidv7      | 10    | 100%     | ✅ Passing |
-| valueobject | 25    | 95%      | ✅ Passing |
-| aggregate   | 5     | 90%      | ✅ Passing |
-| jsonb       | 8     | 85%      | ✅ Passing |
+| bus         | 67    | 100%     |  Passing |
+| logger      | 15    | 95%      |  Passing |
+| migration   | 8     | 90%      |  Passing |
+| response    | 12    | 100%     |  Passing |
+| uuidv7      | 10    | 100%     |  Passing |
+| valueobject | 25    | 95%      |  Passing |
+| aggregate   | 5     | 90%      |  Passing |
+| jsonb       | 8     | 85%      |  Passing |
 
 ---
 
-## 📚 Package Dependencies
+##  Package Dependencies
 
 ### Internal Dependencies
 
 ```
 pkg/
-├── bus
-│   └── (no internal deps)
-├── logger
-│   └── (no internal deps)
-├── migration
-│   └── logger
-├── response
-│   └── logger
-├── uuidv7
-│   └── (no internal deps)
-├── valueobject
-│   └── reference
-├── aggregate
-│   └── uuidv7
-└── jsonb
-    └── (no internal deps)
+ bus
+    (no internal deps)
+ logger
+    (no internal deps)
+ migration
+    logger
+ response
+    logger
+ uuidv7
+    (no internal deps)
+ valueobject
+    reference
+ aggregate
+    uuidv7
+ jsonb
+     (no internal deps)
 ```
 
 **Design Rule**: Packages in `pkg/` **MUST NOT** depend on `internal/` code.
 
 ---
 
-## 🎓 Best Practices
+##  Best Practices
 
-### ✅ DO
+###  DO
 
-- ✅ **Use packages from `pkg/`** in all contexts
-- ✅ **Keep packages small and focused** (single responsibility)
-- ✅ **Write comprehensive tests** for all packages
-- ✅ **Document public APIs** with GoDoc comments
-- ✅ **Avoid external dependencies** when possible
-- ✅ **Use interfaces** for flexibility
+-  **Use packages from `pkg/`** in all contexts
+-  **Keep packages small and focused** (single responsibility)
+-  **Write comprehensive tests** for all packages
+-  **Document public APIs** with GoDoc comments
+-  **Avoid external dependencies** when possible
+-  **Use interfaces** for flexibility
 
-### ❌ DON'T
+###  DON'T
 
-- ❌ **DON'T import `internal/`** from `pkg/` packages
-- ❌ **DON'T add context-specific logic** to `pkg/`
-- ❌ **DON'T create circular dependencies**
-- ❌ **DON'T skip tests** (100% critical path coverage)
-- ❌ **DON'T use global state** (except logger.Init)
+-  **DON'T import `internal/`** from `pkg/` packages
+-  **DON'T add context-specific logic** to `pkg/`
+-  **DON'T create circular dependencies**
+-  **DON'T skip tests** (100% critical path coverage)
+-  **DON'T use global state** (except logger.Init)
 
 ---
 
-## 🛣️ Future Packages
+##  Future Packages
 
 ### Planned (Q1 2026)
 
@@ -535,7 +535,7 @@ pkg/
 
 ---
 
-## 📖 Related Documentation
+##  Related Documentation
 
 - [Architecture Overview](../docs/ARCHITECTURE_OVERVIEW.md)
 - [Event Bus Documentation](bus/README.md)
@@ -546,6 +546,6 @@ pkg/
 ---
 
 **Last Updated**: 2025-12-27  
-**Total Tests**: 156+ tests across all packages  
-**Status**: ✅ Production-ready  
+**Total Tests**: 150+ tests across 32 packages  
+**Status**:  Production-ready  
 **Maintainer**: Promenade Team

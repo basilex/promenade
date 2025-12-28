@@ -2,7 +2,7 @@
 
 **Domain:** Inventory management, products, stock tracking  
 **Ubiquitous Language:** Product, Inventory, Stock, Location, Movement, Reservation  
-**Status:** 📋 Planned (Phase 4 implementation)
+**Status:**  Planned (Phase 4 implementation)
 
 ---
 
@@ -12,7 +12,7 @@ The **Warehouse Context** manages physical goods, inventory levels, and stock mo
 
 ### Responsibilities
 
-✅ **What Warehouse Context DOES:**
+ **What Warehouse Context DOES:**
 
 - Product catalog management
 - Inventory tracking (stock levels, reservations)
@@ -21,7 +21,7 @@ The **Warehouse Context** manages physical goods, inventory levels, and stock mo
 - Low stock alerts and reordering
 - Serial number / lot tracking
 
-❌ **What Warehouse Context DOES NOT DO:**
+ **What Warehouse Context DOES NOT DO:**
 
 - Pricing → **Billing Context**
 - Order processing → **Order Management Context**
@@ -458,6 +458,6 @@ GET    /api/v1/warehouse/movements/:id
 
 ---
 
-**Status:** 📋 Planned for Phase 4  
+**Status:**  Planned for Phase 4  
 **Dependencies:** Order Management context  
 **Next:** Implement after Order Management and Billing contexts

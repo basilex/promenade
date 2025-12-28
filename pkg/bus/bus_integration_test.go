@@ -2,6 +2,7 @@ package bus_test
 
 import (
 	"context"
+	"os"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -252,13 +253,19 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 		t.Skip("Skipping Redis test in short mode")
 	}
 
+	// Use test Redis port (6380) to match docker-compose.test.yml
+	redisPort := 6380
+	if os.Getenv("ENVIRONMENT") == "test" {
+		redisPort = 6380
+	}
+
 	cfg := config.BusSection{
 		Adapter:        "redis",
 		WorkerPoolSize: 10,
 		BufferSize:     1000,
 		Redis: config.RedisSection{
 			Host:     "localhost",
-			Port:     6379,
+			Port:     redisPort,
 			Password: "",
 			DB:       0,
 			PoolSize: 10,
@@ -268,8 +275,14 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 	// Try to create first instance
 	b1, err := bus.NewBus(cfg)
 	if err != nil {
-		t.Skipf("Redis not available: %v", err)
+		t.Skipf("Redis not available on port %d: %v", redisPort, err)
 	}
+
+	// Check if we actually got Redis adapter (not fallback to memory)
+	if b1 == nil {
+		t.Skip("Redis fallback to memory, skipping cross-process test")
+	}
+
 	defer b1.Close(context.Background())
 
 	// Create second instance (simulating another process)

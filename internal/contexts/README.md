@@ -41,34 +41,34 @@ Each context follows this structure:
 
 ```
 /context-name/
-  ├── README.md                    # Context documentation
-  └── /aggregate-name/             # Each aggregate root
-      ├── entity.go                # Domain entity (aggregate root)
-      ├── value_objects.go         # Context-specific value objects
-      ├── repository.go            # Repository interface
-      ├── repository_impl.go       # Repository implementation (Postgres)
-      ├── usecase.go               # Business logic (use cases)
-      ├── handler.go               # HTTP handlers
-      └── dto.go                   # Data transfer objects
+   README.md                    # Context documentation
+   /aggregate-name/             # Each aggregate root
+       entity.go                # Domain entity (aggregate root)
+       value_objects.go         # Context-specific value objects
+       repository.go            # Repository interface
+       repository_impl.go       # Repository implementation (Postgres)
+       usecase.go               # Business logic (use cases)
+       handler.go               # HTTP handlers
+       dto.go                   # Data transfer objects
 ```
 
 **Example:**
 
 ```
 /customer-mgmt/
-  ├── README.md
-  ├── /customer/
-  │   ├── customer.go              # Customer aggregate root
-  │   ├── repository.go
-  │   ├── repository_impl.go
-  │   ├── usecase.go
-  │   └── handler.go
-  ├── /company/
-  │   ├── company.go               # Company aggregate root
-  │   └── ...
-  └── /deal/
-      ├── deal.go                  # Deal aggregate root
-      └── ...
+   README.md
+   /customer/
+      customer.go              # Customer aggregate root
+      repository.go
+      repository_impl.go
+      usecase.go
+      handler.go
+   /company/
+      company.go               # Company aggregate root
+      ...
+   /deal/
+       deal.go                  # Deal aggregate root
+       ...
 ```
 
 ## Available Contexts
@@ -209,13 +209,13 @@ Each context is isolated and uses an **Anti-Corruption Layer** to communicate:
 
 ```go
 // Example: Order context needs customer data
-// ❌ WRONG: Direct dependency
+//  WRONG: Direct dependency
 order := Order{
     CustomerID: customer.ID, // Direct coupling
     Customer: customer,       // Leaking domain model
 }
 
-// ✅ CORRECT: Through ACL
+//  CORRECT: Through ACL
 type CustomerReference struct {
     ID    uuidv7.UUID
     Name  string
@@ -416,6 +416,6 @@ Phase 4: Remove module code
 
 ---
 
-**Status:** 🚀 Ready for implementation  
+**Status:**  Ready for implementation  
 **Next Steps:** Implement Contact aggregate in Identity context  
 **Target:** Full CRM system with Customer Management context
