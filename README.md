@@ -578,7 +578,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **valueobject** | DDD Value Objects                     | 25    | Production | [README](pkg/valueobject/README.md)     |
 | **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](pkg/aggregate/README.md)       |
 | **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
-| **saga**        | Distributed transaction orchestration | -     | Planned    | Coming Q1 2026                          |
+| **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
 
 **Total**: 150+ tests across 32 packages
 

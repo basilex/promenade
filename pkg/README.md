@@ -24,7 +24,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 | **uuidv7**      | Time-ordered UUIDs (RFC 9562)                   | Production | 10    | [README](uuidv7/README.md)          |
 | **valueobject** | Immutable value objects (Email, Phone, Money)   | Production | 25    | [README](valueobject/README.md)     |
 | **aggregate**   | Base aggregate pattern (DDD)                    | Production | 5     | [README](aggregate/README.md)       |
-| **saga**        | Saga orchestration for distributed transactions | Planned    | -     | Coming Q1 2026                      |
+| **saga**        | Saga orchestration for distributed transactions | Production | 28    | [README](saga/README.md)            |
 
 ### Utilities
 
