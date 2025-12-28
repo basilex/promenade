@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
+	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -97,10 +99,21 @@ func setupUserRouter() *gin.Engine {
 	return gin.New()
 }
 
+// createMockJWTManager creates a mock JWT manager for testing
+func createMockJWTManager() *jwt.Manager {
+	return jwt.NewManager(jwt.Config{
+		SecretKey:            "test-secret-key-32-bytes-long!!",
+		AccessTokenDuration:  15 * time.Minute,
+		RefreshTokenDuration: 7 * 24 * time.Hour,
+		Issuer:               "promenade-test",
+	})
+}
+
 // TestUserHandler_Smoke - smoke tests for User handler (mock-based, no database)
 func TestUserHandler_Smoke(t *testing.T) {
 	mockUC := new(MockUserUseCase)
-	handler := userHTTP.NewUserHandler(mockUC)
+	jwtManager := createMockJWTManager()
+	handler := userHTTP.NewUserHandler(mockUC, jwtManager)
 	router := setupUserRouter()
 
 	// Register routes

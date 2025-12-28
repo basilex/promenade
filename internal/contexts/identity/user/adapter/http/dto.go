@@ -37,10 +37,13 @@ type UserResponse struct {
 	UpdatedAt       time.Time  `json:"updated_at"`
 }
 
-// AuthResponse represents authentication response with token
+// AuthResponse represents authentication response with JWT tokens
 type AuthResponse struct {
-	Token string       `json:"token"` // JWT token (to be implemented)
-	User  UserResponse `json:"user"`
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	ExpiresAt    time.Time    `json:"expires_at"`
+	TokenType    string       `json:"token_type"`
+	User         UserResponse `json:"user"`
 }
 
 // ToUserResponse converts a User entity to UserResponse DTO

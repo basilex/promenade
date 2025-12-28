@@ -8,19 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
+	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // UserHandler handles HTTP requests for user operations
 type UserHandler struct {
-	usecase user.IUseCase
+	usecase    user.IUseCase
+	jwtManager *jwt.Manager
 }
 
 // NewUserHandler creates a new user handler
-func NewUserHandler(usecase user.IUseCase) *UserHandler {
+func NewUserHandler(usecase user.IUseCase, jwtManager *jwt.Manager) *UserHandler {
 	return &UserHandler{
-		usecase: usecase,
+		usecase:    usecase,
+		jwtManager: jwtManager,
 	}
 }
 
@@ -101,12 +104,24 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// TODO: Generate JWT token
-	token := "jwt-token-placeholder"
+	// Generate JWT token pair
+	roles := []string{} // TODO: Get roles from user entity when RBAC is implemented
+	tokenPair, err := h.jwtManager.GenerateTokenPair(
+		userEntity.ID,
+		userEntity.Email.Value(),
+		roles,
+	)
+	if err != nil {
+		response.InternalError(c, "failed to generate token")
+		return
+	}
 
 	response.Success(c, AuthResponse{
-		Token: token,
-		User:  ToUserResponse(userEntity),
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
+		ExpiresAt:    tokenPair.ExpiresAt,
+		TokenType:    tokenPair.TokenType,
+		User:         ToUserResponse(userEntity),
 	})
 }
 

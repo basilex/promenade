@@ -13,6 +13,7 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	"github.com/basilex/promenade/pkg/jwt"
 )
 
 // Router manages routes for Identity context
@@ -20,10 +21,11 @@ type Router struct {
 	contactHandler *contactHTTP.ContactHandler
 	profileHandler *profileHTTP.ProfileHandler
 	userHandler    *userHTTP.UserHandler
+	jwtManager     *jwt.Manager
 }
 
 // NewRouter creates a new Identity router with all dependencies
-func NewRouter(db *sqlx.DB) *Router {
+func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 	// Initialize Contact aggregate
 	contactRepository := contactRepo.NewContactRepository(db)
 	contactUseCase := contact.NewUseCase(contactRepository)
@@ -37,12 +39,13 @@ func NewRouter(db *sqlx.DB) *Router {
 	// Initialize User aggregate
 	userRepository := userRepo.NewUserRepository(db)
 	userUseCase := user.NewUseCase(userRepository)
-	userHandler := userHTTP.NewUserHandler(userUseCase)
+	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager)
 
 	return &Router{
 		contactHandler: contactHandler,
 		profileHandler: profileHandler,
 		userHandler:    userHandler,
+		jwtManager:     jwtManager,
 	}
 }
 
@@ -86,17 +89,24 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		// User routes
 		users := identity.Group("/users")
 		{
-			users.POST("/register", r.userHandler.Register)                  // Register new user
-			users.POST("/login", r.userHandler.Login)                        // Authenticate user
-			users.GET("/:id", r.userHandler.GetByID)                         // Get user by ID
-			users.GET("/email/:email", r.userHandler.GetByEmail)             // Get user by email
-			users.POST("/:id/verify-email", r.userHandler.VerifyEmail)       // Verify user email
-			users.POST("/:id/change-password", r.userHandler.ChangePassword) // Change password
-			users.POST("/:id/suspend", r.userHandler.Suspend)                // Suspend user
-			users.POST("/:id/ban", r.userHandler.Ban)                        // Ban user
-			users.POST("/:id/activate", r.userHandler.Activate)              // Activate user
-			users.POST("/:id/unlock", r.userHandler.Unlock)                  // Unlock user account
-			users.GET("", r.userHandler.List)                                // List users with pagination
+			// Public routes (no authentication required)
+			users.POST("/register", r.userHandler.Register) // Register new user
+			users.POST("/login", r.userHandler.Login)       // Authenticate user
+
+			// Protected routes (authentication required)
+			protected := users.Group("")
+			protected.Use(jwt.AuthMiddleware(r.jwtManager))
+			{
+				protected.GET("/:id", r.userHandler.GetByID)                         // Get user by ID
+				protected.GET("/email/:email", r.userHandler.GetByEmail)             // Get user by email
+				protected.POST("/:id/verify-email", r.userHandler.VerifyEmail)       // Verify user email
+				protected.POST("/:id/change-password", r.userHandler.ChangePassword) // Change password
+				protected.POST("/:id/suspend", r.userHandler.Suspend)                // Suspend user
+				protected.POST("/:id/ban", r.userHandler.Ban)                        // Ban user
+				protected.POST("/:id/activate", r.userHandler.Activate)              // Activate user
+				protected.POST("/:id/unlock", r.userHandler.Unlock)                  // Unlock user account
+				protected.GET("", r.userHandler.List)                                // List users with pagination
+			}
 		}
 	}
 }

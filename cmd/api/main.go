@@ -21,6 +21,7 @@ import (
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
+	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 )
@@ -110,6 +111,19 @@ func main() {
 
 	logger.Info("Database migrations completed successfully")
 
+	// Initialize JWT Manager
+	jwtManager := jwt.NewManager(jwt.Config{
+		SecretKey:            cfg.JWT.Secret,
+		AccessTokenDuration:  cfg.JWT.AccessTokenDuration,
+		RefreshTokenDuration: cfg.JWT.RefreshTokenDuration,
+		Issuer:               cfg.JWT.Issuer,
+	})
+	logger.Info("JWT Manager initialized",
+		slog.String("issuer", cfg.JWT.Issuer),
+		slog.Duration("access_token_duration", cfg.JWT.AccessTokenDuration),
+		slog.Duration("refresh_token_duration", cfg.JWT.RefreshTokenDuration),
+	)
+
 	// Initialize Event Bus
 	eventBus, err := bus.NewBus(cfg.Bus)
 	if err != nil {
@@ -145,9 +159,9 @@ func main() {
 	})
 
 	// Initialize context routers
-	sharedRouter := shared.NewRouter(db)           // Shared Context (Reference Data)
-	identityRouter := identity.NewRouter(db)       // Identity Context (User, Contact)
-	customerMgmtRouter := customermgmt.NewRouter(db) // Customer Management Context (Customer)
+	sharedRouter := shared.NewRouter(db)                 // Shared Context (Reference Data)
+	identityRouter := identity.NewRouter(db, jwtManager) // Identity Context (User, Contact) with JWT
+	customerMgmtRouter := customermgmt.NewRouter(db)     // Customer Management Context (Customer)
 
 	// API routes
 	api := r.Group("/api")
