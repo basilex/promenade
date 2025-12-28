@@ -2,7 +2,7 @@
 
 **Domain:** User authentication, profiles, and contact information  
 **Ubiquitous Language:** User, Profile, Contact, Session, Credentials  
-**Status:** Production-ready (Contact, Profile, User aggregates)
+**Status:** ✅ Production-ready (Contact, Profile, User aggregates)
 
 ---
 
@@ -14,14 +14,15 @@ The **Identity Context** manages everything related to user identity, authentica
 
  **What Identity Context DOES:**
 
--  Contact information management (email, phone, address)
--  Contact verification (email confirmation, phone OTP)
--  User profile management (display name, bio, avatar, personal info, social links)
--  Profile visibility control (public/private profiles)
--  User registration and authentication (login/logout) - planned
--  Session management (JWT tokens, token refresh) - planned
--  Role-Based Access Control (RBAC) - users, roles, permissions - planned
--  User credentials and password management (bcrypt hashing) - planned
+- ✅ Contact information management (email, phone, address)
+- ✅ Contact verification (email confirmation, phone OTP)
+- ✅ User profile management (display name, bio, avatar, personal info, social links)
+- ✅ Profile visibility control (public/private profiles)
+- ✅ User registration and authentication (login/logout)
+- ✅ User credentials and password management (bcrypt hashing)
+- ✅ Account status management (active, suspended, banned, locked)
+- 🔄 Session management (JWT tokens, token refresh) - next
+- 🔄 Role-Based Access Control (RBAC) - users, roles, permissions - next
 
  **What Identity Context DOES NOT DO:**
 

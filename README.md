@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-835+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-960+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
@@ -679,23 +679,28 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Database migrations system
 - [x] Testing infrastructure (three-tier strategy)
 
-### Phase 2: Identity Context (Completed - Days 1-3)
+### Phase 2: Identity Context (Completed ✅)
 
 - [x] Contact aggregate (email, phone, address)
 - [x] Profile aggregate (personal info, social links, localization)
+- [x] User aggregate (registration, authentication, password management)
 - [x] Repository implementations (PostgreSQL)
-- [x] HTTP API (REST with Gin)
-- [x] Unit tests (87 tests per aggregate, 83.5% coverage)
-- [x] Smoke tests (7 Contact + 8 Profile tests)
-- [x] Integration tests (9 Contact + 17 Profile subtests)
+- [x] HTTP API (REST with Gin) - all 3 aggregates
+- [x] Unit tests (85+ tests per aggregate)
+- [x] Smoke tests (12 User + 7 Contact + 8 Profile tests)
+- [x] Integration tests (32 User + 9 Contact + 17 Profile subtests)
+- [x] Password policies (8+ chars, digit, letter, bcrypt hashing)
+- [x] Account management (status: active/suspended/banned, locking after failed logins)
 
-### Phase 3: Identity Context - User Aggregate (Week 2)
+### Phase 3: Authentication & Authorization (Current - Week 2)
 
-- [ ] User aggregate (registration, authentication)
-- [ ] JWT authentication
-- [ ] Password policies
-- [ ] Email verification workflow
-- [ ] User-Contact-Profile relationships
+- [ ] JWT authentication (token generation, validation)
+- [ ] JWT middleware for protected endpoints
+- [ ] Session management (Redis storage, TTL)
+- [ ] Token refresh mechanism
+- [ ] Role-Based Access Control (RBAC)
+- [ ] Role & Permission aggregates
+- [ ] RBAC middleware
 
 ### Phase 4: Customer Management Context (Week 2-3)
 
