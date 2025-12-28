@@ -568,17 +568,17 @@ ENVIRONMENT=test ./bin/promenade        # Loads app.test.yaml
 
 Promenade includes a comprehensive **package library** (`pkg/`) with reusable, context-agnostic components:
 
-| Package         | Purpose                               | Tests | Status     | Documentation               |
-| --------------- | ------------------------------------- | ----- | ---------- | --------------------------- |
-| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md) |
-| **logger**      | Structured logging (slog wrapper)     | 15    | Production | -                           |
-| **migration**   | Namespace-based DB migrations         | 8     | Production | -                           |
-| **response**    | Standard HTTP responses               | 12    | Production | -                           |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | -                           |
-| **valueobject** | DDD Value Objects                     | 25    | Production | -                           |
-| **aggregate**   | Base Aggregate pattern                | 5     | Production | -                           |
-| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | -                           |
-| **saga**        | Distributed transaction orchestration | -     | Planned    | Coming Q1 2026              |
+| Package         | Purpose                               | Tests | Status     | Documentation                           |
+| --------------- | ------------------------------------- | ----- | ---------- | --------------------------------------- |
+| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md)             |
+| **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](pkg/logger/README.md)          |
+| **migration**   | Namespace-based DB migrations         | 8     | Production | [README](pkg/migration/README.md)       |
+| **response**    | Standard HTTP responses               | 12    | Production | [README](pkg/response/README.md)        |
+| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | [README](pkg/uuidv7/README.md)          |
+| **valueobject** | DDD Value Objects                     | 25    | Production | [README](pkg/valueobject/README.md)     |
+| **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](pkg/aggregate/README.md)       |
+| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
+| **saga**        | Distributed transaction orchestration | -     | Planned    | Coming Q1 2026                          |
 
 **Total**: 150+ tests across 32 packages
 

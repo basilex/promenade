@@ -10,28 +10,28 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 
 ### Core Infrastructure
 
-| Package       | Purpose                                         | Status     | Tests |
-| ------------- | ----------------------------------------------- | ---------- | ----- |
-| **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      | Production | 67    |
-| **logger**    | Structured logging (slog wrapper)               | Production | 15    |
-| **migration** | Database migration management (namespace-based) | Production | 8     |
-| **response**  | Standard HTTP response formatting               | Production | 12    |
+| Package       | Purpose                                         | Status     | Tests | Documentation                       |
+| ------------- | ----------------------------------------------- | ---------- | ----- | ----------------------------------- |
+| **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      | Production | 67    | [README](bus/README.md)             |
+| **logger**    | Structured logging (slog wrapper)               | Production | 15    | [README](logger/README.md)          |
+| **migration** | Database migration management (namespace-based) | Production | 8     | [README](migration/README.md)       |
+| **response**  | Standard HTTP response formatting               | Production | 12    | [README](response/README.md)        |
 
 ### Domain Primitives
 
-| Package         | Purpose                                         | Status     | Tests |
-| --------------- | ----------------------------------------------- | ---------- | ----- |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)                   | Production | 10    |
-| **valueobject** | Immutable value objects (Email, Phone, Money)   | Production | 25    |
-| **aggregate**   | Base aggregate pattern (DDD)                    | Production | 5     |
-| **saga**        | Saga orchestration for distributed transactions | Planned    | -     |
+| Package         | Purpose                                         | Status     | Tests | Documentation                       |
+| --------------- | ----------------------------------------------- | ---------- | ----- | ----------------------------------- |
+| **uuidv7**      | Time-ordered UUIDs (RFC 9562)                   | Production | 10    | [README](uuidv7/README.md)          |
+| **valueobject** | Immutable value objects (Email, Phone, Money)   | Production | 25    | [README](valueobject/README.md)     |
+| **aggregate**   | Base aggregate pattern (DDD)                    | Production | 5     | [README](aggregate/README.md)       |
+| **saga**        | Saga orchestration for distributed transactions | Planned    | -     | Coming Q1 2026                      |
 
 ### Utilities
 
-| Package       | Purpose                      | Status     | Tests |
-| ------------- | ---------------------------- | ---------- | ----- |
-| **jsonb**     | JSONB helpers for PostgreSQL | Production | 8     |
-| **reference** | Reference data utilities     | Production | 6     |
+| Package       | Purpose                      | Status     | Tests | Documentation                       |
+| ------------- | ---------------------------- | ---------- | ----- | ----------------------------------- |
+| **jsonb**     | JSONB helpers for PostgreSQL | Production | 8     | [README](jsonb/README.md)           |
+| **reference** | Reference data utilities     | Production | 6     | -                                   |
 
 ---
 
