@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-240+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-835+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
@@ -42,8 +42,8 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 | Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | Production | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | Contact (User, Profile planned)       | Contact management            | Production | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer, Company, Deal, Interaction  | CRM core functionality        | Planned    | Coming Q1 2026                                 |
+| **Identity**            | Contact, Profile, User                | User management               | Production | [README](internal/contexts/identity/README.md) |
+| **Customer Management** | Customer                              | CRM core functionality        | Production | [README](internal/contexts/customer-mgmt/README.md) |
 | **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking | Planned    | Coming Q2 2026                                 |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | Planned    | Coming Q2 2026                                 |
 | **Analytics**           | Report, Dashboard, Metric             | Business intelligence         | Planned    | Coming Q3 2026                                 |

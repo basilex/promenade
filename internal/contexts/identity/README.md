@@ -2,11 +2,11 @@
 
 **Domain:** User authentication, profiles, and contact information  
 **Ubiquitous Language:** User, Profile, Contact, Session, Credentials  
-**Status:**  Production-ready (Contact & Profile aggregates) |  User aggregate planned
+**Status:** Production-ready (Contact, Profile, User aggregates)
 
 ---
 
-##  Overview
+## Overview
 
 The **Identity Context** manages everything related to user identity, authentication, authorization (RBAC), and personal contact information. This is the **Core Domain** for user management in Promenade CRM, following **Domain-Driven Design (DDD)** principles with clear bounded context separation.
 

@@ -29,8 +29,8 @@ Each context is autonomous with:
 **Available Contexts**:
 
 - **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only)
-- **Identity** (`internal/contexts/identity/`) - Contact aggregate (authentication, contacts) | User, Profile planned
-- **Customer Management** (planned) - Customer, Company, Deal, Interaction
+- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile aggregates (authentication, contacts, profiles)
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate (lifecycle, B2B, segmentation) | Company, Deal, Interaction planned
 - **Order Management** (planned) - Order, OrderItem, Fulfillment
 - **Billing** (planned) - Invoice, Payment, Subscription
 - **Warehouse** (planned) - Inventory management
@@ -113,12 +113,13 @@ type IUseCase interface {
 }
 
 // Implementation (lowercase struct)
-type UseCase struct {
+type useCase struct {
     repo IRepository
 }
 
+// Constructor: simple NewUseCase (NOT New{Entity}UseCase)
 func NewUseCase(repo IRepository) IUseCase {
-    return &UseCase{repo: repo}
+    return &useCase{repo: repo}
 }
 ```
 
@@ -157,9 +158,10 @@ eventBus.Publish(ctx, event)
 
 **Migrations** (namespace-based per context):
 
-- `make migrate` - Run all migrations (core → shared → identity)
+- `make migrate` - Run all migrations (core → shared → identity → customer-mgmt)
 - `make migrate-core` - Core migrations (UUID v7 extensions)
 - `make migrate-identity` - Identity context migrations
+- `make migrate-customer-mgmt` - Customer Management context migrations
 - `make migrate-new CONTEXT=identity NAME=xxx` - Create new migration
 
 **Docker**:
@@ -173,16 +175,28 @@ eventBus.Publish(ctx, event)
 **Context Routers**: Each context has its own router that registers routes
 
 ```go
-// Identity context router
+// Identity context router (multi-aggregate)
 type Router struct {
-    contactHandler *contactHandler.ContactHandler
+    contactHandler *contactHTTP.ContactHandler
+    profileHandler *profileHTTP.ProfileHandler
+    userHandler    *userHTTP.UserHandler
 }
 
 func NewRouter(db *sqlx.DB) *Router {
+    // Initialize Contact aggregate
     contactRepository := contactRepo.NewContactRepository(db)
-    contactUseCase := contact.NewUseCase(contactRepository)
-    handler := contactHandler.NewContactHandler(contactUseCase)
-    return &Router{contactHandler: handler}
+    contactUseCase := contact.NewUseCase(contactRepository)  // Simple NewUseCase
+    contactHandler := contactHTTP.NewContactHandler(contactUseCase)
+
+    // Initialize Profile aggregate
+    profileRepository := profileRepo.NewProfileRepository(db)
+    profileUseCase := profile.NewUseCase(profileRepository)
+    profileHandler := profileHTTP.NewProfileHandler(profileUseCase)
+
+    return &Router{
+        contactHandler: contactHandler,
+        profileHandler: profileHandler,
+    }
 }
 
 func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
@@ -192,6 +206,11 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
         {
             contacts.POST("", r.contactHandler.Create)
             contacts.GET("/:id", r.contactHandler.GetByID)
+        }
+        profiles := identity.Group("/profiles")
+        {
+            profiles.POST("", r.profileHandler.Create)
+            profiles.GET("/:id", r.profileHandler.GetByID)
         }
     }
 }
@@ -443,9 +462,9 @@ func NewContactRepository(db *sqlx.DB) IRepository {
     return &contactRepository{BaseRepository: NewBaseRepository(db)}
 }
 
-type UseCase struct { repo IRepository }
+type useCase struct { repo IRepository }
 func NewUseCase(repo IRepository) IUseCase {
-    return &UseCase{repo: repo}
+    return &useCase{repo: repo}
 }
 ```
 
@@ -623,7 +642,7 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 3. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
 4. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
 5. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
-6. **Migration Namespaces**: Migrations run in order: core → shared → identity
+6. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt
 
 **Debugging Quick Reference**:
 
@@ -640,8 +659,8 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 ### Naming Consistency
 
 - [ ] All interfaces: `I{Entity}UseCase`, `I{Entity}Repository` (full words, no abbreviations)
-- [ ] All structs: lowercase `{entity}UseCase`, `{entity}Repository`
-- [ ] All constructors: `New{Entity}UseCase() I{Entity}UseCase`
+- [ ] All structs: lowercase `useCase`, `{entity}Repository` (useCase is generic, repos are entity-specific)
+- [ ] All constructors: `NewUseCase() IUseCase` (NEVER `New{Entity}UseCase`) and `New{Entity}Repository()`
 - [ ] All handlers: `{Entity}Handler struct { {entity}UC usecase.I{Entity}UseCase }`
 - [ ] All errors: `Err{Entity}{Condition}` (e.g., `ErrUserNotFound`)
 - [ ] All files: `{entity_name}_{type}.go` (snake_case)
@@ -687,7 +706,8 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 **Red Flags** (автоматично reject):
 
 - Interface name `UserPostUC` (use `IUserPostUseCase`)
-- Public struct `type UserPostUseCase struct` (must be lowercase)
+- Public struct `type UserPostUseCase struct` (must be lowercase `useCase`)
+- Constructor `NewCustomerUseCase()` or `NewContactUseCase()` (use simple `NewUseCase()`)
 - Repository method `FindByID` (use `GetByID`)
 - `uuid.New()` instead of `uuidv7.New()`
 - Handler calls repository directly (must go through usecase)

@@ -17,7 +17,7 @@
 
 ---
 
-## 🎯 Testing Philosophy
+##  Testing Philosophy
 
 Promenade follows **strict DDD principles** with **three-tier testing strategy**:
 
@@ -84,7 +84,7 @@ import (
 	"github.com/basilex/promenade/test/integration"
 )
 
-// ✅ ЕТАЛОННИЙ ПАТЕРН для інтеграційних тестів:
+//  ЕТАЛОННИЙ ПАТЕРН для інтеграційних тестів:
 
 func TestUserRepository_Create(t *testing.T) {
 	// 1. SetupTestDBWithCleanTables - TRUNCATE всіх таблиць (чиста DB для кожного test function)
@@ -138,7 +138,7 @@ func TestUserRepository_ListUsers(t *testing.T) {
 
 ### Key Rules
 
-#### ✅ DO
+####  DO
 
 1. **Use `SetupTestDBWithCleanTables(t)`** - TRUNCATE all tables at start of each test function
 2. **Static emails for single-entity tests** - No UUID pollution
@@ -147,7 +147,7 @@ func TestUserRepository_ListUsers(t *testing.T) {
 5. **require.NoError for critical checks** - Stop test on setup failure
 6. **assert for expectations** - Continue test to see all failures
 
-#### ❌ DON'T
+####  DON'T
 
 1. **DON'T use `SetupTestDB(t)`** - It doesn't clean between test functions (causes duplicate key errors)
 2. **DON'T use WithTransaction** - Requires repository signature changes (*sqlx.Tx vs *sqlx.DB)
@@ -248,7 +248,7 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// ✅ ЕТАЛОННИЙ ПАТЕРН для smoke тестів:
+//  ЕТАЛОННИЙ ПАТЕРН для smoke тестів:
 
 // 1. MockUseCase - імплементує ВСІ методи з IUseCase interface
 type MockUserUseCase struct {
@@ -364,7 +364,7 @@ func TestUserHandler_Smoke(t *testing.T) {
 
 ### Key Rules
 
-#### ✅ DO
+####  DO
 
 1. **Implement ALL IUseCase methods** - Mock must satisfy interface completely
 2. **Use gin.TestMode** - Disable debug logging
@@ -373,7 +373,7 @@ func TestUserHandler_Smoke(t *testing.T) {
 5. **Create entities directly** - No need for factory methods (NewEntity)
 6. **AssertExpectations in each subtest** - Verify all mocks were called
 
-#### ❌ DON'T
+####  DON'T
 
 1. **DON'T use real database** - Smoke tests are mock-only
 2. **DON'T call factory methods** - Create entity structs directly
@@ -675,7 +675,7 @@ go test ./internal/contexts/identity/user -cover
 
 ---
 
-## ✅ Best Practices
+##  Best Practices
 
 ### General
 
@@ -689,12 +689,12 @@ go test ./internal/contexts/identity/user -cover
 ### Naming
 
 ```go
-// ✅ Good
+//  Good
 func TestUser_NewUser_InvalidEmail_ReturnsError(t *testing.T) {}
 func TestUserRepository_Create_DuplicateEmail_ReturnsError(t *testing.T) {}
 func TestUserHandler_Register_MissingPassword_Returns400(t *testing.T) {}
 
-// ❌ Bad
+//  Bad
 func TestUser(t *testing.T) {}
 func Test1(t *testing.T) {}
 func TestCreate(t *testing.T) {}
@@ -703,14 +703,14 @@ func TestCreate(t *testing.T) {}
 ### Assertions
 
 ```go
-// ✅ Use require for critical setup
+//  Use require for critical setup
 require.NoError(t, err, "failed to create test user")
 
-// ✅ Use assert for expectations
+//  Use assert for expectations
 assert.Equal(t, expected, actual)
 assert.Contains(t, err.Error(), "expected substring")
 
-// ❌ Don't swallow errors
+//  Don't swallow errors
 if err != nil {
 	// Silent failure - BAD
 }
@@ -719,23 +719,23 @@ if err != nil {
 ### Test Data
 
 ```go
-// ✅ Predictable test data
+//  Predictable test data
 email := "test@example.com"
 name := "Test User"
 password := "TestPass123!"
 
-// ❌ Random data (hard to debug failures)
+//  Random data (hard to debug failures)
 email := fmt.Sprintf("user_%d@example.com", rand.Int())
 ```
 
 ### Mock Setup
 
 ```go
-// ✅ Clear mock expectations
+//  Clear mock expectations
 mockRepo.On("Create", ctx, mock.AnythingOfType("*user.User")).Return(nil).Once()
 mockRepo.AssertExpectations(t) // Verify all mocks called
 
-// ❌ Vague mocks
+//  Vague mocks
 mockRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
 ```
 
@@ -745,10 +745,10 @@ mockRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 ### Integration Tests
 
-#### ❌ Using SetupTestDB instead of SetupTestDBWithCleanTables
+####  Using SetupTestDB instead of SetupTestDBWithCleanTables
 
 ```go
-// ❌ BAD - shared DB, duplicate key errors
+//  BAD - shared DB, duplicate key errors
 func TestUserRepository_Create(t *testing.T) {
 	db := integration.SetupTestDB(t) // Doesn't clean between functions
 	// ...
@@ -761,7 +761,7 @@ func TestUserRepository_Update(t *testing.T) {
 ```
 
 ```go
-// ✅ GOOD - clean DB for each function
+//  GOOD - clean DB for each function
 func TestUserRepository_Create(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t) // TRUNCATE all tables
 	// ...
@@ -773,10 +773,10 @@ func TestUserRepository_Update(t *testing.T) {
 }
 ```
 
-#### ❌ Over-using UUID in emails
+####  Over-using UUID in emails
 
 ```go
-// ❌ BAD - UUID pollution
+//  BAD - UUID pollution
 func TestUserRepository_GetByID(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 
@@ -787,7 +787,7 @@ func TestUserRepository_GetByID(t *testing.T) {
 ```
 
 ```go
-// ✅ GOOD - static email (DB is clean)
+//  GOOD - static email (DB is clean)
 func TestUserRepository_GetByID(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 
@@ -796,10 +796,10 @@ func TestUserRepository_GetByID(t *testing.T) {
 }
 ```
 
-#### ❌ Using WithTransaction
+####  Using WithTransaction
 
 ```go
-// ❌ BAD - requires repository changes
+//  BAD - requires repository changes
 func TestUserRepository_Create(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	tx, _ := db.BeginTx(ctx, nil)
@@ -811,7 +811,7 @@ func TestUserRepository_Create(t *testing.T) {
 ```
 
 ```go
-// ✅ GOOD - use SetupTestDBWithCleanTables
+//  GOOD - use SetupTestDBWithCleanTables
 func TestUserRepository_Create(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB) // Works with *sqlx.DB
@@ -821,10 +821,10 @@ func TestUserRepository_Create(t *testing.T) {
 
 ### Smoke Tests
 
-#### ❌ Forgetting secondary mock calls
+####  Forgetting secondary mock calls
 
 ```go
-// ❌ BAD - missing GetUser mock
+//  BAD - missing GetUser mock
 t.Run("VerifyEmail returns 200", func(t *testing.T) {
 	mockUC.On("VerifyEmail", mock.Anything, userID).Return(nil).Once()
 	// Handler ALSO calls GetUser but no mock! → PANIC
@@ -832,7 +832,7 @@ t.Run("VerifyEmail returns 200", func(t *testing.T) {
 ```
 
 ```go
-// ✅ GOOD - mock ALL handler calls
+//  GOOD - mock ALL handler calls
 t.Run("VerifyEmail returns 200", func(t *testing.T) {
 	u := &user.User{ID: userID}
 	mockUC.On("VerifyEmail", mock.Anything, userID).Return(nil).Once()
@@ -840,10 +840,10 @@ t.Run("VerifyEmail returns 200", func(t *testing.T) {
 })
 ```
 
-#### ❌ Using factory methods
+####  Using factory methods
 
 ```go
-// ❌ BAD - NewUser hashes password, validates email (unnecessary in smoke test)
+//  BAD - NewUser hashes password, validates email (unnecessary in smoke test)
 u, err := user.NewUser("test@example.com", "password123")
 if err != nil {
 	// Handle validation error in smoke test!?
@@ -851,7 +851,7 @@ if err != nil {
 ```
 
 ```go
-// ✅ GOOD - create struct directly
+//  GOOD - create struct directly
 u := &user.User{
 	ID:           uuidv7.New(),
 	PasswordHash: "hashedPassword", // No real hashing
@@ -861,10 +861,10 @@ u := &user.User{
 
 ### Unit Tests
 
-#### ❌ Testing implementation details
+####  Testing implementation details
 
 ```go
-// ❌ BAD - testing internal methods
+//  BAD - testing internal methods
 func TestUser_hashPassword(t *testing.T) {
 	hash, err := hashPassword("password")
 	// Testing private method
@@ -872,24 +872,24 @@ func TestUser_hashPassword(t *testing.T) {
 ```
 
 ```go
-// ✅ GOOD - testing public behavior
+//  GOOD - testing public behavior
 func TestUser_NewUser_PasswordIsHashed(t *testing.T) {
 	u, _ := NewUser("test@example.com", "password123")
 	assert.NotEqual(t, "password123", u.PasswordHash) // Verify password was hashed
 }
 ```
 
-#### ❌ Not using mock.AssertExpectations
+####  Not using mock.AssertExpectations
 
 ```go
-// ❌ BAD - mock setup but no verification
+//  BAD - mock setup but no verification
 mockRepo.On("Create", ctx, mock.AnythingOfType("*user.User")).Return(nil)
 uc.Register(ctx, "test@example.com", "Name", "password")
 // Did Create get called? We don't know!
 ```
 
 ```go
-// ✅ GOOD - verify all mocks called
+//  GOOD - verify all mocks called
 mockRepo.On("Create", ctx, mock.AnythingOfType("*user.User")).Return(nil).Once()
 uc.Register(ctx, "test@example.com", "Name", "password")
 mockRepo.AssertExpectations(t) // Fails if Create not called exactly once
@@ -897,7 +897,7 @@ mockRepo.AssertExpectations(t) // Fails if Create not called exactly once
 
 ---
 
-## 📊 Test Coverage Requirements
+##  Test Coverage Requirements
 
 ### Per Component
 
@@ -960,5 +960,5 @@ Before writing tests, verify:
 ---
 
 **Last Updated**: 2025-12-28  
-**Status**: ✅ Production-ready  
+**Status**:  Production-ready  
 **Maintainer**: Promenade Team

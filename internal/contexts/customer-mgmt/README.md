@@ -2,7 +2,7 @@
 
 **Domain:** CRM, customer relationships, sales pipeline  
 **Ubiquitous Language:** Customer, Company, Deal, Interaction, Lead, Opportunity  
-**Status:**  Planned (Phase 2 implementation)
+**Status:** Production (Customer aggregate) | Company, Deal, Interaction planned
 
 ---
 

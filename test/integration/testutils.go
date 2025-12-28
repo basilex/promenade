@@ -104,6 +104,9 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
+		// Customer Management Context tables
+		"customer_mgmt_customers",
+
 		// Identity Context tables
 		"identity_contacts",
 		"identity_user_sessions",
@@ -117,7 +120,7 @@ func (tdb *TestDB) CleanAllTables() {
 		"identity_users",
 
 		// TODO: Add Bounded Context tables here as they are created
-		// Examples: customer_mgmt_*, order_mgmt_*, etc.
+		// Examples: order_mgmt_*, billing_*, etc.
 
 		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
@@ -249,8 +252,13 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("identity migrations failed: %w", err)
 	}
 
+	// Run customer management context migrations
+	if err := mgr.MigrateNamespace(ctx, "customer-mgmt"); err != nil {
+		return fmt.Errorf("customer-mgmt migrations failed: %w", err)
+	}
+
 	// TODO: Add additional Bounded Context migrations here as they are created
-	// Examples: customer-mgmt, order-mgmt, etc.
+	// Examples: order-mgmt, billing, etc.
 
 	return nil
 }

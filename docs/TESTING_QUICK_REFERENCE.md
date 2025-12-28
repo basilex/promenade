@@ -4,13 +4,13 @@
 
 ---
 
-## 🎯 Three Test Types
+##  Three Test Types
 
 | Type            | Location                     | Database           | Speed   | Purpose        |
 | --------------- | ---------------------------- | ------------------ | ------- | -------------- |
-| **Unit**        | In-place (`*_test.go`)       | ❌ Mocks           | ⚡ 5s   | Business logic |
-| **Smoke**       | `test/smoke/contexts/`       | ❌ Mock UseCase    | ⚡ 0.4s | HTTP handlers  |
-| **Integration** | `test/integration/contexts/` | ✅ Real PostgreSQL | 🐢 6s   | Repositories   |
+| **Unit**        | In-place (`*_test.go`)       |  Mocks           |  5s   | Business logic |
+| **Smoke**       | `test/smoke/contexts/`       |  Mock UseCase    |  0.4s | HTTP handlers  |
+| **Integration** | `test/integration/contexts/` |  Real PostgreSQL |  6s   | Repositories   |
 
 ---
 
@@ -37,8 +37,8 @@ func TestUserRepository_Create(t *testing.T) {
 }
 ```
 
-**✅ DO**: SetupTestDBWithCleanTables, static emails, ctx first  
-**❌ DON'T**: SetupTestDB, UUID everywhere, WithTransaction
+** DO**: SetupTestDBWithCleanTables, static emails, ctx first  
+** DON'T**: SetupTestDB, UUID everywhere, WithTransaction
 
 ---
 
@@ -95,8 +95,8 @@ func TestUserHandler_Smoke(t *testing.T) {
 }
 ```
 
-**✅ DO**: Mock ALL usecase calls, create entities directly, AssertExpectations  
-**❌ DON'T**: Use real DB, call factory methods, forget secondary mocks
+** DO**: Mock ALL usecase calls, create entities directly, AssertExpectations  
+** DON'T**: Use real DB, call factory methods, forget secondary mocks
 
 ---
 
@@ -133,8 +133,8 @@ func TestUser_NewUser(t *testing.T) {
 }
 ```
 
-**✅ DO**: Table-driven tests, require for critical, mock repositories  
-**❌ DON'T**: Test private methods, skip AssertExpectations, use random data
+** DO**: Table-driven tests, require for critical, mock repositories  
+** DON'T**: Test private methods, skip AssertExpectations, use random data
 
 ---
 
@@ -165,21 +165,21 @@ make test-coverage
 ### Integration
 
 ```go
-// ❌ SetupTestDB - shared DB
+//  SetupTestDB - shared DB
 db := integration.SetupTestDB(t)
 
-// ✅ SetupTestDBWithCleanTables - TRUNCATE
+//  SetupTestDBWithCleanTables - TRUNCATE
 db := integration.SetupTestDBWithCleanTables(t)
 ```
 
 ### Smoke
 
 ```go
-// ❌ Missing secondary mock
+//  Missing secondary mock
 mockUC.On("VerifyEmail", ...).Return(nil).Once()
 // Handler ALSO calls GetUser!
 
-// ✅ Mock ALL calls
+//  Mock ALL calls
 mockUC.On("VerifyEmail", ...).Return(nil).Once()
 mockUC.On("GetUser", ...).Return(u, nil).Once()
 ```
@@ -187,10 +187,10 @@ mockUC.On("GetUser", ...).Return(u, nil).Once()
 ### Unit
 
 ```go
-// ❌ No verification
+//  No verification
 mockRepo.On("Create", ...).Return(nil)
 
-// ✅ Verify called
+//  Verify called
 mockRepo.On("Create", ...).Return(nil).Once()
 mockRepo.AssertExpectations(t)
 ```
