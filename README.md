@@ -571,6 +571,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | Package         | Purpose                               | Tests | Status     | Documentation                           |
 | --------------- | ------------------------------------- | ----- | ---------- | --------------------------------------- |
 | **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md)             |
+| **jwt**         | JWT authentication & RBAC middleware  | 18    | Production | [README](pkg/jwt/README.md)             |
 | **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](pkg/logger/README.md)          |
 | **migration**   | Namespace-based DB migrations         | 8     | Production | [README](pkg/migration/README.md)       |
 | **response**    | Standard HTTP responses               | 12    | Production | [README](pkg/response/README.md)        |
@@ -580,11 +581,12 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
 | **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
 
-**Total**: 150+ tests across 32 packages
+**Total**: 196+ tests across 10 packages
 
 **Key Highlights**:
 
 - **bus**: Central event-driven communication hub (377K events/sec with Memory adapter)
+- **jwt**: JWT token generation/validation with RBAC middleware (87% test coverage)
 - **uuidv7**: Time-ordered UUIDs provide 2x faster inserts than UUID v4
 - **valueobject**: Email, Phone, Money, Address with immutability and validation
 - **aggregate**: Base pattern for all domain aggregates (event sourcing support)

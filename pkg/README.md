@@ -13,6 +13,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 | Package       | Purpose                                         | Status     | Tests | Documentation                       |
 | ------------- | ----------------------------------------------- | ---------- | ----- | ----------------------------------- |
 | **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      | Production | 67    | [README](bus/README.md)             |
+| **jwt**       | JWT authentication & RBAC middleware            | Production | 18    | [README](jwt/README.md)             |
 | **logger**    | Structured logging (slog wrapper)               | Production | 15    | [README](logger/README.md)          |
 | **migration** | Database migration management (namespace-based) | Production | 8     | [README](migration/README.md)       |
 | **response**  | Standard HTTP response formatting               | Production | 12    | [README](response/README.md)        |
@@ -58,7 +59,58 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 
 ---
 
-### 2. pkg/logger - Structured Logging
+### 2. pkg/jwt - JWT Authentication
+
+**JWT token generation and validation** with RBAC middleware for secure authentication and authorization.
+
+**Key Features**:
+
+- Token generation (access + refresh tokens)
+- Token validation with custom claims (user_id, email, roles)
+- Gin middleware for authentication
+- RBAC middleware (RequireRole, RequireAnyRole, RequireAllRoles)
+- Context helpers (GetClaims, GetUserID, MustGetClaims, MustGetUserID)
+- Configurable TTL and secret key
+
+**Usage**:
+
+```go
+import "github.com/basilex/promenade/pkg/jwt"
+
+// Initialize JWT manager
+jwtManager := jwt.NewManager(jwt.Config{
+    SecretKey:            cfg.JWT.Secret,
+    AccessTokenDuration:  15 * time.Minute,
+    RefreshTokenDuration: 7 * 24 * time.Hour,
+    Issuer:               "promenade-crm",
+})
+
+// Generate token pair
+tokenPair, err := jwtManager.GenerateTokenPair(userID, email, roles)
+
+// Protect routes
+router.Use(jwt.AuthMiddleware(jwtManager))
+
+// Require specific role
+admin := router.Group("/admin")
+admin.Use(jwt.RequireRole("admin"))
+```
+
+**Configuration** (`config/app.*.yaml`):
+
+```yaml
+jwt:
+  secret: "your-secret-key-at-least-32-characters"
+  access_token_duration: 15m
+  refresh_token_duration: 168h  # 7 days
+  issuer: "promenade-crm"
+```
+
+**Read More**: [pkg/jwt/README.md](jwt/README.md)
+
+---
+
+### 3. pkg/logger - Structured Logging
 
 **Wrapper around Go's `log/slog`** with context-aware logging and request ID propagation.
 
@@ -102,7 +154,7 @@ logging:
 
 ---
 
-### 3. pkg/migration - Database Migrations
+### 4. pkg/migration - Database Migrations
 
 **Namespace-based migration system** for managing schema evolution across multiple bounded contexts.
 
@@ -146,7 +198,7 @@ go run cmd/migrate/main.go --cmd=up --namespace=identity
 
 ---
 
-### 4. pkg/response - HTTP Responses
+### 5. pkg/response - HTTP Responses
 
 **Standard response formatting** for consistent API responses across all handlers.
 
@@ -200,7 +252,7 @@ response.Paginated(c, http.StatusOK, users, total, page, pageSize)
 
 ---
 
-### 5. pkg/uuidv7 - Time-Ordered UUIDs
+### 6. pkg/uuidv7 - Time-Ordered UUIDs
 
 **UUIDv7 implementation** (RFC 9562) for database primary keys with better performance than UUIDv4.
 
@@ -243,7 +295,7 @@ CREATE TABLE users (
 
 ---
 
-### 6. pkg/valueobject - Value Objects
+### 7. pkg/valueobject - Value Objects
 
 **Immutable value objects** (DDD pattern) for domain concepts with validation and equality semantics.
 
@@ -299,7 +351,7 @@ addr, err := valueobject.NewAddress(
 
 ---
 
-### 7. pkg/aggregate - Base Aggregate
+### 8. pkg/aggregate - Base Aggregate
 
 **Base aggregate pattern** (DDD) for aggregate roots with event sourcing support.
 
