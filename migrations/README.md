@@ -272,8 +272,8 @@ See "Dirty State" section above for recovery steps.
 
 See full documentation:
 
-- [docs/MIGRATION_ARCHITECTURE.md](../docs/MIGRATION_ARCHITECTURE.md) - System design
-- [docs/MIGRATION_SYSTEM.md](../docs/MIGRATION_SYSTEM.md) - Usage guide
+- [docs/INDEX.md](../docs/INDEX.md) - Documentation index
+- [docs/PHASE1_ARCHITECTURE_PREPARATION.md](../docs/PHASE1_ARCHITECTURE_PREPARATION.md) - Migration roadmap
 - [pkg/migration/manager.go](../pkg/migration/manager.go) - Implementation
 
 ## Examples

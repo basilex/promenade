@@ -9,7 +9,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 ### Getting Started
 
 - [Main README](../README.md) - Project overview, quick start, architecture
-- [AI Instructions](.github/copilot-instructions.md) - Essential guide for AI coding agents
+- [AI Instructions](../.github/copilot-instructions.md) - Essential guide for AI coding agents
 - [Testing Guide](../test/README.md) - Three-tier testing strategy
 - [Testing Patterns](TESTING_PATTERNS.md) - **Comprehensive testing patterns guide** (unit, smoke, integration)
 - [Testing Quick Reference](TESTING_QUICK_REFERENCE.md) - One-page cheat sheet
@@ -51,7 +51,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 ### Database
 
-- [Migrations](../migrations/README.md) - Namespace-based migration system
+- [Migrations README](../migrations/README.md) - Namespace-based migration system
 - Core migrations: `migrations/core/` - Extensions (UUID v7)
 - Shared migrations: `migrations/shared/` - Reference data
 - Identity migrations: `migrations/identity/` - Users, contacts
@@ -72,8 +72,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 
 1. Read [docs/TESTING_PATTERNS.md](TESTING_PATTERNS.md) - **ЕТАЛОННІ ПАТЕРНИ** (unit/smoke/integration)
 2. Check [test/README.md](../test/README.md) - Three-tier testing strategy overview
-3. Check [test/TESTING_STRUCTURE.md](../test/TESTING_STRUCTURE.md) - Directory structure
-4. See examples:
+3. See examples:
    - Unit: `internal/contexts/identity/user/*_test.go`
    - Smoke: `test/smoke/contexts/identity/user/handler_test.go`
    - Integration: `test/integration/contexts/identity/user/repository_test.go`

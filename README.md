@@ -109,11 +109,13 @@ promenade/
     app.dev.yaml          # Development (Memory bus, localhost DB)
     app.test.yaml         # Testing
     app.prod.yaml         # Production (Redis bus)
- docs/                       # Architecture documentation (20+ guides)
+ docs/                       # Architecture documentation (8 guides)
      INDEX.md              # Documentation index
-     ARCHITECTURE_OVERVIEW.md # High-level architecture
-     ARCHITECTURE_QUICKREF.md # Quick reference guide
-     ...                   # 20+ detailed guides
+     CLEAN_ARCHITECTURE_SUMMARY.md # DDD with Bounded Contexts
+     PHASE1_ARCHITECTURE_PREPARATION.md # Migration roadmap
+     TESTING_PATTERNS.md  # Comprehensive testing guide
+     TESTING_QUICK_REFERENCE.md # Testing cheat sheet
+     BUS_TEST_COVERAGE.md # Event Bus test report
 ```
 
 ### Key Directories Explained
@@ -755,8 +757,10 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 **Core Documentation**:
 
 - [Documentation Index](docs/INDEX.md) - Complete documentation catalog with quick navigation
-- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) - High-level architecture and design principles
-- [Architecture Quick Reference](docs/ARCHITECTURE_QUICKREF.md) - Quick reference for common patterns
+- [Clean Architecture Summary](docs/CLEAN_ARCHITECTURE_SUMMARY.md) - DDD with Bounded Contexts
+- [Phase 1 Architecture Preparation](docs/PHASE1_ARCHITECTURE_PREPARATION.md) - Migration roadmap
+- [Testing Patterns](docs/TESTING_PATTERNS.md) - Comprehensive testing guide (~965 lines)
+- [Testing Quick Reference](docs/TESTING_QUICK_REFERENCE.md) - One-page cheat sheet
 
 **Bounded Contexts**:
 
@@ -771,15 +775,15 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 **Infrastructure**:
 
 - [Testing Guide](test/README.md) - Testing structure and best practices
-- [Migration Architecture](docs/MIGRATION_ARCHITECTURE.md) - Database migration system
-- [UUID v7 Guide](docs/UUID_V7_GUIDE.md) - Time-ordered UUID implementation
+- [Migrations README](migrations/README.md) - Namespace-based migration system
 
 **Testing & Quality**:
 
-- [Testing Infrastructure](docs/TESTING_INFRASTRUCTURE.md) - Test organization and execution
+- [Testing Patterns](docs/TESTING_PATTERNS.md) - Comprehensive DDD testing guide
+- [Event Bus Test Coverage](docs/BUS_TEST_COVERAGE.md) - Test report (67 tests, 100% passing)
 - Mirror path testing structure (tests alongside code)
 - 150+ tests with 90%+ average coverage
 
-**Total Documentation**: 20+ comprehensive guides with examples, best practices, and architecture decisions
+**Total Documentation**: 8 core guides + 6 context READMEs with examples, best practices, and architecture decisions
 
 ---

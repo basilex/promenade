@@ -715,4 +715,4 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 ---
 
-**For comprehensive documentation**: [README.md](../README.md) | [docs/INDEX.md](../docs/INDEX.md) | [docs/ARCHITECTURE_QUICKREF.md](../docs/ARCHITECTURE_QUICKREF.md)
+**For comprehensive documentation**: [README.md](../README.md) | [docs/INDEX.md](../docs/INDEX.md) | [docs/CLEAN_ARCHITECTURE_SUMMARY.md](../docs/CLEAN_ARCHITECTURE_SUMMARY.md)

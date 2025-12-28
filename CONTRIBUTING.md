@@ -379,10 +379,12 @@ bus.Subscribe(bus.TopicContactCreated, func(ctx context.Context, e bus.Event) er
 ### Documentation
 
 - [Main README](README.md) - Project overview
-- [Architecture Guide](docs/ARCHITECTURE_OVERVIEW.md)
-- [Testing Guide](test/README.md)
-- [Event Bus](pkg/bus/README.md)
-- [AI Instructions](.github/copilot-instructions.md)
+- [Documentation Index](docs/INDEX.md) - All documentation catalog
+- [Clean Architecture Summary](docs/CLEAN_ARCHITECTURE_SUMMARY.md) - DDD with Bounded Contexts
+- [Testing Patterns](docs/TESTING_PATTERNS.md) - Comprehensive testing guide
+- [Testing Guide](test/README.md) - Testing structure
+- [Event Bus](pkg/bus/README.md) - Central communication hub
+- [AI Instructions](.github/copilot-instructions.md) - AI coding agents guide
 
 ### External Resources
 

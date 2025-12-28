@@ -1,27 +1,27 @@
 # Event Bus Package
 
-##  Overview
+## Overview
 
 **Event Bus** is the central communication hub for **asynchronous, decoupled communication** between Bounded Contexts in Promenade CRM. It implements the **Publish-Subscribe pattern** with support for **multiple adapters** (Memory, Redis), **retry policies**, **panic recovery**, and **graceful shutdown**.
 
 ---
 
-##  Key Features
+## Key Features
 
--  **Multiple Adapters**: Memory (dev/test), Redis (production, distributed)
--  **Factory Pattern**: `NewBus(config)` creates adapter-specific bus
--  **Type-Safe Events**: `Event` interface with `BaseEvent` implementation
--  **Retry Policy**: Configurable exponential backoff
--  **Panic Recovery**: Handler panics don't crash the system
--  **Graceful Shutdown**: Wait for in-flight events before closing
--  **Health Checks**: Monitor bus health (`Health(ctx)`)
--  **Topic Constants**: Predefined topics for all domain events
--  **Concurrent Safe**: All operations thread-safe
--  **Context Propagation**: Request tracing, cancellation support
+- **Multiple Adapters**: Memory (dev/test), Redis (production, distributed)
+- **Factory Pattern**: `NewBus(config)` creates adapter-specific bus
+- **Type-Safe Events**: `Event` interface with `BaseEvent` implementation
+- **Retry Policy**: Configurable exponential backoff
+- **Panic Recovery**: Handler panics don't crash the system
+- **Graceful Shutdown**: Wait for in-flight events before closing
+- **Health Checks**: Monitor bus health (`Health(ctx)`)
+- **Topic Constants**: Predefined topics for all domain events
+- **Concurrent Safe**: All operations thread-safe
+- **Context Propagation**: Request tracing, cancellation support
 
 ---
 
-##  Architecture
+## Architecture
 
 ### Directory Structure
 
@@ -54,7 +54,7 @@ pkg/bus/
 
 ---
 
-##  Core Interfaces
+## Core Interfaces
 
 ### EventBus Interface
 
@@ -106,7 +106,7 @@ type EventHandler func(ctx context.Context, event Event) error
 
 ---
 
-##  Configuration
+## Configuration
 
 ### Config Structure
 
@@ -162,7 +162,7 @@ bus:
 
 ---
 
-##  Usage
+## Usage
 
 ### 1. Initialize Bus
 
@@ -257,7 +257,7 @@ if err := bus.Unsubscribe(bus.TopicUserRegistered, handler); err != nil {
 
 ---
 
-##  Topic Constants
+## Topic Constants
 
 **All topics are predefined constants** to prevent typos and enable IDE autocomplete:
 
@@ -329,7 +329,7 @@ const (
 
 ---
 
-##  Adapters
+## Adapters
 
 ### Memory Adapter
 
@@ -337,11 +337,11 @@ const (
 
 **Characteristics**:
 
--  **Ultra-fast**: No network overhead (~377K events/sec)
--  **Simple**: No external dependencies
--  **Reliable**: No connection failures
--  **Not distributed**: Events don't cross process boundaries
--  **No persistence**: Events lost on restart
+- **Ultra-fast**: No network overhead (~377K events/sec)
+- **Simple**: No external dependencies
+- **Reliable**: No connection failures
+- **Not distributed**: Events don't cross process boundaries
+- **No persistence**: Events lost on restart
 
 **When to use**:
 
@@ -358,12 +358,12 @@ const (
 
 **Characteristics**:
 
--  **Distributed**: Events propagate across all instances
--  **Persistent**: Pub/Sub with optional stream storage
--  **Scalable**: Handles thousands of subscribers
--  **Reliable**: Built-in retry and reconnection logic
--  **Slower**: Network latency (~50-100ms per event)
--  **Requires Redis**: External dependency
+- **Distributed**: Events propagate across all instances
+- **Persistent**: Pub/Sub with optional stream storage
+- **Scalable**: Handles thousands of subscribers
+- **Reliable**: Built-in retry and reconnection logic
+- **Slower**: Network latency (~50-100ms per event)
+- **Requires Redis**: External dependency
 
 **When to use**:
 
@@ -376,7 +376,7 @@ const (
 
 ---
 
-##  Retry Policy
+## Retry Policy
 
 ### Exponential Backoff
 
@@ -418,7 +418,7 @@ func (h *Handler) ProcessEvent(ctx context.Context, e bus.Event) error {
 
 ---
 
-##  Panic Recovery
+## Panic Recovery
 
 **All handlers are wrapped in panic recovery** to prevent cascading failures:
 
@@ -447,7 +447,7 @@ func (mb *MemoryBus) handleEvent(ctx context.Context, handler EventHandler, even
 
 ---
 
-##  Testing
+## Testing
 
 ### Test Organization
 
@@ -493,43 +493,43 @@ go tool cover -html=coverage.out
 
 ### Test Results Summary
 
-| Package        | Tests  | Status  | Duration |
-| -------------- | ------ | ------- | -------- |
-| pkg/bus        | 23     |  PASS | 0.01s    |
-| pkg/bus/memory | 21     |  PASS | cached   |
-| pkg/bus/redis  | 16     |  PASS | 7.55s    |
-| integration    | 7      |  PASS | 5.67s    |
-| **Total**      | **67** |  PASS | ~13s     |
+| Package        | Tests  | Status | Duration |
+| -------------- | ------ | ------ | -------- |
+| pkg/bus        | 23     | PASS   | 0.01s    |
+| pkg/bus/memory | 21     | PASS   | cached   |
+| pkg/bus/redis  | 16     | PASS   | 7.55s    |
+| integration    | 7      | PASS   | 5.67s    |
+| **Total**      | **67** | PASS   | ~13s     |
 
 **Test Coverage**: **100%** of critical paths
 
 ---
 
-##  Best Practices
+## Best Practices
 
-###  DO
+### DO
 
--  **Use topic constants** (`bus.TopicUserRegistered`) to prevent typos
--  **Publish after successful database commit** to ensure consistency
--  **Log publish errors** but don't fail the operation
--  **Return nil from handlers** for permanent errors (skip retry)
--  **Use context for cancellation** and request tracing
--  **Keep handlers idempotent** (safe to retry)
--  **Test handlers with TestSuite** (unit + integration)
+- **Use topic constants** (`bus.TopicUserRegistered`) to prevent typos
+- **Publish after successful database commit** to ensure consistency
+- **Log publish errors** but don't fail the operation
+- **Return nil from handlers** for permanent errors (skip retry)
+- **Use context for cancellation** and request tracing
+- **Keep handlers idempotent** (safe to retry)
+- **Test handlers with TestSuite** (unit + integration)
 
-###  DON'T
+### DON'T
 
--  **DON'T hardcode topic strings** (use constants)
--  **DON'T publish before database commit** (risk inconsistency)
--  **DON'T panic in handlers** (use error returns)
--  **DON'T block in handlers** (use goroutines for slow operations)
--  **DON'T share state** between handler invocations
--  **DON'T ignore context cancellation** (`ctx.Done()`)
--  **DON'T use bus for synchronous RPC** (use direct calls)
+- **DON'T hardcode topic strings** (use constants)
+- **DON'T publish before database commit** (risk inconsistency)
+- **DON'T panic in handlers** (use error returns)
+- **DON'T block in handlers** (use goroutines for slow operations)
+- **DON'T share state** between handler invocations
+- **DON'T ignore context cancellation** (`ctx.Done()`)
+- **DON'T use bus for synchronous RPC** (use direct calls)
 
 ---
 
-##  Performance Metrics
+## Performance Metrics
 
 ### Memory Adapter
 
@@ -563,7 +563,7 @@ go tool cover -html=coverage.out
 
 ---
 
-##  Debugging
+## Debugging
 
 ### Enable Debug Logging
 
@@ -613,7 +613,7 @@ metrics.AverageLatency = time.Since(start)
 
 ---
 
-##  Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 
@@ -628,23 +628,23 @@ metrics.AverageLatency = time.Since(start)
 
 ### Not Planned
 
--  **RPC/Request-Reply**: Use HTTP or gRPC instead
--  **Transactions**: Events are fire-and-forget
--  **Guaranteed Ordering**: Redis Pub/Sub doesn't guarantee order
+- **RPC/Request-Reply**: Use HTTP or gRPC instead
+- **Transactions**: Events are fire-and-forget
+- **Guaranteed Ordering**: Redis Pub/Sub doesn't guarantee order
 
 ---
 
-##  Related Documentation
+## Related Documentation
 
-- [Architecture Overview](../../docs/ARCHITECTURE_OVERVIEW.md)
-- [Event-Driven Design](../../docs/EVENT_DRIVEN_DESIGN.md)
-- [Testing Guide](../../test/TESTING_STRUCTURE.md)
+- [Documentation Index](../../docs/INDEX.md)
+- [Clean Architecture Summary](../../docs/CLEAN_ARCHITECTURE_SUMMARY.md)
+- [Testing Patterns](../../docs/TESTING_PATTERNS.md)
+- [Testing Guide](../../test/README.md)
 - [Bus Test Coverage Report](../../docs/BUS_TEST_COVERAGE.md)
-- [Redis Configuration](../../docs/REDIS_CONFIGURATION.md)
 
 ---
 
-##  Contributing
+## Contributing
 
 ### Adding New Topics
 
@@ -677,6 +677,6 @@ metrics.AverageLatency = time.Since(start)
 ---
 
 **Last Updated**: 2025-12-27  
-**Status**:  Production-ready  
+**Status**: Production-ready  
 **Test Coverage**: 67 tests, 100% passing  
 **Maintainer**: Promenade Team

@@ -242,7 +242,7 @@ purge.DefaultPolicyRegistry.RegisterPolicy(purge.RetentionPolicy{
 
 ---
 
-##  Core Does NOT Do
+## Core Does NOT Do
 
 ### Business Logic
 
@@ -346,7 +346,7 @@ internal/
 
 ---
 
-##  Request Flow Example
+## Request Flow Example
 
 ### Authentication Flow
 
@@ -378,14 +378,12 @@ When working on core, ensure:
 
 ---
 
-##  Related Documentation
+## Related Documentation
 
 - **[README.md](../README.md)** - Architecture overview
-- **[docs/ARCHITECTURE_OVERVIEW.md](../docs/ARCHITECTURE_OVERVIEW.md)** - Visual diagrams
-- **[docs/ARCHITECTURE_QUICKREF.md](../docs/ARCHITECTURE_QUICKREF.md)** - Quick reference
-- **[internal/modules/README.md](modules/README.md)** - IModule system
-- **[docs/MODULE_INDEPENDENCE.md](../docs/MODULE_INDEPENDENCE.md)** - IModule autonomy rules
-- **[docs/PURGE_ARCHITECTURE.md](../docs/PURGE_ARCHITECTURE.md)** - Purge orchestration
+- **[docs/INDEX.md](../docs/INDEX.md)** - Documentation index
+- **[docs/CLEAN_ARCHITECTURE_SUMMARY.md](../docs/CLEAN_ARCHITECTURE_SUMMARY.md)** - DDD with Bounded Contexts
+- **[docs/PHASE1_ARCHITECTURE_PREPARATION.md](../docs/PHASE1_ARCHITECTURE_PREPARATION.md)** - Migration roadmap
 - **[migrations/README.md](../migrations/README.md)** - Migration system
 
 ---
