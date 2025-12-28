@@ -20,6 +20,12 @@ database:
   database: "promenade_dev"
   sslmode: "disable"
 
+jwt:
+  secret: "dev-secret-key-change-in-production"
+  access_token_duration: 15m
+  refresh_token_duration: 168h  # 7 days
+  issuer: "promenade-crm"
+
 logging:
   level: "debug"
   format: "text"
