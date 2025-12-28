@@ -12,7 +12,7 @@
 - **Gin Middleware**: Authentication and authorization middleware
 - **Context Helpers**: Extract claims and user ID from Gin context
 - **Configurable**: Secret key, TTL, issuer customization
-- **Well-Tested**: 15 tests (11 core + 4 middleware), 80%+ coverage
+- **Well-Tested**: 18 tests (11 core + 7 middleware), 87%+ coverage
 
 ---
 
@@ -582,8 +582,8 @@ go tool cover -html=coverage.out
 | Test File            | Tests | Coverage |
 |---------------------|-------|----------|
 | jwt_test.go         | 11    | 85%      |
-| middleware_test.go  | 4     | 80%      |
-| **Total**           | **15**| **83%**  |
+| middleware_test.go  | 7     | 90%      |
+| **Total**           | **18**| **87%**  |
 
 **Test Coverage**:
 - Token generation: ✅
@@ -593,6 +593,8 @@ go tool cover -html=coverage.out
 - Role checking: ✅
 - Middleware authentication: ✅
 - Middleware authorization: ✅
+- Context helpers (GetUserID, MustGetClaims, MustGetUserID): ✅
+- Panic recovery: ✅
 
 ---
 
@@ -750,7 +752,7 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 
 ---
 
-**Last Updated**: 2025-12-28  
+**Last Updated**: 208 tests, 87
 **Status**: Production-ready  
 **Test Coverage**: 15 tests, 83% coverage  
 **Maintainer**: Promenade Team
