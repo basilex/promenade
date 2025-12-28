@@ -2,14 +2,17 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
+[![Tests](https://img.shields.io/badge/Tests-240+-success?style=flat)](test/)
+[![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **Production-ready CRM platform** built with **Domain-Driven Design (DDD)**, **Bounded Contexts**, and **CQRS/Event Sourcing patterns**.
 
 ---
 
-##  Architecture Overview
+## Architecture Overview
 
 Promenade follows **strict Domain-Driven Design** principles with clear **Bounded Context** separation and **Event-Driven Architecture** at its core.
 
@@ -22,7 +25,7 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 5. **Sagas** - Distributed transactions coordination (planned)
 6. **CQRS** - Separate read/write models for complex queries (planned)
 
-### Event-Driven Architecture 
+### Event-Driven Architecture
 
 **Event Bus** is the central nervous system of Promenade:
 
@@ -36,20 +39,20 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 
 ### Bounded Contexts
 
-| Context                 | Aggregates                            | Description                   | Status        | Documentation                                  |
-| ----------------------- | ------------------------------------- | ----------------------------- | ------------- | ---------------------------------------------- |
-| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    |  Production | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | Contact (User, Profile planned)       | Contact management            |  Production | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer, Company, Deal, Interaction  | CRM core functionality        |  Planned    | Coming Q1 2026                                 |
-| **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking |  Planned    | Coming Q2 2026                                 |
-| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          |  Planned    | Coming Q2 2026                                 |
-| **Analytics**           | Report, Dashboard, Metric             | Business intelligence         |  Planned    | Coming Q3 2026                                 |
+| Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |
+| ----------------------- | ------------------------------------- | ----------------------------- | ---------- | ---------------------------------------------- |
+| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | Production | [README](internal/contexts/shared/README.md)   |
+| **Identity**            | Contact (User, Profile planned)       | Contact management            | Production | [README](internal/contexts/identity/README.md) |
+| **Customer Management** | Customer, Company, Deal, Interaction  | CRM core functionality        | Planned    | Coming Q1 2026                                 |
+| **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking | Planned    | Coming Q2 2026                                 |
+| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | Planned    | Coming Q2 2026                                 |
+| **Analytics**           | Report, Dashboard, Metric             | Business intelligence         | Planned    | Coming Q3 2026                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 promenade/
@@ -124,7 +127,7 @@ promenade/
 
 ---
 
-##  Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -201,7 +204,7 @@ make swagger-all       # Generate API documentation
 
 ---
 
-##  Testing
+## Testing
 
 Promenade uses a **three-tier testing strategy** with clear separation of concerns:
 
@@ -306,7 +309,7 @@ make test-db-stop
 
 ---
 
-##  Domain Model Examples
+## Domain Model Examples
 
 ### Identity Context
 
@@ -438,7 +441,7 @@ func (e Email) Value() string {
 
 ---
 
-##  Configuration
+## Configuration
 
 Promenade uses **YAML configuration files** per environment with **environment variable overrides**:
 
@@ -557,23 +560,23 @@ ENVIRONMENT=test ./bin/promenade        # Loads app.test.yaml
 
 ---
 
-##  Key Concepts
+## Key Concepts
 
 ### Package Library
 
 Promenade includes a comprehensive **package library** (`pkg/`) with reusable, context-agnostic components:
 
-| Package         | Purpose                               | Tests | Status        | Documentation               |
-| --------------- | ------------------------------------- | ----- | ------------- | --------------------------- |
-| **bus**         | Event Bus (Memory/Redis adapters)     | 67    |  Production | [README](pkg/bus/README.md) |
-| **logger**      | Structured logging (slog wrapper)     | 15    |  Production | -                           |
-| **migration**   | Namespace-based DB migrations         | 8     |  Production | -                           |
-| **response**    | Standard HTTP responses               | 12    |  Production | -                           |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    |  Production | -                           |
-| **valueobject** | DDD Value Objects                     | 25    |  Production | -                           |
-| **aggregate**   | Base Aggregate pattern                | 5     |  Production | -                           |
-| **jsonb**       | PostgreSQL JSONB utilities            | 8     |  Production | -                           |
-| **saga**        | Distributed transaction orchestration | -     |  Planned    | Coming Q1 2026              |
+| Package         | Purpose                               | Tests | Status     | Documentation               |
+| --------------- | ------------------------------------- | ----- | ---------- | --------------------------- |
+| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md) |
+| **logger**      | Structured logging (slog wrapper)     | 15    | Production | -                           |
+| **migration**   | Namespace-based DB migrations         | 8     | Production | -                           |
+| **response**    | Standard HTTP responses               | 12    | Production | -                           |
+| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | -                           |
+| **valueobject** | DDD Value Objects                     | 25    | Production | -                           |
+| **aggregate**   | Base Aggregate pattern                | 5     | Production | -                           |
+| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | -                           |
+| **saga**        | Distributed transaction orchestration | -     | Planned    | Coming Q1 2026              |
 
 **Total**: 150+ tests across 32 packages
 
@@ -588,7 +591,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 
 ---
 
-##  Domain Model Example: Identity Context
+## Domain Model Example: Identity Context
 
 ### Aggregates
 
@@ -634,7 +637,7 @@ type OrderFulfillmentSaga struct {
 
 ---
 
-##  Database
+## Database
 
 ### Migrations
 
@@ -664,9 +667,9 @@ id := uuidv7.New()  // Time-ordered UUID
 
 ---
 
-##  Roadmap
+## Roadmap
 
-### Phase 1: Foundation  (Completed)
+### Phase 1: Foundation (Completed)
 
 - [x] DDD primitives (Aggregate, Value Objects, Saga)
 - [x] Project structure (Bounded Contexts)
@@ -674,7 +677,7 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Database migrations system
 - [x] Testing infrastructure (three-tier strategy)
 
-### Phase 2: Identity Context  (Completed - Days 1-3)
+### Phase 2: Identity Context (Completed - Days 1-3)
 
 - [x] Contact aggregate (email, phone, address)
 - [x] Profile aggregate (personal info, social links, localization)
@@ -713,7 +716,7 @@ id := uuidv7.New()  // Time-ordered UUID
 
 ---
 
-##  Contributing
+## Contributing
 
 This is a learning project focused on DDD architecture. Contributions welcome!
 
@@ -727,13 +730,13 @@ This is a learning project focused on DDD architecture. Contributions welcome!
 
 ---
 
-##  License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-##  Support
+## Support
 
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
@@ -741,9 +744,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## **Built with Domain-Driven Design and Go** 
+## **Built with Domain-Driven Design and Go**
 
-##  Documentation
+## Documentation
 
 ### Complete Documentation Library
 

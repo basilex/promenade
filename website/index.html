@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Promenade CRM - Under Reconstruction</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        text-align: center;
+      }
+
+      .logo {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+
+      .message {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .message h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #ffd700;
+      }
+
+      .message p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: #ffd700;
+        color: #333;
+        border-color: #ffd700;
+      }
+
+      .btn-primary:hover {
+        background: #ffed4e;
+        border-color: #ffed4e;
+      }
+
+      .progress {
+        margin-top: 2rem;
+        text-align: left;
+      }
+
+      .progress-item {
+        margin-bottom: 1rem;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ffd700, #ffed4e);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+
+      footer {
+        margin-top: 3rem;
+        opacity: 0.7;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+        .subtitle {
+          font-size: 1.2rem;
+        }
+        .message h2 {
+          font-size: 1.5rem;
+        }
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">🏗️</div>
+      <h1>Promenade CRM</h1>
+      <p class="subtitle">Production-Ready CRM Platform</p>
+
+      <div class="message">
+        <h2>Website Under Reconstruction</h2>
+        <p>
+          We're rebuilding our website to reflect the new <strong>Domain-Driven Design (DDD) architecture</strong>. The
+          platform has undergone a complete architectural transformation with Bounded Contexts, Event-Driven Design, and
+          CQRS patterns.
+        </p>
+        <p>
+          <strong>Current Status:</strong> Core architecture complete, documentation updated, 240+ tests passing. The
+          new website will showcase the improved architecture and features.
+        </p>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✅</div>
+          <div class="feature-title">DDD Architecture</div>
+          <p>Bounded Contexts, Aggregates, Value Objects</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✅</div>
+          <div class="feature-title">Event Bus</div>
+          <p>Memory & Redis adapters, 377K events/sec</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✅</div>
+          <div class="feature-title">Testing</div>
+          <p>240+ tests, 90%+ coverage</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🏗️</div>
+          <div class="feature-title">New Website</div>
+          <p>Coming soon with full docs</p>
+        </div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-item">
+          <div class="progress-label">
+            <span>Identity Context (Contact, Profile)</span>
+            <span>100%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">
+            <span>Documentation & Tests</span>
+            <span>100%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">
+            <span>Website Redesign</span>
+            <span>30%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 30%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <a href="https://github.com/basilex/promenade" class="btn btn-primary">View on GitHub</a>
+        <a href="https://github.com/basilex/promenade#-quick-start" class="btn">Quick Start</a>
+        <a href="https://github.com/basilex/promenade/blob/dev/docs/INDEX.md" class="btn">Documentation</a>
+      </div>
+
+      <footer>
+        <p>Promenade CRM Platform | Built with Domain-Driven Design | Go 1.23+ | PostgreSQL 16</p>
+        <p>© 2025 Alexander Vasilenko. Licensed under MIT.</p>
+      </footer>
+    </div>
+  </body>
+</html>
