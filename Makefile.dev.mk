@@ -82,19 +82,29 @@ db-fresh: db-reset migrate  ## Fresh database with all migrations
 	@echo "✓ Fresh database ready!"
 
 # Migrations
-migrate:  ## Run all migrations (core + identity)
+migrate:  ## Run all migrations (core + shared + identity + customer-mgmt)
 	@echo "Running all migrations..."
 	@$(MAKE) migrate-core
+	@$(MAKE) migrate-shared
 	@$(MAKE) migrate-identity
+	@$(MAKE) migrate-customer-mgmt
 	@echo "✓ All migrations completed"
 
 migrate-core:  ## Run core migrations (extensions, auth, RBAC)
 	@echo "Running core migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=core
 
+migrate-shared:  ## Run shared context migrations (reference data)
+	@echo "Running shared context migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=shared
+
 migrate-identity:  ## Run identity context migrations
 	@echo "Running identity context migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=identity
+
+migrate-customer-mgmt:  ## Run customer management context migrations
+	@echo "Running customer management context migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=customer-mgmt
 
 migrate-status:  ## Show migration status
 	@echo "Migration status:"

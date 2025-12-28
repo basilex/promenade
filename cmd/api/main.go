@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
+	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/identity"
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
@@ -102,6 +103,11 @@ func main() {
 		logger.Fatal("Failed to run identity migrations", slog.Any("error", err))
 	}
 
+	// Run customer management context migrations (customers, companies, deals, interactions)
+	if err := migrationManager.MigrateNamespace(migrationsCtx, "customer-mgmt"); err != nil {
+		logger.Fatal("Failed to run customer-mgmt migrations", slog.Any("error", err))
+	}
+
 	logger.Info("Database migrations completed successfully")
 
 	// Initialize Event Bus
@@ -139,8 +145,9 @@ func main() {
 	})
 
 	// Initialize context routers
-	sharedRouter := shared.NewRouter(db)     // Shared Context (Reference Data)
-	identityRouter := identity.NewRouter(db) // Identity Context (User, Contact)
+	sharedRouter := shared.NewRouter(db)           // Shared Context (Reference Data)
+	identityRouter := identity.NewRouter(db)       // Identity Context (User, Contact)
+	customerMgmtRouter := customermgmt.NewRouter(db) // Customer Management Context (Customer)
 
 	// API routes
 	api := r.Group("/api")
@@ -160,8 +167,10 @@ func main() {
 			// Register Identity Context routes (User, Contact aggregates)
 			identityRouter.RegisterRoutes(v1)
 
+			// Register Customer Management Context routes (Customer aggregate)
+			customerMgmtRouter.RegisterRoutes(v1)
+
 			// TODO: Register additional context routers here:
-			// - Customer Management context (Customer, Company, Deal, Interaction)
 			// - Order Management context (Order, OrderItem, Fulfillment)
 		}
 	}
