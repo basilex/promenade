@@ -209,6 +209,62 @@ func Load() (*AppConfig, error) {
 	return LoadAppConfig("")
 }
 
+// Validate validates the configuration based on environment
+func (cfg *AppConfig) Validate() error {
+	// JWT secret validation (critical for security)
+	if err := cfg.validateJWTSecret(); err != nil {
+		return err
+	}
+
+	// Database validation
+	if cfg.Database.Host == "" {
+		return fmt.Errorf("database host is required")
+	}
+	if cfg.Database.Database == "" {
+		return fmt.Errorf("database name is required")
+	}
+
+	// Server validation
+	if cfg.Server.Port == 0 {
+		return fmt.Errorf("server port is required")
+	}
+
+	return nil
+}
+
+// validateJWTSecret validates JWT secret key based on environment
+func (cfg *AppConfig) validateJWTSecret() error {
+	const minSecretLength = 32
+	const defaultDevSecret = "dev-secret-key-change-in-production"
+
+	secret := cfg.JWT.Secret
+
+	// Check if secret is empty
+	if secret == "" {
+		return fmt.Errorf("JWT secret is required")
+	}
+
+	// Production environment checks
+	if cfg.App.Environment == "production" || cfg.App.Environment == "prod" {
+		// Check minimum length
+		if len(secret) < minSecretLength {
+			return fmt.Errorf("JWT secret must be at least %d characters in production (current: %d)", minSecretLength, len(secret))
+		}
+
+		// Check for default dev secret
+		if secret == defaultDevSecret {
+			return fmt.Errorf("default JWT secret cannot be used in production. Please set JWT_SECRET environment variable")
+		}
+	}
+
+	// Warning for short secrets in non-production (but allow)
+	if len(secret) < minSecretLength && (cfg.App.Environment == "development" || cfg.App.Environment == "dev") {
+		// Don't fail, but secret is weak - could log a warning if logger was available here
+	}
+
+	return nil
+}
+
 // applyEnvOverrides allows environment variables to override config values
 func applyEnvOverrides(cfg *AppConfig) {
 	// Database overrides

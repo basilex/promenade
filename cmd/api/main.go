@@ -50,6 +50,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Validate configuration
+	if err := cfg.Validate(); err != nil {
+		slog.Error("Invalid configuration", slog.Any("error", err))
+		os.Exit(1)
+	}
+
 	// Initialize logger
 	logFormat := "text"
 	if cfg.App.Environment == "production" {

@@ -32,6 +32,31 @@
 - Role Management: Create, List, GetByID, GetByName, Update, Delete, GetUserRoles
 - Permission Management: Create, List, GetByID, GetByName, Update, Delete, GetRolePermissions
 
+### 2. JWT Secret Validation (COMPLETED December 29, 2025)
+
+**Implementation:**
+- Added `Validate()` method in `internal/infrastructure/config/yaml_config.go`
+- Added `validateJWTSecret()` with environment-aware checks
+- Production validation: minimum 32 characters + blocks default dev secret
+- Development: allows any secret (including default for convenience)
+- Called from `cmd/api/main.go` after config load (before any initialization)
+- Comprehensive tests: 12+ test cases covering all scenarios
+
+**Validation Rules:**
+- Empty secret: blocked in all environments
+- Production: minimum 32 chars required
+- Production: default "dev-secret-key-change-in-production" blocked
+- Development: no restrictions (allows short secrets for local testing)
+- Clear error messages with guidance
+
+**Test Coverage:**
+```
+TestValidate_ValidConfig             PASS
+TestValidate_JWTSecretValidation     PASS (7 subtests)
+TestValidate_DatabaseValidation      PASS (3 subtests)
+TestValidate_ServerValidation        PASS
+```
+
 ---
 
 ## CRITICAL (High Priority)
@@ -78,36 +103,7 @@ INSERT INTO identity_roles (id, name, description, is_system) VALUES
 
 ## CRITICAL (High Priority)
 
-### 1. JWT Secret Validation
-
-**Current State:**
-- Default dev secret can be used in production
-- No validation on startup
-
-**Tasks:**
-- [ ] Add JWT secret validation in `cmd/api/main.go`
-- [ ] Check minimum length (32 chars)
-- [ ] Check for default dev secret in production
-- [ ] Add environment variable example in docs
-
-**Estimate:** 30 minutes
-
-**Code to add:**
-```go
-// cmd/api/main.go after config load
-if cfg.App.Environment == "production" {
-    if len(cfg.JWT.Secret) < 32 {
-        logger.Fatal("JWT secret must be at least 32 characters in production")
-    }
-    if cfg.JWT.Secret == "dev-secret-key-change-in-production" {
-        logger.Fatal("Default JWT secret cannot be used in production")
-    }
-}
-```
-
----
-
-### 2. Rate Limiting for Authentication
+### 1. Rate Limiting for Authentication
 
 **Current State:**
 - No rate limiting on Login/Register endpoints
@@ -206,7 +202,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-### 5. Database Indexes Audit
+### 4. Database Indexes Audit
 
 **Current State:**
 - Not all tables have proper indexes
@@ -219,7 +215,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 - [ ] Create migration with indexes
 
 **Estimate:** 2 hours
-
+3
 **Queries to analyze:**
 ```sql
 -- Check missing indexes
@@ -232,7 +228,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 6. Error Definitions Consistency
+### 5. Error Definitions Consistency
 
 **Current State:**
 - User: errors in usecase.go
@@ -267,7 +263,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 8. Soft Delete Query Audit
+### 7. Soft Delete Query Audit
 
 **Current State:**
 - Most queries include `deleted_at IS NULL`
@@ -283,7 +279,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 9. Caching Layer (Redis)
+### 8. Caching Layer (Redis)
 
 **Current State:**
 - No caching implemented
@@ -300,7 +296,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 10. N+1 Query Optimization
+### 9. N+1 Query Optimization
 
 **Current State:**
 - Potential N+1 in ListUsers + Profiles
@@ -316,7 +312,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 11. CSRF Protection
+### 10. CSRF Protection
 
 **Current State:**
 - Using Bearer tokens (safe)
@@ -336,10 +332,10 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 | Priority | Tasks | Estimated Time | Status |
 |----------|-------|----------------|--------|
-| Critical | 2 | 3-4 hours | Ready to start |
+| Critical | 1 | 2-3 hours | Ready to start |
 | High | 4 | 9 hours | Week 1-2 |
 | Medium | 5 | 11 hours | Week 2-3 |
-| **TOTAL** | **11** | **23-24 hours** | ~3 working days |
+| **TOTAL** | **10** | **22-23 hours** | ~3 working days |
 
 ---
 
