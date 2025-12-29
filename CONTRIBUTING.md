@@ -1,4 +1,4 @@
-# Contributing to Promenade CRM
+# Contributing to Promenade Platform
 
 Thank you for your interest in contributing to Promenade! This document provides guidelines and instructions for contributing.
 

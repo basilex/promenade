@@ -8,7 +8,7 @@
 
 ## Overview
 
-The **Identity Context** manages everything related to user identity, authentication, authorization (RBAC), and personal contact information. This is the **Core Domain** for user management in Promenade CRM, following **Domain-Driven Design (DDD)** principles with clear bounded context separation.
+The **Identity Context** manages everything related to user identity, authentication, authorization (RBAC), and personal contact information. This is the **Core Domain** for user management in Promenade Platform, following **Domain-Driven Design (DDD)** principles with clear bounded context separation.
 
 ###  Bounded Context Responsibilities
 

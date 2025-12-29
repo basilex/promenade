@@ -1,5 +1,5 @@
 // Package jwt provides JSON Web Token (JWT) generation and validation
-// for authentication and authorization in Promenade CRM.
+// for authentication and authorization in Promenade Platform.
 package jwt
 
 import (
@@ -33,7 +33,7 @@ func NewManager(config Config) *Manager {
 		config.RefreshTokenDuration = 7 * 24 * time.Hour
 	}
 	if config.Issuer == "" {
-		config.Issuer = "promenade-crm"
+		config.Issuer = "promenade-platform"
 	}
 	return &Manager{config: config}
 }

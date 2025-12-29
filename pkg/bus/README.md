@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Event Bus** is the central communication hub for **asynchronous, decoupled communication** between Bounded Contexts in Promenade CRM. It implements the **Publish-Subscribe pattern** with support for **multiple adapters** (Memory, Redis), **retry policies**, **panic recovery**, and **graceful shutdown**.
+**Event Bus** is the central communication hub for **asynchronous, decoupled communication** between Bounded Contexts in Promenade Platform. It implements the **Publish-Subscribe pattern** with support for **multiple adapters** (Memory, Redis), **retry policies**, **panic recovery**, and **graceful shutdown**.
 
 ---
 

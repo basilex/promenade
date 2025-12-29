@@ -1,6 +1,6 @@
 # JWT Package
 
-**JSON Web Token (JWT) authentication** for Promenade CRM - token generation, validation, and RBAC middleware.
+**JSON Web Token (JWT) authentication** for Promenade Platform - token generation, validation, and RBAC middleware.
 
 ---
 
@@ -27,7 +27,7 @@ jwt:
   secret: "your-secret-key-at-least-32-characters"
   access_token_duration: 15m
   refresh_token_duration: 168h  # 7 days
-  issuer: "promenade-crm"
+  issuer: "promenade-platform"
 ```
 
 **⚠️ Security**: Use strong secrets in production (at least 32 characters, random)
@@ -129,7 +129,7 @@ type Config struct {
     SecretKey            string        // Secret key for signing tokens (required)
     AccessTokenDuration  time.Duration // Access token TTL (default: 15m)
     RefreshTokenDuration time.Duration // Refresh token TTL (default: 7 days)
-    Issuer               string        // Token issuer (default: "promenade-crm")
+    Issuer               string        // Token issuer (default: "promenade-platform")
 }
 ```
 

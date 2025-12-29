@@ -17,7 +17,7 @@ func TestNewManager(t *testing.T) {
 		assert.Equal(t, "test-secret", manager.config.SecretKey)
 		assert.Equal(t, 15*time.Minute, manager.config.AccessTokenDuration)
 		assert.Equal(t, 7*24*time.Hour, manager.config.RefreshTokenDuration)
-		assert.Equal(t, "promenade-crm", manager.config.Issuer)
+		assert.Equal(t, "promenade-platform", manager.config.Issuer)
 	})
 
 	t.Run("with custom config", func(t *testing.T) {

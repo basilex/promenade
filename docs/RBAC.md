@@ -1,6 +1,6 @@
 # Role-Based Access Control (RBAC) Implementation
 
-**Complete guide to RBAC architecture and implementation in Promenade CRM**
+**Complete guide to RBAC architecture and implementation in Promenade Platform**
 
 ---
 

@@ -1,4 +1,4 @@
-# Promenade CRM Platform
+# Promenade Platform
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
@@ -8,7 +8,10 @@
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Production-ready CRM platform** built with **Domain-Driven Design (DDD)**, **Bounded Contexts**, and **CQRS/Event Sourcing patterns**.
+**Modern backend platform for customer management, orders, and business workflows** — built with **Domain-Driven Design (DDD)**, **Bounded Contexts**, and **Event-Driven Architecture**.
+
+> **Not a traditional CRM** — Promenade is a **modular platform** that grows with your needs.  
+> Start with customer management, add orders when needed, integrate billing when ready.
 
 ---
 
@@ -564,7 +567,7 @@ config/
 
 ```yaml
 app:
-  name: "Promenade CRM"
+  name: "Promenade Platform"
   environment: "development"
   version: "0.1.0"
 

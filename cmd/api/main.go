@@ -27,9 +27,9 @@ import (
 	"github.com/basilex/promenade/pkg/migration"
 )
 
-// @title Promenade CRM Platform
+// @title Promenade Platform
 // @version 2.0
-// @description Clean DDD architecture with Bounded Contexts for CRM platform
+// @description Modern backend platform for customer management, orders, and business workflows with clean DDD architecture
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -75,7 +75,7 @@ func main() {
 		TimeFormat: time.RFC3339,
 	})
 
-	logger.Info("Starting Promenade CRM Platform",
+	logger.Info("Starting Promenade Platform",
 		slog.String("environment", cfg.App.Environment),
 		slog.String("version", cfg.App.Version),
 	)

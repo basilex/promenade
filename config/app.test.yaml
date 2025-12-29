@@ -2,7 +2,7 @@
 # For integration and unit tests
 
 app:
-  name: "Promenade CRM"
+  name: "Promenade Platform"
   environment: "test"
   version: "0.1.0"
 

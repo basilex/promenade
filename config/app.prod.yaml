@@ -2,7 +2,7 @@
 # Production-ready settings with security enabled
 
 app:
-  name: "Promenade CRM"
+  name: "Promenade Platform"
   environment: "production"
   version: "0.1.0"
 

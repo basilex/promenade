@@ -2,7 +2,7 @@
 # Clean DDD architecture - only essential settings
 
 app:
-  name: "Promenade CRM"
+  name: "Promenade Platform"
   environment: "development"
   version: "0.1.0"
 
@@ -40,7 +40,7 @@ jwt:
   secret: "dev-secret-key-change-in-production"
   access_token_duration: 15m
   refresh_token_duration: 168h  # 7 days
-  issuer: "promenade-crm"
+  issuer: "promenade-platform"
 
 logging:
   level: "debug"

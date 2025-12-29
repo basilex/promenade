@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Shared Context** (also known as **Shared Kernel**) manages **reference data** used across all bounded contexts in Promenade CRM. This context provides **read-only, globally consistent data** such as countries, currencies, languages, timezones, and payment methods.
+**Shared Context** (also known as **Shared Kernel**) manages **reference data** used across all bounded contexts in Promenade Platform. This context provides **read-only, globally consistent data** such as countries, currencies, languages, timezones, and payment methods.
 
 **Status**: Production-ready
 

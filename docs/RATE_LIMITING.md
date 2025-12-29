@@ -1,6 +1,6 @@
 # Rate Limiting
 
-**IP-based rate limiting** for Promenade CRM - protect authentication endpoints from brute-force attacks and abuse.
+**IP-based rate limiting** for Promenade Platform - protect authentication endpoints from brute-force attacks and abuse.
 
 ---
 

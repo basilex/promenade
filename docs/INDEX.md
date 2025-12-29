@@ -1,6 +1,6 @@
 # Documentation Index
 
-Complete guide to Promenade CRM Platform architecture and development.
+Complete guide to Promenade Platform architecture and development.
 
 ---
 

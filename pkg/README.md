@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `pkg/` directory contains **shared, reusable packages** used across all bounded contexts in Promenade CRM. These packages are **context-agnostic** and implement common patterns, utilities, and domain primitives.
+The `pkg/` directory contains **shared, reusable packages** used across all bounded contexts in Promenade Platform. These packages are **context-agnostic** and implement common patterns, utilities, and domain primitives.
 
 ---
 
@@ -82,7 +82,7 @@ jwtManager := jwt.NewManager(jwt.Config{
     SecretKey:            cfg.JWT.Secret,
     AccessTokenDuration:  15 * time.Minute,
     RefreshTokenDuration: 7 * 24 * time.Hour,
-    Issuer:               "promenade-crm",
+    Issuer:               "promenade-platform",
 })
 
 // Generate token pair
@@ -103,7 +103,7 @@ jwt:
   secret: "your-secret-key-at-least-32-characters"
   access_token_duration: 15m
   refresh_token_duration: 168h  # 7 days
-  issuer: "promenade-crm"
+  issuer: "promenade-platform"
 ```
 
 **Read More**: [pkg/jwt/README.md](jwt/README.md)

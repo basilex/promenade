@@ -1,6 +1,6 @@
 # Testing Patterns Guide
 
-**Comprehensive guide for writing tests in Promenade CRM (DDD Architecture)**
+**Comprehensive guide for writing tests in Promenade Platform (DDD Architecture)**
 
 ---
 
