@@ -69,7 +69,7 @@ func TestProfileRepository_Queries(t *testing.T) {
 		repo := postgres.NewProfileRepository(testDB.DB)
 
 		// Create 3 profiles (2 public, 1 private)
-		for i := 0; i < 3; i++ {
+		for i := range 3 {
 			userID := uuidv7.New()
 			_, err := tx.Exec(`INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
 				userID, fmt.Sprintf("user%d@test.com", i), "hash", "active")
