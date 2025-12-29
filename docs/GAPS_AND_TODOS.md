@@ -2,7 +2,7 @@
 
 **Created:** December 28, 2025  
 **Last Updated:** December 29, 2025  
-**Status:** Updated after Rate Limiting completion  
+**Status:** Updated after Token Revocation completion  
 **Priority Order:** Critical → High → Medium
 
 ---
@@ -92,30 +92,57 @@ TestRateLimiter_GetVisitorCount             PASS
 - Created `docs/RATE_LIMITING.md` (680+ lines) - Complete implementation guide
 - Updated `README.md` with Rate Limiting overview section
 
----
+### 4. Token Revocation Mechanism (COMPLETED December 29, 2025)
 
-## CRITICAL (High Priority)
+**Implementation:**
+- Created `pkg/jwt/revocation.go` with Redis-backed token blacklist
+- TokenRevoker stores revoked tokens with TTL matching expiration time
+- Updated JWT `AuthMiddleware` to check revocation status before validation
+- Added `POST /auth/revoke` endpoint for user logout functionality
+- Integrated TokenRevoker into Identity router (all protected routes check revocation)
 
-### 1. Token Revocation Mechanism
+**Components:**
+- `pkg/jwt/revocation.go`: Redis blacklist with TTL management
+- `pkg/jwt/revocation_test.go`: 9 comprehensive tests (100% passing)
+  * Revoke/IsRevoked operations
+  * TTL expiration handling
+  * Multiple tokens & concurrent revocations
+  * Stats monitoring
 
-**Current State:**
-- JWT tokens cannot be revoked before expiry
-- No blacklist for compromised tokens
+**Middleware Updates:**
+- AuthMiddleware now accepts optional TokenRevoker parameter
+- Returns 401 TOKEN_REVOKED error for revoked tokens
+- All existing middleware tests updated (pass nil for tests without revocation)
 
-**Tasks:**
-- [ ] Add Redis blacklist for revoked tokens
-- [ ] Create token revocation endpoint
-- [ ] Update JWT middleware to check blacklist
-- [ ] Add TTL matching token expiry
-- [ ] Add tests
+**Configuration:**
+- Added `redis` section to AppConfig (addr, password, db)
+- Redis connection in main.go with graceful fallback (revocation disabled if Redis unavailable)
+- Config updated in `app.dev.yaml`
 
-**Estimate:** 3 hours
+**Test Results:**
+```
+TestNewTokenRevoker                         PASS
+TestTokenRevoker_Revoke                     PASS
+TestTokenRevoker_RevokeExpiredToken         PASS
+TestTokenRevoker_IsRevoked_NotRevoked       PASS
+TestTokenRevoker_TTL                        PASS
+TestTokenRevoker_MultipleTokens             PASS
+TestTokenRevoker_Stats                      PASS
+TestTokenRevoker_RevokeAllForUser_NotImplemented PASS
+TestTokenRevoker_ConcurrentRevocations      PASS
+```
+
+**Security:**
+- Tokens revoked on logout via `/auth/revoke` endpoint
+- Expired tokens not stored (TTL validation prevents unnecessary storage)
+- Graceful Redis failure (if Redis unavailable, revocation disabled but app continues)
+- Concurrent-safe revocation operations (Redis atomic operations)
 
 ---
 
 ## HIGH PRIORITY (Week 1-2)
 
-### 2. Health Checks for Dependencies
+### 1. Health Checks for Dependencies
 
 **Current State:**
 - `/health` endpoint exists but doesn't check dependencies
@@ -131,7 +158,7 @@ TestRateLimiter_GetVisitorCount             PASS
 
 ---
 
-### 3. Database Indexes Audit
+### 2. Database Indexes Audit
 
 **Current State:**
 - Not all tables have proper indexes
@@ -157,7 +184,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 4. Error Definitions Consistency
+### 3. Error Definitions Consistency
 
 **Current State:**
 - User: errors in usecase.go
@@ -259,12 +286,12 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ## Summary Statistics
 
-| Priority | Tasks | Estimated Time | Status |
-|----------|-------|----------------|--------|
-| Critical | 1 | 3 hours | Ready to start |
-| High | 3 | 4 hours | Week 1-2 |
-| Medium | 5 | 10 hours | Week 2-3 |
-| **TOTAL** | **9** | **17 hours** | ~2 working days |
+| Priority  | Tasks | Estimated Time | Status        |
+|-----------|-------|----------------|---------------|
+| Completed | 4     | 10 hours       | Done ✅       |
+| High      | 3     | 4 hours        | Week 1-2      |
+| Medium    | 5     | 10 hours       | Week 2-3      |
+| **TOTAL** | **12**| **24 hours**   | ~3 working days |
 
 ---
 
