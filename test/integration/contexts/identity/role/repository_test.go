@@ -23,8 +23,10 @@ func TestRoleRepository_CRUD(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRoleRepository(testDB.DB)
 
-		// Create
-		r, err := role.NewRole("test_role", "Test Role", "Test description")
+		// Create with unique role name
+		uuid := uuidv7.New().String()[:8]
+		roleName := fmt.Sprintf("test_role_%s", uuid)
+		r, err := role.NewRole(roleName, "Test Role", "Test description")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, r))
 
@@ -35,7 +37,7 @@ func TestRoleRepository_CRUD(t *testing.T) {
 		assert.Equal(t, "Test Role", found.DisplayName)
 
 		// Read by Name
-		foundByName, err := repo.GetByName(ctx, "test_role")
+		foundByName, err := repo.GetByName(ctx, roleName)
 		require.NoError(t, err)
 		assert.Equal(t, r.ID, foundByName.ID)
 
@@ -62,14 +64,17 @@ func TestRoleRepository_Queries(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRoleRepository(testDB.DB)
 
-		// Create 2 roles
-		r1, _ := role.NewRole("role1", "Role 1", "First")
-		r2, _ := role.NewRole("role2", "Role 2", "Second")
+		// Create 2 roles with unique names
+		uuid := uuidv7.New().String()[:8]
+		role1Name := fmt.Sprintf("role1_%s", uuid)
+		role2Name := fmt.Sprintf("role2_%s", uuid)
+		r1, _ := role.NewRole(role1Name, "Role 1", "First")
+		r2, _ := role.NewRole(role2Name, "Role 2", "Second")
 		require.NoError(t, repo.Create(ctx, r1))
 		require.NoError(t, repo.Create(ctx, r2))
 
 		// ExistsByName
-		exists, err := repo.ExistsByName(ctx, "role1")
+		exists, err := repo.ExistsByName(ctx, role1Name)
 		require.NoError(t, err)
 		assert.True(t, exists)
 

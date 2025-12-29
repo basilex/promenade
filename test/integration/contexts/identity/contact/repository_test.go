@@ -2,6 +2,7 @@ package contact_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -23,6 +24,11 @@ func TestContactRepository_CRUD(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewContactRepository(testDB.DB)
 		userID := uuidv7.New()
+
+		// Create user first (required for foreign key)
+		_, err := tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+			userID, "user_"+userID.String()+"@test.com", "hash", "active")
+		require.NoError(t, err)
 
 		// Create email contact
 		c, err := contact.NewEmailContact(userID, "test@example.com", "Work")
@@ -66,6 +72,11 @@ func TestContactRepository_Primary(t *testing.T) {
 		repo := postgres.NewContactRepository(testDB.DB)
 		userID := uuidv7.New()
 
+		// Create user first (required for foreign key)
+		_, err := tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+			userID, "user_"+userID.String()+"@test.com", "hash", "active")
+		require.NoError(t, err)
+
 		// Create two contacts
 		c1, _ := contact.NewEmailContact(userID, "first@example.com", "Work")
 		c2, _ := contact.NewEmailContact(userID, "second@example.com", "Personal")
@@ -106,6 +117,11 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	// Transaction should rollback on error
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewContactRepository(testDB.DB)
+		
+		// Create user first (required for foreign key)
+		_, err := tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+			userID, "user_"+userID.String()+"@test.com", "hash", "active")
+		require.NoError(t, err)
 		
 		c, _ := contact.NewEmailContact(userID, email.Value(), "Work")
 		require.NoError(t, repo.Create(ctx, c))

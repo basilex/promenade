@@ -23,8 +23,9 @@ func TestPermissionRepository_CRUD(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewPermissionRepository(testDB.DB)
 
-		// Create
-		p, err := permission.NewPermission("test_resource", "read", "Test permission")
+		// Create with unique resource name
+		uuid := uuidv7.New().String()[:8]
+		p, err := permission.NewPermission(fmt.Sprintf("test_resource_%s", uuid), "read", "Test permission")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, p))
 
@@ -61,9 +62,10 @@ func TestPermissionRepository_Queries(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewPermissionRepository(testDB.DB)
 
-		// Create 2 permissions
-		p1, _ := permission.NewPermission("resource1", "read", "First")
-		p2, _ := permission.NewPermission("resource2", "write", "Second")
+		// Create 2 permissions with unique names
+		uuid := uuidv7.New().String()[:8]
+		p1, _ := permission.NewPermission(fmt.Sprintf("resource1_%s", uuid), "read", "First")
+		p2, _ := permission.NewPermission(fmt.Sprintf("resource2_%s", uuid), "write", "Second")
 		require.NoError(t, repo.Create(ctx, p1))
 		require.NoError(t, repo.Create(ctx, p2))
 

@@ -65,9 +65,10 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		repo := postgres.NewCustomerRepository(testDB.DB)
 		assignedTo := uuidv7.New()
 
-		// Create 3 customers
+		// Create 3 customers with unique emails
+		uuid := uuidv7.New().String()[:8]
 		for i := range 3 {
-			c, _ := customer.NewCustomer("Customer "+string(rune('A'+i)), "cust"+string(rune('a'+i))+"@test.com", "web", assignedTo)
+			c, _ := customer.NewCustomer("Customer "+string(rune('A'+i)), fmt.Sprintf("cust%c_%s@test.com", rune('a'+i), uuid), "web", assignedTo)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
