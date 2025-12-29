@@ -62,6 +62,7 @@ jobs:
           go run cmd/migrate/main.go --cmd=up --namespace=core
           go run cmd/migrate/main.go --cmd=up --namespace=shared
           go run cmd/migrate/main.go --cmd=up --namespace=identity
+          go run cmd/migrate/main.go --cmd=up --namespace=customer-mgmt
 
       - name: Run unit tests
         run: make test-unit
@@ -90,12 +91,13 @@ jobs:
         run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.out
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     name: Lint
