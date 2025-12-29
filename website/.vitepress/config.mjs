@@ -3,9 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Promenade Platform',
   description: 'Modern backend platform for customer management, orders, and business workflows with clean DDD architecture',
+  base: '/promenade/',
   
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', href: '/promenade/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3b82f6' }],
   ],
 
