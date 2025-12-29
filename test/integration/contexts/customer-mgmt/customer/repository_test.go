@@ -163,7 +163,8 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		assignedTo2 := uuidv7.New()
 		
 		for i := range 2 {
-			c, _ := customer.NewCustomer("Assigned1", fmt.Sprintf("assigned1_%d@test.com", i), "web", assignedTo1)
+			uuid := uuidv7.New().String()[:8]
+			c, _ := customer.NewCustomer(fmt.Sprintf("Assigned1_%d", i), fmt.Sprintf("assigned1_%s_%d@test.com", uuid, i), "web", assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 		uuid := uuidv7.New().String()[:8]
@@ -179,7 +180,8 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		// ListByCompanyID (B2B customers)
 		companyID := uuidv7.New()
 		for i := range 2 {
-			c, _ := customer.NewB2BCustomer("B2B Customer", fmt.Sprintf("b2b_%d@test.com", i), "web", companyID, assignedTo1)
+			uuid2 := uuidv7.New().String()[:8]
+			c, _ := customer.NewB2BCustomer(fmt.Sprintf("B2B Customer %d", i), fmt.Sprintf("b2b_%s_%d@test.com", uuid2, i), "web", companyID, assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 

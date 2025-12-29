@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -110,28 +111,32 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	userID := uuidv7.New()
-	email := "tx@example.com"
+	uuid := uuidv7.New().String()[:8]
+	email := "tx_" + uuid + "@example.com"
 
-	// Transaction should rollback on error
-	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		repo := postgres.NewContactRepository(testDB.DB)
-		
-		// Create user first (required for foreign key)
-		_, err := tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
-			userID, "user_"+userID.String()+"@test.com", "hash", "active")
-		require.NoError(t, err)
-		
-		c, _ := contact.NewEmailContact(userID, email, "Work")
-		require.NoError(t, repo.Create(ctx, c))
-		
-		// Verify contact was created
-		found, err := repo.GetByID(ctx, c.ID)
-		require.NoError(t, err)
-		assert.Equal(t, c.ID, found.ID)
-		
-		// Force rollback by causing panic
-		t.FailNow()
-	})
+	// Create user outside transaction for FK constraint
+	_, err := testDB.DB.Exec(`INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+		userID, "user_"+uuid+"@test.com", "hash", "active")
+	require.NoError(t, err)
+
+	// Test transaction rollback
+	tx, err := testDB.DB.BeginTxx(context.Background(), nil)
+	require.NoError(t, err)
+	
+	ctx := database.SetTxToContext(context.Background(), tx)
+	repo := postgres.NewContactRepository(testDB.DB)
+	
+	c, _ := contact.NewEmailContact(userID, email, "Work")
+	err = repo.Create(ctx, c)
+	require.NoError(t, err)
+	
+	// Verify contact was created in transaction
+	found, err := repo.GetByID(ctx, c.ID)
+	require.NoError(t, err)
+	assert.Equal(t, c.ID, found.ID)
+	
+	// Rollback
+	tx.Rollback()
 
 	// Verify rollback - contact should not exist
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {

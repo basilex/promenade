@@ -88,7 +88,7 @@ func TestUserRepository_Queries(t *testing.T) {
 		assert.False(t, exists)
 
 		// ListUsers
-		users, total, err := repo.ListUsers(ctx, 10, 0)
+		users, total, err := repo.ListUsers(ctx, 1, 10)  // page=1, pageSize=10
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(users), 2)
