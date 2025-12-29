@@ -68,6 +68,25 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 
 **See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
 
+### Health Checks
+
+Promenade provides **comprehensive health monitoring** for all dependencies:
+
+- **4 HTTP Endpoints**: `/health`, `/health/db`, `/health/redis`, `/health/bus`
+- **3 Status Levels**: healthy, degraded, unhealthy
+- **5-Second Timeout**: Prevents hanging checks
+- **Graceful Degradation**: Optional dependencies (Redis) handled gracefully
+- **Proper HTTP Status Codes**: 200 (healthy/degraded), 503 (unhealthy)
+- **21 Tests**: Comprehensive test coverage (100% passing)
+
+**Endpoints**:
+- `GET /health` - Overall system health (PostgreSQL + Redis + Event Bus)
+- `GET /health/db` - PostgreSQL database health
+- `GET /health/redis` - Redis health (if configured)
+- `GET /health/bus` - Event Bus health
+
+**See**: [docs/HEALTH_CHECKS.md](docs/HEALTH_CHECKS.md) for complete Health Check documentation
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |
