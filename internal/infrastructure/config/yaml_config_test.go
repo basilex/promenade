@@ -255,9 +255,9 @@ func TestApplyEnvOverrides(t *testing.T) {
 	}
 
 	// Set environment variables
-	os.Setenv("DB_HOST", "env-db-host")
-	os.Setenv("DB_PORT", "5433")
-	os.Setenv("DB_USER", "env-user")
+	_ = os.Setenv("DB_HOST", "env-db-host")
+	_ = os.Setenv("DB_PORT", "5433")
+	_ = os.Setenv("DB_USER", "env-user")
 	os.Setenv("DB_PASSWORD", "env-pass")
 	os.Setenv("DB_NAME", "env-db-name")
 	os.Setenv("SERVER_PORT", "9000")
@@ -266,9 +266,9 @@ func TestApplyEnvOverrides(t *testing.T) {
 	os.Setenv("BUS_ADAPTER", "redis")
 
 	defer func() {
-		os.Unsetenv("DB_HOST")
-		os.Unsetenv("DB_PORT")
-		os.Unsetenv("DB_USER")
+		_ = os.Unsetenv("DB_HOST")
+		_ = os.Unsetenv("DB_PORT")
+		_ = os.Unsetenv("DB_USER")
 		os.Unsetenv("DB_PASSWORD")
 		os.Unsetenv("DB_NAME")
 		os.Unsetenv("SERVER_PORT")

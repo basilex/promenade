@@ -81,8 +81,8 @@ func TestCustomerRepository_Create(t *testing.T) {
 		c, err := customer.NewCustomer("Tagged User", "tagged@example.com", "website", assignedTo)
 		require.NoError(t, err)
 
-		c.AddTag("vip")
-		c.AddTag("premium")
+		_ = c.AddTag("vip")
+		_ = c.AddTag("premium")
 
 		err = repo.Create(ctx, c)
 		require.NoError(t, err)
@@ -205,7 +205,7 @@ func TestCustomerRepository_Update(t *testing.T) {
 		err := repo.Create(ctx, c)
 		require.NoError(t, err)
 
-		c.AddTag("important")
+		_ = c.AddTag("important")
 		err = repo.Update(ctx, c)
 		require.NoError(t, err)
 

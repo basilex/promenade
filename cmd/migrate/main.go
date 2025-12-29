@@ -46,7 +46,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			slog.Error("Failed to close database connection", slog.Any("error", err))
+		}
+	}()
 
 	// Create migration manager
 	migrationsDir := "migrations"

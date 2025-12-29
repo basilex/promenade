@@ -167,7 +167,7 @@ func TestContactRepository_Update(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, c))
 
 		// Update label
-		c.UpdateLabel("Personal")
+		_ = c.UpdateLabel("Personal")
 		require.NoError(t, repo.Update(ctx, c))
 
 		// Verify update

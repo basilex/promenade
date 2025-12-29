@@ -291,7 +291,7 @@ func (m *manager) applyMigration(ctx context.Context, mig MigrationFile) error {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 
@@ -413,7 +413,7 @@ func (m *manager) rollbackMigration(ctx context.Context, mig MigrationFile) erro
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 
@@ -453,7 +453,11 @@ func (m *manager) Status(ctx context.Context) (map[string]MigrationStatus, error
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			// Log error but don't fail
+		}
+	}()
 
 	namespaces := []string{}
 	for rows.Next() {

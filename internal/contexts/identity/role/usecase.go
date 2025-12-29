@@ -134,7 +134,9 @@ func (uc *UseCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayNa
 	}
 
 	// Update fields
-	role.UpdateDisplayName(displayName)
+	if err := role.UpdateDisplayName(displayName); err != nil {
+		return nil, fmt.Errorf("failed to update display name: %w", err)
+	}
 	role.UpdateDescription(description)
 
 	// Validate

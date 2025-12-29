@@ -388,9 +388,9 @@ func TestCustomer_AddTag_Success(t *testing.T) {
 func TestCustomer_AddTag_Multiple(t *testing.T) {
 	customer, _ := NewCustomer("John Doe", "john@example.com", "website", uuidv7.New())
 
-	customer.AddTag("vip")
-	customer.AddTag("enterprise")
-	customer.AddTag("priority")
+	_ = customer.AddTag("vip")
+	_ = customer.AddTag("enterprise")
+	_ = customer.AddTag("priority")
 
 	assert.Len(t, customer.Tags, 3)
 	assert.Contains(t, customer.Tags, "vip")

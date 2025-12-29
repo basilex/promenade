@@ -19,7 +19,7 @@ import (
 func TestMemoryBus_MultipleSubscribers(t *testing.T) {
 	config := bus.NewConfig(5, 100, 1, 100*time.Millisecond, time.Second, 2.0)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	topic := "test.multiple"
 	received1 := make(chan bus.Event, 1)
@@ -44,7 +44,7 @@ func TestMemoryBus_MultipleSubscribers(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, handler3))
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	require.NoError(t, mb.Publish(context.Background(), topic, event))
+	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
 
 	select {
 	case e := <-received1:
@@ -71,7 +71,7 @@ func TestMemoryBus_MultipleSubscribers(t *testing.T) {
 func TestMemoryBus_RetryLogic(t *testing.T) {
 	config := bus.NewConfig(5, 100, 3, 10*time.Millisecond, 100*time.Millisecond, 1.5)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	topic := "test.retry"
 	var attempts atomic.Int32
@@ -88,7 +88,7 @@ func TestMemoryBus_RetryLogic(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, handler))
 
 	event := bus.NewBaseEvent("test.retry.event", uuidv7.New())
-	require.NoError(t, mb.Publish(context.Background(), topic, event))
+	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
 
 	time.Sleep(500 * time.Millisecond)
 	assert.Equal(t, int32(3), attempts.Load())
@@ -97,7 +97,7 @@ func TestMemoryBus_RetryLogic(t *testing.T) {
 func TestMemoryBus_PanicRecovery(t *testing.T) {
 	config := bus.NewConfig(5, 100, 1, 100*time.Millisecond, time.Second, 2.0)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	topic := "test.panic"
 
@@ -115,7 +115,7 @@ func TestMemoryBus_PanicRecovery(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, normalHandler))
 
 	event := bus.NewBaseEvent("test.panic.event", uuidv7.New())
-	require.NoError(t, mb.Publish(context.Background(), topic, event))
+	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
 
 	select {
 	case e := <-received:
@@ -128,7 +128,7 @@ func TestMemoryBus_PanicRecovery(t *testing.T) {
 func TestMemoryBus_Unsubscribe(t *testing.T) {
 	config := bus.NewConfig(5, 100, 1, 100*time.Millisecond, time.Second, 2.0)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	topic := "test.unsubscribe"
 	received := make(chan bus.Event, 10)
@@ -163,7 +163,7 @@ func TestMemoryBus_Unsubscribe(t *testing.T) {
 func TestMemoryBus_ConcurrentPublish(t *testing.T) {
 	config := bus.NewConfig(10, 1000, 1, 100*time.Millisecond, time.Second, 2.0)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	topic := "test.concurrent"
 	var receivedCount atomic.Int32
@@ -182,7 +182,7 @@ func TestMemoryBus_ConcurrentPublish(t *testing.T) {
 		go func(n int) {
 			defer wg.Done()
 			event := bus.NewBaseEvent("test.concurrent.event", uuidv7.New())
-			mb.Publish(context.Background(), topic, event)
+			_ = mb.Publish(context.Background(), topic, event)
 		}(i)
 	}
 

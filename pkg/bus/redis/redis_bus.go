@@ -189,7 +189,7 @@ func (rb *RedisBus) subscriptionWorker(topic string) {
 	defer rb.wg.Done()
 
 	pubsub := rb.client.Subscribe(rb.ctx, topic)
-	defer pubsub.Close()
+	defer func() { _ = pubsub.Close() }()
 
 	rb.logger.Info("Started subscription worker", slog.String("topic", topic))
 

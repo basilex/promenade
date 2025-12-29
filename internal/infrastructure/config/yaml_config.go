@@ -287,7 +287,9 @@ func applyEnvOverrides(cfg *AppConfig) {
 		cfg.Database.Postgres.Host = v
 	}
 	if v := os.Getenv("DB_PORT"); v != "" {
-		fmt.Sscanf(v, "%d", &cfg.Database.Postgres.Port)
+			if _, err := fmt.Sscanf(v, "%d", &cfg.Database.Postgres.Port); err != nil {
+				// Keep default port if parsing fails
+			}
 	}
 	if v := os.Getenv("DB_USER"); v != "" {
 		cfg.Database.Postgres.User = v
@@ -309,7 +311,9 @@ func applyEnvOverrides(cfg *AppConfig) {
 
 	// Server overrides
 	if v := os.Getenv("SERVER_PORT"); v != "" {
-		fmt.Sscanf(v, "%d", &cfg.Server.Port)
+			if _, err := fmt.Sscanf(v, "%d", &cfg.Server.Port); err != nil {
+				// Keep default port if parsing fails
+			}
 	}
 
 	// JWT overrides

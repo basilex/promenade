@@ -34,7 +34,7 @@ func skipIfRedisUnavailable(t *testing.T) *redis.RedisBus {
 
 func TestRedisBus_NewRedisBus_Success(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	assert.NotNil(t, rb)
 }
@@ -66,7 +66,7 @@ func TestRedisBus_NewRedisBus_InvalidPort(t *testing.T) {
 
 func TestRedisBus_Health(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	err := rb.Health(context.Background())
 	assert.NoError(t, err)
@@ -85,7 +85,7 @@ func TestRedisBus_Health_AfterClose(t *testing.T) {
 
 func TestRedisBus_PublishSubscribe(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.pubsub"
 	received := make(chan bus.Event, 1)
@@ -101,7 +101,7 @@ func TestRedisBus_PublishSubscribe(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	err = rb.Publish(context.Background(), topic, event)
+	err = _ = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -114,7 +114,7 @@ func TestRedisBus_PublishSubscribe(t *testing.T) {
 
 func TestRedisBus_MultipleSubscribers(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.multiple"
 	received1 := make(chan bus.Event, 1)
@@ -141,7 +141,7 @@ func TestRedisBus_MultipleSubscribers(t *testing.T) {
 	time.Sleep(300 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	err := rb.Publish(context.Background(), topic, event)
+	err := _ = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -168,7 +168,7 @@ func TestRedisBus_MultipleSubscribers(t *testing.T) {
 
 func TestRedisBus_RetryLogic(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.retry"
 	var attempts atomic.Int32
@@ -188,7 +188,7 @@ func TestRedisBus_RetryLogic(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.retry.event", uuidv7.New())
-	err := rb.Publish(context.Background(), topic, event)
+	err := _ = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -201,7 +201,7 @@ func TestRedisBus_RetryLogic(t *testing.T) {
 
 func TestRedisBus_PanicRecovery(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.panic"
 
@@ -221,7 +221,7 @@ func TestRedisBus_PanicRecovery(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.panic.event", uuidv7.New())
-	err := rb.Publish(context.Background(), topic, event)
+	err := _ = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -234,7 +234,7 @@ func TestRedisBus_PanicRecovery(t *testing.T) {
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.unsubscribe"
 	received := make(chan bus.Event, 10)
@@ -273,12 +273,12 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 
 func TestRedisBus_MultipleInstances(t *testing.T) {
 	rb1 := skipIfRedisUnavailable(t)
-	defer rb1.Close(context.Background())
+	defer func() { _ = rb1.Close(context.Background()) }()
 
 	config := bus.NewConfig(5, 100, 2, 100*time.Millisecond, time.Second, 2.0)
 	rb2, err := redis.NewRedisBus("localhost:6379", "", 0, 10, config)
 	require.NoError(t, err)
-	defer rb2.Close(context.Background())
+	defer func() { _ = rb2.Close(context.Background()) }()
 
 	topic := "test.redis.distributed"
 	received1 := make(chan bus.Event, 1)
@@ -319,7 +319,7 @@ func TestRedisBus_MultipleInstances(t *testing.T) {
 
 func TestRedisBus_ConcurrentPublish(t *testing.T) {
 	rb := skipIfRedisUnavailable(t)
-	defer rb.Close(context.Background())
+	defer func() { _ = rb.Close(context.Background()) }()
 
 	topic := "test.redis.concurrent"
 	var receivedCount atomic.Int32
@@ -340,7 +340,7 @@ func TestRedisBus_ConcurrentPublish(t *testing.T) {
 		go func(n int) {
 			defer wg.Done()
 			event := bus.NewBaseEvent("test.concurrent.event", uuidv7.New())
-			rb.Publish(context.Background(), topic, event)
+			_ = rb.Publish(context.Background(), topic, event)
 		}(i)
 	}
 
@@ -395,7 +395,7 @@ func TestRedisBus_GracefulShutdown(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.shutdown.event", uuidv7.New())
-	err := rb.Publish(context.Background(), topic, event)
+	err := _ = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	<-processing
