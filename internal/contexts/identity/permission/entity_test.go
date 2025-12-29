@@ -46,9 +46,9 @@ func TestNewPermission(t *testing.T) {
 			wantErr:     true,
 		},
 		{
-			name:        "invalid action",
+			name:        "invalid action with special chars",
 			resource:    "users",
-			action:      "invalid",
+			action:      "read@write",
 			description: "Test",
 			wantErr:     true,
 		},
@@ -120,11 +120,11 @@ func TestPermission_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid action",
+			name: "invalid action with special chars",
 			perm: &Permission{
-				Name:        "users:invalid",
+				Name:        "users:read@write",
 				Resource:    "users",
-				Action:      "invalid",
+				Action:      "read@write",
 				Description: "Test",
 			},
 			wantErr: true,
@@ -144,7 +144,14 @@ func TestPermission_Validate(t *testing.T) {
 }
 
 func TestValidateAction(t *testing.T) {
-	validActions := []string{"read", "write", "delete", "admin", "create", "update", "list"}
+	// Test valid actions (lowercase alphanumeric + underscore + hyphen + wildcard)
+	validActions := []string{
+		"read", "write", "delete", "admin", "create", "update", "list",
+		"*",                        // wildcard
+		"custom_action",            // underscore
+		"custom-action",            // hyphen
+		"execute", "modify", "any", // extensible - any lowercase is valid
+	}
 	for _, action := range validActions {
 		t.Run("valid action: "+action, func(t *testing.T) {
 			err := validateAction(action)
@@ -152,10 +159,19 @@ func TestValidateAction(t *testing.T) {
 		})
 	}
 
-	invalidActions := []string{"invalid", "execute", "modify", ""}
-	for _, action := range invalidActions {
-		t.Run("invalid action: "+action, func(t *testing.T) {
-			err := validateAction(action)
+	// Test invalid actions (uppercase, special chars, spaces)
+	invalidActions := []struct {
+		action string
+		name   string
+	}{
+		{action: "Read", name: "uppercase"},
+		{action: "read@write", name: "special_char_@"},
+		{action: "read write", name: "space"},
+		{action: "", name: "empty"},
+	}
+	for _, tt := range invalidActions {
+		t.Run("invalid action: "+tt.name, func(t *testing.T) {
+			err := validateAction(tt.action)
 			assert.Error(t, err)
 		})
 	}

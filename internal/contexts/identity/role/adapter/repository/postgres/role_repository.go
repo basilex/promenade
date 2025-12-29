@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -27,20 +28,30 @@ func NewRoleRepository(db *sqlx.DB) roleentity.IRepository {
 type roleRow struct {
 	ID          uuidv7.UUID  `db:"id"`
 	Name        string       `db:"name"`
+	DisplayName string       `db:"display_name"`
 	Description string       `db:"description"`
 	IsSystem    bool         `db:"is_system"`
-	CreatedAt   string       `db:"created_at"`
-	UpdatedAt   string       `db:"updated_at"`
+	CreatedAt   time.Time    `db:"created_at"`
+	UpdatedAt   time.Time    `db:"updated_at"`
 	DeletedAt   sql.NullTime `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity
 func (r *roleRow) toEntity() (*roleentity.Role, error) {
+	var deletedAt *time.Time
+	if r.DeletedAt.Valid {
+		deletedAt = &r.DeletedAt.Time
+	}
+
 	return &roleentity.Role{
 		ID:          r.ID,
 		Name:        r.Name,
+		DisplayName: r.DisplayName,
 		Description: r.Description,
 		IsSystem:    r.IsSystem,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
+		DeletedAt:   deletedAt,
 	}, nil
 }
 
@@ -49,8 +60,11 @@ func fromRoleEntity(r *roleentity.Role) *roleRow {
 	row := &roleRow{
 		ID:          r.ID,
 		Name:        r.Name,
+		DisplayName: r.DisplayName,
 		Description: r.Description,
 		IsSystem:    r.IsSystem,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
 	}
 
 	if r.DeletedAt != nil {
@@ -65,11 +79,11 @@ func (r *roleRepository) Create(ctx context.Context, role *roleentity.Role) erro
 	row := fromRoleEntity(role)
 
 	query := `
-		INSERT INTO identity_roles (id, name, description, is_system, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		INSERT INTO identity_roles (id, name, display_name, description, is_system, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 	`
 
-	_, err := r.Exec(ctx, query, row.ID, row.Name, row.Description, row.IsSystem)
+	_, err := r.Exec(ctx, query, row.ID, row.Name, row.DisplayName, row.Description, row.IsSystem)
 	if err != nil {
 		return fmt.Errorf("failed to create role: %w", err)
 	}
@@ -82,7 +96,7 @@ func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*roleenti
 	var row roleRow
 
 	query := `
-		SELECT id, name, description, is_system, created_at, updated_at, deleted_at
+		SELECT id, name, display_name, description, is_system, created_at, updated_at, deleted_at
 		FROM identity_roles
 		WHERE id = $1 AND deleted_at IS NULL
 	`
@@ -103,9 +117,9 @@ func (r *roleRepository) GetByName(ctx context.Context, name string) (*roleentit
 	var row roleRow
 
 	query := `
-		SELECT id, name, description, is_system, created_at, updated_at
+		SELECT id, name, display_name, description, is_system, created_at, updated_at, deleted_at
 		FROM identity_roles
-		WHERE name = $1
+		WHERE name = $1 AND deleted_at IS NULL
 	`
 
 	err := r.Get(ctx, &row, query, name)
@@ -125,11 +139,11 @@ func (r *roleRepository) Update(ctx context.Context, role *roleentity.Role) erro
 
 	query := `
 		UPDATE identity_roles
-		SET description = $2, updated_at = CURRENT_TIMESTAMP
+		SET display_name = $2, description = $3, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1 AND deleted_at IS NULL
 	`
 
-	result, err := r.Exec(ctx, query, row.ID, row.Description)
+	result, err := r.Exec(ctx, query, row.ID, row.DisplayName, row.Description)
 	if err != nil {
 		return fmt.Errorf("failed to update role: %w", err)
 	}
@@ -148,6 +162,28 @@ func (r *roleRepository) Update(ctx context.Context, role *roleentity.Role) erro
 
 // Delete soft deletes a role
 func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+	// First check if role exists and get its is_system flag
+	var row roleRow
+	checkQuery := `SELECT id, is_system, deleted_at FROM identity_roles WHERE id = $1`
+	err := r.Get(ctx, &row, checkQuery, id)
+	if err == sql.ErrNoRows {
+		return roleentity.ErrRoleNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("failed to check role: %w", err)
+	}
+
+	// Check if already deleted
+	if row.DeletedAt.Valid {
+		return roleentity.ErrRoleNotFound
+	}
+
+	// Check if system role
+	if row.IsSystem {
+		return roleentity.ErrCannotDeleteSystem
+	}
+
+	// Perform soft delete
 	query := `
 		UPDATE identity_roles
 		SET deleted_at = CURRENT_TIMESTAMP
@@ -165,6 +201,7 @@ func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if rowsAffected == 0 {
+		// This shouldn't happen given our checks above, but handle defensively
 		return roleentity.ErrCannotDeleteSystem
 	}
 
@@ -195,7 +232,7 @@ func (r *roleRepository) ListRoles(ctx context.Context) ([]*roleentity.Role, err
 	var rows []roleRow
 
 	query := `
-		SELECT id, name, description, is_system, created_at, updated_at, deleted_at
+		SELECT id, name, display_name, description, is_system, created_at, updated_at, deleted_at
 		FROM identity_roles
 		WHERE deleted_at IS NULL
 		ORDER BY name
@@ -223,10 +260,10 @@ func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) (
 	var rows []roleRow
 
 	query := `
-		SELECT r.id, r.name, r.description, r.is_system, r.created_at, r.updated_at
+		SELECT r.id, r.name, r.display_name, r.description, r.is_system, r.created_at, r.updated_at, r.deleted_at
 		FROM identity_roles r
 		INNER JOIN identity_user_roles ur ON r.id = ur.role_id
-		WHERE ur.user_id = $1
+		WHERE ur.user_id = $1 AND r.deleted_at IS NULL
 		ORDER BY r.name
 	`
 

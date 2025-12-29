@@ -23,8 +23,9 @@ type Role struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID   uuidv7.UUID
-	Name string // unique, lowercase (e.g., "admin", "user", "manager")
+	ID          uuidv7.UUID
+	Name        string // unique, lowercase identifier (e.g., "admin", "user", "manager")
+	DisplayName string // Human-readable name for UI (e.g., "System Administrator")
 
 	// Metadata
 	Description string
@@ -37,9 +38,13 @@ type Role struct {
 }
 
 // NewRole creates a new role
-func NewRole(name, description string) (*Role, error) {
+func NewRole(name, displayName, description string) (*Role, error) {
 	if err := validateRoleName(name); err != nil {
 		return nil, err
+	}
+
+	if strings.TrimSpace(displayName) == "" {
+		return nil, fmt.Errorf("display name is required")
 	}
 
 	now := time.Now()
@@ -47,6 +52,7 @@ func NewRole(name, description string) (*Role, error) {
 		BaseAggregate: aggregate.NewBaseAggregate(),
 		ID:            uuidv7.New(),
 		Name:          strings.ToLower(strings.TrimSpace(name)),
+		DisplayName:   strings.TrimSpace(displayName),
 		Description:   strings.TrimSpace(description),
 		IsSystem:      false,
 		CreatedAt:     now,
@@ -55,8 +61,8 @@ func NewRole(name, description string) (*Role, error) {
 }
 
 // NewSystemRole creates a system role (cannot be deleted)
-func NewSystemRole(name, description string) (*Role, error) {
-	role, err := NewRole(name, description)
+func NewSystemRole(name, displayName, description string) (*Role, error) {
+	role, err := NewRole(name, displayName, description)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +75,17 @@ func NewSystemRole(name, description string) (*Role, error) {
 func (r *Role) UpdateDescription(description string) {
 	r.Description = strings.TrimSpace(description)
 	r.UpdatedAt = time.Now()
+}
+
+// UpdateDisplayName updates the role display name
+func (r *Role) UpdateDisplayName(displayName string) error {
+	trimmed := strings.TrimSpace(displayName)
+	if trimmed == "" {
+		return fmt.Errorf("display name cannot be empty")
+	}
+	r.DisplayName = trimmed
+	r.UpdatedAt = time.Now()
+	return nil
 }
 
 // CanDelete checks if the role can be deleted
@@ -85,7 +102,11 @@ func (r *Role) Validate() error {
 		return err
 	}
 
-	if r.Description == "" {
+	if strings.TrimSpace(r.DisplayName) == "" {
+		return fmt.Errorf("display name is required")
+	}
+
+	if strings.TrimSpace(r.Description) == "" {
 		return fmt.Errorf("description is required")
 	}
 

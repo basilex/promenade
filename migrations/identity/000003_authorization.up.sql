@@ -8,28 +8,44 @@
 -- Permissions Table
 CREATE TABLE identity_permissions (
     id          UUID PRIMARY KEY DEFAULT uuid_v7(),
+    name        VARCHAR(101) GENERATED ALWAYS AS (resource || ':' || action) STORED NOT NULL,
     resource    VARCHAR(50) NOT NULL,
     action      VARCHAR(50) NOT NULL,
     description TEXT,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    deleted_at  TIMESTAMP WITH TIME ZONE,
     UNIQUE(resource, action)
 );
 
 CREATE INDEX idx_identity_permissions_resource ON identity_permissions(resource);
 CREATE INDEX idx_identity_permissions_action ON identity_permissions(action);
+CREATE INDEX idx_identity_permissions_deleted_at ON identity_permissions(deleted_at) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_identity_permissions_name ON identity_permissions(name) WHERE deleted_at IS NULL;
+
+CREATE TRIGGER trg_identity_permissions_updated_at
+    BEFORE UPDATE ON identity_permissions
+    FOR EACH ROW
+    EXECUTE FUNCTION tfn_entity_updated_at();
 
 COMMENT ON TABLE identity_permissions IS 'Granular permissions in resource:action format';
-COMMENT ON COLUMN identity_permissions.resource IS 'Resource name (e.g., posts, users, *)';
-COMMENT ON COLUMN identity_permissions.action IS 'Action name (e.g., create, read, update, delete, *)';
+COMMENT ON COLUMN identity_permissions.name IS 'Permission name in resource:action format (e.g., users:read)';
+COMMENT ON COLUMN identity_permissions.resource IS 'Resource nam,
+    deleted_at   TIMESTAMP WITH TIME ZONE
+);
 
--- Roles Table
-CREATE TABLE identity_roles (
-    id           UUID PRIMARY KEY DEFAULT uuid_v7(),
-    name         VARCHAR(50) NOT NULL UNIQUE,
-    display_name VARCHAR(100) NOT NULL,
-    description  TEXT,
-    is_system    BOOLEAN DEFAULT false NOT NULL,
-    created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+CREATE INDEX idx_identity_roles_name ON identity_roles(name);
+CREATE INDEX idx_identity_roles_system ON identity_roles(is_system);
+CREATE INDEX idx_identity_roles_deleted_at ON identity_roles(deleted_at);
+
+CREATE TRIGGER trg_identity_roles_updated_at
+    BEFORE UPDATE ON identity_roles
+    FOR EACH ROW
+    EXECUTE FUNCTION tfn_entity_updated_at();
+
+COMMENT ON TABLE identity_roles IS 'Groups of permissions for assignment to users';
+COMMENT ON COLUMN identity_roles.is_system IS 'System roles cannot be deleted';
+COMMENT ON COLUMN identity_roles.deleted_at IS 'Soft delete timestamp (NULL = active, NOT NULL = deleted)
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 

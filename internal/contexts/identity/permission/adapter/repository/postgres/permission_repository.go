@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -25,34 +26,52 @@ func NewPermissionRepository(db *sqlx.DB) permission.IRepository {
 
 // permissionRow represents database row structure for identity_permissions table
 type permissionRow struct {
-	ID          uuidv7.UUID `db:"id"`
-	Name        string      `db:"name"`
-	Resource    string      `db:"resource"`
-	Action      string      `db:"action"`
-	Description string      `db:"description"`
-	CreatedAt   string      `db:"created_at"`
+	ID          uuidv7.UUID  `db:"id"`
+	Name        string       `db:"name"`
+	Resource    string       `db:"resource"`
+	Action      string       `db:"action"`
+	Description string       `db:"description"`
+	CreatedAt   time.Time    `db:"created_at"`
+	UpdatedAt   time.Time    `db:"updated_at"`
+	DeletedAt   sql.NullTime `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity
 func (r *permissionRow) toEntity() (*permission.Permission, error) {
+	var deletedAt *time.Time
+	if r.DeletedAt.Valid {
+		deletedAt = &r.DeletedAt.Time
+	}
+
 	return &permission.Permission{
 		ID:          r.ID,
 		Name:        r.Name,
 		Resource:    r.Resource,
 		Action:      r.Action,
 		Description: r.Description,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
+		DeletedAt:   deletedAt,
 	}, nil
 }
 
 // fromEntity converts domain entity to database row
 func fromPermissionEntity(p *permission.Permission) *permissionRow {
-	return &permissionRow{
+	row := &permissionRow{
 		ID:          p.ID,
 		Name:        p.Name,
 		Resource:    p.Resource,
 		Action:      p.Action,
 		Description: p.Description,
+		CreatedAt:   p.CreatedAt,
+		UpdatedAt:   p.UpdatedAt,
 	}
+
+	if p.DeletedAt != nil {
+		row.DeletedAt = sql.NullTime{Time: *p.DeletedAt, Valid: true}
+	}
+
+	return row
 }
 
 // Create creates a new permission in the database
@@ -60,11 +79,11 @@ func (r *permissionRepository) Create(ctx context.Context, perm *permission.Perm
 	row := fromPermissionEntity(perm)
 
 	query := `
-		INSERT INTO identity_permissions (id, name, resource, action, description, created_at)
-		VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+		INSERT INTO identity_permissions (id, resource, action, description, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 	`
 
-	_, err := r.Exec(ctx, query, row.ID, row.Name, row.Resource, row.Action, row.Description)
+	_, err := r.Exec(ctx, query, row.ID, row.Resource, row.Action, row.Description)
 	if err != nil {
 		return fmt.Errorf("failed to create permission: %w", err)
 	}
@@ -77,9 +96,9 @@ func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*pe
 	var row permissionRow
 
 	query := `
-		SELECT id, name, resource, action, description, created_at
+		SELECT id, name, resource, action, description, created_at, updated_at, deleted_at
 		FROM identity_permissions
-		WHERE id = $1
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	err := r.Get(ctx, &row, query, id)
@@ -98,9 +117,9 @@ func (r *permissionRepository) GetByName(ctx context.Context, name string) (*per
 	var row permissionRow
 
 	query := `
-		SELECT id, name, resource, action, description, created_at
+		SELECT id, name, resource, action, description, created_at, updated_at, deleted_at
 		FROM identity_permissions
-		WHERE name = $1
+		WHERE name = $1 AND deleted_at IS NULL
 	`
 
 	err := r.Get(ctx, &row, query, name)
@@ -120,8 +139,8 @@ func (r *permissionRepository) Update(ctx context.Context, perm *permission.Perm
 
 	query := `
 		UPDATE identity_permissions
-		SET description = $2
-		WHERE id = $1
+		SET description = $2, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	result, err := r.Exec(ctx, query, row.ID, row.Description)
@@ -141,11 +160,12 @@ func (r *permissionRepository) Update(ctx context.Context, perm *permission.Perm
 	return nil
 }
 
-// Delete deletes a permission
+// Delete soft deletes a permission
 func (r *permissionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		DELETE FROM identity_permissions
-		WHERE id = $1
+		UPDATE identity_permissions
+		SET deleted_at = CURRENT_TIMESTAMP
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	result, err := r.Exec(ctx, query, id)
@@ -172,7 +192,7 @@ func (r *permissionRepository) ExistsByName(ctx context.Context, name string) (b
 	query := `
 		SELECT EXISTS(
 			SELECT 1 FROM identity_permissions
-			WHERE name = $1
+			WHERE name = $1 AND deleted_at IS NULL
 		)
 	`
 
@@ -189,8 +209,9 @@ func (r *permissionRepository) ListPermissions(ctx context.Context) ([]*permissi
 	var rows []permissionRow
 
 	query := `
-		SELECT id, name, resource, action, description, created_at
+		SELECT id, name, resource, action, description, created_at, updated_at, deleted_at
 		FROM identity_permissions
+		WHERE deleted_at IS NULL
 		ORDER BY resource, action
 	`
 
@@ -216,10 +237,10 @@ func (r *permissionRepository) GetRolePermissions(ctx context.Context, roleID uu
 	var rows []permissionRow
 
 	query := `
-		SELECT p.id, p.name, p.resource, p.action, p.description, p.created_at
+		SELECT p.id, p.name, p.resource, p.action, p.description, p.created_at, p.updated_at, p.deleted_at
 		FROM identity_permissions p
 		INNER JOIN identity_role_permissions rp ON p.id = rp.permission_id
-		WHERE rp.role_id = $1
+		WHERE rp.role_id = $1 AND p.deleted_at IS NULL
 		ORDER BY p.resource, p.action
 	`
 

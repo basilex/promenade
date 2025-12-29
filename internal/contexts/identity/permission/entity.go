@@ -34,6 +34,8 @@ type Permission struct {
 
 	// Lifecycle
 	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time // Soft delete support
 }
 
 // NewPermission creates a new permission
@@ -52,6 +54,7 @@ func NewPermission(resource, action, description string) (*Permission, error) {
 
 	name := fmt.Sprintf("%s:%s", resource, action)
 
+	now := time.Now()
 	return &Permission{
 		BaseAggregate: aggregate.NewBaseAggregate(),
 		ID:            uuidv7.New(),
@@ -59,7 +62,8 @@ func NewPermission(resource, action, description string) (*Permission, error) {
 		Resource:      strings.ToLower(strings.TrimSpace(resource)),
 		Action:        strings.ToLower(strings.TrimSpace(action)),
 		Description:   strings.TrimSpace(description),
-		CreatedAt:     time.Now(),
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}, nil
 }
 
@@ -78,6 +82,12 @@ func (p *Permission) Validate() error {
 	}
 
 	return nil
+}
+
+// UpdateDescription updates the permission description
+func (p *Permission) UpdateDescription(description string) {
+	p.Description = strings.TrimSpace(description)
+	p.UpdatedAt = time.Now()
 }
 
 // validateResource validates resource name
@@ -99,18 +109,30 @@ func validateResource(resource string) error {
 }
 
 // validateAction validates action name
+// Allows wildcard (*) and common CRUD operations
+// Extensible: any lowercase alphanumeric string is valid
 func validateAction(action string) error {
 	trimmed := strings.TrimSpace(action)
 	if trimmed == "" {
 		return fmt.Errorf("action cannot be empty")
 	}
 
-	validActions := []string{"read", "write", "delete", "admin", "create", "update", "list"}
-	for _, valid := range validActions {
-		if trimmed == valid {
-			return nil
+	if len(trimmed) > 50 {
+		return fmt.Errorf("action must not exceed 50 characters")
+	}
+
+	// Allow wildcard
+	if trimmed == "*" {
+		return nil
+	}
+
+	// Allow any lowercase alphanumeric with underscores and hyphens
+	// This makes it extensible for future actions
+	for _, ch := range trimmed {
+		if !((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
+			return fmt.Errorf("action must contain only lowercase letters, numbers, underscores and hyphens")
 		}
 	}
 
-	return fmt.Errorf("invalid action: %s (allowed: %v)", trimmed, validActions)
+	return nil
 }
