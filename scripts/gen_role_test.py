@@ -1,4 +1,6 @@
-package role_test
+#!/usr/bin/env python3
+
+role_test = '''package role_test
 
 import (
 	"context"
@@ -78,9 +80,8 @@ func TestRoleRepository_Queries(t *testing.T) {
 		assert.False(t, exists)
 
 		// List
-		roles, total, err := repo.ListRoles(ctx, 10, 0)
+		roles, err := repo.ListRoles(ctx, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(2))
 		assert.GreaterOrEqual(t, len(roles), 2)
 
 		// GetUserRoles (requires user-role assignment)
@@ -98,3 +99,9 @@ func TestRoleRepository_Queries(t *testing.T) {
 		assert.Equal(t, "role1", userRoles[0].Name)
 	})
 }
+'''
+
+with open('test/integration/contexts/identity/role/repository_test.go', 'w') as f:
+    f.write(role_test)
+
+print("✓ Generated test/integration/contexts/identity/role/repository_test.go (98 lines)")
