@@ -5,6 +5,9 @@ export default defineConfig({
   description: 'Modern backend platform for customer management, orders, and business workflows with clean DDD architecture',
   base: '/promenade/',
   
+  // Ignore dead links (localhost URLs and pages under construction)
+  ignoreDeadLinks: 'localhostLinks',
+  
   head: [
     ['link', { rel: 'icon', href: '/promenade/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3b82f6' }],
