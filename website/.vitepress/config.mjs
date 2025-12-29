@@ -48,12 +48,18 @@ export default defineConfig({
           ]
         },
         {
-          text: 'Guides',
+          text: 'Implementation Guides',
           items: [
-            { text: 'Testing Patterns', link: '/guide/testing' },
-            { text: 'RBAC', link: '/guide/rbac' },
-            { text: 'Health Checks', link: '/docs/guides/health-checks' },
-            { text: 'Rate Limiting', link: '/docs/guides/rate-limiting' },
+            { text: 'RBAC & Authorization', link: '/guide/rbac' },
+            { text: 'Rate Limiting', link: '/guide/rate-limiting' },
+            { text: 'Health Checks', link: '/guide/health-checks' },
+            { text: 'Testing Patterns', link: '/guide/testing-patterns' },
+            { text: 'Testing Quick Reference', link: '/guide/testing-quick-reference' },
+          ]
+        },
+        {
+          text: 'Reference',
+          items: [
             { text: 'API Reference', link: '/guide/api-reference' },
             { text: 'Contributing', link: '/guide/contributing' },
           ]
@@ -87,9 +93,14 @@ export default defineConfig({
           text: 'Bounded Contexts',
           items: [
             { text: 'Overview', link: '/contexts/' },
-            { text: 'Identity', link: '/contexts/identity' },
-            { text: 'Shared', link: '/contexts/shared' },
+            { text: 'Identity Context', link: '/contexts/identity' },
+            { text: 'Shared Context', link: '/contexts/shared' },
             { text: 'Customer Management', link: '/contexts/customer' },
+          ]
+        },
+        {
+          text: 'Planned Contexts',
+          items: [
             { text: 'Order Management', link: '/contexts/order' },
             { text: 'Billing', link: '/contexts/billing' },
           ]
@@ -98,15 +109,29 @@ export default defineConfig({
       
       '/packages/': [
         {
-          text: 'Package Library',
+          text: 'Infrastructure',
           items: [
             { text: 'Overview', link: '/packages/' },
             { text: 'Event Bus', link: '/packages/bus' },
-            { text: 'JWT', link: '/packages/jwt' },
+            { text: 'JWT Authentication', link: '/packages/jwt' },
             { text: 'Logger', link: '/packages/logger' },
+          ]
+        },
+        {
+          text: 'Domain Primitives',
+          items: [
             { text: 'UUID v7', link: '/packages/uuidv7' },
             { text: 'Value Objects', link: '/packages/valueobject' },
-            { text: 'Response', link: '/packages/response' },
+            { text: 'Aggregates', link: '/packages/aggregate' },
+            { text: 'Saga Pattern', link: '/packages/saga' },
+          ]
+        },
+        {
+          text: 'Utilities',
+          items: [
+            { text: 'Response Helpers', link: '/packages/response' },
+            { text: 'JSONB Utilities', link: '/packages/jsonb' },
+            { text: 'Migrations', link: '/packages/migration' },
           ]
         }
       ]
