@@ -1,4 +1,6 @@
-package customer_test
+#!/usr/bin/env python3
+
+customer_test = '''package customer_test
 
 import (
 	"context"
@@ -41,12 +43,12 @@ func TestCustomerRepository_CRUD(t *testing.T) {
 		assert.Equal(t, c.ID, foundByEmail.ID)
 
 		// Update
-		c.Name = "Updated Customer"
-		require.NoError(t, c.QualifyAsProspect())
+		c.UpdateName("Updated Customer")
+		c.ConvertToQualified()
 		require.NoError(t, repo.Update(ctx, c))
 		updated, _ := repo.GetByID(ctx, c.ID)
 		assert.Equal(t, "Updated Customer", updated.Name)
-		assert.Equal(t, customer.CustomerStatusProspect, updated.Status)
+		assert.Equal(t, customer.StatusQualified, updated.Status)
 
 		// Delete
 		require.NoError(t, repo.Delete(ctx, c.ID))
@@ -109,36 +111,36 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 		// Create customers with different statuses and tiers
 		c1, _ := customer.NewCustomer("Lead1", "lead1@test.com", "web", assignedTo)
 		c2, _ := customer.NewCustomer("Qualified1", "qual1@test.com", "web", assignedTo)
-		c2.QualifyAsProspect()
+		c2.ConvertToQualified()
 		c3, _ := customer.NewCustomer("Active1", "active1@test.com", "web", assignedTo)
-		c3.ConvertToCustomer()
-		c3.UpgradeTier(customer.CustomerTierPro)
+		c3.ConvertToActive()
+		c3.UpgradeToGold()
 		
 		require.NoError(t, repo.Create(ctx, c1))
 		require.NoError(t, repo.Create(ctx, c2))
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// ListByStatus
-		leads, total, err := repo.ListByStatus(ctx, customer.CustomerStatusLead, 10, 0)
+		leads, total, err := repo.ListByStatus(ctx, customer.StatusLead, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, int64(1))
 		assert.GreaterOrEqual(t, len(leads), 1)
 
 		// CountByStatus
-		leadCount, err := repo.CountByStatus(ctx, customer.CustomerStatusLead)
+		leadCount, err := repo.CountByStatus(ctx, customer.StatusLead)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, leadCount, int64(1))
 
 		// ListByTier
-		proCustomers, total, err := repo.ListByTier(ctx, customer.CustomerTierPro, 10, 0)
+		goldCustomers, total, err := repo.ListByTier(ctx, customer.TierGold, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, int64(1))
-		assert.GreaterOrEqual(t, len(proCustomers), 1)
+		assert.GreaterOrEqual(t, len(goldCustomers), 1)
 
 		// CountByTier
-		proCount, err := repo.CountByTier(ctx, customer.CustomerTierPro)
+		goldCount, err := repo.CountByTier(ctx, customer.TierGold)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, proCount, int64(1))
+		assert.GreaterOrEqual(t, goldCount, int64(1))
 	})
 }
 
@@ -174,8 +176,15 @@ func TestCustomerRepository_Relations(t *testing.T) {
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
-		byCompany, err := repo.ListByCompanyID(ctx, companyID)
+		byCompany, total, err := repo.ListByCompanyID(ctx, companyID, 10, 0)
 		require.NoError(t, err)
+		assert.GreaterOrEqual(t, total, int64(2))
 		assert.GreaterOrEqual(t, len(byCompany), 2)
 	})
 }
+'''
+
+with open('test/integration/contexts/customer-mgmt/customer/repository_test.go', 'w') as f:
+    f.write(customer_test)
+
+print("✓ Generated test/integration/contexts/customer-mgmt/customer/repository_test.go (165 lines)")
