@@ -89,7 +89,12 @@ func TestCustomerRepository_Queries(t *testing.T) {
 
 		// GetByUserID (requires user_id assignment)
 		userID := uuidv7.New()
-		c4, _ := customer.NewCustomer("User Customer", "user@test.com", "web", assignedTo)
+		uuid = uuidv7.New().String()[:8]
+		// Create user first
+		_, err = tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+			userID, fmt.Sprintf("user_%s@test.com", uuid), "hash", "active")
+		require.NoError(t, err)
+		c4, _ := customer.NewCustomer("User Customer", fmt.Sprintf("user_%s@test.com", uuid), "web", assignedTo)
 		c4.UserID = &userID
 		require.NoError(t, repo.Create(ctx, c4))
 		
@@ -109,10 +114,11 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 		assignedTo := uuidv7.New()
 
 		// Create customers with different statuses and tiers
-		c1, _ := customer.NewCustomer("Lead1", "lead1@test.com", "web", assignedTo)
-		c2, _ := customer.NewCustomer("Qualified1", "qual1@test.com", "web", assignedTo)
+		uuid := uuidv7.New().String()[:8]
+		c1, _ := customer.NewCustomer("Lead1", fmt.Sprintf("lead1_%s@test.com", uuid), "web", assignedTo)
+		c2, _ := customer.NewCustomer("Qualified1", fmt.Sprintf("qual1_%s@test.com", uuid), "web", assignedTo)
 		c2.QualifyAsProspect()
-		c3, _ := customer.NewCustomer("Active1", "active1@test.com", "web", assignedTo)
+		c3, _ := customer.NewCustomer("Active1", fmt.Sprintf("active1_%s@test.com", uuid), "web", assignedTo)
 		c3.ConvertToCustomer()
 		c3.UpgradeTier(customer.CustomerTierPro)
 		
@@ -160,7 +166,8 @@ func TestCustomerRepository_Relations(t *testing.T) {
 			c, _ := customer.NewCustomer("Assigned1", fmt.Sprintf("assigned1_%d@test.com", i), "web", assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
-		c3, _ := customer.NewCustomer("Assigned2", "assigned2@test.com", "web", assignedTo2)
+		uuid := uuidv7.New().String()[:8]
+		c3, _ := customer.NewCustomer("Assigned2", fmt.Sprintf("assigned2_%s@test.com", uuid), "web", assignedTo2)
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// ListByAssignedTo

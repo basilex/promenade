@@ -65,13 +65,15 @@ func TestPermissionRepository_Queries(t *testing.T) {
 
 		// Create 2 permissions with unique names
 		uuid := uuidv7.New().String()[:8]
-		p1, _ := permission.NewPermission(fmt.Sprintf("resource1_%s", uuid), "read", "First")
-		p2, _ := permission.NewPermission(fmt.Sprintf("resource2_%s", uuid), "write", "Second")
+		resource1Name := fmt.Sprintf("resource1_%s", uuid)
+		resource2Name := fmt.Sprintf("resource2_%s", uuid)
+		p1, _ := permission.NewPermission(resource1Name, "read", "First")
+		p2, _ := permission.NewPermission(resource2Name, "write", "Second")
 		require.NoError(t, repo.Create(ctx, p1))
 		require.NoError(t, repo.Create(ctx, p2))
 
 		// ExistsByName
-		exists, err := repo.ExistsByName(ctx, "resource1:read")
+		exists, err := repo.ExistsByName(ctx, resource1Name+":read")
 		require.NoError(t, err)
 		assert.True(t, exists)
 
@@ -87,16 +89,16 @@ func TestPermissionRepository_Queries(t *testing.T) {
 
 		// GetRolePermissions (requires role-permission assignment)
 		roleID := uuidv7.New()
-		_, err = testDB.DB.Exec(`INSERT INTO identity_roles (id, name, display_name, description) VALUES ($1, $2, $3, $4)`,
+		_, err = tx.ExecContext(ctx, `INSERT INTO identity_roles (id, name, display_name, description) VALUES ($1, $2, $3, $4)`,
 			roleID, fmt.Sprintf("role_%s", roleID), "Test Role", "Test")
 		require.NoError(t, err)
 
-		_, err = testDB.DB.Exec(`INSERT INTO identity_role_permissions (role_id, permission_id) VALUES ($1, $2)`, roleID, p1.ID)
+		_, err = tx.ExecContext(ctx, `INSERT INTO identity_role_permissions (role_id, permission_id) VALUES ($1, $2)`, roleID, p1.ID)
 		require.NoError(t, err)
 
 		rolePerms, err := repo.GetRolePermissions(ctx, roleID)
 		require.NoError(t, err)
 		assert.Len(t, rolePerms, 1)
-		assert.Equal(t, "resource1:read", rolePerms[0].Name)
+		assert.Equal(t, resource1Name+":read", rolePerms[0].Name)
 	})
 }

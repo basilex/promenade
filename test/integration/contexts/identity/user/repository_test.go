@@ -13,7 +13,6 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
-	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -72,9 +71,9 @@ func TestUserRepository_Queries(t *testing.T) {
 		// Create 2 users with unique emails
 		email1 := fmt.Sprintf("user1_%s@example.com", uuidv7.New().String())
 		email2 := fmt.Sprintf("user2_%s@example.com", uuidv7.New().String())
-		u1, err := user.NewUser(email1, "pass1")
+		u1, err := user.NewUser(email1, "password123")
 		require.NoError(t, err)
-		u2, err := user.NewUser(email2, "pass2")
+		u2, err := user.NewUser(email2, "password456")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u1))
 		require.NoError(t, repo.Create(ctx, u2))
@@ -95,12 +94,12 @@ func TestUserRepository_Queries(t *testing.T) {
 		assert.GreaterOrEqual(t, len(users), 2)
 
 		// ValueObject roundtrip (Email preservation)
-		email1 := "value@object.com"
-		u3, err := user.NewUser(email1, "pass3")
+		email3 := "value@object.com"
+		u3, err := user.NewUser(email3, "password789")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u3))
 		retrieved, _ := repo.GetByID(ctx, u3.ID)
-		assert.Equal(t, email1, retrieved.Email.Value())
+		assert.Equal(t, email3, retrieved.Email.Value())
 	})
 }
 
@@ -110,13 +109,20 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	}
 	testDB := integration.SetupTestDB(t)
 
+	// Create user WITHOUT transaction so it persists for concurrent tests
 	var userID uuidv7.UUID
-	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
+	func() {
 		repo := postgres.NewUserRepository(testDB.DB)
-		u, _ := user.NewUser("concurrent@example.com", "password123")
-		require.NoError(t, repo.Create(ctx, u))
+		email := fmt.Sprintf("concurrent_%s@example.com", uuidv7.New().String())
+		u, _ := user.NewUser(email, "password123")
+		require.NoError(t, repo.Create(context.Background(), u))
 		userID = u.ID
-	})
+	}()
+
+	// Cleanup after test
+	defer func() {
+		testDB.DB.Exec("DELETE FROM identity_users WHERE id = $1", userID)
+	}()
 
 	// Run 10 concurrent updates
 	var wg sync.WaitGroup

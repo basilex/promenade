@@ -2,7 +2,6 @@ package contact_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -12,7 +11,6 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
-	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -125,6 +123,11 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 		
 		c, _ := contact.NewEmailContact(userID, email, "Work")
 		require.NoError(t, repo.Create(ctx, c))
+		
+		// Verify contact was created
+		found, err := repo.GetByID(ctx, c.ID)
+		require.NoError(t, err)
+		assert.Equal(t, c.ID, found.ID)
 		
 		// Force rollback by causing panic
 		t.FailNow()
