@@ -125,7 +125,26 @@ VALUES
     (uuid_v7(), 'roles', 'delete', 'Delete roles', NOW()),
     (uuid_v7(), 'roles', 'list', 'List roles', NOW()),
     (uuid_v7(), 'roles', 'assign', 'Assign roles to users', NOW()),
-    (uuid_v7(), 'roles', '*', 'All role operations', NOW());
+    (uuid_v7(), 'roles', '*', 'All role operations', NOW()),
+    
+    -- Customers (CRM)
+    (uuid_v7(), 'customers', 'create', 'Create customers', NOW()),
+    (uuid_v7(), 'customers', 'read', 'View customer information', NOW()),
+    (uuid_v7(), 'customers', 'update', 'Update customers', NOW()),
+    (uuid_v7(), 'customers', 'write', 'Create and update customers', NOW()),
+    (uuid_v7(), 'customers', 'delete', 'Delete customers', NOW()),
+    (uuid_v7(), 'customers', 'list', 'List customers', NOW()),
+    (uuid_v7(), 'customers', 'admin', 'Full customer management', NOW()),
+    (uuid_v7(), 'customers', '*', 'All customer operations', NOW()),
+    
+    -- Contacts (CRM)
+    (uuid_v7(), 'contacts', 'create', 'Create contacts', NOW()),
+    (uuid_v7(), 'contacts', 'read', 'View contact information', NOW()),
+    (uuid_v7(), 'contacts', 'update', 'Update contacts', NOW()),
+    (uuid_v7(), 'contacts', 'write', 'Create and update contacts', NOW()),
+    (uuid_v7(), 'contacts', 'delete', 'Delete contacts', NOW()),
+    (uuid_v7(), 'contacts', 'list', 'List contacts', NOW()),
+    (uuid_v7(), 'contacts', '*', 'All contact operations', NOW());
 
 -- ============================================================================
 -- Seed Data: System Roles
@@ -140,6 +159,7 @@ VALUES
     (uuid_v7(), 'support', 'Support Agent', 'Customer support access', TRUE, NOW(), NOW()),
     (uuid_v7(), 'viewer', 'Viewer', 'Read-only access for reporting', TRUE, NOW(), NOW()),
     (uuid_v7(), 'user', 'User', 'Regular user with basic permissions', TRUE, NOW(), NOW()),
+    (uuid_v7(), 'manager', 'Manager', 'Manager with extended CRM access', TRUE, NOW(), NOW()),
     (uuid_v7(), 'guest', 'Guest', 'Limited read-only access', TRUE, NOW(), NOW());
 
 -- ============================================================================
@@ -222,6 +242,17 @@ WHERE r.name = 'guest' AND (
     (p.resource = 'profiles' AND p.action = 'read')
 );
 
+-- Manager: CRM read and write permissions (customers, contacts, profiles, users)
+INSERT INTO identity_role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM identity_roles r, identity_permissions p
+WHERE r.name = 'manager' AND (
+    (p.resource = 'users' AND p.action IN ('read', 'list', 'write', 'update')) OR
+    (p.resource = 'customers' AND p.action IN ('read', 'list', 'write', 'create', 'update')) OR
+    (p.resource = 'contacts' AND p.action IN ('read', 'list', 'write', 'create', 'update')) OR
+    (p.resource = 'profiles' AND p.action IN ('read', 'list', 'write', 'create', 'update'))
+);
+
 -- ============================================================================
 -- Seed Data: Assign Roles to Default Users
 -- ============================================================================
@@ -242,39 +273,7 @@ CROSS JOIN identity_roles r
 WHERE u.email = 'admin@promenade.com' AND r.name = 'admin'
 ON CONFLICT DO NOTHING;
 
--- 3. Moderator
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'moderator@promenade.com' AND r.name = 'moderator'
-ON CONFLICT DO NOTHING;
-
--- 4. Developer
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'developer@promenade.com' AND r.name = 'developer'
-ON CONFLICT DO NOTHING;
-
--- 5. Support Agent
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'support@promenade.com' AND r.name = 'support'
-ON CONFLICT DO NOTHING;
-
--- 6. Report Viewer
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'viewer@promenade.com' AND r.name = 'viewer'
-ON CONFLICT DO NOTHING;
-
--- 7. Project Owner (alexander.vasilenko@gmail.com)
+-- 3. Project Owner (alexander.vasilenko@gmail.com) - assign 'user' role
 INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
 FROM identity_users u
@@ -282,18 +281,14 @@ CROSS JOIN identity_roles r
 WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'user'
 ON CONFLICT DO NOTHING;
 
--- 8. Fallback: Assign 'user' role to any other existing users
+-- 4. Fallback: Assign 'user' role to any other existing users without roles
 INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
 SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
 FROM identity_users u
 CROSS JOIN identity_roles r
-WHERE u.email NOT IN (
-    'system@promenade.com',
-    'admin@promenade.com',
-    'moderator@promenade.com',
-    'developer@promenade.com',
-    'support@promenade.com',
-    'viewer@promenade.com',
-    'alexander.vasilenko@gmail.com'
-) AND r.name = 'user'
+WHERE u.email NOT IN ('system@promenade.com', 'admin@promenade.com', 'alexander.vasilenko@gmail.com')
+  AND r.name = 'user'
+  AND NOT EXISTS (
+    SELECT 1 FROM identity_user_roles ur WHERE ur.user_id = u.id
+  )
 ON CONFLICT DO NOTHING;

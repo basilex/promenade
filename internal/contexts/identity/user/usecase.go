@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/basilex/promenade/internal/contexts/identity/role"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -58,12 +59,14 @@ type IUseCase interface {
 // UseCase implements IUseCase interface
 type UseCase struct {
 	userRepo IRepository
+	roleRepo role.IRepository
 }
 
 // NewUseCase creates a new user use case
-func NewUseCase(userRepo IRepository) IUseCase {
+func NewUseCase(userRepo IRepository, roleRepo role.IRepository) IUseCase {
 	return &UseCase{
 		userRepo: userRepo,
+		roleRepo: roleRepo,
 	}
 }
 
@@ -87,6 +90,31 @@ func (uc *UseCase) Register(ctx context.Context, email, name, password string) (
 	// Save to repository
 	if err := uc.userRepo.Create(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to save user: %w", err)
+	}
+
+	// Assign default "user" role
+	defaultRole, err := uc.roleRepo.GetByName(ctx, "user")
+	if err != nil {
+		// Log warning but don't fail registration if role not found
+		// (migrations might not have run yet in tests)
+		fmt.Printf("[WARN] Failed to get default 'user' role: %v\n", err)
+		return user, nil
+	}
+
+	if err := uc.roleRepo.AssignRoleToUser(ctx, user.ID, defaultRole.ID, nil); err != nil {
+		// Log warning but don't fail registration
+		fmt.Printf("[WARN] Failed to assign 'user' role to user %s: %v\n", user.ID.String(), err)
+		return user, nil
+	}
+
+	fmt.Printf("[INFO] Assigned 'user' role to user %s\n", user.ID.String())
+
+	// Reload user to get roles
+	user, err = uc.userRepo.GetByID(ctx, user.ID)
+	if err != nil {
+		// Return user without roles if reload fails
+		fmt.Printf("[WARN] Failed to reload user after role assignment: %v\n", err)
+		return user, nil
 	}
 
 	return user, nil

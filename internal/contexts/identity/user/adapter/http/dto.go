@@ -34,6 +34,7 @@ type RefreshTokenRequest struct {
 type UserResponse struct {
 	ID              string     `json:"id"`
 	Email           string     `json:"email"`
+	Roles           []string   `json:"roles"`  // User roles for authorization
 	Status          string     `json:"status"`
 	EmailVerified   bool       `json:"email_verified"`
 	EmailVerifiedAt *time.Time `json:"email_verified_at,omitempty"`
@@ -56,6 +57,7 @@ func ToUserResponse(u *user.User) UserResponse {
 	return UserResponse{
 		ID:              u.ID.String(),
 		Email:           u.Email.Value(),
+		Roles:           u.Roles, // Include user roles
 		Status:          string(u.Status),
 		EmailVerified:   u.EmailVerified,
 		EmailVerifiedAt: u.EmailVerifiedAt,

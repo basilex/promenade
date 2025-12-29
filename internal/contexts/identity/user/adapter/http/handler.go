@@ -105,11 +105,10 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	// Generate JWT token pair
-	roles := []string{} // TODO: Get roles from user entity when RBAC is implemented
 	tokenPair, err := h.jwtManager.GenerateTokenPair(
 		userEntity.ID,
 		userEntity.Email.Value(),
-		roles,
+		userEntity.Roles, // Roles loaded from database via repository
 	)
 	if err != nil {
 		response.InternalError(c, "failed to generate token")

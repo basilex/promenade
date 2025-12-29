@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/basilex/promenade/internal/contexts/identity/role"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -61,16 +62,95 @@ func (m *MockRepository) ListUsers(ctx context.Context, limit, offset int) ([]*U
 	return args.Get(0).([]*User), args.Int(1), args.Error(2)
 }
 
+// MockRoleRepository is a mock implementation of role.IRepository
+type MockRoleRepository struct {
+	mock.Mock
+}
+
+func (m *MockRoleRepository) Create(ctx context.Context, role *role.Role) error {
+	args := m.Called(ctx, role)
+	return args.Error(0)
+}
+
+func (m *MockRoleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*role.Role, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*role.Role), args.Error(1)
+}
+
+func (m *MockRoleRepository) GetByName(ctx context.Context, name string) (*role.Role, error) {
+	args := m.Called(ctx, name)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*role.Role), args.Error(1)
+}
+
+func (m *MockRoleRepository) Update(ctx context.Context, r *role.Role) error {
+	args := m.Called(ctx, r)
+	return args.Error(0)
+}
+
+func (m *MockRoleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}
+
+func (m *MockRoleRepository) ExistsByName(ctx context.Context, name string) (bool, error) {
+	args := m.Called(ctx, name)
+	return args.Bool(0), args.Error(1)
+}
+
+func (m *MockRoleRepository) ListRoles(ctx context.Context) ([]*role.Role, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*role.Role), args.Error(1)
+}
+
+func (m *MockRoleRepository) AssignRoleToUser(ctx context.Context, userID, roleID uuidv7.UUID, assignedBy *uuidv7.UUID) error {
+	args := m.Called(ctx, userID, roleID, assignedBy)
+	return args.Error(0)
+}
+
+func (m *MockRoleRepository) RemoveRoleFromUser(ctx context.Context, userID, roleID uuidv7.UUID) error {
+	args := m.Called(ctx, userID, roleID)
+	return args.Error(0)
+}
+
+func (m *MockRoleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*role.Role, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*role.Role), args.Error(1)
+}
+
 // Test Register
 func TestUseCase_Register(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "test@example.com").Return(false, nil)
 		repo.On("Create", ctx, mock.Anything).Return(nil)
+		
+		// Mock role assignment
+		userRole := &role.Role{ID: uuidv7.New(), Name: "user"}
+		roleRepo.On("GetByName", ctx, "user").Return(userRole, nil)
+		roleRepo.On("AssignRoleToUser", ctx, mock.Anything, userRole.ID, mock.Anything).Return(nil)
+		
+		// Mock GetByID for reloading user with roles after assignment
+		// Create a user with roles that will be returned
+		userWithRoles, _ := NewUser("test@example.com", "password123")
+		userWithRoles.Roles = []string{"user"}
+		repo.On("GetByID", ctx, mock.Anything).Return(userWithRoles, nil).Maybe()
 
 		user, err := uc.Register(ctx, "test@example.com", "Test User", "password123")
 
@@ -84,7 +164,8 @@ func TestUseCase_Register(t *testing.T) {
 
 	t.Run("error - email already exists", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "test@example.com").Return(true, nil)
 
@@ -97,7 +178,8 @@ func TestUseCase_Register(t *testing.T) {
 
 	t.Run("error - invalid email", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "invalid-email").Return(false, nil)
 
@@ -109,7 +191,8 @@ func TestUseCase_Register(t *testing.T) {
 
 	t.Run("error - weak password", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "test@example.com").Return(false, nil)
 
@@ -121,7 +204,8 @@ func TestUseCase_Register(t *testing.T) {
 
 	t.Run("error - repository failure on check", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "test@example.com").Return(false, errors.New("db error"))
 
@@ -133,7 +217,8 @@ func TestUseCase_Register(t *testing.T) {
 
 	t.Run("error - repository failure on create", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ExistsByEmail", ctx, "test@example.com").Return(false, nil)
 		repo.On("Create", ctx, mock.Anything).Return(errors.New("db error"))
@@ -151,7 +236,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.Activate()
@@ -171,7 +257,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("error - user not found", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("GetByEmail", ctx, "test@example.com").Return(nil, ErrUserNotFound)
 
@@ -184,7 +271,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("error - account locked", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.Activate()
@@ -203,7 +291,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("error - account not active", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.Deactivate()
@@ -219,7 +308,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("error - wrong password", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.Activate()
@@ -238,7 +328,8 @@ func TestUseCase_Authenticate(t *testing.T) {
 
 	t.Run("error - account locks after 5 failed attempts", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.Activate()
@@ -263,7 +354,8 @@ func TestUseCase_GetUser(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		expectedUser, _ := NewUser("test@example.com", "password123")
 		expectedUser.ID = userID
@@ -279,7 +371,8 @@ func TestUseCase_GetUser(t *testing.T) {
 
 	t.Run("error - not found", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("GetByID", ctx, userID).Return(nil, ErrUserNotFound)
 
@@ -297,7 +390,8 @@ func TestUseCase_GetUserByEmail(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		expectedUser, _ := NewUser("test@example.com", "password123")
 
@@ -312,7 +406,8 @@ func TestUseCase_GetUserByEmail(t *testing.T) {
 
 	t.Run("error - not found", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("GetByEmail", ctx, "test@example.com").Return(nil, ErrUserNotFound)
 
@@ -331,7 +426,8 @@ func TestUseCase_VerifyEmail(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -349,7 +445,8 @@ func TestUseCase_VerifyEmail(t *testing.T) {
 
 	t.Run("success - already verified", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -366,7 +463,8 @@ func TestUseCase_VerifyEmail(t *testing.T) {
 
 	t.Run("error - user not found", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("GetByID", ctx, userID).Return(nil, ErrUserNotFound)
 
@@ -384,7 +482,8 @@ func TestUseCase_ChangePassword(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "oldPassword123")
 		user.ID = userID
@@ -402,7 +501,8 @@ func TestUseCase_ChangePassword(t *testing.T) {
 
 	t.Run("error - wrong old password", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "oldPassword123")
 		user.ID = userID
@@ -418,7 +518,8 @@ func TestUseCase_ChangePassword(t *testing.T) {
 
 	t.Run("error - invalid new password", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "oldPassword123")
 		user.ID = userID
@@ -439,7 +540,8 @@ func TestUseCase_SuspendUser(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -456,7 +558,8 @@ func TestUseCase_SuspendUser(t *testing.T) {
 
 	t.Run("error - user not found", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("GetByID", ctx, userID).Return(nil, ErrUserNotFound)
 
@@ -474,7 +577,8 @@ func TestUseCase_BanUser(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -497,7 +601,8 @@ func TestUseCase_ActivateUser(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -521,7 +626,8 @@ func TestUseCase_UnlockUser(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user, _ := NewUser("test@example.com", "password123")
 		user.ID = userID
@@ -549,7 +655,8 @@ func TestUseCase_ListUsers(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		user1, _ := NewUser("user1@example.com", "password123")
 		user2, _ := NewUser("user2@example.com", "password123")
@@ -567,7 +674,8 @@ func TestUseCase_ListUsers(t *testing.T) {
 
 	t.Run("success - empty list", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ListUsers", ctx, 20, 0).Return([]*User{}, 0, nil)
 
@@ -581,7 +689,8 @@ func TestUseCase_ListUsers(t *testing.T) {
 
 	t.Run("error - repository failure", func(t *testing.T) {
 		repo := new(MockRepository)
-		uc := NewUseCase(repo)
+		roleRepo := new(MockRoleRepository)
+		uc := NewUseCase(repo, roleRepo)
 
 		repo.On("ListUsers", ctx, 20, 0).Return(nil, 0, errors.New("db error"))
 

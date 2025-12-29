@@ -34,6 +34,9 @@ type User struct {
 	// Authentication
 	PasswordHash string
 
+	// Authorization
+	Roles []string `json:"roles"` // Role names (e.g., ["admin", "user"])
+
 	// Status
 	Status           UserStatus
 	EmailVerified    bool
@@ -75,6 +78,7 @@ func NewUser(email, password string) (*User, error) {
 		Status:           UserStatusActive,
 		EmailVerified:    false,
 		FailedLoginCount: 0,
+		Roles:            []string{"user"}, // Default role
 		CreatedAt:        now,
 		UpdatedAt:        now,
 	}, nil
@@ -172,6 +176,36 @@ func (u *User) Ban() {
 // IsActive checks if the user account is active
 func (u *User) IsActive() bool {
 	return u.Status == UserStatusActive && !u.IsLocked() && u.DeletedAt == nil
+}
+
+// HasRole checks if the user has a specific role
+func (u *User) HasRole(role string) bool {
+	for _, r := range u.Roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
+// HasAnyRole checks if the user has any of the specified roles
+func (u *User) HasAnyRole(roles []string) bool {
+	for _, role := range roles {
+		if u.HasRole(role) {
+			return true
+		}
+	}
+	return false
+}
+
+// HasAllRoles checks if the user has all of the specified roles
+func (u *User) HasAllRoles(roles []string) bool {
+	for _, role := range roles {
+		if !u.HasRole(role) {
+			return false
+		}
+	}
+	return true
 }
 
 // Validate validates the user entity

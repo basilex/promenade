@@ -138,7 +138,17 @@ func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*user.Use
 		return nil, fmt.Errorf("failed to get user by id: %w", err)
 	}
 
-	return row.toEntity()
+	u, err := row.toEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	// Load user roles
+	if err := r.loadUserRoles(ctx, u); err != nil {
+		return nil, fmt.Errorf("failed to load user roles: %w", err)
+	}
+
+	return u, nil
 }
 
 // GetByEmail retrieves a user by email
@@ -162,7 +172,17 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*user.Us
 		return nil, fmt.Errorf("failed to get user by email: %w", err)
 	}
 
-	return row.toEntity()
+	u, err := row.toEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	// Load user roles
+	if err := r.loadUserRoles(ctx, u); err != nil {
+		return nil, fmt.Errorf("failed to load user roles: %w", err)
+	}
+
+	return u, nil
 }
 
 // Update updates an existing user
@@ -290,4 +310,24 @@ func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*
 	}
 
 	return users, total, nil
+}
+
+// loadUserRoles loads roles for a user from identity_user_roles and identity_roles tables
+func (r *userRepository) loadUserRoles(ctx context.Context, u *user.User) error {
+	query := `
+		SELECT r.name
+		FROM identity_roles r
+		INNER JOIN identity_user_roles ur ON r.id = ur.role_id
+		WHERE ur.user_id = $1
+		ORDER BY r.name
+	`
+
+	var roles []string
+	err := r.Select(ctx, &roles, query, u.ID)
+	if err != nil {
+		return fmt.Errorf("failed to load user roles: %w", err)
+	}
+
+	u.Roles = roles
+	return nil
 }

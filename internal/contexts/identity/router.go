@@ -10,6 +10,7 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity/profile"
 	profileHTTP "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/http"
 	profileRepo "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/repository/postgres"
+	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
@@ -36,9 +37,12 @@ func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 	profileUseCase := profile.NewUseCase(profileRepository)
 	profileHandler := profileHTTP.NewProfileHandler(profileUseCase)
 
-	// Initialize User aggregate
+	// Initialize Role repository
+	roleRepository := roleRepo.NewRoleRepository(db)
+
+	// Initialize User aggregate (with role repository)
 	userRepository := userRepo.NewUserRepository(db)
-	userUseCase := user.NewUseCase(userRepository)
+	userUseCase := user.NewUseCase(userRepository, roleRepository)
 	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager)
 
 	return &Router{

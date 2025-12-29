@@ -2,6 +2,8 @@
 
 Essential guide for AI agents working in Promenade. For detailed documentation, see [README.md](../README.md) and [docs/](../docs/).
 
+---
+
 ## Core Architecture Principles
 
 ### 1. Domain-Driven Design (DDD) with Bounded Contexts
@@ -14,6 +16,7 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 - **Domain Events** - Asynchronous communication via Event Bus (Memory/Redis adapters)
 - **No ORM** - Raw SQL with sqlx + BaseRepository pattern
 - **UUID v7 Only** - Use `pkg/uuidv7.New()` for all IDs (time-ordered, 2x faster inserts)
+- **JWT Authentication** - Token-based auth with RBAC (15min access, 7 days refresh)
 
 ### 2. Bounded Contexts Structure
 
@@ -28,9 +31,13 @@ Each context is autonomous with:
 
 **Available Contexts**:
 
-- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only)
-- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile aggregates (authentication, contacts, profiles)
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate (lifecycle, B2B, segmentation) | Company, Deal, Interaction planned
+- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only) ✅ Production
+- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile aggregates ✅ Production
+  - User: Registration, authentication, password management ✅
+  - Contact: Email, phone, address management ✅
+  - Profile: Personal info, bio, avatar, localization ✅
+  - Role & Permission: RBAC implementation 🔄 In Progress (see GAPS_AND_TODOS.md)
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Company, Deal, Interaction planned
 - **Order Management** (planned) - Order, OrderItem, Fulfillment
 - **Billing** (planned) - Invoice, Payment, Subscription
 - **Warehouse** (planned) - Inventory management
@@ -245,6 +252,100 @@ func (h *ContactHandler) Create(c *gin.Context) {
 }
 ```
 
+## JWT Authentication & Authorization
+
+**JWT Manager**: Initialized in `cmd/api/main.go` and passed to Identity context router
+
+```go
+// Initialize JWT Manager in main.go
+jwtManager := jwt.NewManager(jwt.Config{
+    SecretKey:            cfg.JWT.Secret,
+    AccessTokenDuration:  cfg.JWT.AccessTokenDuration,  // 15 minutes
+    RefreshTokenDuration: cfg.JWT.RefreshTokenDuration, // 7 days
+    Issuer:               cfg.JWT.Issuer,
+})
+
+// Pass to Identity router
+identityRouter := identity.NewRouter(db, jwtManager)
+```
+
+**Protecting Routes** (see `internal/contexts/identity/router.go`):
+
+```go
+// Protected routes require JWT middleware
+contacts := identity.Group("/contacts")
+contacts.Use(jwt.AuthMiddleware(r.jwtManager))  // Apply middleware
+{
+    contacts.POST("", r.contactHandler.Create)
+    contacts.GET("", r.contactHandler.List)
+}
+
+// Public routes (no middleware)
+public := identity.Group("/public")
+{
+    public.GET("/profiles", r.profileHandler.ListPublic)
+}
+```
+
+**Login Flow** (User Handler):
+
+```go
+// 1. Authenticate user
+user, err := h.useCase.Authenticate(ctx, req.Email, req.Password)
+
+// 2. Generate JWT tokens
+accessToken, err := h.jwtManager.GenerateToken(user.ID.String(), user.Roles())
+refreshToken, err := h.jwtManager.GenerateRefreshToken(user.ID.String())
+
+// 3. Return tokens in response
+response.Success(c, LoginResponse{
+    AccessToken:  accessToken,
+    RefreshToken: refreshToken,
+    User:         toUserDTO(user),
+})
+```
+
+**Token Refresh** (see `pkg/jwt/README.md`):
+
+```go
+// Client sends refresh token
+refreshToken := req.RefreshToken
+
+// Validate and generate new access token
+claims, err := h.jwtManager.ValidateToken(refreshToken)
+newAccessToken, err := h.jwtManager.GenerateToken(claims.UserID, claims.Roles)
+```
+
+**Role-Based Access Control (RBAC)**:
+
+```go
+// Roles stored in JWT claims
+claims.Roles = []string{"admin", "manager", "user"}
+
+// Require specific roles (middleware)
+admin := api.Group("/admin")
+admin.Use(jwt.RequireRoles(jwtManager, "admin"))  // Only admins
+{
+    admin.POST("/users", handler.CreateUser)
+}
+
+// Check roles in handler
+userID := jwt.GetUserID(c)  // Extract from context
+roles := jwt.GetRoles(c)    // Get user roles
+if !contains(roles, "admin") {
+    response.Error(c, http.StatusForbidden, "FORBIDDEN", "Admin access required")
+    return
+}
+```
+
+**Critical JWT Rules**:
+
+- **Never hardcode secrets**: Use env vars in production (`JWT_SECRET`)
+- **15 min access tokens**: Short TTL for security, use refresh tokens for long sessions
+- **Load roles on login**: User aggregate must fetch roles from DB (`user.Roles()`)
+- **Validate tokens**: Always use `jwtManager.ValidateToken()`, never decode manually
+- **Context propagation**: Extract `userID` from JWT claims via `jwt.GetUserID(c)`
+
 ## Data Patterns
 
 **Repository pattern** (embed BaseRepository):
@@ -395,8 +496,8 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 ```bash
 make test                      # All tests with race detector (~40s)
 make test-unit                 # Unit tests only (~5s)
-make test-smoke                # Smoke tests (~0.3s)
-make test-integration          # Integration tests with real DB (~5s)
+make test-smoke                # Smoke tests (mock-based, ~0.35s)
+make test-integration          # Integration tests with real DB (~14s)
 make test-coverage             # HTML coverage report
 
 # Context-specific tests
@@ -407,9 +508,10 @@ go test ./test/integration/contexts/identity/... -v
 # Package tests
 go test ./pkg/bus/... -v
 go test ./pkg/uuidv7/... -v
+go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 150+ tests across 32 packages, 90%+ average coverage
+**Test Statistics**: 240+ tests across 40+ packages, 90%+ average coverage
 
 **Example Entity Test**:
 
@@ -438,6 +540,65 @@ func TestUseCase_CreateEmailContact(t *testing.T) {
     assert.NoError(t, err)
     assert.NotNil(t, contact)
     assert.True(t, mockRepo.CreateCalled)
+}
+```
+
+**Smoke Test Pattern** (mock-based handlers):
+
+```go
+// Create mock UseCase (testify/mock)
+type MockUserUseCase struct {
+    mock.Mock
+}
+
+func (m *MockUserUseCase) Register(ctx context.Context, email, name, password string) (*user.User, error) {
+    args := m.Called(ctx, email, name, password)
+    if args.Get(0) == nil {
+        return nil, args.Error(1)
+    }
+    return args.Get(0).(*user.User), args.Error(1)
+}
+
+// Test handler with mock
+func TestHandler_Register(t *testing.T) {
+    gin.SetMode(gin.TestMode)
+    mockUC := new(MockUserUseCase)
+    handler := userHTTP.NewUserHandler(mockUC, jwtManager)
+    
+    // Setup expectations
+    mockUser := &user.User{ID: uuidv7.New(), Email: valueobject.MustNewEmail("test@example.com")}
+    mockUC.On("Register", mock.Anything, "test@example.com", "Test User", "password123").
+        Return(mockUser, nil)
+    
+    // Make request
+    w := httptest.NewRecorder()
+    c, _ := gin.CreateTestContext(w)
+    c.Request = httptest.NewRequest("POST", "/", bytes.NewBufferString(`{"email":"test@example.com","name":"Test User","password":"password123"}`))
+    
+    handler.Register(c)
+    
+    assert.Equal(t, http.StatusCreated, w.Code)
+    mockUC.AssertExpectations(t)
+}
+```
+
+**Integration Test Pattern** (real DB):
+
+```go
+func TestUserRepository_Create(t *testing.T) {
+    db := integration.SetupTestDBWithCleanTables(t)  // Auto-starts test DB, runs migrations
+    repo := postgres.NewUserRepository(db.DB)
+    ctx := context.Background()
+
+    u, _ := user.NewUser("test@example.com", "password123")
+    err := repo.Create(ctx, u)
+    
+    require.NoError(t, err)
+    
+    // Verify persistence
+    retrieved, err := repo.GetByID(ctx, u.ID)
+    require.NoError(t, err)
+    assert.Equal(t, u.ID, retrieved.ID)
 }
 ```
 
@@ -713,8 +874,6 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - Handler calls repository directly (must go through usecase)
 - Business logic in handler or repository (must be in usecase)
 - Missing `ctx context.Context` as first parameter
-- Directory named `entities/` or `handlers/` (must be singular)
-
 ## Key Files
 
 | File                                                           | Purpose                           |
@@ -722,10 +881,12 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 | [cmd/api/main.go](../cmd/api/main.go)                          | Entry point, context registration |
 | [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk) | All workflows (modular)           |
 | [pkg/uuidv7/uuidv7.go](../pkg/uuidv7/uuidv7.go)                | Time-ordered UUIDs                |
+| [pkg/jwt/README.md](../pkg/jwt/README.md)                      | JWT authentication docs           |
 | [pkg/bus/README.md](../pkg/bus/README.md)                      | Event Bus documentation           |
 | [internal/infrastructure/database/transaction.go][tx]          | Transaction management            |
 | [internal/contexts/shared/router.go][shared]                   | Shared context router             |
 | [internal/contexts/identity/router.go][identity]               | Identity context router           |
+| [docs/GAPS_AND_TODOS.md](../docs/GAPS_AND_TODOS.md)            | Current work items & priorities   |
 | [docs/](../docs/)                                              | Architecture guides (20+ docs)    |
 | [test/README.md](../test/README.md)                            | Testing guide                     |
 
