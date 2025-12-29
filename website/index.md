@@ -230,6 +230,24 @@ Start with customer management, add orders when needed, integrate billing when r
   </div>
 </div>
 
+<div class="use-case">
+  <div class="use-case-icon">🛍️</div>
+  <div class="use-case-content">
+    <h3>E-commerce & SaaS Platforms</h3>
+    <p>Customer + Order + Billing contexts provide complete e-commerce backend. Event-driven order processing, inventory management.</p>
+    <div class="use-case-benefit">✓ Complete business logic, scalable</div>
+  </div>
+</div>
+
+<div class="use-case">
+  <div class="use-case-icon">☁️</div>
+  <div class="use-case-content">
+    <h3>Cloud-Native & DevOps Teams</h3>
+    <p>Docker-ready, health checks, graceful shutdown, structured logs. Kubernetes-compatible with 4 monitoring endpoints.</p>
+    <div class="use-case-benefit">✓ Production-ready, observable</div>
+  </div>
+</div>
+
 </div>
 
 ## 🏆 What Developers Say
