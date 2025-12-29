@@ -84,7 +84,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		// List with pagination
 		customers, total, err := repo.List(ctx, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(3))
+		assert.GreaterOrEqual(t, total, 3)
 		assert.GreaterOrEqual(t, len(customers), 3)
 
 		// GetByUserID (requires user_id assignment)
@@ -129,24 +129,24 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 		// ListByStatus
 		leads, total, err := repo.ListByStatus(ctx, customer.CustomerStatusLead, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(1))
+		assert.GreaterOrEqual(t, total, 1)
 		assert.GreaterOrEqual(t, len(leads), 1)
 
 		// CountByStatus
 		leadCount, err := repo.CountByStatus(ctx, customer.CustomerStatusLead)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, leadCount, int64(1))
+		assert.GreaterOrEqual(t, leadCount, 1)
 
 		// ListByTier
 		proCustomers, total, err := repo.ListByTier(ctx, customer.CustomerTierPro, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(1))
+		assert.GreaterOrEqual(t, total, 1)
 		assert.GreaterOrEqual(t, len(proCustomers), 1)
 
 		// CountByTier
 		proCount, err := repo.CountByTier(ctx, customer.CustomerTierPro)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, proCount, int64(1))
+		assert.GreaterOrEqual(t, proCount, 1)
 	})
 }
 
@@ -173,7 +173,7 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		// ListByAssignedTo
 		assigned, total, err := repo.ListByAssignedTo(ctx, assignedTo1, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(2))
+		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(assigned), 2)
 
 		// ListByCompanyID (B2B customers)

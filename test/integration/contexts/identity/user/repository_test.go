@@ -90,7 +90,7 @@ func TestUserRepository_Queries(t *testing.T) {
 		// ListUsers
 		users, total, err := repo.ListUsers(ctx, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(2))
+		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(users), 2)
 
 		// ValueObject roundtrip (Email preservation)

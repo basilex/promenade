@@ -84,7 +84,7 @@ func TestPermissionRepository_Queries(t *testing.T) {
 		// List
 		perms, total, err := repo.ListPermissions(ctx, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(2))
+		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(perms), 2)
 
 		// GetRolePermissions (requires role-permission assignment)

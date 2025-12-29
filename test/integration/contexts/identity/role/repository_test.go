@@ -85,7 +85,7 @@ func TestRoleRepository_Queries(t *testing.T) {
 		// List
 		roles, total, err := repo.ListRoles(ctx, 10, 0)
 		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, int64(2))
+		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(roles), 2)
 
 		// GetUserRoles (requires user-role assignment)
