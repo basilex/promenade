@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/identity"
@@ -117,6 +118,22 @@ func main() {
 
 	logger.Info("Database migrations completed successfully")
 
+	// Initialize Redis (for token revocation)
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Addr,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
+	})
+	defer redisClient.Close()
+
+	// Test Redis connection
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+		logger.Warn("Redis connection failed, token revocation will be disabled", slog.Any("error", err))
+		redisClient = nil // Disable token revocation if Redis is unavailable
+	} else {
+		logger.Info("Redis connected successfully", slog.String("addr", cfg.Redis.Addr))
+	}
+
 	// Initialize JWT Manager
 	jwtManager := jwt.NewManager(jwt.Config{
 		SecretKey:            cfg.JWT.Secret,
@@ -129,6 +146,15 @@ func main() {
 		slog.Duration("access_token_duration", cfg.JWT.AccessTokenDuration),
 		slog.Duration("refresh_token_duration", cfg.JWT.RefreshTokenDuration),
 	)
+
+	// Initialize Token Revoker (if Redis is available)
+	var tokenRevoker *jwt.TokenRevoker
+	if redisClient != nil {
+		tokenRevoker = jwt.NewTokenRevoker(redisClient)
+		logger.Info("Token Revoker initialized with Redis")
+	} else {
+		logger.Warn("Token Revoker disabled (Redis unavailable)")
+	}
 
 	// Initialize Event Bus
 	eventBus, err := bus.NewBus(cfg.Bus)
@@ -165,9 +191,9 @@ func main() {
 	})
 
 	// Initialize context routers
-	sharedRouter := shared.NewRouter(db)                 // Shared Context (Reference Data)
-	identityRouter := identity.NewRouter(db, jwtManager) // Identity Context (User, Contact) with JWT
-	customerMgmtRouter := customermgmt.NewRouter(db)     // Customer Management Context (Customer)
+	sharedRouter := shared.NewRouter(db)                                     // Shared Context (Reference Data)
+	identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)       // Identity Context (User, Contact) with JWT and Token Revocation
+	customerMgmtRouter := customermgmt.NewRouter(db)                         // Customer Management Context (Customer)
 
 	// API routes
 	api := r.Group("/api")

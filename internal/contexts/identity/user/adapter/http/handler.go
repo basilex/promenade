@@ -15,15 +15,17 @@ import (
 
 // UserHandler handles HTTP requests for user operations
 type UserHandler struct {
-	usecase    user.IUseCase
-	jwtManager *jwt.Manager
+	usecase       user.IUseCase
+	jwtManager    *jwt.Manager
+	tokenRevoker  *jwt.TokenRevoker
 }
 
 // NewUserHandler creates a new user handler
-func NewUserHandler(usecase user.IUseCase, jwtManager *jwt.Manager) *UserHandler {
+func NewUserHandler(usecase user.IUseCase, jwtManager *jwt.Manager, tokenRevoker *jwt.TokenRevoker) *UserHandler {
 	return &UserHandler{
-		usecase:    usecase,
-		jwtManager: jwtManager,
+		usecase:      usecase,
+		jwtManager:   jwtManager,
+		tokenRevoker: tokenRevoker,
 	}
 }
 
@@ -589,3 +591,52 @@ func (h *UserHandler) List(c *gin.Context) {
 		},
 	})
 }
+
+// RevokeToken handles POST /auth/revoke
+// @Summary Revoke current token
+// @Description Revoke the current JWT access token (logout)
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.SuccessResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /auth/revoke [post]
+func (h *UserHandler) RevokeToken(c *gin.Context) {
+	// Extract token from Authorization header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		response.Unauthorized(c, "missing authorization header")
+		return
+	}
+
+	// Parse Bearer token
+	parts := c.Request.Header.Get("Authorization")
+	if len(parts) < 7 || parts[:7] != "Bearer " {
+		response.Unauthorized(c, "invalid authorization header format")
+		return
+	}
+	token := parts[7:]
+
+	// Validate token to get expiration time
+	claims, err := h.jwtManager.ValidateAccessToken(token)
+	if err != nil {
+		response.Unauthorized(c, "invalid or expired token")
+		return
+	}
+
+	// Revoke token
+	if h.tokenRevoker != nil {
+		err = h.tokenRevoker.Revoke(c.Request.Context(), token, claims.ExpiresAt.Time)
+		if err != nil {
+			response.InternalError(c, "failed to revoke token")
+			return
+		}
+	}
+
+	response.Success(c, gin.H{
+		"message": "token revoked successfully",
+	})
+}
+

@@ -21,7 +21,7 @@ func setupTestRouter() (*gin.Engine, *Manager) {
 func TestAuthMiddleware(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/protected", AuthMiddleware(manager), func(c *gin.Context) {
+	router.GET("/protected", AuthMiddleware(manager, nil), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	})
 
@@ -73,7 +73,7 @@ func TestAuthMiddleware(t *testing.T) {
 func TestRequireRole(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/admin", AuthMiddleware(manager), RequireRole("admin"), func(c *gin.Context) {
+	router.GET("/admin", AuthMiddleware(manager, nil), RequireRole("admin"), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "admin access"})
 	})
 
@@ -107,7 +107,7 @@ func TestRequireRole(t *testing.T) {
 func TestRequireAnyRole(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/moderator", AuthMiddleware(manager), RequireAnyRole("admin", "moderator"), func(c *gin.Context) {
+	router.GET("/moderator", AuthMiddleware(manager, nil), RequireAnyRole("admin", "moderator"), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "moderator access"})
 	})
 
@@ -141,7 +141,7 @@ func TestRequireAnyRole(t *testing.T) {
 func TestRequireAllRoles(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/superadmin", AuthMiddleware(manager), RequireAllRoles("admin", "superadmin"), func(c *gin.Context) {
+	router.GET("/superadmin", AuthMiddleware(manager, nil), RequireAllRoles("admin", "superadmin"), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "superadmin access"})
 	})
 
@@ -175,7 +175,7 @@ func TestRequireAllRoles(t *testing.T) {
 func TestGetClaims(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/test", AuthMiddleware(manager), func(c *gin.Context) {
+	router.GET("/test", AuthMiddleware(manager, nil), func(c *gin.Context) {
 		claims := GetClaims(c)
 		if claims != nil {
 			c.JSON(http.StatusOK, gin.H{"email": claims.Email})
@@ -217,7 +217,7 @@ func TestGetClaims(t *testing.T) {
 func TestGetUserID(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/user-id", AuthMiddleware(manager), func(c *gin.Context) {
+	router.GET("/user-id", AuthMiddleware(manager, nil), func(c *gin.Context) {
 		userID := GetUserID(c)
 		c.JSON(http.StatusOK, gin.H{"user_id": userID})
 	})
@@ -257,7 +257,7 @@ func TestGetUserID(t *testing.T) {
 func TestMustGetClaims(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/must-claims", AuthMiddleware(manager), func(c *gin.Context) {
+	router.GET("/must-claims", AuthMiddleware(manager, nil), func(c *gin.Context) {
 		claims := MustGetClaims(c)
 		c.JSON(http.StatusOK, gin.H{"email": claims.Email})
 	})
@@ -303,7 +303,7 @@ func TestMustGetClaims(t *testing.T) {
 func TestMustGetUserID(t *testing.T) {
 	router, manager := setupTestRouter()
 
-	router.GET("/must-user-id", AuthMiddleware(manager), func(c *gin.Context) {
+	router.GET("/must-user-id", AuthMiddleware(manager, nil), func(c *gin.Context) {
 		userID := MustGetUserID(c)
 		c.JSON(http.StatusOK, gin.H{"user_id": userID.String()})
 	})

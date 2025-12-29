@@ -17,6 +17,7 @@ type AppConfig struct {
 	Logging   LoggingSection   `yaml:"logging"`
 	CORS      CORSSection      `yaml:"cors"`
 	Bus       BusSection       `yaml:"bus"`
+	Redis     RedisSection     `yaml:"redis"` // Redis for token revocation
 	RateLimit RateLimitSection `yaml:"rate_limit"`
 	Email     EmailSection     `yaml:"email"`
 	Purge     PurgeSection     `yaml:"purge"`
@@ -86,8 +87,9 @@ type BusSection struct {
 }
 
 type RedisSection struct {
-	Host       string `yaml:"host"`
-	Port       int    `yaml:"port"`
+	Addr       string `yaml:"addr"`       // Redis address (host:port)
+	Host       string `yaml:"host"`       // Deprecated: use Addr
+	Port       int    `yaml:"port"`       // Deprecated: use Addr
 	Password   string `yaml:"password"`
 	DB         int    `yaml:"db"`
 	MaxRetries int    `yaml:"max_retries"`

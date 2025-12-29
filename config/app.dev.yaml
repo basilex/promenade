@@ -26,6 +26,12 @@ jwt:
   refresh_token_duration: 168h  # 7 days
   issuer: "promenade-crm"
 
+# Redis for token revocation
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
 logging:
   level: "debug"
   format: "text"

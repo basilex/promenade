@@ -34,10 +34,11 @@ type Router struct {
 	roleHandler       *roleHTTP.RoleHandler
 	permissionHandler *permissionHTTP.PermissionHandler
 	jwtManager        *jwt.Manager
+	tokenRevoker      *jwt.TokenRevoker
 }
 
 // NewRouter creates a new Identity router with all dependencies
-func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
+func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager, tokenRevoker *jwt.TokenRevoker) *Router {
 	// Initialize Contact aggregate
 	contactRepository := contactRepo.NewContactRepository(db)
 	contactUseCase := contact.NewUseCase(contactRepository)
@@ -58,10 +59,10 @@ func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 	permissionUseCase := permission.NewUseCase(permissionRepository)
 	permissionHandler := permissionHTTP.NewPermissionHandler(permissionUseCase)
 
-	// Initialize User aggregate (with role repository)
+	// Initialize User aggregate (with role repository and token revoker)
 	userRepository := userRepo.NewUserRepository(db)
 	userUseCase := user.NewUseCase(userRepository, roleRepository)
-	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager)
+	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager, tokenRevoker)
 
 	return &Router{
 		contactHandler:    contactHandler,
@@ -70,6 +71,7 @@ func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 		roleHandler:       roleHandler,
 		permissionHandler: permissionHandler,
 		jwtManager:        jwtManager,
+		tokenRevoker:      tokenRevoker,
 	}
 }
 
@@ -78,9 +80,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 	// Identity group
 	identity := api.Group("/identity")
 	{
-		// Contact routes (protected with JWT)
+		// Contact routes (protected with JWT + token revocation check)
 		contacts := identity.Group("/contacts")
-		contacts.Use(jwt.AuthMiddleware(r.jwtManager))
+		contacts.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 		{
 			contacts.POST("", r.contactHandler.Create)                // Create new contact
 			contacts.GET("", r.contactHandler.List)                   // List contacts (filter by user_id, type)
@@ -99,9 +101,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			profiles.GET("/:id", r.profileHandler.GetByID)                          // Get profile by ID (public profiles)
 			profiles.GET("/user/:user_id", r.profileHandler.GetByUserID)            // Get profile by user ID
 
-			// Protected routes (JWT required)
+			// Protected routes (JWT required + token revocation check)
 			protected := profiles.Group("")
-			protected.Use(jwt.AuthMiddleware(r.jwtManager))
+			protected.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 			{
 				protected.POST("", r.profileHandler.Create)                                  // Create new profile
 				protected.DELETE("/:id", r.profileHandler.Delete)                            // Delete profile
@@ -129,9 +131,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			users.POST("/register", registerLimiter.Limit(), r.userHandler.Register) // Register new user (rate limited)
 			users.POST("/login", loginLimiter.Limit(), r.userHandler.Login)          // Authenticate user (rate limited)
 
-			// Protected routes (authentication required)
+			// Protected routes (authentication required + token revocation check)
 			protected := users.Group("")
-			protected.Use(jwt.AuthMiddleware(r.jwtManager))
+			protected.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 			{
 				protected.GET("/:id", r.userHandler.GetByID)                         // Get user by ID
 				protected.GET("/email/:email", r.userHandler.GetByEmail)             // Get user by email
@@ -149,11 +151,18 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		auth := identity.Group("/auth")
 		{
 			auth.POST("/refresh", r.userHandler.RefreshToken) // Refresh access token
+			
+			// Protected auth routes (token revocation check)
+			authProtected := auth.Group("")
+			authProtected.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
+			{
+				authProtected.POST("/revoke", r.userHandler.RevokeToken) // Revoke current token (logout)
+			}
 		}
 
-		// Role routes (admin only)
+		// Role routes (admin only + token revocation check)
 		roles := identity.Group("/roles")
-		roles.Use(jwt.AuthMiddleware(r.jwtManager))
+		roles.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 		// TODO: Add admin authorization middleware here
 		{
 			roles.POST("", r.roleHandler.Create)              // Create new role
@@ -165,9 +174,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			roles.GET("/user/:user_id", r.roleHandler.GetUserRoles) // Get user's roles
 		}
 
-		// Permission routes (admin only)
+		// Permission routes (admin only + token revocation check)
 		permissions := identity.Group("/permissions")
-		permissions.Use(jwt.AuthMiddleware(r.jwtManager))
+		permissions.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 		// TODO: Add admin authorization middleware here
 		{
 			permissions.POST("", r.permissionHandler.Create)              // Create new permission

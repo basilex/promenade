@@ -17,8 +17,9 @@ const (
 	UserIDContextKey = "user_id"
 )
 
-// AuthMiddleware validates JWT token from Authorization header
-func AuthMiddleware(manager *Manager) gin.HandlerFunc {
+// AuthMiddleware validates JWT token from Authorization header.
+// If TokenRevoker is provided, also checks if token is revoked.
+func AuthMiddleware(manager *Manager, revoker *TokenRevoker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -35,6 +36,22 @@ func AuthMiddleware(manager *Manager) gin.HandlerFunc {
 		}
 
 		token := parts[1]
+
+		// Check if token is revoked (if revoker provided)
+		if revoker != nil {
+			revoked, err := revoker.IsRevoked(c.Request.Context(), token)
+			if err != nil {
+				response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to check token revocation")
+				c.Abort()
+				return
+			}
+			if revoked {
+				response.ErrorResponse(c, http.StatusUnauthorized, "TOKEN_REVOKED", "Token has been revoked")
+				c.Abort()
+				return
+			}
+		}
+
 		claims, err := manager.ValidateAccessToken(token)
 		if err != nil {
 			response.ErrorResponse(c, http.StatusUnauthorized, "UNAUTHORIZED", "Invalid or expired token")
