@@ -10,6 +10,7 @@ Complete guide to Promenade Platform architecture and development.
 
 - [Main README](../README.md) - Project overview, quick start, architecture
 - [AI Instructions](../.github/copilot-instructions.md) - Essential guide for AI coding agents
+- [**Refactoring Roadmap**](REFACTORING_ROADMAP.md) - **Action plan to production-ready state** (4 weeks)
 - [Testing Guide](../test/README.md) - Three-tier testing strategy
 - [Testing Patterns](TESTING_PATTERNS.md) - **Comprehensive testing patterns guide** (unit, smoke, integration)
 - [Testing Quick Reference](TESTING_QUICK_REFERENCE.md) - One-page cheat sheet
