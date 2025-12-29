@@ -1,4 +1,6 @@
-package contact_test
+#!/usr/bin/env python3
+
+contact_test = '''package contact_test
 
 import (
 	"context"
@@ -43,7 +45,7 @@ func TestContactRepository_CRUD(t *testing.T) {
 
 		// Update
 		c.UpdateLabel("Personal")
-		c.Verify()
+		c.SetVerified()
 		require.NoError(t, repo.Update(ctx, c))
 		updated, _ := repo.GetByUserID(ctx, userID)
 		assert.Equal(t, "Personal", updated[0].Label)
@@ -101,18 +103,19 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	userID := uuidv7.New()
-	email, _ := valueobject.NewEmail("tx@example.com")
+	email := valueobject.MustNewEmail("tx@example.com")
 
 	// Transaction should rollback on error
-	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
+	err := testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewContactRepository(testDB.DB)
 		
 		c, _ := contact.NewEmailContact(userID, email.Value(), "Work")
 		require.NoError(t, repo.Create(ctx, c))
 		
-		// Force rollback by causing panic
-		t.FailNow()
+		// Force error to trigger rollback
+		return assert.AnError
 	})
+	assert.Error(t, err)
 
 	// Verify rollback - contact should not exist
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
@@ -122,3 +125,9 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 		assert.Empty(t, contacts, "Contact should have been rolled back")
 	})
 }
+'''
+
+with open('test/integration/contexts/identity/contact/repository_test.go', 'w') as f:
+    f.write(contact_test)
+
+print("✓ Generated test/integration/contexts/identity/contact/repository_test.go (122 lines)")
