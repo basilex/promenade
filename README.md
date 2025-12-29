@@ -575,12 +575,23 @@ server:
   write_timeout: 10s
 
 database:
-  host: "localhost"
-  port: 5432
-  user: "system"
-  password: "passw0rd"
-  database: "promenade_dev"
-  ssl_mode: "disable"
+  postgres:
+    host: "localhost"
+    port: 5432
+    user: "system"
+    password: "passw0rd"
+    database: "promenade_dev"
+    ssl_mode: "disable"
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    pool_size: 10
+    max_retries: 3
+    databases:
+      revocation: 0  # JWT token revocation
+      bus: 1         # Event bus (if adapter=redis)
+      cache: 2       # Application cache
+      sessions: 3    # User sessions
 
 # Event Bus configuration (Memory adapter for dev)
 bus:
@@ -604,18 +615,27 @@ logging:
 # ... (same app/server sections)
 
 database:
-  host: "${DB_HOST}" # Environment variable override
-  port: 5432
-  user: "${DB_USER}"
-  password: "${DB_PASSWORD}"
-  database: "promenade_prod"
-  ssl_mode: "require"
+  postgres:
+    host: "${DB_HOST}" # Environment variable override
+    port: 5432
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    database: "promenade_prod"
+    ssl_mode: "require"
+  redis:
+    addr: "${REDIS_ADDR:-localhost:6379}"
+    password: "${REDIS_PASSWORD}"
+    pool_size: 20
+    max_retries: 3
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
 
 # Redis Event Bus for production (distributed)
 bus:
   adapter: "redis"
-  redis_addr: "${REDIS_ADDR}"
-  redis_password: "${REDIS_PASSWORD}"
   worker_pool_size: 20
   buffer_size: 5000
   retry_attempts: 5

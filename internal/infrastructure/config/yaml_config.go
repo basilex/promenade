@@ -10,18 +10,17 @@ import (
 
 // AppConfig represents core application configuration
 type AppConfig struct {
-	App       AppSection       `yaml:"app"`
-	Server    ServerSection    `yaml:"server"`
-	Database  DatabaseSection  `yaml:"database"`
-	JWT       JWTSection       `yaml:"jwt"`
-	Logging   LoggingSection   `yaml:"logging"`
-	CORS      CORSSection      `yaml:"cors"`
-	Bus       BusSection       `yaml:"bus"`
-	Redis     RedisSection     `yaml:"redis"` // Redis for token revocation
-	RateLimit RateLimitSection `yaml:"rate_limit"`
-	Email     EmailSection     `yaml:"email"`
-	Purge     PurgeSection     `yaml:"purge"`
-	Modules   ModulesSection   `yaml:"modules"`
+	App       AppSection        `yaml:"app"`
+	Server    ServerSection     `yaml:"server"`
+	Database  DatabasesSection  `yaml:"database"`  // Centralized databases (Postgres, Redis, etc.)
+	JWT       JWTSection        `yaml:"jwt"`
+	Logging   LoggingSection    `yaml:"logging"`
+	CORS      CORSSection       `yaml:"cors"`
+	Bus       BusSection        `yaml:"bus"`
+	RateLimit RateLimitSection  `yaml:"rate_limit"`
+	Email     EmailSection      `yaml:"email"`
+	Purge     PurgeSection      `yaml:"purge"`
+	Modules   ModulesSection    `yaml:"modules"`
 }
 
 type AppSection struct {
@@ -40,7 +39,14 @@ type ServerSection struct {
 	ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 }
 
-type DatabaseSection struct {
+// DatabasesSection holds all database configurations
+type DatabasesSection struct {
+	Postgres PostgresSection `yaml:"postgres"`
+	Redis    RedisSection    `yaml:"redis"`
+}
+
+// PostgresSection holds PostgreSQL configuration
+type PostgresSection struct {
 	Host            string        `yaml:"host"`
 	Port            int           `yaml:"port"`
 	User            string        `yaml:"user"`
@@ -83,17 +89,24 @@ type BusSection struct {
 	RetryDelay      time.Duration `yaml:"retry_delay"`
 	RetryMaxDelay   time.Duration `yaml:"retry_max_delay"`
 	RetryMultiplier float64       `yaml:"retry_multiplier"`
-	Redis           RedisSection  `yaml:"redis"`
+	// Redis config moved to database.redis with DB selection via databases.bus
 }
 
+// RedisSection holds unified Redis configuration for all services
 type RedisSection struct {
-	Addr       string `yaml:"addr"`       // Redis address (host:port)
-	Host       string `yaml:"host"`       // Deprecated: use Addr
-	Port       int    `yaml:"port"`       // Deprecated: use Addr
-	Password   string `yaml:"password"`
-	DB         int    `yaml:"db"`
-	MaxRetries int    `yaml:"max_retries"`
-	PoolSize   int    `yaml:"pool_size"`
+	Addr       string         `yaml:"addr"`        // Redis address (host:port)
+	Password   string         `yaml:"password"`    // Redis password
+	PoolSize   int            `yaml:"pool_size"`   // Connection pool size
+	MaxRetries int            `yaml:"max_retries"` // Max retry attempts
+	Databases  RedisDatabases `yaml:"databases"`   // Logical DB separation
+}
+
+// RedisDatabases defines logical database numbers for different services
+type RedisDatabases struct {
+	Revocation int `yaml:"revocation"` // JWT token blacklist
+	Bus        int `yaml:"bus"`        // Event Bus (when redis adapter)
+	Cache      int `yaml:"cache"`      // Cache layer
+	Sessions   int `yaml:"sessions"`   // User sessions
 }
 
 type RateLimitSection struct {
@@ -218,12 +231,12 @@ func (cfg *AppConfig) Validate() error {
 		return err
 	}
 
-	// Database validation
-	if cfg.Database.Host == "" {
-		return fmt.Errorf("database host is required")
+	// Database validation (PostgreSQL)
+	if cfg.Database.Postgres.Host == "" {
+		return fmt.Errorf("database.postgres.host is required")
 	}
-	if cfg.Database.Database == "" {
-		return fmt.Errorf("database name is required")
+	if cfg.Database.Postgres.Database == "" {
+		return fmt.Errorf("database.postgres.database is required")
 	}
 
 	// Server validation
@@ -269,21 +282,29 @@ func (cfg *AppConfig) validateJWTSecret() error {
 
 // applyEnvOverrides allows environment variables to override config values
 func applyEnvOverrides(cfg *AppConfig) {
-	// Database overrides
+	// PostgreSQL overrides
 	if v := os.Getenv("DB_HOST"); v != "" {
-		cfg.Database.Host = v
+		cfg.Database.Postgres.Host = v
 	}
 	if v := os.Getenv("DB_PORT"); v != "" {
-		fmt.Sscanf(v, "%d", &cfg.Database.Port)
+		fmt.Sscanf(v, "%d", &cfg.Database.Postgres.Port)
 	}
 	if v := os.Getenv("DB_USER"); v != "" {
-		cfg.Database.User = v
+		cfg.Database.Postgres.User = v
 	}
 	if v := os.Getenv("DB_PASSWORD"); v != "" {
-		cfg.Database.Password = v
+		cfg.Database.Postgres.Password = v
 	}
 	if v := os.Getenv("DB_NAME"); v != "" {
-		cfg.Database.Database = v
+		cfg.Database.Postgres.Database = v
+	}
+
+	// Redis overrides
+	if v := os.Getenv("REDIS_ADDR"); v != "" {
+		cfg.Database.Redis.Addr = v
+	}
+	if v := os.Getenv("REDIS_PASSWORD"); v != "" {
+		cfg.Database.Redis.Password = v
 	}
 
 	// Server overrides

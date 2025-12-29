@@ -11,7 +11,7 @@ import (
 	"github.com/basilex/promenade/pkg/logger"
 )
 
-func NewPostgresConnection(cfg *config.DatabaseSection) (*sqlx.DB, error) {
+func NewPostgresConnection(cfg *config.PostgresSection) (*sqlx.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode,

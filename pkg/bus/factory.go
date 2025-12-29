@@ -22,13 +22,13 @@ const (
 var MemoryBusFactory func(Config) IBus
 
 // RedisBusFactory is a function type for creating Redis bus instances
-var RedisBusFactory func(config.BusSection, Config) (IBus, error)
+var RedisBusFactory func(config.RedisSection, int, Config) (IBus, error)
 
 // NewBus creates a new event bus based on configuration.
 // It implements graceful degradation:
 // - Development/Test: Returns error if adapter initialization fails
 // - Production: Falls back to in-memory adapter with warning log
-func NewBus(cfg config.BusSection) (IBus, error) {
+func NewBus(cfg config.BusSection, redisConfig config.RedisSection) (IBus, error) {
 	adapterType := AdapterType(strings.ToLower(cfg.Adapter))
 
 	// Validate adapter type
@@ -68,8 +68,8 @@ func NewBus(cfg config.BusSection) (IBus, error) {
 			return nil, fmt.Errorf("redis bus factory not initialized")
 		}
 
-		// Try to initialize Redis adapter
-		eventBus, err = RedisBusFactory(cfg, busConfig)
+		// Try to initialize Redis adapter with database.redis.databases.bus
+		eventBus, err = RedisBusFactory(redisConfig, redisConfig.Databases.Bus, busConfig)
 		if err != nil {
 			// Graceful degradation: fallback to in-memory
 			logger.Warn("Failed to initialize Redis event bus, falling back to in-memory adapter",
@@ -86,8 +86,8 @@ func NewBus(cfg config.BusSection) (IBus, error) {
 		} else {
 			logger.Info("Event bus initialized",
 				slog.String("adapter", "redis"),
-				slog.String("host", cfg.Redis.Host),
-				slog.Int("port", cfg.Redis.Port))
+				slog.String("addr", redisConfig.Addr),
+				slog.Int("db", redisConfig.Databases.Bus))
 		}
 	}
 
@@ -95,8 +95,9 @@ func NewBus(cfg config.BusSection) (IBus, error) {
 }
 
 // MustNewBus creates a new bus or panics on error.
-func MustNewBus(cfg config.BusSection) IBus {
-	eventBus, err := NewBus(cfg)
+// Note: For redis adapter, redisConfig must be provided.
+func MustNewBus(cfg config.BusSection, redisConfig config.RedisSection) IBus {
+	eventBus, err := NewBus(cfg, redisConfig)
 	if err != nil {
 		panic(fmt.Sprintf("failed to initialize event bus: %v", err))
 	}

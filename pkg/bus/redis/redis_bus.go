@@ -17,13 +17,12 @@ import (
 
 // init registers the Redis bus factory
 func init() {
-	bus.RedisBusFactory = func(cfg config.BusSection, busConfig bus.Config) (bus.IBus, error) {
+	bus.RedisBusFactory = func(redisCfg config.RedisSection, db int, busConfig bus.Config) (bus.IBus, error) {
 		return NewRedisBus(
-			cfg.Redis.Host,
-			cfg.Redis.Port,
-			cfg.Redis.Password,
-			cfg.Redis.DB,
-			cfg.Redis.PoolSize,
+			redisCfg.Addr,
+			redisCfg.Password,
+			db, // Use logical database number (e.g., databases.bus = 1)
+			redisCfg.PoolSize,
 			busConfig,
 		)
 	}
@@ -54,7 +53,7 @@ type eventEnvelope struct {
 }
 
 // NewRedisBus creates a new Redis-based event bus
-func NewRedisBus(host string, port int, password string, db int, poolSize int, config bus.Config) (*RedisBus, error) {
+func NewRedisBus(addr string, password string, db int, poolSize int, config bus.Config) (*RedisBus, error) {
 	// Determine max retries from config (default: 3 for production reliability)
 	maxRetries := 3
 	if config.RetryPolicy != nil && config.RetryPolicy.MaxAttempts > 0 {
@@ -67,7 +66,7 @@ func NewRedisBus(host string, port int, password string, db int, poolSize int, c
 	writeTimeout := 3 * time.Second // Allow time for Redis to write
 
 	client := redis.NewClient(&redis.Options{
-		Addr:         fmt.Sprintf("%s:%d", host, port),
+		Addr:         addr, // e.g., "localhost:6379"
 		Password:     password,
 		DB:           db,
 		PoolSize:     poolSize,
@@ -98,8 +97,7 @@ func NewRedisBus(host string, port int, password string, db int, poolSize int, c
 	}
 
 	rb.logger.Info("Redis bus initialized",
-		slog.String("host", host),
-		slog.Int("port", port),
+		slog.String("addr", addr),
 		slog.Int("db", db),
 		slog.Int("pool_size", poolSize))
 

@@ -81,7 +81,7 @@ func main() {
 	)
 
 	// Connect to database
-	db, err := database.NewPostgresConnection(&cfg.Database)
+	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
 	if err != nil {
 		logger.Fatal("Failed to connect to database", slog.Any("error", err))
 	}
@@ -118,11 +118,13 @@ func main() {
 
 	logger.Info("Database migrations completed successfully")
 
-	// Initialize Redis (for token revocation)
+	// Initialize Redis (for token revocation and bus)
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.Redis.Addr,
-		Password: cfg.Redis.Password,
-		DB:       cfg.Redis.DB,
+		Addr:       cfg.Database.Redis.Addr,
+		Password:   cfg.Database.Redis.Password,
+		DB:         cfg.Database.Redis.Databases.Revocation, // Use revocation DB
+		PoolSize:   cfg.Database.Redis.PoolSize,
+		MaxRetries: cfg.Database.Redis.MaxRetries,
 	})
 	defer redisClient.Close()
 
@@ -131,7 +133,10 @@ func main() {
 		logger.Warn("Redis connection failed, token revocation will be disabled", slog.Any("error", err))
 		redisClient = nil // Disable token revocation if Redis is unavailable
 	} else {
-		logger.Info("Redis connected successfully", slog.String("addr", cfg.Redis.Addr))
+		logger.Info("Redis connected successfully",
+			slog.String("addr", cfg.Database.Redis.Addr),
+			slog.Int("revocation_db", cfg.Database.Redis.Databases.Revocation),
+		)
 	}
 
 	// Initialize JWT Manager
@@ -157,7 +162,7 @@ func main() {
 	}
 
 	// Initialize Event Bus
-	eventBus, err := bus.NewBus(cfg.Bus)
+	eventBus, err := bus.NewBus(cfg.Bus, cfg.Database.Redis)
 	if err != nil {
 		logger.Fatal("Failed to initialize event bus", slog.Any("error", err))
 	}

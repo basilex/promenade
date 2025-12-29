@@ -15,9 +15,11 @@ func TestValidate_ValidConfig(t *testing.T) {
 		Server: ServerSection{
 			Port: 8080,
 		},
-		Database: DatabaseSection{
-			Host:     "localhost",
-			Database: "testdb",
+		Database: DatabasesSection{
+			Postgres: PostgresSection{
+				Host:     "localhost",
+				Database: "testdb",
+			},
 		},
 		JWT: JWTSection{
 			Secret: "this-is-a-long-enough-secret-key-for-testing-32-chars",
@@ -93,9 +95,11 @@ func TestValidate_JWTSecretValidation(t *testing.T) {
 				Server: ServerSection{
 					Port: 8080,
 				},
-				Database: DatabaseSection{
-					Host:     "localhost",
-					Database: "testdb",
+				Database: DatabasesSection{
+					Postgres: PostgresSection{
+						Host:     "localhost",
+						Database: "testdb",
+					},
 				},
 				JWT: JWTSection{
 					Secret: tt.secret,
@@ -133,14 +137,14 @@ func TestValidate_DatabaseValidation(t *testing.T) {
 			host:        "",
 			database:    "testdb",
 			wantErr:     true,
-			errContains: "database host is required",
+			errContains: "database.postgres.host is required",
 		},
 		{
 			name:        "missing database name",
 			host:        "localhost",
 			database:    "",
 			wantErr:     true,
-			errContains: "database name is required",
+			errContains: "database.postgres.database is required",
 		},
 	}
 
@@ -153,9 +157,11 @@ func TestValidate_DatabaseValidation(t *testing.T) {
 				Server: ServerSection{
 					Port: 8080,
 				},
-				Database: DatabaseSection{
-					Host:     tt.host,
-					Database: tt.database,
+				Database: DatabasesSection{
+					Postgres: PostgresSection{
+						Host:     tt.host,
+						Database: tt.database,
+					},
 				},
 				JWT: JWTSection{
 					Secret: "valid-secret-key-for-development",
@@ -182,9 +188,11 @@ func TestValidate_ServerValidation(t *testing.T) {
 		Server: ServerSection{
 			Port: 0, // Invalid
 		},
-		Database: DatabaseSection{
-			Host:     "localhost",
-			Database: "testdb",
+		Database: DatabasesSection{
+			Postgres: PostgresSection{
+				Host:     "localhost",
+				Database: "testdb",
+			},
 		},
 		JWT: JWTSection{
 			Secret: "valid-secret-key",

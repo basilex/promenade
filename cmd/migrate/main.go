@@ -42,7 +42,7 @@ func main() {
 	})
 
 	// Initialize database connection
-	db, err := database.NewPostgresConnection(&cfg.Database)
+	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

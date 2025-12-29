@@ -24,7 +24,7 @@ func skipIfRedisUnavailable(t *testing.T) *redis.RedisBus {
 	}
 
 	config := bus.NewConfig(5, 100, 2, 100*time.Millisecond, time.Second, 2.0)
-	rb, err := redis.NewRedisBus("localhost", 6379, "", 0, 10, config)
+	rb, err := redis.NewRedisBus("localhost:6379", "", 0, 10, config)
 	if err != nil {
 		t.Skipf("Redis not available: %v", err)
 	}
@@ -45,7 +45,7 @@ func TestRedisBus_NewRedisBus_InvalidHost(t *testing.T) {
 	}
 
 	config := bus.NewConfig(5, 100, 1, 100*time.Millisecond, time.Second, 2.0)
-	rb, err := redis.NewRedisBus("invalid-host-12345", 6379, "", 0, 10, config)
+	rb, err := redis.NewRedisBus("invalid-host-12345:6379", "", 0, 10, config)
 
 	assert.Error(t, err)
 	assert.Nil(t, rb)
@@ -58,7 +58,7 @@ func TestRedisBus_NewRedisBus_InvalidPort(t *testing.T) {
 	}
 
 	config := bus.NewConfig(5, 100, 1, 100*time.Millisecond, time.Second, 2.0)
-	rb, err := redis.NewRedisBus("localhost", 9999, "", 0, 10, config)
+	rb, err := redis.NewRedisBus("localhost:9999", "", 0, 10, config)
 
 	assert.Error(t, err)
 	assert.Nil(t, rb)
@@ -276,7 +276,7 @@ func TestRedisBus_MultipleInstances(t *testing.T) {
 	defer rb1.Close(context.Background())
 
 	config := bus.NewConfig(5, 100, 2, 100*time.Millisecond, time.Second, 2.0)
-	rb2, err := redis.NewRedisBus("localhost", 6379, "", 0, 10, config)
+	rb2, err := redis.NewRedisBus("localhost:6379", "", 0, 10, config)
 	require.NoError(t, err)
 	defer rb2.Close(context.Background())
 

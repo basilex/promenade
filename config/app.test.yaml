@@ -13,12 +13,23 @@ server:
   write_timeout: 5s
 
 database:
-  host: "localhost"
-  port: 5433
-  user: "system"
-  password: "passw0rd"
-  database: "promenade_test"
-  ssl_mode: "disable"
+  postgres:
+    host: "localhost"
+    port: 5433
+    user: "system"
+    password: "passw0rd"
+    database: "promenade_test"
+    ssl_mode: "disable"
+  redis:
+    addr: "localhost:6380"
+    password: ""
+    pool_size: 5
+    max_retries: 1
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
 
 logging:
   level: "info"
@@ -34,10 +45,3 @@ bus:
   retry_delay: 100ms
   retry_max_delay: 1s
   retry_multiplier: 2.0
-  redis:
-    host: "localhost"
-    port: 6379
-    password: ""
-    db: 1
-    max_retries: 1
-    pool_size: 5

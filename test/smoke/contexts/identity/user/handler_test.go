@@ -114,7 +114,7 @@ func createMockJWTManager() *jwt.Manager {
 func TestUserHandler_Smoke(t *testing.T) {
 	mockUC := new(MockUserUseCase)
 	jwtManager := createMockJWTManager()
-	handler := userHTTP.NewUserHandler(mockUC, jwtManager)
+	handler := userHTTP.NewUserHandler(mockUC, jwtManager, nil) // nil tokenRevoker for smoke tests
 	router := setupUserRouter()
 
 	// Register routes
@@ -374,7 +374,7 @@ func TestUserHandler_RefreshToken(t *testing.T) {
 		Issuer:               "promenade-test",
 	})
 	
-	handler := userHTTP.NewUserHandler(mockUC, jwtManager)
+	handler := userHTTP.NewUserHandler(mockUC, jwtManager, nil) // nil tokenRevoker for smoke tests
 	router.POST("/auth/refresh", handler.RefreshToken)
 
 	userID := uuidv7.New()

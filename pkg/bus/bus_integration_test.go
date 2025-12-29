@@ -28,7 +28,7 @@ func TestBus_MemoryAdapter_EndToEnd(t *testing.T) {
 		RetryDelay:     100 * time.Millisecond,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{}) // Empty RedisSection for memory adapter
 	require.NoError(t, err)
 	defer b.Close(context.Background())
 
@@ -81,7 +81,7 @@ func TestBus_MemoryAdapter_MultipleSubscribers(t *testing.T) {
 		BufferSize:     1000,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	defer b.Close(context.Background())
 
@@ -120,7 +120,7 @@ func TestBus_MemoryAdapter_HighThroughput(t *testing.T) {
 		BufferSize:     10000,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	defer b.Close(context.Background())
 
@@ -171,7 +171,7 @@ func TestBus_MemoryAdapter_RetryPolicy(t *testing.T) {
 		RetryDelay:     50 * time.Millisecond,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	defer b.Close(context.Background())
 
@@ -209,7 +209,7 @@ func TestBus_MemoryAdapter_GracefulShutdown(t *testing.T) {
 		BufferSize:     100,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 
 	topic := "integration.shutdown"
@@ -263,17 +263,19 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 		Adapter:        "redis",
 		WorkerPoolSize: 10,
 		BufferSize:     1000,
-		Redis: config.RedisSection{
-			Host:     "localhost",
-			Port:     redisPort,
-			Password: "",
-			DB:       0,
-			PoolSize: 10,
+	}
+
+	redisCfg := config.RedisSection{
+		Addr:     "localhost:6380",
+		Password: "",
+		PoolSize: 10,
+		Databases: config.RedisDatabases{
+			Bus: 0,
 		},
 	}
 
 	// Try to create first instance
-	b1, err := bus.NewBus(cfg)
+	b1, err := bus.NewBus(cfg, redisCfg)
 	if err != nil {
 		t.Skipf("Redis not available on port %d: %v", redisPort, err)
 	}
@@ -286,7 +288,7 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 	defer b1.Close(context.Background())
 
 	// Create second instance (simulating another process)
-	b2, err := bus.NewBus(cfg)
+	b2, err := bus.NewBus(cfg, redisCfg)
 	require.NoError(t, err)
 	defer b2.Close(context.Background())
 
@@ -349,7 +351,7 @@ func TestBus_FactorySelection(t *testing.T) {
 				BufferSize:     100,
 			}
 
-			b, err := bus.NewBus(cfg)
+			b, err := bus.NewBus(cfg, config.RedisSection{})
 
 			if tt.wantErr {
 				assert.Error(t, err)

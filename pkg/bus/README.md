@@ -143,6 +143,18 @@ bus:
 **Production** (`config/app.prod.yaml`):
 
 ```yaml
+database:
+  redis:
+    addr: "redis.prod.example.com:6379"
+    password: "${REDIS_PASSWORD}"
+    pool_size: 20
+    max_retries: 3
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
+
 bus:
   adapter: "redis" # Distributed adapter
   worker_pool_size: 50
@@ -151,13 +163,6 @@ bus:
   retry_delay: 1s
   retry_max_delay: 30s
   retry_multiplier: 2.0
-  redis:
-    host: "redis.prod.example.com"
-    port: 6379
-    password: "${REDIS_PASSWORD}"
-    db: 0
-    max_retries: 3
-    pool_size: 20
 ```
 
 ---
@@ -173,8 +178,8 @@ if err != nil {
     log.Fatal("Failed to load config:", err)
 }
 
-// Create bus (factory selects adapter)
-eventBus, err := bus.NewBus(cfg.Bus)
+// Create bus (factory selects adapter based on cfg.Bus.Adapter)
+eventBus, err := bus.NewBus(cfg.Bus, cfg.Database.Redis)
 if err != nil {
     log.Fatal("Failed to initialize event bus:", err)
 }

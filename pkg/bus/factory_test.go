@@ -22,7 +22,7 @@ func TestNewBus_Memory(t *testing.T) {
 		RetryDelay:     time.Second,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	require.NotNil(t, b)
 
@@ -42,7 +42,7 @@ func TestNewBus_MemoryDefaults(t *testing.T) {
 		Adapter: "memory",
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	require.NotNil(t, b)
 
@@ -58,7 +58,7 @@ func TestNewBus_InvalidAdapter(t *testing.T) {
 		Adapter: "invalid-adapter",
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	assert.Error(t, err)
 	assert.Nil(t, b)
 	assert.Contains(t, err.Error(), "unsupported bus adapter")
@@ -69,7 +69,7 @@ func TestNewBus_EmptyAdapter(t *testing.T) {
 		Adapter: "",
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	assert.Error(t, err)
 	assert.Nil(t, b)
 }
@@ -82,7 +82,7 @@ func TestMustNewBus_Success(t *testing.T) {
 	}
 
 	// Should not panic
-	b := bus.MustNewBus(cfg)
+	b := bus.MustNewBus(cfg, config.RedisSection{})
 	require.NotNil(t, b)
 	defer b.Close(context.Background())
 
@@ -96,7 +96,7 @@ func TestMustNewBus_Panics(t *testing.T) {
 	}
 
 	assert.Panics(t, func() {
-		bus.MustNewBus(cfg)
+		bus.MustNewBus(cfg, config.RedisSection{})
 	}, "MustNewBus should panic with invalid adapter")
 }
 
@@ -175,7 +175,7 @@ func TestBus_HealthCheck(t *testing.T) {
 		BufferSize:     100,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 	defer b.Close(context.Background())
 
@@ -197,7 +197,7 @@ func TestBus_HealthCheckAfterClose(t *testing.T) {
 		BufferSize:     100,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 
 	// Close the bus
@@ -216,7 +216,7 @@ func TestBus_MultipleClose(t *testing.T) {
 		BufferSize:     100,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 
 	// First close should work
@@ -235,7 +235,7 @@ func TestBus_CloseWithTimeout(t *testing.T) {
 		BufferSize:     100,
 	}
 
-	b, err := bus.NewBus(cfg)
+	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
 
 	// Close with timeout context

@@ -31,16 +31,28 @@ server:
   shutdown_timeout: 15s
 
 database:
-  host: "testdb.local"
-  port: 5433
-  user: "testuser"
-  password: "testpass"
-  database: "testdb"
-  sslmode: "require"
-  max_open_conns: 30
-  max_idle_conns: 10
-  conn_max_lifetime: 10m
-  conn_max_idle_time: 5m
+  postgres:
+    host: "testdb.local"
+    port: 5433
+    user: "testuser"
+    password: "testpass"
+    database: "testdb"
+    sslmode: "require"
+    max_open_conns: 30
+    max_idle_conns: 10
+    conn_max_lifetime: 10m
+    conn_max_idle_time: 5m
+  
+  redis:
+    addr: "redis.test.local:6380"
+    password: "redis-test-pass"
+    pool_size: 15
+    max_retries: 4
+    databases:
+      revocation: 0
+      bus: 2
+      cache: 3
+      sessions: 4
 
 jwt:
   secret: "test-jwt-secret"
@@ -74,13 +86,8 @@ bus:
   buffer_size: 150
   retry_attempts: 5
   retry_delay: 3s
-  redis:
-    host: "redis.test.local"
-    port: 6380
-    password: "redis-test-pass"
-    db: 2
-    max_retries: 4
-    pool_size: 15
+  retry_max_delay: 30s
+  retry_multiplier: 2.0
 
 rate_limit:
   enabled: true
@@ -126,16 +133,16 @@ purge:
 	assert.Equal(t, 15*time.Second, cfg.Server.ShutdownTimeout)
 
 	// Verify Database section
-	assert.Equal(t, "testdb.local", cfg.Database.Host)
-	assert.Equal(t, 5433, cfg.Database.Port)
-	assert.Equal(t, "testuser", cfg.Database.User)
-	assert.Equal(t, "testpass", cfg.Database.Password)
-	assert.Equal(t, "testdb", cfg.Database.Database)
-	assert.Equal(t, "require", cfg.Database.SSLMode)
-	assert.Equal(t, 30, cfg.Database.MaxOpenConns)
-	assert.Equal(t, 10, cfg.Database.MaxIdleConns)
-	assert.Equal(t, 10*time.Minute, cfg.Database.ConnMaxLifetime)
-	assert.Equal(t, 5*time.Minute, cfg.Database.ConnMaxIdleTime)
+	assert.Equal(t, "testdb.local", cfg.Database.Postgres.Host)
+	assert.Equal(t, 5433, cfg.Database.Postgres.Port)
+	assert.Equal(t, "testuser", cfg.Database.Postgres.User)
+	assert.Equal(t, "testpass", cfg.Database.Postgres.Password)
+	assert.Equal(t, "testdb", cfg.Database.Postgres.Database)
+	assert.Equal(t, "require", cfg.Database.Postgres.SSLMode)
+	assert.Equal(t, 30, cfg.Database.Postgres.MaxOpenConns)
+	assert.Equal(t, 10, cfg.Database.Postgres.MaxIdleConns)
+	assert.Equal(t, 10*time.Minute, cfg.Database.Postgres.ConnMaxLifetime)
+	assert.Equal(t, 5*time.Minute, cfg.Database.Postgres.ConnMaxIdleTime)
 
 	// Verify JWT section
 	assert.Equal(t, "test-jwt-secret", cfg.JWT.Secret)
@@ -164,14 +171,15 @@ purge:
 	assert.Equal(t, 150, cfg.Bus.BufferSize)
 	assert.Equal(t, 5, cfg.Bus.RetryAttempts)
 	assert.Equal(t, 3*time.Second, cfg.Bus.RetryDelay)
+	assert.Equal(t, 30*time.Second, cfg.Bus.RetryMaxDelay)
+	assert.Equal(t, 2.0, cfg.Bus.RetryMultiplier)
 
-	// Verify Redis section
-	assert.Equal(t, "redis.test.local", cfg.Bus.Redis.Host)
-	assert.Equal(t, 6380, cfg.Bus.Redis.Port)
-	assert.Equal(t, "redis-test-pass", cfg.Bus.Redis.Password)
-	assert.Equal(t, 2, cfg.Bus.Redis.DB)
-	assert.Equal(t, 4, cfg.Bus.Redis.MaxRetries)
-	assert.Equal(t, 15, cfg.Bus.Redis.PoolSize)
+	// Verify Redis section (moved to database.redis)
+	assert.Equal(t, "redis.test.local:6380", cfg.Database.Redis.Addr)
+	assert.Equal(t, "redis-test-pass", cfg.Database.Redis.Password)
+	assert.Equal(t, 2, cfg.Database.Redis.Databases.Bus)
+	assert.Equal(t, 4, cfg.Database.Redis.MaxRetries)
+	assert.Equal(t, 15, cfg.Database.Redis.PoolSize)
 
 	// Verify RateLimit section
 	assert.True(t, cfg.RateLimit.Enabled)
@@ -223,12 +231,14 @@ app:
 
 func TestApplyEnvOverrides(t *testing.T) {
 	cfg := &AppConfig{
-		Database: DatabaseSection{
-			Host:     "original-db",
-			Port:     5432,
-			User:     "original-user",
-			Password: "original-pass",
-			Database: "original-db-name",
+		Database: DatabasesSection{
+			Postgres: PostgresSection{
+				Host:     "original-db",
+				Port:     5432,
+				User:     "original-user",
+				Password: "original-pass",
+				Database: "original-db-name",
+			},
 		},
 		Server: ServerSection{
 			Port: 8080,
@@ -269,11 +279,11 @@ func TestApplyEnvOverrides(t *testing.T) {
 
 	applyEnvOverrides(cfg)
 
-	assert.Equal(t, "env-db-host", cfg.Database.Host)
-	assert.Equal(t, 5433, cfg.Database.Port)
-	assert.Equal(t, "env-user", cfg.Database.User)
-	assert.Equal(t, "env-pass", cfg.Database.Password)
-	assert.Equal(t, "env-db-name", cfg.Database.Database)
+	assert.Equal(t, "env-db-host", cfg.Database.Postgres.Host)
+	assert.Equal(t, 5433, cfg.Database.Postgres.Port)
+	assert.Equal(t, "env-user", cfg.Database.Postgres.User)
+	assert.Equal(t, "env-pass", cfg.Database.Postgres.Password)
+	assert.Equal(t, "env-db-name", cfg.Database.Postgres.Database)
 	assert.Equal(t, 9000, cfg.Server.Port)
 	assert.Equal(t, "env-jwt-secret", cfg.JWT.Secret)
 	assert.Equal(t, "production", cfg.App.Environment)
@@ -391,11 +401,12 @@ server:
   port: 8080
 
 database:
-  host: "localhost"
-  port: 5432
-  user: "user"
-  password: "pass"
-  database: "db"
+  postgres:
+    host: "localhost"
+    port: 5432
+    user: "user"
+    password: "pass"
+    database: "db"
 
 jwt:
   secret: "secret123"
@@ -411,6 +422,6 @@ jwt:
 	assert.Equal(t, "MinimalApp", cfg.App.Name)
 	assert.Equal(t, "dev", cfg.App.Environment)
 	assert.Equal(t, 8080, cfg.Server.Port)
-	assert.Equal(t, "localhost", cfg.Database.Host)
+	assert.Equal(t, "localhost", cfg.Database.Postgres.Host)
 	assert.Equal(t, "secret123", cfg.JWT.Secret)
 }
