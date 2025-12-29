@@ -16,9 +16,9 @@ test-smoke:  ## Run smoke tests (mock-based, no DB)
 	@echo "Running smoke tests..."
 	go test -v ./test/smoke/contexts/... -run "Handler"
 
-test-integration: test-db-start  ## Run integration tests (requires test DB)
+test-integration:  ## Run integration tests (requires test DB)
 	@echo "Running integration tests..."
-	@echo "Test DB: localhost:5433/promenade_test"
+	@echo "Test DB: localhost:5432/promenade_test (or 5433 if using test-db-start)"
 	ENVIRONMENT=test go test -v ./test/integration/contexts/...
 
 test-coverage:  ## Generate test coverage report
