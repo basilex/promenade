@@ -1,3 +1,7 @@
+**Navigation**: [Home](../README.md) > Internal
+
+---
+
 # Internal - Application Core
 
 **Core application code** organized by architectural layers and bounded contexts.

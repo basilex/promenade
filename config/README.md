@@ -1,3 +1,7 @@
+**Navigation**: [Home](../README.md) > Configuration Files
+
+---
+
 # Configuration Files
 
 **Environment-specific YAML configuration** for Promenade Platform.

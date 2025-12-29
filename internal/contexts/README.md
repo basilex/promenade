@@ -1,3 +1,7 @@
+**Navigation**: [Home](../../README.md) > [Internal](../README.md) > Bounded Contexts
+
+---
+
 # Bounded Contexts
 
 This directory contains the application's **bounded contexts** following Domain-Driven Design (DDD) principles.

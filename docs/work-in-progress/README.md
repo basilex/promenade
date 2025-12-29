@@ -1,3 +1,7 @@
+**Navigation**: [Home](../../README.md) > [Documentation](../INDEX.md) > Work In Progress
+
+---
+
 # Work In Progress - Active Development
 
 **Current development tasks and progress tracking** - documents that change frequently.

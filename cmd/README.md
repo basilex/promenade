@@ -1,3 +1,7 @@
+**Navigation**: [Home](../README.md) > Command Line Tools
+
+---
+
 # Command Line Tools
 
 **Application entry points** for server and utilities.

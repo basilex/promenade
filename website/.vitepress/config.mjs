@@ -18,9 +18,16 @@ export default defineConfig({
     
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
+      { 
+        text: 'Concepts',
+        items: [
+          { text: 'Clean Architecture', link: '/concepts/clean-architecture' },
+          { text: 'Event-Driven', link: '/concepts/event-driven' },
+          { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
+        ]
+      },
       { text: 'Contexts', link: '/contexts/identity' },
       { text: 'Packages', link: '/packages/bus' },
-      { text: 'API Reference', link: '/guide/api-reference' },
       {
         text: 'v2.0',
         items: [
@@ -41,12 +48,36 @@ export default defineConfig({
           ]
         },
         {
-          text: 'Development',
+          text: 'Guides',
           items: [
-            { text: 'Testing Strategy', link: '/guide/testing' },
+            { text: 'Testing Patterns', link: '/guide/testing' },
             { text: 'RBAC', link: '/guide/rbac' },
+            { text: 'Health Checks', link: '/docs/guides/health-checks' },
+            { text: 'Rate Limiting', link: '/docs/guides/rate-limiting' },
             { text: 'API Reference', link: '/guide/api-reference' },
             { text: 'Contributing', link: '/guide/contributing' },
+          ]
+        }
+      ],
+      
+      '/concepts/': [
+        {
+          text: 'Core Concepts',
+          items: [
+            { text: 'Clean Architecture', link: '/concepts/clean-architecture' },
+            { text: 'Event-Driven Architecture', link: '/concepts/event-driven' },
+            { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
+          ]
+        }
+      ],
+      
+      '/reference/': [
+        {
+          text: 'Technical Reference',
+          items: [
+            { text: 'Test Coverage Report', link: '/reference/test-coverage-report' },
+            { text: 'Bus Test Coverage', link: '/reference/bus-test-coverage' },
+            { text: 'Refactoring Roadmap', link: '/reference/refactoring-roadmap' },
           ]
         }
       ],

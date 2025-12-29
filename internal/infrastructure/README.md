@@ -1,3 +1,7 @@
+**Navigation**: [Home](../../README.md) > [Internal](../README.md) > Infrastructure
+
+---
+
 # Infrastructure - Cross-Cutting Concerns
 
 **Shared infrastructure** components used across all bounded contexts.

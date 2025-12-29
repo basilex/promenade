@@ -1,3 +1,7 @@
+**Navigation**: [Home](../../../README.md) > [Internal](../../README.md) > [Infrastructure](../README.md) > Configuration
+
+---
+
 # Configuration Package
 
 **YAML-based configuration management** with environment variable overrides for Promenade Platform.

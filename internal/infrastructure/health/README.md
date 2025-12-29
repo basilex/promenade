@@ -1,3 +1,7 @@
+**Navigation**: [Home](../../../README.md) > [Internal](../../README.md) > [Infrastructure](../README.md) > Health Checks
+
+---
+
 # Health Checks Package
 
 **Comprehensive health monitoring** for all Promenade Platform dependencies with graceful degradation.

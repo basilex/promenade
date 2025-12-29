@@ -1,3 +1,7 @@
+**Navigation**: [Home](../README.md) > Development Scripts
+
+---
+
 # Scripts - Development Utilities
 
 **Helper scripts** for development, deployment, and maintenance.
