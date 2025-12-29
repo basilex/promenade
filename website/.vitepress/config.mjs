@@ -44,6 +44,7 @@ export default defineConfig({
           text: 'Development',
           items: [
             { text: 'Testing Strategy', link: '/guide/testing' },
+            { text: 'RBAC', link: '/guide/rbac' },
             { text: 'API Reference', link: '/guide/api-reference' },
             { text: 'Contributing', link: '/guide/contributing' },
           ]
