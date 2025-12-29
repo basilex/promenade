@@ -15,6 +15,14 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// min returns the minimum of two integers
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 // Manager manages database migrations with namespace support
 type Manager interface {
 	// MigrateNamespace applies all pending migrations for a namespace
@@ -274,6 +282,8 @@ func (m *manager) MigrateNamespace(ctx context.Context, namespace string) error 
 
 // applyMigration applies a single migration in a transaction
 func (m *manager) applyMigration(ctx context.Context, mig MigrationFile) error {
+	log := logger.FromContext(ctx)
+	
 	tx, err := m.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -290,8 +300,19 @@ func (m *manager) applyMigration(ctx context.Context, mig MigrationFile) error {
 		return fmt.Errorf("failed to mark as dirty: %w", err)
 	}
 
+	// Log SQL for debugging
+	log.Debug("Executing migration SQL",
+		"namespace", mig.Namespace,
+		"version", mig.Version,
+		"sql_length", len(mig.UpSQL),
+		"sql_preview", mig.UpSQL[:min(200, len(mig.UpSQL))])
+
 	// Execute migration
 	if _, err = tx.ExecContext(ctx, mig.UpSQL); err != nil {
+		log.Error("Migration execution failed",
+			"namespace", mig.Namespace,
+			"version", mig.Version,
+			"error", err)
 		return fmt.Errorf("failed to execute migration SQL: %w", err)
 	}
 

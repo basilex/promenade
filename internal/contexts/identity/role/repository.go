@@ -26,8 +26,8 @@ type IRepository interface {
 	// ExistsByName checks if a role with the given name exists
 	ExistsByName(ctx context.Context, name string) (bool, error)
 
-	// ListRoles lists all roles
-	ListRoles(ctx context.Context) ([]*Role, error)
+	// ListRoles lists all roles with pagination
+	ListRoles(ctx context.Context, limit, offset int) ([]*Role, int, error)
 
 	// GetUserRoles retrieves all roles for a user
 	GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*Role, error)

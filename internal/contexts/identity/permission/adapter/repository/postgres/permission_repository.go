@@ -204,32 +204,45 @@ func (r *permissionRepository) ExistsByName(ctx context.Context, name string) (b
 	return exists, nil
 }
 
-// ListPermissions lists all permissions
-func (r *permissionRepository) ListPermissions(ctx context.Context) ([]*permission.Permission, error) {
+// ListPermissions lists all permissions with pagination
+func (r *permissionRepository) ListPermissions(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error) {
 	var rows []permissionRow
 
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*) FROM identity_permissions
+		WHERE deleted_at IS NULL
+	`
+	err := r.Get(ctx, &total, countQuery)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to count permissions: %w", err)
+	}
+
+	// Get paginated results
 	query := `
 		SELECT id, name, resource, action, description, created_at, updated_at, deleted_at
 		FROM identity_permissions
 		WHERE deleted_at IS NULL
 		ORDER BY resource, action
+		LIMIT $1 OFFSET $2
 	`
 
-	err := r.Select(ctx, &rows, query)
+	err = r.Select(ctx, &rows, query, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list permissions: %w", err)
+		return nil, 0, fmt.Errorf("failed to list permissions: %w", err)
 	}
 
 	permissions := make([]*permission.Permission, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		permissions[i] = entity
 	}
 
-	return permissions, nil
+	return permissions, total, nil
 }
 
 // GetRolePermissions retrieves all permissions for a role

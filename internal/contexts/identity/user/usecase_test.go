@@ -103,12 +103,12 @@ func (m *MockRoleRepository) ExistsByName(ctx context.Context, name string) (boo
 	return args.Bool(0), args.Error(1)
 }
 
-func (m *MockRoleRepository) ListRoles(ctx context.Context) ([]*role.Role, error) {
-	args := m.Called(ctx)
+func (m *MockRoleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*role.Role, int, error) {
+	args := m.Called(ctx, limit, offset)
 	if args.Get(0) == nil {
-		return nil, args.Error(1)
+		return nil, args.Int(1), args.Error(2)
 	}
-	return args.Get(0).([]*role.Role), args.Error(1)
+	return args.Get(0).([]*role.Role), args.Int(1), args.Error(2)
 }
 
 func (m *MockRoleRepository) AssignRoleToUser(ctx context.Context, userID, roleID uuidv7.UUID, assignedBy *uuidv7.UUID) error {

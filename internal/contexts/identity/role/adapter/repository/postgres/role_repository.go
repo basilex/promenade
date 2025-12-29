@@ -227,32 +227,45 @@ func (r *roleRepository) ExistsByName(ctx context.Context, name string) (bool, e
 	return exists, nil
 }
 
-// ListRoles lists all roles
-func (r *roleRepository) ListRoles(ctx context.Context) ([]*roleentity.Role, error) {
+// ListRoles lists all roles with pagination
+func (r *roleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*roleentity.Role, int, error) {
 	var rows []roleRow
 
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*) FROM identity_roles
+		WHERE deleted_at IS NULL
+	`
+	err := r.Get(ctx, &total, countQuery)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to count roles: %w", err)
+	}
+
+	// Get paginated results
 	query := `
 		SELECT id, name, display_name, description, is_system, created_at, updated_at, deleted_at
 		FROM identity_roles
 		WHERE deleted_at IS NULL
 		ORDER BY name
+		LIMIT $1 OFFSET $2
 	`
 
-	err := r.Select(ctx, &rows, query)
+	err = r.Select(ctx, &rows, query, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list roles: %w", err)
+		return nil, 0, fmt.Errorf("failed to list roles: %w", err)
 	}
 
 	roles := make([]*roleentity.Role, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		roles[i] = entity
 	}
 
-	return roles, nil
+	return roles, total, nil
 }
 
 // GetUserRoles retrieves all roles for a user

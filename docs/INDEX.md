@@ -17,6 +17,7 @@ Complete guide to Promenade CRM Platform architecture and development.
 ### Architecture & Design
 
 - [Clean Architecture Summary](CLEAN_ARCHITECTURE_SUMMARY.md) - DDD with Bounded Contexts
+- [RBAC Implementation](RBAC.md) - Complete Role-Based Access Control guide
 - [Phase 1 Architecture Preparation](PHASE1_ARCHITECTURE_PREPARATION.md) - Migration roadmap
 - [Event Bus Documentation](../pkg/bus/README.md) - Central communication hub (Memory/Redis)
 - [Event Bus Test Coverage](BUS_TEST_COVERAGE.md) - Test report (67 tests, 100% passing)

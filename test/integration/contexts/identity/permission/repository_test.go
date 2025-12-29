@@ -155,9 +155,10 @@ func TestPermissionRepository_ListPermissions(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, p2))
 		require.NoError(t, repo.Create(ctx, p3))
 
-		permissions, err := repo.ListPermissions(ctx)
+		permissions, total, err := repo.ListPermissions(ctx, 20, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(permissions), 3)
+		assert.GreaterOrEqual(t, total, 3)
 	})
 }
 

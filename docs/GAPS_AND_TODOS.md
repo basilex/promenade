@@ -1,53 +1,40 @@
 # Gaps & Technical Debt - Action Plan
 
 **Created:** December 28, 2025  
-**Status:** Ready for implementation  
+**Last Updated:** December 29, 2025  
+**Status:** Updated after RBAC completion  
 **Priority Order:** Critical → High → Medium
 
 ---
 
-## 🔴 **CRITICAL (Day 1 - Tomorrow)**
+## COMPLETED TASKS
 
-### 1. RBAC Implementation ⚡ **HIGHEST PRIORITY**
+### 1. RBAC Implementation (COMPLETED December 29, 2025)
 
-**Current State:**
-- JWT includes empty roles array: `roles := []string{} // TODO`
-- Migration file missing: `migrations/core/000003_core_rbac_full.up.sql`
-- Middleware exists but no data source
+**Implementation:**
+- Created migration `migrations/identity/000003_authorization.up.sql` with RBAC tables
+- Added Role entity in Identity context with full CRUD
+- Added Permission entity in Identity context with full CRUD
+- Created PostgreSQL repositories for Role and Permission
+- Implemented use cases with business logic
+- Created HTTP handlers with 14 JWT-protected endpoints (7 Role + 7 Permission)
+- Added comprehensive tests (unit + smoke + integration)
+- Integrated into Identity router with JWT middleware
 
-**Tasks:**
-- [ ] Create RBAC migration (roles, permissions, user_roles, role_permissions tables)
-- [ ] Add Role entity in Identity context
-- [ ] Add Permission entity in Identity context
-- [ ] Update User entity with roles relationship
-- [ ] Implement Role repository
-- [ ] Implement Permission repository
-- [ ] Update Login handler to load user roles
-- [ ] Add tests (unit + integration)
+**Migration Details:**
+- `identity_permissions` table with GENERATED ALWAYS column: `name AS (resource || ':' || action)`
+- `identity_roles` table with soft delete support
+- Junction tables: `identity_user_roles`, `identity_role_permissions`
+- Seed data: 29+ permissions (wildcard, users, roles, permissions, contacts, profiles, customers)
+- Seed data: 5 system roles (superadmin, admin, manager, user, guest)
 
-**Estimate:** 4-5 hours
+**API Endpoints:**
+- Role Management: Create, List, GetByID, GetByName, Update, Delete, GetUserRoles
+- Permission Management: Create, List, GetByID, GetByName, Update, Delete, GetRolePermissions
 
-**Files to create:**
-```
-migrations/identity/000006_rbac.up.sql
-migrations/identity/000006_rbac.down.sql
-internal/contexts/identity/role/
-  entity.go
-  repository.go
-  usecase.go
-  adapter/repository/postgres/role_repository.go
-internal/contexts/identity/permission/
-  entity.go
-  repository.go
-```
+---
 
-**SQL Schema:**
-```sql
--- roles table
-CREATE TABLE identity_roles (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
+## CRITICAL (High Priority)
     is_system BOOLEAN DEFAULT false,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -89,7 +76,9 @@ INSERT INTO identity_roles (id, name, description, is_system) VALUES
 
 ---
 
-### 2. JWT Secret Validation 🔒
+## CRITICAL (High Priority)
+
+### 1. JWT Secret Validation
 
 **Current State:**
 - Default dev secret can be used in production
@@ -118,7 +107,7 @@ if cfg.App.Environment == "production" {
 
 ---
 
-### 3. Rate Limiting for Authentication 🚦
+### 2. Rate Limiting for Authentication
 
 **Current State:**
 - No rate limiting on Login/Register endpoints
@@ -182,9 +171,9 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-## 🟡 **HIGH PRIORITY (Day 2-3)**
+## HIGH PRIORITY (Day 2-3)
 
-### 4. Token Revocation Mechanism 🔐
+### 3. Token Revocation Mechanism
 
 **Current State:**
 - JWT tokens cannot be revoked before expiry
@@ -201,7 +190,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-### 5. Health Checks for Dependencies ❤️
+### 4. Health Checks for Dependencies
 
 **Current State:**
 - `/health` endpoint exists but doesn't check dependencies
@@ -217,7 +206,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-### 6. Database Indexes Audit 📊
+### 5. Database Indexes Audit
 
 **Current State:**
 - Not all tables have proper indexes
@@ -234,7 +223,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 **Queries to analyze:**
 ```sql
 -- Check missing indexes
-SELECT * FROM users WHERE email = ?  -- UNIQUE INDEX exists ✅
+SELECT * FROM users WHERE email = ?  -- UNIQUE INDEX exists
 SELECT * FROM contacts WHERE user_id = ?  -- Need INDEX
 SELECT * FROM profiles WHERE user_id = ?  -- Need UNIQUE INDEX
 SELECT * FROM customers WHERE email = ?  -- Need INDEX
@@ -243,7 +232,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 7. Error Definitions Consistency 📝
+### 6. Error Definitions Consistency
 
 **Current State:**
 - User: errors in usecase.go
@@ -260,9 +249,9 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-## 🟢 **MEDIUM PRIORITY (Week 2)**
+## MEDIUM PRIORITY (Week 2)
 
-### 8. Panic Handling Improvements ⚠️
+### 7. Panic Handling Improvements
 
 **Current State:**
 - `MustGetClaims()` panics if claims not found
@@ -278,10 +267,10 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 9. Soft Delete Query Audit 🗑️
+### 8. Soft Delete Query Audit
 
 **Current State:**
-- Most queries include `deleted_at IS NULL` ✅
+- Most queries include `deleted_at IS NULL`
 - Need to verify ALL queries
 
 **Tasks:**
@@ -294,7 +283,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 10. Caching Layer (Redis) 💾
+### 9. Caching Layer (Redis)
 
 **Current State:**
 - No caching implemented
@@ -311,7 +300,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 11. N+1 Query Optimization 🚀
+### 10. N+1 Query Optimization
 
 **Current State:**
 - Potential N+1 in ListUsers + Profiles
@@ -327,11 +316,11 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 12. CSRF Protection 🛡️
+### 11. CSRF Protection
 
 **Current State:**
-- Using Bearer tokens (safe) ✅
-- If cookies added → need CSRF
+- Using Bearer tokens (safe)
+- If cookies added, need CSRF
 
 **Tasks:**
 - [ ] Add CSRF middleware (if needed)
@@ -343,38 +332,18 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-## 📊 **Summary Statistics**
+## Summary Statistics
 
 | Priority | Tasks | Estimated Time | Status |
 |----------|-------|----------------|--------|
-| 🔴 Critical | 3 | 7-9 hours | **START TOMORROW** |
-| 🟡 High | 4 | 9 hours | Week 1-2 |
-| 🟢 Medium | 5 | 11 hours | Week 2-3 |
-| **TOTAL** | **12** | **27-29 hours** | ~4 working days |
+| Critical | 2 | 3-4 hours | Ready to start |
+| High | 4 | 9 hours | Week 1-2 |
+| Medium | 5 | 11 hours | Week 2-3 |
+| **TOTAL** | **11** | **23-24 hours** | ~3 working days |
 
 ---
 
-## 🎯 **Tomorrow's Action Plan (December 29)**
-
-### Morning (3-4 hours)
-1. ⚡ **RBAC Implementation** (PRIORITY #1)
-   - Create migration
-   - Add Role & Permission entities
-   - Update User with roles
-   - Load roles in Login handler
-
-### Afternoon (2-3 hours)
-2. 🔒 **JWT Secret Validation** (30 min)
-3. 🚦 **Rate Limiting** (2 hours)
-4. ✅ **Testing all changes** (30 min)
-
-### End of Day
-5. 📝 **Commit & Push**
-6. ✅ **Update this TODO list**
-
----
-
-## 📝 **Notes**
+## Notes
 
 - All changes should include tests (unit + integration)
 - Update README.md if public API changes
@@ -393,3 +362,13 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 **Last Updated:** December 28, 2025  
 **Next Review:** After Day 1 completion
+Related Documents
+
+- [Clean Architecture Summary](CLEAN_ARCHITECTURE_SUMMARY.md)
+- [Testing Patterns](TESTING_PATTERNS.md)
+- [AI Instructions](../.github/copilot-instructions.md)
+
+---
+
+**Last Updated:** December 29, 2025  
+**Next Review:** After next major feature

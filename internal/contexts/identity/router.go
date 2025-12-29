@@ -7,9 +7,14 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	contactHTTP "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http"
 	contactRepo "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/identity/permission"
+	permissionHTTP "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/http"
+	permissionRepo "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/identity/profile"
 	profileHTTP "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/http"
 	profileRepo "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/identity/role"
+	roleHTTP "github.com/basilex/promenade/internal/contexts/identity/role/adapter/http"
 	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
@@ -19,10 +24,12 @@ import (
 
 // Router manages routes for Identity context
 type Router struct {
-	contactHandler *contactHTTP.ContactHandler
-	profileHandler *profileHTTP.ProfileHandler
-	userHandler    *userHTTP.UserHandler
-	jwtManager     *jwt.Manager
+	contactHandler    *contactHTTP.ContactHandler
+	profileHandler    *profileHTTP.ProfileHandler
+	userHandler       *userHTTP.UserHandler
+	roleHandler       *roleHTTP.RoleHandler
+	permissionHandler *permissionHTTP.PermissionHandler
+	jwtManager        *jwt.Manager
 }
 
 // NewRouter creates a new Identity router with all dependencies
@@ -37,8 +44,15 @@ func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 	profileUseCase := profile.NewUseCase(profileRepository)
 	profileHandler := profileHTTP.NewProfileHandler(profileUseCase)
 
-	// Initialize Role repository
+	// Initialize Role aggregate
 	roleRepository := roleRepo.NewRoleRepository(db)
+	roleUseCase := role.NewUseCase(roleRepository)
+	roleHandler := roleHTTP.NewRoleHandler(roleUseCase)
+
+	// Initialize Permission aggregate
+	permissionRepository := permissionRepo.NewPermissionRepository(db)
+	permissionUseCase := permission.NewUseCase(permissionRepository)
+	permissionHandler := permissionHTTP.NewPermissionHandler(permissionUseCase)
 
 	// Initialize User aggregate (with role repository)
 	userRepository := userRepo.NewUserRepository(db)
@@ -46,10 +60,12 @@ func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager) *Router {
 	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager)
 
 	return &Router{
-		contactHandler: contactHandler,
-		profileHandler: profileHandler,
-		userHandler:    userHandler,
-		jwtManager:     jwtManager,
+		contactHandler:    contactHandler,
+		profileHandler:    profileHandler,
+		userHandler:       userHandler,
+		roleHandler:       roleHandler,
+		permissionHandler: permissionHandler,
+		jwtManager:        jwtManager,
 	}
 }
 
@@ -125,6 +141,34 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		auth := identity.Group("/auth")
 		{
 			auth.POST("/refresh", r.userHandler.RefreshToken) // Refresh access token
+		}
+
+		// Role routes (admin only)
+		roles := identity.Group("/roles")
+		roles.Use(jwt.AuthMiddleware(r.jwtManager))
+		// TODO: Add admin authorization middleware here
+		{
+			roles.POST("", r.roleHandler.Create)              // Create new role
+			roles.GET("", r.roleHandler.List)                 // List roles with pagination
+			roles.GET("/:id", r.roleHandler.GetByID)          // Get role by ID
+			roles.GET("/name/:name", r.roleHandler.GetByName) // Get role by name
+			roles.PUT("/:id", r.roleHandler.Update)           // Update role
+			roles.DELETE("/:id", r.roleHandler.Delete)        // Delete role
+			roles.GET("/user/:user_id", r.roleHandler.GetUserRoles) // Get user's roles
+		}
+
+		// Permission routes (admin only)
+		permissions := identity.Group("/permissions")
+		permissions.Use(jwt.AuthMiddleware(r.jwtManager))
+		// TODO: Add admin authorization middleware here
+		{
+			permissions.POST("", r.permissionHandler.Create)              // Create new permission
+			permissions.GET("", r.permissionHandler.List)                 // List permissions with pagination
+			permissions.GET("/:id", r.permissionHandler.GetByID)          // Get permission by ID
+			permissions.GET("/name/:name", r.permissionHandler.GetByName) // Get permission by name
+			permissions.PUT("/:id", r.permissionHandler.Update)           // Update permission
+			permissions.DELETE("/:id", r.permissionHandler.Delete)        // Delete permission
+			permissions.GET("/role/:role_id", r.permissionHandler.GetRolePermissions) // Get role's permissions
 		}
 	}
 }

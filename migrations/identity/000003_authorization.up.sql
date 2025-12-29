@@ -30,13 +30,25 @@ CREATE TRIGGER trg_identity_permissions_updated_at
 
 COMMENT ON TABLE identity_permissions IS 'Granular permissions in resource:action format';
 COMMENT ON COLUMN identity_permissions.name IS 'Permission name in resource:action format (e.g., users:read)';
-COMMENT ON COLUMN identity_permissions.resource IS 'Resource nam,
+COMMENT ON COLUMN identity_permissions.resource IS 'Resource name (e.g., users, roles, customers)';
+COMMENT ON COLUMN identity_permissions.action IS 'Action name (e.g., read, write, delete)';
+COMMENT ON COLUMN identity_permissions.deleted_at IS 'Soft delete timestamp (NULL = active)';
+
+-- Roles Table
+CREATE TABLE identity_roles (
+    id           UUID PRIMARY KEY DEFAULT uuid_v7(),
+    name         VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
+    description  TEXT,
+    is_system    BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     deleted_at   TIMESTAMP WITH TIME ZONE
 );
 
 CREATE INDEX idx_identity_roles_name ON identity_roles(name);
 CREATE INDEX idx_identity_roles_system ON identity_roles(is_system);
-CREATE INDEX idx_identity_roles_deleted_at ON identity_roles(deleted_at);
+CREATE INDEX idx_identity_roles_deleted_at ON identity_roles(deleted_at) WHERE deleted_at IS NULL;
 
 CREATE TRIGGER trg_identity_roles_updated_at
     BEFORE UPDATE ON identity_roles
@@ -45,20 +57,7 @@ CREATE TRIGGER trg_identity_roles_updated_at
 
 COMMENT ON TABLE identity_roles IS 'Groups of permissions for assignment to users';
 COMMENT ON COLUMN identity_roles.is_system IS 'System roles cannot be deleted';
-COMMENT ON COLUMN identity_roles.deleted_at IS 'Soft delete timestamp (NULL = active, NOT NULL = deleted)
-    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
-);
-
-CREATE INDEX idx_identity_roles_name ON identity_roles(name);
-CREATE INDEX idx_identity_roles_system ON identity_roles(is_system);
-
-CREATE TRIGGER trg_identity_roles_updated_at
-    BEFORE UPDATE ON identity_roles
-    FOR EACH ROW
-    EXECUTE FUNCTION tfn_entity_updated_at();
-
-COMMENT ON TABLE identity_roles IS 'Groups of permissions for assignment to users';
-COMMENT ON COLUMN identity_roles.is_system IS 'System roles cannot be deleted';
+COMMENT ON COLUMN identity_roles.deleted_at IS 'Soft delete timestamp (NULL = active)';
 
 -- Role-Permissions Junction (Many-to-Many)
 CREATE TABLE identity_role_permissions (
@@ -98,213 +97,114 @@ COMMENT ON COLUMN identity_user_roles.expires_at IS 'Optional expiration for tem
 INSERT INTO identity_permissions (id, resource, action, description, created_at)
 VALUES (uuid_v7(), '*', '*', 'Full access to all resources and actions (superadmin)', NOW());
 
--- Common permissions
+-- User management permissions
 INSERT INTO identity_permissions (id, resource, action, description, created_at)
-VALUES 
-    -- Users
-    (uuid_v7(), 'users', 'create', 'Create new users', NOW()),
-    (uuid_v7(), 'users', 'read', 'Read user information', NOW()),
-    (uuid_v7(), 'users', 'update', 'Update user information', NOW()),
+VALUES
+    (uuid_v7(), 'users', 'read', 'View user information', NOW()),
+    (uuid_v7(), 'users', 'write', 'Create and update users', NOW()),
     (uuid_v7(), 'users', 'delete', 'Delete users', NOW()),
-    (uuid_v7(), 'users', 'list', 'List all users', NOW()),
-    (uuid_v7(), 'users', 'ban', 'Ban/suspend users', NOW()),
-    (uuid_v7(), 'users', '*', 'All user operations', NOW()),
-    
-    -- Posts
-    (uuid_v7(), 'posts', 'create', 'Create new posts', NOW()),
-    (uuid_v7(), 'posts', 'read', 'Read posts', NOW()),
-    (uuid_v7(), 'posts', 'update', 'Update posts', NOW()),
-    (uuid_v7(), 'posts', 'delete', 'Delete posts', NOW()),
-    (uuid_v7(), 'posts', 'list', 'List posts', NOW()),
-    (uuid_v7(), 'posts', '*', 'All post operations', NOW()),
-    
-    -- Comments
-    (uuid_v7(), 'comments', 'create', 'Create comments', NOW()),
-    (uuid_v7(), 'comments', 'read', 'Read comments', NOW()),
-    (uuid_v7(), 'comments', 'update', 'Update comments', NOW()),
-    (uuid_v7(), 'comments', 'delete', 'Delete comments', NOW()),
-    (uuid_v7(), 'comments', 'list', 'List comments', NOW()),
-    (uuid_v7(), 'comments', '*', 'All comment operations', NOW()),
-    
-    -- Profiles
-    (uuid_v7(), 'profiles', 'create', 'Create profiles', NOW()),
-    (uuid_v7(), 'profiles', 'read', 'Read profiles', NOW()),
-    (uuid_v7(), 'profiles', 'update', 'Update profiles', NOW()),
-    (uuid_v7(), 'profiles', 'delete', 'Delete profiles', NOW()),
-    (uuid_v7(), 'profiles', 'list', 'List profiles', NOW()),
-    (uuid_v7(), 'profiles', '*', 'All profile operations', NOW()),
-    
-    -- Roles
-    (uuid_v7(), 'roles', 'create', 'Create roles', NOW()),
-    (uuid_v7(), 'roles', 'read', 'Read roles', NOW()),
-    (uuid_v7(), 'roles', 'update', 'Update roles', NOW()),
+    (uuid_v7(), 'users', 'suspend', 'Suspend user accounts', NOW()),
+    (uuid_v7(), 'users', 'ban', 'Ban user accounts', NOW()),
+    (uuid_v7(), 'users', 'activate', 'Activate user accounts', NOW());
+
+-- Role management permissions
+INSERT INTO identity_permissions (id, resource, action, description, created_at)
+VALUES
+    (uuid_v7(), 'roles', 'read', 'View roles', NOW()),
+    (uuid_v7(), 'roles', 'write', 'Create and update roles', NOW()),
     (uuid_v7(), 'roles', 'delete', 'Delete roles', NOW()),
-    (uuid_v7(), 'roles', 'list', 'List roles', NOW()),
-    (uuid_v7(), 'roles', 'assign', 'Assign roles to users', NOW()),
-    (uuid_v7(), 'roles', '*', 'All role operations', NOW()),
-    
-    -- Customers (CRM)
-    (uuid_v7(), 'customers', 'create', 'Create customers', NOW()),
-    (uuid_v7(), 'customers', 'read', 'View customer information', NOW()),
-    (uuid_v7(), 'customers', 'update', 'Update customers', NOW()),
-    (uuid_v7(), 'customers', 'write', 'Create and update customers', NOW()),
-    (uuid_v7(), 'customers', 'delete', 'Delete customers', NOW()),
-    (uuid_v7(), 'customers', 'list', 'List customers', NOW()),
-    (uuid_v7(), 'customers', 'admin', 'Full customer management', NOW()),
-    (uuid_v7(), 'customers', '*', 'All customer operations', NOW()),
-    
-    -- Contacts (CRM)
-    (uuid_v7(), 'contacts', 'create', 'Create contacts', NOW()),
-    (uuid_v7(), 'contacts', 'read', 'View contact information', NOW()),
-    (uuid_v7(), 'contacts', 'update', 'Update contacts', NOW()),
+    (uuid_v7(), 'roles', 'assign', 'Assign roles to users', NOW());
+
+-- Permission management permissions
+INSERT INTO identity_permissions (id, resource, action, description, created_at)
+VALUES
+    (uuid_v7(), 'permissions', 'read', 'View permissions', NOW()),
+    (uuid_v7(), 'permissions', 'write', 'Create and update permissions', NOW()),
+    (uuid_v7(), 'permissions', 'delete', 'Delete permissions', NOW()),
+    (uuid_v7(), 'permissions', 'assign', 'Assign permissions to roles', NOW());
+
+-- Contact management permissions
+INSERT INTO identity_permissions (id, resource, action, description, created_at)
+VALUES
+    (uuid_v7(), 'contacts', 'read', 'View contacts', NOW()),
     (uuid_v7(), 'contacts', 'write', 'Create and update contacts', NOW()),
     (uuid_v7(), 'contacts', 'delete', 'Delete contacts', NOW()),
-    (uuid_v7(), 'contacts', 'list', 'List contacts', NOW()),
-    (uuid_v7(), 'contacts', '*', 'All contact operations', NOW());
+    (uuid_v7(), 'contacts', 'verify', 'Verify contacts', NOW());
 
--- ============================================================================
--- Seed Data: System Roles
--- ============================================================================
-
-INSERT INTO identity_roles (id, name, display_name, description, is_system, created_at, updated_at)
+-- Profile management permissions
+INSERT INTO identity_permissions (id, resource, action, description, created_at)
 VALUES
-    (uuid_v7(), 'system', 'System Administrator', 'Full system access with all permissions (superadmin)', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'admin', 'Administrator', 'Full administrative access', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'moderator', 'Moderator', 'Can moderate user content and comments', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'developer', 'Developer', 'Development and debugging access', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'support', 'Support Agent', 'Customer support access', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'viewer', 'Viewer', 'Read-only access for reporting', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'user', 'User', 'Regular user with basic permissions', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'manager', 'Manager', 'Manager with extended CRM access', TRUE, NOW(), NOW()),
-    (uuid_v7(), 'guest', 'Guest', 'Limited read-only access', TRUE, NOW(), NOW());
+    (uuid_v7(), 'profiles', 'read', 'View profiles', NOW()),
+    (uuid_v7(), 'profiles', 'write', 'Create and update profiles', NOW()),
+    (uuid_v7(), 'profiles', 'delete', 'Delete profiles', NOW());
+
+-- Customer management permissions
+INSERT INTO identity_permissions (id, resource, action, description, created_at)
+VALUES
+    (uuid_v7(), 'customers', 'read', 'View customers', NOW()),
+    (uuid_v7(), 'customers', 'write', 'Create and update customers', NOW()),
+    (uuid_v7(), 'customers', 'delete', 'Delete customers', NOW()),
+    (uuid_v7(), 'customers', 'manage', 'Full customer management', NOW());
+
+-- ============================================================================
+-- Seed Data: Roles
+-- ============================================================================
+
+-- System roles (cannot be deleted)
+INSERT INTO identity_roles (id, name, display_name, description, is_system, created_at)
+VALUES
+    (uuid_v7(), 'superadmin', 'Super Administrator', 'Full system access with all permissions', TRUE, NOW()),
+    (uuid_v7(), 'admin', 'Administrator', 'System administrator with most permissions', TRUE, NOW()),
+    (uuid_v7(), 'manager', 'Manager', 'Team manager with user and customer management', TRUE, NOW()),
+    (uuid_v7(), 'user', 'User', 'Regular user with basic permissions', TRUE, NOW()),
+    (uuid_v7(), 'guest', 'Guest', 'Guest user with read-only access', TRUE, NOW());
 
 -- ============================================================================
 -- Seed Data: Role-Permission Assignments
 -- ============================================================================
 
--- System role: wildcard permission
+-- Superadmin: all permissions (wildcard)
 INSERT INTO identity_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'system' AND p.resource = '*' AND p.action = '*';
+FROM identity_roles r
+CROSS JOIN identity_permissions p
+WHERE r.name = 'superadmin'
+  AND p.resource = '*'
+  AND p.action = '*';
 
--- Admin role: wildcard permission
+-- Admin: all permissions except wildcard
 INSERT INTO identity_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'admin' AND p.resource = '*' AND p.action = '*';
+FROM identity_roles r
+CROSS JOIN identity_permissions p
+WHERE r.name = 'admin'
+  AND NOT (p.resource = '*' AND p.action = '*');
 
--- Moderator: content moderation
+-- Manager: user, customer, and profile management
 INSERT INTO identity_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'moderator' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'posts' AND p.action IN ('read', 'update', 'delete', 'list')) OR
-    (p.resource = 'comments' AND p.action = '*') OR
-    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
-);
+FROM identity_roles r
+CROSS JOIN identity_permissions p
+WHERE r.name = 'manager'
+  AND p.resource IN ('users', 'customers', 'profiles', 'contacts')
+  AND p.action IN ('read', 'write', 'manage');
 
--- Developer: full read + debug access
+-- User: own profile and contact management, read customers
 INSERT INTO identity_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'developer' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'posts' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'comments' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
-);
+FROM identity_roles r
+CROSS JOIN identity_permissions p
+WHERE r.name = 'user'
+  AND (
+      (p.resource IN ('profiles', 'contacts') AND p.action IN ('read', 'write'))
+      OR (p.resource = 'customers' AND p.action = 'read')
+  );
 
--- Support: customer support access
+-- Guest: read-only access
 INSERT INTO identity_role_permissions (role_id, permission_id)
 SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'support' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'posts' AND p.action = 'read') OR
-    (p.resource = 'comments' AND p.action = 'read') OR
-    (p.resource = 'profiles' AND p.action = 'read')
-);
-
--- Viewer: read-only analytics
-INSERT INTO identity_role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'viewer' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'posts' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'comments' AND p.action IN ('read', 'list')) OR
-    (p.resource = 'profiles' AND p.action IN ('read', 'list'))
-);
-
--- User: basic permissions
-INSERT INTO identity_role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'user' AND (
-    (p.resource = 'posts' AND p.action IN ('create', 'read')) OR
-    (p.resource = 'comments' AND p.action IN ('create', 'read')) OR
-    (p.resource = 'profiles' AND p.action IN ('create', 'read'))
-);
-
--- Guest: minimal read access
-INSERT INTO identity_role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'guest' AND (
-    (p.resource = 'posts' AND p.action = 'read') OR
-    (p.resource = 'comments' AND p.action = 'read') OR
-    (p.resource = 'profiles' AND p.action = 'read')
-);
-
--- Manager: CRM read and write permissions (customers, contacts, profiles, users)
-INSERT INTO identity_role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM identity_roles r, identity_permissions p
-WHERE r.name = 'manager' AND (
-    (p.resource = 'users' AND p.action IN ('read', 'list', 'write', 'update')) OR
-    (p.resource = 'customers' AND p.action IN ('read', 'list', 'write', 'create', 'update')) OR
-    (p.resource = 'contacts' AND p.action IN ('read', 'list', 'write', 'create', 'update')) OR
-    (p.resource = 'profiles' AND p.action IN ('read', 'list', 'write', 'create', 'update'))
-);
-
--- ============================================================================
--- Seed Data: Assign Roles to Default Users
--- ============================================================================
-
--- 1. System Administrator (superadmin)
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), u.id  -- Self-assigned during bootstrap
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'system@promenade.com' AND r.name = 'system'
-ON CONFLICT DO NOTHING;
-
--- 2. Admin User
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'admin@promenade.com' AND r.name = 'admin'
-ON CONFLICT DO NOTHING;
-
--- 3. Project Owner (alexander.vasilenko@gmail.com) - assign 'user' role
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email = 'alexander.vasilenko@gmail.com' AND r.name = 'user'
-ON CONFLICT DO NOTHING;
-
--- 4. Fallback: Assign 'user' role to any other existing users without roles
-INSERT INTO identity_user_roles (user_id, role_id, assigned_at, assigned_by)
-SELECT u.id, r.id, NOW(), (SELECT id FROM identity_users WHERE email = 'system@promenade.com')
-FROM identity_users u
-CROSS JOIN identity_roles r
-WHERE u.email NOT IN ('system@promenade.com', 'admin@promenade.com', 'alexander.vasilenko@gmail.com')
-  AND r.name = 'user'
-  AND NOT EXISTS (
-    SELECT 1 FROM identity_user_roles ur WHERE ur.user_id = u.id
-  )
-ON CONFLICT DO NOTHING;
+FROM identity_roles r
+CROSS JOIN identity_permissions p
+WHERE r.name = 'guest'
+  AND p.action = 'read'
+  AND p.resource IN ('profiles', 'customers');

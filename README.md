@@ -37,12 +37,25 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 
 **See**: [pkg/bus/README.md](pkg/bus/README.md) for complete Event Bus documentation
 
+### Role-Based Access Control (RBAC)
+
+Promenade implements **enterprise-grade RBAC** for fine-grained authorization:
+
+- **Roles**: Named collections of permissions (superadmin, admin, manager, user, guest)
+- **Permissions**: Specific actions on resources (e.g., "users:create", "customers:delete")
+- **JWT Integration**: Roles embedded in tokens for stateless authorization
+- **Flexible**: Easy to add custom roles and permissions without code changes
+- **5 System Roles**: Pre-configured with 29+ permissions across all resources
+- **14 API Endpoints**: Complete management of roles and permissions
+
+**See**: [docs/RBAC.md](docs/RBAC.md) for complete RBAC implementation guide
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | Production | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | Contact, Profile, User                | User management               | Production | [README](internal/contexts/identity/README.md) |
+| **Identity**            | User, Contact, Profile                | User management & RBAC        | Production | [README](internal/contexts/identity/README.md) |
 | **Customer Management** | Customer                              | CRM core functionality        | Production | [README](internal/contexts/customer-mgmt/README.md) |
 | **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking | Planned    | Coming Q2 2026                                 |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | Planned    | Coming Q2 2026                                 |
@@ -69,11 +82,13 @@ promenade/
           usecase/       # Business logic (GetCountries, GetCurrencies, etc.)
           adapter/http/  # HTTP handlers (Gin)
           adapter/repository/postgres/ # PostgreSQL implementation
-       identity/          #  Identity Context (Contact ready, User/Profile planned)
+       identity/          #  Identity Context (User, Contact, Profile, Role, Permission)
           README.md      # Complete documentation (~550 lines)
+          user/          #  User Aggregate (authentication, password management)
           contact/       #  Contact Aggregate (email, phone, address)
-          user/          #  User Aggregate (authentication, RBAC) - planned
-          profile/       #  Profile Aggregate (display name, bio, avatar) - planned
+          profile/       #  Profile Aggregate (display name, bio, avatar)
+          role/          #  Role Aggregate (RBAC roles)
+          permission/    #  Permission Aggregate (RBAC permissions)
        customer-mgmt/     #  Customer Management Context (planned)
        order-mgmt/        #  Order Management Context (planned)
        billing/           #  Billing Context (planned)
@@ -768,24 +783,26 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Password policies (8+ chars, digit, letter, bcrypt hashing)
 - [x] Account management (status: active/suspended/banned, locking after failed logins)
 
-### Phase 3: Authentication & Authorization (Current - Week 2)
+### Phase 3: Authentication & Authorization (Completed)
 
-- [ ] JWT authentication (token generation, validation)
-- [ ] JWT middleware for protected endpoints
-- [ ] Session management (Redis storage, TTL)
-- [ ] Token refresh mechanism
-- [ ] Role-Based Access Control (RBAC)
-- [ ] Role & Permission aggregates
-- [ ] RBAC middleware
+- [x] JWT authentication (token generation, validation)
+- [x] JWT middleware for protected endpoints
+- [x] Session management (Redis storage, TTL)
+- [x] Token refresh mechanism
+- [x] Role-Based Access Control (RBAC)
+- [x] Role & Permission aggregates
+- [x] RBAC middleware
+- [x] Role management API (7 endpoints)
+- [x] Permission management API (7 endpoints)
 
-### Phase 4: Customer Management Context (Week 2-3)
+### Phase 4: Customer Management Context (Current - Week 2-3)
 
-- [ ] Customer aggregate (lifecycle, segmentation)
+- [x] Customer aggregate (lifecycle, segmentation)
 - [ ] Company aggregate (B2B)
 - [ ] Deal aggregate (pipeline, stages)
 - [ ] Interaction aggregate (calls, emails, meetings)
 
-### Phase 4: Order Management Context (Week 4-5)
+### Phase 5: Order Management Context (Week 4-5)
 
 - [ ] Order aggregate (creation, fulfillment)
 - [ ] OrderItem value object

@@ -180,9 +180,10 @@ func TestRoleRepository_ListRoles(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, r2))
 		require.NoError(t, repo.Create(ctx, r3))
 
-		roles, err := repo.ListRoles(ctx)
+		roles, total, err := repo.ListRoles(ctx, 20, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(roles), 3)
+		assert.GreaterOrEqual(t, total, 3)
 	})
 }
 

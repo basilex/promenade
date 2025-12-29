@@ -80,3 +80,8 @@ func Unauthorized(c *gin.Context, message string) {
 func Forbidden(c *gin.Context, message string) {
 	ErrorResponse(c, http.StatusForbidden, "FORBIDDEN", message)
 }
+
+// Conflict sends a 409 Conflict response
+func Conflict(c *gin.Context, message string) {
+	ErrorResponse(c, http.StatusConflict, "CONFLICT", message)
+}

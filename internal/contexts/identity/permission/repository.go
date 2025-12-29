@@ -26,8 +26,8 @@ type IRepository interface {
 	// ExistsByName checks if a permission with the given name exists
 	ExistsByName(ctx context.Context, name string) (bool, error)
 
-	// ListPermissions lists all permissions
-	ListPermissions(ctx context.Context) ([]*Permission, error)
+	// ListPermissions lists all permissions with pagination
+	ListPermissions(ctx context.Context, limit, offset int) ([]*Permission, int, error)
 
 	// GetRolePermissions retrieves all permissions for a role
 	GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*Permission, error)
