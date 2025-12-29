@@ -13,6 +13,8 @@
 > **Not a traditional CRM** — Promenade is a **modular platform** that grows with your needs.  
 > Start with customer management, add orders when needed, integrate billing when ready.
 
+📚 **[View Full Documentation](https://basilex.github.io/promenade/)** | 🚀 **[Quick Start Guide](https://basilex.github.io/promenade/guide/getting-started)** | 📖 **[API Reference](https://basilex.github.io/promenade/guide/api-reference)**
+
 ---
 
 ## Architecture Overview
