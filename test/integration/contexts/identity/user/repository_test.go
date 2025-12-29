@@ -2,6 +2,7 @@ package user_test
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"testing"
 
@@ -24,8 +25,9 @@ func TestUserRepository_CRUD(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
-		// Create
-		u, err := user.NewUser("test@example.com", "password123")
+		// Create with unique email
+		email := valueobject.MustNewEmail(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()))
+		u, err := user.NewUser(email.Value(), "password123")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u))
 		assert.NotEqual(t, "", u.ID.String())
@@ -33,10 +35,10 @@ func TestUserRepository_CRUD(t *testing.T) {
 		// GetByID
 		found, err := repo.GetByID(ctx, u.ID)
 		require.NoError(t, err)
-		assert.Equal(t, "test@example.com", found.Email.Value())
+		assert.Equal(t, email.Value(), found.Email.Value())
 
 		// GetByEmail
-		foundByEmail, err := repo.GetByEmail(ctx, "test@example.com")
+		foundByEmail, err := repo.GetByEmail(ctx, email.Value())
 		require.NoError(t, err)
 		assert.Equal(t, u.ID, foundByEmail.ID)
 
@@ -67,14 +69,16 @@ func TestUserRepository_Queries(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
-		// Create 2 users
-		u1, _ := user.NewUser("user1@example.com", "pass1")
-		u2, _ := user.NewUser("user2@example.com", "pass2")
+		// Create 2 users with unique emails
+		email1 := valueobject.MustNewEmail(fmt.Sprintf("user1_%s@example.com", uuidv7.New().String()))
+		email2 := valueobject.MustNewEmail(fmt.Sprintf("user2_%s@example.com", uuidv7.New().String()))
+		u1, _ := user.NewUser(email1.Value(), "pass1")
+		u2, _ := user.NewUser(email2.Value(), "pass2")
 		require.NoError(t, repo.Create(ctx, u1))
 		require.NoError(t, repo.Create(ctx, u2))
 
 		// ExistsByEmail
-		exists, err := repo.ExistsByEmail(ctx, "user1@example.com")
+		exists, err := repo.ExistsByEmail(ctx, email1.Value())
 		require.NoError(t, err)
 		assert.True(t, exists)
 

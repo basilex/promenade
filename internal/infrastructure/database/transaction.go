@@ -53,3 +53,8 @@ func GetTx(ctx context.Context) (*sqlx.Tx, bool) {
 	tx, ok := ctx.Value(txKey).(*sqlx.Tx)
 	return tx, ok
 }
+
+// SetTxToContext adds a transaction to context (for testing)
+func SetTxToContext(ctx context.Context, tx *sqlx.Tx) context.Context {
+	return context.WithValue(ctx, txKey, tx)
+}

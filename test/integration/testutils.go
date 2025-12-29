@@ -154,6 +154,9 @@ func (tdb *TestDB) WithTransaction(t *testing.T, fn func(ctx context.Context, tx
 		t.Fatalf("Failed to begin transaction: %v", err)
 	}
 
+	// Add transaction to context so repositories can use it via getExecutor(ctx)
+	ctx = database.SetTxToContext(ctx, tx)
+
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
 			t.Errorf("Failed to rollback transaction: %v", err)
