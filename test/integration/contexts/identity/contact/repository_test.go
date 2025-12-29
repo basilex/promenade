@@ -112,7 +112,7 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	userID := uuidv7.New()
-	email, _ := valueobject.NewEmail("tx@example.com")
+	email := "tx@example.com"
 
 	// Transaction should rollback on error
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
@@ -123,7 +123,7 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 			userID, "user_"+userID.String()+"@test.com", "hash", "active")
 		require.NoError(t, err)
 		
-		c, _ := contact.NewEmailContact(userID, email.Value(), "Work")
+		c, _ := contact.NewEmailContact(userID, email, "Work")
 		require.NoError(t, repo.Create(ctx, c))
 		
 		// Force rollback by causing panic

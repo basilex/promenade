@@ -95,12 +95,12 @@ func TestUserRepository_Queries(t *testing.T) {
 		assert.GreaterOrEqual(t, len(users), 2)
 
 		// ValueObject roundtrip (Email preservation)
-		email1 := "VALUE@OBJECT.COM"
-		email2, _ := valueobject.NewEmail(email1)
-		u3, _ := user.NewUser(email2.Value(), "pass3")
+		email1 := "value@object.com"
+		u3, err := user.NewUser(email1, "pass3")
+		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u3))
 		retrieved, _ := repo.GetByID(ctx, u3.ID)
-		assert.Equal(t, email2.Value(), retrieved.Email.Value())
+		assert.Equal(t, email1, retrieved.Email.Value())
 	})
 }
 
