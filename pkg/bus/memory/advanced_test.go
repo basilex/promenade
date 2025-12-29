@@ -44,7 +44,7 @@ func TestMemoryBus_MultipleSubscribers(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, handler3))
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
+	require.NoError(t, mb.Publish(context.Background(), topic, event))
 
 	select {
 	case e := <-received1:
@@ -88,7 +88,7 @@ func TestMemoryBus_RetryLogic(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, handler))
 
 	event := bus.NewBaseEvent("test.retry.event", uuidv7.New())
-	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
+	require.NoError(t, mb.Publish(context.Background(), topic, event))
 
 	time.Sleep(500 * time.Millisecond)
 	assert.Equal(t, int32(3), attempts.Load())
@@ -115,7 +115,7 @@ func TestMemoryBus_PanicRecovery(t *testing.T) {
 	require.NoError(t, mb.Subscribe(topic, normalHandler))
 
 	event := bus.NewBaseEvent("test.panic.event", uuidv7.New())
-	require.NoError(t, _ = mb.Publish(context.Background(), topic, event))
+	require.NoError(t, mb.Publish(context.Background(), topic, event))
 
 	select {
 	case e := <-received:

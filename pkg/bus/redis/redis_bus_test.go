@@ -101,7 +101,7 @@ func TestRedisBus_PublishSubscribe(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	err = _ = rb.Publish(context.Background(), topic, event)
+	err = rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -141,7 +141,7 @@ func TestRedisBus_MultipleSubscribers(t *testing.T) {
 	time.Sleep(300 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	err := _ = rb.Publish(context.Background(), topic, event)
+	err := rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -188,7 +188,7 @@ func TestRedisBus_RetryLogic(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.retry.event", uuidv7.New())
-	err := _ = rb.Publish(context.Background(), topic, event)
+	err := rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -221,7 +221,7 @@ func TestRedisBus_PanicRecovery(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.panic.event", uuidv7.New())
-	err := _ = rb.Publish(context.Background(), topic, event)
+	err := rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	select {
@@ -395,7 +395,7 @@ func TestRedisBus_GracefulShutdown(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	event := bus.NewBaseEvent("test.shutdown.event", uuidv7.New())
-	err := _ = rb.Publish(context.Background(), topic, event)
+	err := rb.Publish(context.Background(), topic, event)
 	require.NoError(t, err)
 
 	<-processing

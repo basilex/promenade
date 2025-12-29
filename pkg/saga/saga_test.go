@@ -87,7 +87,7 @@ func TestSaga_Execute_Success(t *testing.T) {
 			Execute: func(ctx context.Context) error { executed = append(executed, "step2"); return nil },
 		})
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
@@ -98,7 +98,7 @@ func TestSaga_Execute_Success(t *testing.T) {
 
 	t.Run("executes empty saga without error", func(t *testing.T) {
 		s := saga.New("empty")
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err != nil {
 			t.Errorf("expected no error for empty saga, got %v", err)
 		}
@@ -136,7 +136,7 @@ func TestSaga_Execute_Failure(t *testing.T) {
 			Execute: func(ctx context.Context) error { executed = append(executed, "step3"); return nil },
 		})
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err == nil {
 			t.Error("expected error, got nil")
 		}
@@ -152,7 +152,7 @@ func TestSaga_Execute_Failure(t *testing.T) {
 			Execute: func(ctx context.Context) error { return errors.New("validation failed") },
 		})
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		errMsg := err.Error()
 		if errMsg == "" || !contains(errMsg, "order-saga") {
 			t.Errorf("error should include saga name, got: %s", errMsg)
@@ -166,7 +166,7 @@ func TestSaga_Execute_Failure(t *testing.T) {
 			Execute: func(ctx context.Context) error { return errors.New("payment failed") },
 		})
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		errMsg := err.Error()
 		if !contains(errMsg, "payment-processing") {
 			t.Errorf("error should include step name, got: %s", errMsg)
@@ -238,7 +238,7 @@ func TestSaga_Compensation(t *testing.T) {
 			Execute: func(ctx context.Context) error { return errors.New("execute failed") },
 		})
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		errMsg := err.Error()
 		if !contains(errMsg, "compensation") || !contains(errMsg, "failed") {
 			t.Errorf("expected compensation failure in error, got: %s", errMsg)
@@ -435,7 +435,7 @@ func TestSaga_RealWorldScenarios(t *testing.T) {
 			Step("finalize", func(ctx context.Context) error { steps = append(steps, "finalize"); return nil }, nil).
 			Build()
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err != nil {
 			t.Errorf("workflow should succeed, got error: %v", err)
 		}
@@ -474,7 +474,7 @@ func TestSaga_EdgeCases(t *testing.T) {
 			Step("only-step", func(ctx context.Context) error { executed = true; return nil }, nil).
 			Build()
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err != nil || !executed {
 			t.Error("single step saga should execute successfully")
 		}
@@ -500,7 +500,7 @@ func TestSaga_EdgeCases(t *testing.T) {
 			StepWithoutCompensation("step2", func(ctx context.Context) error { return errors.New("failed") }).
 			Build()
 
-		err := _ = s.Execute(context.Background())
+		err := s.Execute(context.Background())
 		if err == nil {
 			t.Error("expected error")
 		}
