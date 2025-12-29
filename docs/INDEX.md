@@ -186,7 +186,17 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 
 ---
 
-## 📝 Recent Updates
+## � Work In Progress
+
+**Active development** tasks and progress tracking:
+
+- [Work In Progress](work-in-progress/README.md) - Current tasks and TODOs
+- Living documents that change frequently
+- Phase progress reports and optimizations
+
+---
+
+## �📝 Recent Updates
 
 **December 29, 2025**:
 - ✅ Health Checks implementation (21 tests)
