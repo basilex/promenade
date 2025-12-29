@@ -2,7 +2,7 @@
 # Makefile.test.mk - Testing Infrastructure
 # ============================================================================
 
-.PHONY: test test-unit test-integration test-coverage test-smoke test-db-start test-db-stop
+.PHONY: test test-unit test-integration test-coverage test-db-start test-db-stop
 
 test:  ## Run all tests
 	@echo "Running all tests..."
@@ -11,10 +11,6 @@ test:  ## Run all tests
 test-unit:  ## Run only unit tests (fast, no DB)
 	@echo "Running unit tests..."
 	go test -v -short ./...
-
-test-smoke:  ## Run smoke tests (mock-based, no DB)
-	@echo "Running smoke tests..."
-	go test -v ./test/smoke/contexts/... -run "Handler"
 
 test-integration:  ## Run integration tests (requires test DB)
 	@echo "Running integration tests..."

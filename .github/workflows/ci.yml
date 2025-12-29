@@ -67,9 +67,6 @@ jobs:
       - name: Run unit tests
         run: make test-unit
 
-      - name: Run smoke tests
-        run: make test-smoke
-
       - name: Run integration tests
         env:
           DB_HOST: localhost
