@@ -2,6 +2,8 @@
 
 This directory contains the application's **bounded contexts** following Domain-Driven Design (DDD) principles.
 
+**See Also**: [Bounded Contexts Strategy](../../docs/concepts/bounded-contexts.md) - Complete architectural guide
+
 ## What is a Bounded Context?
 
 A **bounded context** is an explicit boundary within which a domain model is defined and applicable. It represents a specific area of the business with its own:
@@ -10,6 +12,8 @@ A **bounded context** is an explicit boundary within which a domain model is def
 - **Domain Model** - Entities, value objects, aggregates specific to this context
 - **Business Rules** - Logic that applies within this context
 - **Consistency Boundaries** - Transactional boundaries (aggregates)
+
+**Key Principle**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 ## Architecture
 
@@ -396,23 +400,25 @@ Phase 3: Routes use context handlers
 Phase 4: Remove module code
 ```
 
-## Resources
+## Related Documentation
 
-- **Documentation:**
+- [Main README](../../README.md) - Project overview
+- [Documentation Index](../../docs/INDEX.md) - Complete documentation catalog
+- [Bounded Contexts Strategy](../../docs/concepts/bounded-contexts.md) - Complete architectural guide
+- [Clean Architecture with DDD](../../docs/concepts/clean-architecture.md) - Architecture principles
+- [Event-Driven Architecture](../../docs/concepts/event-driven.md) - Event Bus and communication
 
-  - `docs/BOUNDED_CONTEXTS_GUIDE.md` - Complete DDD guide
-  - `docs/AGGREGATE_PATTERN.md` - Aggregate root pattern
-  - `docs/SAGA_PATTERN.md` - Distributed transactions
-  - `docs/VALUE_OBJECTS_GUIDE.md` - Value objects reference
+**Context Documentation**:
+- [Identity Context](identity/README.md) - User, Contact, Profile, RBAC
+- [Shared Context](shared/README.md) - Reference data (Country, Currency, Language, Timezone)
+- [Customer Management](customer-mgmt/README.md) - Customer aggregate
 
-- **Examples:**
-
-  - `examples/crm_context_example/` - Working CRM example
-
-- **Packages:**
-  - `pkg/aggregate/` - Base aggregate implementation
-  - `pkg/valueobject/` - Shared value objects
-  - `pkg/saga/` - Saga pattern implementation
+**Packages**:
+- [Package Overview](../../pkg/README.md) - All shared packages
+- [Event Bus](../../pkg/bus/README.md) - Event Bus implementation
+- [Aggregate Pattern](../../pkg/aggregate/README.md) - Base aggregate
+- [Value Objects](../../pkg/valueobject/README.md) - Shared value objects
+- [Saga Pattern](../../pkg/saga/README.md) - Distributed transactions
 
 ---
 

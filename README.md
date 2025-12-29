@@ -911,33 +911,48 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 **Core Documentation**:
 
-- [Documentation Index](docs/INDEX.md) - Complete documentation catalog with quick navigation
-- [Clean Architecture Summary](docs/CLEAN_ARCHITECTURE_SUMMARY.md) - DDD with Bounded Contexts
-- [Phase 1 Architecture Preparation](docs/PHASE1_ARCHITECTURE_PREPARATION.md) - Migration roadmap
-- [Testing Patterns](docs/TESTING_PATTERNS.md) - Comprehensive testing guide (~965 lines)
-- [Testing Quick Reference](docs/TESTING_QUICK_REFERENCE.md) - One-page cheat sheet
+- [Documentation Index](docs/INDEX.md) - Quick navigation hub with concepts and links
+- [Clean Architecture with DDD](docs/concepts/clean-architecture.md) - Bounded Contexts, Aggregates, Value Objects
+- [Event-Driven Architecture](docs/concepts/event-driven.md) - Event Bus, Domain Events, Sagas
+- [Bounded Contexts Strategy](docs/concepts/bounded-contexts.md) - Context isolation and communication
+
+**Implementation Guides**:
+
+- [RBAC Implementation](docs/guides/rbac.md) - Roles, permissions, JWT integration
+- [Rate Limiting](docs/guides/rate-limiting.md) - IP-based protection for authentication
+- [Health Checks](docs/guides/health-checks.md) - Dependency monitoring and alerting
+- [Testing Patterns](docs/guides/testing-patterns.md) - Three-tier testing strategy (~965 lines)
+- [Testing Quick Reference](docs/guides/testing-quick-reference.md) - One-page cheat sheet
+
+**Technical Reference**:
+
+- [Test Coverage Report](docs/reference/test-coverage-report.md) - 240+ tests breakdown
+- [Bus Test Coverage](docs/reference/bus-test-coverage.md) - Event Bus test report (67 tests, 100% passing)
+- [Refactoring Roadmap](docs/reference/refactoring-roadmap.md) - Technical debt and improvements
 
 **Bounded Contexts**:
 
-- [Identity Context](internal/contexts/identity/README.md) - Contact aggregate (User, Profile planned) (~550 lines)
+- [Contexts Overview](internal/contexts/README.md) - All bounded contexts catalog
+- [Identity Context](internal/contexts/identity/README.md) - User, Contact, Profile, RBAC (~550 lines)
 - [Shared Context](internal/contexts/shared/README.md) - Reference data (Country, Currency, Language, Timezone) (~450 lines)
+- [Customer Management](internal/contexts/customer-mgmt/README.md) - Customer aggregate
 
 **Package Library**:
 
 - [Package Overview](pkg/README.md) - All shared packages documentation (~400 lines)
 - [Event Bus](pkg/bus/README.md) - Central communication hub (Memory/Redis adapters) (~600 lines)
+- [JWT Authentication](pkg/jwt/README.md) - Token generation, validation, RBAC middleware
+- [UUID v7](pkg/uuidv7/README.md) - Time-ordered UUIDs for better performance
+- [Logger](pkg/logger/README.md) - Structured logging with context
+- [Value Objects](pkg/valueobject/README.md) - Email, Phone, Money, Address
 
 **Infrastructure**:
 
+- [Configuration](internal/infrastructure/config/README.md) - YAML config management
+- [Database](internal/infrastructure/database/README.md) - PostgreSQL connection and transactions
+- [Health Checks](internal/infrastructure/health/README.md) - Dependency monitoring
 - [Testing Guide](test/README.md) - Testing structure and best practices
-- [Migrations README](migrations/README.md) - Namespace-based migration system
-
-**Testing & Quality**:
-
-- [Testing Patterns](docs/TESTING_PATTERNS.md) - Comprehensive DDD testing guide
-- [Event Bus Test Coverage](docs/BUS_TEST_COVERAGE.md) - Test report (67 tests, 100% passing)
-- Mirror path testing structure (tests alongside code)
-- 150+ tests with 90%+ average coverage
+- [Migrations](migrations/README.md) - Namespace-based migration system
 
 **Total Documentation**: 8 core guides + 6 context READMEs with examples, best practices, and architecture decisions
 
