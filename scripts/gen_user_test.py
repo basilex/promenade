@@ -1,4 +1,6 @@
-package user_test
+#!/usr/bin/env python3
+
+user_test = '''package user_test
 
 import (
 	"context"
@@ -11,7 +13,6 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
-	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -47,10 +48,10 @@ func TestUserRepository_CRUD(t *testing.T) {
 		assert.Equal(t, user.UserStatusActive, updated.Status)
 
 		// Update (password)
-		require.NoError(t, u.ChangePassword("newpassword123"))
+		require.NoError(t, u.SetPassword("newpassword123"))
 		require.NoError(t, repo.Update(ctx, u))
 		withNewPass, _ := repo.GetByID(ctx, u.ID)
-		assert.NoError(t, withNewPass.CheckPassword("newpassword123"))
+		assert.True(t, withNewPass.VerifyPassword("newpassword123"))
 
 		// Delete
 		require.NoError(t, repo.Delete(ctx, u.ID))
@@ -104,7 +105,7 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	}
 	testDB := integration.SetupTestDB(t)
 
-	var userID uuidv7.UUID
+	var userID valueobject.UUID
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewUserRepository(testDB.DB)
 		u, _ := user.NewUser("concurrent@example.com", "password123")
@@ -116,8 +117,10 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	var wg sync.WaitGroup
 	errors := make(chan error, 10)
 
-	for range 10 {
-		wg.Go(func() {
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 			testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 				repo := postgres.NewUserRepository(testDB.DB)
 				u, err := repo.GetByID(ctx, userID)
@@ -130,7 +133,7 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 					errors <- err
 				}
 			})
-		})
+		}()
 	}
 
 	wg.Wait()
@@ -149,3 +152,9 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 		assert.Equal(t, user.UserStatusActive, u.Status)
 	})
 }
+'''
+
+with open('test/integration/contexts/identity/user/repository_test.go', 'w') as f:
+    f.write(user_test)
+
+print("✓ Generated test/integration/contexts/identity/user/repository_test.go (155 lines)")
