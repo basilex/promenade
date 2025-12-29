@@ -103,54 +103,134 @@ Start with customer management, add orders when needed, integrate billing when r
 
 </div>
 
-## 💡 Quick Examples
+## �️ Technology Stack
 
-:::: code-group
+<div class="tech-stack">
 
-::: code-group-item Publish Event
-```go
-// In User UseCase - after successful registration
-event := bus.NewBaseEvent("user.registered", userID)
-eventBus.Publish(ctx, bus.TopicUserRegistered, event)
-```
-:::
+<div class="tech-category">
+  <h3>Backend</h3>
+  <div class="tech-items">
+    <div class="tech-item">
+      <img src="https://go.dev/images/go-logo-blue.svg" alt="Go" />
+      <div>
+        <strong>Go 1.23+</strong>
+        <span>Fast, reliable, concurrent</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL" />
+      <div>
+        <strong>PostgreSQL 16</strong>
+        <span>ACID, JSONB, UUID v7</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <img src="https://redis.io/wp-content/uploads/2024/04/Logotype.svg" alt="Redis" />
+      <div>
+        <strong>Redis 7</strong>
+        <span>Event Bus, Caching, Sessions</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-::: code-group-item Subscribe to Event
-```go
-// In Notification Handler - send welcome email
-func (h *NotificationHandler) HandleUserRegistered(ctx context.Context, e bus.Event) error {
-    userID := e.AggregateID()
-    return h.emailService.SendWelcomeEmail(ctx, userID)
-}
-```
-:::
+<div class="tech-category">
+  <h3>Architecture</h3>
+  <div class="tech-items">
+    <div class="tech-item">
+      <div class="tech-icon">🏗️</div>
+      <div>
+        <strong>Domain-Driven Design</strong>
+        <span>Bounded Contexts, Aggregates</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">⚡</div>
+      <div>
+        <strong>Event-Driven</strong>
+        <span>377K events/sec throughput</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🎯</div>
+      <div>
+        <strong>Clean Architecture</strong>
+        <span>Layers, SOLID, Testability</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-::: code-group-item Protected Route
-```go
-// Protect routes with JWT middleware
-users := api.Group("/users")
-users.Use(jwt.AuthMiddleware(jwtManager))
-{
-    users.GET("/me", handler.GetMyProfile)
-    users.PUT("/me", handler.UpdateProfile)
-}
-```
-:::
+<div class="tech-category">
+  <h3>Infrastructure</h3>
+  <div class="tech-items">
+    <div class="tech-item">
+      <div class="tech-icon">🐳</div>
+      <div>
+        <strong>Docker</strong>
+        <span>Containerized services</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🔐</div>
+      <div>
+        <strong>JWT + RBAC</strong>
+        <span>Token-based auth, 5 roles</span>
+      </div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">📊</div>
+      <div>
+        <strong>Health Checks</strong>
+        <span>4 endpoints, monitoring</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-::: code-group-item RBAC Authorization
-```go
-// Admin-only routes
-admin := api.Group("/admin")
-admin.Use(jwt.AuthMiddleware(jwtManager))
-admin.Use(jwt.RequireRole("admin"))
-{
-    admin.GET("/users", handler.ListAllUsers)
-    admin.POST("/users/:id/suspend", handler.SuspendUser)
-}
-```
-:::
+</div>
 
-::::
+## 🎯 Perfect For
+
+<div class="use-cases">
+
+<div class="use-case">
+  <div class="use-case-icon">🚀</div>
+  <div class="use-case-content">
+    <h3>Startups Building MVPs</h3>
+    <p>Start with Identity + Customer Management contexts. Add Order Management when you have first sales. Scale without rewriting.</p>
+    <div class="use-case-benefit">✓ Fast time-to-market, modular growth</div>
+  </div>
+</div>
+
+<div class="use-case">
+  <div class="use-case-icon">🏢</div>
+  <div class="use-case-content">
+    <h3>Enterprise Microservices</h3>
+    <p>Each Bounded Context is deployment-independent. Event Bus handles communication. Perfect for distributed teams.</p>
+    <div class="use-case-benefit">✓ Team autonomy, clear boundaries</div>
+  </div>
+</div>
+
+<div class="use-case">
+  <div class="use-case-icon">📚</div>
+  <div class="use-case-content">
+    <h3>Learning DDD & Clean Architecture</h3>
+    <p>Real production code with 33 README files, testing patterns documented, architecture decisions explained.</p>
+    <div class="use-case-benefit">✓ Educational codebase, best practices</div>
+  </div>
+</div>
+
+<div class="use-case">
+  <div class="use-case-icon">⚡</div>
+  <div class="use-case-content">
+    <h3>High-Performance Applications</h3>
+    <p>UUID v7 gives 2x faster inserts. Event Bus handles 377K events/sec. No ORM overhead with sqlx.</p>
+    <div class="use-case-benefit">✓ Database optimized, production tested</div>
+  </div>
+</div>
+
+</div>
 
 ## 🏆 What Developers Say
 
@@ -279,6 +359,112 @@ make dev
 </div>
 
 <style>
+.tech-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.tech-category h3 {
+  color: var(--vp-c-brand);
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  border-bottom: 2px solid var(--vp-c-brand);
+  padding-bottom: 0.5rem;
+}
+
+.tech-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.tech-item:hover {
+  border-color: var(--vp-c-brand);
+  transform: translateX(4px);
+}
+
+.tech-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.tech-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.tech-item strong {
+  display: block;
+  color: var(--vp-c-text-1);
+  font-size: 0.95rem;
+}
+
+.tech-item span {
+  display: block;
+  color: var(--vp-c-text-3);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.use-case {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.use-case:hover {
+  border-color: var(--vp-c-brand);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.use-case-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.use-case h3 {
+  color: var(--vp-c-text-1);
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.use-case p {
+  color: var(--vp-c-text-2);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.use-case-benefit {
+  color: var(--vp-c-brand);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .testimonials {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
