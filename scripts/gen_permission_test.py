@@ -1,4 +1,6 @@
-package permission_test
+#!/usr/bin/env python3
+
+permission_test = '''package permission_test
 
 import (
 	"context"
@@ -97,3 +99,9 @@ func TestPermissionRepository_Queries(t *testing.T) {
 		assert.Equal(t, "resource1:read", rolePerms[0].Name)
 	})
 }
+'''
+
+with open('test/integration/contexts/identity/permission/repository_test.go', 'w') as f:
+    f.write(permission_test)
+
+print("✓ Generated test/integration/contexts/identity/permission/repository_test.go (106 lines)")
