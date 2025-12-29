@@ -2,7 +2,7 @@
 
 **Created:** December 28, 2025  
 **Last Updated:** December 29, 2025  
-**Status:** Updated after RBAC completion  
+**Status:** Updated after Rate Limiting completion  
 **Priority Order:** Critical → High → Medium
 
 ---
@@ -57,119 +57,46 @@ TestValidate_DatabaseValidation      PASS (3 subtests)
 TestValidate_ServerValidation        PASS
 ```
 
----
-
-## CRITICAL (High Priority)
-    is_system BOOLEAN DEFAULT false,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
-);
-
--- permissions table
-CREATE TABLE identity_permissions (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    name VARCHAR(100) UNIQUE NOT NULL,
-    resource VARCHAR(50) NOT NULL,
-    action VARCHAR(50) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- user_roles junction table
-CREATE TABLE identity_user_roles (
-    user_id UUID NOT NULL REFERENCES identity_users(id),
-    role_id UUID NOT NULL REFERENCES identity_roles(id),
-    assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    assigned_by UUID REFERENCES identity_users(id),
-    PRIMARY KEY (user_id, role_id)
-);
-
--- role_permissions junction table
-CREATE TABLE identity_role_permissions (
-    role_id UUID NOT NULL REFERENCES identity_roles(id),
-    permission_id UUID NOT NULL REFERENCES identity_permissions(id),
-    PRIMARY KEY (role_id, permission_id)
-);
-
--- Default roles seed data
-INSERT INTO identity_roles (id, name, description, is_system) VALUES
-    (uuid_v7(), 'admin', 'System administrator', true),
-    (uuid_v7(), 'user', 'Regular user', true),
-    (uuid_v7(), 'manager', 'Manager role', true);
-```
-
----
-
-## CRITICAL (High Priority)
-
-### 1. Rate Limiting for Authentication
-
-**Current State:**
-- No rate limiting on Login/Register endpoints
-- Vulnerable to brute-force attacks
-- Account lockout works but doesn't stop attack
-
-**Tasks:**
-- [ ] Add rate limiting middleware (use `golang.org/x/time/rate`)
-- [ ] IP-based limiting for Login (5 attempts per minute)
-- [ ] IP-based limiting for Register (3 attempts per minute)
-- [ ] Add rate limit headers in response
-- [ ] Add tests
-
-**Estimate:** 2-3 hours
-
-**Package to use:**
-```bash
-go get golang.org/x/time/rate
-```
+### 3. Rate Limiting for Authentication (COMPLETED December 29, 2025)
 
 **Implementation:**
-```go
-// pkg/middleware/ratelimit.go
-type RateLimiter struct {
-    visitors map[string]*rate.Limiter
-    mu       sync.RWMutex
-    rate     rate.Limit
-    burst    int
-}
+- Created `pkg/middleware/ratelimit.go` with RateLimiter using token bucket algorithm
+- IP-based tracking with per-IP rate limiters (thread-safe with RWMutex)
+- Configurable rate and burst size using `golang.org/x/time/rate`
+- Standard X-RateLimit-* headers (Limit, Remaining, Reset)
+- Memory cleanup method (`CleanupVisitors()`) to prevent leaks
+- Comprehensive test suite: 10 tests covering all scenarios (100% coverage)
 
-func NewRateLimiter(r rate.Limit, b int) *RateLimiter {
-    return &RateLimiter{
-        visitors: make(map[string]*rate.Limiter),
-        rate:     r,
-        burst:    b,
-    }
-}
+**Integration:**
+- Applied to Identity context authentication endpoints:
+  * Login: 5 attempts per minute (burst 1)
+  * Register: 3 attempts per minute (burst 1)
+- Returns 429 Too Many Requests with clear error message
+- Separate limits per IP address (one abusive client doesn't affect others)
 
-func (rl *RateLimiter) Limit() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        ip := c.ClientIP()
-        
-        rl.mu.Lock()
-        limiter, exists := rl.visitors[ip]
-        if !exists {
-            limiter = rate.NewLimiter(rl.rate, rl.burst)
-            rl.visitors[ip] = limiter
-        }
-        rl.mu.Unlock()
-        
-        if !limiter.Allow() {
-            response.Error(c, http.StatusTooManyRequests, "RATE_LIMIT_EXCEEDED", "Too many requests")
-            c.Abort()
-            return
-        }
-        
-        c.Next()
-    }
-}
+**Test Coverage:**
 ```
+TestNewRateLimiter                          PASS
+TestRateLimiter_AllowsRequests              PASS
+TestRateLimiter_BlocksExcessRequests        PASS
+TestRateLimiter_SetsRateLimitHeaders        PASS
+TestRateLimiter_SetsResetHeaderWhenLimitExceeded PASS
+TestRateLimiter_SeparatesIPAddresses        PASS
+TestRateLimiter_AllowsBurstRequests         PASS
+TestRateLimiter_CleanupVisitors             PASS
+TestRateLimiter_ConcurrentAccess            PASS
+TestRateLimiter_GetVisitorCount             PASS
+```
+
+**Documentation:**
+- Created `docs/RATE_LIMITING.md` (680+ lines) - Complete implementation guide
+- Updated `README.md` with Rate Limiting overview section
 
 ---
 
-## HIGH PRIORITY (Day 2-3)
+## CRITICAL (High Priority)
 
-### 3. Token Revocation Mechanism
+### 1. Token Revocation Mechanism
 
 **Current State:**
 - JWT tokens cannot be revoked before expiry
@@ -186,7 +113,9 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-### 4. Health Checks for Dependencies
+## HIGH PRIORITY (Week 1-2)
+
+### 2. Health Checks for Dependencies
 
 **Current State:**
 - `/health` endpoint exists but doesn't check dependencies
@@ -202,7 +131,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 
 ---
 
-### 4. Database Indexes Audit
+### 3. Database Indexes Audit
 
 **Current State:**
 - Not all tables have proper indexes
@@ -215,7 +144,7 @@ func (rl *RateLimiter) Limit() gin.HandlerFunc {
 - [ ] Create migration with indexes
 
 **Estimate:** 2 hours
-3
+
 **Queries to analyze:**
 ```sql
 -- Check missing indexes
@@ -228,7 +157,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 5. Error Definitions Consistency
+### 4. Error Definitions Consistency
 
 **Current State:**
 - User: errors in usecase.go
@@ -245,9 +174,9 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-## MEDIUM PRIORITY (Week 2)
+## MEDIUM PRIORITY (Week 2-3)
 
-### 7. Panic Handling Improvements
+### 5. Panic Handling Improvements
 
 **Current State:**
 - `MustGetClaims()` panics if claims not found
@@ -263,7 +192,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 7. Soft Delete Query Audit
+### 6. Soft Delete Query Audit
 
 **Current State:**
 - Most queries include `deleted_at IS NULL`
@@ -279,7 +208,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 8. Caching Layer (Redis)
+### 7. Caching Layer (Redis)
 
 **Current State:**
 - No caching implemented
@@ -296,7 +225,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 9. N+1 Query Optimization
+### 8. N+1 Query Optimization
 
 **Current State:**
 - Potential N+1 in ListUsers + Profiles
@@ -312,7 +241,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 10. CSRF Protection
+### 9. CSRF Protection
 
 **Current State:**
 - Using Bearer tokens (safe)
@@ -332,10 +261,10 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 | Priority | Tasks | Estimated Time | Status |
 |----------|-------|----------------|--------|
-| Critical | 1 | 2-3 hours | Ready to start |
-| High | 4 | 9 hours | Week 1-2 |
-| Medium | 5 | 11 hours | Week 2-3 |
-| **TOTAL** | **10** | **22-23 hours** | ~3 working days |
+| Critical | 1 | 3 hours | Ready to start |
+| High | 3 | 4 hours | Week 1-2 |
+| Medium | 5 | 10 hours | Week 2-3 |
+| **TOTAL** | **9** | **17 hours** | ~2 working days |
 
 ---
 
@@ -348,17 +277,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-## 🔗 **Related Documents**
-
-- [Clean Architecture Summary](CLEAN_ARCHITECTURE_SUMMARY.md)
-- [Testing Patterns](TESTING_PATTERNS.md)
-- [AI Instructions](../.github/copilot-instructions.md)
-
----
-
-**Last Updated:** December 28, 2025  
-**Next Review:** After Day 1 completion
-Related Documents
+## Related Documents
 
 - [Clean Architecture Summary](CLEAN_ARCHITECTURE_SUMMARY.md)
 - [Testing Patterns](TESTING_PATTERNS.md)

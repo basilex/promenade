@@ -50,6 +50,19 @@ Promenade implements **enterprise-grade RBAC** for fine-grained authorization:
 
 **See**: [docs/RBAC.md](docs/RBAC.md) for complete RBAC implementation guide
 
+### Rate Limiting
+
+Promenade implements **IP-based rate limiting** to protect against brute-force attacks:
+
+- **Token Bucket Algorithm**: Each IP gets separate rate limiter with configurable rate and burst
+- **Authentication Protection**: Login (5/min), Register (3/min) endpoints rate-limited
+- **X-RateLimit Headers**: Standard headers (Limit, Remaining, Reset) in all responses
+- **Thread-Safe**: Concurrent access with RWMutex, production-ready
+- **Memory Management**: Periodic cleanup prevents memory leaks
+- **10 Tests**: Comprehensive test coverage (100% passing)
+
+**See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |

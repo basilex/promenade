@@ -1,8 +1,11 @@
 package identity
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/time/rate"
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	contactHTTP "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http"
@@ -20,6 +23,7 @@ import (
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/jwt"
+	"github.com/basilex/promenade/pkg/middleware"
 )
 
 // Router manages routes for Identity context
@@ -117,9 +121,13 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		// User routes
 		users := identity.Group("/users")
 		{
-			// Public routes (no authentication required)
-			users.POST("/register", r.userHandler.Register) // Register new user
-			users.POST("/login", r.userHandler.Login)       // Authenticate user
+			// Rate limiters
+			loginLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)       // 5 attempts per minute
+			registerLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/3), 1)    // 3 attempts per minute
+
+			// Public routes with rate limiting
+			users.POST("/register", registerLimiter.Limit(), r.userHandler.Register) // Register new user (rate limited)
+			users.POST("/login", loginLimiter.Limit(), r.userHandler.Login)          // Authenticate user (rate limited)
 
 			// Protected routes (authentication required)
 			protected := users.Group("")
