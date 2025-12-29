@@ -19,6 +19,7 @@ import (
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/internal/infrastructure/health"
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
@@ -187,13 +188,10 @@ func main() {
 		gin.Logger(),
 	)
 
-	// Health check
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":    "healthy",
-			"timestamp": time.Now().Format(time.RFC3339),
-		})
-	})
+	// Health checks with dependency monitoring
+	healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
+	healthHandler := health.NewHandler(healthChecker)
+	healthHandler.RegisterRoutes(r)
 
 	// Initialize context routers
 	sharedRouter := shared.NewRouter(db)                                     // Shared Context (Reference Data)

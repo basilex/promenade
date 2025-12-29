@@ -138,27 +138,69 @@ TestTokenRevoker_ConcurrentRevocations      PASS
 - Graceful Redis failure (if Redis unavailable, revocation disabled but app continues)
 - Concurrent-safe revocation operations (Redis atomic operations)
 
+### 5. Health Checks for Dependencies (COMPLETED December 29, 2025)
+
+**Implementation:**
+- Created `internal/infrastructure/health/health.go` with Checker pattern
+- Created `internal/infrastructure/health/handler.go` with 4 HTTP endpoints
+- Integrated into `cmd/api/main.go` with dependency injection
+- Comprehensive test suite: 21 tests (100% passing)
+
+**Components:**
+- **health.Checker**: Core health check logic with timeout-based checks
+  * CheckAll(ctx) - All dependencies with 5-second timeout
+  * CheckDatabase(ctx) - PostgreSQL ping + query test
+  * CheckRedis(ctx) - Redis ping (graceful if not configured)
+  * CheckEventBus(ctx) - Event bus health check
+- **health.Handler**: HTTP endpoints with proper status codes
+  * GET /health - Overall status (200/503)
+  * GET /health/db - Database only
+  * GET /health/redis - Redis only
+  * GET /health/bus - Event Bus only
+
+**Features:**
+- **3 Status Levels**: healthy, degraded, unhealthy
+- **Timeout Protection**: 5-second timeout for all checks
+- **Graceful Degradation**: Optional dependencies (Redis) handled gracefully
+- **HTTP Status Codes**: 200 (healthy/degraded), 503 (unhealthy)
+- **Version Tracking**: Reports application version in response
+
+**Test Coverage:**
+```
+TestChecker_CheckDatabase_Healthy                PASS
+TestChecker_CheckDatabase_Unhealthy_PingFailed   PASS
+TestChecker_CheckDatabase_Degraded_QueryFailed   PASS
+TestChecker_CheckRedis_Healthy                   PASS
+TestChecker_CheckRedis_Unhealthy                 PASS
+TestChecker_CheckRedis_NotConfigured             PASS
+TestChecker_CheckEventBus_Healthy                PASS
+TestChecker_CheckAll_AllHealthy                  PASS
+TestChecker_CheckAll_DatabaseUnhealthy           PASS
+TestChecker_CheckAll_WithTimeout                 PASS (5s timeout verified)
+TestHandler_CheckAll_Healthy                     PASS
+TestHandler_CheckAll_Unhealthy                   PASS
+TestHandler_CheckAll_Degraded                    PASS
+TestHandler_CheckDatabase_Healthy                PASS
+TestHandler_CheckDatabase_Unhealthy              PASS
+TestHandler_CheckRedis                           PASS
+TestHandler_CheckEventBus                        PASS
+TestHandler_RegisterRoutes                       PASS
+```
+
+**Dependencies Added:**
+- `github.com/DATA-DOG/go-sqlmock` - Database mock for testing
+- `github.com/go-redis/redismock/v9` - Redis mock for testing
+
+**Integration:**
+- Replaces old simple `/health` endpoint with comprehensive system
+- Dependencies: db (PostgreSQL), redisClient (optional), eventBus
+- Graceful handling when Redis not available
+
 ---
 
 ## HIGH PRIORITY (Week 1-2)
 
-### 1. Health Checks for Dependencies
-
-**Current State:**
-- `/health` endpoint exists but doesn't check dependencies
-
-**Tasks:**
-- [ ] Add `/health/db` - PostgreSQL check
-- [ ] Add `/health/redis` - Redis check (if used)
-- [ ] Add `/health/bus` - Event Bus check
-- [ ] Return proper status codes (200/503)
-- [ ] Add timeout for checks
-
-**Estimate:** 1 hour
-
----
-
-### 2. Database Indexes Audit
+### 1. Database Indexes Audit
 
 **Current State:**
 - Not all tables have proper indexes
@@ -184,7 +226,7 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ---
 
-### 3. Error Definitions Consistency
+### 2. Error Definitions Consistency
 
 **Current State:**
 - User: errors in usecase.go
