@@ -44,12 +44,12 @@ type Config struct {
 // DefaultConfig returns default test database configuration
 func DefaultConfig() Config {
 	return Config{
-		Host:     getEnv("TEST_DB_HOST", "localhost"),
-		Port:     getEnv("TEST_DB_PORT", "5433"), // Use dedicated test container port
-		User:     getEnv("TEST_DB_USER", "system"),
-		Password: getEnv("TEST_DB_PASSWORD", "passw0rd"),
-		DBName:   getEnv("TEST_DB_NAME", "promenade_test"),
-		SSLMode:  getEnv("TEST_DB_SSLMODE", "disable"),
+		Host:     getEnv("DB_HOST", getEnv("TEST_DB_HOST", "localhost")),
+		Port:     getEnv("DB_PORT", getEnv("TEST_DB_PORT", "5433")), // CI uses DB_PORT=5432, local uses 5433
+		User:     getEnv("DB_USER", getEnv("TEST_DB_USER", "system")),
+		Password: getEnv("DB_PASSWORD", getEnv("TEST_DB_PASSWORD", "passw0rd")),
+		DBName:   getEnv("DB_NAME", getEnv("TEST_DB_NAME", "promenade_test")),
+		SSLMode:  getEnv("DB_SSLMODE", getEnv("TEST_DB_SSLMODE", "disable")),
 	}
 }
 
