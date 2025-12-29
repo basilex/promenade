@@ -26,8 +26,8 @@ func TestUserRepository_CRUD(t *testing.T) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
 		// Create with unique email
-		email := valueobject.MustNewEmail(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()))
-		u, err := user.NewUser(email.Value(), "password123")
+		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
+		u, err := user.NewUser(email, "password123")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u))
 		assert.NotEqual(t, "", u.ID.String())
@@ -35,10 +35,10 @@ func TestUserRepository_CRUD(t *testing.T) {
 		// GetByID
 		found, err := repo.GetByID(ctx, u.ID)
 		require.NoError(t, err)
-		assert.Equal(t, email.Value(), found.Email.Value())
+		assert.Equal(t, email, found.Email.Value())
 
 		// GetByEmail
-		foundByEmail, err := repo.GetByEmail(ctx, email.Value())
+		foundByEmail, err := repo.GetByEmail(ctx, email)
 		require.NoError(t, err)
 		assert.Equal(t, u.ID, foundByEmail.ID)
 
@@ -70,15 +70,17 @@ func TestUserRepository_Queries(t *testing.T) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
 		// Create 2 users with unique emails
-		email1 := valueobject.MustNewEmail(fmt.Sprintf("user1_%s@example.com", uuidv7.New().String()))
-		email2 := valueobject.MustNewEmail(fmt.Sprintf("user2_%s@example.com", uuidv7.New().String()))
-		u1, _ := user.NewUser(email1.Value(), "pass1")
-		u2, _ := user.NewUser(email2.Value(), "pass2")
+		email1 := fmt.Sprintf("user1_%s@example.com", uuidv7.New().String())
+		email2 := fmt.Sprintf("user2_%s@example.com", uuidv7.New().String())
+		u1, err := user.NewUser(email1, "pass1")
+		require.NoError(t, err)
+		u2, err := user.NewUser(email2, "pass2")
+		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u1))
 		require.NoError(t, repo.Create(ctx, u2))
 
 		// ExistsByEmail
-		exists, err := repo.ExistsByEmail(ctx, email1.Value())
+		exists, err := repo.ExistsByEmail(ctx, email1)
 		require.NoError(t, err)
 		assert.True(t, exists)
 

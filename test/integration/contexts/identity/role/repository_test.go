@@ -33,7 +33,7 @@ func TestRoleRepository_CRUD(t *testing.T) {
 		// Read by ID
 		found, err := repo.GetByID(ctx, r.ID)
 		require.NoError(t, err)
-		assert.Equal(t, "test_role", found.Name)
+		assert.Equal(t, roleName, found.Name)
 		assert.Equal(t, "Test Role", found.DisplayName)
 
 		// Read by Name
@@ -90,16 +90,16 @@ func TestRoleRepository_Queries(t *testing.T) {
 
 		// GetUserRoles (requires user-role assignment)
 		userID := uuidv7.New()
-		_, err = testDB.DB.Exec(`INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
+		_, err = tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
 			userID, fmt.Sprintf("user_%s@test.com", userID), "hash", "active")
 		require.NoError(t, err)
 
-		_, err = testDB.DB.Exec(`INSERT INTO identity_user_roles (user_id, role_id) VALUES ($1, $2)`, userID, r1.ID)
+		_, err = tx.ExecContext(ctx, `INSERT INTO identity_user_roles (user_id, role_id) VALUES ($1, $2)`, userID, r1.ID)
 		require.NoError(t, err)
 
 		userRoles, err := repo.GetUserRoles(ctx, userID)
 		require.NoError(t, err)
 		assert.Len(t, userRoles, 1)
-		assert.Equal(t, "role1", userRoles[0].Name)
+		assert.Equal(t, role1Name, userRoles[0].Name)
 	})
 }

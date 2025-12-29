@@ -25,19 +25,20 @@ func TestPermissionRepository_CRUD(t *testing.T) {
 
 		// Create with unique resource name
 		uuid := uuidv7.New().String()[:8]
-		p, err := permission.NewPermission(fmt.Sprintf("test_resource_%s", uuid), "read", "Test permission")
+		resourceName := fmt.Sprintf("test_resource_%s", uuid)
+		p, err := permission.NewPermission(resourceName, "read", "Test permission")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, p))
 
 		// Read by ID
 		found, err := repo.GetByID(ctx, p.ID)
 		require.NoError(t, err)
-		assert.Equal(t, "test_resource", found.Resource)
+		assert.Equal(t, resourceName, found.Resource)
 		assert.Equal(t, "read", found.Action)
-		assert.Equal(t, "test_resource:read", found.Name)
+		assert.Equal(t, resourceName+":read", found.Name)
 
 		// Read by Name
-		foundByName, err := repo.GetByName(ctx, "test_resource:read")
+		foundByName, err := repo.GetByName(ctx, resourceName+":read")
 		require.NoError(t, err)
 		assert.Equal(t, p.ID, foundByName.ID)
 
