@@ -14,6 +14,9 @@ import (
 )
 
 func TestUserRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -48,6 +51,9 @@ func TestUserRepository_Create(t *testing.T) {
 }
 
 func TestUserRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -72,6 +78,9 @@ func TestUserRepository_GetByID(t *testing.T) {
 }
 
 func TestUserRepository_GetByEmail(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -106,6 +115,9 @@ func TestUserRepository_GetByEmail(t *testing.T) {
 }
 
 func TestUserRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -188,6 +200,9 @@ func TestUserRepository_Update(t *testing.T) {
 }
 
 func TestUserRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -215,6 +230,9 @@ func TestUserRepository_Delete(t *testing.T) {
 }
 
 func TestUserRepository_ExistsByEmail(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -258,6 +276,9 @@ func TestUserRepository_ExistsByEmail(t *testing.T) {
 }
 
 func TestUserRepository_ListUsers(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -299,6 +320,9 @@ func TestUserRepository_ListUsers(t *testing.T) {
 }
 
 func TestUserRepository_ValueObjectRoundTrip(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
@@ -323,6 +347,9 @@ func TestUserRepository_ValueObjectRoundTrip(t *testing.T) {
 }
 
 func TestUserRepository_ConcurrentUpdates(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()

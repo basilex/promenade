@@ -14,6 +14,9 @@ import (
 )
 
 func TestRoleRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -60,6 +63,9 @@ func TestRoleRepository_Create(t *testing.T) {
 }
 
 func TestRoleRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -84,6 +90,9 @@ func TestRoleRepository_GetByID(t *testing.T) {
 }
 
 func TestRoleRepository_GetByName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -106,6 +115,9 @@ func TestRoleRepository_GetByName(t *testing.T) {
 }
 
 func TestRoleRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -130,6 +142,9 @@ func TestRoleRepository_Update(t *testing.T) {
 }
 
 func TestRoleRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -166,6 +181,9 @@ func TestRoleRepository_Delete(t *testing.T) {
 }
 
 func TestRoleRepository_ListRoles(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -188,6 +206,9 @@ func TestRoleRepository_ListRoles(t *testing.T) {
 }
 
 func TestRoleRepository_ExistsByName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()
@@ -209,6 +230,9 @@ func TestRoleRepository_ExistsByName(t *testing.T) {
 }
 
 func TestRoleRepository_GetUserRoles(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	roleRepo := postgres.NewRoleRepository(db.DB)
 	ctx := context.Background()

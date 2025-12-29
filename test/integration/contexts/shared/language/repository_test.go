@@ -15,6 +15,9 @@ import (
 )
 
 func TestRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -100,6 +103,9 @@ func TestRepository_Create(t *testing.T) {
 }
 
 func TestRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -168,6 +174,9 @@ func TestRepository_GetByID(t *testing.T) {
 }
 
 func TestRepository_GetByCode(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -264,6 +273,9 @@ func TestRepository_GetByCode(t *testing.T) {
 }
 
 func TestRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -326,6 +338,9 @@ func TestRepository_Update(t *testing.T) {
 }
 
 func TestRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -375,6 +390,9 @@ func TestRepository_Delete(t *testing.T) {
 }
 
 func TestRepository_List(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {

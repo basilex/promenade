@@ -14,6 +14,9 @@ import (
 )
 
 func TestPermissionRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -47,6 +50,9 @@ func TestPermissionRepository_Create(t *testing.T) {
 }
 
 func TestPermissionRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -71,6 +77,9 @@ func TestPermissionRepository_GetByID(t *testing.T) {
 }
 
 func TestPermissionRepository_GetByName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -93,6 +102,9 @@ func TestPermissionRepository_GetByName(t *testing.T) {
 }
 
 func TestPermissionRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -114,6 +126,9 @@ func TestPermissionRepository_Update(t *testing.T) {
 }
 
 func TestPermissionRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -141,6 +156,9 @@ func TestPermissionRepository_Delete(t *testing.T) {
 }
 
 func TestPermissionRepository_ListPermissions(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -163,6 +181,9 @@ func TestPermissionRepository_ListPermissions(t *testing.T) {
 }
 
 func TestPermissionRepository_ExistsByName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()
@@ -184,6 +205,9 @@ func TestPermissionRepository_ExistsByName(t *testing.T) {
 }
 
 func TestPermissionRepository_GetRolePermissions(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	permRepo := postgres.NewPermissionRepository(db.DB)
 	ctx := context.Background()

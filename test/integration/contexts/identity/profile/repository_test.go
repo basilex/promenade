@@ -30,6 +30,9 @@ func createTestUser(t *testing.T, db *integration.TestDB, userID uuidv7.UUID) {
 }
 
 func TestProfileRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
@@ -84,6 +87,9 @@ func TestProfileRepository_Create(t *testing.T) {
 }
 
 func TestProfileRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
@@ -111,6 +117,9 @@ func TestProfileRepository_GetByID(t *testing.T) {
 }
 
 func TestProfileRepository_GetByUserID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
@@ -139,6 +148,9 @@ func TestProfileRepository_GetByUserID(t *testing.T) {
 }
 
 func TestProfileRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
@@ -329,6 +341,9 @@ func TestProfileRepository_Update(t *testing.T) {
 }
 
 func TestProfileRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()
@@ -350,6 +365,9 @@ func TestProfileRepository_Delete(t *testing.T) {
 }
 
 func TestProfileRepository_ListPublicProfiles(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewProfileRepository(db.DB)
 	ctx := context.Background()

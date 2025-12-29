@@ -16,6 +16,9 @@ import (
 )
 
 func TestCustomerRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -96,6 +99,9 @@ func TestCustomerRepository_Create(t *testing.T) {
 }
 
 func TestCustomerRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -122,6 +128,9 @@ func TestCustomerRepository_GetByID(t *testing.T) {
 }
 
 func TestCustomerRepository_GetByEmail(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -146,6 +155,9 @@ func TestCustomerRepository_GetByEmail(t *testing.T) {
 }
 
 func TestCustomerRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -216,6 +228,9 @@ func TestCustomerRepository_Update(t *testing.T) {
 }
 
 func TestCustomerRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -236,6 +251,9 @@ func TestCustomerRepository_Delete(t *testing.T) {
 }
 
 func TestCustomerRepository_ExistsByEmail(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -259,6 +277,9 @@ func TestCustomerRepository_ExistsByEmail(t *testing.T) {
 }
 
 func TestCustomerRepository_ListByStatus(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -297,6 +318,9 @@ func TestCustomerRepository_ListByStatus(t *testing.T) {
 }
 
 func TestCustomerRepository_ListByTier(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -337,6 +361,9 @@ func TestCustomerRepository_ListByTier(t *testing.T) {
 }
 
 func TestCustomerRepository_List(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -373,6 +400,9 @@ func TestCustomerRepository_List(t *testing.T) {
 }
 
 func TestCustomerRepository_CountByStatus(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -405,6 +435,9 @@ func TestCustomerRepository_CountByStatus(t *testing.T) {
 }
 
 func TestCustomerRepository_CountByTier(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -436,6 +469,9 @@ func TestCustomerRepository_CountByTier(t *testing.T) {
 }
 
 func TestCustomerRepository_GetByUserID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -473,6 +509,9 @@ func TestCustomerRepository_GetByUserID(t *testing.T) {
 }
 
 func TestCustomerRepository_ListByAssignedTo(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()
@@ -511,6 +550,9 @@ func TestCustomerRepository_ListByAssignedTo(t *testing.T) {
 }
 
 func TestCustomerRepository_ListByCompanyID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewCustomerRepository(db.DB)
 	ctx := context.Background()

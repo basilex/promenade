@@ -16,6 +16,9 @@ import (
 )
 
 func TestCurrencyRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -46,6 +49,9 @@ func TestCurrencyRepository_Create(t *testing.T) {
 }
 
 func TestCurrencyRepository_GetByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("not_found", func(t *testing.T) {
@@ -62,6 +68,9 @@ func TestCurrencyRepository_GetByID(t *testing.T) {
 }
 
 func TestCurrencyRepository_GetByCode(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -89,6 +98,9 @@ func TestCurrencyRepository_GetByCode(t *testing.T) {
 }
 
 func TestCurrencyRepository_List(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("returns_active_only", func(t *testing.T) {
@@ -120,6 +132,9 @@ func TestCurrencyRepository_List(t *testing.T) {
 }
 
 func TestCurrencyRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("success", func(t *testing.T) {
@@ -153,6 +168,9 @@ func TestCurrencyRepository_Update(t *testing.T) {
 }
 
 func TestCurrencyRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	testDB := integration.SetupTestDB(t)
 
 	t.Run("soft_delete", func(t *testing.T) {

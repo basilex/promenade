@@ -29,6 +29,9 @@ func createTestUser(t *testing.T, db *integration.TestDB, userID uuidv7.UUID) {
 }
 
 func TestContactRepository_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -87,6 +90,9 @@ func TestContactRepository_Create(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -111,6 +117,9 @@ func TestContactRepository_GetByUserID(t *testing.T) {
 }
 
 func TestContactRepository_GetByUserIDAndType(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -138,6 +147,9 @@ func TestContactRepository_GetByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_Update(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -178,6 +190,9 @@ func TestContactRepository_Update(t *testing.T) {
 }
 
 func TestContactRepository_Delete(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -201,6 +216,9 @@ func TestContactRepository_Delete(t *testing.T) {
 }
 
 func TestContactRepository_SetPrimary(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -231,6 +249,9 @@ func TestContactRepository_SetPrimary(t *testing.T) {
 }
 
 func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -263,6 +284,9 @@ func TestContactRepository_GetPrimaryByUserIDAndType(t *testing.T) {
 }
 
 func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
@@ -289,6 +313,9 @@ func TestContactRepository_ExistsPrimaryForUserAndType(t *testing.T) {
 }
 
 func TestContactRepository_WithTransaction(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewContactRepository(db.DB)
 	ctx := context.Background()
