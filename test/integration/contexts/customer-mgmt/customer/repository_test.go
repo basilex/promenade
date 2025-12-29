@@ -2,6 +2,7 @@ package customer_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -154,8 +155,8 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		assignedTo1 := uuidv7.New()
 		assignedTo2 := uuidv7.New()
 		
-		for range 2 {
-			c, _ := customer.NewCustomer("Assigned1", "assigned1@test.com", "web", assignedTo1)
+		for i := range 2 {
+			c, _ := customer.NewCustomer("Assigned1", fmt.Sprintf("assigned1_%d@test.com", i), "web", assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 		c3, _ := customer.NewCustomer("Assigned2", "assigned2@test.com", "web", assignedTo2)
@@ -169,8 +170,8 @@ func TestCustomerRepository_Relations(t *testing.T) {
 
 		// ListByCompanyID (B2B customers)
 		companyID := uuidv7.New()
-		for range 2 {
-			c, _ := customer.NewB2BCustomer("B2B Customer", "b2b@test.com", "web", companyID, assignedTo1)
+		for i := range 2 {
+			c, _ := customer.NewB2BCustomer("B2B Customer", fmt.Sprintf("b2b_%d@test.com", i), "web", companyID, assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
