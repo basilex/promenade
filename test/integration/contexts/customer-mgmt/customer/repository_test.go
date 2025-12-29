@@ -184,8 +184,8 @@ func TestCustomerRepository_Update(t *testing.T) {
 	t.Run("update customer tier", func(t *testing.T) {
 		assignedTo := uuidv7.New()
 		c, _ := customer.NewCustomer("Tier Test", "tier@example.com", "website", assignedTo)
-		_ = c.QualifyAsProspect()
-		_ = c.ConvertToCustomer()
+		require.NoError(t, c.QualifyAsProspect())
+		require.NoError(t, c.ConvertToCustomer())
 		err := repo.Create(ctx, c)
 		require.NoError(t, err)
 
@@ -264,15 +264,16 @@ func TestCustomerRepository_ListByStatus(t *testing.T) {
 	ctx := context.Background()
 	assignedTo := uuidv7.New()
 
+	// Create test data BEFORE subtests to ensure it persists
 	lead1, _ := customer.NewCustomer("Lead 1", "lead1@example.com", "website", assignedTo)
-	_ = repo.Create(ctx, lead1)
+	require.NoError(t, repo.Create(ctx, lead1))
 
 	lead2, _ := customer.NewCustomer("Lead 2", "lead2@example.com", "website", assignedTo)
-	_ = repo.Create(ctx, lead2)
+	require.NoError(t, repo.Create(ctx, lead2))
 
 	prospect, _ := customer.NewCustomer("Prospect", "prospect@example.com", "website", assignedTo)
-	_ = prospect.QualifyAsProspect()
-	_ = repo.Create(ctx, prospect)
+	require.NoError(t, prospect.QualifyAsProspect())
+	require.NoError(t, repo.Create(ctx, prospect))
 
 	t.Run("list leads", func(t *testing.T) {
 		customers, total, err := repo.ListByStatus(ctx, customer.CustomerStatusLead, 10, 0)
@@ -301,17 +302,18 @@ func TestCustomerRepository_ListByTier(t *testing.T) {
 	ctx := context.Background()
 	assignedTo := uuidv7.New()
 
+	// Create test data BEFORE subtests to ensure it persists
 	free1, _ := customer.NewCustomer("Free 1", "free1@example.com", "website", assignedTo)
-	_ = repo.Create(ctx, free1)
+	require.NoError(t, repo.Create(ctx, free1))
 
 	free2, _ := customer.NewCustomer("Free 2", "free2@example.com", "website", assignedTo)
-	_ = repo.Create(ctx, free2)
+	require.NoError(t, repo.Create(ctx, free2))
 
 	pro, _ := customer.NewCustomer("Pro", "pro@example.com", "website", assignedTo)
-	_ = pro.QualifyAsProspect()
-	_ = pro.ConvertToCustomer()
-	_ = pro.UpgradeTier(customer.CustomerTierPro)
-	_ = repo.Create(ctx, pro)
+	require.NoError(t, pro.QualifyAsProspect())
+	require.NoError(t, pro.ConvertToCustomer())
+	require.NoError(t, pro.UpgradeTier(customer.CustomerTierPro))
+	require.NoError(t, repo.Create(ctx, pro))
 
 	t.Run("list free tier", func(t *testing.T) {
 		customers, total, err := repo.ListByTier(ctx, customer.CustomerTierFree, 10, 0)
@@ -340,10 +342,12 @@ func TestCustomerRepository_List(t *testing.T) {
 	ctx := context.Background()
 	assignedTo := uuidv7.New()
 
+	// Create test data BEFORE subtests to ensure it persists
 	for i := 1; i <= 5; i++ {
 		email := fmt.Sprintf("%s@example.com", uuidv7.New())
-		c, _ := customer.NewCustomer("Customer", email, "website", assignedTo)
-		_ = repo.Create(ctx, c)
+		c, err := customer.NewCustomer("Customer", email, "website", assignedTo)
+		require.NoError(t, err)
+		require.NoError(t, repo.Create(ctx, c))
 	}
 
 	t.Run("list all customers", func(t *testing.T) {
