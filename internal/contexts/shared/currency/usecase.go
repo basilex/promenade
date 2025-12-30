@@ -2,8 +2,18 @@ package currency
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	"time"
 
+	"github.com/basilex/promenade/pkg/cache"
+	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
+)
+
+const (
+	// cacheTTL is the cache TTL for currency data (1 hour for reference data)
+	cacheTTL = 1 * time.Hour
 )
 
 // IUseCase defines business logic for currency operations
@@ -17,40 +27,157 @@ type IUseCase interface {
 }
 
 type useCase struct {
-	repo IRepository
+	repo  IRepository
+	cache cache.Cache
 }
 
-// NewUseCase creates a new currency use case
-func NewUseCase(repo IRepository) IUseCase {
-	return &useCase{repo: repo}
+// NewUseCase creates a new currency use case with cache support
+func NewUseCase(repo IRepository, cacheClient cache.Cache) IUseCase {
+	return &useCase{
+		repo:  repo,
+		cache: cacheClient,
+	}
 }
 
 func (uc *useCase) GetByID(ctx context.Context, id uuidv7.UUID) (*Currency, error) {
-	return uc.repo.GetByID(ctx, id)
+	// Try cache first
+	cacheKey := fmt.Sprintf("currency:id:%s", id.String())
+	var currency Currency
+	err := uc.cache.Get(ctx, cacheKey, &currency)
+	
+	if err == nil {
+		logger.FromContext(ctx).Debug("Cache hit", slog.String("key", cacheKey))
+		return &currency, nil
+	}
+	
+	if !cache.IsCacheMiss(err) {
+		logger.FromContext(ctx).Error("Cache error", slog.Any("error", err))
+	}
+	
+	// Cache miss - fetch from database
+	logger.FromContext(ctx).Debug("Cache miss", slog.String("key", cacheKey))
+	currency_, err := uc.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Store in cache
+	if err := uc.cache.Set(ctx, cacheKey, currency_, cacheTTL); err != nil {
+		logger.FromContext(ctx).Error("Failed to cache currency", slog.Any("error", err))
+	}
+	
+	return currency_, nil
 }
 
 func (uc *useCase) GetByCode(ctx context.Context, code string) (*Currency, error) {
-	return uc.repo.GetByCode(ctx, code)
+	// Try cache first
+	cacheKey := fmt.Sprintf("currency:code:%s", code)
+	var currency Currency
+	err := uc.cache.Get(ctx, cacheKey, &currency)
+	
+	if err == nil {
+		logger.FromContext(ctx).Debug("Cache hit", slog.String("key", cacheKey))
+		return &currency, nil
+	}
+	
+	if !cache.IsCacheMiss(err) {
+		logger.FromContext(ctx).Error("Cache error", slog.Any("error", err))
+	}
+	
+	// Cache miss - fetch from database
+	logger.FromContext(ctx).Debug("Cache miss", slog.String("key", cacheKey))
+	currency_, err := uc.repo.GetByCode(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Store in cache
+	if err := uc.cache.Set(ctx, cacheKey, currency_, cacheTTL); err != nil {
+		logger.FromContext(ctx).Error("Failed to cache currency", slog.Any("error", err))
+	}
+	
+	return currency_, nil
 }
 
 func (uc *useCase) List(ctx context.Context) ([]*Currency, error) {
-	return uc.repo.List(ctx)
+	// Try cache first
+	cacheKey := "currency:list:all"
+	var currencies []*Currency
+	err := uc.cache.Get(ctx, cacheKey, &currencies)
+	
+	if err == nil {
+		logger.FromContext(ctx).Debug("Cache hit", slog.String("key", cacheKey))
+		return currencies, nil
+	}
+	
+	if !cache.IsCacheMiss(err) {
+		logger.FromContext(ctx).Error("Cache error", slog.Any("error", err))
+	}
+	
+	// Cache miss - fetch from database
+	logger.FromContext(ctx).Debug("Cache miss", slog.String("key", cacheKey))
+	currencies, err = uc.repo.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Store in cache
+	if err := uc.cache.Set(ctx, cacheKey, currencies, cacheTTL); err != nil {
+		logger.FromContext(ctx).Error("Failed to cache currencies", slog.Any("error", err))
+	}
+	
+	return currencies, nil
 }
 
 func (uc *useCase) Create(ctx context.Context, currency *Currency) error {
 	if err := currency.Validate(); err != nil {
 		return err
 	}
-	return uc.repo.Create(ctx, currency)
+	
+	if err := uc.repo.Create(ctx, currency); err != nil {
+		return err
+	}
+	
+	// Invalidate list cache
+	if err := uc.cache.Delete(ctx, "currency:list:all"); err != nil {
+		logger.FromContext(ctx).Error("Failed to invalidate cache", slog.Any("error", err))
+	}
+	
+	return nil
 }
 
 func (uc *useCase) Update(ctx context.Context, currency *Currency) error {
 	if err := currency.Validate(); err != nil {
 		return err
 	}
-	return uc.repo.Update(ctx, currency)
+	
+	if err := uc.repo.Update(ctx, currency); err != nil {
+		return err
+	}
+	
+	// Invalidate cache for this currency
+	uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", currency.ID.String()))
+	uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
+	uc.cache.Delete(ctx, "currency:list:all")
+	
+	return nil
 }
 
 func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
-	return uc.repo.Delete(ctx, id)
+	// Fetch currency first to get code for cache invalidation
+	currency, err := uc.repo.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	
+	if err := uc.repo.Delete(ctx, id); err != nil {
+		return err
+	}
+	
+	// Invalidate cache
+	uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", id.String()))
+	uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
+	uc.cache.Delete(ctx, "currency:list:all")
+	
+	return nil
 }

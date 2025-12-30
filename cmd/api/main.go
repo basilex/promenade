@@ -23,13 +23,14 @@ import (
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
+	"github.com/basilex/promenade/pkg/cache"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 )
 
 // @title Promenade Platform
-// @version 2.0
+// @version 0.1.0
 // @description Modern backend platform for customer management, orders, and business workflows with clean DDD architecture
 // @termsOfService http://swagger.io/terms/
 
@@ -119,7 +120,7 @@ func main() {
 
 	logger.Info("Database migrations completed successfully")
 
-	// Initialize Redis (for token revocation and bus)
+	// Initialize Redis (for token revocation, bus, and cache)
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:       cfg.Database.Redis.Addr,
 		Password:   cfg.Database.Redis.Password,
@@ -131,14 +132,50 @@ func main() {
 
 	// Test Redis connection
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		logger.Warn("Redis connection failed, token revocation will be disabled", slog.Any("error", err))
-		redisClient = nil // Disable token revocation if Redis is unavailable
+		logger.Warn("Redis connection failed, some features will be disabled", slog.Any("error", err))
+		redisClient = nil // Graceful degradation
 	} else {
 		logger.Info("Redis connected successfully",
 			slog.String("addr", cfg.Database.Redis.Addr),
 			slog.Int("revocation_db", cfg.Database.Redis.Databases.Revocation),
 		)
 	}
+
+	// Initialize Cache Layer
+	var cacheClient cache.Cache
+	if redisClient != nil {
+		// Parse cache config
+		cacheConfig, err := cfg.Cache.ToCacheConfig()
+		if err != nil {
+			logger.Fatal("Failed to parse cache config", slog.Any("error", err))
+		}
+
+		// Create Redis client for cache (separate DB)
+		cacheRedisClient := redis.NewClient(&redis.Options{
+			Addr:       cfg.Database.Redis.Addr,
+			Password:   cfg.Database.Redis.Password,
+			DB:         cfg.Database.Redis.Databases.Cache, // Use cache DB
+			PoolSize:   cfg.Database.Redis.PoolSize,
+			MaxRetries: cfg.Database.Redis.MaxRetries,
+		})
+		defer cacheRedisClient.Close()
+
+		cacheClient, err = cache.NewCache(cacheConfig, cacheRedisClient)
+		if err != nil {
+			logger.Fatal("Failed to initialize cache", slog.Any("error", err))
+		}
+
+		logger.Info("Cache initialized",
+			slog.String("adapter", cacheConfig.Adapter),
+			slog.String("prefix", cacheConfig.Prefix),
+			slog.Bool("enabled", cacheConfig.Enabled),
+		)
+	} else {
+		// Fallback to no-op cache when Redis unavailable
+		cacheClient, _ = cache.NewCache(&cache.Config{Enabled: false, Adapter: "noop"}, nil)
+		logger.Warn("Cache disabled (Redis unavailable)")
+	}
+	defer cacheClient.Close(context.Background())
 
 	// Initialize JWT Manager
 	jwtManager := jwt.NewManager(jwt.Config{
@@ -194,9 +231,9 @@ func main() {
 	healthHandler.RegisterRoutes(r)
 
 	// Initialize context routers
-	sharedRouter := shared.NewRouter(db)                                     // Shared Context (Reference Data)
-	identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)       // Identity Context (User, Contact) with JWT and Token Revocation
-	customerMgmtRouter := customermgmt.NewRouter(db)                         // Customer Management Context (Customer)
+	sharedRouter := shared.NewRouter(db, cacheClient)                    // Shared Context (Reference Data with Cache)
+	identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)   // Identity Context (User, Contact, Profile, RBAC)
+	customerMgmtRouter := customermgmt.NewRouter(db)                     // Customer Management Context (Customer)
 
 	// API routes
 	api := r.Group("/api")
@@ -210,14 +247,10 @@ func main() {
 				})
 			})
 
-			// Register Shared Context routes (Countries, Currencies, Languages, Timezones)
-			sharedRouter.RegisterRoutes(v1)
-
-			// Register Identity Context routes (User, Contact aggregates)
-			identityRouter.RegisterRoutes(v1)
-
-			// Register Customer Management Context routes (Customer aggregate)
-			customerMgmtRouter.RegisterRoutes(v1)
+			// Register context routes
+			sharedRouter.RegisterRoutes(v1)       // Countries, Currencies, Languages, Timezones
+			identityRouter.RegisterRoutes(v1)     // Users, Contacts, Profiles, Roles, Permissions
+			customerMgmtRouter.RegisterRoutes(v1) // Customers
 
 			// TODO: Register additional context routers here:
 			// - Order Management context (Order, OrderItem, Fulfillment)

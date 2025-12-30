@@ -73,7 +73,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		}
 
 		// ExistsByEmail
-		exists, err := repo.ExistsByEmail(ctx, "custa@test.com")
+		exists, err := repo.ExistsByEmail(ctx, fmt.Sprintf("custa_%s@test.com", uuid))
 		require.NoError(t, err)
 		assert.True(t, exists)
 

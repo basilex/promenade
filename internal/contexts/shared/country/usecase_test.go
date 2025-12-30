@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/basilex/promenade/pkg/cache/noop"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -58,7 +59,7 @@ func (m *MockRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 func TestUseCase_GetByID(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
@@ -98,7 +99,7 @@ func TestUseCase_GetByID(t *testing.T) {
 
 func TestUseCase_GetByCode(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
@@ -125,7 +126,7 @@ func TestUseCase_GetByCode(t *testing.T) {
 
 func TestUseCase_List(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
@@ -146,7 +147,7 @@ func TestUseCase_List(t *testing.T) {
 
 func TestUseCase_Create(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
@@ -185,7 +186,7 @@ func TestUseCase_Create(t *testing.T) {
 
 func TestUseCase_Update(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
@@ -223,7 +224,7 @@ func TestUseCase_Update(t *testing.T) {
 
 func TestUseCase_Delete(t *testing.T) {
 	mockRepo := new(MockRepository)
-	uc := NewUseCase(mockRepo)
+	uc := NewUseCase(mockRepo, noop.NewNoOpCache())
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {

@@ -69,7 +69,7 @@ Returns overall system health with all dependency checks.
     }
   },
   "timestamp": "2025-12-29T18:00:00Z",
-  "version": "2.0"
+  "version": "0.1.0"
 }
 ```
 

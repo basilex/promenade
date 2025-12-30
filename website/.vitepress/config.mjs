@@ -53,6 +53,7 @@ export default defineConfig({
             { text: 'RBAC & Authorization', link: '/guide/rbac' },
             { text: 'Rate Limiting', link: '/guide/rate-limiting' },
             { text: 'Health Checks', link: '/guide/health-checks' },
+            { text: 'Caching Layer', link: '/guide/caching' },
             { text: 'Testing Patterns', link: '/guide/testing-patterns' },
             { text: 'Testing Quick Reference', link: '/guide/testing-quick-reference' },
           ]
@@ -83,7 +84,6 @@ export default defineConfig({
           items: [
             { text: 'Test Coverage Report', link: '/reference/test-coverage-report' },
             { text: 'Bus Test Coverage', link: '/reference/bus-test-coverage' },
-            { text: 'Refactoring Roadmap', link: '/reference/refactoring-roadmap' },
           ]
         }
       ],
@@ -114,6 +114,7 @@ export default defineConfig({
             { text: 'Overview', link: '/packages/' },
             { text: 'Event Bus', link: '/packages/bus' },
             { text: 'JWT Authentication', link: '/packages/jwt' },
+            { text: 'Cache', link: '/packages/cache' },
             { text: 'Logger', link: '/packages/logger' },
           ]
         },

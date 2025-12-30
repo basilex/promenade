@@ -19,6 +19,8 @@ import (
 	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	timezoneHTTP "github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/http"
 	timezonePostgres "github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/repository/postgres"
+
+	"github.com/basilex/promenade/pkg/cache"
 )
 
 // Router handles HTTP routing for Shared Context (Reference Data)
@@ -30,25 +32,25 @@ type Router struct {
 }
 
 // NewRouter creates a new Shared Context router with Clean Architecture layers
-func NewRouter(db *sqlx.DB) *Router {
+func NewRouter(db *sqlx.DB, cacheClient cache.Cache) *Router {
 	// Country aggregate
 	countryRepo := countryPostgres.NewRepository(db)
-	countryUC := country.NewUseCase(countryRepo)
+	countryUC := country.NewUseCase(countryRepo, cacheClient)
 	countryHandler := countryHTTP.NewHandler(countryUC)
 
 	// Currency aggregate
 	currencyRepo := currencyPostgres.NewRepository(db)
-	currencyUC := currency.NewUseCase(currencyRepo)
+	currencyUC := currency.NewUseCase(currencyRepo, cacheClient)
 	currencyHandler := currencyHTTP.NewHandler(currencyUC)
 
 	// Language aggregate
 	languageRepo := languagePostgres.NewRepository(db)
-	languageUC := language.NewUseCase(languageRepo)
+	languageUC := language.NewUseCase(languageRepo, cacheClient)
 	languageHandler := languageHTTP.NewHandler(languageUC)
 
 	// Timezone aggregate
 	timezoneRepo := timezonePostgres.NewRepository(db)
-	timezoneUC := timezone.NewUseCase(timezoneRepo)
+	timezoneUC := timezone.NewUseCase(timezoneRepo, cacheClient)
 	timezoneHandler := timezoneHTTP.NewHandler(timezoneUC)
 
 	return &Router{

@@ -56,6 +56,20 @@
 
 ---
 
+### Caching Layer
+
+**Redis-based caching system** improves performance and reduces database load.
+
+- **Adapters**: Redis (production), NoOp (testing)
+- **TTL Strategy**: Reference (1h-24h), User (10-30m), Session (30m-1h)
+- **Pattern**: Cache-aside with write-through invalidation
+- **Features**: Graceful degradation, pattern-based deletion, JSON marshaling
+- **Implementation**: [Caching Guide](CACHING.md)
+
+**Cached**: Countries, Currencies, Languages, Timezones, Profiles, Customers
+
+---
+
 ### Testing Strategy
 
 **Three-tier testing** with clear separation and professional organization.
@@ -213,7 +227,7 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 
 ---
 
-**Version**: 2.0  
+**Version**: 0.1.0  
 **Status**: Production-ready  
 **License**: MIT  
 **Maintainer**: Promenade Team

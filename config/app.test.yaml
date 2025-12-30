@@ -19,7 +19,7 @@ database:
     user: "system"
     password: "passw0rd"
     database: "promenade_test"
-    ssl_mode: "disable"
+    sslmode: "disable"
   redis:
     addr: "localhost:6380"
     password: ""
@@ -30,6 +30,12 @@ database:
       bus: 1
       cache: 2
       sessions: 3
+
+jwt:
+  secret: "test-secret-key-for-testing-only"
+  access_token_duration: 15m
+  refresh_token_duration: 168h  # 7 days
+  issuer: "promenade-platform"
 
 logging:
   level: "info"
@@ -45,3 +51,18 @@ bus:
   retry_delay: 100ms
   retry_max_delay: 1s
   retry_multiplier: 2.0
+
+# Cache Layer - NoOp adapter for tests (no caching, always fetch fresh)
+cache:
+  enabled: false
+  adapter: "noop"
+  prefix: "promenade:test:"
+  default_ttl: "1m"
+  ttl:
+    countries: "1m"
+    currencies: "1m"
+    languages: "1m"
+    timezones: "1m"
+    user_profile: "1m"
+    customer: "1m"
+    session: "1m"

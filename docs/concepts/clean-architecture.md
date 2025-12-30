@@ -1,4 +1,4 @@
-# Promenade v2.0 - Clean Architecture Summary
+# Clean Architecture with DDD
 
 ##  What We Kept
 

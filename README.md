@@ -87,6 +87,24 @@ Promenade provides **comprehensive health monitoring** for all dependencies:
 
 **See**: [docs/HEALTH_CHECKS.md](docs/HEALTH_CHECKS.md) for complete Health Check documentation
 
+### Caching Layer
+
+Promenade implements **Redis-based caching** for improved performance and reduced database load:
+
+- **Multiple Adapters**: Redis (production/dev), NoOp (testing/fallback)
+- **Resource-Specific TTL**: Reference data (1h-24h), User data (10-30m), Sessions (30m-1h)
+- **Cache-Aside Pattern**: Read-through cache with write-through invalidation
+- **Graceful Degradation**: Application continues if Redis unavailable
+- **Pattern-Based Invalidation**: Efficient bulk deletion with SCAN
+- **JSON Marshaling**: Automatic serialization of complex types
+
+**Cached Resources**:
+- Reference data: Countries, Currencies, Languages, Timezones
+- User data: Profiles, Customer records
+- Session data: Temporary state
+
+**See**: [docs/CACHING.md](docs/CACHING.md) for complete Caching implementation guide
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |

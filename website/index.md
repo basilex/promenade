@@ -74,6 +74,12 @@ features:
     link: /guide/health-checks
     linkText: Health Check API →
     
+  - icon: 🗄️
+    title: Redis Caching
+    details: Resource-specific TTL (Reference 1h-24h, User 10-30m, Session 30m-1h). Cache-aside pattern with write-through invalidation. Graceful degradation when Redis unavailable.
+    link: /guide/caching
+    linkText: Caching Guide →
+    
   - icon: 🧩
     title: Value Objects
     details: Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.

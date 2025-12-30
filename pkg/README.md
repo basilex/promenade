@@ -13,6 +13,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 | Package       | Purpose                                         | Status     | Tests | Documentation                       |
 | ------------- | ----------------------------------------------- | ---------- | ----- | ----------------------------------- |
 | **bus**       | Event Bus (Pub/Sub, Memory/Redis adapters)      | Production | 67    | [README](bus/README.md)             |
+| **cache**     | Caching layer (Redis/NoOp adapters)             | Production | -     | [README](cache/README.md)           |
 | **jwt**       | JWT authentication & RBAC middleware            | Production | 18    | [README](jwt/README.md)             |
 | **logger**    | Structured logging (slog wrapper)               | Production | 15    | [README](logger/README.md)          |
 | **migration** | Database migration management (namespace-based) | Production | 8     | [README](migration/README.md)       |
@@ -59,7 +60,77 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 
 ---
 
-### 2. pkg/jwt - JWT Authentication
+### 2. pkg/cache - Caching Layer
+
+**Redis-based caching system** with multiple adapters for performance optimization.
+
+**Key Features**:
+
+- Multiple adapters (Redis production, NoOp testing)
+- Resource-specific TTL configuration
+- Cache-aside pattern with write-through invalidation
+- Pattern-based deletion (SCAN)
+- Graceful degradation when Redis unavailable
+- JSON marshaling for complex types
+
+**Usage**:
+
+```go
+import "github.com/basilex/promenade/pkg/cache"
+
+// Initialize cache
+cacheClient, err := cache.NewCache(cacheConfig, redisClient)
+
+// UseCase integration
+type countryUseCase struct {
+    repo  IRepository
+    cache cache.Cache
+}
+
+// Cache-aside pattern
+func (uc *countryUseCase) GetByID(ctx context.Context, id uuid.UUID) (*Country, error) {
+    // Try cache first
+    var country Country
+    if err := uc.cache.Get(ctx, fmt.Sprintf("country:id:%s", id), &country); err == nil {
+        return &country, nil
+    }
+    
+    // Cache miss - fetch from DB
+    country, err := uc.repo.GetByID(ctx, id)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Store in cache
+    uc.cache.Set(ctx, fmt.Sprintf("country:id:%s", id), country, 1*time.Hour)
+    return country, nil
+}
+```
+
+**Configuration** (`config/app.*.yaml`):
+
+```yaml
+cache:
+  enabled: true
+  adapter: "redis"  # redis or noop
+  prefix: "promenade:dev:"
+  default_ttl: "5m"
+  ttl:
+    countries: "1h"      # Reference data
+    user_profile: "15m"  # User data
+    session: "30m"       # Session data
+```
+
+**TTL Strategy**:
+- **Reference data** (countries, currencies): 1h (dev) → 24h (prod)
+- **User data** (profiles, customers): 10-15m (dev) → 20-30m (prod)
+- **Session data**: 30m (dev) → 1h (prod)
+
+**Read More**: [pkg/cache/README.md](cache/README.md) | [docs/CACHING.md](../docs/CACHING.md)
+
+---
+
+### 3. pkg/jwt - JWT Authentication
 
 **JWT token generation and validation** with RBAC middleware for secure authentication and authorization.
 
@@ -110,7 +181,7 @@ jwt:
 
 ---
 
-### 3. pkg/logger - Structured Logging
+### 4. pkg/logger - Structured Logging
 
 **Wrapper around Go's `log/slog`** with context-aware logging and request ID propagation.
 
@@ -154,7 +225,7 @@ logging:
 
 ---
 
-### 4. pkg/migration - Database Migrations
+### 5. pkg/migration - Database Migrations
 
 **Namespace-based migration system** for managing schema evolution across multiple bounded contexts.
 
@@ -198,7 +269,7 @@ go run cmd/migrate/main.go --cmd=up --namespace=identity
 
 ---
 
-### 5. pkg/response - HTTP Responses
+### 6. pkg/response - HTTP Responses
 
 **Standard response formatting** for consistent API responses across all handlers.
 
@@ -252,7 +323,7 @@ response.Paginated(c, http.StatusOK, users, total, page, pageSize)
 
 ---
 
-### 6. pkg/uuidv7 - Time-Ordered UUIDs
+### 7. pkg/uuidv7 - Time-Ordered UUIDs
 
 **UUIDv7 implementation** (RFC 9562) for database primary keys with better performance than UUIDv4.
 
@@ -295,7 +366,7 @@ CREATE TABLE users (
 
 ---
 
-### 7. pkg/valueobject - Value Objects
+### 8. pkg/valueobject - Value Objects
 
 **Immutable value objects** (DDD pattern) for domain concepts with validation and equality semantics.
 
@@ -351,7 +422,7 @@ addr, err := valueobject.NewAddress(
 
 ---
 
-### 8. pkg/aggregate - Base Aggregate
+### 9. pkg/aggregate - Base Aggregate
 
 **Base aggregate pattern** (DDD) for aggregate roots with event sourcing support.
 
@@ -412,7 +483,7 @@ func (r *UserRepository) Create(ctx context.Context, user *User) error {
 
 ---
 
-### 8. pkg/saga - Saga Orchestration (Planned)
+### 10. pkg/saga - Saga Orchestration (Planned)
 
 **Distributed transaction coordination** using Saga pattern for cross-context workflows.
 
@@ -439,7 +510,7 @@ saga.
 
 ---
 
-### 9. pkg/jsonb - JSONB Utilities
+### 11. pkg/jsonb - JSONB Utilities
 
 **PostgreSQL JSONB helpers** for storing flexible data in JSON columns.
 

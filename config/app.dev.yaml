@@ -33,7 +33,7 @@ database:
     databases:
       revocation: 0  # JWT token blacklist
       bus: 1         # Event Bus (when redis adapter used)
-      cache: 2       # Future: Cache layer
+      cache: 2       # Cache layer
       sessions: 3    # Future: User sessions
 
 jwt:
@@ -56,3 +56,22 @@ bus:
   retry_delay: 1s
   retry_max_delay: 10s
   retry_multiplier: 2.0
+
+# Cache Layer - Redis for development
+cache:
+  enabled: true
+  adapter: "redis"  # redis or noop
+  prefix: "promenade:dev:"
+  default_ttl: "5m"
+  ttl:
+    # Reference data (rarely changes)
+    countries: "1h"
+    currencies: "1h"
+    languages: "1h"
+    timezones: "1h"
+    # User data (changes more frequently)
+    user_profile: "15m"
+    customer: "10m"
+    # Session data (short-lived)
+    session: "30m"
+

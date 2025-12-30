@@ -17,6 +17,7 @@ type AppConfig struct {
 	Logging   LoggingSection    `yaml:"logging"`
 	CORS      CORSSection       `yaml:"cors"`
 	Bus       BusSection        `yaml:"bus"`
+	Cache     CacheSection      `yaml:"cache"`
 	RateLimit RateLimitSection  `yaml:"rate_limit"`
 	Email     EmailSection      `yaml:"email"`
 	Purge     PurgeSection      `yaml:"purge"`
@@ -113,6 +114,26 @@ type RateLimitSection struct {
 	Enabled           bool `yaml:"enabled"`
 	RequestsPerSecond int  `yaml:"requests_per_second"`
 	Burst             int  `yaml:"burst"`
+}
+
+// CacheSection holds cache configuration
+type CacheSection struct {
+	Enabled    bool        `yaml:"enabled"`     // Enable/disable caching
+	Adapter    string      `yaml:"adapter"`     // redis or noop
+	Prefix     string      `yaml:"prefix"`      // Key prefix for namespace isolation
+	DefaultTTL string      `yaml:"default_ttl"` // Default TTL (e.g., "5m")
+	TTL        CacheTTL    `yaml:"ttl"`         // TTL per resource type
+}
+
+// CacheTTL holds TTL configuration for different resource types
+type CacheTTL struct {
+	Countries   string `yaml:"countries"`    // e.g., "1h"
+	Currencies  string `yaml:"currencies"`   // e.g., "1h"
+	Languages   string `yaml:"languages"`    // e.g., "1h"
+	Timezones   string `yaml:"timezones"`    // e.g., "1h"
+	UserProfile string `yaml:"user_profile"` // e.g., "15m"
+	Customer    string `yaml:"customer"`     // e.g., "10m"
+	Session     string `yaml:"session"`      // e.g., "30m"
 }
 
 type EmailSection struct {
