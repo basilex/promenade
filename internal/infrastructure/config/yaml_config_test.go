@@ -113,6 +113,26 @@ purge:
 	err := os.WriteFile(configPath, []byte(yamlContent), 0644)
 	require.NoError(t, err)
 
+	// Clear environment variables that might override config values
+	envVars := []string{
+		"DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME",
+		"REDIS_ADDR", "REDIS_PASSWORD",
+		"SERVER_PORT", "JWT_SECRET", "ENVIRONMENT", "BUS_ADAPTER",
+	}
+	oldEnvValues := make(map[string]string)
+	for _, key := range envVars {
+		oldEnvValues[key] = os.Getenv(key)
+		os.Unsetenv(key)
+	}
+	defer func() {
+		// Restore original environment variables
+		for key, value := range oldEnvValues {
+			if value != "" {
+				os.Setenv(key, value)
+			}
+		}
+	}()
+
 	// Load config
 	cfg, err := LoadAppConfig(configPath)
 	require.NoError(t, err)
