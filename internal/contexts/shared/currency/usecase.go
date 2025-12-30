@@ -139,9 +139,7 @@ func (uc *useCase) Create(ctx context.Context, currency *Currency) error {
 	}
 	
 	// Invalidate list cache
-	if err := _ = uc.cache.Delete(ctx, "currency:list:all"); err != nil {
-		logger.FromContext(ctx).Error("Failed to invalidate cache", slog.Any("error", err))
-	}
+	_ = uc.cache.Delete(ctx, "currency:list:all")
 	
 	return nil
 }
