@@ -106,7 +106,34 @@ features:
 **Promenade is not a traditional CRM** — it's a **modular platform** that grows with your needs.
 
 Start with customer management, add orders when needed, integrate billing when ready. Each module is a separate **Bounded Context** with its own domain model.
+**Perfect for**: Startups building MVPs • Enterprise microservices • Learning DDD • E-commerce platforms • High-performance applications
 
+</div>
+
+## 🚀 Quick Start
+
+<div class="next-steps">
+
+```bash
+# 1. Clone repository
+git clone https://github.com/basilex/promenade.git
+cd promenade
+
+# 2. Start PostgreSQL (Docker)
+make docker-up
+
+# 3. Run migrations + start API
+make dev
+
+# Server starts on http://localhost:8081
+# Health check: http://localhost:8081/health
+```
+
+**First Steps:**
+- 📖 [Getting Started Guide](/guide/getting-started) - Complete setup walkthrough
+- 🏗️ [Architecture Overview](/concepts/clean-architecture) - Understand the system design
+- 🔌 [API Reference](/reference/api-reference) - Explore REST endpoints
+- 🧪 [Testing Guide](/guide/testing-patterns) - Run and write tests
 </div>
 
 ## �️ Technology Stack
@@ -357,29 +384,60 @@ Start with customer management, add orders when needed, integrate billing when r
   </div>
 </div>
 
-## 🚀 Getting Started
+## � Resources & Community
 
-<div class="next-steps">
+<div class="resources">
 
-```bash
-# 1. Clone repository
-git clone https://github.com/basilex/promenade.git
-cd promenade
+<div class="resource-category">
+  <h3>📖 Documentation</h3>
+  <ul>
+    <li><a href="/guide/getting-started">Getting Started Guide</a> - 5-minute setup</li>
+    <li><a href="/concepts/clean-architecture">Clean Architecture with DDD</a> - Core principles</li>
+    <li><a href="/guide/testing-patterns">Testing Patterns</a> - Three-tier testing strategy</li>
+    <li><a href="/reference/api-reference">API Reference</a> - Complete REST documentation</li>
+  </ul>
+</div>
 
-# 2. Start PostgreSQL (Docker)
-make docker-up
+<div class="resource-category">
+  <h3>🔧 Development</h3>
+  <ul>
+    <li><a href="https://github.com/basilex/promenade">GitHub Repository</a> - Source code & issues</li>
+    <li><a href="https://github.com/basilex/promenade/actions">GitHub Actions</a> - CI/CD status</li>
+    <li><a href="/guide/development-workflow">Development Workflow</a> - Daily development process</li>
+    <li><a href="/guide/contributing">Contributing Guide</a> - How to contribute</li>
+  </ul>
+</div>
 
-# 3. Run migrations + start API
-make dev
+<div class="resource-category">
+  <h3>🎓 Learning</h3>
+  <ul>
+    <li><a href="/concepts/bounded-contexts">Bounded Contexts Strategy</a> - Context isolation</li>
+    <li><a href="/concepts/event-driven">Event-Driven Architecture</a> - Event Bus deep dive</li>
+    <li><a href="/guide/rbac">RBAC Implementation</a> - Role-based access control</li>
+    <li><a href="/packages/">Package Library</a> - 10 reusable packages</li>
+  </ul>
+</div>
 
-# Server starts on http://localhost:8081
-```
+<div class="resource-category">
+  <h3>🚀 Production</h3>
+  <ul>
+    <li><a href="/guide/health-checks">Health Monitoring</a> - Dependency health checks</li>
+    <li><a href="/guide/caching">Caching Layer</a> - Redis-based caching</li>
+    <li><a href="/guide/rate-limiting">Rate Limiting</a> - IP-based protection</li>
+    <li><a href="/guide/production-deployment">Production Deployment</a> - Docker & Kubernetes</li>
+  </ul>
+</div>
 
-**Next Steps:**
-- [Quick Start Guide](/guide/quick-start) - 5-minute setup
-- [Architecture Overview](/guide/architecture) - System design
-- [API Reference](/guide/api-reference) - REST endpoints
+</div>
 
+<div class="community-cta">
+  <h3>💬 Join the Community</h3>
+  <p>Have questions? Found a bug? Want to contribute?</p>
+  <div class="cta-buttons">
+    <a href="https://github.com/basilex/promenade/discussions" class="cta-button primary">💬 Discussions</a>
+    <a href="https://github.com/basilex/promenade/issues" class="cta-button">🐛 Report Issue</a>
+    <a href="mailto:alexander.vasilenko@gmail.com" class="cta-button">📧 Contact</a>
+  </div>
 </div>
 
 <style>
@@ -611,5 +669,115 @@ make dev
 
 .vp-box strong {
   color: var(--vp-c-brand);
+}
+
+.resources {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.resource-category {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.resource-category:hover {
+  border-color: var(--vp-c-brand);
+  transform: translateY(-4px);
+}
+
+.resource-category h3 {
+  color: var(--vp-c-text-1);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.resource-category ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resource-category li {
+  margin-bottom: 0.75rem;
+}
+
+.resource-category a {
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.resource-category a:hover {
+  color: var(--vp-c-brand);
+}
+
+.resource-category a::before {
+  content: '→';
+  margin-right: 0.5rem;
+  color: var(--vp-c-brand);
+}
+
+.community-cta {
+  background: linear-gradient(135deg, var(--vp-c-brand-soft) 0%, var(--vp-c-bg-soft) 100%);
+  border: 2px solid var(--vp-c-brand);
+  border-radius: 16px;
+  padding: 3rem;
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.community-cta h3 {
+  color: var(--vp-c-brand);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.community-cta p {
+  color: var(--vp-c-text-2);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid var(--vp-c-brand);
+  color: var(--vp-c-brand);
+  background: transparent;
+}
+
+.cta-button.primary {
+  background: var(--vp-c-brand);
+  color: white;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button.primary:hover {
+  background: var(--vp-c-brand-dark);
+  border-color: var(--vp-c-brand-dark);
 }
 </style>
