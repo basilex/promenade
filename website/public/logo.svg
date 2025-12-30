@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="36" fill="url(#bgGradient)"/>
+  
+  <!-- Abstract "P" letter representing Promenade -->
+  <!-- Vertical line of P -->
+  <rect x="60" y="50" width="20" height="100" rx="10" fill="white" opacity="0.95"/>
+  
+  <!-- Top curve of P - representing a path/promenade -->
+  <path d="M 80 60 Q 130 60 130 85 Q 130 110 105 110 L 80 110" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="20" 
+        stroke-linecap="round"
+        opacity="0.95"/>
+  
+  <!-- Three small dots representing workflow/journey -->
+  <circle cx="60" cy="130" r="5" fill="url(#pathGradient)" opacity="0.8"/>
+  <circle cx="80" cy="130" r="5" fill="url(#pathGradient)" opacity="0.8"/>
+  <circle cx="100" cy="130" r="5" fill="url(#pathGradient)" opacity="0.8"/>
+  
+  <!-- Subtle network lines representing bounded contexts -->
+  <line x1="150" y1="70" x2="160" y2="60" stroke="white" stroke-width="2" opacity="0.3"/>
+  <line x1="150" y1="90" x2="165" y2="95" stroke="white" stroke-width="2" opacity="0.3"/>
+  <line x1="150" y1="110" x2="160" y2="120" stroke="white" stroke-width="2" opacity="0.3"/>
+  <circle cx="165" cy="60" r="4" fill="white" opacity="0.4"/>
+  <circle cx="170" cy="95" r="4" fill="white" opacity="0.4"/>
+  <circle cx="165" cy="120" r="4" fill="white" opacity="0.4"/>
+</svg>

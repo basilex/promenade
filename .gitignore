@@ -81,10 +81,9 @@ temp/
 logs/
 *.log.*
 
-# Hugo build output (website)
-website/public/
-website/resources/
-website/.hugo_build.lock
+# VitePress build output (website)
+website/.vitepress/dist/
+website/.vitepress/cache/
 
 # Project-specific
 *.code-workspace
