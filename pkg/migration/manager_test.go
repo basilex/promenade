@@ -20,7 +20,7 @@ func setupMockDB(t *testing.T) (*sqlx.DB, sqlmock.Sqlmock) {
 
 func TestNewManager(t *testing.T) {
 	db, _ := setupMockDB(t)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mgr := NewManager(db, "test_migrations")
 
@@ -59,7 +59,7 @@ func TestMigrationStatus_Structure(t *testing.T) {
 
 func TestManager_InterfaceCompliance(t *testing.T) {
 	db, _ := setupMockDB(t)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	var mgr interface{} = NewManager(db, "test")
 

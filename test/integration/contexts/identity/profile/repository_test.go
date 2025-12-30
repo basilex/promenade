@@ -46,8 +46,8 @@ func TestProfileRepository_CRUD(t *testing.T) {
 		assert.Equal(t, p.ID, foundByUser.ID)
 
 		// Update
-		found.UpdateDisplayName("Updated User")
-		found.UpdateBio("New bio")
+		_ = found.UpdateDisplayName("Updated User")
+		_ = found.UpdateBio("New bio")
 		require.NoError(t, repo.Update(ctx, found))
 		updated, _ := repo.GetByID(ctx, p.ID)
 		assert.Equal(t, "Updated User", updated.DisplayName)

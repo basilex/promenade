@@ -42,7 +42,7 @@ func TestRoleRepository_CRUD(t *testing.T) {
 		assert.Equal(t, r.ID, foundByName.ID)
 
 		// Update
-		found.UpdateDisplayName("Updated Role")
+		_ = found.UpdateDisplayName("Updated Role")
 		found.UpdateDescription("Updated description")
 		require.NoError(t, repo.Update(ctx, found))
 		updated, _ := repo.GetByID(ctx, r.ID)

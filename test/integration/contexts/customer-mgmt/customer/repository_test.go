@@ -117,10 +117,10 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 		uuid := uuidv7.New().String()[:8]
 		c1, _ := customer.NewCustomer("Lead1", fmt.Sprintf("lead1_%s@test.com", uuid), "web", assignedTo)
 		c2, _ := customer.NewCustomer("Qualified1", fmt.Sprintf("qual1_%s@test.com", uuid), "web", assignedTo)
-		c2.QualifyAsProspect()
+		_ = c2.QualifyAsProspect()
 		c3, _ := customer.NewCustomer("Active1", fmt.Sprintf("active1_%s@test.com", uuid), "web", assignedTo)
-		c3.ConvertToCustomer()
-		c3.UpgradeTier(customer.CustomerTierPro)
+		_ = c3.ConvertToCustomer()
+		_ = c3.UpgradeTier(customer.CustomerTierPro)
 		
 		require.NoError(t, repo.Create(ctx, c1))
 		require.NoError(t, repo.Create(ctx, c2))

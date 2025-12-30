@@ -139,9 +139,7 @@ func (uc *useCase) Create(ctx context.Context, timezone *Timezone) error {
 	}
 	
 	// Invalidate list cache
-	if err := uc.cache.Delete(ctx, "timezone:list:all"); err != nil {
-		logger.FromContext(ctx).Error("Failed to invalidate cache", slog.Any("error", err))
-	}
+	_ = uc.cache.Delete(ctx, "timezone:list:all")
 	
 	return nil
 }
@@ -156,9 +154,9 @@ func (uc *useCase) Update(ctx context.Context, timezone *Timezone) error {
 	}
 	
 	// Invalidate cache for this timezone
-	uc.cache.Delete(ctx, fmt.Sprintf("timezone:id:%s", timezone.ID.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("timezone:name:%s", timezone.Name))
-	uc.cache.Delete(ctx, "timezone:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("timezone:id:%s", timezone.ID.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("timezone:name:%s", timezone.Name))
+	_ = uc.cache.Delete(ctx, "timezone:list:all")
 	
 	return nil
 }
@@ -175,9 +173,9 @@ func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 	
 	// Invalidate cache
-	uc.cache.Delete(ctx, fmt.Sprintf("timezone:id:%s", id.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("timezone:name:%s", timezone.Name))
-	uc.cache.Delete(ctx, "timezone:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("timezone:id:%s", id.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("timezone:name:%s", timezone.Name))
+	_ = uc.cache.Delete(ctx, "timezone:list:all")
 	
 	return nil
 }

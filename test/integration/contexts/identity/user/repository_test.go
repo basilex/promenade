@@ -121,7 +121,7 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 
 	// Cleanup after test
 	defer func() {
-		testDB.DB.Exec("DELETE FROM identity_users WHERE id = $1", userID)
+		_, _ = testDB.DB.Exec("DELETE FROM identity_users WHERE id = $1", userID)
 	}()
 
 	// Run 10 concurrent updates

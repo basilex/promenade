@@ -15,7 +15,7 @@ import (
 func TestMemoryBus_PublishSubscribe(t *testing.T) {
 	config := bus.NewConfig(5, 100, 1, time.Second, time.Second*5, 2.0)
 	mb := memory.NewMemoryBus(config)
-	defer mb.Close(context.Background())
+	defer func() { _ = mb.Close(context.Background()) }()
 
 	received := make(chan bus.Event, 1)
 	topic := "test.event"
@@ -45,7 +45,7 @@ func TestMemoryBus_Health(t *testing.T) {
 	err := mb.Health(context.Background())
 	assert.NoError(t, err)
 
-	mb.Close(context.Background())
+	_ = mb.Close(context.Background())
 
 	err = mb.Health(context.Background())
 	assert.Error(t, err)

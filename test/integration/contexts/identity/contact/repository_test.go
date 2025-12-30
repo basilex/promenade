@@ -47,7 +47,7 @@ func TestContactRepository_CRUD(t *testing.T) {
 		assert.Len(t, emailContacts, 1)
 
 		// Update
-		c.UpdateLabel("Personal")
+		_ = c.UpdateLabel("Personal")
 		c.Verify()
 		require.NoError(t, repo.Update(ctx, c))
 		updated, _ := repo.GetByUserID(ctx, userID)
@@ -136,7 +136,7 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	assert.Equal(t, c.ID, found.ID)
 	
 	// Rollback
-	tx.Rollback()
+	_ = tx.Rollback()
 
 	// Verify rollback - contact should not exist
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {

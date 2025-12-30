@@ -30,7 +30,7 @@ func TestBus_MemoryAdapter_EndToEnd(t *testing.T) {
 
 	b, err := bus.NewBus(cfg, config.RedisSection{}) // Empty RedisSection for memory adapter
 	require.NoError(t, err)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	// Multiple topics and handlers
 	userEvents := make(chan bus.Event, 10)
@@ -83,7 +83,7 @@ func TestBus_MemoryAdapter_MultipleSubscribers(t *testing.T) {
 
 	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	topic := "integration.fanout"
 	var count atomic.Int32
@@ -99,7 +99,8 @@ func TestBus_MemoryAdapter_MultipleSubscribers(t *testing.T) {
 
 	// Publish one event
 	event := bus.NewBaseEvent("test.event", uuidv7.New())
-	require.NoError(t, b.Publish(context.Background(), topic, event))
+	err = b.Publish(context.Background(), topic, event)
+	require.NoError(t, err)
 
 	// Wait for all handlers
 	time.Sleep(time.Second)
@@ -122,7 +123,7 @@ func TestBus_MemoryAdapter_HighThroughput(t *testing.T) {
 
 	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	topic := "integration.throughput"
 	var receivedCount atomic.Int32
@@ -144,7 +145,7 @@ func TestBus_MemoryAdapter_HighThroughput(t *testing.T) {
 		go func(n int) {
 			defer wg.Done()
 			event := bus.NewBaseEvent("throughput.event", uuidv7.New())
-			b.Publish(context.Background(), topic, event)
+			_ = b.Publish(context.Background(), topic, event)
 		}(i)
 	}
 
@@ -173,7 +174,7 @@ func TestBus_MemoryAdapter_RetryPolicy(t *testing.T) {
 
 	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	topic := "integration.retry"
 	var attempts atomic.Int32
@@ -191,7 +192,8 @@ func TestBus_MemoryAdapter_RetryPolicy(t *testing.T) {
 	require.NoError(t, b.Subscribe(topic, handler))
 
 	event := bus.NewBaseEvent("retry.event", uuidv7.New())
-	require.NoError(t, b.Publish(context.Background(), topic, event))
+	err = b.Publish(context.Background(), topic, event)
+	require.NoError(t, err)
 
 	select {
 	case <-success:
@@ -226,7 +228,8 @@ func TestBus_MemoryAdapter_GracefulShutdown(t *testing.T) {
 	require.NoError(t, b.Subscribe(topic, handler))
 
 	event := bus.NewBaseEvent("shutdown.event", uuidv7.New())
-	require.NoError(t, b.Publish(context.Background(), topic, event))
+	err = b.Publish(context.Background(), topic, event)
+	require.NoError(t, err)
 
 	// Wait for handler to start
 	<-processing
@@ -285,12 +288,12 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 		t.Skip("Redis fallback to memory, skipping cross-process test")
 	}
 
-	defer b1.Close(context.Background())
+	defer func() { _ = b1.Close(context.Background()) }()
 
 	// Create second instance (simulating another process)
 	b2, err := bus.NewBus(cfg, redisCfg)
 	require.NoError(t, err)
-	defer b2.Close(context.Background())
+	defer func() { _ = b2.Close(context.Background()) }()
 
 	topic := "integration.redis.distributed"
 	received1 := make(chan bus.Event, 1)
