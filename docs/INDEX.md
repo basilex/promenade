@@ -136,6 +136,7 @@ Technical specifications and detailed documentation:
 - [API Reference](reference/api-reference.md) - Complete HTTP API documentation
 - [Test Coverage Report](reference/test-coverage-report.md) - 240+ tests breakdown
 - [Bus Test Coverage](reference/bus-test-coverage.md) - Event Bus test report
+- [Index Audit Report](INDEX_AUDIT_REPORT.md) - Database index analysis (13 tables, 60+ indexes)
 - [Migration History](reference/migration-history.md) - Database schema evolution
 - [Configuration Reference](reference/configuration.md) - YAML config options
 
