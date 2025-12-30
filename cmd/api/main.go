@@ -128,7 +128,11 @@ func main() {
 		PoolSize:   cfg.Database.Redis.PoolSize,
 		MaxRetries: cfg.Database.Redis.MaxRetries,
 	})
-	defer redisClient.Close()
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			logger.Error("Failed to close Redis client", slog.Any("error", err))
+		}
+	}()
 
 	// Test Redis connection
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
@@ -158,7 +162,11 @@ func main() {
 			PoolSize:   cfg.Database.Redis.PoolSize,
 			MaxRetries: cfg.Database.Redis.MaxRetries,
 		})
-		defer cacheRedisClient.Close()
+		defer func() {
+			if err := cacheRedisClient.Close(); err != nil {
+				logger.Error("Failed to close cache Redis client", slog.Any("error", err))
+			}
+		}()
 
 		cacheClient, err = cache.NewCache(cacheConfig, cacheRedisClient)
 		if err != nil {
@@ -175,7 +183,11 @@ func main() {
 		cacheClient, _ = cache.NewCache(&cache.Config{Enabled: false, Adapter: "noop"}, nil)
 		logger.Warn("Cache disabled (Redis unavailable)")
 	}
-	defer cacheClient.Close(context.Background())
+	defer func() {
+		if err := cacheClient.Close(context.Background()); err != nil {
+			logger.Error("Failed to close cache client", slog.Any("error", err))
+		}
+	}()
 
 	// Initialize JWT Manager
 	jwtManager := jwt.NewManager(jwt.Config{

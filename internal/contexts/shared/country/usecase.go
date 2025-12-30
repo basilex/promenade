@@ -145,9 +145,9 @@ func (uc *useCase) Update(ctx context.Context, country *Country) error {
 	}
 
 	// Invalidate caches
-	uc.cache.Delete(ctx, fmt.Sprintf("country:id:%s", country.ID.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("country:code:%s", country.Code))
-	uc.cache.Delete(ctx, "country:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("country:id:%s", country.ID.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("country:code:%s", country.Code))
+	_ = uc.cache.Delete(ctx, "country:list:all")
 
 	return nil
 }

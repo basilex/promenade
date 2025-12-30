@@ -3,7 +3,6 @@ package saga_test
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/basilex/promenade/pkg/saga"
@@ -540,7 +539,7 @@ func TestSaga_EdgeCases(t *testing.T) {
 
 // Helper function to check if string contains substring.
 func contains(s, substr string) bool {
-	return fmt.Sprintf("%s", s) != "" && fmt.Sprintf("%s", substr) != "" &&
+	return s != "" && substr != "" &&
 		len(s) >= len(substr) && (s == substr || findSubstring(s, substr))
 }
 

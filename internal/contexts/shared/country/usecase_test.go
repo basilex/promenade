@@ -229,7 +229,11 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
+		country, _ := NewCountry("UA", "Ukraine", "UKR")
+		country.ID = id
 
+		// Delete method calls GetByID first for cache invalidation
+		mockRepo.On("GetByID", ctx, id).Return(country, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(nil).Once()
 
 		err := uc.Delete(ctx, id)

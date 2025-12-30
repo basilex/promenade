@@ -401,7 +401,7 @@ func TestCustomer_AddTag_Multiple(t *testing.T) {
 func TestCustomer_AddTag_Duplicate(t *testing.T) {
 	customer, _ := NewCustomer("John Doe", "john@example.com", "website", uuidv7.New())
 
-	customer.AddTag("vip")
+	_ = customer.AddTag("vip")
 	err := customer.AddTag("vip")
 
 	assert.Error(t, err)
@@ -420,8 +420,8 @@ func TestCustomer_AddTag_Empty(t *testing.T) {
 
 func TestCustomer_RemoveTag_Success(t *testing.T) {
 	customer, _ := NewCustomer("John Doe", "john@example.com", "website", uuidv7.New())
-	customer.AddTag("vip")
-	customer.AddTag("priority")
+	_ = customer.AddTag("vip")
+	_ = customer.AddTag("priority")
 
 	err := customer.RemoveTag("vip")
 
@@ -433,7 +433,7 @@ func TestCustomer_RemoveTag_Success(t *testing.T) {
 
 func TestCustomer_RemoveTag_NonExistent(t *testing.T) {
 	customer, _ := NewCustomer("John Doe", "john@example.com", "website", uuidv7.New())
-	customer.AddTag("vip")
+	_ = customer.AddTag("vip")
 
 	err := customer.RemoveTag("enterprise")
 

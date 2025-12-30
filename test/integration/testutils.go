@@ -190,7 +190,7 @@ func (tdb *TestDB) Cleanup() {
 	}
 
 	if tdb.DB != nil {
-		tdb.DB.Close()
+		_ = tdb.DB.Close()
 	}
 }
 
