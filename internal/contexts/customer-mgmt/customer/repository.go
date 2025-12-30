@@ -49,4 +49,10 @@ type ICustomerRepository interface {
 
 	// CountByTier counts customers by tier
 	CountByTier(ctx context.Context, tier CustomerTier) (int, error)
+
+	// CountByAllStatuses returns counts grouped by all statuses (optimized, single query)
+	CountByAllStatuses(ctx context.Context) (map[CustomerStatus]int, error)
+
+	// CountByAllTiers returns counts grouped by all tiers (optimized, single query)
+	CountByAllTiers(ctx context.Context) (map[CustomerTier]int, error)
 }

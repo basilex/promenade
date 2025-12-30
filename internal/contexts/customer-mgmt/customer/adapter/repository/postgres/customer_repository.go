@@ -530,3 +530,55 @@ func (r *customerRepository) CountByTier(ctx context.Context, tier customer.Cust
 
 	return count, nil
 }
+
+// CountByAllStatuses returns counts grouped by all statuses (optimized, single query)
+func (r *customerRepository) CountByAllStatuses(ctx context.Context) (map[customer.CustomerStatus]int, error) {
+	type statusCount struct {
+		Status string `db:"status"`
+		Count  int    `db:"count"`
+	}
+
+	var results []statusCount
+	query := `
+		SELECT status, COUNT(*) as count
+		FROM customer_mgmt_customers
+		WHERE deleted_at IS NULL
+		GROUP BY status`
+
+	if err := r.Select(ctx, &results, query); err != nil {
+		return nil, fmt.Errorf("failed to count by all statuses: %w", err)
+	}
+
+	counts := make(map[customer.CustomerStatus]int)
+	for _, result := range results {
+		counts[customer.CustomerStatus(result.Status)] = result.Count
+	}
+
+	return counts, nil
+}
+
+// CountByAllTiers returns counts grouped by all tiers (optimized, single query)
+func (r *customerRepository) CountByAllTiers(ctx context.Context) (map[customer.CustomerTier]int, error) {
+	type tierCount struct {
+		Tier  string `db:"tier"`
+		Count int    `db:"count"`
+	}
+
+	var results []tierCount
+	query := `
+		SELECT tier, COUNT(*) as count
+		FROM customer_mgmt_customers
+		WHERE deleted_at IS NULL
+		GROUP BY tier`
+
+	if err := r.Select(ctx, &results, query); err != nil {
+		return nil, fmt.Errorf("failed to count by all tiers: %w", err)
+	}
+
+	counts := make(map[customer.CustomerTier]int)
+	for _, result := range results {
+		counts[customer.CustomerTier(result.Tier)] = result.Count
+	}
+
+	return counts, nil
+}

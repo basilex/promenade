@@ -420,20 +420,21 @@ func (uc *useCase) ListCustomers(ctx context.Context, limit, offset int) ([]*Cus
 	return customers, total, nil
 }
 
-// GetCustomerStats retrieves statistics by status and tier
+// GetCustomerStats retrieves statistics by status and tier (optimized with GROUP BY)
 func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error) {
 	stats := &CustomerStats{
 		ByStatus: make(map[CustomerStatus]int),
 		ByTier:   make(map[CustomerTier]int),
 	}
 
-	// Count by each status
-	statuses := []CustomerStatus{CustomerStatusLead, CustomerStatusProspect, CustomerStatusCustomer, CustomerStatusChurned}
-	for _, status := range statuses {
-		count, err := uc.repo.CountByStatus(ctx, status)
-		if err != nil {
-			return nil, fmt.Errorf("failed to count by status %s: %w", status, err)
-		}
+	// Get all status counts in ONE query (GROUP BY optimization)
+	statusCounts, err := uc.repo.CountByAllStatuses(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count by all statuses: %w", err)
+	}
+
+	// Populate stats from bulk query results
+	for status, count := range statusCounts {
 		stats.ByStatus[status] = count
 		stats.TotalCustomers += count
 
@@ -444,15 +445,14 @@ func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error)
 		}
 	}
 
-	// Count by each tier
-	tiers := []CustomerTier{CustomerTierFree, CustomerTierBasic, CustomerTierPro, CustomerTierEnterprise}
-	for _, tier := range tiers {
-		count, err := uc.repo.CountByTier(ctx, tier)
-		if err != nil {
-			return nil, fmt.Errorf("failed to count by tier %s: %w", tier, err)
-		}
-		stats.ByTier[tier] = count
+	// Get all tier counts in ONE query (GROUP BY optimization)
+	tierCounts, err := uc.repo.CountByAllTiers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count by all tiers: %w", err)
 	}
+
+	// Populate tier stats
+	stats.ByTier = tierCounts
 
 	return stats, nil
 }

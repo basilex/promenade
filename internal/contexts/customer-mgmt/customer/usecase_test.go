@@ -110,6 +110,22 @@ func (m *MockRepository) CountByTier(ctx context.Context, tier CustomerTier) (in
 	return args.Int(0), args.Error(1)
 }
 
+func (m *MockRepository) CountByAllStatuses(ctx context.Context) (map[CustomerStatus]int, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[CustomerStatus]int), args.Error(1)
+}
+
+func (m *MockRepository) CountByAllTiers(ctx context.Context) (map[CustomerTier]int, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[CustomerTier]int), args.Error(1)
+}
+
 // ============================================================================
 // CreateCustomer Tests
 // ============================================================================
@@ -465,17 +481,22 @@ func TestUseCase_GetCustomerStats(t *testing.T) {
 		repo := new(MockRepository)
 		uc := NewUseCase(repo)
 
-		// Mock counts for each status
-		repo.On("CountByStatus", ctx, CustomerStatusLead).Return(10, nil)
-		repo.On("CountByStatus", ctx, CustomerStatusProspect).Return(5, nil)
-		repo.On("CountByStatus", ctx, CustomerStatusCustomer).Return(20, nil)
-		repo.On("CountByStatus", ctx, CustomerStatusChurned).Return(3, nil)
+		// Mock optimized bulk queries (GROUP BY)
+		statusCounts := map[CustomerStatus]int{
+			CustomerStatusLead:     10,
+			CustomerStatusProspect: 5,
+			CustomerStatusCustomer: 20,
+			CustomerStatusChurned:  3,
+		}
+		repo.On("CountByAllStatuses", ctx).Return(statusCounts, nil)
 
-		// Mock counts for each tier
-		repo.On("CountByTier", ctx, CustomerTierFree).Return(15, nil)
-		repo.On("CountByTier", ctx, CustomerTierBasic).Return(10, nil)
-		repo.On("CountByTier", ctx, CustomerTierPro).Return(8, nil)
-		repo.On("CountByTier", ctx, CustomerTierEnterprise).Return(5, nil)
+		tierCounts := map[CustomerTier]int{
+			CustomerTierFree:       15,
+			CustomerTierBasic:      10,
+			CustomerTierPro:        8,
+			CustomerTierEnterprise: 5,
+		}
+		repo.On("CountByAllTiers", ctx).Return(tierCounts, nil)
 
 		stats, err := uc.GetCustomerStats(ctx)
 
@@ -484,6 +505,8 @@ func TestUseCase_GetCustomerStats(t *testing.T) {
 		assert.Equal(t, 38, stats.TotalCustomers)
 		assert.Equal(t, 20, stats.ActiveCustomers)
 		assert.Equal(t, 3, stats.ChurnedCustomers)
+		assert.Equal(t, 10, stats.ByStatus[CustomerStatusLead])
+		assert.Equal(t, 15, stats.ByTier[CustomerTierFree])
 		repo.AssertExpectations(t)
 	})
 }
