@@ -9,8 +9,8 @@ export default defineConfig({
   ignoreDeadLinks: true,
   
   head: [
-    ['link', { rel: 'icon', href: '/promenade/favicon.ico' }],
-    ['meta', { name: 'theme-color', content: '#3b82f6' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/promenade/favicon.svg' }],
+    ['meta', { name: 'theme-color', content: '#818cf8' }],
   ],
 
   themeConfig: {
