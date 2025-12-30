@@ -12,7 +12,7 @@ import (
 	"github.com/basilex/promenade/pkg/logger"
 )
 
-// RedisCache implements cache.Cache using Redis
+// RedisCache implements cache.ICache using Redis
 type RedisCache struct {
 	client *redis.Client
 	prefix string

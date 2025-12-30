@@ -547,7 +547,6 @@ Apply rate limiting to other sensitive endpoints:
 - [Documentation Index](INDEX.md)
 - [JWT Authentication](../pkg/jwt/README.md)
 - [Identity Context](../contexts/identity.md)
-- [GAPS and TODOs](GAPS_AND_TODOS.md)
 
 ---
 

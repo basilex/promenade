@@ -234,7 +234,13 @@ func TestUseCase_Delete(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
 		expectedErr := errors.New("delete failed")
+		entity := &Timezone{
+			ID:           id,
+			Name:         "UTC",
+			Abbreviation: "UTC",
+		}
 
+		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(expectedErr).Once()
 
 		err := uc.Delete(ctx, id)

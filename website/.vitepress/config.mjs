@@ -24,6 +24,8 @@ export default defineConfig({
           { text: 'Clean Architecture', link: '/concepts/clean-architecture' },
           { text: 'Event-Driven', link: '/concepts/event-driven' },
           { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
+          { text: 'Customer Management', link: '/concepts/customer-management' },
+          { text: 'Order Management', link: '/concepts/order-management' },
         ]
       },
       { text: 'Contexts', link: '/contexts/identity' },
@@ -74,6 +76,8 @@ export default defineConfig({
             { text: 'Clean Architecture', link: '/concepts/clean-architecture' },
             { text: 'Event-Driven Architecture', link: '/concepts/event-driven' },
             { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
+            { text: 'Customer Management', link: '/concepts/customer-management' },
+            { text: 'Order Management', link: '/concepts/order-management' },
           ]
         }
       ],
@@ -96,13 +100,14 @@ export default defineConfig({
             { text: 'Identity Context', link: '/contexts/identity' },
             { text: 'Shared Context', link: '/contexts/shared' },
             { text: 'Customer Management', link: '/contexts/customer' },
+            { text: 'Order Management', link: '/contexts/order' },
           ]
         },
         {
           text: 'Planned Contexts',
           items: [
-            { text: 'Order Management', link: '/contexts/order' },
             { text: 'Billing', link: '/contexts/billing' },
+            { text: 'Warehouse', link: '/contexts/warehouse' },
           ]
         }
       ],

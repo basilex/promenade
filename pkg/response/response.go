@@ -9,16 +9,25 @@ import (
 
 // Response represents the standard API response structure
 type Response struct {
-	Status  string      `json:"status"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   *Error      `json:"error,omitempty"`
-	Message string      `json:"message,omitempty"`
+	Status     string      `json:"status"`
+	Data       interface{} `json:"data,omitempty"`
+	Error      *Error      `json:"error,omitempty"`
+	Message    string      `json:"message,omitempty"`
+	Pagination *Pagination `json:"pagination,omitempty"`
 }
 
 // Error represents an error in the API response
 type Error struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+}
+
+// Pagination represents pagination metadata
+type Pagination struct {
+	Total    int64 `json:"total"`
+	Page     int   `json:"page"`
+	PageSize int   `json:"page_size"`
+	Pages    int   `json:"pages"`
 }
 
 // Success sends a successful response
@@ -42,6 +51,25 @@ func Created(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusCreated, Response{
 		Status: "success",
 		Data:   data,
+	})
+}
+
+// SuccessWithPagination sends a successful response with pagination metadata
+func SuccessWithPagination(c *gin.Context, data interface{}, total int64, page, pageSize int) {
+	pages := int(total) / pageSize
+	if int(total)%pageSize > 0 {
+		pages++
+	}
+
+	c.JSON(http.StatusOK, Response{
+		Status: "success",
+		Data:   data,
+		Pagination: &Pagination{
+			Total:    total,
+			Page:     page,
+			PageSize: pageSize,
+			Pages:    pages,
+		},
 	})
 }
 

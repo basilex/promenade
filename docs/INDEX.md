@@ -64,9 +64,24 @@
 - **TTL Strategy**: Reference (1h-24h), User (10-30m), Session (30m-1h)
 - **Pattern**: Cache-aside with write-through invalidation
 - **Features**: Graceful degradation, pattern-based deletion, JSON marshaling
-- **Implementation**: [Caching Guide](CACHING.md)
+- **Implementation**: [Caching Guide](guides/caching.md)
 
 **Cached**: Countries, Currencies, Languages, Timezones, Profiles, Customers
+
+---
+
+### Customer Management
+
+**Complete CRM functionality** for B2C and B2B customer lifecycle management.
+
+- **Customer Lifecycle**: Lead → Prospect → Customer → Churned (state machine)
+- **B2C & B2B Support**: Individual consumers and business contacts
+- **Customer Segmentation**: Tiers (free, basic, pro, enterprise) + flexible tags
+- **Sales Pipeline**: Assign to reps, track source and status
+- **14 Endpoints**: Complete CRUD + business logic operations
+- **Implementation**: [Customer Management Guide](concepts/customer-management.md)
+
+**Live tested**: All 14 endpoints working | State transitions validated
 
 ---
 
@@ -83,6 +98,22 @@
 
 ---
 
+### Order Management
+
+**Complete order lifecycle management** with **fully implemented business rules**.
+
+- **Order Creation**: Create orders with currency support
+- **Line Items**: Add/remove/update products with automatic totals
+- **State Machine**: pending → confirmed → processing → fulfilled - **fully enforced** ✅
+- **Business Rules**: All validations implemented in entity methods ✅
+- **Money Handling**: Type-safe Money value object (cents-based)
+- **14 Endpoints**: Complete CRUD + business logic
+- **Implementation**: [Order Management Guide](concepts/order-management.md)
+
+**Status**: All core business logic implemented | Future: Inventory/Payment/Shipping integrations
+
+---
+
 ## 🏗️ Architecture
 
 ### Bounded Contexts
@@ -91,8 +122,8 @@
 | ----------------------- | ----------- | ------------------------------------- | ------------------------------------------------- |
 | **Shared**              | ✅ Production | Country, Currency, Language, Timezone | [Context Guide](../internal/contexts/shared/README.md)      |
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
-| **Customer Management** | ✅ Production | Customer                              | [Context Guide](../internal/contexts/customer-mgmt/README.md) |
-| **Order Management**    | 📋 Planned   | Order, OrderItem, Fulfillment         | Coming Q2 2026                                    |
+| **Customer Management** | ✅ Production | Customer                              | [Customer Guide](concepts/customer-management.md) |
+| **Order Management**    | ✅ Production | Order, OrderLine                      | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | 📋 Planned   | Invoice, Payment, Subscription        | Coming Q2 2026                                    |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
 
@@ -130,6 +161,7 @@ Fundamental architectural principles and design patterns:
 - [Clean Architecture with DDD](concepts/clean-architecture.md) - Bounded Contexts, Aggregates, Value Objects
 - [Event-Driven Architecture](concepts/event-driven.md) - Event Bus, Domain Events, Sagas
 - [Bounded Contexts Strategy](concepts/bounded-contexts.md) - Context isolation and communication
+- [Order Management](concepts/order-management.md) - Complete order lifecycle, state machine, business rules
 
 ### Guides
 
@@ -150,7 +182,7 @@ Technical specifications and detailed documentation:
 - [API Reference](reference/api-reference.md) - Complete HTTP API documentation
 - [Test Coverage Report](reference/test-coverage-report.md) - 240+ tests breakdown
 - [Bus Test Coverage](reference/bus-test-coverage.md) - Event Bus test report
-- [Index Audit Report](INDEX_AUDIT_REPORT.md) - Database index analysis (13 tables, 60+ indexes)
+- [Index Audit Report](work-in-progress/INDEX_AUDIT_REPORT.md) - Database index analysis (13 tables, 60+ indexes)
 - [Migration History](reference/migration-history.md) - Database schema evolution
 - [Configuration Reference](reference/configuration.md) - YAML config options
 

@@ -103,18 +103,54 @@ Promenade implements **Redis-based caching** for improved performance and reduce
 - User data: Profiles, Customer records
 - Session data: Temporary state
 
-**See**: [docs/CACHING.md](docs/CACHING.md) for complete Caching implementation guide
+**See**: [docs/guides/caching.md](docs/guides/caching.md) for complete Caching implementation guide
+
+### Customer Management
+
+Promenade implements **complete CRM functionality** for B2C and B2B customer lifecycle management:
+
+- **Customer Lifecycle**: Track customers through states (Lead → Prospect → Customer → Churned)
+- **B2C & B2B Support**: Handle individual consumers and business contacts
+- **Customer Segmentation**: Organize by tier (free, basic, pro, enterprise) and tags
+- **Sales Pipeline**: Assign customers to sales reps, track source and status
+- **14 API Endpoints**: Complete CRUD + business logic operations
+- **Auto-validated Data**: Email and Phone value objects with validation
+
+**Key Features**:
+- State machine enforces lifecycle transitions
+- JSONB tags for flexible metadata
+- Soft delete support
+- Sales rep assignment
+- Integration with Identity and Order Management contexts
+
+**See**: [docs/concepts/customer-management.md](docs/concepts/customer-management.md) for complete Customer Management guide
+
+### Order Management
+
+Promenade provides **complete order lifecycle management** with state transitions and **fully implemented business rules**:
+
+- **Order Creation**: Create orders with currency support for customers
+- **Line Items**: Add/remove/update products with automatic total calculation
+- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled) - **fully enforced** ✅
+- **Business Rules**: All validations implemented (line count, status checks, terminal state protection) ✅
+- **Money Handling**: Type-safe Money value object (cents-based precision)
+- **14 API Endpoints**: Complete CRUD + business logic operations
+- **Auto-generated Numbers**: ORD-YYYY-NNNNNN format for easy tracking
+
+**Implementation Status**: All core business rules implemented in entity (`Confirm()`, `StartProcessing()`, `MarkFulfilled()`, `Cancel()`). Future: Inventory/Payment/Shipping integrations.
+
+**See**: [docs/concepts/order-management.md](docs/concepts/order-management.md) for complete Order Management guide
 
 ### Bounded Contexts
 
-| Context                 | Aggregates                            | Description                   | Status     | Documentation                                  |
-| ----------------------- | ------------------------------------- | ----------------------------- | ---------- | ---------------------------------------------- |
-| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | Production | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | User, Contact, Profile                | User management & RBAC        | Production | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer                              | CRM core functionality        | Production | [README](internal/contexts/customer-mgmt/README.md) |
-| **Order Management**    | Order, OrderItem, Fulfillment         | Order processing and tracking | Planned    | Coming Q2 2026                                 |
-| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | Planned    | Coming Q2 2026                                 |
-| **Analytics**           | Report, Dashboard, Metric             | Business intelligence         | Planned    | Coming Q3 2026                                 |
+| Context                 | Aggregates                            | Description                   | Status           | Documentation                                  |
+| ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
+| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
+| **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
+| **Customer Management** | Customer                              | CRM core functionality        | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
+| **Order Management**    | Order, OrderLine                      | Order processing & fulfillment | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
+| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
+| **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
@@ -144,8 +180,8 @@ promenade/
           profile/       #  Profile Aggregate (display name, bio, avatar)
           role/          #  Role Aggregate (RBAC roles)
           permission/    #  Permission Aggregate (RBAC permissions)
-       customer-mgmt/     #  Customer Management Context (planned)
-       order-mgmt/        #  Order Management Context (planned)
+       customer-mgmt/     #  Customer Management Context (Customer)
+       order-mgmt/        #  Order Management Context (Order, OrderLine)
        billing/           #  Billing Context (planned)
        README.md          # Contexts overview
     infrastructure/         # Cross-cutting concerns
@@ -168,6 +204,8 @@ promenade/
     core/                 # Core infrastructure (UUID v7, auth, RBAC)
     shared/               # Shared context migrations (reference data)
     identity/             # Identity context migrations (users, contacts)
+    customer-mgmt/        # Customer Management context migrations
+    order-mgmt/           # Order Management context migrations
  test/                       # Testing infrastructure
     README.md             # Testing structure documentation
     smoke/                # Smoke tests (mock-based, no DB)

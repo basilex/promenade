@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// Cache defines the interface for caching operations
-type Cache interface {
+// ICache defines the interface for caching operations
+type ICache interface {
 	// Get retrieves a value from cache and unmarshals it into dest
 	Get(ctx context.Context, key string, dest interface{}) error
 

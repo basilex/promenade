@@ -32,7 +32,7 @@ type Router struct {
 }
 
 // NewRouter creates a new Shared Context router with Clean Architecture layers
-func NewRouter(db *sqlx.DB, cacheClient cache.Cache) *Router {
+func NewRouter(db *sqlx.DB, cacheClient cache.ICache) *Router {
 	// Country aggregate
 	countryRepo := countryPostgres.NewRepository(db)
 	countryUC := country.NewUseCase(countryRepo, cacheClient)

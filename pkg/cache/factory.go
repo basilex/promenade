@@ -10,7 +10,7 @@ import (
 )
 
 // NewCache creates a cache instance based on configuration
-func NewCache(cfg *Config, redisClient *redis.Client) (Cache, error) {
+func NewCache(cfg *Config, redisClient *redis.Client) (ICache, error) {
 	// If caching is disabled, return no-op cache
 	if !cfg.Enabled {
 		return noop.NewNoOpCache(), nil

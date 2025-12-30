@@ -513,7 +513,6 @@ If Redis is not configured (nil), health check returns:
 ## Related Documentation
 
 - [Main README](../README.md) - Project overview
-- [GAPS_AND_TODOS.md](GAPS_AND_TODOS.md) - Implementation checklist
 - [Configuration Guide](../config/README.md) - App configuration
 
 ---

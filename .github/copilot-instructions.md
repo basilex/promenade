@@ -864,7 +864,7 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - [ ] Test file: `{filename}_test.go` in same directory
 - [ ] Manual mocks created in `mocks_test.go` if needed (inline structs)
 
-**Red Flags** (автоматично reject):
+**Red Flags** (automatic rejection):
 
 - Interface name `UserPostUC` (use `IUserPostUseCase`)
 - Public struct `type UserPostUseCase struct` (must be lowercase `useCase`)

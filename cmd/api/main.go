@@ -16,6 +16,7 @@ import (
 
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/identity"
+	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
@@ -118,6 +119,11 @@ func main() {
 		logger.Fatal("Failed to run customer-mgmt migrations", slog.Any("error", err))
 	}
 
+	// Run order management context migrations (orders, contracts, fulfillment)
+	if err := migrationManager.MigrateNamespace(migrationsCtx, "order-mgmt"); err != nil {
+		logger.Fatal("Failed to run order-mgmt migrations", slog.Any("error", err))
+	}
+
 	logger.Info("Database migrations completed successfully")
 
 	// Initialize Redis (for token revocation, bus, and cache)
@@ -146,7 +152,7 @@ func main() {
 	}
 
 	// Initialize Cache Layer
-	var cacheClient cache.Cache
+	var cacheClient cache.ICache
 	if redisClient != nil {
 		// Parse cache config
 		cacheConfig, err := cfg.Cache.ToCacheConfig()
@@ -246,6 +252,7 @@ func main() {
 	sharedRouter := shared.NewRouter(db, cacheClient)                    // Shared Context (Reference Data with Cache)
 	identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)   // Identity Context (User, Contact, Profile, RBAC)
 	customerMgmtRouter := customermgmt.NewRouter(db)                     // Customer Management Context (Customer)
+	orderMgmtRouter := ordermgmt.NewRouter(db)                           // Order Management Context (Order, OrderLine)
 
 	// API routes
 	api := r.Group("/api")
@@ -263,9 +270,7 @@ func main() {
 			sharedRouter.RegisterRoutes(v1)       // Countries, Currencies, Languages, Timezones
 			identityRouter.RegisterRoutes(v1)     // Users, Contacts, Profiles, Roles, Permissions
 			customerMgmtRouter.RegisterRoutes(v1) // Customers
-
-			// TODO: Register additional context routers here:
-			// - Order Management context (Order, OrderItem, Fulfillment)
+			orderMgmtRouter.RegisterRoutes(v1)    // Orders
 		}
 	}
 

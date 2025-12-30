@@ -89,10 +89,10 @@ defer cacheClient.Close(context.Background())
 ```go
 type useCase struct {
     repo  IRepository
-    cache cache.Cache
+    cache cache.ICache
 }
 
-func NewUseCase(repo IRepository, cacheClient cache.Cache) IUseCase {
+func NewUseCase(repo IRepository, cacheClient cache.ICache) IUseCase {
     return &useCase{
         repo:  repo,
         cache: cacheClient,

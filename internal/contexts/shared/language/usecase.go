@@ -28,11 +28,11 @@ type IUseCase interface {
 
 type useCase struct {
 	repo  IRepository
-	cache cache.Cache
+	cache cache.ICache
 }
 
-// NewUseCase creates a new language use case with cache support
-func NewUseCase(repo IRepository, cacheClient cache.Cache) IUseCase {
+// NewUseCase creates a new Language use case
+func NewUseCase(repo IRepository, cacheClient cache.ICache) IUseCase {
 	return &useCase{
 		repo:  repo,
 		cache: cacheClient,

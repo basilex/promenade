@@ -124,7 +124,7 @@ cache:
 
 ```go
 // In cmd/api/main.go
-var cacheClient cache.Cache
+var cacheClient cache.ICache
 if redisClient != nil {
     cacheConfig, err := cfg.Cache.ToCacheConfig()
     if err != nil {
@@ -164,7 +164,7 @@ defer cacheClient.Close(context.Background())
 ```go
 type countryUseCase struct {
     repo  IRepository
-    cache cache.Cache
+    cache cache.ICache
 }
 
 // GetByID - Cache-aside pattern with 1 hour TTL

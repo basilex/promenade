@@ -80,6 +80,18 @@ features:
     link: /guide/caching
     linkText: Caching Guide →
     
+  - icon: �
+    title: Customer Management
+    details: Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.
+    link: /concepts/customer-management
+    linkText: Customer Management Guide →
+    
+  - icon: �📦
+    title: Order Management
+    details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
+    link: /concepts/order-management
+    linkText: Order Management Guide →
+    
   - icon: 🧩
     title: Value Objects
     details: Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.

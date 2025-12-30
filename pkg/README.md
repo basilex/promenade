@@ -84,7 +84,7 @@ cacheClient, err := cache.NewCache(cacheConfig, redisClient)
 // UseCase integration
 type countryUseCase struct {
     repo  IRepository
-    cache cache.Cache
+    cache cache.ICache
 }
 
 // Cache-aside pattern
@@ -126,7 +126,7 @@ cache:
 - **User data** (profiles, customers): 10-15m (dev) → 20-30m (prod)
 - **Session data**: 30m (dev) → 1h (prod)
 
-**Read More**: [pkg/cache/README.md](cache/README.md) | [docs/CACHING.md](../docs/CACHING.md)
+**Read More**: [pkg/cache/README.md](cache/README.md) | [docs/guides/caching.md](../docs/guides/caching.md)
 
 ---
 
