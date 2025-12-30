@@ -139,7 +139,7 @@ func (uc *useCase) Create(ctx context.Context, currency *Currency) error {
 	}
 	
 	// Invalidate list cache
-	if err := uc.cache.Delete(ctx, "currency:list:all"); err != nil {
+	if err := _ = uc.cache.Delete(ctx, "currency:list:all"); err != nil {
 		logger.FromContext(ctx).Error("Failed to invalidate cache", slog.Any("error", err))
 	}
 	
@@ -156,9 +156,9 @@ func (uc *useCase) Update(ctx context.Context, currency *Currency) error {
 	}
 	
 	// Invalidate cache for this currency
-	uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", currency.ID.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
-	uc.cache.Delete(ctx, "currency:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", currency.ID.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
+	_ = uc.cache.Delete(ctx, "currency:list:all")
 	
 	return nil
 }
@@ -176,8 +176,8 @@ func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	
 	// Invalidate cache
 	uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", id.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
-	uc.cache.Delete(ctx, "currency:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
+	_ = uc.cache.Delete(ctx, "currency:list:all")
 	
 	return nil
 }
