@@ -239,7 +239,7 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
-		curr := &currency.Currency{
+		entity := &Currency{
 			ID:   id,
 			Code: "USD",
 			Name: "US Dollar",
@@ -247,7 +247,7 @@ func TestUseCase_Delete(t *testing.T) {
 		expectedErr := errors.New("delete failed")
 
 		// Delete method calls GetByID first for cache invalidation
-		mockRepo.On("GetByID", ctx, id).Return(curr, nil).Once()
+		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(expectedErr).Once()
 
 		err := uc.Delete(ctx, id)
