@@ -364,7 +364,7 @@ func (rb *RedisBus) Health(ctx context.Context) error {
 	rb.closeMu.Unlock()
 
 	if err := rb.client.Ping(ctx).Err(); err != nil {
-		return fmt.Errorf("Redis ping failed: %w", err)
+		return fmt.Errorf("redis ping failed: %w", err)
 	}
 
 	return nil

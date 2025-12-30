@@ -122,8 +122,8 @@ func validateRoleName(name string) error {
 
 	// Check for valid characters (alphanumeric, underscore, hyphen)
 	for _, ch := range trimmed {
-		if !((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
-			(ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
+		if (ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') &&
+			(ch < '0' || ch > '9') && ch != '_' && ch != '-' {
 			return fmt.Errorf("role name contains invalid characters")
 		}
 	}

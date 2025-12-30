@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -293,10 +294,8 @@ func (cfg *AppConfig) validateJWTSecret() error {
 		}
 	}
 
-	// Warning for short secrets in non-production (but allow)
-	if len(secret) < minSecretLength && (cfg.App.Environment == "development" || cfg.App.Environment == "dev") {
-		// Don't fail, but secret is weak - could log a warning if logger was available here
-	}
+	// Note: Short secrets are allowed in development for convenience
+	// In production, they are blocked above. No action needed here.
 
 	return nil
 }
@@ -308,9 +307,10 @@ func applyEnvOverrides(cfg *AppConfig) {
 		cfg.Database.Postgres.Host = v
 	}
 	if v := os.Getenv("DB_PORT"); v != "" {
-			if _, err := fmt.Sscanf(v, "%d", &cfg.Database.Postgres.Port); err != nil {
-				// Keep default port if parsing fails
-			}
+		if port, err := strconv.Atoi(v); err == nil {
+			cfg.Database.Postgres.Port = port
+		}
+		// If parsing fails, keep default port from config
 	}
 	if v := os.Getenv("DB_USER"); v != "" {
 		cfg.Database.Postgres.User = v
@@ -332,9 +332,10 @@ func applyEnvOverrides(cfg *AppConfig) {
 
 	// Server overrides
 	if v := os.Getenv("SERVER_PORT"); v != "" {
-			if _, err := fmt.Sscanf(v, "%d", &cfg.Server.Port); err != nil {
-				// Keep default port if parsing fails
-			}
+		if port, err := strconv.Atoi(v); err == nil {
+			cfg.Server.Port = port
+		}
+		// If parsing fails, keep default port from config
 	}
 
 	// JWT overrides

@@ -122,7 +122,7 @@ func validateAction(action string) error {
 	// Allow any lowercase alphanumeric with underscores and hyphens
 	// This makes it extensible for future actions
 	for _, ch := range trimmed {
-		if !((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-') {
+		if (ch < 'a' || ch > 'z') && (ch < '0' || ch > '9') && ch != '_' && ch != '-' {
 			return fmt.Errorf("action must contain only lowercase letters, numbers, underscores and hyphens")
 		}
 	}

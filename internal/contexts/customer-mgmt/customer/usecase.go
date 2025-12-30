@@ -438,9 +438,10 @@ func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error)
 		stats.ByStatus[status] = count
 		stats.TotalCustomers += count
 
-		if status == CustomerStatusCustomer {
+		switch status {
+		case CustomerStatusCustomer:
 			stats.ActiveCustomers = count
-		} else if status == CustomerStatusChurned {
+		case CustomerStatusChurned:
 			stats.ChurnedCustomers = count
 		}
 	}

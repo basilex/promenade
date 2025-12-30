@@ -454,9 +454,7 @@ func (m *manager) Status(ctx context.Context) (map[string]MigrationStatus, error
 		return nil, err
 	}
 	defer func() {
-		if err := rows.Close(); err != nil {
-			// Log error but don't fail
-		}
+		_ = rows.Close() // Ignore close error
 	}()
 
 	namespaces := []string{}

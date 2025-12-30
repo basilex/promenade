@@ -46,7 +46,7 @@ func TestNewBus_MemoryDefaults(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, b)
 
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	// Should work with default values
 	err = b.Health(context.Background())
@@ -84,7 +84,7 @@ func TestMustNewBus_Success(t *testing.T) {
 	// Should not panic
 	b := bus.MustNewBus(cfg, config.RedisSection{})
 	require.NotNil(t, b)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	err := b.Health(context.Background())
 	assert.NoError(t, err)
@@ -177,7 +177,7 @@ func TestBus_HealthCheck(t *testing.T) {
 
 	b, err := bus.NewBus(cfg, config.RedisSection{})
 	require.NoError(t, err)
-	defer b.Close(context.Background())
+	defer func() { _ = b.Close(context.Background()) }()
 
 	// Health check should pass
 	err = b.Health(context.Background())

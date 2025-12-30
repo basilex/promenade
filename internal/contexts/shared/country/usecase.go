@@ -164,9 +164,9 @@ func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	// Invalidate caches
-	uc.cache.Delete(ctx, fmt.Sprintf("country:id:%s", id.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("country:code:%s", country.Code))
-	uc.cache.Delete(ctx, "country:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("country:id:%s", id.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("country:code:%s", country.Code))
+	_ = uc.cache.Delete(ctx, "country:list:all")
 
 	return nil
 }

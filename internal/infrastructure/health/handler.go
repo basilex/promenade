@@ -49,11 +49,14 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 func (h *Handler) CheckAll(c *gin.Context) {
 	report := h.checker.CheckAll(c.Request.Context())
 
-	statusCode := http.StatusOK
-	if report.Status == StatusUnhealthy {
+	var statusCode int
+	switch report.Status {
+	case StatusUnhealthy:
 		statusCode = http.StatusServiceUnavailable
-	} else if report.Status == StatusDegraded {
+	case StatusDegraded:
 		statusCode = http.StatusOK // Still operational, just degraded
+	default:
+		statusCode = http.StatusOK
 	}
 
 	c.JSON(statusCode, report)

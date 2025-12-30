@@ -71,7 +71,7 @@ func SetupTestDB(t *testing.T) *TestDB {
 
 	// Run migrations
 	if err := runMigrations(db, log.Logger); err != nil {
-		db.Close()
+		_ = db.Close()
 		t.Fatalf("Failed to run migrations: %v", err)
 	}
 
@@ -222,7 +222,7 @@ func connectDB(cfg Config) (*sqlx.DB, error) {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 

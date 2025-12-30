@@ -33,7 +33,7 @@ func TestNewTokenRevoker(t *testing.T) {
 
 func TestTokenRevoker_Revoke(t *testing.T) {
 	client, _ := setupTestRedis(t)
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	revoker := NewTokenRevoker(client)
 	ctx := context.Background()
@@ -73,7 +73,7 @@ func TestTokenRevoker_RevokeExpiredToken(t *testing.T) {
 
 func TestTokenRevoker_IsRevoked_NotRevoked(t *testing.T) {
 	client, _ := setupTestRedis(t)
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	revoker := NewTokenRevoker(client)
 	ctx := context.Background()
@@ -116,7 +116,7 @@ func TestTokenRevoker_TTL(t *testing.T) {
 
 func TestTokenRevoker_MultipleTokens(t *testing.T) {
 	client, _ := setupTestRedis(t)
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	revoker := NewTokenRevoker(client)
 	ctx := context.Background()
@@ -166,7 +166,7 @@ func TestTokenRevoker_Stats(t *testing.T) {
 
 func TestTokenRevoker_RevokeAllForUser_NotImplemented(t *testing.T) {
 	client, _ := setupTestRedis(t)
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	revoker := NewTokenRevoker(client)
 	ctx := context.Background()

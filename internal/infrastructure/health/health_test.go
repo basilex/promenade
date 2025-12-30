@@ -19,7 +19,7 @@ import (
 func TestChecker_CheckDatabase_Healthy(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -37,7 +37,7 @@ func TestChecker_CheckDatabase_Healthy(t *testing.T) {
 func TestChecker_CheckDatabase_Unhealthy_PingFailed(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -54,7 +54,7 @@ func TestChecker_CheckDatabase_Unhealthy_PingFailed(t *testing.T) {
 func TestChecker_CheckDatabase_Degraded_QueryFailed(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
@@ -119,7 +119,7 @@ func TestChecker_CheckEventBus_Healthy(t *testing.T) {
 func TestChecker_CheckAll_AllHealthy(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	redisClient, redisMock := redismock.NewClientMock()
@@ -146,7 +146,7 @@ func TestChecker_CheckAll_AllHealthy(t *testing.T) {
 func TestChecker_CheckAll_DatabaseUnhealthy(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	redisClient, redisMock := redismock.NewClientMock()
@@ -171,7 +171,7 @@ func TestChecker_CheckAll_DatabaseUnhealthy(t *testing.T) {
 func TestChecker_CheckAll_WithTimeout(t *testing.T) {
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	eventBus := memory.NewMemoryBus(bus.Config{

@@ -362,7 +362,7 @@ func TestBus_FactorySelection(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, b)
-				b.Close(context.Background())
+				_ = b.Close(context.Background())
 			}
 		})
 	}

@@ -156,9 +156,9 @@ func (uc *useCase) Update(ctx context.Context, language *Language) error {
 	}
 	
 	// Invalidate cache for this language
-	uc.cache.Delete(ctx, fmt.Sprintf("language:id:%s", language.ID.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("language:code:%s", language.Code))
-	uc.cache.Delete(ctx, "language:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("language:id:%s", language.ID.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("language:code:%s", language.Code))
+	_ = uc.cache.Delete(ctx, "language:list:all")
 	
 	return nil
 }
@@ -175,9 +175,9 @@ func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 	
 	// Invalidate cache
-	uc.cache.Delete(ctx, fmt.Sprintf("language:id:%s", id.String()))
-	uc.cache.Delete(ctx, fmt.Sprintf("language:code:%s", language.Code))
-	uc.cache.Delete(ctx, "language:list:all")
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("language:id:%s", id.String()))
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("language:code:%s", language.Code))
+	_ = uc.cache.Delete(ctx, "language:list:all")
 	
 	return nil
 }
