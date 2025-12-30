@@ -28,7 +28,7 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*timezone.Tim
 	`
 	err := sqlx.GetContext(ctx, r.db, &t, query, id)
 	if err == sql.ErrNoRows {
-		return nil, timezone.ErrNotFound
+		return nil, timezone.ErrTimezoneNotFound
 	}
 	return &t, err
 }
@@ -42,7 +42,7 @@ func (r *repository) GetByName(ctx context.Context, name string) (*timezone.Time
 	`
 	err := sqlx.GetContext(ctx, r.db, &t, query, name)
 	if err == sql.ErrNoRows {
-		return nil, timezone.ErrNotFound
+		return nil, timezone.ErrTimezoneNotFound
 	}
 	return &t, err
 }

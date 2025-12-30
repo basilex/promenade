@@ -1,16 +1,10 @@
 package language
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrNotFound = errors.New("language not found")
 )
 
 // Language represents an ISO 639-1 language (Aggregate Root in Shared Context)

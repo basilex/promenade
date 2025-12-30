@@ -82,13 +82,13 @@ func TestUseCase_GetByID(t *testing.T) {
 
 	t.Run("not_found", func(t *testing.T) {
 		id := uuidv7.New()
-		mockRepo.On("GetByID", ctx, id).Return(nil, ErrNotFound).Once()
+		mockRepo.On("GetByID", ctx, id).Return(nil, ErrTimezoneNotFound).Once()
 
 		result, err := uc.GetByID(ctx, id)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, ErrNotFound, err)
+		assert.Equal(t, ErrTimezoneNotFound, err)
 		mockRepo.AssertExpectations(t)
 	})
 }

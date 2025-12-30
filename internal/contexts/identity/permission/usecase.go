@@ -9,14 +9,6 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Additional errors for use cases
-var (
-	ErrPermissionNameExists = errors.New("permission name already exists")
-	ErrResourceRequired     = errors.New("resource is required")
-	ErrActionRequired       = errors.New("action is required")
-	ErrInvalidAction        = errors.New("invalid action format")
-)
-
 // IUseCase defines the business logic interface for Permission operations
 type IUseCase interface {
 	// CreatePermission creates a new permission

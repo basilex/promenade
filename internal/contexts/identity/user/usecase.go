@@ -9,17 +9,6 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Common errors
-var (
-	ErrUserNotFound          = errors.New("user not found")
-	ErrEmailAlreadyExists    = errors.New("email already exists")
-	ErrInvalidCredentials    = errors.New("invalid credentials")
-	ErrAccountLocked         = errors.New("account is locked")
-	ErrAccountNotActive      = errors.New("account is not active")
-	ErrEmailNotVerified      = errors.New("email is not verified")
-	ErrInvalidPassword       = errors.New("invalid password")
-)
-
 // IUseCase defines the interface for User use cases
 type IUseCase interface {
 	// Register creates a new user account

@@ -1,16 +1,10 @@
 package country
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrNotFound = errors.New("country not found")
 )
 
 // Country represents an ISO 3166-1 country (Aggregate Root in Shared Context)

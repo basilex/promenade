@@ -28,7 +28,7 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*country.Coun
 	`
 	err := sqlx.GetContext(ctx, r.db, &c, query, id)
 	if err == sql.ErrNoRows {
-		return nil, country.ErrNotFound
+		return nil, country.ErrCountryNotFound
 	}
 	return &c, err
 }
@@ -42,7 +42,7 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*country.Count
 	`
 	err := sqlx.GetContext(ctx, r.db, &c, query, code)
 	if err == sql.ErrNoRows {
-		return nil, country.ErrNotFound
+		return nil, country.ErrCountryNotFound
 	}
 	return &c, err
 }

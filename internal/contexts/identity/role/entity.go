@@ -1,20 +1,12 @@
 package role
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrRoleNotFound       = errors.New("role not found")
-	ErrRoleAlreadyExists  = errors.New("role already exists")
-	ErrCannotDeleteSystem = errors.New("cannot delete system role")
 )
 
 // Role represents a user role in the system

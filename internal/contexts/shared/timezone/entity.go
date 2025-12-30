@@ -1,16 +1,10 @@
 package timezone
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrNotFound = errors.New("timezone not found")
 )
 
 // Timezone represents an IANA timezone (Aggregate Root in Shared Context)

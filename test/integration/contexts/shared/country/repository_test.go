@@ -61,7 +61,7 @@ func TestCountryRepository_CRUD(t *testing.T) {
 
 		deleted, err := repo.GetByID(ctx, c.ID)
 		assert.Error(t, err, "GetByID should fail after delete")
-		assert.Equal(t, country.ErrNotFound, err)
+		assert.Equal(t, country.ErrCountryNotFound, err)
 		assert.Nil(t, deleted)
 	})
 }
@@ -113,7 +113,7 @@ func TestCountryRepository_Queries(t *testing.T) {
 		// GetByCode - not found
 		notFound, err := repo.GetByCode(ctx, "XX")
 		assert.Error(t, err)
-		assert.Equal(t, country.ErrNotFound, err)
+		assert.Equal(t, country.ErrCountryNotFound, err)
 		assert.Nil(t, notFound)
 
 		// List

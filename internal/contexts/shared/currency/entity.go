@@ -1,16 +1,10 @@
 package currency
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrNotFound = errors.New("currency not found")
 )
 
 // Currency represents an ISO 4217 currency (Aggregate Root in Shared Context)

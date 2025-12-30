@@ -8,13 +8,6 @@ import (
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// Additional errors for use cases
-var (
-	ErrRoleNameRequired    = errors.New("role name is required")
-	ErrRoleDisplayRequired = errors.New("role display name is required")
-	ErrRoleNameExists      = errors.New("role name already exists")
-)
-
 // IUseCase defines the business logic interface for Role operations
 type IUseCase interface {
 	// CreateRole creates a new role

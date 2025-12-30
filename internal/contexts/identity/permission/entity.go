@@ -1,19 +1,12 @@
 package permission
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrPermissionNotFound      = errors.New("permission not found")
-	ErrPermissionAlreadyExists = errors.New("permission already exists")
 )
 
 // Permission represents a specific permission in the system
