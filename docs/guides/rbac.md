@@ -635,7 +635,11 @@ superadmin.Use(jwt.RequireAllRoles("admin", "superadmin"))
 ```go
 func (h *Handler) DeleteUser(c *gin.Context) {
     // Get current user from JWT
-    claims := jwt.MustGetClaims(c)
+    claims := jwt.GetClaims(c)
+    if claims == nil {
+        response.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "No authentication claims")
+        return
+    }
     currentUserID, _ := claims.ExtractUserID()
     
     // Check if user has admin role

@@ -348,22 +348,6 @@ func GetUserID(c *gin.Context) string
 
 Extracts user ID string from Gin context. Returns `""` if not found.
 
-### MustGetClaims
-
-```go
-func MustGetClaims(c *gin.Context) *Claims
-```
-
-Extracts claims or panics. Use after `AuthMiddleware`.
-
-### MustGetUserID
-
-```go
-func MustGetUserID(c *gin.Context) uuidv7.UUID
-```
-
-Extracts user ID as UUID v7 or panics. Use after `AuthMiddleware`.
-
 ---
 
 ## Examples
@@ -428,7 +412,11 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 ```go
 func (h *UserHandler) SuspendUser(c *gin.Context) {
     // Extract current user from JWT
-    claims := jwt.MustGetClaims(c)
+    claims := jwt.GetClaims(c)
+    if claims == nil {
+        response.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "No authentication claims")
+        return
+    }
     currentUserID, _ := claims.ExtractUserID()
 
     // Check admin role (alternative to RequireRole middleware)
@@ -593,7 +581,7 @@ go tool cover -html=coverage.out
 - Role checking: ✅
 - Middleware authentication: ✅
 - Middleware authorization: ✅
-- Context helpers (GetUserID, MustGetClaims, MustGetUserID): ✅
+- Context helpers (GetUserID, GetClaims): ✅
 - Panic recovery: ✅
 
 ---

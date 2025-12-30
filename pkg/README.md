@@ -69,7 +69,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 - Token validation with custom claims (user_id, email, roles)
 - Gin middleware for authentication
 - RBAC middleware (RequireRole, RequireAnyRole, RequireAllRoles)
-- Context helpers (GetClaims, GetUserID, MustGetClaims, MustGetUserID)
+- Context helpers (GetClaims, GetUserID)
 - Configurable TTL and secret key
 
 **Usage**:

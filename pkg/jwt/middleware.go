@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/basilex/promenade/pkg/response"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 const (
@@ -153,28 +152,4 @@ func GetUserID(c *gin.Context) string {
 	}
 
 	return userID
-}
-
-// MustGetClaims extracts JWT claims or panics
-func MustGetClaims(c *gin.Context) *Claims {
-	claims := GetClaims(c)
-	if claims == nil {
-		panic("JWT claims not found in context")
-	}
-	return claims
-}
-
-// MustGetUserID extracts user ID or panics
-func MustGetUserID(c *gin.Context) uuidv7.UUID {
-	userID := GetUserID(c)
-	if userID == "" {
-		panic("User ID not found in context")
-	}
-
-	uuid, err := uuidv7.Parse(userID)
-	if err != nil {
-		panic("Invalid user ID in context: " + err.Error())
-	}
-
-	return uuid
 }

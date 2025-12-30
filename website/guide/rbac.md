@@ -216,7 +216,11 @@ superadmin.Use(jwt.RequireAllRoles("admin", "superadmin"))
 ```go
 func (h *UserHandler) SuspendUser(c *gin.Context) {
     // Extract current user from JWT
-    claims := jwt.MustGetClaims(c)
+    claims := jwt.GetClaims(c)
+    if claims == nil {
+        response.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "No authentication claims")
+        return
+    }
     
     // Check admin role
     if !claims.HasRole("admin") {
