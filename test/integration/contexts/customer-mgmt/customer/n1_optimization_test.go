@@ -20,7 +20,7 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewCustomerRepository(testDB.DB)

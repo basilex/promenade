@@ -216,7 +216,13 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
+		tz := &timezone.Timezone{
+			ID:   id,
+			Name: "Europe/Kyiv",
+		}
 
+		// Delete method calls GetByID first for cache invalidation
+		mockRepo.On("GetByID", ctx, id).Return(tz, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(nil).Once()
 
 		err := uc.Delete(ctx, id)
