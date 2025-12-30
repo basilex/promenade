@@ -440,6 +440,26 @@ make dev
   </ul>
 </div>
 
+<div class="resource-category">
+  <h3>📊 Metrics & Performance</h3>
+  <ul>
+    <li><a href="/reference/test-coverage-report">Test Coverage Report</a> - 240+ tests, 90%+ coverage</li>
+    <li><a href="/reference/bus-test-coverage">Event Bus Tests</a> - 67 tests, 377K events/sec</li>
+    <li><a href="/packages/uuidv7">UUID v7 Performance</a> - 2x faster inserts</li>
+    <li><a href="https://github.com/basilex/promenade/actions">CI/CD Pipeline</a> - Build status & metrics</li>
+  </ul>
+</div>
+
+<div class="resource-category">
+  <h3>📈 Status & Updates</h3>
+  <ul>
+    <li><a href="https://github.com/basilex/promenade/releases">Release Notes</a> - Version history</li>
+    <li><a href="https://github.com/basilex/promenade/milestones">Roadmap & Milestones</a> - Future plans</li>
+    <li><a href="https://github.com/basilex/promenade/commits/dev">Recent Commits</a> - Latest changes</li>
+    <li><a href="https://github.com/basilex/promenade">Star on GitHub ⭐</a> - Support the project</li>
+  </ul>
+</div>
+
 </div>
 
 <div class="community-cta">
