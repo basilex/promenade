@@ -10,12 +10,16 @@ import (
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	customerHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/http"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
+	dealHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/http"
+	dealRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/repository/postgres"
 )
 
 // Router manages routes for Customer Management context
 type Router struct {
 	customerHandler *customerHTTP.CustomerHandler
 	companyHandler  *companyHTTP.CompanyHandler
+	dealHandler     *dealHTTP.DealHandler
 }
 
 // NewRouter creates a new Customer Management router with all dependencies
@@ -30,9 +34,15 @@ func NewRouter(db *sqlx.DB) *Router {
 	companyUseCase := company.NewUseCase(companyRepository)
 	companyHandler := companyHTTP.NewCompanyHandler(companyUseCase)
 
+	// Initialize Deal aggregate
+	dealRepository := dealRepo.NewDealRepository(db)
+	dealUseCase := deal.NewUseCase(dealRepository)
+	dealHandler := dealHTTP.NewDealHandler(dealUseCase)
+
 	return &Router{
 		customerHandler: customerHandler,
 		companyHandler:  companyHandler,
+		dealHandler:     dealHandler,
 	}
 }
 
@@ -81,6 +91,23 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			companies.PUT("/:id/parent", r.companyHandler.SetParentCompany)
 			companies.PUT("/:id/description", r.companyHandler.UpdateDescription)
 			companies.DELETE("/:id", r.companyHandler.Delete)
+		}
+
+		// Deal routes (Sales Pipeline)
+		deals := customerMgmt.Group("/deals")
+		{
+			deals.POST("", r.dealHandler.Create)
+			deals.GET("", r.dealHandler.List)
+			deals.GET("/:id", r.dealHandler.GetByID)
+			deals.PUT("/:id/basic-info", r.dealHandler.UpdateBasicInfo)
+			deals.PUT("/:id/value", r.dealHandler.UpdateValue)
+			deals.PUT("/:id/stage", r.dealHandler.MoveToStage)
+			deals.POST("/:id/win", r.dealHandler.MarkAsWon)
+			deals.POST("/:id/lose", r.dealHandler.MarkAsLost)
+			deals.DELETE("/:id", r.dealHandler.Delete)
+			deals.GET("/stage/:stage", r.dealHandler.ListByStage)
+			deals.GET("/stats/pipeline", r.dealHandler.GetPipelineStats)
+			deals.GET("/stats/won", r.dealHandler.GetWonDeals)
 		}
 	}
 }
