@@ -12,7 +12,7 @@
 
 ```
 scripts/
- create-migration.sh   # Create new migration file
+ create-migration.sh   # Create new migration files
  clean-docs.py         # Documentation cleanup utility
 ```
 
