@@ -16,6 +16,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 | **cache**     | Caching layer (Redis/NoOp adapters)             | Production | -     | [README](cache/README.md)           |
 | **jwt**       | JWT authentication & RBAC middleware            | Production | 18    | [README](jwt/README.md)             |
 | **logger**    | Structured logging (slog wrapper)               | Production | 15    | [README](logger/README.md)          |
+| **middleware**| HTTP middleware (rate limiting, CSRF)           | Production | 25    | [README](middleware/README.md)      |
 | **migration** | Database migration management (namespace-based) | Production | 8     | [README](migration/README.md)       |
 | **response**  | Standard HTTP response formatting               | Production | 12    | [README](response/README.md)        |
 
@@ -181,7 +182,51 @@ jwt:
 
 ---
 
-### 4. pkg/logger - Structured Logging
+### 4. pkg/middleware - HTTP Middleware
+
+**HTTP middleware collection** for Gin framework providing rate limiting, CSRF protection, and other cross-cutting concerns.
+
+**Key Features**:
+
+- **Rate Limiter**: IP-based rate limiting with token bucket algorithm
+- **CSRF Protection**: Double-submit cookie pattern for CSRF prevention
+- Thread-safe concurrent access
+- Configurable policies per endpoint
+- Production-ready security defaults
+
+**Usage**:
+
+```go
+import (
+    "github.com/basilex/promenade/pkg/middleware"
+    "golang.org/x/time/rate"
+)
+
+// Rate limiting
+loginLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1) // 5/min
+router.POST("/auth/login", loginLimiter.Limit(), loginHandler)
+
+// CSRF protection
+csrfConfig := middleware.DefaultCSRFConfig()
+csrfConfig.CookieSecure = true
+csrfMiddleware := middleware.CSRFMiddleware(csrfConfig)
+
+protected := router.Group("/api")
+protected.Use(csrfMiddleware)
+```
+
+**Middleware Components**:
+
+- `RateLimiter` - Per-IP rate limiting with X-RateLimit-* headers
+- `CSRFMiddleware` - CSRF token generation and validation
+- Automatic cleanup and memory management
+- 25 tests, 93% coverage
+
+**Read More**: [pkg/middleware/README.md](middleware/README.md) | [Rate Limiting Guide](../docs/guides/rate-limiting.md) | [CSRF Protection Guide](../docs/guides/csrf-protection.md)
+
+---
+
+### 5. pkg/logger - Structured Logging
 
 **Wrapper around Go's `log/slog`** with context-aware logging and request ID propagation.
 
@@ -225,7 +270,7 @@ logging:
 
 ---
 
-### 5. pkg/migration - Database Migrations
+### 6. pkg/migration - Database Migrations
 
 **Namespace-based migration system** for managing schema evolution across multiple bounded contexts.
 
@@ -269,7 +314,7 @@ go run cmd/migrate/main.go --cmd=up --namespace=identity
 
 ---
 
-### 6. pkg/response - HTTP Responses
+### 7. pkg/response - HTTP Responses
 
 **Standard response formatting** for consistent API responses across all handlers.
 
@@ -323,7 +368,7 @@ response.Paginated(c, http.StatusOK, users, total, page, pageSize)
 
 ---
 
-### 7. pkg/uuidv7 - Time-Ordered UUIDs
+### 8. pkg/uuidv7 - Time-Ordered UUIDs
 
 **UUIDv7 implementation** (RFC 9562) for database primary keys with better performance than UUIDv4.
 
@@ -366,7 +411,7 @@ CREATE TABLE users (
 
 ---
 
-### 8. pkg/valueobject - Value Objects
+### 9. pkg/valueobject - Value Objects
 
 **Immutable value objects** (DDD pattern) for domain concepts with validation and equality semantics.
 
@@ -422,7 +467,7 @@ addr, err := valueobject.NewAddress(
 
 ---
 
-### 9. pkg/aggregate - Base Aggregate
+### 10. pkg/aggregate - Base Aggregate
 
 **Base aggregate pattern** (DDD) for aggregate roots with event sourcing support.
 
@@ -483,7 +528,7 @@ func (r *UserRepository) Create(ctx context.Context, user *User) error {
 
 ---
 
-### 10. pkg/saga - Saga Orchestration (Planned)
+### 11. pkg/saga - Saga Orchestration (Planned)
 
 **Distributed transaction coordination** using Saga pattern for cross-context workflows.
 
@@ -510,7 +555,7 @@ saga.
 
 ---
 
-### 11. pkg/jsonb - JSONB Utilities
+### 12. pkg/jsonb - JSONB Utilities
 
 **PostgreSQL JSONB helpers** for storing flexible data in JSON columns.
 

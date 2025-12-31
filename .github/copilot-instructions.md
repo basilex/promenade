@@ -154,12 +154,13 @@ eventBus.Publish(ctx, event)
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
-**Testing** (three-tier strategy):
+**Testing** (four-tier strategy):
 
 - `make test` - All tests with race detector (~40s, 240+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s)
 - `make test-smoke` - Smoke tests (mock-based, ~0.35s)
 - `make test-integration` - Integration tests with real DB (~2s, 24 tests, auto-starts test DB)
+- `make test-benchmark` - Benchmark tests (performance measurement, 5s per benchmark)
 - `make test-coverage` - HTML coverage report
 - Test DB: `make test-db-start` / `make test-db-stop` (auto-managed by test-integration)
 
@@ -376,63 +377,7 @@ if !contains(roles, "admin") {
 - **Context propagation**: Extract `userID` from JWT claims via `jwt.GetUserID(c)`
 - **Token revocation**: Check blacklist on protected routes (graceful degradation if Redis unavailable)
 
-## Health Checks & Monitoring
-
-**Health Checker**: Monitors all dependencies with graceful degradation
-
-```go
-// Initialize in cmd/api/main.go
-healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
-healthHandler := health.NewHandler(healthChecker)
-healthHandler.RegisterRoutes(r)
-```
-
-**Available Endpoints**:
-- `GET /health` - Overall system health (DB + Redis + Event Bus)
-- `GET /health/db` - PostgreSQL health check
-- `GET /health/redis` - Redis health check (optional)
-- `GET /health/bus` - Event Bus health check
-
-**Status Levels**: `healthy` (200), `degraded` (200), `unhealthy` (503)
-
-## Caching Layer
-
-**Cache Client**: Redis-based caching with graceful fallback
-
-**Cache Client**: Redis-based caching with graceful fallback
-
-```go
-// Initialize in cmd/api/main.go
-cacheClient, err := cache.NewCache(cacheConfig, cacheRedisClient)
-
-// Pass to context routers that need caching
-sharedRouter := shared.NewRouter(db, cacheClient)  // Reference data with cache
-```
-
-**Cache Usage in Repository**:
-
-```go
-// Try cache first
-cached, err := r.cache.Get(ctx, cacheKey, &countries)
-if err == nil && cached {
-    return countries, nil  // Cache hit
-}
-
-// Cache miss - fetch from DB
-countries, err := r.fetchFromDB(ctx)
-if err != nil {
-    return nil, err
-}
-
-// Store in cache
-r.cache.Set(ctx, cacheKey, countries, ttl)
-return countries, nil
-```
-
-**TTL Strategy**:
-- Reference data: 1h-24h (Country, Currency, Language, Timezone)
-- User data: 10-30m (Profile, Customer)
-- Session data: 30m-1h (temporary state)
+## Data Patterns
 
 **Invalidation**: Pattern-based deletion on updates
 
@@ -440,8 +385,6 @@ return countries, nil
 // Invalidate all country-related cache entries
 r.cache.DeletePattern(ctx, "countries:*")
 ```
-
-## Data Patterns
 
 **Repository pattern** (embed BaseRepository):
 
@@ -478,6 +421,66 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 - Soft delete: Always add `WHERE deleted_at IS NULL`
 - Context: Always pass `ctx` for tx/logger propagation
 - Logger: `logger.FromContext(ctx)` not global logger
+
+## Customer Management & Deal Pipeline
+
+**Customer Context** (`internal/contexts/customer-mgmt/customer/`):
+
+- **Customer Lifecycle**: Lead → Prospect → Customer → Churned (state machine)
+- **Customer Tiers**: free, basic, pro, enterprise
+- **Segmentation**: JSONB tags for flexible metadata
+- **Sales Rep Assignment**: Track ownership and source
+- **14 API Endpoints**: Complete CRUD + business operations
+
+**Company Context** (`internal/contexts/customer-mgmt/company/`):
+
+- **B2B Support**: Legal entities for business customers
+- **Tax & Legal**: Tax ID, legal name, registration number
+- **Parent-Subsidiary**: Support for corporate hierarchies
+- **Industry & Size**: Classification and employee count
+- **14 API Endpoints**: Complete CRUD + hierarchical operations
+
+**Deal Context** (`internal/contexts/customer-mgmt/deal/`):
+
+- **Deal Stages**: lead → qualified → proposal → negotiation → closed_won/closed_lost
+- **Probability Tracking**: Auto-calculated per stage (10% → 100%)
+- **Money Value Object**: Type-safe handling with currency support
+- **Pipeline Statistics**: Filter by stage, customer, or sales rep
+- **12 API Endpoints**: Complete CRUD + stage transitions
+
+**Business Rules**:
+- Customer state transitions enforce lifecycle rules
+- Deal stage transitions are validated (can't skip stages)
+- Automatic probability updates on stage changes
+- Win/loss tracking with actual close dates
+
+## Order Management
+
+**Order Context** (`internal/contexts/order-mgmt/order/`):
+
+- **Order Creation**: Generate orders with auto-numbered format (ORD-YYYY-NNNNNN)
+- **Line Items**: Add/remove products with automatic total calculation
+- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled)
+- **Money Handling**: Type-safe cents-based precision
+- **14 API Endpoints**: Complete CRUD + state transitions
+
+**Order Entity Methods**:
+
+```go
+func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice Money) error
+func (o *Order) RemoveLine(lineID uuidv7.UUID) error
+func (o *Order) UpdateLine(lineID uuidv7.UUID, quantity int) error
+func (o *Order) Confirm() error            // pending → confirmed
+func (o *Order) StartProcessing() error    // confirmed → processing
+func (o *Order) MarkFulfilled() error      // processing → fulfilled
+func (o *Order) Cancel(reason string) error
+```
+
+**Business Rules**:
+- Order must have at least one line item to confirm
+- Cannot modify confirmed orders (must cancel and recreate)
+- Terminal states (fulfilled, cancelled) are immutable
+- Total automatically recalculated on line item changes
 
 ## Adding a New Aggregate
 
@@ -570,11 +573,74 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 - Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET, REDIS_ADDR)
 - Access: `logger.FromContext(ctx)`, `database.GetTx(ctx)`
 
+## Health Checks & Monitoring
+
+**Health Checker**: Monitors all dependencies with graceful degradation
+
+```go
+// Initialize in cmd/api/main.go
+healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
+healthHandler := health.NewHandler(healthChecker)
+healthHandler.RegisterRoutes(r)
+```
+
+**Available Endpoints**:
+- `GET /health` - Overall system health (DB + Redis + Event Bus)
+- `GET /health/db` - PostgreSQL health check
+- `GET /health/redis` - Redis health check (optional)
+- `GET /health/bus` - Event Bus health check
+
+**Status Levels**: `healthy` (200), `degraded` (200), `unhealthy` (503)
+
+## Caching Layer
+
+**Cache Client**: Redis-based caching with graceful fallback
+
+```go
+// Initialize in cmd/api/main.go
+cacheClient, err := cache.NewCache(cacheConfig, cacheRedisClient)
+
+// Pass to context routers that need caching
+sharedRouter := shared.NewRouter(db, cacheClient)  // Reference data with cache
+```
+
+**Cache Usage in Repository**:
+
+```go
+// Try cache first
+cached, err := r.cache.Get(ctx, cacheKey, &countries)
+if err == nil && cached {
+    return countries, nil  // Cache hit
+}
+
+// Cache miss - fetch from DB
+countries, err := r.fetchFromDB(ctx)
+if err != nil {
+    return nil, err
+}
+
+// Store in cache
+r.cache.Set(ctx, cacheKey, countries, ttl)
+return countries, nil
+```
+
+**TTL Strategy**:
+- Reference data: 1h-24h (Country, Currency, Language, Timezone)
+- User data: 10-30m (Profile, Customer)
+- Session data: 30m-1h (temporary state)
+
+**Invalidation**: Pattern-based deletion on updates
+
+```go
+// Invalidate all country-related cache entries
+r.cache.DeletePattern(ctx, "countries:*")
+```
+
 ## Testing Strategy
 
-**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional smoke/integration tests in mirror path structure
+**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional smoke/integration/benchmark tests in mirror path structure
 
-**Three-Tier Test Strategy**:
+**Four-Tier Test Strategy**:
 
 1. **Unit Tests** (in-place): Fast feedback, test individual components
    - Location: Same directory as production code (`entity_test.go`, `usecase_test.go`)
@@ -584,7 +650,11 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
    - Run: `make test-smoke` (~0.3s)
 3. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
    - Location: Mirror path structure (e.g., `test/integration/contexts/identity/contact/repository_test.go`)
-   - Run: `make test-integration` (~5s, auto-starts test DB)
+   - Run: `make test-integration` (~2s, auto-starts test DB)
+4. **Benchmark Tests** (`test/benchmark/contexts/`): Performance measurement with real database
+   - Location: Mirror path structure (e.g., `test/benchmark/contexts/identity/user/repository_bench_test.go`)
+   - Run: `make test-benchmark` (~5s per benchmark, auto-starts test DB)
+   - Purpose: Validate optimizations (e.g., N+1 query fixes), measure query performance
 
 **Running Tests**:
 
@@ -592,13 +662,15 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 make test                      # All tests with race detector (~40s)
 make test-unit                 # Unit tests only (~5s)
 make test-smoke                # Smoke tests (mock-based, ~0.35s)
-make test-integration          # Integration tests with real DB (~14s)
+make test-integration          # Integration tests with real DB (~2s)
+make test-benchmark            # Benchmark tests (5s per benchmark)
 make test-coverage             # HTML coverage report
 
 # Context-specific tests
 go test ./internal/contexts/identity/... -v
 go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/identity/... -v
+go test -bench=. ./test/benchmark/contexts/identity/user -v
 
 # Package tests
 go test ./pkg/bus/... -v
@@ -698,66 +770,6 @@ func TestUserRepository_Create(t *testing.T) {
 ```
 
 **Test Helpers**: [test/integration/](../test/integration/) for DB setup and utilities
-
-## Customer Management & Deal Pipeline
-
-**Customer Context** (`internal/contexts/customer-mgmt/customer/`):
-
-- **Customer Lifecycle**: Lead → Prospect → Customer → Churned (state machine)
-- **Customer Tiers**: free, basic, pro, enterprise
-- **Segmentation**: JSONB tags for flexible metadata
-- **Sales Rep Assignment**: Track ownership and source
-- **14 API Endpoints**: Complete CRUD + business operations
-
-**Company Context** (`internal/contexts/customer-mgmt/company/`):
-
-- **B2B Support**: Legal entities for business customers
-- **Tax & Legal**: Tax ID, legal name, registration number
-- **Parent-Subsidiary**: Support for corporate hierarchies
-- **Industry & Size**: Classification and employee count
-- **14 API Endpoints**: Complete CRUD + hierarchical operations
-
-**Deal Context** (`internal/contexts/customer-mgmt/deal/`):
-
-- **Deal Stages**: lead → qualified → proposal → negotiation → closed_won/closed_lost
-- **Probability Tracking**: Auto-calculated per stage (10% → 100%)
-- **Money Value Object**: Type-safe handling with currency support
-- **Pipeline Statistics**: Filter by stage, customer, or sales rep
-- **12 API Endpoints**: Complete CRUD + stage transitions
-
-**Business Rules**:
-- Customer state transitions enforce lifecycle rules
-- Deal stage transitions are validated (can't skip stages)
-- Automatic probability updates on stage changes
-- Win/loss tracking with actual close dates
-
-## Order Management
-
-**Order Context** (`internal/contexts/order-mgmt/order/`):
-
-- **Order Creation**: Generate orders with auto-numbered format (ORD-YYYY-NNNNNN)
-- **Line Items**: Add/remove products with automatic total calculation
-- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled)
-- **Money Handling**: Type-safe cents-based precision
-- **14 API Endpoints**: Complete CRUD + state transitions
-
-**Order Entity Methods**:
-
-```go
-func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice Money) error
-func (o *Order) RemoveLine(lineID uuidv7.UUID) error
-func (o *Order) UpdateLine(lineID uuidv7.UUID, quantity int) error
-func (o *Order) Confirm() error            // pending → confirmed
-func (o *Order) StartProcessing() error    // confirmed → processing
-func (o *Order) MarkFulfilled() error      // processing → fulfilled
-func (o *Order) Cancel(reason string) error
-```
-
-**Business Rules**:
-- Order must have at least one line item to confirm
-- Cannot modify confirmed orders (must cancel and recreate)
-- Terminal states (fulfilled, cancelled) are immutable
-- Total automatically recalculated on line item changes
 
 ## Codebase Conventions & Patterns
 

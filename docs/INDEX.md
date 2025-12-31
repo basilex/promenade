@@ -165,6 +165,7 @@
 | **bus**         | Event Bus (Memory/Redis)           | 67    | [Guide](../pkg/bus/README.md)              |
 | **jwt**         | Authentication & RBAC              | 18    | [Guide](../pkg/jwt/README.md)              |
 | **logger**      | Structured logging                 | 15    | [Guide](../pkg/logger/README.md)           |
+| **middleware**  | HTTP middleware (rate limit, CSRF) | 25    | [Guide](../pkg/middleware/README.md)       |
 | **uuidv7**      | Time-ordered UUIDs                 | 10    | [Guide](../pkg/uuidv7/README.md)           |
 | **valueobject** | Domain value objects               | 45    | [Guide](../pkg/valueobject/README.md)      |
 | **response**    | HTTP response helpers              | 13    | [Guide](../pkg/response/README.md)         |
@@ -173,7 +174,7 @@
 | **aggregate**   | Base aggregate pattern             | 5     | [Guide](../pkg/aggregate/README.md)        |
 | **jsonb**       | PostgreSQL JSONB utilities         | 8     | [Guide](../pkg/jsonb/README.md)            |
 
-**Total**: 196+ tests across 10 packages | [Package Overview](../pkg/README.md)
+**Total**: 221+ tests across 11 packages | [Package Overview](../pkg/README.md)
 
 ---
 
