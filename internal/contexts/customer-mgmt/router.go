@@ -13,13 +13,17 @@ import (
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
 	dealHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/http"
 	dealRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	interactionHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/http"
+	interactionRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
 )
 
 // Router manages routes for Customer Management context
 type Router struct {
-	customerHandler *customerHTTP.CustomerHandler
-	companyHandler  *companyHTTP.CompanyHandler
-	dealHandler     *dealHTTP.DealHandler
+	customerHandler    *customerHTTP.CustomerHandler
+	companyHandler     *companyHTTP.CompanyHandler
+	dealHandler        *dealHTTP.DealHandler
+	interactionHandler *interactionHTTP.InteractionHandler
 }
 
 // NewRouter creates a new Customer Management router with all dependencies
@@ -39,10 +43,16 @@ func NewRouter(db *sqlx.DB) *Router {
 	dealUseCase := deal.NewUseCase(dealRepository)
 	dealHandler := dealHTTP.NewDealHandler(dealUseCase)
 
+	// Initialize Interaction aggregate
+	interactionRepository := interactionRepo.NewInteractionRepository(db)
+	interactionUseCase := interaction.NewUseCase(interactionRepository)
+	interactionHandler := interactionHTTP.NewInteractionHandler(interactionUseCase)
+
 	return &Router{
-		customerHandler: customerHandler,
-		companyHandler:  companyHandler,
-		dealHandler:     dealHandler,
+		customerHandler:    customerHandler,
+		companyHandler:     companyHandler,
+		dealHandler:        dealHandler,
+		interactionHandler: interactionHandler,
 	}
 }
 
@@ -108,6 +118,25 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			deals.GET("/stage/:stage", r.dealHandler.ListByStage)
 			deals.GET("/stats/pipeline", r.dealHandler.GetPipelineStats)
 			deals.GET("/stats/won", r.dealHandler.GetWonDeals)
+		}
+
+		// Interaction routes (Customer Communication Log)
+		interactions := customerMgmt.Group("/interactions")
+		{
+			interactions.POST("", r.interactionHandler.Create)
+			interactions.GET("", r.interactionHandler.List)
+			interactions.GET("/:id", r.interactionHandler.GetByID)
+			interactions.GET("/customer/:customer_id", r.interactionHandler.ListByCustomer)
+			interactions.GET("/company/:company_id", r.interactionHandler.ListByCompany)
+			interactions.GET("/type/:type", r.interactionHandler.ListByType)
+			interactions.GET("/follow-ups/pending", r.interactionHandler.ListPendingFollowUps)
+			interactions.PUT("/:id/content", r.interactionHandler.UpdateContent)
+			interactions.PUT("/:id/outcome", r.interactionHandler.SetOutcome)
+			interactions.POST("/:id/end", r.interactionHandler.EndInteraction)
+			interactions.PUT("/:id/follow-up", r.interactionHandler.SetFollowUp)
+			interactions.POST("/:id/attendees", r.interactionHandler.AddAttendee)
+			interactions.DELETE("/:id/attendees/:attendee_id", r.interactionHandler.RemoveAttendee)
+			interactions.DELETE("/:id", r.interactionHandler.Delete)
 		}
 	}
 }
