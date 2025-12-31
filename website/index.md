@@ -80,11 +80,17 @@ features:
     link: /guide/caching
     linkText: Caching Guide →
     
-  - icon: �
+  - icon: 👥
     title: Customer Management
     details: Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.
     link: /concepts/customer-management
     linkText: Customer Management Guide →
+    
+  - icon: 💼
+    title: Deal Management
+    details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
+    link: /concepts/deal-management
+    linkText: Deal Management Guide →
     
   - icon: �📦
     title: Order Management

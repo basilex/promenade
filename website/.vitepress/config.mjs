@@ -25,6 +25,7 @@ export default defineConfig({
           { text: 'Event-Driven', link: '/concepts/event-driven' },
           { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
           { text: 'Customer Management', link: '/concepts/customer-management' },
+          { text: 'Deal Management', link: '/concepts/deal-management' },
           { text: 'Order Management', link: '/concepts/order-management' },
         ]
       },
@@ -77,6 +78,7 @@ export default defineConfig({
             { text: 'Event-Driven Architecture', link: '/concepts/event-driven' },
             { text: 'Bounded Contexts', link: '/concepts/bounded-contexts' },
             { text: 'Customer Management', link: '/concepts/customer-management' },
+            { text: 'Deal Management', link: '/concepts/deal-management' },
             { text: 'Order Management', link: '/concepts/order-management' },
           ]
         }
