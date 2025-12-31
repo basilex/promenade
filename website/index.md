@@ -274,42 +274,42 @@ These are the ready-to-use business modules that save you months of development 
     <div class="icon">👥</div>
     <h3>Customer Management</h3>
     <p>Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.</p>
-    [Explore Customer Management →](/concepts/customer-management.html)
+    <a href="/promenade/concepts/customer-management.html" class="link">Explore Customer Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">💼</div>
     <h3>Deal Management</h3>
     <p>Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.</p>
-    [Explore Deal Management →](/concepts/deal-management.html)
+    <a href="/promenade/concepts/deal-management.html" class="link">Explore Deal Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📦</div>
     <h3>Order Management</h3>
     <p>Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.</p>
-    [Explore Order Management →](/concepts/order-management.html)
+    <a href="/promenade/concepts/order-management.html" class="link">Explore Order Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🔐</div>
     <h3>User Authentication</h3>
     <p>Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.</p>
-    [See Authentication Guide →](/guide/rbac.html)
+    <a href="/promenade/guide/rbac.html" class="link">See Authentication Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">💳</div>
     <h3>Billing & Invoicing</h3>
     <p>Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.</p>
-    [Coming Q2 2026 →](/concepts/billing.html)
+    <a href="/promenade/concepts/billing.html" class="link">Coming Q2 2026 →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📊</div>
     <h3>Analytics & Reporting</h3>
     <p>Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.</p>
-    [Coming Q3 2026 →](/concepts/analytics.html)
+    <a href="/promenade/concepts/analytics.html" class="link">Coming Q3 2026 →</a>
   </div>
 </div>
 
@@ -328,91 +328,91 @@ For developers and technical teams: the architectural patterns and infrastructur
     <div class="icon">🏗️</div>
     <h3>Domain-Driven Design</h3>
     <p>Pure DDD with Bounded Contexts, Aggregates, Value Objects, and Domain Events. Each context is autonomous with its own domain model and database schema.</p>
-    [Learn DDD Architecture →](/concepts/clean-architecture.html)
+    <a href="/promenade/concepts/clean-architecture.html" class="link">Learn DDD Architecture →</a>
   </div>
 
   <div class="feature">
     <div class="icon">⚡</div>
     <h3>Event-Driven Architecture</h3>
     <p>Central Event Bus with Memory and Redis adapters. 377K events/sec throughput, automatic retry, panic recovery, and graceful shutdown.</p>
-    [Explore Event Bus →](/concepts/event-driven.html)
+    <a href="/promenade/concepts/event-driven.html" class="link">Explore Event Bus →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🔐</div>
     <h3>JWT + RBAC Authentication</h3>
     <p>Token-based authentication with Role-Based Access Control. 15-minute access tokens, 7-day refresh tokens, and Redis-backed token revocation.</p>
-    [See RBAC Guide →](/guide/rbac.html)
+    <a href="/promenade/guide/rbac.html" class="link">See RBAC Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🎯</div>
     <h3>Bounded Contexts</h3>
     <p>6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse, Analytics. Contexts communicate only via Event Bus.</p>
-    [View All Contexts →](/concepts/bounded-contexts.html)
+    <a href="/promenade/concepts/bounded-contexts.html" class="link">View All Contexts →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📊</div>
     <h3>Three-Tier Testing</h3>
     <p>Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.</p>
-    [Read Testing Guide →](/guide/testing-patterns.html)
+    <a href="/promenade/guide/testing-patterns.html" class="link">Read Testing Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🚀</div>
     <h3>Production-Ready</h3>
     <p>Rate limiting (5/min login), health checks (4 endpoints), graceful shutdown, structured logging, database migrations, Docker support.</p>
-    [Health Monitoring →](/guide/health-checks.html)
+    <a href="/promenade/guide/health-checks.html" class="link">Health Monitoring →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🔄</div>
     <h3>Event Bus Adapters</h3>
     <p>Switch between Memory (377K events/sec, dev) and Redis (distributed, prod) adapters with single config change. Zero code changes needed.</p>
-    [Event Bus Docs →](/packages/bus.html)
+    <a href="/promenade/packages/bus.html" class="link">Event Bus Docs →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🛡️</div>
     <h3>Rate Limiting</h3>
     <p>IP-based rate limiting with token bucket algorithm. Login 5/min, Register 3/min. Automatic cleanup prevents memory leaks. Production-ready.</p>
-    [Rate Limiting Guide →](/guide/rate-limiting.html)
+    <a href="/promenade/guide/rate-limiting.html" class="link">Rate Limiting Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">💚</div>
     <h3>Health Checks</h3>
     <p>Comprehensive health monitoring for PostgreSQL, Redis, Event Bus. 4 endpoints, 3 status levels (healthy/degraded/unhealthy), 5-second timeout.</p>
-    [Health Check API →](/guide/health-checks.html)
+    <a href="/promenade/guide/health-checks.html" class="link">Health Check API →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🗄️</div>
     <h3>Redis Caching</h3>
     <p>Resource-specific TTL (Reference 1h-24h, User 10-30m, Session 30m-1h). Cache-aside pattern with write-through invalidation. Graceful degradation when Redis unavailable.</p>
-    [Caching Guide →](/guide/caching.html)
+    <a href="/promenade/guide/caching.html" class="link">Caching Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🧩</div>
     <h3>Value Objects</h3>
     <p>Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.</p>
-    [Value Objects →](/packages/valueobject.html)
+    <a href="/promenade/packages/valueobject.html" class="link">Value Objects →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🔑</div>
     <h3>UUID v7 (Time-Ordered)</h3>
     <p>Time-ordered UUIDs provide 2x faster database inserts than UUID v4, better B-tree index locality, and natural ordering by creation time.</p>
-    [UUID v7 Benchmark →](/packages/uuidv7.html)
+    <a href="/promenade/packages/uuidv7.html" class="link">UUID v7 Benchmark →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📝</div>
     <h3>Structured Logging</h3>
     <p>Context-aware logging with slog wrapper. Request ID propagation, log levels (debug/info/warn/error), JSON format for production.</p>
-    [Logger Package →](/packages/logger.html)
+    <a href="/promenade/packages/logger.html" class="link">Logger Package →</a>
   </div>
 </div>
 
