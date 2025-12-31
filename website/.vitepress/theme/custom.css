@@ -1,0 +1,254 @@
+/* Custom styles for Promenade Platform website */
+
+/* Business Value Section */
+.business-value {
+  margin: 2rem 0;
+}
+
+.value-prop {
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-left: 4px solid var(--vp-c-brand-1);
+}
+
+.value-prop h3 {
+  margin-top: 0;
+  color: var(--vp-c-brand-1);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.value-prop h4 {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--vp-c-text-1);
+}
+
+.value-prop table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+}
+
+.value-prop th,
+.value-prop td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.value-prop th {
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg);
+}
+
+.value-prop td:first-child {
+  font-weight: 500;
+}
+
+/* Quick Start Guide */
+.quick-start-guide {
+  margin: 2rem 0;
+}
+
+.quick-start-guide h3 {
+  color: var(--vp-c-brand-1);
+  margin-top: 2rem;
+  font-size: 1.3rem;
+}
+
+.quick-start-guide .vp-code-group,
+.quick-start-guide pre {
+  margin: 1rem 0;
+}
+
+.next-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.next-step-card {
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--vp-c-divider);
+  transition: all 0.3s ease;
+}
+
+.next-step-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.step-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-content h4 {
+  margin: 0.5rem 0;
+  color: var(--vp-c-text-1);
+  font-size: 1.1rem;
+}
+
+.step-content p {
+  margin: 0.5rem 0 1rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.95rem;
+}
+
+.step-content a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.step-content a:hover {
+  text-decoration: underline;
+}
+
+/* Technology Stack (existing, keep it) */
+.tech-stack {
+  display: grid;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.tech-category {
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.tech-category h3 {
+  margin-top: 0;
+  color: var(--vp-c-brand-1);
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.tech-items {
+  display: grid;
+  gap: 1rem;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--vp-c-bg);
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.tech-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.tech-icon {
+  font-size: 2rem;
+  width: 40px;
+  text-align: center;
+}
+
+.tech-item strong {
+  display: block;
+  color: var(--vp-c-text-1);
+  margin-bottom: 0.25rem;
+}
+
+.tech-item span {
+  display: block;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+/* Use Cases (existing, keep it) */
+.use-cases {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.use-case {
+  display: flex;
+  gap: 1.5rem;
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.use-case-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.use-case-content h3 {
+  margin-top: 0;
+  color: var(--vp-c-text-1);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.use-case-content p {
+  color: var(--vp-c-text-2);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.use-case-benefit {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .next-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .use-case {
+    flex-direction: column;
+  }
+  
+  .value-prop {
+    padding: 1.5rem;
+  }
+  
+  .value-prop table {
+    font-size: 0.9rem;
+  }
+}
+
+/* Info box improvements */
+.vp-box {
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.vp-box.info {
+  background: var(--vp-c-tip-soft);
+  border-left: 4px solid var(--vp-c-tip-1);
+}
+
+.vp-box.tip {
+  background: var(--vp-c-tip-soft);
+  border-left: 4px solid var(--vp-c-tip-1);
+}
+
+.vp-box strong {
+  color: var(--vp-c-text-1);
+}
