@@ -85,6 +85,31 @@
 
 ---
 
+### Deal Management
+
+**Complete sales pipeline management** with deal lifecycle tracking and **fully implemented business rules**.
+
+- **Deal Lifecycle**: Track deals through stages (lead → qualified → proposal → negotiation → closed)
+- **Probability Tracking**: Automatic probability calculation per stage (10% → 100%)
+- **Money Handling**: Type-safe Money value object for deal values
+- **Pipeline Statistics**: Real-time stats by stage and won deals analytics
+- **12 API Endpoints**: Complete CRUD + business logic operations
+- **Stage Transitions**: Enforced state machine (lead → ... → closed_won/closed_lost)
+
+**Key Features**:
+- State machine enforces valid stage transitions
+- Automatic probability updates per stage
+- Win/Loss tracking with actual close dates
+- Filter deals by stage, customer, or sales rep
+- Pipeline and revenue statistics
+- Integration with Customer aggregate
+
+**Implementation Status**: All core business rules implemented in entity (`MoveToStage()`, `MarkWon()`, `MarkLost()`). Tested via HTTP API with 100% success rate.
+
+**See**: [Deal Management Guide](concepts/deal-management.md) for complete documentation
+
+---
+
 ### Testing Strategy
 
 **Three-tier testing** with clear separation and professional organization.
@@ -122,7 +147,7 @@
 | ----------------------- | ----------- | ------------------------------------- | ------------------------------------------------- |
 | **Shared**              | ✅ Production | Country, Currency, Language, Timezone | [Context Guide](../internal/contexts/shared/README.md)      |
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
-| **Customer Management** | ✅ Production | Customer                              | [Customer Guide](concepts/customer-management.md) |
+| **Customer Management** | ✅ Production | Customer, Company, Deal, Interaction  | [Customer Guide](concepts/customer-management.md) |
 | **Order Management**    | ✅ Production | Order, OrderLine                      | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | 📋 Planned   | Invoice, Payment, Subscription        | Coming Q2 2026                                    |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
@@ -161,6 +186,8 @@ Fundamental architectural principles and design patterns:
 - [Clean Architecture with DDD](concepts/clean-architecture.md) - Bounded Contexts, Aggregates, Value Objects
 - [Event-Driven Architecture](concepts/event-driven.md) - Event Bus, Domain Events, Sagas
 - [Bounded Contexts Strategy](concepts/bounded-contexts.md) - Context isolation and communication
+- [Customer Management](concepts/customer-management.md) - CRM functionality, customer lifecycle, B2C & B2B
+- [Deal Management](concepts/deal-management.md) - Sales pipeline, deal stages, probability tracking
 - [Order Management](concepts/order-management.md) - Complete order lifecycle, state machine, business rules
 
 ### Guides

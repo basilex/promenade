@@ -125,6 +125,29 @@ Promenade implements **complete CRM functionality** for B2C and B2B customer lif
 
 **See**: [docs/concepts/customer-management.md](docs/concepts/customer-management.md) for complete Customer Management guide
 
+### Deal Management
+
+Promenade provides **complete sales pipeline management** with deal lifecycle tracking and **fully implemented business rules**:
+
+- **Deal Lifecycle**: Track deals through stages (lead → qualified → proposal → negotiation → closed)
+- **Probability Tracking**: Automatic probability calculation per stage (10% → 100%)
+- **Money Handling**: Type-safe Money value object for deal values
+- **Pipeline Statistics**: Real-time stats by stage and won deals analytics
+- **12 API Endpoints**: Complete CRUD + business logic operations
+- **Stage Transitions**: Enforced state machine (lead → ... → closed_won/closed_lost)
+
+**Key Features**:
+- State machine enforces valid stage transitions
+- Automatic probability updates per stage
+- Win/Loss tracking with actual close dates
+- Filter deals by stage, customer, or sales rep
+- Pipeline and revenue statistics
+- Integration with Customer aggregate
+
+**Implementation Status**: All core business rules implemented in entity (`MoveToStage()`, `MarkWon()`, `MarkLost()`). Tested via HTTP API with 100% success rate.
+
+**See**: [docs/concepts/deal-management.md](docs/concepts/deal-management.md) for complete Deal Management guide
+
 ### Order Management
 
 Promenade provides **complete order lifecycle management** with state transitions and **fully implemented business rules**:
@@ -147,7 +170,7 @@ Promenade provides **complete order lifecycle management** with state transition
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer                              | CRM core functionality        | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
+| **Customer Management** | Customer, Company, Deal, Interaction  | CRM & sales pipeline          | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
 | **Order Management**    | Order, OrderLine                      | Order processing & fulfillment | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
