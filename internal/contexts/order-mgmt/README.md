@@ -2,7 +2,7 @@
 
 **Domain:** Order processing, contracts, fulfillment  
 **Ubiquitous Language:** Order, Contract, Fulfillment, OrderLine, Shipment  
-**Status:**  Planned (Phase 3 implementation)
+**Status:** ✅ Production (Order, OrderLine) | Contract, Fulfillment planned Q1-Q2 2026
 
 ---
 

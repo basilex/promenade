@@ -2,7 +2,7 @@
 
 **Domain:** CRM, customer relationships, sales pipeline  
 **Ubiquitous Language:** Customer, Company, Deal, Interaction, Lead, Opportunity  
-**Status:** Production (Customer aggregate) | Company, Deal, Interaction planned
+**Status:** ✅ Production (Customer, Company, Deal) | Interaction planned Q1 2026
 
 ---
 

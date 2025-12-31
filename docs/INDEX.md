@@ -147,8 +147,8 @@
 | ----------------------- | ----------- | ------------------------------------- | ------------------------------------------------- |
 | **Shared**              | ✅ Production | Country, Currency, Language, Timezone | [Context Guide](../internal/contexts/shared/README.md)      |
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
-| **Customer Management** | ✅ Production | Customer, Company, Deal, Interaction  | [Customer Guide](concepts/customer-management.md) |
-| **Order Management**    | ✅ Production | Order, OrderLine                      | [Order Guide](concepts/order-management.md)                   |
+| **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction 📋 | [Customer Guide](concepts/customer-management.md) |
+| **Order Management**    | ✅ Production | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | 📋 Planned   | Invoice, Payment, Subscription        | Coming Q2 2026                                    |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
 

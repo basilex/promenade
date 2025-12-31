@@ -170,8 +170,8 @@ Promenade provides **complete order lifecycle management** with state transition
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer, Company, Deal, Interaction  | CRM & sales pipeline          | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
-| **Order Management**    | Order, OrderLine                      | Order processing & fulfillment | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
+| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction 📋 | CRM & sales pipeline    | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
+| **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
@@ -933,20 +933,21 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Role management API (7 endpoints)
 - [x] Permission management API (7 endpoints)
 
-### Phase 4: Customer Management Context (Current - Week 2-3)
+### Phase 4: Customer Management Context (Completed ✅)
 
 - [x] Customer aggregate (lifecycle, segmentation)
-- [ ] Company aggregate (B2B)
-- [ ] Deal aggregate (pipeline, stages)
-- [ ] Interaction aggregate (calls, emails, meetings)
+- [x] Company aggregate (B2B support, 14 endpoints)
+- [x] Deal aggregate (pipeline, stages, 12 endpoints)
+- [ ] Interaction aggregate (calls, emails, meetings) - Planned Q1 2026
 
-### Phase 5: Order Management Context (Week 4-5)
+### Phase 5: Order Management Context (Completed ✅)
 
-- [ ] Order aggregate (creation, fulfillment)
-- [ ] OrderItem value object
-- [ ] Fulfillment saga (payment → inventory → shipping)
+- [x] Order aggregate (creation, fulfillment, 14 endpoints)
+- [x] OrderLine entity (integrated with Order)
+- [ ] Contract aggregate - Planned Q1 2026
+- [ ] Fulfillment saga (payment → inventory → shipping) - Planned Q2 2026
 
-### Phase 5: Analytics & Reporting (Week 6)
+### Phase 6: Analytics & Reporting (Planned Q2 2026)
 
 - [ ] CQRS read models
 - [ ] Dashboards
