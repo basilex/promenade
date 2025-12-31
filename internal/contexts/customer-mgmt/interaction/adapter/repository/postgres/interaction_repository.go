@@ -49,6 +49,15 @@ type interactionRow struct {
 	DeletedAt        *time.Time     `db:"deleted_at"`
 }
 
+// interactionRowWithRelations represents a database row with related entity names (for List queries)
+// Optimization: Avoids N+1 query problem by using LEFT JOIN + ARRAY_AGG
+type interactionRowWithRelations struct {
+	interactionRow
+	CustomerName  *string `db:"customer_name"`   // Customer name from LEFT JOIN
+	CompanyName   *string `db:"company_name"`    // Company name from LEFT JOIN
+	CreatedByName *string `db:"created_by_name"` // User name from LEFT JOIN
+}
+
 // toEntity converts database row to domain entity
 func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
 	// Parse attendees from JSONB
@@ -255,18 +264,24 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 		return []*interaction.Interaction{}, 0, nil
 	}
 
-	// Get page
-	var rows []interactionRow
+	// Get page with LEFT JOIN to avoid N+1 (loads customer, company, user names in single query)
+	var rows []interactionRowWithRelations
 	query := `
 		SELECT 
-			id, customer_id, company_id, type, direction, outcome,
-			subject, description, created_by, attendees,
-			started_at, ended_at, duration_sec,
-			follow_up_required, follow_up_date, follow_up_notes,
-			created_at, updated_at, deleted_at
-		FROM customer_interactions
-		WHERE customer_id = $1 AND deleted_at IS NULL
-		ORDER BY started_at DESC
+			i.id, i.customer_id, i.company_id, i.type, i.direction, i.outcome,
+			i.subject, i.description, i.created_by, i.attendees,
+			i.started_at, i.ended_at, i.duration_sec,
+			i.follow_up_required, i.follow_up_date, i.follow_up_notes,
+			i.created_at, i.updated_at, i.deleted_at,
+			c.name AS customer_name,
+			NULL AS company_name,
+			u.email AS created_by_name
+		FROM customer_interactions i
+		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		
+		LEFT JOIN identity_users u ON i.created_by = u.id
+		WHERE i.customer_id = $1 AND i.deleted_at IS NULL
+		ORDER BY i.started_at DESC
 		LIMIT $2 OFFSET $3`
 
 	if err := r.Select(ctx, &rows, query, customerID, pageSize, offset); err != nil {
@@ -275,7 +290,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.toEntity()
+		inter, err := row.interactionRow.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -304,18 +319,23 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 		return []*interaction.Interaction{}, 0, nil
 	}
 
-	// Get page
-	var rows []interactionRow
+	// Get page with LEFT JOIN to avoid N+1
+	var rows []interactionRowWithRelations
 	query := `
 		SELECT 
-			id, customer_id, company_id, type, direction, outcome,
-			subject, description, created_by, attendees,
-			started_at, ended_at, duration_sec,
-			follow_up_required, follow_up_date, follow_up_notes,
-			created_at, updated_at, deleted_at
-		FROM customer_interactions
-		WHERE company_id = $1 AND deleted_at IS NULL
-		ORDER BY started_at DESC
+			i.id, i.customer_id, i.company_id, i.type, i.direction, i.outcome,
+			i.subject, i.description, i.created_by, i.attendees,
+			i.started_at, i.ended_at, i.duration_sec,
+			i.follow_up_required, i.follow_up_date, i.follow_up_notes,
+			i.created_at, i.updated_at, i.deleted_at,
+			c.name AS customer_name,
+			NULL AS company_name,
+			u.email AS created_by_name
+		FROM customer_interactions i
+		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN identity_users u ON i.created_by = u.id
+		WHERE i.company_id = $1 AND i.deleted_at IS NULL
+		ORDER BY i.started_at DESC
 		LIMIT $2 OFFSET $3`
 
 	if err := r.Select(ctx, &rows, query, companyID, pageSize, offset); err != nil {
@@ -324,7 +344,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.toEntity()
+		inter, err := row.interactionRow.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -353,18 +373,24 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 		return []*interaction.Interaction{}, 0, nil
 	}
 
-	// Get page
-	var rows []interactionRow
+	// Get page with LEFT JOIN to avoid N+1
+	var rows []interactionRowWithRelations
 	query := `
 		SELECT 
-			id, customer_id, company_id, type, direction, outcome,
-			subject, description, created_by, attendees,
-			started_at, ended_at, duration_sec,
-			follow_up_required, follow_up_date, follow_up_notes,
-			created_at, updated_at, deleted_at
-		FROM customer_interactions
-		WHERE type = $1 AND deleted_at IS NULL
-		ORDER BY started_at DESC
+			i.id, i.customer_id, i.company_id, i.type, i.direction, i.outcome,
+			i.subject, i.description, i.created_by, i.attendees,
+			i.started_at, i.ended_at, i.duration_sec,
+			i.follow_up_required, i.follow_up_date, i.follow_up_notes,
+			i.created_at, i.updated_at, i.deleted_at,
+			c.name AS customer_name,
+			NULL AS company_name,
+			u.email AS created_by_name
+		FROM customer_interactions i
+		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		
+		LEFT JOIN identity_users u ON i.created_by = u.id
+		WHERE i.type = $1 AND i.deleted_at IS NULL
+		ORDER BY i.started_at DESC
 		LIMIT $2 OFFSET $3`
 
 	if err := r.Select(ctx, &rows, query, interactionType, pageSize, offset); err != nil {
@@ -373,7 +399,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.toEntity()
+		inter, err := row.interactionRow.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -402,18 +428,24 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 		return []*interaction.Interaction{}, 0, nil
 	}
 
-	// Get page
-	var rows []interactionRow
+	// Get page with LEFT JOIN to avoid N+1
+	var rows []interactionRowWithRelations
 	query := `
 		SELECT 
-			id, customer_id, company_id, type, direction, outcome,
-			subject, description, created_by, attendees,
-			started_at, ended_at, duration_sec,
-			follow_up_required, follow_up_date, follow_up_notes,
-			created_at, updated_at, deleted_at
-		FROM customer_interactions
-		WHERE created_by = $1 AND deleted_at IS NULL
-		ORDER BY started_at DESC
+			i.id, i.customer_id, i.company_id, i.type, i.direction, i.outcome,
+			i.subject, i.description, i.created_by, i.attendees,
+			i.started_at, i.ended_at, i.duration_sec,
+			i.follow_up_required, i.follow_up_date, i.follow_up_notes,
+			i.created_at, i.updated_at, i.deleted_at,
+			c.name AS customer_name,
+			NULL AS company_name,
+			u.email AS created_by_name
+		FROM customer_interactions i
+		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		
+		LEFT JOIN identity_users u ON i.created_by = u.id
+		WHERE i.created_by = $1 AND i.deleted_at IS NULL
+		ORDER BY i.started_at DESC
 		LIMIT $2 OFFSET $3`
 
 	if err := r.Select(ctx, &rows, query, createdBy, pageSize, offset); err != nil {
@@ -422,7 +454,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.toEntity()
+		inter, err := row.interactionRow.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -453,20 +485,26 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 		return []*interaction.Interaction{}, 0, nil
 	}
 
-	// Get page
-	var rows []interactionRow
+	// Get page with LEFT JOIN to avoid N+1
+	var rows []interactionRowWithRelations
 	query := `
 		SELECT 
-			id, customer_id, company_id, type, direction, outcome,
-			subject, description, created_by, attendees,
-			started_at, ended_at, duration_sec,
-			follow_up_required, follow_up_date, follow_up_notes,
-			created_at, updated_at, deleted_at
-		FROM customer_interactions
-		WHERE follow_up_required = true 
-		  AND (follow_up_date IS NULL OR follow_up_date <= $1)
-		  AND deleted_at IS NULL
-		ORDER BY follow_up_date ASC NULLS FIRST, started_at DESC
+			i.id, i.customer_id, i.company_id, i.type, i.direction, i.outcome,
+			i.subject, i.description, i.created_by, i.attendees,
+			i.started_at, i.ended_at, i.duration_sec,
+			i.follow_up_required, i.follow_up_date, i.follow_up_notes,
+			i.created_at, i.updated_at, i.deleted_at,
+			c.name AS customer_name,
+			NULL AS company_name,
+			u.email AS created_by_name
+		FROM customer_interactions i
+		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		
+		LEFT JOIN identity_users u ON i.created_by = u.id
+		WHERE i.follow_up_required = true 
+		  AND (i.follow_up_date IS NULL OR i.follow_up_date <= $1)
+		  AND i.deleted_at IS NULL
+		ORDER BY i.follow_up_date ASC NULLS FIRST, i.started_at DESC
 		LIMIT $2 OFFSET $3`
 
 	if err := r.Select(ctx, &rows, query, time.Now(), pageSize, offset); err != nil {
@@ -475,7 +513,7 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.toEntity()
+		inter, err := row.interactionRow.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
