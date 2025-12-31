@@ -10,24 +10,27 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+
+	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
-	"github.com/basilex/promenade/internal/contexts/identity"
 	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
+
+	"github.com/basilex/promenade/internal/contexts/identity"
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/internal/infrastructure/health"
 	"github.com/basilex/promenade/pkg/bus"
-	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
-	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
 	"github.com/basilex/promenade/pkg/cache"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
+
+	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
+	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
 )
 
 // @title Promenade Platform
