@@ -169,21 +169,12 @@ COMMENT ON INDEX idx_deals_deleted_at IS 'Soft delete queries';
 -- Triggers
 -- ============================================================================
 
--- Update updated_at timestamp automatically
-CREATE OR REPLACE FUNCTION update_deals_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
+-- Auto-update updated_at timestamp
 CREATE TRIGGER trigger_deals_updated_at
     BEFORE UPDATE ON customer_deals
     FOR EACH ROW
-    EXECUTE FUNCTION update_deals_updated_at();
+    EXECUTE FUNCTION tfn_entity_updated_at();
 
-COMMENT ON FUNCTION update_deals_updated_at() IS 'Automatically updates updated_at timestamp on row modification';
 COMMENT ON TRIGGER trigger_deals_updated_at ON customer_deals IS 'Ensures updated_at is always current';
 
 -- ============================================================================

@@ -5,9 +5,8 @@
 -- Created: 2025-12-30
 -- ============================================================================
 
--- Drop trigger and function
+-- Drop trigger (function tfn_entity_updated_at() is in core, don't drop)
 DROP TRIGGER IF EXISTS trigger_deals_updated_at ON customer_deals;
-DROP FUNCTION IF EXISTS update_deals_updated_at();
 
 -- Drop table (CASCADE will drop dependent objects)
 DROP TABLE IF EXISTS customer_deals CASCADE;
