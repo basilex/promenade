@@ -1,80 +1,21 @@
-# Interaction Management Guide
+# Interaction Management
 
-**Complete customer interaction tracking** for Promenade Platform - log calls, emails, meetings, notes, and manage follow-ups.
+**Complete customer interaction tracking** for calls, emails, meetings, and notes with outcome tracking and follow-up management.
 
 ---
 
 ## Overview
 
-The **Interaction aggregate** provides comprehensive customer communication logging within the **Customer Management Context**. It enables sales teams and customer service reps to track all touchpoints with customers and companies, manage follow-ups, and maintain a complete interaction history.
+**Interaction aggregate** tracks all customer touchpoints - phone calls, emails, meetings, and notes - with comprehensive metadata, participant tracking, and follow-up management.
 
-**Status**: ✅ **Production-ready** (Phase 4)
+### Key Concepts
 
----
-
-## Key Features
-
-### 1. Multiple Interaction Types
-
-Support for 6 types of customer communications:
-
-- **Call** - Phone calls (inbound/outbound)
-- **Email** - Email correspondence  
-- **Meeting** - In-person or virtual meetings
-- **Note** - General notes and memos
-- **SMS** - SMS/text messages
-- **Chat** - Live chat or messaging
-
-### 2. Direction Tracking
-
-Track communication direction:
-
-- **Inbound** - From customer to company
-- **Outbound** - From company to customer
-
-### 3. Outcome Recording
-
-Capture interaction results:
-
-- **successful** - Successful interaction
-- **no_answer** - No answer (calls)
-- **voicemail** - Left voicemail
-- **busy** - Line busy
-- **scheduled** - Meeting scheduled
-- **not_interested** - Customer not interested
-
-### 4. Duration Calculation
-
-Automatic duration tracking:
-
-- Record start time when interaction begins
-- End interaction to calculate duration
-- Duration stored in seconds for analytics
-
-### 5. Follow-up Management
-
-Built-in follow-up workflow:
-
-- Mark interactions requiring follow-up
-- Set follow-up date
-- Add follow-up notes
-- Query pending follow-ups
-
-### 6. Attendee Tracking
-
-For meetings, track participants:
-
-- Add multiple attendees by user ID
-- Remove attendees
-- Store as JSONB array in database
-
-### 7. B2B Support
-
-Link interactions to companies:
-
-- Optional company_id field
-- Track interactions at company level
-- Support for both B2C and B2B workflows
+- **Interaction Types**: Call, Email, Meeting, Note
+- **Directions**: Inbound (customer-initiated), Outbound (company-initiated)
+- **Outcomes**: Successful, Failed, No Answer, Scheduled, Cancelled
+- **JSONB Attendees**: Flexible multi-participant tracking
+- **Follow-up Management**: Flag and schedule follow-up actions
+- **Duration Tracking**: Automatic calculation for ended interactions
 
 ---
 
@@ -84,74 +25,69 @@ Link interactions to companies:
 
 ```go
 type Interaction struct {
-    aggregate.BaseAggregate
-
     // Identity
     ID         uuidv7.UUID
-    CustomerID uuidv7.UUID  // Required: link to customer
-    CompanyID  *uuidv7.UUID // Optional: link to company (B2B)
+    CustomerID uuidv7.UUID  // Required: customer this interaction belongs to
+    CompanyID  *uuidv7.UUID // Optional: for B2B interactions
 
     // Classification
-    Type      InteractionType      // call, email, meeting, note, sms, chat
+    Type      InteractionType      // call, email, meeting, note
     Direction InteractionDirection // inbound, outbound
-    Outcome   *InteractionOutcome  // successful, no_answer, etc.
+    Outcome   *InteractionOutcome  // successful, failed, no_answer, scheduled, cancelled
 
     // Content
-    Subject     string // Subject/title
-    Description string // Detailed notes
+    Subject     string // Required: brief description (max 255 chars)
+    Description string // Optional: detailed notes
 
     // Participants
-    CreatedBy UUID          // User who logged interaction
-    Attendees []uuidv7.UUID // Meeting participants (JSONB)
+    CreatedBy uuidv7.UUID   // User who created/logged this interaction
+    Attendees []uuidv7.UUID // JSONB array of user IDs who participated
 
     // Timing
     StartedAt   time.Time  // When interaction started
-    EndedAt     *time.Time // When interaction ended
-    DurationSec *int       // Duration in seconds
+    EndedAt     *time.Time // When interaction ended (nil if in progress)
+    DurationSec *int       // Calculated duration in seconds
 
     // Follow-up
     FollowUpRequired bool
-    FollowUpDate     *time.Time
-    FollowUpNotes    string
+    FollowUpDate     *time.Time // When follow-up is needed
+    FollowUpNotes    string     // Notes about follow-up action
 
-    // Timestamps
+    // Metadata
     CreatedAt time.Time
     UpdatedAt time.Time
-    DeletedAt *time.Time // Soft delete
+    DeletedAt *time.Time
 }
 ```
 
-### Enumerations
+### Enums
 
-**InteractionType**:
+**Interaction Types**:
 ```go
 const (
-    InteractionTypeCall    = "call"
-    InteractionTypeEmail   = "email"
-    InteractionTypeMeeting = "meeting"
-    InteractionTypeNote    = "note"
-    InteractionTypeSMS     = "sms"
-    InteractionTypeChat    = "chat"
+    InteractionTypeCall    = "call"    // Phone call
+    InteractionTypeEmail   = "email"   // Email correspondence
+    InteractionTypeMeeting = "meeting" // In-person or virtual meeting
+    InteractionTypeNote    = "note"    // General note/memo
 )
 ```
 
-**InteractionDirection**:
+**Interaction Directions**:
 ```go
 const (
-    InteractionDirectionInbound  = "inbound"
-    InteractionDirectionOutbound = "outbound"
+    InteractionDirectionInbound  = "inbound"  // Customer-initiated
+    InteractionDirectionOutbound = "outbound" // Company-initiated
 )
 ```
 
-**InteractionOutcome**:
+**Interaction Outcomes**:
 ```go
 const (
-    InteractionOutcomeSuccessful    = "successful"
-    InteractionOutcomeNoAnswer      = "no_answer"
-    InteractionOutcomeVoicemail     = "voicemail"
-    InteractionOutcomeBusy          = "busy"
-    InteractionOutcomeScheduled     = "scheduled"
-    InteractionOutcomeNotInterested = "not_interested"
+    InteractionOutcomeSuccessful = "successful" // Goal achieved
+    InteractionOutcomeFailed     = "failed"     // Goal not achieved
+    InteractionOutcomeNoAnswer   = "no_answer"  // Call not answered
+    InteractionOutcomeScheduled  = "scheduled"  // Follow-up scheduled
+    InteractionOutcomeCancelled  = "cancelled"  // Cancelled before completion
 )
 ```
 
@@ -159,164 +95,355 @@ const (
 
 ## Business Rules
 
-### 1. Interaction Creation
+### Entity Rules
 
-- **Customer ID required** - must link to existing customer
-- **Company ID optional** - for B2B interactions
-- **Type and direction required** - must be valid enum values
-- **Subject and description required** - cannot be empty
-- **Created by required** - must be valid user ID
-- **Started at required** - when interaction began
+1. **Required Fields**:
+   - CustomerID (every interaction must belong to a customer)
+   - Type (call, email, meeting, note)
+   - Direction (inbound, outbound)
+   - Subject (brief description, max 255 chars)
+   - CreatedBy (user who logged the interaction)
+   - StartedAt (when interaction occurred)
 
-### 2. Duration Calculation
+2. **Duration Calculation**:
+   - If `EndedAt` is set, `DurationSec` calculated automatically
+   - Formula: `DurationSec = EndedAt.Unix() - StartedAt.Unix()`
+   - Cannot manually set duration (auto-calculated)
 
-- **Auto-calculated** - when `EndInteraction()` called
-- **Formula**: `duration_sec = ended_at - started_at`
-- **Cannot end before start** - validation enforced
-- **Cannot end twice** - returns `ErrInteractionAlreadyEnded`
+3. **Attendees Management**:
+   - Stored as JSONB array (flexible, no FK constraints)
+   - Can add/remove attendees dynamically
+   - Empty array `[]` if no attendees
+   - Duplicate attendees prevented by entity logic
 
-### 3. Follow-up Requirements
+4. **Follow-up Rules**:
+   - If `FollowUpRequired = true`, follow-up date recommended (not enforced)
+   - Follow-up notes optional but helpful for context
+   - Query pending follow-ups via `ListPendingFollowUps()`
 
-- If `follow_up_required = true`, `follow_up_date` must be set
-- Follow-up date can be null if not required
-- Follow-up notes are optional
+### Factory Methods
 
-### 4. Attendee Management
+```go
+// Create new interaction
+func NewInteraction(
+    customerID uuidv7.UUID,
+    companyID *uuidv7.UUID,
+    interactionType InteractionType,
+    direction InteractionDirection,
+    subject string,
+    description string,
+    createdBy uuidv7.UUID,
+    startedAt time.Time,
+) (*Interaction, error)
+```
 
-- Attendees stored as JSONB array of UUIDs
-- Can add/remove attendees dynamically
-- Primarily for meetings, but available for all types
-- No duplicate check (implementation choice)
+**Validation**:
+- Subject cannot be empty
+- CreatedBy must be valid UUID
+- Type must be valid enum value
+- Direction must be valid enum value
+- StartedAt cannot be zero time
 
-### 5. Soft Delete
+### Entity Methods
 
-- All deletions are soft deletes (`deleted_at IS NOT NULL`)
-- Deleted interactions excluded from queries
-- Preserves interaction history for audit
+**Content Management**:
+```go
+func (i *Interaction) UpdateContent(subject, description string) error
+```
+
+**Outcome Tracking**:
+```go
+func (i *Interaction) SetOutcome(outcome InteractionOutcome) error
+```
+
+**Time Management**:
+```go
+func (i *Interaction) EndInteraction(endedAt time.Time) error
+// Validates: endedAt must be after StartedAt
+// Calculates: DurationSec automatically
+```
+
+**Follow-up Management**:
+```go
+func (i *Interaction) SetFollowUp(required bool, followUpDate *time.Time, notes string) error
+// Validates: if required=true and date provided, date must be in future
+```
+
+**Attendee Management**:
+```go
+func (i *Interaction) AddAttendee(attendeeID uuidv7.UUID) error
+// Prevents: duplicate attendees
+
+func (i *Interaction) RemoveAttendee(attendeeID uuidv7.UUID) error
+// Silent: no error if attendee not found
+```
 
 ---
 
-## API Endpoints
+## Use Cases
 
-### Create Interaction
+### IUseCase Interface
 
-**POST** `/api/v1/customer-mgmt/interactions`
+```go
+type IUseCase interface {
+    // CRUD Operations
+    CreateInteraction(ctx, customerID, companyID, type, direction, subject, description, createdBy, startedAt) (*Interaction, error)
+    GetInteraction(ctx context.Context, id uuidv7.UUID) (*Interaction, error)
+    UpdateContent(ctx context.Context, id uuidv7.UUID, subject, description string) (*Interaction, error)
+    DeleteInteraction(ctx context.Context, id uuidv7.UUID) error
 
-```json
-{
-  "customer_id": "01JGABC...",
-  "company_id": "01JGXYZ...",
-  "type": "call",
-  "direction": "outbound",
-  "subject": "Follow-up call regarding proposal",
-  "description": "Discussed pricing options. Customer interested in enterprise plan.",
-  "created_by": "01JGUSER...",
-  "started_at": "2025-12-30T14:30:00Z"
+    // Business Operations
+    SetOutcome(ctx context.Context, id uuidv7.UUID, outcome string) (*Interaction, error)
+    EndInteraction(ctx context.Context, id uuidv7.UUID, endedAt time.Time) (*Interaction, error)
+    SetFollowUp(ctx, id, required, followUpDate, notes) (*Interaction, error)
+    AddAttendee(ctx context.Context, id, attendeeID uuidv7.UUID) (*Interaction, error)
+    RemoveAttendee(ctx context.Context, id, attendeeID uuidv7.UUID) (*Interaction, error)
+
+    // List/Query Operations (with N+1 optimization)
+    ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*Interaction, int64, error)
+    ListByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*Interaction, int64, error)
+    ListByType(ctx context.Context, interactionType string, page, pageSize int) ([]*Interaction, int64, error)
+    ListByCreatedBy(ctx context.Context, createdBy uuidv7.UUID, page, pageSize int) ([]*Interaction, int64, error)
+    ListPendingFollowUps(ctx context.Context, page, pageSize int) ([]*Interaction, int64, error)
 }
 ```
 
-**Response** (201 Created):
+---
+
+## Repository Pattern
+
+### N+1 Optimization
+
+All List queries use **LEFT JOIN** to batch-load related data and prevent N+1 problem:
+
+```go
+// interactionRowWithRelations - optimized row struct
+type interactionRowWithRelations struct {
+    interactionRow
+    CustomerName  *string `db:"customer_name"`   // From customer_mgmt_customers
+    CompanyName   *string `db:"company_name"`    // From customer_mgmt_companies (NULL if not available)
+    CreatedByName *string `db:"created_by_name"` // From identity_users (email field)
+}
+
+// Example: ListByCustomer with LEFT JOIN
+query := `
+    SELECT 
+        i.*,
+        c.name AS customer_name,
+        NULL AS company_name,  -- Company table not in all environments yet
+        u.email AS created_by_name
+    FROM customer_interactions i
+    LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+    LEFT JOIN identity_users u ON i.created_by = u.id
+    WHERE i.customer_id = $1 AND i.deleted_at IS NULL
+    ORDER BY i.started_at DESC
+    LIMIT $2 OFFSET $3
+`
+```
+
+**Benefits**:
+- Single query instead of N+1 queries
+- Customer name available without extra lookup
+- Created by user email available without extra lookup
+- Future-ready for displaying names in responses
+
+### Query Patterns
+
+**By Customer** (most common):
+```sql
+WHERE i.customer_id = $1 AND i.deleted_at IS NULL
+ORDER BY i.started_at DESC
+```
+
+**By Type** (e.g., all calls):
+```sql
+WHERE i.type = 'call' AND i.deleted_at IS NULL
+ORDER BY i.started_at DESC
+```
+
+**Pending Follow-ups**:
+```sql
+WHERE i.follow_up_required = true 
+  AND (i.follow_up_date IS NULL OR i.follow_up_date <= NOW())
+  AND i.deleted_at IS NULL
+ORDER BY i.follow_up_date ASC NULLS FIRST, i.started_at DESC
+```
+
+---
+
+## Database Schema
+
+### Table: `customer_interactions`
+
+```sql
+CREATE TABLE customer_interactions (
+    id                 UUID PRIMARY KEY DEFAULT uuid_v7(),
+    customer_id        UUID NOT NULL REFERENCES customer_mgmt_customers(id),
+    company_id         UUID REFERENCES customer_mgmt_companies(id),
+    
+    type               interaction_type NOT NULL,
+    direction          interaction_direction NOT NULL,
+    outcome            interaction_outcome,
+    
+    subject            VARCHAR(255) NOT NULL,
+    description        TEXT NOT NULL DEFAULT '',
+    
+    created_by         UUID NOT NULL REFERENCES identity_users(id),
+    attendees          JSONB NOT NULL DEFAULT '[]',
+    
+    started_at         TIMESTAMPTZ NOT NULL,
+    ended_at           TIMESTAMPTZ,
+    duration_sec       INTEGER,
+    
+    follow_up_required BOOLEAN NOT NULL DEFAULT false,
+    follow_up_date     TIMESTAMPTZ,
+    follow_up_notes    TEXT,
+    
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at         TIMESTAMPTZ
+);
+```
+
+### Enums
+
+```sql
+CREATE TYPE interaction_type AS ENUM ('call', 'email', 'meeting', 'note');
+CREATE TYPE interaction_direction AS ENUM ('inbound', 'outbound');
+CREATE TYPE interaction_outcome AS ENUM ('successful', 'failed', 'no_answer', 'scheduled', 'cancelled');
+```
+
+### Indexes
+
+```sql
+-- Primary key
+CREATE INDEX idx_interactions_pkey ON customer_interactions(id);
+
+-- Foreign keys (partial - only non-deleted)
+CREATE INDEX idx_interactions_customer_id ON customer_interactions(customer_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_interactions_company_id ON customer_interactions(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_interactions_created_by ON customer_interactions(created_by) WHERE deleted_at IS NULL;
+
+-- Query optimization
+CREATE INDEX idx_interactions_customer_started ON customer_interactions(customer_id, started_at DESC) WHERE deleted_at IS NULL;
+
+-- Follow-ups
+CREATE INDEX idx_interactions_follow_up ON customer_interactions(follow_up_date) 
+    WHERE follow_up_required = true AND deleted_at IS NULL;
+
+-- JSONB attendees (GIN index for array containment)
+CREATE INDEX idx_interactions_attendees ON customer_interactions USING GIN(attendees);
+```
+
+### Trigger
+
+Auto-update `updated_at` timestamp:
+
+```sql
+CREATE TRIGGER trigger_interactions_updated_at
+    BEFORE UPDATE ON customer_interactions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+```
+
+---
+
+## API Examples
+
+### Create Interaction
+
+**Request**:
+```http
+POST /api/v1/customer-mgmt/interactions
+Content-Type: application/json
+
+{
+  "customer_id": "01JGEF1234567890ABCDEFGHIJ",
+  "type": "call",
+  "direction": "outbound",
+  "subject": "Follow-up call about product demo",
+  "description": "Called customer to discuss demo feedback and next steps",
+  "started_at": "2025-12-28T10:30:00Z"
+}
+```
+
+**Response**:
 ```json
 {
   "status": "success",
   "data": {
-    "id": "01JGINT123...",
-    "customer_id": "01JGABC...",
-    "company_id": "01JGXYZ...",
+    "id": "01JGEF9876543210ZYXWVUTSRQ",
+    "customer_id": "01JGEF1234567890ABCDEFGHIJ",
     "type": "call",
     "direction": "outbound",
-    "outcome": null,
-    "subject": "Follow-up call regarding proposal",
-    "description": "Discussed pricing options...",
-    "created_by": "01JGUSER...",
+    "subject": "Follow-up call about product demo",
+    "description": "Called customer to discuss demo feedback and next steps",
+    "created_by": "01JGEF5555555555555555555",
     "attendees": [],
-    "started_at": "2025-12-30T14:30:00Z",
-    "ended_at": null,
-    "duration_sec": null,
-    "follow_up_required": false,
-    "follow_up_date": null,
-    "follow_up_notes": "",
-    "created_at": "2025-12-30T14:30:05Z",
-    "updated_at": "2025-12-30T14:30:05Z"
+    "started_at": "2025-12-28T10:30:00Z",
+    "created_at": "2025-12-28T10:30:05Z",
+    "updated_at": "2025-12-28T10:30:05Z"
   }
 }
 ```
 
----
+### End Interaction
 
-### Get Interaction by ID
+**Request**:
+```http
+PUT /api/v1/customer-mgmt/interactions/01JGEF9876543210ZYXWVUTSRQ/end
+Content-Type: application/json
 
-**GET** `/api/v1/customer-mgmt/interactions/{id}`
+{
+  "ended_at": "2025-12-28T10:45:00Z"
+}
+```
 
-**Response** (200 OK):
+**Response**:
 ```json
 {
   "status": "success",
-  "data": { ...interaction }
-}
-```
-
-**Error** (404 Not Found):
-```json
-{
-  "status": "error",
-  "error": {
-    "code": "INTERACTION_NOT_FOUND",
-    "message": "interaction not found"
+  "data": {
+    "id": "01JGEF9876543210ZYXWVUTSRQ",
+    "started_at": "2025-12-28T10:30:00Z",
+    "ended_at": "2025-12-28T10:45:00Z",
+    "duration_sec": 900
   }
 }
 ```
 
----
+### Set Follow-up
 
-### List Interactions by Customer
+**Request**:
+```http
+PUT /api/v1/customer-mgmt/interactions/01JGEF9876543210ZYXWVUTSRQ/follow-up
+Content-Type: application/json
 
-**GET** `/api/v1/customer-mgmt/interactions/customer/{customer_id}?page=1&page_size=20`
-
-**Response** (200 OK):
-```json
 {
-  "status": "success",
-  "data": [
-    { ...interaction1 },
-    { ...interaction2 }
-  ],
-  "pagination": {
-    "total": 45,
-    "page": 1,
-    "page_size": 20,
-    "total_pages": 3
-  }
+  "follow_up_required": true,
+  "follow_up_date": "2025-12-30T09:00:00Z",
+  "follow_up_notes": "Customer requested additional pricing information"
 }
 ```
 
----
+### Add Attendee
 
-### List Interactions by Company
+**Request**:
+```http
+POST /api/v1/customer-mgmt/interactions/01JGEF9876543210ZYXWVUTSRQ/attendees
+Content-Type: application/json
 
-**GET** `/api/v1/customer-mgmt/interactions/company/{company_id}?page=1&page_size=20`
+{
+  "attendee_id": "01JGEF7777777777777777777"
+}
+```
 
-Returns all interactions for a specific company.
+### List by Customer
 
----
-
-### List Interactions by Type
-
-**GET** `/api/v1/customer-mgmt/interactions/type/{type}?page=1&page_size=20`
-
-Filter interactions by type (call, email, meeting, note, sms, chat).
-
----
-
-### List Pending Follow-ups
-
-**GET** `/api/v1/customer-mgmt/interactions/follow-ups/pending?page=1&page_size=20`
-
-Returns interactions with:
-- `follow_up_required = true`
-- `follow_up_date <= NOW()` or `follow_up_date IS NULL`
-
-Ordered by `follow_up_date ASC NULLS FIRST`.
+**Request**:
+```http
+GET /api/v1/customer-mgmt/interactions/customer/01JGEF1234567890ABCDEFGHIJ?page=1&page_size=20
+```
 
 **Response**:
 ```json
@@ -324,448 +451,152 @@ Ordered by `follow_up_date ASC NULLS FIRST`.
   "status": "success",
   "data": [
     {
-      "id": "01JGINT...",
-      "customer_id": "01JGCUST...",
-      "subject": "Proposal discussion",
-      "follow_up_required": true,
-      "follow_up_date": "2025-12-29T10:00:00Z",
-      "follow_up_notes": "Call back to discuss contract terms",
-      ...
+      "id": "01JGEF9876543210ZYXWVUTSRQ",
+      "customer_id": "01JGEF1234567890ABCDEFGHIJ",
+      "type": "call",
+      "direction": "outbound",
+      "outcome": "successful",
+      "subject": "Follow-up call about product demo",
+      "started_at": "2025-12-28T10:30:00Z",
+      "ended_at": "2025-12-28T10:45:00Z",
+      "duration_sec": 900
     }
   ],
-  "pagination": { ... }
-}
-```
-
----
-
-### Update Content
-
-**PUT** `/api/v1/customer-mgmt/interactions/{id}/content`
-
-```json
-{
-  "subject": "Updated subject",
-  "description": "Updated description with more details"
-}
-```
-
----
-
-### Set Outcome
-
-**PUT** `/api/v1/customer-mgmt/interactions/{id}/outcome`
-
-```json
-{
-  "outcome": "successful"
-}
-```
-
-Valid outcomes: `successful`, `no_answer`, `voicemail`, `busy`, `scheduled`, `not_interested`
-
----
-
-### End Interaction
-
-**POST** `/api/v1/customer-mgmt/interactions/{id}/end`
-
-```json
-{
-  "ended_at": "2025-12-30T15:00:00Z"
-}
-```
-
-**Response**:
-```json
-{
-  "status": "success",
-  "data": {
-    "id": "01JGINT...",
-    ...
-    "started_at": "2025-12-30T14:30:00Z",
-    "ended_at": "2025-12-30T15:00:00Z",
-    "duration_sec": 1800
+  "pagination": {
+    "total": 150,
+    "page": 1,
+    "page_size": 20,
+    "total_pages": 8
   }
 }
 ```
 
-**Business Logic**:
-- Calculates `duration_sec = ended_at - started_at`
-- Cannot end before start (validation)
-- Cannot end twice (`ErrInteractionAlreadyEnded`)
-
 ---
 
-### Set Follow-up
+## Performance Optimization
 
-**PUT** `/api/v1/customer-mgmt/interactions/{id}/follow-up`
+### Benchmark Results
 
-```json
-{
-  "required": true,
-  "follow_up_date": "2025-12-31T10:00:00Z",
-  "notes": "Call back to finalize contract"
-}
+**Hardware**: Apple M4 Max  
+**Test DB**: PostgreSQL 16 on port 5433
+
+```
+BenchmarkCreateInteraction-16      9619    341426 ns/op    5270 B/op    99 allocs/op
+BenchmarkListByCustomer-16         5134    602662 ns/op   58040 B/op   897 allocs/op
 ```
 
-To disable follow-up:
-```json
-{
-  "required": false
-}
+**Analysis**:
+- **Create**: ~341μs per interaction (single INSERT with JSONB)
+- **List**: ~603μs for 20 interactions from 50 total (with LEFT JOIN, pagination)
+- Memory efficient: 5.3KB for create, 58KB for list with 20 rows
+
+### N+1 Prevention
+
+Without optimization (N+1 problem):
+```
+1 query:  SELECT * FROM customer_interactions WHERE customer_id = X
+50 queries: SELECT name FROM customer_mgmt_customers WHERE id = Y (for each interaction)
+50 queries: SELECT email FROM identity_users WHERE id = Z (for each interaction)
+= 101 queries total
 ```
 
----
-
-### Add Attendee
-
-**POST** `/api/v1/customer-mgmt/interactions/{id}/attendees`
-
-```json
-{
-  "attendee_id": "01JGUSER..."
-}
+With LEFT JOIN optimization:
 ```
-
-Adds a user to the attendees list (for meetings).
-
----
-
-### Remove Attendee
-
-**DELETE** `/api/v1/customer-mgmt/interactions/{id}/attendees/{attendee_id}`
-
-Removes a user from the attendees list.
-
----
-
-### Delete Interaction
-
-**DELETE** `/api/v1/customer-mgmt/interactions/{id}`
-
-**Response** (204 No Content)
-
-Soft deletes the interaction.
-
----
-
-## Use Cases
-
-### 1. Log Sales Call
-
-```bash
-# Create outbound call
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "01JGCUST...",
-    "type": "call",
-    "direction": "outbound",
-    "subject": "Follow-up call",
-    "description": "Discussed pricing and timeline",
-    "created_by": "01JGUSER...",
-    "started_at": "2025-12-30T10:00:00Z"
-  }'
-
-# End call
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/end \
-  -H "Content-Type: application/json" \
-  -d '{
-    "ended_at": "2025-12-30T10:15:00Z"
-  }'
-
-# Set outcome
-curl -X PUT http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/outcome \
-  -H "Content-Type: application/json" \
-  -d '{
-    "outcome": "successful"
-  }'
+1 query: SELECT i.*, c.name, u.email FROM customer_interactions i
+         LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+         LEFT JOIN identity_users u ON i.created_by = u.id
+         WHERE i.customer_id = X
+= 1 query total (100x improvement!)
 ```
-
----
-
-### 2. Schedule Meeting with Follow-up
-
-```bash
-# Create meeting
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "01JGCUST...",
-    "company_id": "01JGCOMP...",
-    "type": "meeting",
-    "direction": "inbound",
-    "subject": "Product demo",
-    "description": "Demonstrated key features",
-    "created_by": "01JGUSER...",
-    "started_at": "2025-12-30T14:00:00Z"
-  }'
-
-# Add attendees
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/attendees \
-  -H "Content-Type: application/json" \
-  -d '{"attendee_id": "01JGUSER1..."}'
-
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/attendees \
-  -H "Content-Type: application/json" \
-  -d '{"attendee_id": "01JGUSER2..."}'
-
-# Set follow-up
-curl -X PUT http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/follow-up \
-  -H "Content-Type: application/json" \
-  -d '{
-    "required": true,
-    "follow_up_date": "2026-01-03T10:00:00Z",
-    "notes": "Send contract proposal"
-  }'
-```
-
----
-
-### 3. Track Email Thread
-
-```bash
-# Log initial email
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "01JGCUST...",
-    "type": "email",
-    "direction": "outbound",
-    "subject": "Proposal for enterprise plan",
-    "description": "Sent detailed proposal with pricing",
-    "created_by": "01JGUSER...",
-    "started_at": "2025-12-29T09:00:00Z"
-  }'
-
-# Log customer reply
-curl -X POST http://localhost:8081/api/v1/customer-mgmt/interactions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "01JGCUST...",
-    "type": "email",
-    "direction": "inbound",
-    "subject": "Re: Proposal for enterprise plan",
-    "description": "Customer requested clarification on pricing",
-    "created_by": "01JGUSER...",
-    "started_at": "2025-12-29T14:30:00Z"
-  }'
-```
-
----
-
-### 4. View Customer Interaction History
-
-```bash
-# Get all interactions for customer
-curl http://localhost:8081/api/v1/customer-mgmt/interactions/customer/{customer_id}?page=1&page_size=50
-
-# Filter by type
-curl http://localhost:8081/api/v1/customer-mgmt/interactions/type/call?page=1&page_size=20
-```
-
----
-
-### 5. Manage Follow-ups
-
-```bash
-# Get pending follow-ups
-curl http://localhost:8081/api/v1/customer-mgmt/interactions/follow-ups/pending
-
-# After completing follow-up, disable it
-curl -X PUT http://localhost:8081/api/v1/customer-mgmt/interactions/{id}/follow-up \
-  -H "Content-Type: application/json" \
-  -d '{
-    "required": false
-  }'
-```
-
----
-
-## Database Schema
-
-### Table: customer_interactions
-
-```sql
-CREATE TABLE customer_interactions (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    customer_id UUID NOT NULL,
-    company_id UUID,
-    type interaction_type NOT NULL,
-    direction interaction_direction NOT NULL,
-    outcome interaction_outcome,
-    subject VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    created_by UUID NOT NULL,
-    attendees JSONB DEFAULT '[]',
-    started_at TIMESTAMPTZ NOT NULL,
-    ended_at TIMESTAMPTZ,
-    duration_sec INTEGER,
-    follow_up_required BOOLEAN NOT NULL DEFAULT false,
-    follow_up_date TIMESTAMPTZ,
-    follow_up_notes TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMPTZ,
-
-    CONSTRAINT fk_interactions_customer
-        FOREIGN KEY (customer_id)
-        REFERENCES customer_mgmt_customers(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_interactions_company
-        FOREIGN KEY (company_id)
-        REFERENCES customer_companies(id)
-        ON DELETE SET NULL,
-
-    CONSTRAINT fk_interactions_created_by
-        FOREIGN KEY (created_by)
-        REFERENCES identity_users(id)
-        ON DELETE RESTRICT
-);
-```
-
-### Indexes
-
-```sql
--- Customer lookups (most common)
-CREATE INDEX idx_interactions_customer_id 
-    ON customer_interactions(customer_id) 
-    WHERE deleted_at IS NULL;
-
--- Company lookups
-CREATE INDEX idx_interactions_company_id 
-    ON customer_interactions(company_id) 
-    WHERE deleted_at IS NULL;
-
--- Type filtering
-CREATE INDEX idx_interactions_type 
-    ON customer_interactions(type) 
-    WHERE deleted_at IS NULL;
-
--- User activity
-CREATE INDEX idx_interactions_created_by 
-    ON customer_interactions(created_by) 
-    WHERE deleted_at IS NULL;
-
--- Follow-up management (critical)
-CREATE INDEX idx_interactions_follow_up 
-    ON customer_interactions(follow_up_date) 
-    WHERE follow_up_required = true AND deleted_at IS NULL;
-
--- Timeline queries
-CREATE INDEX idx_interactions_started_at 
-    ON customer_interactions(started_at DESC) 
-    WHERE deleted_at IS NULL;
-
--- Composite: customer timeline
-CREATE INDEX idx_interactions_customer_started 
-    ON customer_interactions(customer_id, started_at DESC) 
-    WHERE deleted_at IS NULL;
-
--- JSONB: attendee searches
-CREATE INDEX idx_interactions_attendees 
-    ON customer_interactions USING gin(attendees);
-```
-
----
-
-## Integration Points
-
-### With Customer Aggregate
-
-- **customer_id** (required) - every interaction linked to customer
-- **Cascade delete** - deleting customer removes interactions
-- **Customer timeline** - show interaction history on customer detail
-
-### With Company Aggregate
-
-- **company_id** (optional) - B2B interactions linked to company
-- **Set null on delete** - deleting company removes link, keeps interaction
-- **Company activity log** - show interactions per company
-
-### With Identity Context
-
-- **created_by** (required) - track who logged interaction
-- **Attendees** - reference identity_users for meeting participants
-- **Restrict delete** - cannot delete user if they created interactions
-- **Activity tracking** - show user's interaction history
-
-### With Deal Aggregate
-
-- **Interaction → Deal** - track interactions related to deals
-- **Deal notes** - interactions can provide context for deal progression
-- **Follow-up workflow** - interactions trigger deal follow-ups
 
 ---
 
 ## Testing
 
-### Unit Tests
+### Test Coverage
 
-**entity_test.go** (17 test cases):
+**Total**: 74 tests, 100% passing
+
+**Unit Tests** (69 tests):
+- `entity_test.go`: Factory methods, validation, business rules
+- `usecase_test.go`: Business logic, error handling
+
+**Integration Tests** (5 tests):
+- `repository_test.go`: CRUD operations, List queries with real database
+
+**Benchmark Tests** (2 benchmarks):
+- `repository_bench_test.go`: Create and List performance measurement
+
+### Running Tests
 
 ```bash
-go test ./internal/contexts/customer-mgmt/interaction -v
-```
+# All interaction tests
+go test ./internal/contexts/customer-mgmt/interaction/... -v
 
-**Coverage**:
-- NewInteraction constructor (6 tests)
-- UpdateContent (3 tests)
-- SetOutcome (2 tests)
-- EndInteraction (3 tests)
-- SetFollowUp (3 tests)
-- AddAttendee/RemoveAttendee (4 tests)
-- Delete (1 test)
-- Validate (10 tests)
+# Integration tests only
+go test ./test/integration/contexts/customer-mgmt/interaction -v
+
+# Benchmarks
+go test -bench=. -benchmem ./test/benchmark/contexts/customer-mgmt/interaction
+```
 
 ---
 
-## Error Handling
+## Use Case Scenarios
 
-### Domain Errors
+### Scenario 1: Logging a Sales Call
 
-```go
-var (
-    ErrInteractionNotFound      = errors.New("interaction not found")
-    ErrInteractionAlreadyExists = errors.New("interaction already exists")
-    ErrInvalidInteractionType   = errors.New("invalid interaction type")
-    ErrInvalidDirection         = errors.New("invalid direction")
-    ErrInvalidOutcome           = errors.New("invalid outcome")
-    ErrInteractionAlreadyEnded  = errors.New("interaction already ended")
-)
+**Workflow**:
+1. Sales rep calls customer to discuss product interest
+2. Create interaction with type=call, direction=outbound
+3. During call, add outcome=successful
+4. End interaction with actual end time (auto-calculates duration)
+5. Set follow-up for demo scheduling
+
+**API Flow**:
+```
+POST /interactions → Create call interaction
+PUT  /interactions/:id/outcome → Set outcome=successful
+PUT  /interactions/:id/end → End call, calculate duration
+PUT  /interactions/:id/follow-up → Schedule demo follow-up
 ```
 
-### HTTP Error Codes
+### Scenario 2: Email Thread Tracking
 
-| Code | Error                       | Reason                           |
-|------|-----------------------------|----------------------------------|
-| 400  | VALIDATION_ERROR            | Invalid request body             |
-| 400  | INVALID_CUSTOMER_ID         | Invalid customer UUID            |
-| 400  | INVALID_INTERACTION_TYPE    | Invalid type enum                |
-| 400  | INVALID_DIRECTION           | Invalid direction enum           |
-| 400  | INVALID_OUTCOME             | Invalid outcome enum             |
-| 404  | INTERACTION_NOT_FOUND       | Interaction doesn't exist        |
-| 409  | INTERACTION_ALREADY_ENDED   | Cannot end twice                 |
-| 500  | INTERNAL_ERROR              | Database or system error         |
+**Workflow**:
+1. Customer sends inquiry email (direction=inbound)
+2. Create interaction with type=email
+3. Add sales rep as attendee who will respond
+4. Log outcome=successful after sending reply
+5. If needs follow-up, flag and schedule
 
----
+**API Flow**:
+```
+POST /interactions → Create email interaction
+POST /interactions/:id/attendees → Add responding sales rep
+PUT  /interactions/:id/outcome → Mark as successful reply
+PUT  /interactions/:id/follow-up → Flag if needs follow-up
+```
 
-## Performance Considerations
+### Scenario 3: Meeting with Multiple Participants
 
-### Query Optimization
+**Workflow**:
+1. Schedule meeting with customer and internal team
+2. Create interaction with type=meeting
+3. Add all internal attendees (sales, solutions architect, manager)
+4. After meeting, update outcome and notes
+5. Set follow-up for proposal delivery
 
-1. **Customer Timeline** - Composite index `(customer_id, started_at DESC)`
-2. **Follow-up Query** - Partial index on `follow_up_date WHERE follow_up_required = true`
-3. **Type Filtering** - Index on `type` column
-4. **Pagination** - All list endpoints support `page` and `page_size`
-
-### Database Load
-
-- **JSONB Attendees** - GIN index for attendee searches
-- **Soft Delete Filter** - All indexes include `WHERE deleted_at IS NULL`
-- **Cascading Deletes** - Customer deletion removes interactions (performance impact for large datasets)
+**API Flow**:
+```
+POST /interactions → Create meeting interaction
+POST /interactions/:id/attendees → Add attendee 1
+POST /interactions/:id/attendees → Add attendee 2
+POST /interactions/:id/attendees → Add attendee 3
+PUT  /interactions/:id/end → End meeting
+PUT  /interactions/:id/outcome → Set outcome=successful
+PUT  /interactions/:id/follow-up → Schedule proposal follow-up
+```
 
 ---
 
@@ -773,32 +604,34 @@ var (
 
 ### Planned Features
 
-- [ ] **Interaction Templates** - Pre-defined templates for common interactions
-- [ ] **Email Integration** - Auto-import emails from mailbox
-- [ ] **Calendar Integration** - Sync meetings with calendar
-- [ ] **Attachments** - Upload files/documents to interactions
-- [ ] **Tags** - Tag interactions for categorization
-- [ ] **Sentiment Analysis** - AI-powered sentiment detection
-- [ ] **Activity Reports** - Sales rep activity dashboards
-- [ ] **Interaction Scoring** - Quality scoring for interactions
-- [ ] **Bulk Import** - CSV import for historical data
-- [ ] **Export/Archive** - Export interactions for compliance
+- [ ] **Email Integration**: Auto-create interactions from email system
+- [ ] **Calendar Sync**: Import meetings from calendar systems
+- [ ] **Call Recording**: Store call recordings in S3/cloud storage
+- [ ] **Transcription**: Auto-transcribe calls and meetings
+- [ ] **Sentiment Analysis**: Analyze customer sentiment from interactions
+- [ ] **Activity Feed**: Real-time feed of all customer interactions
+- [ ] **Interaction Templates**: Pre-filled templates for common interaction types
+- [ ] **Reminders**: Auto-reminders for pending follow-ups
+
+### Not Planned
+
+- **Real-time Communication**: Use dedicated communication platform
+- **Video Conferencing**: Integrate with existing tools (Zoom, Teams)
+- **CRM Workflows**: Complex automation (use dedicated workflow engine)
 
 ---
 
 ## Related Documentation
 
-- [Main README](../../README.md)
-- [Documentation Index](../INDEX.md)
-- [Customer Management Guide](customer-management.md)
-- [Company Management Guide](company-management.md)
-- [Deal Management Guide](deal-management.md)
-- [Customer Management Context](../../internal/contexts/customer-mgmt/README.md)
+- [Customer Management Guide](customer-management.md) - Customer aggregate (interactions belong to customers)
+- [Company Management Guide](company-management.md) - Company aggregate (B2B interactions)
+- [Deal Management Guide](deal-management.md) - Deal aggregate (interactions related to deals)
+- [Documentation Index](../INDEX.md) - All documentation
+- [Main README](../../README.md) - Project overview
 
 ---
 
 **Version**: 0.1.0  
 **Status**: Production-ready  
-**Test Coverage**: 17 unit tests  
-**Maintainer**: Promenade Team  
-**Last Updated**: 2025-12-30
+**Test Coverage**: 74 tests, 100% passing  
+**Maintainer**: Promenade Team
