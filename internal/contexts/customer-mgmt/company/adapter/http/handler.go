@@ -88,7 +88,7 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 		req.Industry,
 		req.Size,
 		req.EmployeeCount,
-		req.AnnualRevenue,
+		req.Revenue,
 		req.Currency,
 		req.Description,
 		parentID,
@@ -483,9 +483,9 @@ func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
 	if req.EmployeeCount != nil {
 		employeeCount = *req.EmployeeCount
 	}
-	var annualRevenue int64
-	if req.AnnualRevenue != nil {
-		annualRevenue = *req.AnnualRevenue
+	var revenue int64
+	if req.Revenue != nil {
+		revenue = *req.Revenue
 	}
 	var currency string
 	if req.Currency != nil {
@@ -498,7 +498,7 @@ func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
 		req.Industry,
 		size,
 		employeeCount,
-		annualRevenue,
+		revenue,
 		currency,
 	)
 	if err != nil {

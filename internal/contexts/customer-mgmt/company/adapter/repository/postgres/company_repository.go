@@ -48,7 +48,7 @@ type companyRow struct {
 	Industry           sql.NullString `db:"industry"`
 	Size               string         `db:"size"`
 	EmployeeCount      int            `db:"employee_count"`
-	AnnualRevenue      int64          `db:"annual_revenue"`
+	Revenue            int64          `db:"revenue"`
 	Currency           string         `db:"currency"`
 	Description        sql.NullString `db:"description"`
 	ParentCompanyID    sql.NullString `db:"parent_company_id"`
@@ -74,7 +74,7 @@ func (r *companyRow) toEntity() (*company.Company, error) {
 		Type:          company.CompanyType(r.Type),
 		Size:          company.CompanySize(r.Size),
 		EmployeeCount: r.EmployeeCount,
-		Revenue:       r.AnnualRevenue,
+		Revenue:       r.Revenue,
 		Currency:      r.Currency,
 		CreatedAt:     r.CreatedAt,
 		UpdatedAt:     r.UpdatedAt,
@@ -198,7 +198,7 @@ func toRow(c *company.Company) (*companyRow, error) {
 		Type:          string(c.Type),
 		Size:          string(c.Size),
 		EmployeeCount: c.EmployeeCount,
-		AnnualRevenue: c.Revenue,
+		Revenue: c.Revenue,
 		Currency:      c.Currency,
 		CreatedAt:     c.CreatedAt,
 		UpdatedAt:     c.UpdatedAt,
@@ -290,14 +290,14 @@ func (r *companyRepository) Create(ctx context.Context, c *company.Company) erro
 			id, name, legal_name, type, tax_id, registration_number,
 			website, email, phone, phone_country_code,
 			address_line1, address_line2, city, state_province, postal_code, country,
-			industry, size, employee_count, annual_revenue, currency,
+			industry, size, employee_count, revenue, currency,
 			description, parent_company_id,
 			created_at, updated_at, deleted_at
 		) VALUES (
 			:id, :name, :legal_name, :type, :tax_id, :registration_number,
 			:website, :email, :phone, :phone_country_code,
 			:address_line1, :address_line2, :city, :state_province, :postal_code, :country,
-			:industry, :size, :employee_count, :annual_revenue, :currency,
+			:industry, :size, :employee_count, :revenue, :currency,
 			:description, :parent_company_id,
 			:created_at, :updated_at, :deleted_at
 		)`
@@ -515,7 +515,7 @@ func (r *companyRepository) Update(ctx context.Context, c *company.Company) erro
 			industry = :industry,
 			size = :size,
 			employee_count = :employee_count,
-			annual_revenue = :annual_revenue,
+			revenue = :revenue,
 			currency = :currency,
 			description = :description,
 			parent_company_id = :parent_company_id,

@@ -29,7 +29,7 @@ type CreateCompanyRequest struct {
 	Industry           *string `json:"industry,omitempty" binding:"omitempty,max=100"`
 	Size               string  `json:"size" binding:"required,oneof=micro small medium large enterprise"`
 	EmployeeCount      int     `json:"employee_count" binding:"min=0"`
-	AnnualRevenue      int64   `json:"annual_revenue" binding:"min=0"`
+	Revenue            int64   `json:"revenue" binding:"min=0"`
 	Currency           string  `json:"currency" binding:"required,len=3"` // ISO 4217
 	Description        *string `json:"description,omitempty" binding:"omitempty,max=2000"`
 	ParentCompanyID    *string `json:"parent_company_id,omitempty"`
@@ -62,7 +62,7 @@ type UpdateCompanyBusinessInfoRequest struct {
 	Industry      *string `json:"industry,omitempty" binding:"omitempty,max=100"`
 	Size          *string `json:"size,omitempty" binding:"omitempty,oneof=micro small medium large enterprise"`
 	EmployeeCount *int    `json:"employee_count,omitempty" binding:"omitempty,min=0"`
-	AnnualRevenue *int64  `json:"annual_revenue,omitempty" binding:"omitempty,min=0"`
+	Revenue       *int64  `json:"revenue,omitempty" binding:"omitempty,min=0"`
 	Currency      *string `json:"currency,omitempty" binding:"omitempty,len=3"`
 }
 
@@ -97,7 +97,7 @@ type CompanyResponse struct {
 	Industry           *string `json:"industry,omitempty"`
 	Size               string  `json:"size"`
 	EmployeeCount      int     `json:"employee_count"`
-	AnnualRevenue      int64   `json:"annual_revenue"`
+	Revenue            int64   `json:"revenue"`
 	Currency           string  `json:"currency"`
 	Description        *string `json:"description,omitempty"`
 	ParentCompanyID    *string `json:"parent_company_id,omitempty"`
@@ -122,7 +122,7 @@ func ToCompanyResponse(c *company.Company) CompanyResponse {
 		Type:          string(c.Type),
 		Size:          string(c.Size),
 		EmployeeCount: c.EmployeeCount,
-		AnnualRevenue: c.Revenue, // entity.Revenue -> response.AnnualRevenue
+		Revenue: c.Revenue, // entity.Revenue -> response.AnnualRevenue
 		Currency:      c.Currency,
 		CreatedAt:     c.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		UpdatedAt:     c.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
