@@ -36,6 +36,8 @@ Start with customer management, add orders when needed, integrate billing when r
 
 <div class="business-value">
 
+<div class="two-column-text">
+
 <div class="value-prop">
 
 ### What is Promenade?
@@ -58,6 +60,10 @@ Start with what you need today. Customer tracking? That's ready. Add order manag
 Whether you're a 3-person startup or planning to process 10,000 orders per day, the same architecture works. The system is battle-tested with 240+ automated quality checks running on every change.
 
 </div>
+
+</div>
+
+<div class="two-column-text">
 
 <div class="value-prop">
 
@@ -83,6 +89,8 @@ Whether you're a 3-person startup or planning to process 10,000 orders per day, 
 
 </div>
 
+</div>
+
 <div class="value-prop">
 
 ### What You Get Out-of-the-Box
@@ -99,6 +107,8 @@ Whether you're a 3-person startup or planning to process 10,000 orders per day, 
 **Total development time saved: 10-13 months** of engineering work
 
 </div>
+
+<div class="two-column-text">
 
 <div class="value-prop">
 
@@ -118,6 +128,8 @@ Health checks every 30 seconds. If database goes down, you know within seconds. 
 
 **Tested**  
 Every feature has 240+ automated tests. When you add a new feature, tests run in 40 seconds and tell you if something breaks.
+
+</div>
 
 </div>
 
@@ -141,6 +153,8 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 
 </div>
 
+<div class="two-column-text">
+
 <div class="value-prop">
 
 ### Who Should Use Promenade?
@@ -157,6 +171,8 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 - Mobile-only apps with no backend needs
 - Pure analytics platforms (use Snowflake/BigQuery)
 - Real-time chat apps (use dedicated chat services)
+
+</div>
 
 </div>
 

@@ -78,6 +78,21 @@
   margin: 2rem 0;
 }
 
+/* Two-column layout for text sections */
+.two-column-text {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .two-column-text {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 .value-prop {
   background: var(--vp-c-bg-soft);
   border-radius: 12px;
