@@ -2,7 +2,7 @@
 # Makefile.test.mk - Testing Infrastructure
 # ============================================================================
 
-.PHONY: test test-unit test-integration test-coverage test-db-start test-db-stop
+.PHONY: test test-unit test-smoke test-integration test-benchmark test-benchmark-all test-coverage test-db-start test-db-stop
 
 test:  ## Run all tests
 	@echo "Running all tests..."
@@ -12,10 +12,30 @@ test-unit:  ## Run only unit tests (fast, no DB)
 	@echo "Running unit tests..."
 	go test -v -short ./...
 
+test-smoke:  ## Run smoke tests (mock-based handlers, no DB)
+	@echo "Running smoke tests..."
+	go test -v ./test/smoke/contexts/...
+
 test-integration:  ## Run integration tests (requires test DB)
 	@echo "Running integration tests..."
 	@echo "Test DB: localhost:5432/promenade_test (or 5433 if using test-db-start)"
 	ENVIRONMENT=test go test -v ./test/integration/contexts/...
+
+test-benchmark:  ## Run benchmark tests (requires test DB)
+	@echo "Running benchmark tests..."
+	@echo "Test DB: localhost:5433/promenade_test"
+	@$(MAKE) test-db-start
+	@sleep 3
+	go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...
+	@$(MAKE) test-db-stop
+
+test-benchmark-all:  ## Run all benchmark tests with extended time
+	@echo "Running extended benchmark tests..."
+	@echo "Test DB: localhost:5433/promenade_test"
+	@$(MAKE) test-db-start
+	@sleep 3
+	go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...
+	@$(MAKE) test-db-stop
 
 test-coverage:  ## Generate test coverage report
 	@echo "Generating coverage report..."

@@ -15,7 +15,7 @@
 
 ## Test Organization
 
-Promenade uses **three-tier testing strategy** with clear separation:
+Promenade uses **four-tier testing strategy** with clear separation:
 
 ### 1. Unit Tests (In-Place)
 
@@ -74,6 +74,26 @@ test/integration/
          bus_integration_test.go
 ```
 
+### 4. Benchmark Tests (Mirror Path, With DB)
+
+**Location**: `test/benchmark/contexts/` (mirror path)  
+**Purpose**: Performance measurement and optimization validation
+
+```
+test/benchmark/
+ contexts/                   # Mirror path structure
+    identity/
+       user/
+          repository_bench_test.go  #  Repository performance benchmarks
+```
+
+**Key characteristics**:
+- Measure query performance and memory usage
+- Validate optimizations (e.g., N+1 query fixes)
+- Require real database (like integration tests)
+- Use test DB on port 5433
+- Run via Makefile targets with automatic DB setup
+
 ---
 
 ## Running Tests
@@ -90,22 +110,29 @@ make test-smoke
 # Integration tests (with real DB)
 make test-integration
 
+# Benchmark tests (performance measurement, with real DB)
+make test-benchmark
+
 # All tests
 make test
 ```
 
 ### Test Comparison
 
-| Type            | Location                      | Database   | Speed         | Run When     |
-| --------------- | ----------------------------- | ---------- | ------------- | ------------ |
-| **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save   |
-| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~0.35s) | Every commit |
-| **Integration** | `/test/integration/contexts/` | Real DB    | Slow (~30s)   | Before merge |
+| Type            | Location                      | Database   | Speed         | Run When              |
+| --------------- | ----------------------------- | ---------- | ------------- | --------------------- |
+| **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save            |
+| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~0.35s) | Every commit          |
+| **Integration** | `/test/integration/contexts/` | Real DB    | Slow (~30s)   | Before merge          |
+| **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations   |
 
 # Context-specific tests
 
 go test ./internal/contexts/identity/... -v
 go test ./internal/contexts/shared/... -v
+
+# Benchmark tests (manual, for specific optimization validation)
+go test -bench=. -benchmem ./test/benchmark/contexts/identity/user
 
 # Package tests
 
@@ -117,7 +144,7 @@ go test ./pkg/uuidv7/... -v
 go test ./... -cover -coverprofile=coverage.out
 go tool cover -html=coverage.out
 
-````
+```
 
 ### Makefile Targets
 
@@ -126,8 +153,10 @@ make test                 # All tests
 make test-unit            # Unit tests only (fast, < 5s)
 make test-smoke           # Smoke tests (mock-based handlers)
 make test-integration     # Integration tests (with real DB)
+make test-benchmark       # Benchmark tests (auto DB setup, 5s per benchmark)
+make test-benchmark-all   # Extended benchmarks (10s per benchmark)
 make test-coverage        # HTML coverage report
-````
+```
 
 ---
 

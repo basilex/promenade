@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -38,6 +39,12 @@ type userRow struct {
 	CreatedAt        string       `db:"created_at"`
 	UpdatedAt        string       `db:"updated_at"`
 	DeletedAt        sql.NullTime `db:"deleted_at"`
+}
+
+// userRowWithRoles extends userRow with roles array (for batch loading optimization)
+type userRowWithRoles struct {
+	userRow
+	Roles pq.StringArray `db:"roles"` // PostgreSQL TEXT[] array (use pq.StringArray for scanning)
 }
 
 // toEntity converts database row to domain entity
@@ -265,7 +272,8 @@ func (r *userRepository) ExistsByEmail(ctx context.Context, email string) (bool,
 	return exists, nil
 }
 
-// ListUsers retrieves a paginated list of users
+// ListUsers retrieves a paginated list of users with roles loaded in a single query
+// Optimization: Uses LEFT JOIN with ARRAY_AGG to avoid N+1 query problem
 func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*user.User, int, error) {
 	offset := (page - 1) * pageSize
 
@@ -282,16 +290,26 @@ func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*
 		return nil, 0, fmt.Errorf("failed to count users: %w", err)
 	}
 
-	// Get paginated results
-	var rows []userRow
+	// Get paginated results WITH roles in single query (avoid N+1)
+	// Uses LEFT JOIN + ARRAY_AGG to batch load all roles
+	var rows []userRowWithRoles
 	query := `
 		SELECT 
-			id, email, password_hash, status, email_verified, 
-			email_verified_at, last_login_at, failed_login_count, locked_until,
-			created_at, updated_at, deleted_at
-		FROM identity_users
-		WHERE deleted_at IS NULL
-		ORDER BY created_at DESC
+			u.id, u.email, u.password_hash, u.status, u.email_verified, 
+			u.email_verified_at, u.last_login_at, u.failed_login_count, u.locked_until,
+			u.created_at, u.updated_at, u.deleted_at,
+			COALESCE(
+				ARRAY_AGG(r.name ORDER BY r.name) FILTER (WHERE r.name IS NOT NULL), 
+				ARRAY[]::TEXT[]
+			) AS roles
+		FROM identity_users u
+		LEFT JOIN identity_user_roles ur ON u.id = ur.user_id
+		LEFT JOIN identity_roles r ON ur.role_id = r.id
+		WHERE u.deleted_at IS NULL
+		GROUP BY u.id, u.email, u.password_hash, u.status, u.email_verified,
+				 u.email_verified_at, u.last_login_at, u.failed_login_count, u.locked_until,
+				 u.created_at, u.updated_at, u.deleted_at
+		ORDER BY u.created_at DESC
 		LIMIT $1 OFFSET $2
 	`
 
@@ -300,12 +318,15 @@ func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}
 
+	// Convert rows to entities (roles already loaded)
 	users := make([]*user.User, 0, len(rows))
 	for _, row := range rows {
-		u, err := row.toEntity()
+		u, err := row.userRow.toEntity()
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to convert row to entity: %w", err)
 		}
+		// Assign roles from batch-loaded array (convert pq.StringArray to []string)
+		u.Roles = []string(row.Roles)
 		users = append(users, u)
 	}
 

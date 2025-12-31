@@ -37,7 +37,7 @@ Each context is autonomous with:
   - Contact: Email, phone, address management ✅
   - Profile: Personal info, bio, avatar, localization ✅
   - Role & Permission: RBAC implementation ✅ Production
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Deal aggregate ✅ Production | Company, Interaction planned
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Deal aggregate ✅ Production | Company aggregate ✅ Production | Interaction planned
 - **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
 - **Billing** (planned Q2 2026) - Invoice, Payment, Subscription
 - **Warehouse** (planned Q3 2026) - Inventory management
@@ -156,10 +156,10 @@ eventBus.Publish(ctx, event)
 
 **Testing** (three-tier strategy):
 
-- `make test` - All tests with race detector (~40s)
+- `make test` - All tests with race detector (~40s, 240+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s)
-- `make test-smoke` - Smoke tests (mock-based, ~0.3s)
-- `make test-integration` - Integration tests with real DB (~5s, auto-starts test DB)
+- `make test-smoke` - Smoke tests (mock-based, ~0.35s)
+- `make test-integration` - Integration tests with real DB (~2s, 24 tests, auto-starts test DB)
 - `make test-coverage` - HTML coverage report
 - Test DB: `make test-db-start` / `make test-db-stop` (auto-managed by test-integration)
 
@@ -396,6 +396,8 @@ healthHandler.RegisterRoutes(r)
 **Status Levels**: `healthy` (200), `degraded` (200), `unhealthy` (503)
 
 ## Caching Layer
+
+**Cache Client**: Redis-based caching with graceful fallback
 
 **Cache Client**: Redis-based caching with graceful fallback
 
@@ -707,6 +709,14 @@ func TestUserRepository_Create(t *testing.T) {
 - **Sales Rep Assignment**: Track ownership and source
 - **14 API Endpoints**: Complete CRUD + business operations
 
+**Company Context** (`internal/contexts/customer-mgmt/company/`):
+
+- **B2B Support**: Legal entities for business customers
+- **Tax & Legal**: Tax ID, legal name, registration number
+- **Parent-Subsidiary**: Support for corporate hierarchies
+- **Industry & Size**: Classification and employee count
+- **14 API Endpoints**: Complete CRUD + hierarchical operations
+
 **Deal Context** (`internal/contexts/customer-mgmt/deal/`):
 
 - **Deal Stages**: lead → qualified → proposal → negotiation → closed_won/closed_lost
@@ -943,7 +953,7 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `shared/`, `identity/`, `customer-mgmt/`, `order-mgmt/`)
 - **Context Won't Load**: Verify router imported and registered in `cmd/api/main.go`
 - **Event Bus Issues**: Check adapter config (`memory` for dev, `redis` for prod) in `config/app.{env}.yaml`
-- **Integration Test DB**: Auto-started on port 5433, uses `promenade_test` database
+- **Integration Test DB**: Auto-started on port 5433, uses `promenade_test` database (Docker container)
 
 ## Code Review Checklist
 
