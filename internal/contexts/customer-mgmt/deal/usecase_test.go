@@ -351,6 +351,7 @@ func TestUseCase_DeleteDeal(t *testing.T) {
 
 	dealID := uuidv7.New()
 
+	mockRepo.On("Exists", ctx, dealID).Return(true, nil)
 	mockRepo.On("Delete", ctx, dealID).Return(nil)
 
 	err := uc.DeleteDeal(ctx, dealID)
@@ -367,11 +368,12 @@ func TestUseCase_DeleteDeal_NotFound(t *testing.T) {
 
 	dealID := uuidv7.New()
 
-	mockRepo.On("Delete", ctx, dealID).Return(errors.New("deal not found"))
+	mockRepo.On("Exists", ctx, dealID).Return(false, nil)
 
 	err := uc.DeleteDeal(ctx, dealID)
 
 	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "deal not found")
 	mockRepo.AssertExpectations(t)
 }
 
@@ -383,13 +385,13 @@ func TestUseCase_ListDeals(t *testing.T) {
 
 	expectedDeals := []*Deal{createTestDealEntity(t), createTestDealEntity(t)}
 
-	mockRepo.On("List", ctx, 1, 20).Return(expectedDeals, 2, nil)
+	mockRepo.On("List", ctx, 1, 20).Return(expectedDeals, int64(2), nil)
 
 	deals, total, err := uc.ListDeals(ctx, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 2)
-	assert.Equal(t, 2, total)
+	assert.Equal(t, int64(2), total)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -401,13 +403,13 @@ func TestUseCase_ListDealsByStage(t *testing.T) {
 
 	expectedDeals := []*Deal{createTestDealEntity(t)}
 
-	mockRepo.On("ListByStage", ctx, DealStageProposal, 1, 20).Return(expectedDeals, 1, nil)
+	mockRepo.On("ListByStage", ctx, DealStageProposal, 1, 20).Return(expectedDeals, int64(1), nil)
 
 	deals, total, err := uc.ListDealsByStage(ctx, DealStageProposal, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 1)
-	assert.Equal(t, 1, total)
+	assert.Equal(t, int64(1), total)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -420,13 +422,13 @@ func TestUseCase_ListDealsByCustomer(t *testing.T) {
 	customerID := uuidv7.New()
 	expectedDeals := []*Deal{createTestDealEntity(t)}
 
-	mockRepo.On("ListByCustomer", ctx, customerID, 1, 20).Return(expectedDeals, 1, nil)
+	mockRepo.On("ListByCustomer", ctx, customerID, 1, 20).Return(expectedDeals, int64(1), nil)
 
 	deals, total, err := uc.ListDealsByCustomer(ctx, customerID, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 1)
-	assert.Equal(t, 1, total)
+	assert.Equal(t, int64(1), total)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -439,13 +441,13 @@ func TestUseCase_ListDealsByCompany(t *testing.T) {
 	companyID := uuidv7.New()
 	expectedDeals := []*Deal{createTestDealEntity(t)}
 
-	mockRepo.On("ListByCompany", ctx, companyID, 1, 20).Return(expectedDeals, 1, nil)
+	mockRepo.On("ListByCompany", ctx, companyID, 1, 20).Return(expectedDeals, int64(1), nil)
 
 	deals, total, err := uc.ListDealsByCompany(ctx, companyID, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 1)
-	assert.Equal(t, 1, total)
+	assert.Equal(t, int64(1), total)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -458,13 +460,13 @@ func TestUseCase_ListDealsByAssignedTo(t *testing.T) {
 	userID := uuidv7.New()
 	expectedDeals := []*Deal{createTestDealEntity(t)}
 
-	mockRepo.On("ListByAssignedTo", ctx, userID, 1, 20).Return(expectedDeals, 1, nil)
+	mockRepo.On("ListByAssignedTo", ctx, userID, 1, 20).Return(expectedDeals, int64(1), nil)
 
 	deals, total, err := uc.ListDealsByAssignedTo(ctx, userID, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 1)
-	assert.Equal(t, 1, total)
+	assert.Equal(t, int64(1), total)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -476,13 +478,13 @@ func TestUseCase_ListDealsBySource(t *testing.T) {
 
 	expectedDeals := []*Deal{createTestDealEntity(t)}
 
-	mockRepo.On("ListBySource", ctx, DealSourceReferral, 1, 20).Return(expectedDeals, 1, nil)
+	mockRepo.On("ListBySource", ctx, DealSourceReferral, 1, 20).Return(expectedDeals, int64(1), nil)
 
 	deals, total, err := uc.ListDealsBySource(ctx, DealSourceReferral, 1, 20)
 
 	assert.NoError(t, err)
 	assert.Len(t, deals, 1)
-	assert.Equal(t, 1, total)
+	assert.Equal(t, int64(1), total)
 	mockRepo.AssertExpectations(t)
 }
 
