@@ -1,5 +1,56 @@
 /* Custom styles for Promenade Platform website */
 
+/* Feature Cards */
+.vp-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.vp-features .feature {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  transition: all 0.3s ease;
+}
+
+.vp-features .feature:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vp-features .feature .icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.vp-features .feature h3 {
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.vp-features .feature p {
+  margin: 0.75rem 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.6;
+}
+
+.vp-features .feature .link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.vp-features .feature .link:hover {
+  text-decoration: underline;
+}
+
 /* Business Features intro */
 .business-features-intro,
 .technical-features-intro {

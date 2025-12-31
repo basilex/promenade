@@ -172,42 +172,50 @@ These are the ready-to-use business modules that save you months of development 
 
 </div>
 
-features:
-  - icon: 👥
-    title: Customer Management
-    details: Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.
-    link: /concepts/customer-management
-    linkText: Explore Customer Management →
-    
-  - icon: 💼
-    title: Deal Management
-    details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
-    link: /concepts/deal-management
-    linkText: Explore Deal Management →
-    
-  - icon: 📦
-    title: Order Management
-    details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
-    link: /concepts/order-management
-    linkText: Explore Order Management →
-    
-  - icon: 🔐
-    title: User Authentication
-    details: Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.
-    link: /guide/rbac
-    linkText: See Authentication Guide →
-    
-  - icon: 💳
-    title: Billing & Invoicing
-    details: Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.
-    link: /concepts/billing
-    linkText: Coming Q2 2026 →
-    
-  - icon: 📊
-    title: Analytics & Reporting
-    details: Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.
-    link: /concepts/analytics
-    linkText: Coming Q3 2026 →
+<div class="vp-features">
+  <div class="feature">
+    <div class="icon">👥</div>
+    <h3>Customer Management</h3>
+    <p>Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.</p>
+    <a href="/concepts/customer-management" class="link">Explore Customer Management →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">💼</div>
+    <h3>Deal Management</h3>
+    <p>Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.</p>
+    <a href="/concepts/deal-management" class="link">Explore Deal Management →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">📦</div>
+    <h3>Order Management</h3>
+    <p>Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.</p>
+    <a href="/concepts/order-management" class="link">Explore Order Management →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🔐</div>
+    <h3>User Authentication</h3>
+    <p>Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.</p>
+    <a href="/guide/rbac" class="link">See Authentication Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">💳</div>
+    <h3>Billing & Invoicing</h3>
+    <p>Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.</p>
+    <a href="/concepts/billing" class="link">Coming Q2 2026 →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">📊</div>
+    <h3>Analytics & Reporting</h3>
+    <p>Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.</p>
+    <a href="/concepts/analytics" class="link">Coming Q3 2026 →</a>
+  </div>
+</div>
+
 ---
 
 ## ⚙️ Technical Foundation
@@ -218,96 +226,99 @@ For developers and technical teams: the architectural patterns and infrastructur
 
 </div>
 
-features:
-  - icon: 🏗️
-    title: Domain-Driven Design
-    details: Pure DDD with Bounded Contexts, Aggregates, Value Objects, and Domain Events. Each context is autonomous with its own domain model and database schema.
-    link: /concepts/clean-architecture
-    linkText: Learn DDD Architecture →
-    
-  - icon: ⚡
-    title: Event-Driven Architecture
-    details: Central Event Bus with Memory and Redis adapters. 377K events/sec throughput, automatic retry, panic recovery, and graceful shutdown.
-    link: /concepts/event-driven
-    linkText: Explore Event Bus →
-    
-  - icon: 🔐
-    title: JWT + RBAC Authentication
-    details: Token-based authentication with Role-Based Access Control. 15-minute access tokens, 7-day refresh tokens, and Redis-backed token revocation.
-    link: /guide/rbac
-    linkText: See RBAC Guide →
-    
-  - icon: 🎯
-    title: Bounded Contexts
-    details: 6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse, Analytics. Contexts communicate only via Event Bus.
-    link: /concepts/bounded-contexts
-    linkText: View All Contexts →
-    
-  - icon: 📊
-    title: Three-Tier Testing
-    details: Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.
-    link: /guide/testing-patterns
-    linkText: Read Testing Guide →
-    
-  - icon: 🚀
-    title: Production-Ready
-    details: Rate limiting (5/min login), health checks (4 endpoints), graceful shutdown, structured logging, database migrations, Docker support.
-    link: /guide/health-checks
-    linkText: Health Monitoring →
-    
-  - icon: 🔄
-    title: Event Bus Adapters
-    details: Switch between Memory (377K events/sec, dev) and Redis (distributed, prod) adapters with single config change. Zero code changes needed.
-    link: /packages/bus
-    linkText: Event Bus Docs →
-    
-  - icon: 🛡️
-    title: Rate Limiting
-    details: IP-based rate limiting with token bucket algorithm. Login 5/min, Register 3/min. Automatic cleanup prevents memory leaks. Production-ready.
-    link: /guide/rate-limiting
-    linkText: Rate Limiting Guide →
-    
-  - icon: 💚
-    title: Health Checks
-    details: Comprehensive health monitoring for PostgreSQL, Redis, Event Bus. 4 endpoints, 3 status levels (healthy/degraded/unhealthy), 5-second timeout.
-    link: /guide/health-checks
-    linkText: Health Check API →
-    
-  - icon: 🗄️
-    title: Redis Caching
-    details: Resource-specific TTL (Reference 1h-24h, User 10-30m, Session 30m-1h). Cache-aside pattern with write-through invalidation. Graceful degradation when Redis unavailable.
-    link: /guide/caching
-    linkText: Caching Guide →
-    
-  - icon: 
-    title: Deal Management
-    details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
-    link: /concepts/deal-management
-    linkText: Deal Management Guide →
-    
-  - icon: �📦
-    title: Order Management
-    details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
-    link: /concepts/order-management
-    linkText: Order Management Guide →
-    
-  - icon: 🧩
-    title: Value Objects
-    details: Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.
-    link: /packages/valueobject
-    linkText: Value Objects →
-    
-  - icon: 🔑
-    title: UUID v7 (Time-Ordered)
-    details: Time-ordered UUIDs provide 2x faster database inserts than UUID v4, better B-tree index locality, and natural ordering by creation time.
-    link: /packages/uuidv7
-    linkText: UUID v7 Benchmark →
-    
-  - icon: 📝
-    title: Structured Logging
-    details: Context-aware logging with slog wrapper. Request ID propagation, log levels (debug/info/warn/error), JSON format for production.
-    link: /packages/logger
-    linkText: Logger Package →
+<div class="vp-features">
+  <div class="feature">
+    <div class="icon">🏗️</div>
+    <h3>Domain-Driven Design</h3>
+    <p>Pure DDD with Bounded Contexts, Aggregates, Value Objects, and Domain Events. Each context is autonomous with its own domain model and database schema.</p>
+    <a href="/concepts/clean-architecture" class="link">Learn DDD Architecture →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">⚡</div>
+    <h3>Event-Driven Architecture</h3>
+    <p>Central Event Bus with Memory and Redis adapters. 377K events/sec throughput, automatic retry, panic recovery, and graceful shutdown.</p>
+    <a href="/concepts/event-driven" class="link">Explore Event Bus →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🔐</div>
+    <h3>JWT + RBAC Authentication</h3>
+    <p>Token-based authentication with Role-Based Access Control. 15-minute access tokens, 7-day refresh tokens, and Redis-backed token revocation.</p>
+    <a href="/guide/rbac" class="link">See RBAC Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🎯</div>
+    <h3>Bounded Contexts</h3>
+    <p>6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse, Analytics. Contexts communicate only via Event Bus.</p>
+    <a href="/concepts/bounded-contexts" class="link">View All Contexts →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">📊</div>
+    <h3>Three-Tier Testing</h3>
+    <p>Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.</p>
+    <a href="/guide/testing-patterns" class="link">Read Testing Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🚀</div>
+    <h3>Production-Ready</h3>
+    <p>Rate limiting (5/min login), health checks (4 endpoints), graceful shutdown, structured logging, database migrations, Docker support.</p>
+    <a href="/guide/health-checks" class="link">Health Monitoring →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🔄</div>
+    <h3>Event Bus Adapters</h3>
+    <p>Switch between Memory (377K events/sec, dev) and Redis (distributed, prod) adapters with single config change. Zero code changes needed.</p>
+    <a href="/packages/bus" class="link">Event Bus Docs →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🛡️</div>
+    <h3>Rate Limiting</h3>
+    <p>IP-based rate limiting with token bucket algorithm. Login 5/min, Register 3/min. Automatic cleanup prevents memory leaks. Production-ready.</p>
+    <a href="/guide/rate-limiting" class="link">Rate Limiting Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">💚</div>
+    <h3>Health Checks</h3>
+    <p>Comprehensive health monitoring for PostgreSQL, Redis, Event Bus. 4 endpoints, 3 status levels (healthy/degraded/unhealthy), 5-second timeout.</p>
+    <a href="/guide/health-checks" class="link">Health Check API →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🗄️</div>
+    <h3>Redis Caching</h3>
+    <p>Resource-specific TTL (Reference 1h-24h, User 10-30m, Session 30m-1h). Cache-aside pattern with write-through invalidation. Graceful degradation when Redis unavailable.</p>
+    <a href="/guide/caching" class="link">Caching Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🧩</div>
+    <h3>Value Objects</h3>
+    <p>Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.</p>
+    <a href="/packages/valueobject" class="link">Value Objects →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">🔑</div>
+    <h3>UUID v7 (Time-Ordered)</h3>
+    <p>Time-ordered UUIDs provide 2x faster database inserts than UUID v4, better B-tree index locality, and natural ordering by creation time.</p>
+    <a href="/packages/uuidv7" class="link">UUID v7 Benchmark →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">📝</div>
+    <h3>Structured Logging</h3>
+    <p>Context-aware logging with slog wrapper. Request ID propagation, log levels (debug/info/warn/error), JSON format for production.</p>
+    <a href="/packages/logger" class="link">Logger Package →</a>
+  </div>
+</div>
+
 ---
 
 ## 🚀 Quick Start - Try It in 5 Minutes
