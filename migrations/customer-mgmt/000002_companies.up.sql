@@ -173,7 +173,7 @@ COMMENT ON INDEX idx_companies_type_size_active IS 'Filter by type and size with
 CREATE TRIGGER trigger_companies_updated_at
     BEFORE UPDATE ON customer_companies
     FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
+    EXECUTE FUNCTION tfn_entity_updated_at();
 
 COMMENT ON TRIGGER trigger_companies_updated_at ON customer_companies IS 'Auto-update updated_at on row modification';
 
