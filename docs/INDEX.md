@@ -197,8 +197,10 @@ Step-by-step implementation guides:
 - [Getting Started](guides/getting-started.md) - Quick start, installation, first steps
 - [RBAC Implementation](guides/rbac.md) - Roles, permissions, JWT integration
 - [Rate Limiting](guides/rate-limiting.md) - IP-based protection for authentication
+- [CSRF Protection](guides/csrf-protection.md) - Cross-site request forgery defense
 - [Health Checks](guides/health-checks.md) - Dependency monitoring and alerting
-- [Testing Patterns](guides/testing-patterns.md) - Three-tier testing strategy
+- [Caching](guides/caching.md) - Redis caching layer implementation
+- [Testing Patterns](guides/testing-patterns.md) - Four-tier testing strategy
 - [Development Workflow](guides/development-workflow.md) - Daily development process
 - [Production Deployment](guides/production-deployment.md) - Docker, Kubernetes, monitoring
 
