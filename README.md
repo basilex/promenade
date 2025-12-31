@@ -123,7 +123,7 @@ Promenade implements **complete CRM functionality** for B2C and B2B customer lif
 - Sales rep assignment
 - Integration with Identity and Order Management contexts
 
-**See**: [docs/concepts/customer-management.md](docs/concepts/customer-management.md) for complete Customer Management guide
+**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md)
 
 ### Deal Management
 

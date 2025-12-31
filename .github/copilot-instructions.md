@@ -454,6 +454,8 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 - Automatic probability updates on stage changes
 - Win/loss tracking with actual close dates
 
+**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md)
+
 ## Order Management
 
 **Order Context** (`internal/contexts/order-mgmt/order/`):

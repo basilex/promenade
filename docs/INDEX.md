@@ -188,6 +188,7 @@ Fundamental architectural principles and design patterns:
 - [Event-Driven Architecture](concepts/event-driven.md) - Event Bus, Domain Events, Sagas
 - [Bounded Contexts Strategy](concepts/bounded-contexts.md) - Context isolation and communication
 - [Customer Management](concepts/customer-management.md) - CRM functionality, customer lifecycle, B2C & B2B
+- [Company Management](concepts/company-management.md) - B2B organizations, hierarchical structure, legal entities
 - [Deal Management](concepts/deal-management.md) - Sales pipeline, deal stages, probability tracking
 - [Order Management](concepts/order-management.md) - Complete order lifecycle, state machine, business rules
 
