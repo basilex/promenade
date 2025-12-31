@@ -32,15 +32,15 @@ Each context is autonomous with:
 **Available Contexts**:
 
 - **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only) ✅ Production
-- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile aggregates ✅ Production
+- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile, Role, Permission aggregates ✅ Production
   - User: Registration, authentication, password management ✅
   - Contact: Email, phone, address management ✅
   - Profile: Personal info, bio, avatar, localization ✅
-  - Role & Permission: RBAC implementation 🔄 In Progress (see GAPS_AND_TODOS.md)
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Company, Deal, Interaction planned
-- **Order Management** (planned) - Order, OrderItem, Fulfillment
-- **Billing** (planned) - Invoice, Payment, Subscription
-- **Warehouse** (planned) - Inventory management
+  - Role & Permission: RBAC implementation ✅ Production
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Deal aggregate ✅ Production | Company, Interaction planned
+- **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
+- **Billing** (planned Q2 2026) - Invoice, Payment, Subscription
+- **Warehouse** (planned Q3 2026) - Inventory management
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
@@ -165,10 +165,12 @@ eventBus.Publish(ctx, event)
 
 **Migrations** (namespace-based per context):
 
-- `make migrate` - Run all migrations (core → shared → identity → customer-mgmt)
-- `make migrate-core` - Core migrations (UUID v7 extensions)
+- `make migrate` - Run all migrations (core → shared → identity → customer-mgmt → order-mgmt)
+- `make migrate-core` - Core migrations (UUID v7 extensions, auth, RBAC)
+- `make migrate-shared` - Shared context migrations (reference data)
 - `make migrate-identity` - Identity context migrations
 - `make migrate-customer-mgmt` - Customer Management context migrations
+- `make migrate-order-mgmt` - Order Management context migrations
 - `make migrate-new CONTEXT=identity NAME=xxx` - Create new migration
 
 **Docker**:
@@ -266,7 +268,34 @@ jwtManager := jwt.NewManager(jwt.Config{
 })
 
 // Pass to Identity router
-identityRouter := identity.NewRouter(db, jwtManager)
+identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)
+```
+
+**Rate Limiting**: IP-based protection for authentication endpoints
+
+```go
+// Rate limiters in router.go
+loginLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)     // 5 per minute
+registerLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/3), 1)  // 3 per minute
+
+// Apply to public auth routes
+users.POST("/register", registerLimiter.Limit(), handler.Register)
+users.POST("/login", loginLimiter.Limit(), handler.Login)
+```
+
+**Token Revocation**: Redis-based token blacklist for logout
+
+```go
+// Initialize token revoker (cmd/api/main.go)
+tokenRevoker := jwt.NewTokenRevoker(redisClient)
+
+// Apply middleware with revocation check
+protected.Use(jwt.AuthMiddleware(jwtManager, tokenRevoker))
+
+// Revoke token on logout
+if err := h.tokenRevoker.RevokeToken(ctx, tokenString, ttl); err != nil {
+    return err
+}
 ```
 
 **Protecting Routes** (see `internal/contexts/identity/router.go`):
@@ -345,6 +374,70 @@ if !contains(roles, "admin") {
 - **Load roles on login**: User aggregate must fetch roles from DB (`user.Roles()`)
 - **Validate tokens**: Always use `jwtManager.ValidateToken()`, never decode manually
 - **Context propagation**: Extract `userID` from JWT claims via `jwt.GetUserID(c)`
+- **Token revocation**: Check blacklist on protected routes (graceful degradation if Redis unavailable)
+
+## Health Checks & Monitoring
+
+**Health Checker**: Monitors all dependencies with graceful degradation
+
+```go
+// Initialize in cmd/api/main.go
+healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
+healthHandler := health.NewHandler(healthChecker)
+healthHandler.RegisterRoutes(r)
+```
+
+**Available Endpoints**:
+- `GET /health` - Overall system health (DB + Redis + Event Bus)
+- `GET /health/db` - PostgreSQL health check
+- `GET /health/redis` - Redis health check (optional)
+- `GET /health/bus` - Event Bus health check
+
+**Status Levels**: `healthy` (200), `degraded` (200), `unhealthy` (503)
+
+## Caching Layer
+
+**Cache Client**: Redis-based caching with graceful fallback
+
+```go
+// Initialize in cmd/api/main.go
+cacheClient, err := cache.NewCache(cacheConfig, cacheRedisClient)
+
+// Pass to context routers that need caching
+sharedRouter := shared.NewRouter(db, cacheClient)  // Reference data with cache
+```
+
+**Cache Usage in Repository**:
+
+```go
+// Try cache first
+cached, err := r.cache.Get(ctx, cacheKey, &countries)
+if err == nil && cached {
+    return countries, nil  // Cache hit
+}
+
+// Cache miss - fetch from DB
+countries, err := r.fetchFromDB(ctx)
+if err != nil {
+    return nil, err
+}
+
+// Store in cache
+r.cache.Set(ctx, cacheKey, countries, ttl)
+return countries, nil
+```
+
+**TTL Strategy**:
+- Reference data: 1h-24h (Country, Currency, Language, Timezone)
+- User data: 10-30m (Profile, Customer)
+- Session data: 30m-1h (temporary state)
+
+**Invalidation**: Pattern-based deletion on updates
+
+```go
+// Invalidate all country-related cache entries
+r.cache.DeletePattern(ctx, "countries:*")
+```
 
 ## Data Patterns
 
@@ -604,6 +697,58 @@ func TestUserRepository_Create(t *testing.T) {
 
 **Test Helpers**: [test/integration/](../test/integration/) for DB setup and utilities
 
+## Customer Management & Deal Pipeline
+
+**Customer Context** (`internal/contexts/customer-mgmt/customer/`):
+
+- **Customer Lifecycle**: Lead → Prospect → Customer → Churned (state machine)
+- **Customer Tiers**: free, basic, pro, enterprise
+- **Segmentation**: JSONB tags for flexible metadata
+- **Sales Rep Assignment**: Track ownership and source
+- **14 API Endpoints**: Complete CRUD + business operations
+
+**Deal Context** (`internal/contexts/customer-mgmt/deal/`):
+
+- **Deal Stages**: lead → qualified → proposal → negotiation → closed_won/closed_lost
+- **Probability Tracking**: Auto-calculated per stage (10% → 100%)
+- **Money Value Object**: Type-safe handling with currency support
+- **Pipeline Statistics**: Filter by stage, customer, or sales rep
+- **12 API Endpoints**: Complete CRUD + stage transitions
+
+**Business Rules**:
+- Customer state transitions enforce lifecycle rules
+- Deal stage transitions are validated (can't skip stages)
+- Automatic probability updates on stage changes
+- Win/loss tracking with actual close dates
+
+## Order Management
+
+**Order Context** (`internal/contexts/order-mgmt/order/`):
+
+- **Order Creation**: Generate orders with auto-numbered format (ORD-YYYY-NNNNNN)
+- **Line Items**: Add/remove products with automatic total calculation
+- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled)
+- **Money Handling**: Type-safe cents-based precision
+- **14 API Endpoints**: Complete CRUD + state transitions
+
+**Order Entity Methods**:
+
+```go
+func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice Money) error
+func (o *Order) RemoveLine(lineID uuidv7.UUID) error
+func (o *Order) UpdateLine(lineID uuidv7.UUID, quantity int) error
+func (o *Order) Confirm() error            // pending → confirmed
+func (o *Order) StartProcessing() error    // confirmed → processing
+func (o *Order) MarkFulfilled() error      // processing → fulfilled
+func (o *Order) Cancel(reason string) error
+```
+
+**Business Rules**:
+- Order must have at least one line item to confirm
+- Cannot modify confirmed orders (must cancel and recreate)
+- Terminal states (fulfilled, cancelled) are immutable
+- Total automatically recalculated on line item changes
+
 ## Codebase Conventions & Patterns
 
 ### Naming Conventions
@@ -780,20 +925,6 @@ response.Success(c, data)                    // 200 OK with data
 response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 ```
 
-## Event Bus & Configuration
-
-**Event Bus** - Dual adapters (factory with graceful fallback):
-
-- **Memory** (`pkg/bus/memory`): Dev/test, in-process, fast
-- **Redis** (`pkg/bus/redis`): Prod, distributed, persistent
-- Config: `bus.adapter: memory|redis` in `config/app.{env}.yaml`
-
-**Config Loading**:
-
-- Core: `config/app.{env}.yaml` (ENVIRONMENT=dev/test/prod)
-- Overrides: Sensitive values via env vars (DB_PASSWORD, JWT_SECRET, REDIS_ADDR)
-- Access: `logger.FromContext(ctx)`, `database.GetTx(ctx)`
-
 ## Critical Gotchas
 
 **Top Mistakes**:
@@ -808,10 +939,11 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 **Debugging Quick Reference**:
 
 - **DB Connection**: `make docker-ps` → check Postgres on 5432, test DB on 5433
-- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~5s)
-- **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `shared/`, `identity/`)
+- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~2s)
+- **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `shared/`, `identity/`, `customer-mgmt/`, `order-mgmt/`)
 - **Context Won't Load**: Verify router imported and registered in `cmd/api/main.go`
 - **Event Bus Issues**: Check adapter config (`memory` for dev, `redis` for prod) in `config/app.{env}.yaml`
+- **Integration Test DB**: Auto-started on port 5433, uses `promenade_test` database
 
 ## Code Review Checklist
 

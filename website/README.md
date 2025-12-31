@@ -23,12 +23,21 @@ npm run docs:preview
 
 ### Deploy to GitHub Pages
 
-```bash
-npm run docs:build
+**Manual Deploy:**
 
-# Deploy dist folder to gh-pages branch
-# (Automated via GitHub Actions)
+```bash
+./deploy.sh
 ```
+
+This will:
+1. Build the VitePress site
+2. Create/update the gh-pages branch
+3. Push to GitHub
+4. Site goes live at: https://basilex.github.io/promenade/
+
+**Note**: Links work with `/promenade/` base path configured in `.vitepress/config.mjs`
+
+**Automated via GitHub Actions** (coming soon)
 
 ## Project Structure
 
