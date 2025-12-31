@@ -1,5 +1,27 @@
 /* Custom styles for Promenade Platform website */
 
+/* Business Features intro */
+.business-features-intro,
+.technical-features-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+}
+
+.business-features-intro {
+  border-left: 4px solid var(--vp-c-brand-1);
+}
+
+.technical-features-intro {
+  border-left: 4px solid var(--vp-c-text-3);
+}
+
 /* Business Value Section */
 .business-value {
   margin: 2rem 0;

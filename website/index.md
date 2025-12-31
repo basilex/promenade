@@ -164,6 +164,60 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 
 ---
 
+## 💼 Core Business Capabilities
+
+<div class="business-features-intro">
+
+These are the ready-to-use business modules that save you months of development time. Each one is production-ready with complete API, database schema, and business logic.
+
+</div>
+
+features:
+  - icon: 👥
+    title: Customer Management
+    details: Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.
+    link: /concepts/customer-management
+    linkText: Explore Customer Management →
+    
+  - icon: 💼
+    title: Deal Management
+    details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
+    link: /concepts/deal-management
+    linkText: Explore Deal Management →
+    
+  - icon: 📦
+    title: Order Management
+    details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
+    link: /concepts/order-management
+    linkText: Explore Order Management →
+    
+  - icon: 🔐
+    title: User Authentication
+    details: Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.
+    link: /guide/rbac
+    linkText: See Authentication Guide →
+    
+  - icon: 💳
+    title: Billing & Invoicing
+    details: Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.
+    link: /concepts/billing
+    linkText: Coming Q2 2026 →
+    
+  - icon: 📊
+    title: Analytics & Reporting
+    details: Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.
+    link: /concepts/analytics
+    linkText: Coming Q3 2026 →
+---
+
+## ⚙️ Technical Foundation
+
+<div class="technical-features-intro">
+
+For developers and technical teams: the architectural patterns and infrastructure that make Promenade fast, reliable, and maintainable.
+
+</div>
+
 features:
   - icon: 🏗️
     title: Domain-Driven Design
@@ -225,13 +279,7 @@ features:
     link: /guide/caching
     linkText: Caching Guide →
     
-  - icon: 👥
-    title: Customer Management
-    details: Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.
-    link: /concepts/customer-management
-    linkText: Customer Management Guide →
-    
-  - icon: 💼
+  - icon: 
     title: Deal Management
     details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
     link: /concepts/deal-management
