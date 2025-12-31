@@ -131,6 +131,27 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 
 </div>
 
+<div class="value-prop">
+
+### What This Means for You
+
+**Lower Risk**  
+Proven patterns mean fewer bugs. No "oops, we need to rebuild the entire customer system" moments at 3 AM. Sleep better.
+
+**Faster Hiring**  
+Standard tech stack (Go, PostgreSQL, Redis). Any senior developer can understand the code in 2 days. No exotic frameworks to learn.
+
+**Cost Control**  
+No surprise licensing fees. Host anywhere: AWS, Google Cloud, your own servers. Scale up when needed, scale down to save money.
+
+**Team Velocity**  
+New features ship faster because foundation is solid. Instead of debugging database issues, your team builds features customers want.
+
+**Exit Strategy**  
+You own the code. If you outgrow it, migrate gradually. If acquired, buyers see clean architecture. No technical debt horror stories.
+
+</div>
+
 </div>
 
 <div class="value-prop">
@@ -171,6 +192,36 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 - Mobile-only apps with no backend needs
 - Pure analytics platforms (use Snowflake/BigQuery)
 - Real-time chat apps (use dedicated chat services)
+
+</div>
+
+<div class="value-prop">
+
+### Your First 30 Days
+
+**Week 1: Explore & Plan**
+- Review API documentation
+- Test customer management endpoints
+- Map your data model to Promenade entities
+- Identify what you'll use first
+
+**Week 2: Development Setup**
+- Clone repository, run locally
+- Connect to your staging database
+- Customize authentication rules
+- Test API calls from your frontend
+
+**Week 3: Integration**
+- Migrate first 100 customers (CSV import)
+- Connect your app to customer API
+- Train team on admin dashboard
+- Set up monitoring alerts
+
+**Week 4: Go Live**
+- Run final tests with real data
+- Switch production traffic
+- Monitor first 1,000 requests
+- Celebrate launch 🎉
 
 </div>
 
