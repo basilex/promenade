@@ -2,9 +2,9 @@
 # Promenade - .gitignore
 # ============================================================================
 
-# Binaries
-api
-main
+# Binaries (ignore binary files in root, not directories)
+/api
+/main
 bin/
 *.exe
 *.exe~

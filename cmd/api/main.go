@@ -1,33 +1,14 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	_ "github.com/lib/pq"
 
-	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
-
-	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
-	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
-
-	"github.com/basilex/promenade/internal/contexts/identity"
-	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/config"
-	"github.com/basilex/promenade/internal/infrastructure/database"
-	"github.com/basilex/promenade/internal/infrastructure/health"
-	"github.com/basilex/promenade/pkg/bus"
-	"github.com/basilex/promenade/pkg/cache"
-	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
-	"github.com/basilex/promenade/pkg/migration"
 
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
@@ -63,259 +44,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Initialize logger
-	logFormat := "text"
-	if cfg.App.Environment == "production" {
-		logFormat = "json"
-	}
-
-	logLevel := "info"
-	if cfg.App.Environment == "development" {
-		logLevel = "debug"
-	}
-
-	logger.Init(logger.Config{
-		Level:      logLevel,
-		Format:     logFormat,
-		AddSource:  cfg.App.Environment == "development",
-		TimeFormat: time.RFC3339,
-	})
-
-	logger.Info("Starting Promenade Platform",
-		slog.String("environment", cfg.App.Environment),
-		slog.String("version", cfg.App.Version),
-	)
-
-	// Connect to database
-	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
+	// Bootstrap application dependencies
+	app, err := Bootstrap(cfg)
 	if err != nil {
-		logger.Fatal("Failed to connect to database", slog.Any("error", err))
+		logger.Fatal("Failed to bootstrap application", slog.Any("error", err))
 	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			logger.Error("Failed to close database connection", slog.Any("error", err))
-		}
-	}()
-
-	// Run migrations automatically
-	logger.Info("Running database migrations...")
-	migrationManager := migration.NewManager(db, "migrations")
-	migrationsCtx := context.Background()
-
-	// Run core migrations (extensions: uuid_v7, pgcrypto)
-	if err := migrationManager.MigrateNamespace(migrationsCtx, "core"); err != nil {
-		logger.Fatal("Failed to run core migrations", slog.Any("error", err))
-	}
-
-	// Run shared kernel migrations (reference data: countries, currencies, languages, timezones)
-	if err := migrationManager.MigrateNamespace(migrationsCtx, "shared"); err != nil {
-		logger.Fatal("Failed to run shared migrations", slog.Any("error", err))
-	}
-
-	// Run identity context migrations (users, authentication, authorization, contacts)
-	if err := migrationManager.MigrateNamespace(migrationsCtx, "identity"); err != nil {
-		logger.Fatal("Failed to run identity migrations", slog.Any("error", err))
-	}
-
-	// Run customer management context migrations (customers, companies, deals, interactions)
-	if err := migrationManager.MigrateNamespace(migrationsCtx, "customer-mgmt"); err != nil {
-		logger.Fatal("Failed to run customer-mgmt migrations", slog.Any("error", err))
-	}
-
-	// Run order management context migrations (orders, contracts, fulfillment)
-	if err := migrationManager.MigrateNamespace(migrationsCtx, "order-mgmt"); err != nil {
-		logger.Fatal("Failed to run order-mgmt migrations", slog.Any("error", err))
-	}
-
-	logger.Info("Database migrations completed successfully")
-
-	// Initialize Redis (for token revocation, bus, and cache)
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:       cfg.Database.Redis.Addr,
-		Password:   cfg.Database.Redis.Password,
-		DB:         cfg.Database.Redis.Databases.Revocation, // Use revocation DB
-		PoolSize:   cfg.Database.Redis.PoolSize,
-		MaxRetries: cfg.Database.Redis.MaxRetries,
-	})
-	defer func() {
-		if err := redisClient.Close(); err != nil {
-			logger.Error("Failed to close Redis client", slog.Any("error", err))
-		}
-	}()
-
-	// Test Redis connection
-	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		logger.Warn("Redis connection failed, some features will be disabled", slog.Any("error", err))
-		redisClient = nil // Graceful degradation
-	} else {
-		logger.Info("Redis connected successfully",
-			slog.String("addr", cfg.Database.Redis.Addr),
-			slog.Int("revocation_db", cfg.Database.Redis.Databases.Revocation),
-		)
-	}
-
-	// Initialize Cache Layer
-	var cacheClient cache.ICache
-	if redisClient != nil {
-		// Parse cache config
-		cacheConfig, err := cfg.Cache.ToCacheConfig()
-		if err != nil {
-			logger.Fatal("Failed to parse cache config", slog.Any("error", err))
-		}
-
-		// Create Redis client for cache (separate DB)
-		cacheRedisClient := redis.NewClient(&redis.Options{
-			Addr:       cfg.Database.Redis.Addr,
-			Password:   cfg.Database.Redis.Password,
-			DB:         cfg.Database.Redis.Databases.Cache, // Use cache DB
-			PoolSize:   cfg.Database.Redis.PoolSize,
-			MaxRetries: cfg.Database.Redis.MaxRetries,
-		})
-		defer func() {
-			if err := cacheRedisClient.Close(); err != nil {
-				logger.Error("Failed to close cache Redis client", slog.Any("error", err))
-			}
-		}()
-
-		cacheClient, err = cache.NewCache(cacheConfig, cacheRedisClient)
-		if err != nil {
-			logger.Fatal("Failed to initialize cache", slog.Any("error", err))
-		}
-
-		logger.Info("Cache initialized",
-			slog.String("adapter", cacheConfig.Adapter),
-			slog.String("prefix", cacheConfig.Prefix),
-			slog.Bool("enabled", cacheConfig.Enabled),
-		)
-	} else {
-		// Fallback to no-op cache when Redis unavailable
-		cacheClient, _ = cache.NewCache(&cache.Config{Enabled: false, Adapter: "noop"}, nil)
-		logger.Warn("Cache disabled (Redis unavailable)")
-	}
-	defer func() {
-		if err := cacheClient.Close(context.Background()); err != nil {
-			logger.Error("Failed to close cache client", slog.Any("error", err))
-		}
-	}()
-
-	// Initialize JWT Manager
-	jwtManager := jwt.NewManager(jwt.Config{
-		SecretKey:            cfg.JWT.Secret,
-		AccessTokenDuration:  cfg.JWT.AccessTokenDuration,
-		RefreshTokenDuration: cfg.JWT.RefreshTokenDuration,
-		Issuer:               cfg.JWT.Issuer,
-	})
-	logger.Info("JWT Manager initialized",
-		slog.String("issuer", cfg.JWT.Issuer),
-		slog.Duration("access_token_duration", cfg.JWT.AccessTokenDuration),
-		slog.Duration("refresh_token_duration", cfg.JWT.RefreshTokenDuration),
-	)
-
-	// Initialize Token Revoker (if Redis is available)
-	var tokenRevoker *jwt.TokenRevoker
-	if redisClient != nil {
-		tokenRevoker = jwt.NewTokenRevoker(redisClient)
-		logger.Info("Token Revoker initialized with Redis")
-	} else {
-		logger.Warn("Token Revoker disabled (Redis unavailable)")
-	}
-
-	// Initialize Event Bus
-	eventBus, err := bus.NewBus(cfg.Bus, cfg.Database.Redis)
-	if err != nil {
-		logger.Fatal("Failed to initialize event bus", slog.Any("error", err))
-	}
-	defer func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if err := eventBus.Close(ctx); err != nil {
-			logger.Error("Failed to close event bus", slog.Any("error", err))
-		}
-	}()
+	defer app.Close()
 
 	// Setup HTTP server
-	if cfg.App.Environment == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	server := NewServer(app)
+	server.SetupRoutes()
+	srv := server.Start()
 
-	r := gin.New()
-
-	// Global middleware
-	r.Use(
-		gin.Recovery(),
-		gin.Logger(),
-	)
-
-	// Health checks with dependency monitoring
-	healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
-	healthHandler := health.NewHandler(healthChecker)
-	healthHandler.RegisterRoutes(r)
-
-	// Initialize context routers
-	sharedRouter := shared.NewRouter(db, cacheClient)                    // Shared Context (Reference Data with Cache)
-	identityRouter := identity.NewRouter(db, jwtManager, tokenRevoker)   // Identity Context (User, Contact, Profile, RBAC)
-	customerMgmtRouter := customermgmt.NewRouter(db)                     // Customer Management Context (Customer)
-	orderMgmtRouter := ordermgmt.NewRouter(db)                           // Order Management Context (Order, OrderLine)
-
-	// API routes
-	api := r.Group("/api")
-	{
-		v1 := api.Group("/v1")
-		{
-			v1.GET("", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{
-					"message": "Promenade CRM Platform API v1",
-					"version": cfg.App.Version,
-				})
-			})
-
-			// Register context routes
-			sharedRouter.RegisterRoutes(v1)       // Countries, Currencies, Languages, Timezones
-			identityRouter.RegisterRoutes(v1)     // Users, Contacts, Profiles, Roles, Permissions
-			customerMgmtRouter.RegisterRoutes(v1) // Customers
-			orderMgmtRouter.RegisterRoutes(v1)    // Orders
-		}
-	}
-
-	// Start server
-	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
-		Handler:      r,
-		ReadTimeout:  cfg.Server.ReadTimeout,
-		WriteTimeout: cfg.Server.WriteTimeout,
-	}
-
+	// Start server in goroutine
 	go func() {
-		host := cfg.Server.Host
-		if host == "0.0.0.0" || host == "" {
-			host = "localhost"
-		}
-
-		logger.Info("Server started",
-			slog.Int("port", cfg.Server.Port),
-			slog.String("host", cfg.Server.Host),
-			slog.String("health_check", fmt.Sprintf("http://%s:%d/health", host, cfg.Server.Port)),
-			slog.String("environment", cfg.App.Environment),
-		)
-
+		LogServerInfo(cfg.Server.Port, cfg.Server.Host, cfg.App.Environment)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal("Failed to start server", slog.Any("error", err))
 		}
 	}()
 
 	// Graceful shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	logger.Info("Shutting down server gracefully...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := srv.Shutdown(ctx); err != nil {
-		logger.Fatal("Server forced to shutdown", slog.Any("error", err))
-	}
-
-	logger.Info("Server exited gracefully")
+	GracefulShutdown(srv, app)
 }

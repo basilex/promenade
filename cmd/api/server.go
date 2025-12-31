@@ -1,0 +1,86 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
+	"github.com/basilex/promenade/internal/contexts/identity"
+	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
+	"github.com/basilex/promenade/internal/contexts/shared"
+	"github.com/basilex/promenade/internal/infrastructure/health"
+)
+
+// Server holds HTTP server configuration
+type Server struct {
+	app    *App
+	router *gin.Engine
+}
+
+// NewServer creates a new HTTP server
+func NewServer(app *App) *Server {
+	// Set Gin mode
+	if app.Config.App.Environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.New()
+
+	// Global middleware
+	router.Use(
+		gin.Recovery(),
+		gin.Logger(),
+	)
+
+	return &Server{
+		app:    app,
+		router: router,
+	}
+}
+
+// SetupRoutes registers all application routes
+func (s *Server) SetupRoutes() {
+	// Health checks
+	healthHandler := health.NewHandler(s.app.HealthChecker)
+	healthHandler.RegisterRoutes(s.router)
+
+	// Initialize context routers
+	sharedRouter := shared.NewRouter(s.app.DB, s.app.CacheClient)
+	identityRouter := identity.NewRouter(s.app.DB, s.app.JWTManager, s.app.TokenRevoker)
+	customerMgmtRouter := customermgmt.NewRouter(s.app.DB)
+	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB)
+
+	// API routes
+	api := s.router.Group("/api")
+	{
+		v1 := api.Group("/v1")
+		{
+			v1.GET("", func(c *gin.Context) {
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Promenade CRM Platform API v1",
+					"version": s.app.Config.App.Version,
+				})
+			})
+
+			// Register context routes
+			sharedRouter.RegisterRoutes(v1)       // Countries, Currencies, Languages, Timezones
+			identityRouter.RegisterRoutes(v1)     // Users, Contacts, Profiles, Roles, Permissions
+			customerMgmtRouter.RegisterRoutes(v1) // Customers
+			orderMgmtRouter.RegisterRoutes(v1)    // Orders
+		}
+	}
+}
+
+// Start starts the HTTP server
+func (s *Server) Start() *http.Server {
+	srv := &http.Server{
+		Addr:         fmt.Sprintf(":%d", s.app.Config.Server.Port),
+		Handler:      s.router,
+		ReadTimeout:  s.app.Config.Server.ReadTimeout,
+		WriteTimeout: s.app.Config.Server.WriteTimeout,
+	}
+
+	return srv
+}
