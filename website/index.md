@@ -89,6 +89,36 @@ Whether you're a 3-person startup or planning to process 10,000 orders per day, 
 
 </div>
 
+<div class="value-prop">
+
+### Key Success Metrics
+
+**For SaaS Startups:**
+- Customer Acquisition Cost (CAC): Track from day 1
+- Monthly Recurring Revenue (MRR): Auto-calculated from billing
+- Churn Rate: Monitor lifecycle transitions (active → churned)
+- Trial-to-Paid Conversion: Deal pipeline win rates
+
+**For E-commerce:**
+- Average Order Value (AOV): From order totals
+- Customer Lifetime Value (CLV): Historical order analysis
+- Repeat Purchase Rate: Customer order frequency
+- Cart Abandonment: Order states tracking
+
+**For B2B Sales:**
+- Deal Velocity: Time in each pipeline stage
+- Win Rate by Stage: Probability tracking built-in
+- Sales Cycle Length: Deal creation to close date
+- Revenue Forecast Accuracy: Pipeline value vs actual
+
+**All Businesses:**
+- Time to First Value: Days until first successful operation
+- API Response Time: < 50ms target (monitored)
+- System Uptime: 99.9% SLA with health checks
+- Data Quality Score: Validation errors tracked
+
+</div>
+
 </div>
 
 <div class="value-prop">
