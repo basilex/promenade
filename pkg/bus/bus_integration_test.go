@@ -256,10 +256,10 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 		t.Skip("Skipping Redis test in short mode")
 	}
 
-	// Use test Redis port (6380) to match docker-compose.test.yml
-	redisPort := 6380
-	if os.Getenv("ENVIRONMENT") == "test" {
-		redisPort = 6380
+	// Read Redis address from env (for CI compatibility)
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "localhost:6380" // Default to test Redis port
 	}
 
 	cfg := config.BusSection{
@@ -269,7 +269,7 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 	}
 
 	redisCfg := config.RedisSection{
-		Addr:     "localhost:6380",
+		Addr:     redisAddr,
 		Password: "",
 		PoolSize: 10,
 		Databases: config.RedisDatabases{
@@ -280,7 +280,7 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 	// Try to create first instance
 	b1, err := bus.NewBus(cfg, redisCfg)
 	if err != nil {
-		t.Skipf("Redis not available on port %d: %v", redisPort, err)
+		t.Skipf("Redis not available at %s: %v", redisAddr, err)
 	}
 
 	// Check if we actually got Redis adapter (not fallback to memory)
