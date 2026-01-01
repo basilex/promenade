@@ -9,6 +9,7 @@
 .PHONY: db-create db-drop db-reset db-fresh
 .PHONY: migrate migrate-core migrate-identity migrate-status migrate-new
 .PHONY: dev dev-fresh
+.PHONY: ci-check ci-lint ci-test ci-build pre-push
 
 # Go development
 install:  ## Install development dependencies
@@ -129,3 +130,32 @@ dev: docker-up migrate run  ## Full dev environment (Docker + migrations + API)
 
 dev-fresh: docker-up db-fresh run  ## Fresh start with clean database
 
+# CI simulation (run locally before push)
+ci-check: ci-lint ci-test ci-build  ## Run all CI checks locally (lint + test + build)
+
+ci-lint:  ## Run linters (same as CI)
+	@echo "🔍 Running golangci-lint..."
+	@golangci-lint run --timeout=5m || (echo "❌ Lint failed" && exit 1)
+	@echo "✅ Lint passed"
+
+ci-test:  ## Run all tests (same as CI)
+	@echo "🧪 Running unit tests..."
+	@make test-unit || (echo "❌ Unit tests failed" && exit 1)
+	@echo "✅ Unit tests passed"
+	@echo ""
+	@echo "🧪 Running integration tests..."
+	@make test-integration || (echo "❌ Integration tests failed" && exit 1)
+	@echo "✅ Integration tests passed"
+	@echo ""
+	@echo "🧪 Running race detector..."
+	@go test -race ./... > /dev/null 2>&1 || (echo "❌ Race detector failed" && exit 1)
+	@echo "✅ Race detector passed"
+
+ci-build:  ## Test build (same as CI)
+	@echo "🔨 Testing build..."
+	@make build > /dev/null || (echo "❌ Build failed" && exit 1)
+	@echo "✅ Build passed"
+
+pre-push: ci-check  ## Alias for ci-check (run before git push)
+	@echo ""
+	@echo "🎉 All CI checks passed! Safe to push."
