@@ -20,7 +20,7 @@ func TestUserRepository_CRUD(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
@@ -64,7 +64,7 @@ func TestUserRepository_Queries(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewUserRepository(testDB.DB)
 
@@ -107,7 +107,7 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 
 	// Create user WITHOUT transaction so it persists for concurrent tests
 	var userID uuidv7.UUID
