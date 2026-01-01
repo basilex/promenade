@@ -3,12 +3,12 @@ package user_test
 import (
 	"context"
 	"fmt"
-	"sync"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
@@ -125,32 +125,29 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	}()
 
 	// Run 10 concurrent updates
-	var wg sync.WaitGroup
-	errors := make(chan error, 10)
+	var g errgroup.Group
 
 	for range 10 {
-		wg.Go(func() {
+		g.Go(func() error {
 			testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 				repo := postgres.NewUserRepository(testDB.DB)
 				u, err := repo.GetByID(ctx, userID)
 				if err != nil {
-					errors <- err
+					t.Errorf("failed to get user: %v", err)
 					return
 				}
 				u.Activate()
 				if err := repo.Update(ctx, u); err != nil {
-					errors <- err
+					t.Errorf("failed to update user: %v", err)
 				}
 			})
+			return nil
 		})
 	}
 
-	wg.Wait()
-	close(errors)
-
-	// Check no errors occurred
-	for err := range errors {
-		assert.NoError(t, err)
+	// Wait for all goroutines
+	if err := g.Wait(); err != nil {
+		t.Fatalf("errgroup wait failed: %v", err)
 	}
 
 	// Verify final state
