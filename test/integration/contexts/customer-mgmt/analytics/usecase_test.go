@@ -2,6 +2,7 @@ package analytics_test
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -23,7 +24,14 @@ import (
 	"github.com/basilex/promenade/test/integration"
 )
 
+// testMutex ensures analytics tests run sequentially to avoid deadlocks
+// from concurrent foreign key inserts across multiple tables
+var testMutex sync.Mutex
+
 func TestAnalyticsUseCase_GetCustomerOverview(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -43,6 +51,9 @@ func TestAnalyticsUseCase_GetCustomerOverview(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetCustomerLifecycle(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -72,6 +83,9 @@ func TestAnalyticsUseCase_GetCustomerLifecycle(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetCustomerSegmentation(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -93,6 +107,9 @@ func TestAnalyticsUseCase_GetCustomerSegmentation(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetDealPipeline(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -112,6 +129,9 @@ func TestAnalyticsUseCase_GetDealPipeline(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetSalesRepPerformance(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -132,6 +152,9 @@ func TestAnalyticsUseCase_GetSalesRepPerformance(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetSalesRepPerformanceByID(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -153,6 +176,9 @@ func TestAnalyticsUseCase_GetSalesRepPerformanceByID(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetRevenueTimeSeries(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
@@ -189,6 +215,9 @@ func TestAnalyticsUseCase_GetRevenueTimeSeries(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetInteractionInsights(t *testing.T) {
+	testMutex.Lock()
+	defer testMutex.Unlock()
+
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
