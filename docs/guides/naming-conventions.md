@@ -65,21 +65,97 @@ internal/contexts/customer-mgmt/company/
 - **Flat**: Files directly in `adapter/http/`, not nested in `handler/` and `dto/`
 - **Consistent**: Same pattern across all 21 tables/aggregates
 - **Scalable**: Works well for aggregates with 1-10 files
+- **No Premature Optimization**: Don't add complexity until needed
 
-**When to Add Subdirectories?**
+### Structure Evolution Strategy
 
-If an aggregate grows to have many files (10+ handlers, 20+ DTOs), consider:
+Promenade follows **progressive complexity** - start simple, evolve when needed.
+
+#### Phase 1: Simple Structure (CURRENT ✅)
+
+**When to use**: Aggregates with 1-10 files (most cases)
+
+```
+adapter/http/
+  handler.go        # All HTTP handlers
+  dto.go            # All DTOs
+  dto_test.go       # DTO tests (optional)
+```
+
+**Benefits**:
+- Quick navigation (2 files)
+- Easy to understand
+- Minimal cognitive overhead
+- Works for 90% of aggregates
+
+**Status**: All 21 aggregates currently use this structure
+
+#### Phase 2: Organized Structure (FUTURE 📋)
+
+**When to use**: Aggregates with 10-20 files, multiple concerns
+
 ```
 adapter/http/
   handlers/
-     customer_handler.go
-     order_handler.go
+     create_handler.go      # POST operations
+     query_handler.go       # GET operations
+     update_handler.go      # PUT/PATCH operations
   dto/
-     customer_dto.go
-     order_dto.go
+     requests.go            # All request DTOs
+     responses.go           # All response DTOs
+     converters.go          # Entity ↔ DTO conversion
 ```
 
-**Current Status**: All aggregates use simple structure ✅
+**Triggers**:
+- 5+ handler methods in `handler.go` (100+ lines)
+- 10+ DTO structs in `dto.go` (200+ lines)
+- Multiple concerns mixing in one file
+
+#### Phase 3: Complex Structure (FUTURE 📋)
+
+**When to use**: Large aggregates with many operations, versioned APIs
+
+```
+adapter/http/
+  v1/
+     handlers/
+        customer_create_handler.go
+        customer_query_handler.go
+        customer_update_handler.go
+     dto/
+        customer_request_dto.go
+        customer_response_dto.go
+  v2/
+     handlers/
+        customer_create_handler.go
+     dto/
+        customer_request_dto.go
+```
+
+**Triggers**:
+- API versioning required (v1, v2)
+- 20+ handler methods
+- Team size > 5 (avoid merge conflicts)
+- Microservice extraction planned
+
+### Migration Path
+
+When transitioning between phases:
+
+1. **Identify trigger** (file size, team feedback, merge conflicts)
+2. **Plan migration** (which files to split)
+3. **Create new structure** in separate PR
+4. **Update imports** across codebase
+5. **Run all tests** (ensure no breakage)
+6. **Update documentation**
+
+**Don't migrate prematurely** - simple structure is a feature, not a limitation!
+
+### Current Decision
+
+**Status**: Phase 1 (Simple Structure) ✅  
+**Review Date**: When any aggregate reaches 10+ files  
+**Philosophy**: "Make it work, make it right, make it fast" - we're at "make it work"
 
 ### File Naming Rules
 

@@ -482,6 +482,102 @@ internal/contexts/{context}/{aggregate}/adapter/http/
 
 **Note**: Files are **flat** in `adapter/http/` directory without nested `handler/` or `dto/` subdirectories. This keeps structure simple for aggregates with few files.
 
+### Handler Pattern Evolution Strategy
+
+**Current Structure** (Phase 1 - Simple) ✅:
+```
+adapter/http/
+  handler.go        # All HTTP handlers in single file
+  handler_test.go   # Handler unit tests
+  dto.go            # All DTOs in single file
+  dto_test.go       # DTO validation tests
+```
+
+**When to Use**:
+- ✅ **Now**: 1-10 endpoints per aggregate (CURRENT: all 21 aggregates)
+- ✅ **Simplicity**: Easy navigation, no package overhead
+- ✅ **Team**: Small teams (1-5 developers)
+- ✅ **Benefits**: Fast development, minimal structure, clear ownership
+
+**Future Structure** (Phase 2 - Organized) 📋:
+```
+adapter/http/
+  handlers/
+    create.go       # POST /customers
+    get.go          # GET /customers/:id
+    list.go         # GET /customers
+    update.go       # PUT /customers/:id
+    delete.go       # DELETE /customers/:id
+  dto/
+    request.go      # All request DTOs
+    response.go     # All response DTOs
+  handler_test.go   # Shared test setup
+```
+
+**When to Migrate**:
+- 📋 **10+ endpoints** in single handler.go (file exceeds 500 lines)
+- 📋 **Multiple developers** working on same aggregate simultaneously
+- 📋 **Merge conflicts** in handler.go become frequent
+- 📋 **Endpoint grouping** needed (public vs internal, v1 vs v2)
+
+**Benefits of Phase 2**:
+- Clear endpoint separation (one file per operation)
+- Reduced merge conflicts
+- Easier code review (smaller diffs)
+- Better endpoint discoverability
+
+**Future Structure** (Phase 3 - Versioned APIs) 📋:
+```
+adapter/http/
+  v1/
+    handlers/
+      create.go
+      get.go
+    dto/
+      request.go
+      response.go
+  v2/
+    handlers/
+      create.go     # Breaking changes
+      get.go
+    dto/
+      request.go    # New fields
+      response.go
+  handler_test.go
+```
+
+**When to Migrate**:
+- 📋 **API versioning** required (breaking changes)
+- 📋 **20+ endpoints** with multiple versions
+- 📋 **Large team** (10+ developers)
+- 📋 **Microservices** with independent deployment
+
+**Benefits of Phase 3**:
+- API versioning support (backward compatibility)
+- Independent evolution of v1 and v2
+- Clear deprecation path
+- Gradual client migration
+
+**Migration Path**:
+1. **Measure first**: Count endpoints, track merge conflicts, measure file size
+2. **Decide based on pain**: Don't migrate prematurely - complexity has cost
+3. **Migrate incrementally**: Start with most conflicted endpoints
+4. **Update tests**: Keep test coverage during migration
+5. **Update documentation**: Reflect new structure in README
+6. **Validate consistency**: Ensure all aggregates follow chosen pattern
+
+**Current Decision** (Review quarterly):
+- ✅ **Simple structure** works well for current scale (1-10 endpoints)
+- ✅ **Consistent** across all 21 aggregates in production
+- ✅ **Low cognitive load** - easy to find code
+- ✅ **Fast development** - no navigation overhead
+- ⚠️ **Monitor**: File size, merge conflicts, team feedback
+- 📋 **Trigger**: First aggregate to exceed 10 endpoints or 500 lines
+
+**Philosophy**: *"Make it work, make it right, make it fast"* - we're at "make it work". Don't add complexity until metrics justify it. Simple structure is a feature, not a limitation!
+
+---
+
 ### Handler Implementation
 
 **File**: `internal/contexts/customer-mgmt/customer/adapter/http/handler.go`
