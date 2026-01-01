@@ -1,6 +1,6 @@
 # Promenade Platform
 
-[![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![Tests](https://img.shields.io/badge/Tests-240+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
@@ -86,6 +86,29 @@ Promenade provides **comprehensive health monitoring** for all dependencies:
 - `GET /health/bus` - Event Bus health
 
 **See**: [docs/HEALTH_CHECKS.md](docs/HEALTH_CHECKS.md) for complete Health Check documentation
+
+### Local CI Validation
+
+Promenade provides **local CI simulation** to catch issues before pushing to GitHub:
+
+- **Pre-Push Validation**: Run all CI checks locally with `make pre-push`
+- **Selective Checks**: Run lint (`make ci-lint`), tests (`make ci-test`), or build (`make ci-build`) independently
+- **Time Savings**: 4+ minutes saved per failed push by catching issues early
+- **GitHub Actions Parity**: Exact same checks as CI pipeline
+- **5 Commands**: ci-check, ci-lint, ci-test, ci-build, pre-push
+
+**Usage**:
+```bash
+# Before every push (REQUIRED)
+make pre-push
+
+# Or run checks separately
+make ci-lint        # golangci-lint (0 issues)
+make ci-test        # All tests + race detector
+make ci-build       # Test compilation
+```
+
+**See**: [docs/guides/local-ci.md](docs/guides/local-ci.md) for complete Local CI Validation guide
 
 ### Caching Layer
 
@@ -823,6 +846,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **jwt**         | JWT authentication & RBAC middleware  | 18    | Production | [README](pkg/jwt/README.md)             |
 | **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](pkg/logger/README.md)          |
 | **middleware**  | HTTP middleware (rate limit, CSRF)    | 25    | Production | [README](pkg/middleware/README.md)      |
+| **cache**       | Redis-based caching layer             | 8     | Production | [README](pkg/cache/README.md)           |
 | **migration**   | Namespace-based DB migrations         | 8     | Production | [README](pkg/migration/README.md)       |
 | **response**    | Standard HTTP responses               | 12    | Production | [README](pkg/response/README.md)        |
 | **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | [README](pkg/uuidv7/README.md)          |
@@ -831,7 +855,7 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
 | **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
 
-**Total**: 221+ tests across 11 packages
+**Total**: 229+ tests across 12 packages
 
 **Key Highlights**:
 
@@ -962,7 +986,7 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Customer aggregate (lifecycle, segmentation)
 - [x] Company aggregate (B2B support, 14 endpoints)
 - [x] Deal aggregate (pipeline, stages, 12 endpoints)
-- [ ] Interaction aggregate (calls, emails, meetings) - Planned Q1 2026
+- [x] Interaction aggregate (calls, emails, meetings, 14 endpoints) - **COMPLETED Dec 31, 2025**
 
 ### Phase 5: Order Management Context (Completed ✅)
 
@@ -1027,6 +1051,7 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 - [RBAC Implementation](docs/guides/rbac.md) - Roles, permissions, JWT integration
 - [Rate Limiting](docs/guides/rate-limiting.md) - IP-based protection for authentication
 - [Health Checks](docs/guides/health-checks.md) - Dependency monitoring and alerting
+- [Local CI Validation](docs/guides/local-ci.md) - Run GitHub Actions checks locally before push
 - [Testing Patterns](docs/guides/testing-patterns.md) - Three-tier testing strategy (~965 lines)
 - [Testing Quick Reference](docs/guides/testing-quick-reference.md) - One-page cheat sheet
 
