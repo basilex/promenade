@@ -19,6 +19,8 @@
 
 **Per Aggregate Structure** (within each context):
 
+Promenade uses a **simple, flat structure** for aggregates to minimize nesting and improve discoverability:
+
 ```
 internal/contexts/{context}/{aggregate}/
   entity.go                     # Domain entity (aggregate root)
@@ -26,35 +28,58 @@ internal/contexts/{context}/{aggregate}/
   repository.go                 # IRepository interface
   usecase.go                    # IUseCase interface + implementation
   usecase_test.go               # Use case unit tests
+  errors.go                     # Domain errors (optional)
   adapter/
-      http/handler/
-         {aggregate}_handler.go    # HTTP handlers
-         {aggregate}_handler_test.go # Handler unit tests (optional)
-         dto/
-             {aggregate}_dto.go    # Data transfer objects
+      http/
+         handler.go             # HTTP handlers
+         dto.go                 # Data transfer objects
+         dto_test.go            # DTO tests (optional)
       repository/postgres/
-          base_repository.go        # BaseRepository (per context)
+          base_repository.go    # BaseRepository (per context)
           {aggregate}_repository.go # PostgreSQL implementation
 ```
 
-**Example - Customer Aggregate**:
+**Real Example - Company Aggregate**:
 
+```bash
+$ tree internal/contexts/customer-mgmt/company
+internal/contexts/customer-mgmt/company/
+├── entity.go
+├── entity_test.go
+├── repository.go
+├── usecase.go
+├── usecase_test.go
+├── errors.go
+└── adapter/
+    ├── http/
+    │   ├── handler.go
+    │   ├── dto.go
+    │   └── dto_test.go
+    └── repository/postgres/
+        ├── base_repository.go
+        └── company_repository.go
 ```
-internal/contexts/customer-mgmt/customer/
-  entity.go
-  entity_test.go
-  repository.go
-  usecase.go
-  usecase_test.go
-  adapter/
-      http/handler/
-         customer_handler.go
-         dto/
-             customer_dto.go
-      repository/postgres/
-          base_repository.go
-          customer_repository.go
+
+**Why This Structure?**
+- **Simple**: Fewer directories, easier navigation
+- **Flat**: Files directly in `adapter/http/`, not nested in `handler/` and `dto/`
+- **Consistent**: Same pattern across all 21 tables/aggregates
+- **Scalable**: Works well for aggregates with 1-10 files
+
+**When to Add Subdirectories?**
+
+If an aggregate grows to have many files (10+ handlers, 20+ DTOs), consider:
 ```
+adapter/http/
+  handlers/
+     customer_handler.go
+     order_handler.go
+  dto/
+     customer_dto.go
+     order_dto.go
+```
+
+**Current Status**: All aggregates use simple structure ✅
 
 ### File Naming Rules
 
@@ -66,17 +91,21 @@ internal/contexts/customer-mgmt/customer/
 | **Repository Tests** | `{aggregate}_repository_test.go` | `customer_repository_test.go` |
 | **Use Case**      | `usecase.go`                    | `usecase.go`                 |
 | **Use Case Tests**| `usecase_test.go`               | `usecase_test.go`            |
-| **Handler**       | `{aggregate}_handler.go`        | `customer_handler.go`        |
-| **Handler Tests** | `{aggregate}_handler_test.go`   | `customer_handler_test.go`   |
-| **DTOs**          | `{aggregate}_dto.go`            | `customer_dto.go`            |
+| **Handler**       | `handler.go` (in `adapter/http/`) | `handler.go`               |
+| **Handler Tests** | `handler_test.go` (optional)    | `handler_test.go`            |
+| **DTOs**          | `dto.go` (in `adapter/http/`)   | `dto.go`                     |
+| **DTO Tests**     | `dto_test.go` (optional)        | `dto_test.go`                |
+| **Errors**        | `errors.go` (optional)          | `errors.go`                  |
 | **Migrations**    | `{number}_{name}.{up|down}.sql` | `000001_customers.up.sql`    |
 
 **Key Rules**:
 - Use `snake_case` for file names
 - Entity and UseCase files are generic (`entity.go`, `usecase.go`)
-- Repository/Handler files are aggregate-specific (`customer_repository.go`)
+- Repository files are aggregate-specific (`{aggregate}_repository.go`)
+- Handler and DTO files are generic (`handler.go`, `dto.go`) in `adapter/http/`
 - Test files mirror production files with `_test.go` suffix
 - Migration files are numbered sequentially with descriptive name
+- Errors file is optional (`errors.go`) for domain-specific errors
 
 ---
 

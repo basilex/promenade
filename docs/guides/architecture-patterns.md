@@ -32,9 +32,10 @@
 ```
 internal/contexts/{context}/{aggregate}/
   repository.go                    # Interface definition
-  adapter/repository/postgres/
-      base_repository.go          # Shared base repository
-      {aggregate}_repository.go   # PostgreSQL implementation
+  adapter/
+      repository/postgres/
+          base_repository.go      # Shared base repository
+          {aggregate}_repository.go # PostgreSQL implementation
 ```
 
 ### Interface Definition
@@ -323,6 +324,7 @@ WHERE id = $1
 internal/contexts/{context}/{aggregate}/
   usecase.go        # Interface + implementation
   usecase_test.go   # Business logic tests
+  errors.go         # Domain errors (optional)
 ```
 
 ### Interface Definition
@@ -471,19 +473,21 @@ return nil, fmt.Errorf("failed to save customer: %w", err)
 ### Structure
 
 ```
-internal/contexts/{context}/{aggregate}/adapter/http/handler/
-  {aggregate}_handler.go        # HTTP handlers
-  {aggregate}_handler_test.go   # Handler tests
-  dto/
-      {aggregate}_dto.go        # Request/Response DTOs
+internal/contexts/{context}/{aggregate}/adapter/http/
+  handler.go        # HTTP handlers
+  handler_test.go   # Handler tests (optional)
+  dto.go            # Request/Response DTOs
+  dto_test.go       # DTO tests (optional)
 ```
+
+**Note**: Files are **flat** in `adapter/http/` directory without nested `handler/` or `dto/` subdirectories. This keeps structure simple for aggregates with few files.
 
 ### Handler Implementation
 
-**File**: `internal/contexts/customer-mgmt/customer/adapter/http/handler/customer_handler.go`
+**File**: `internal/contexts/customer-mgmt/customer/adapter/http/handler.go`
 
 ```go
-package handler
+package http
 
 import (
     "errors"
@@ -492,7 +496,6 @@ import (
     "github.com/gin-gonic/gin"
     
     "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
-    "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/http/handler/dto"
     "github.com/basilex/promenade/pkg/response"
     "github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -510,7 +513,7 @@ func NewCustomerHandler(uc customer.IUseCase) *CustomerHandler {
 // Create handles POST /customers
 func (h *CustomerHandler) Create(c *gin.Context) {
     // Bind request
-    var req dto.CreateCustomerRequest
+    var req CreateCustomerRequest
     if err := c.ShouldBindJSON(&req); err != nil {
         response.Error(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
         return
@@ -561,7 +564,7 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
     }
     
     // Return success response
-    response.Success(c, dto.ToCustomerResponse(customer))
+    response.Success(c, ToCustomerResponse(customer))
 }
 
 // Update handles PUT /customers/:id
@@ -574,7 +577,7 @@ func (h *CustomerHandler) Update(c *gin.Context) {
     }
     
     // Bind request
-    var req dto.UpdateCustomerRequest
+    var req UpdateCustomerRequest
     if err := c.ShouldBindJSON(&req); err != nil {
         response.Error(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
         return
@@ -596,10 +599,10 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 
 ### DTOs (Data Transfer Objects)
 
-**File**: `internal/contexts/customer-mgmt/customer/adapter/http/handler/dto/customer_dto.go`
+**File**: `internal/contexts/customer-mgmt/customer/adapter/http/dto.go`
 
 ```go
-package dto
+package http
 
 import (
     "time"
@@ -1001,7 +1004,7 @@ func (uc *useCase) CreateCustomer(...) (*Customer, error) {
 }
 ```
 
-**5. Handler** (`adapter/http/handler/customer_handler.go`):
+**5. Handler** (`adapter/http/handler.go`):
 ```go
 func (h *CustomerHandler) Create(c *gin.Context) {
     // Bind request → Call use case → Return response
@@ -1025,7 +1028,7 @@ customers := api.Group("/customers")
 |-------------------|--------------------------------|-----------------------------------|
 | **Repository**    | Data access abstraction        | `{aggregate}/repository.go`       |
 | **Use Case**      | Business logic orchestration   | `{aggregate}/usecase.go`          |
-| **Handler**       | HTTP request handling          | `adapter/http/handler/{aggregate}_handler.go` |
+| **Handler**       | HTTP request handling          | `adapter/http/handler.go`     |
 | **Value Object**  | Immutable validated values     | `pkg/valueobject/{type}.go`       |
 | **Entity**        | Domain objects with identity   | `{aggregate}/entity.go`           |
 
