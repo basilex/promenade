@@ -113,19 +113,6 @@ func parseUUID(s string) (uuidv7.UUID, error) {
 	return uuidv7.Parse(s)
 }
 
-func parseOptionalUUID(s *string) (*uuidv7.UUID, error) {
-	if s == nil || *s == "" {
-		return nil, nil
-	}
-
-	id, err := uuidv7.Parse(*s)
-	if err != nil {
-		return nil, err
-	}
-
-	return &id, nil
-}
-
 func parseTime(s string) (time.Time, error) {
 	return time.Parse(time.RFC3339, s)
 }

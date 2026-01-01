@@ -172,8 +172,8 @@ func (uc *useCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 		return err
 	}
 	
-	// Invalidate cache
-	uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", id.String()))
+	// Invalidate cache (graceful degradation if cache unavailable)
+	_ = uc.cache.Delete(ctx, fmt.Sprintf("currency:id:%s", id.String()))
 	_ = uc.cache.Delete(ctx, fmt.Sprintf("currency:code:%s", currency.Code))
 	_ = uc.cache.Delete(ctx, "currency:list:all")
 	

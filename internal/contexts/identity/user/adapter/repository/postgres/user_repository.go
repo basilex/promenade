@@ -321,7 +321,7 @@ func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*
 	// Convert rows to entities (roles already loaded)
 	users := make([]*user.User, 0, len(rows))
 	for _, row := range rows {
-		u, err := row.userRow.toEntity()
+		u, err := row.toEntity()
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to convert row to entity: %w", err)
 		}

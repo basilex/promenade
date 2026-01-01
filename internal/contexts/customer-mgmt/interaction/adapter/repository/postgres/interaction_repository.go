@@ -290,7 +290,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.interactionRow.toEntity()
+		inter, err := row.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -344,7 +344,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.interactionRow.toEntity()
+		inter, err := row.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -399,7 +399,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.interactionRow.toEntity()
+		inter, err := row.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -454,7 +454,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.interactionRow.toEntity()
+		inter, err := row.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}
@@ -513,7 +513,7 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 
 	interactions := make([]*interaction.Interaction, len(rows))
 	for i, row := range rows {
-		inter, err := row.interactionRow.toEntity()
+		inter, err := row.toEntity()
 		if err != nil {
 			return nil, 0, err
 		}

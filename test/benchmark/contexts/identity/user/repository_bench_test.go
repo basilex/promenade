@@ -51,7 +51,7 @@ func setupBenchmarkDB(b *testing.B) *sqlx.DB {
 // BenchmarkListUsers_SmallDataset benchmarks ListUsers with 20 users (typical page size)
 func BenchmarkListUsers_SmallDataset(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := userRepo.NewUserRepository(db)
 	roleRepository := roleRepo.NewRoleRepository(db)
@@ -87,7 +87,7 @@ func BenchmarkListUsers_SmallDataset(b *testing.B) {
 // BenchmarkListUsers_MediumDataset benchmarks ListUsers with 100 users
 func BenchmarkListUsers_MediumDataset(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := userRepo.NewUserRepository(db)
 	roleRepository := roleRepo.NewRoleRepository(db)
@@ -123,7 +123,7 @@ func BenchmarkListUsers_MediumDataset(b *testing.B) {
 // BenchmarkListUsers_NoRoles benchmarks ListUsers with users that have no roles
 func BenchmarkListUsers_NoRoles(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := userRepo.NewUserRepository(db)
 	ctx := context.Background()
@@ -163,7 +163,7 @@ func BenchmarkListUsers_NoRoles(b *testing.B) {
 // BenchmarkListUsers_MultipleRoles benchmarks users with multiple roles each
 func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := userRepo.NewUserRepository(db)
 	roleRepository := roleRepo.NewRoleRepository(db)
@@ -174,9 +174,9 @@ func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 	managerRole, _ := role.NewRole("manager", "Manager", "Manager role")
 	userRole, _ := role.NewRole("user", "User", "User role")
 
-	roleRepository.Create(ctx, adminRole)
-	roleRepository.Create(ctx, managerRole)
-	roleRepository.Create(ctx, userRole)
+	_ = roleRepository.Create(ctx, adminRole)
+	_ = roleRepository.Create(ctx, managerRole)
+	_ = roleRepository.Create(ctx, userRole)
 
 	// Setup: Create 20 users, each with 3 roles
 	for i := 0; i < 20; i++ {
@@ -186,9 +186,9 @@ func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 		}
 
 		// Assign all 3 roles to each user
-		roleRepository.AssignRoleToUser(ctx, u.ID, adminRole.ID, nil)
-		roleRepository.AssignRoleToUser(ctx, u.ID, managerRole.ID, nil)
-		roleRepository.AssignRoleToUser(ctx, u.ID, userRole.ID, nil)
+		_ = roleRepository.AssignRoleToUser(ctx, u.ID, adminRole.ID, nil)
+		_ = roleRepository.AssignRoleToUser(ctx, u.ID, managerRole.ID, nil)
+		_ = roleRepository.AssignRoleToUser(ctx, u.ID, userRole.ID, nil)
 	}
 
 	// Reset timer after setup

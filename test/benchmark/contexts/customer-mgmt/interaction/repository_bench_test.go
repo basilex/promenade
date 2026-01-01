@@ -71,7 +71,7 @@ func createTestCustomer(b *testing.B, ctx context.Context, custRepo customer.ICu
 // BenchmarkCreateInteraction benchmarks creating interactions
 func BenchmarkCreateInteraction(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := interactionRepo.NewInteractionRepository(db)
 	custRepo := customerRepo.NewCustomerRepository(db)
@@ -134,7 +134,7 @@ func BenchmarkCreateInteraction(b *testing.B) {
 // BenchmarkListByCustomer benchmarks listing interactions
 func BenchmarkListByCustomer(b *testing.B) {
 	db := setupBenchmarkDB(b)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	repo := interactionRepo.NewInteractionRepository(db)
 	custRepo := customerRepo.NewCustomerRepository(db)
@@ -153,7 +153,7 @@ func BenchmarkListByCustomer(b *testing.B) {
 			userID,
 			time.Now().Add(time.Duration(i)*time.Hour),
 		)
-		repo.Create(ctx, inter)
+		_ = repo.Create(ctx, inter)
 	}
 
 	b.ResetTimer()

@@ -2,7 +2,6 @@ package http
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -149,17 +148,6 @@ func parseCustomerID(customerID string) (uuidv7.UUID, error) {
 	return id, nil
 }
 
-// parseCompanyID parses company ID from request
-func parseCompanyID(companyID *string) (*uuidv7.UUID, error) {
-	if companyID == nil || *companyID == "" {
-		return nil, nil
-	}
-	id, err := uuidv7.Parse(*companyID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid company ID format: %w", err)
-	}
-	return &id, nil
-}
 
 // parseAssignedTo parses assigned to user ID from request
 func parseAssignedTo(assignedTo *string) (*uuidv7.UUID, error) {
@@ -171,13 +159,4 @@ func parseAssignedTo(assignedTo *string) (*uuidv7.UUID, error) {
 		return nil, fmt.Errorf("invalid assigned to ID format: %w", err)
 	}
 	return &id, nil
-}
-
-// parseDate parses date from string
-func parseDate(dateStr string) (time.Time, error) {
-	date, err := time.Parse("2006-01-02", dateStr)
-	if err != nil {
-		return time.Time{}, fmt.Errorf("invalid date format (expected YYYY-MM-DD): %w", err)
-	}
-	return date, nil
 }

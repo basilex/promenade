@@ -122,13 +122,13 @@ purge:
 	oldEnvValues := make(map[string]string)
 	for _, key := range envVars {
 		oldEnvValues[key] = os.Getenv(key)
-		os.Unsetenv(key)
+		_ = os.Unsetenv(key)
 	}
 	defer func() {
 		// Restore original environment variables
 		for key, value := range oldEnvValues {
 			if value != "" {
-				os.Setenv(key, value)
+				_ = os.Setenv(key, value)
 			}
 		}
 	}()

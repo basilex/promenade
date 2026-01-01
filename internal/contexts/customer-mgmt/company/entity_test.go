@@ -188,7 +188,7 @@ func TestCompany_SetParentCompany(t *testing.T) {
 	company, _ := NewCompany("Subsidiary Corp", "llc")
 	parentID := uuidv7.New()
 
-	company.SetParentCompany(&parentID)
+	_ = company.SetParentCompany(&parentID)
 
 	assert.NotNil(t, company.ParentCompanyID)
 	assert.Equal(t, parentID, *company.ParentCompanyID)
