@@ -104,7 +104,10 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
-		// Customer Management Context tables
+		// Customer Management Context tables (reverse FK order)
+		"customer_mgmt_interactions",
+		"customer_mgmt_deals",
+		"customer_mgmt_companies",
 		"customer_mgmt_customers",
 
 		// Identity Context tables

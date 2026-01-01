@@ -150,6 +150,28 @@
 
 ---
 
+### Customer Analytics
+
+**CQRS read models** for business intelligence and reporting.
+
+- **9 Query Methods**: Optimized analytical queries (direct SQL, no repository pattern)
+- **8 GET Endpoints**: Customer, deal, sales rep, revenue, and interaction analytics
+- **Real-time Metrics**: Customer overview, deal pipeline, sales rep performance
+- **Time Series**: Revenue trends with configurable granularity (day/week/month)
+- **Funnel Analysis**: Customer lifecycle transitions and deal stage conversions
+- **Performance Optimized**: Denormalized queries with LEFT JOIN across aggregates
+- **Implementation**: [Analytics README](../internal/contexts/customer-mgmt/analytics/README.md)
+
+**Key Characteristics**:
+- CQRS pattern separates read (analytics) from write (CRUD)
+- Direct DB access bypasses repository for maximum performance
+- Aggregations span multiple entities (Customer + Deal + Interaction)
+- No business logic (read-only reporting)
+
+**All 8 endpoints live**: Customer overview, lifecycle, segmentation, deal pipeline, conversions, sales rep performance, revenue time series, interaction insights
+
+---
+
 ### Testing Strategy
 
 **Three-tier testing** with clear separation and professional organization.
@@ -187,7 +209,7 @@
 | ----------------------- | ----------- | ------------------------------------- | ------------------------------------------------- |
 | **Shared**              | ✅ Production | Country, Currency, Language, Timezone | [Context Guide](../internal/contexts/shared/README.md)      |
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
-| **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction ✅ | [Customer Guide](concepts/customer-management.md) |
+| **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | ✅ Production | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | 📋 Planned   | Invoice, Payment, Subscription        | Coming Q2 2026                                    |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |

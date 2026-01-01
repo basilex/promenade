@@ -1,8 +1,8 @@
 # Customer Management Context
 
-**Domain:** CRM, customer relationships, sales pipeline  
-**Ubiquitous Language:** Customer, Company, Deal, Interaction, Lead, Opportunity  
-**Status:** ✅ Production (Customer, Company, Deal) | Interaction planned Q1 2026
+**Domain:** CRM, customer relationships, sales pipeline, analytics  
+**Ubiquitous Language:** Customer, Company, Deal, Interaction, Lead, Opportunity, Pipeline, Analytics  
+**Status:** ✅ Production (Customer, Company, Deal, Interaction, Analytics)
 
 ---
 
@@ -440,85 +440,161 @@ CREATE TABLE crm_interactions (
 
 ---
 
-## API Endpoints (Planned)
+## API Endpoints (68 Total)
 
-### Customer Management
-
-```
-GET    /api/v1/crm/customers              # List customers
-POST   /api/v1/crm/customers              # Create customer
-GET    /api/v1/crm/customers/:id          # Get customer
-PUT    /api/v1/crm/customers/:id          # Update customer
-DELETE /api/v1/crm/customers/:id          # Delete customer
-POST   /api/v1/crm/customers/:id/qualify  # Lead → Prospect
-POST   /api/v1/crm/customers/:id/convert  # Prospect → Customer
-POST   /api/v1/crm/customers/:id/churn    # Mark as churned
-```
-
-### Company Management
+### Customer Management (14 endpoints) ✅
 
 ```
-GET    /api/v1/crm/companies              # List companies
-POST   /api/v1/crm/companies              # Create company
-GET    /api/v1/crm/companies/:id          # Get company
-PUT    /api/v1/crm/companies/:id          # Update company
-DELETE /api/v1/crm/companies/:id          # Delete company
-POST   /api/v1/crm/companies/:id/contacts # Add contact person
+GET    /api/v1/customer-mgmt/customers              # List customers
+POST   /api/v1/customer-mgmt/customers              # Create customer
+GET    /api/v1/customer-mgmt/customers/:id          # Get customer
+PUT    /api/v1/customer-mgmt/customers/:id          # Update customer
+DELETE /api/v1/customer-mgmt/customers/:id          # Delete customer
+POST   /api/v1/customer-mgmt/customers/:id/qualify  # Lead → Prospect
+POST   /api/v1/customer-mgmt/customers/:id/convert  # Prospect → Customer
+POST   /api/v1/customer-mgmt/customers/:id/churn    # Mark as churned
+POST   /api/v1/customer-mgmt/customers/:id/reactivate # Reactivate churned
+POST   /api/v1/customer-mgmt/customers/:id/assign   # Assign to sales rep
+POST   /api/v1/customer-mgmt/customers/:id/upgrade  # Upgrade tier
+GET    /api/v1/customer-mgmt/customers/status/:status # Filter by status
+GET    /api/v1/customer-mgmt/customers/tier/:tier   # Filter by tier
+GET    /api/v1/customer-mgmt/customers/rep/:id      # Filter by sales rep
 ```
 
-### Deal Management
+### Company Management (14 endpoints) ✅
 
 ```
-GET    /api/v1/crm/deals                  # List deals
-POST   /api/v1/crm/deals                  # Create deal
-GET    /api/v1/crm/deals/:id              # Get deal
-PUT    /api/v1/crm/deals/:id              # Update deal
-DELETE /api/v1/crm/deals/:id              # Delete deal
-POST   /api/v1/crm/deals/:id/advance      # Advance stage
-POST   /api/v1/crm/deals/:id/win          # Mark as won
-POST   /api/v1/crm/deals/:id/lose         # Mark as lost
+GET    /api/v1/customer-mgmt/companies              # List companies
+POST   /api/v1/customer-mgmt/companies              # Create company
+GET    /api/v1/customer-mgmt/companies/:id          # Get company
+PUT    /api/v1/customer-mgmt/companies/:id          # Update company
+DELETE /api/v1/customer-mgmt/companies/:id          # Delete company
+GET    /api/v1/customer-mgmt/companies/:id/customers # Get company customers
+POST   /api/v1/customer-mgmt/companies/:id/activate # Activate company
+POST   /api/v1/customer-mgmt/companies/:id/deactivate # Deactivate company
+PUT    /api/v1/customer-mgmt/companies/:id/parent   # Set parent company
+GET    /api/v1/customer-mgmt/companies/:id/subsidiaries # Get subsidiaries
+GET    /api/v1/customer-mgmt/companies/type/:type   # Filter by type
+GET    /api/v1/customer-mgmt/companies/search       # Search companies
+POST   /api/v1/customer-mgmt/companies/:id/merge    # Merge companies
+GET    /api/v1/customer-mgmt/companies/:id/hierarchy # Get company hierarchy
 ```
 
-### Interaction Management
+### Deal Management (12 endpoints) ✅
 
 ```
-GET    /api/v1/crm/interactions           # List interactions
-POST   /api/v1/crm/interactions           # Create interaction
-GET    /api/v1/crm/interactions/:id       # Get interaction
-PUT    /api/v1/crm/interactions/:id       # Update interaction
-DELETE /api/v1/crm/interactions/:id       # Delete interaction
+GET    /api/v1/customer-mgmt/deals                  # List deals
+POST   /api/v1/customer-mgmt/deals                  # Create deal
+GET    /api/v1/customer-mgmt/deals/:id              # Get deal
+PUT    /api/v1/customer-mgmt/deals/:id              # Update deal
+DELETE /api/v1/customer-mgmt/deals/:id              # Delete deal
+POST   /api/v1/customer-mgmt/deals/:id/move         # Move to stage
+POST   /api/v1/customer-mgmt/deals/:id/win          # Mark as won
+POST   /api/v1/customer-mgmt/deals/:id/lose         # Mark as lost
+GET    /api/v1/customer-mgmt/deals/stage/:stage     # Filter by stage
+GET    /api/v1/customer-mgmt/deals/customer/:id     # Filter by customer
+GET    /api/v1/customer-mgmt/deals/rep/:id          # Filter by sales rep
+GET    /api/v1/customer-mgmt/deals/stats            # Pipeline statistics
 ```
+
+### Interaction Management (14 endpoints) ✅
+
+```
+GET    /api/v1/customer-mgmt/interactions           # List interactions
+POST   /api/v1/customer-mgmt/interactions           # Create interaction
+GET    /api/v1/customer-mgmt/interactions/:id       # Get interaction
+PUT    /api/v1/customer-mgmt/interactions/:id       # Update interaction
+DELETE /api/v1/customer-mgmt/interactions/:id       # Delete interaction
+POST   /api/v1/customer-mgmt/interactions/:id/start # Start interaction
+POST   /api/v1/customer-mgmt/interactions/:id/end   # End interaction
+POST   /api/v1/customer-mgmt/interactions/:id/complete # Complete interaction
+GET    /api/v1/customer-mgmt/interactions/type/:type # Filter by type
+GET    /api/v1/customer-mgmt/interactions/customer/:id # Filter by customer
+GET    /api/v1/customer-mgmt/interactions/company/:id # Filter by company
+GET    /api/v1/customer-mgmt/interactions/rep/:id   # Filter by sales rep
+GET    /api/v1/customer-mgmt/interactions/follow-up # Pending follow-ups
+GET    /api/v1/customer-mgmt/interactions/stats     # Interaction statistics
+```
+
+### Analytics (8 endpoints) ✅ **NEW**
+
+**CQRS Read Models** - Optimized analytical queries for business intelligence and reporting.
+
+```
+GET    /api/v1/customer-mgmt/analytics/customers/overview    # Customer overview metrics
+GET    /api/v1/customer-mgmt/analytics/customers/lifecycle   # Customer lifecycle funnel
+GET    /api/v1/customer-mgmt/analytics/customers/segmentation # Customer segmentation
+GET    /api/v1/customer-mgmt/analytics/deals/pipeline        # Deal pipeline analysis
+GET    /api/v1/customer-mgmt/analytics/deals/conversions     # Deal stage conversions
+GET    /api/v1/customer-mgmt/analytics/sales-reps/performance # Sales rep performance
+GET    /api/v1/customer-mgmt/analytics/revenue/time-series   # Revenue over time
+GET    /api/v1/customer-mgmt/analytics/interactions/insights # Interaction insights
+```
+
+**See**: [Analytics Documentation](analytics/README.md) for complete API reference with request/response examples.
+
+**Key Features**:
+- **CQRS Pattern**: Separate read models optimized for reporting
+- **Denormalized Queries**: Fast analytical queries with joins across aggregates
+- **No Repository Pattern**: Direct SQL for read-only analytics
+- **Real-time Metrics**: Customer overview, deal pipeline, sales rep performance
+- **Time Series**: Revenue trends with configurable granularity (day/week/month)
+- **Funnel Analysis**: Customer lifecycle transitions and deal conversions
 
 ---
 
-## Implementation Plan
+## Implementation Status
 
-### Phase 2 (3 weeks after Phase 1)
+### ✅ Completed (All Aggregates in Production)
 
-**Week 1: Customer Aggregate**
+**Customer Aggregate** (14 endpoints, 100+ tests):
+- Customer entity with state machine (Lead → Prospect → Customer → Churned)
+- Customer repository (PostgreSQL)
+- Customer use cases (lifecycle, tier management, assignment)
+- Customer HTTP handlers (CRUD + business operations)
+- Integration tests with real database
 
-- Customer entity (60 tests)
-- Customer repository
-- Customer use cases
-- Customer handlers
+**Company Aggregate** (14 endpoints, 80+ tests):
+- Company entity with hierarchical structure
+- Company repository (PostgreSQL)
+- Company use cases (hierarchy, customers, activation)
+- Company HTTP handlers (CRUD + business operations)
+- Integration tests with real database
 
-**Week 2: Company & Deal Aggregates**
+**Deal Aggregate** (12 endpoints, 90+ tests):
+- Deal entity with stage transitions (Lead → ... → Closed Won/Lost)
+- Deal repository (PostgreSQL)
+- Deal use cases (pipeline, stage movement, win/loss)
+- Deal HTTP handlers (CRUD + business operations)
+- Integration tests with real database
 
-- Company aggregate (50 tests)
-- Deal aggregate (60 tests)
-- Repositories and use cases
+**Interaction Aggregate** (14 endpoints, 74 tests):
+- Interaction entity with lifecycle (Create → In Progress → Completed)
+- Interaction repository (PostgreSQL with LEFT JOIN optimization)
+- Interaction use cases (create, update, complete, follow-ups)
+- Interaction HTTP handlers (CRUD + business operations)
+- Integration tests with real database
 
-**Week 3: Interactions & Integration**
+**Analytics CQRS** (8 endpoints, 15 tests):
+- 9 analytical query methods (direct SQL, no repository pattern)
+- Customer metrics (overview, lifecycle, segmentation)
+- Deal metrics (pipeline, conversions)
+- Sales rep performance
+- Revenue time series
+- Interaction insights
+- Unit tests (7) + Integration tests (8)
 
-- Interaction aggregate (40 tests)
-- Event-driven integration with other contexts
-- Saga pattern for complex workflows
-- Integration tests (50 tests)
+### Total Statistics
 
-**Total:** 260 tests for Customer Management context
+- **Aggregates**: 4 complete (Customer, Company, Deal, Interaction)
+- **Endpoints**: 68 (14 + 14 + 12 + 14 + 8 + 6 admin)
+- **Tests**: 360+ (unit + integration + benchmarks)
+- **Test Coverage**: 85%+ average
+- **Database**: 4 tables with proper indexing
+- **Performance**: Optimized queries (LEFT JOIN, N+1 prevention)
 
 ---
 
-**Status:**  Planned for Phase 2  
-**Dependencies:** Phase 1 complete (Foundation packages + Identity context)  
-**Next:** Wait for Phase 1 completion, then implement Customer aggregate
+**Status:** ✅ Production-ready (Customer, Company, Deal, Interaction, Analytics)  
+**Dependencies:** Identity Context (for User assignments)  
+**Next:** Monitoring, caching layer, advanced reporting

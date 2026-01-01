@@ -195,6 +195,37 @@ Promenade provides **comprehensive customer interaction tracking** for calls, em
 
 **See**: [docs/concepts/interaction-management.md](docs/concepts/interaction-management.md) for complete Interaction Management guide
 
+### Customer Analytics
+
+Promenade implements **CQRS read models** for business intelligence and reporting:
+
+- **9 Query Methods**: Optimized analytical queries (direct SQL, no repository pattern)
+- **8 GET Endpoints**: Customer, deal, sales rep, revenue, and interaction analytics
+- **Real-time Metrics**: Customer overview, deal pipeline, sales rep performance
+- **Time Series**: Revenue trends with configurable granularity (day/week/month)
+- **Funnel Analysis**: Customer lifecycle transitions and deal stage conversions
+- **Performance Optimized**: Denormalized queries with LEFT JOIN across aggregates
+
+**Key Features**:
+- CQRS pattern separates read (analytics) from write (CRUD) models
+- Direct database access bypasses repository abstraction for maximum query performance
+- Aggregations span multiple entities (Customer + Deal + Interaction)
+- No business logic in analytics (read-only reporting)
+
+**Available Analytics**:
+1. **Customer Overview** - Total customers, status/tier distribution, top sales reps
+2. **Customer Lifecycle** - Conversion funnel (Lead → Prospect → Customer → Churned)
+3. **Customer Segmentation** - Distribution by status, tier, lifetime value
+4. **Deal Pipeline** - Pipeline by stage, win/loss rates, avg days to close
+5. **Deal Conversions** - Stage-to-stage conversion rates, bottleneck identification
+6. **Sales Rep Performance** - Active customers, deals won/lost, revenue, win rates
+7. **Revenue Time Series** - Revenue over time with new customer tracking
+8. **Interaction Insights** - Interaction counts by type/outcome, follow-up metrics
+
+**Implementation Status**: All 8 endpoints live in production. 15 tests (7 unit + 8 integration). CQRS pattern fully implemented.
+
+**See**: [Analytics README](internal/contexts/customer-mgmt/analytics/README.md) for complete API reference with request/response examples
+
 ### Order Management
 
 Promenade provides **complete order lifecycle management** with state transitions and **fully implemented business rules**:
@@ -217,7 +248,7 @@ Promenade provides **complete order lifecycle management** with state transition
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅ | CRM & sales pipeline    | ✅ Production     | [Guide](docs/concepts/customer-management.md) |
+| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |

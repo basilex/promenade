@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics"
+	analyticsHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/http"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/http"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
@@ -24,6 +26,7 @@ type Router struct {
 	companyHandler     *companyHTTP.CompanyHandler
 	dealHandler        *dealHTTP.DealHandler
 	interactionHandler *interactionHTTP.InteractionHandler
+	analyticsHandler   *analyticsHTTP.AnalyticsHandler
 }
 
 // NewRouter creates a new Customer Management router with all dependencies
@@ -48,11 +51,16 @@ func NewRouter(db *sqlx.DB) *Router {
 	interactionUseCase := interaction.NewUseCase(interactionRepository)
 	interactionHandler := interactionHTTP.NewInteractionHandler(interactionUseCase)
 
+	// Initialize Analytics (CQRS read models)
+	analyticsUseCase := analytics.NewUseCase(db)
+	analyticsHandler := analyticsHTTP.NewAnalyticsHandler(analyticsUseCase)
+
 	return &Router{
 		customerHandler:    customerHandler,
 		companyHandler:     companyHandler,
 		dealHandler:        dealHandler,
 		interactionHandler: interactionHandler,
+		analyticsHandler:   analyticsHandler,
 	}
 }
 
@@ -137,6 +145,19 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			interactions.POST("/:id/attendees", r.interactionHandler.AddAttendee)
 			interactions.DELETE("/:id/attendees/:attendee_id", r.interactionHandler.RemoveAttendee)
 			interactions.DELETE("/:id", r.interactionHandler.Delete)
+		}
+
+		// Analytics routes (CQRS read models for business intelligence)
+		analytics := customerMgmt.Group("/analytics")
+		{
+			analytics.GET("/customers/overview", r.analyticsHandler.GetCustomerOverview)
+			analytics.GET("/customers/lifecycle", r.analyticsHandler.GetCustomerLifecycle)
+			analytics.GET("/customers/segmentation", r.analyticsHandler.GetCustomerSegmentation)
+			analytics.GET("/deals/pipeline", r.analyticsHandler.GetDealPipeline)
+			analytics.GET("/deals/conversions", r.analyticsHandler.GetDealConversions)
+			analytics.GET("/sales-reps/performance", r.analyticsHandler.GetSalesRepPerformance)
+			analytics.GET("/revenue/time-series", r.analyticsHandler.GetRevenueTimeSeries)
+			analytics.GET("/interactions/insights", r.analyticsHandler.GetInteractionInsights)
 		}
 	}
 }
