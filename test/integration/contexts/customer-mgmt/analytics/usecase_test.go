@@ -24,6 +24,10 @@ import (
 )
 
 func TestAnalyticsUseCase_GetCustomerOverview(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -39,6 +43,10 @@ func TestAnalyticsUseCase_GetCustomerOverview(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetCustomerLifecycle(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -64,6 +72,10 @@ func TestAnalyticsUseCase_GetCustomerLifecycle(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetCustomerSegmentation(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -81,6 +93,10 @@ func TestAnalyticsUseCase_GetCustomerSegmentation(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetDealPipeline(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -96,6 +112,10 @@ func TestAnalyticsUseCase_GetDealPipeline(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetSalesRepPerformance(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -112,6 +132,10 @@ func TestAnalyticsUseCase_GetSalesRepPerformance(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetSalesRepPerformanceByID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -129,6 +153,10 @@ func TestAnalyticsUseCase_GetSalesRepPerformanceByID(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetRevenueTimeSeries(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
@@ -161,6 +189,10 @@ func TestAnalyticsUseCase_GetRevenueTimeSeries(t *testing.T) {
 }
 
 func TestAnalyticsUseCase_GetInteractionInsights(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
