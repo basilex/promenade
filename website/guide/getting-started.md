@@ -13,7 +13,7 @@ Promenade is **not a traditional CRM** - it's a **modular platform** that grows 
 
 ## Prerequisites
 
-- **Go 1.23+** - [Install Go](https://go.dev/doc/install)
+- **Go 1.24+** - [Install Go](https://go.dev/doc/install)
 - **Docker & Docker Compose** - [Install Docker](https://docs.docker.com/get-docker/)
 - **Make** - Build automation tool
 

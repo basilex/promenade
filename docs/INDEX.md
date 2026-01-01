@@ -271,7 +271,7 @@ Technical specifications and detailed documentation:
 
 ## 📊 Project Statistics
 
-- **Code**: Go 1.23+, PostgreSQL 16, Redis 7
+- **Code**: Go 1.24+, PostgreSQL 16, Redis 7
 - **Tests**: 240+ tests, 90%+ average coverage
 - **Documentation**: 15,000+ lines across 30+ files
 - **Contexts**: 3 production-ready, 3 planned

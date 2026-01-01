@@ -463,7 +463,7 @@ Modern backend platform for customer management, orders, and business workflows 
 - **CQRS** - Command Query Responsibility Segregation (planned)
 
 ### Tech Stack
-- **Go 1.23+** - Modern, fast, reliable
+- **Go 1.24+** - Modern, fast, reliable
 - **PostgreSQL 16** - Primary database
 - **Redis 7** - Cache, sessions, event bus
 - **Docker** - Containerization

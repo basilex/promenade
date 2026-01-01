@@ -8,7 +8,7 @@
 
 Before you begin, ensure you have:
 
-- **Go 1.23+** installed
+- **Go 1.24+** installed
 - **Docker & Docker Compose** (for PostgreSQL)
 - **Make** (comes with macOS/Linux)
 - **Git** (to clone the repository)

@@ -560,7 +560,7 @@ Full API documentation: [API Reference](/reference/api-reference)
     <div class="tech-item">
       <img src="https://go.dev/images/go-logo-blue.svg" alt="Go" />
       <div>
-        <strong>Go 1.23+</strong>
+        <strong>Go 1.24+</strong>
         <span>Fast, reliable, concurrent</span>
       </div>
     </div>

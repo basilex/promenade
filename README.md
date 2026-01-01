@@ -288,7 +288,7 @@ promenade/
 
 ### Prerequisites
 
-- **Go 1.23+**
+- **Go 1.24+**
 - **Docker & Docker Compose** (for PostgreSQL)
 - **Make**
 

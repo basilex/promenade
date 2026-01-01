@@ -26,7 +26,7 @@ This project adheres to a code of conduct. By participating, you are expected to
 
 ### Prerequisites
 
-- Go 1.23+
+- Go 1.24+
 - Docker & Docker Compose
 - PostgreSQL 16 (via Docker)
 - Make

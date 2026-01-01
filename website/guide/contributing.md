@@ -8,7 +8,7 @@
 
 ### Prerequisites
 
-- **Go 1.23+** installed
+- **Go 1.24+** installed
 - **Docker & Docker Compose** (for PostgreSQL)
 - **Make** (comes with macOS/Linux)
 - **Git** configured

@@ -359,7 +359,7 @@ git push origin --delete feature/my-feature
 
 ```bash
 # macOS
-brew install go           # Go 1.23+
+brew install go           # Go 1.24+
 brew install postgresql   # PostgreSQL 16
 brew install redis        # Redis 7
 brew install make         # GNU Make
