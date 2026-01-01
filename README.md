@@ -257,6 +257,60 @@ Promenade provides **complete order lifecycle management** with state transition
 
 ---
 
+## Design Patterns & Conventions
+
+Promenade follows **strict design patterns** and **naming conventions** to ensure consistency, maintainability, and code quality across the entire codebase.
+
+### Core Patterns
+
+**Repository Pattern** - Data access abstraction with `BaseRepository` for common operations:
+- Interface: `IRepository` (e.g., `ICustomerRepository`)
+- Implementation: Private struct with `BaseRepository` embedded
+- Methods: `Create`, `GetByID`, `Update`, `Delete`, `List*`
+
+**Use Case Pattern** - Business logic encapsulation:
+- Interface: `IUseCase` (single interface per aggregate)
+- Implementation: Private `useCase` struct (generic name)
+- Constructor: Simple `NewUseCase()` (NOT `New{Entity}UseCase`)
+
+**Handler Pattern** - HTTP endpoint handling:
+- Struct: `{Entity}Handler` (e.g., `CustomerHandler`)
+- Methods: Match HTTP verbs (`Create`, `GetByID`, `Update`, `Delete`, `List`)
+- DTOs: Request/Response objects in `dto/` subdirectory
+
+**Value Objects** - Immutable domain primitives:
+- Email, Phone, Money, Address with validation
+- Factory methods: `NewEmail()`, `NewPhone()`, `NewMoney()`
+- Immutability: No setters, only getters
+
+### Naming Conventions
+
+**File Naming**:
+- Entities: `entity.go`, `entity_test.go`
+- Use Cases: `usecase.go`, `usecase_test.go`
+- Repositories: `{aggregate}_repository.go`
+- Handlers: `{aggregate}_handler.go`
+- DTOs: `{aggregate}_dto.go`
+
+**Database Naming**:
+- Tables: `<context>_<aggregate>` (e.g., `customer_customers`, `order_orders`)
+- Columns: `snake_case` (e.g., `user_id`, `created_at`, `is_active`)
+- Indexes: `idx_<table>_<column>` (e.g., `idx_customers_email`)
+- Foreign Keys: `fk_<table>_<ref_table>` (e.g., `fk_orders_customers`)
+
+**Go Naming**:
+- Interfaces: `I{Entity}Repository`, `I{Entity}UseCase`
+- Implementations: lowercase `repository`, `useCase` (private structs)
+- Constructors: `New{Entity}Repository()`, `NewUseCase()`
+- Errors: `Err{Entity}{Condition}` (e.g., `ErrCustomerNotFound`)
+
+**Detailed Documentation**:
+- [Naming Conventions Guide](docs/guides/naming-conventions.md) - Files, directories, Go code
+- [Database Conventions Guide](docs/guides/database-conventions.md) - Tables, columns, indexes, migrations
+- [Architecture Patterns Guide](docs/guides/architecture-patterns.md) - Repository, UseCase, Handler implementations
+
+---
+
 ## Project Structure
 
 ```

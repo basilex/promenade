@@ -271,6 +271,11 @@ Step-by-step implementation guides:
 - [Development Workflow](guides/development-workflow.md) - Daily development process
 - [Production Deployment](guides/production-deployment.md) - Docker, Kubernetes, monitoring
 
+**Design Patterns & Conventions**:
+- [Naming Conventions](guides/naming-conventions.md) - Files, directories, Go code naming standards
+- [Database Conventions](guides/database-conventions.md) - Tables, columns, indexes, migrations
+- [Architecture Patterns](guides/architecture-patterns.md) - Repository, UseCase, Handler, Value Object patterns
+
 ### Reference
 
 Technical specifications and detailed documentation:
