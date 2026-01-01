@@ -89,10 +89,16 @@ git checkout -b feature/my-feature
 # Make changes, commit, push
 git add .
 git commit -m "feat: add new feature"
+
+# Run local CI checks before push
+make pre-push  # Ensures all CI checks pass
+
 git push origin feature/my-feature
 
 # Create Pull Request to dev
 ```
+
+**See**: [Local CI Validation Guide](docs/guides/local-ci.md) for details on running CI checks locally.
 
 ---
 

@@ -224,6 +224,7 @@ Fundamental architectural principles and design patterns:
 Step-by-step implementation guides:
 
 - [Getting Started](guides/getting-started.md) - Quick start, installation, first steps
+- [Local CI Validation](guides/local-ci.md) - Run GitHub Actions checks locally before push
 - [RBAC Implementation](guides/rbac.md) - Roles, permissions, JWT integration
 - [Rate Limiting](guides/rate-limiting.md) - IP-based protection for authentication
 - [CSRF Protection](guides/csrf-protection.md) - Cross-site request forgery defense
