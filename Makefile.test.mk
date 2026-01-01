@@ -19,7 +19,8 @@ test-smoke:  ## Run smoke tests (mock-based handlers, no DB)
 test-integration:  ## Run integration tests (requires test DB)
 	@echo "Running integration tests..."
 	@echo "Test DB: localhost:5432/promenade_test (or 5433 if using test-db-start)"
-	ENVIRONMENT=test go test -v ./test/integration/contexts/...
+	@echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"
+	ENVIRONMENT=test go test -v -p 1 ./test/integration/contexts/...
 
 test-benchmark:  ## Run benchmark tests (requires test DB)
 	@echo "Running benchmark tests..."
