@@ -1024,7 +1024,7 @@ Authorization: Bearer <access_token>
 ```json
 {
   "status": "healthy",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "dependencies": {
     "database": "healthy",
     "redis": "healthy",
@@ -1038,7 +1038,7 @@ Authorization: Bearer <access_token>
 ```json
 {
   "status": "unhealthy",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "dependencies": {
     "database": "unhealthy",
     "redis": "degraded",

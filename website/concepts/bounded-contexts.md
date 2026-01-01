@@ -81,10 +81,11 @@
 **Purpose**: CRM functionality - customers, companies, deals, interactions
 
 **Aggregates**:
-- Customer (lifecycle, segmentation, contact info)
-- Company (planned)
-- Deal (planned)
-- Interaction (planned)
+- Customer ✅ (lifecycle, segmentation, contact info)
+- Company ✅ (B2B legal entities, hierarchies)
+- Deal ✅ (sales pipeline tracking)
+- Interaction ✅ (calls, emails, meetings, notes)
+- Analytics ✅ (CQRS read models)
 
 **Database**: `customer_*` tables  
 **Communication**: Publishes events (customer.created, deal.won)  

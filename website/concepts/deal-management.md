@@ -964,7 +964,7 @@ curl -X PUT /api/v1/customer-mgmt/deals/:id/value \
 
 ---
 
-**Version**: 0.1.0  
+**Version**: 1.0.0  
 **Status**: Production-ready  
 **Last Updated**: December 31, 2025  
 **Maintainer**: Promenade Team

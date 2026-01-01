@@ -37,7 +37,7 @@ Each context is autonomous with:
   - Contact: Email, phone, address management ✅
   - Profile: Personal info, bio, avatar, localization ✅
   - Role & Permission: RBAC implementation ✅ Production
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer aggregate ✅ Production | Deal aggregate ✅ Production | Company aggregate ✅ Production | Interaction planned
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer ✅ | Company ✅ | Deal ✅ | Interaction ✅ | Analytics ✅ (all Production)
 - **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
 - **Billing** (planned Q2 2026) - Invoice, Payment, Subscription
 - **Warehouse** (planned Q3 2026) - Inventory management
@@ -179,6 +179,14 @@ eventBus.Publish(ctx, event)
 - `make docker-up` - Start PostgreSQL (localhost:5432)
 - `make docker-down` - Stop PostgreSQL
 - `make docker-ps` - Show running containers
+
+**Local CI Validation** (run before every push):
+
+- `make pre-push` - Run all CI checks locally (lint + test + build)
+- `make ci-lint` - Run golangci-lint (same as GitHub Actions)
+- `make ci-test` - Run all tests with race detector
+- `make ci-build` - Test compilation
+- Saves 4+ minutes per failed push by catching issues early
 
 ## API & HTTP Patterns
 
@@ -448,13 +456,33 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 - **Pipeline Statistics**: Filter by stage, customer, or sales rep
 - **12 API Endpoints**: Complete CRUD + stage transitions
 
+**Interaction Context** (`internal/contexts/customer-mgmt/interaction/`):
+
+- **Interaction Types**: Call, Email, Meeting, Note, SMS, Chat
+- **Directions**: Inbound (customer-initiated), Outbound (company-initiated)
+- **Outcomes**: Successful, Failed, No Answer, Voicemail, Busy, Scheduled, Not Interested
+- **JSONB Attendees**: Multi-participant tracking with flexible arrays
+- **Follow-up Management**: Flag and schedule follow-up actions
+- **Duration Tracking**: Automatic calculation for ended interactions
+- **14 API Endpoints**: Complete CRUD + business operations
+
+**Analytics Context** (`internal/contexts/customer-mgmt/analytics/`):
+
+- **CQRS Pattern**: Separate read models for reporting (9 query methods)
+- **Direct SQL**: No repository abstraction for optimized analytics
+- **8 GET Endpoints**: Customer overview, lifecycle, segmentation, deal pipeline, conversions, sales rep performance, revenue time series, interaction insights
+- **Denormalized Queries**: LEFT JOIN across aggregates for performance
+- **Real-time Metrics**: Dashboard-ready analytics
+
 **Business Rules**:
 - Customer state transitions enforce lifecycle rules
 - Deal stage transitions are validated (can't skip stages)
 - Automatic probability updates on stage changes
 - Win/loss tracking with actual close dates
+- Interaction duration auto-calculated when ended
+- Follow-up tracking with due dates and completion status
 
-**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md)
+**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md) | [Interaction Management Guide](docs/concepts/interaction-management.md) | [Analytics README](internal/contexts/customer-mgmt/analytics/README.md)
 
 ## Order Management
 
@@ -958,7 +986,7 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 3. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
 4. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
 5. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
-6. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt
+6. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt → order-mgmt
 
 **Debugging Quick Reference**:
 

@@ -358,7 +358,7 @@ JWT_SECRET=$(openssl rand -base64 32) ./bin/promenade
 app:
   name: "Promenade Platform"
   environment: "development"
-  version: "0.1.0"
+  version: "1.0.0"
 
 server:
   host: "0.0.0.0"

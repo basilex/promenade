@@ -7,7 +7,7 @@
 Customer Management is a **Bounded Context** that handles all CRM (Customer Relationship Management) functionality. This is where business relationships are managed, distinct from technical user authentication (Identity context).
 
 **Status**: ✅ Production-ready (December 2025)  
-**Aggregates**: Customer (+ Company, Deal, Interaction planned)  
+**Aggregates**: Customer, Company, Deal, Interaction (all ✅ Production)  
 **Endpoints**: 14 HTTP routes  
 **Database**: 1 table with soft delete (+ 3 planned)
 
@@ -358,7 +358,7 @@ type Order struct {
 ::: tip Production Status
 Customer Management is **production-ready** with 14 working endpoints, complete CRUD operations, and business logic enforcement.
 
-**Aggregates**: Customer (production) | Company, Deal, Interaction (planned Q2 2026)
+**Aggregates**: Customer (production) | Company (production) | Deal (production) | Interaction (production) | Analytics (production)
 :::
 
 ::: info Next Steps

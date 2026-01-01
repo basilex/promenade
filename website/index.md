@@ -299,17 +299,17 @@ These are the ready-to-use business modules that save you months of development 
   </div>
 
   <div class="feature">
-    <div class="icon">💳</div>
-    <h3>Billing & Invoicing</h3>
-    <p>Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.</p>
-    <a href="/promenade/concepts/billing.html" class="link">Coming Q2 2026 →</a>
+    <div class="icon">�</div>
+    <h3>Interaction Tracking</h3>
+    <p>Track customer interactions - calls, emails, meetings, notes. Direction (inbound/outbound), outcomes, duration tracking, multi-participant support. Follow-up management. 14 API endpoints production-ready.</p>
+    <a href="/promenade/concepts/interaction-management.html" class="link">Explore Interaction Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📊</div>
     <h3>Analytics & Reporting</h3>
-    <p>Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.</p>
-    <a href="/promenade/concepts/analytics.html" class="link">Coming Q3 2026 →</a>
+    <p>Real-time business intelligence with CQRS read models. Customer overview, deal pipeline, sales rep performance, revenue time series, interaction insights. 8 GET endpoints production-ready.</p>
+    <a href="/promenade/concepts/analytics.html" class="link">Explore Analytics →</a>
   </div>
 </div>
 
@@ -354,9 +354,16 @@ For developers and technical teams: the architectural patterns and infrastructur
 
   <div class="feature">
     <div class="icon">📊</div>
-    <h3>Three-Tier Testing</h3>
-    <p>Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.</p>
+    <h3>Four-Tier Testing</h3>
+    <p>Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB), Benchmark tests (performance). 90%+ coverage.</p>
     <a href="/promenade/guide/testing-patterns.html" class="link">Read Testing Guide →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon">✅</div>
+    <h3>Local CI Validation</h3>
+    <p>Run GitHub Actions checks locally before push. Lint (golangci-lint), test (race detector), build validation. Saves 4+ minutes per failed push.</p>
+    <a href="/promenade/guide/local-ci.html" class="link">Local CI Guide →</a>
   </div>
 
   <div class="feature">
@@ -459,7 +466,7 @@ You should see:
 ```json
 {
   "status": "healthy",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "timestamp": "2025-12-31T10:00:00Z"
 }
 ```

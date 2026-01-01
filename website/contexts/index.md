@@ -32,18 +32,20 @@ Provides reference data for all contexts (read-only).
 - Language codes (ISO 639-1)
 - IANA timezone database
 
-### Customer Management 🚧
+### Customer Management ✅
 
-**Status**: In Development  
-**Aggregates**: Customer, Company, Deal, Interaction
+**Status**: Production  
+**Aggregates**: Customer, Company, Deal, Interaction, Analytics  
+**Documentation**: [Customer Management](/concepts/customer-management)
 
-CRM core functionality for managing customers and sales pipeline.
+Complete CRM functionality for managing customers, companies, deals, and sales pipeline.
 
-**Planned Features**:
-- Customer lifecycle management
-- Company (B2B) management
-- Deal pipeline tracking
-- Interaction history (calls, emails, meetings)
+**Key Features**:
+- Customer lifecycle management (Lead → Prospect → Customer → Churned)
+- B2B company management with hierarchies
+- Deal pipeline tracking with stages and probability
+- Interaction tracking (calls, emails, meetings, notes)
+- Real-time analytics and reporting (CQRS read models)
 
 ### Order Management 📅
 

@@ -184,7 +184,7 @@ docker push promenade/api:latest
 app:
   name: "Promenade Platform"
   environment: "production"
-  version: "0.1.0"
+  version: "1.0.0"
 
 server:
   host: "0.0.0.0"

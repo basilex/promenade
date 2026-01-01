@@ -30,7 +30,7 @@ func TestInteractionRepository_CRUD(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInteractionRepository(testDB.DB)
 		custRepo := customerRepo.NewCustomerRepository(testDB.DB)
@@ -82,7 +82,7 @@ func TestInteractionRepository_ListByCustomer(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInteractionRepository(testDB.DB)
 		custRepo := customerRepo.NewCustomerRepository(testDB.DB)
@@ -125,7 +125,7 @@ func TestInteractionRepository_ListByType(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInteractionRepository(testDB.DB)
 		custRepo := customerRepo.NewCustomerRepository(testDB.DB)
@@ -174,7 +174,7 @@ func TestInteractionRepository_ListPendingFollowUps(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInteractionRepository(testDB.DB)
 		custRepo := customerRepo.NewCustomerRepository(testDB.DB)
@@ -219,7 +219,7 @@ func TestInteractionRepository_Attendees(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
-	testDB := integration.SetupTestDB(t)
+	testDB := integration.SetupTestDBWithCleanTables(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInteractionRepository(testDB.DB)
 		custRepo := customerRepo.NewCustomerRepository(testDB.DB)
