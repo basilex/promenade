@@ -194,7 +194,7 @@ func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) e
 	}
 
 	query := `
-		INSERT INTO customer_mgmt_customers (
+		INSERT INTO customer_customers (
 			id, user_id, company_id, name, email, phone,
 			status, tier, source, assigned_to, tags,
 			created_at, updated_at, last_contacted_at, converted_at,
@@ -217,7 +217,7 @@ func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) e
 func (r *customerRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*customer.Customer, error) {
 	var row customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE id = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
@@ -234,7 +234,7 @@ func (r *customerRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cust
 func (r *customerRepository) GetByEmail(ctx context.Context, email string) (*customer.Customer, error) {
 	var row customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE email = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, email); err != nil {
@@ -251,7 +251,7 @@ func (r *customerRepository) GetByEmail(ctx context.Context, email string) (*cus
 func (r *customerRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*customer.Customer, error) {
 	var row customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE user_id = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, userID.String()); err != nil {
@@ -272,7 +272,7 @@ func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) e
 	}
 
 	query := `
-		UPDATE customer_mgmt_customers SET
+		UPDATE customer_customers SET
 			user_id = :user_id,
 			company_id = :company_id,
 			name = :name,
@@ -309,7 +309,7 @@ func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) e
 // Delete soft-deletes a customer
 func (r *customerRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE customer_mgmt_customers
+		UPDATE customer_customers
 		SET deleted_at = NOW()
 		WHERE id = $1 AND deleted_at IS NULL`
 
@@ -334,7 +334,7 @@ func (r *customerRepository) ExistsByEmail(ctx context.Context, email string) (b
 	var exists bool
 	query := `
 		SELECT EXISTS(
-			SELECT 1 FROM customer_mgmt_customers
+			SELECT 1 FROM customer_customers
 			WHERE email = $1 AND deleted_at IS NULL
 		)`
 
@@ -349,7 +349,7 @@ func (r *customerRepository) ExistsByEmail(ctx context.Context, email string) (b
 func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.UUID, limit, offset int) ([]*customer.Customer, int, error) {
 	var rows []customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE assigned_to = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3`
@@ -361,7 +361,7 @@ func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.
 	// Get total count
 	var total int
 	countQuery := `
-		SELECT COUNT(*) FROM customer_mgmt_customers
+		SELECT COUNT(*) FROM customer_customers
 		WHERE assigned_to = $1 AND deleted_at IS NULL`
 	if err := r.Get(ctx, &total, countQuery, repID.String()); err != nil {
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
@@ -383,7 +383,7 @@ func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.
 func (r *customerRepository) ListByCompanyID(ctx context.Context, companyID uuidv7.UUID) ([]*customer.Customer, error) {
 	var rows []customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE company_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC`
 
@@ -407,7 +407,7 @@ func (r *customerRepository) ListByCompanyID(ctx context.Context, companyID uuid
 func (r *customerRepository) ListByStatus(ctx context.Context, status customer.CustomerStatus, limit, offset int) ([]*customer.Customer, int, error) {
 	var rows []customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE status = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3`
@@ -419,7 +419,7 @@ func (r *customerRepository) ListByStatus(ctx context.Context, status customer.C
 	// Get total count
 	var total int
 	countQuery := `
-		SELECT COUNT(*) FROM customer_mgmt_customers
+		SELECT COUNT(*) FROM customer_customers
 		WHERE status = $1 AND deleted_at IS NULL`
 	if err := r.Get(ctx, &total, countQuery, string(status)); err != nil {
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
@@ -441,7 +441,7 @@ func (r *customerRepository) ListByStatus(ctx context.Context, status customer.C
 func (r *customerRepository) ListByTier(ctx context.Context, tier customer.CustomerTier, limit, offset int) ([]*customer.Customer, int, error) {
 	var rows []customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE tier = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3`
@@ -453,7 +453,7 @@ func (r *customerRepository) ListByTier(ctx context.Context, tier customer.Custo
 	// Get total count
 	var total int
 	countQuery := `
-		SELECT COUNT(*) FROM customer_mgmt_customers
+		SELECT COUNT(*) FROM customer_customers
 		WHERE tier = $1 AND deleted_at IS NULL`
 	if err := r.Get(ctx, &total, countQuery, string(tier)); err != nil {
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
@@ -475,7 +475,7 @@ func (r *customerRepository) ListByTier(ctx context.Context, tier customer.Custo
 func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*customer.Customer, int, error) {
 	var rows []customerRow
 	query := `
-		SELECT * FROM customer_mgmt_customers
+		SELECT * FROM customer_customers
 		WHERE deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`
@@ -486,7 +486,7 @@ func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*cu
 
 	// Get total count
 	var total int
-	countQuery := `SELECT COUNT(*) FROM customer_mgmt_customers WHERE deleted_at IS NULL`
+	countQuery := `SELECT COUNT(*) FROM customer_customers WHERE deleted_at IS NULL`
 	if err := r.Get(ctx, &total, countQuery); err != nil {
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
 	}
@@ -507,7 +507,7 @@ func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*cu
 func (r *customerRepository) CountByStatus(ctx context.Context, status customer.CustomerStatus) (int, error) {
 	var count int
 	query := `
-		SELECT COUNT(*) FROM customer_mgmt_customers
+		SELECT COUNT(*) FROM customer_customers
 		WHERE status = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &count, query, string(status)); err != nil {
@@ -521,7 +521,7 @@ func (r *customerRepository) CountByStatus(ctx context.Context, status customer.
 func (r *customerRepository) CountByTier(ctx context.Context, tier customer.CustomerTier) (int, error) {
 	var count int
 	query := `
-		SELECT COUNT(*) FROM customer_mgmt_customers
+		SELECT COUNT(*) FROM customer_customers
 		WHERE tier = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &count, query, string(tier)); err != nil {
@@ -541,7 +541,7 @@ func (r *customerRepository) CountByAllStatuses(ctx context.Context) (map[custom
 	var results []statusCount
 	query := `
 		SELECT status, COUNT(*) as count
-		FROM customer_mgmt_customers
+		FROM customer_customers
 		WHERE deleted_at IS NULL
 		GROUP BY status`
 
@@ -567,7 +567,7 @@ func (r *customerRepository) CountByAllTiers(ctx context.Context) (map[customer.
 	var results []tierCount
 	query := `
 		SELECT tier, COUNT(*) as count
-		FROM customer_mgmt_customers
+		FROM customer_customers
 		WHERE deleted_at IS NULL
 		GROUP BY tier`
 

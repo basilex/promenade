@@ -85,7 +85,7 @@ CREATE TABLE customer_deals (
     -- Foreign Keys
     CONSTRAINT fk_deals_customer
         FOREIGN KEY (customer_id)
-        REFERENCES customer_mgmt_customers(id)
+        REFERENCES customer_customers(id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_deals_company

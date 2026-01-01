@@ -5,12 +5,12 @@
 -- Orders Table
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS order_mgmt_orders (
+CREATE TABLE IF NOT EXISTS order_orders (
     -- Identity
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
     order_number VARCHAR(50) UNIQUE NOT NULL,  -- ORD-2026-000001
-    customer_id UUID NOT NULL,  -- References customer_mgmt_customers (cross-context)
-    company_id UUID NULL,       -- References customer_mgmt_companies (B2B orders)
+    customer_id UUID NOT NULL,  -- References customer_customers (cross-context)
+    company_id UUID NULL,       -- References customer_companies (B2B orders)
 
     -- Order Details
     total_amount DECIMAL(15, 2) NOT NULL DEFAULT 0,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS order_mgmt_orders (
     cancelled_at TIMESTAMP WITH TIME ZONE NULL,
 
     -- References (to other contexts)
-    contract_id UUID NULL,   -- References order_mgmt_contracts
+    contract_id UUID NULL,   -- References order_contracts
     invoice_id UUID NULL,    -- References billing_invoices (cross-context)
 
     -- Lifecycle timestamps
@@ -44,25 +44,25 @@ CREATE TABLE IF NOT EXISTS order_mgmt_orders (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_orders_customer_id ON order_mgmt_orders (customer_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_company_id ON order_mgmt_orders (company_id) WHERE deleted_at IS NULL AND company_id IS NOT NULL;
-CREATE INDEX idx_orders_status ON order_mgmt_orders (status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_order_date ON order_mgmt_orders (order_date DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_created_at ON order_mgmt_orders (created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_orders_contract_id ON order_mgmt_orders (contract_id) WHERE deleted_at IS NULL AND contract_id IS NOT NULL;
-CREATE INDEX idx_orders_invoice_id ON order_mgmt_orders (invoice_id) WHERE deleted_at IS NULL AND invoice_id IS NOT NULL;
+CREATE INDEX idx_orders_customer_id ON order_orders (customer_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_orders_company_id ON order_orders (company_id) WHERE deleted_at IS NULL AND company_id IS NOT NULL;
+CREATE INDEX idx_orders_status ON order_orders (status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_orders_order_date ON order_orders (order_date DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_orders_created_at ON order_orders (created_at DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_orders_contract_id ON order_orders (contract_id) WHERE deleted_at IS NULL AND contract_id IS NOT NULL;
+CREATE INDEX idx_orders_invoice_id ON order_orders (invoice_id) WHERE deleted_at IS NULL AND invoice_id IS NOT NULL;
 
 -- Partial index for soft deletes
-CREATE INDEX idx_orders_deleted_at ON order_mgmt_orders (deleted_at) WHERE deleted_at IS NOT NULL;
+CREATE INDEX idx_orders_deleted_at ON order_orders (deleted_at) WHERE deleted_at IS NOT NULL;
 
 -- ============================================================================
 -- Order Lines Table (line items)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS order_mgmt_order_lines (
+CREATE TABLE IF NOT EXISTS order_lines (
     -- Identity
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    order_id UUID NOT NULL REFERENCES order_mgmt_orders (id) ON DELETE CASCADE,
+    order_id UUID NOT NULL REFERENCES order_orders (id) ON DELETE CASCADE,
     product_id UUID NOT NULL,  -- References warehouse_products (cross-context)
 
     -- Line details
@@ -83,22 +83,22 @@ CREATE TABLE IF NOT EXISTS order_mgmt_order_lines (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_order_lines_order_id ON order_mgmt_order_lines (order_id);
-CREATE INDEX idx_order_lines_product_id ON order_mgmt_order_lines (product_id);
-CREATE INDEX idx_order_lines_created_at ON order_mgmt_order_lines (created_at DESC);
+CREATE INDEX idx_order_lines_order_id ON order_lines (order_id);
+CREATE INDEX idx_order_lines_product_id ON order_lines (product_id);
+CREATE INDEX idx_order_lines_created_at ON order_lines (created_at DESC);
 
 -- ============================================================================
 -- Comments
 -- ============================================================================
 
-COMMENT ON TABLE order_mgmt_orders IS 'Orders aggregate: manages order lifecycle from creation to fulfillment';
-COMMENT ON COLUMN order_mgmt_orders.order_number IS 'Human-readable order number (ORD-YYYY-NNNNNN)';
-COMMENT ON COLUMN order_mgmt_orders.status IS 'Order status: pending → confirmed → processing → fulfilled (or cancelled)';
-COMMENT ON COLUMN order_mgmt_orders.customer_id IS 'References customer_mgmt_customers (cross-context reference)';
-COMMENT ON COLUMN order_mgmt_orders.company_id IS 'Optional: for B2B orders, references customer_mgmt_companies';
-COMMENT ON COLUMN order_mgmt_orders.contract_id IS 'Optional: associated contract (same context)';
-COMMENT ON COLUMN order_mgmt_orders.invoice_id IS 'Optional: associated invoice (billing context)';
+COMMENT ON TABLE order_orders IS 'Orders aggregate: manages order lifecycle from creation to fulfillment';
+COMMENT ON COLUMN order_orders.order_number IS 'Human-readable order number (ORD-YYYY-NNNNNN)';
+COMMENT ON COLUMN order_orders.status IS 'Order status: pending → confirmed → processing → fulfilled (or cancelled)';
+COMMENT ON COLUMN order_orders.customer_id IS 'References customer_customers (cross-context reference)';
+COMMENT ON COLUMN order_orders.company_id IS 'Optional: for B2B orders, references customer_companies';
+COMMENT ON COLUMN order_orders.contract_id IS 'Optional: associated contract (same context)';
+COMMENT ON COLUMN order_orders.invoice_id IS 'Optional: associated invoice (billing context)';
 
-COMMENT ON TABLE order_mgmt_order_lines IS 'Order line items: products and quantities in an order';
-COMMENT ON COLUMN order_mgmt_order_lines.product_id IS 'References warehouse_products (cross-context reference)';
-COMMENT ON COLUMN order_mgmt_order_lines.total_amount IS 'Computed: quantity * unit_price';
+COMMENT ON TABLE order_lines IS 'Order line items: products and quantities in an order';
+COMMENT ON COLUMN order_lines.product_id IS 'References warehouse_products (cross-context reference)';
+COMMENT ON COLUMN order_lines.total_amount IS 'Computed: quantity * unit_price';

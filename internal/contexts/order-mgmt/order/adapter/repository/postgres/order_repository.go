@@ -129,7 +129,7 @@ func (r *orderLineRow) toLineEntity() order.OrderLine {
 // Create creates a new order
 func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 	query := `
-		INSERT INTO order_mgmt_orders (
+		INSERT INTO order_orders (
 			id, order_number, customer_id, company_id,
 			total_amount, currency, status,
 			order_date, confirmed_at, fulfilled_at, cancelled_at,
@@ -173,7 +173,7 @@ func (r *orderRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*order.O
 			   order_date, confirmed_at, fulfilled_at, cancelled_at,
 			   contract_id, invoice_id,
 			   created_at, updated_at, deleted_at
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE id = $1 AND deleted_at IS NULL
 	`
 
@@ -196,7 +196,7 @@ func (r *orderRepository) GetByOrderNumber(ctx context.Context, orderNumber stri
 			   order_date, confirmed_at, fulfilled_at, cancelled_at,
 			   contract_id, invoice_id,
 			   created_at, updated_at, deleted_at
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE order_number = $1 AND deleted_at IS NULL
 	`
 
@@ -214,7 +214,7 @@ func (r *orderRepository) GetByOrderNumber(ctx context.Context, orderNumber stri
 // Update updates an existing order
 func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 	query := `
-		UPDATE order_mgmt_orders
+		UPDATE order_orders
 		SET order_number = :order_number,
 			customer_id = :customer_id,
 			company_id = :company_id,
@@ -252,7 +252,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 // Delete soft-deletes an order
 func (r *orderRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
-		UPDATE order_mgmt_orders
+		UPDATE order_orders
 		SET deleted_at = NOW(),
 			updated_at = NOW()
 		WHERE id = $1 AND deleted_at IS NULL
@@ -270,7 +270,7 @@ func (r *orderRepository) ListByCustomerID(ctx context.Context, customerID uuidv
 	var total int64
 	countQuery := `
 		SELECT COUNT(*)
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE customer_id = $1 AND deleted_at IS NULL
 	`
 	if err := r.Get(ctx, &total, countQuery, customerID); err != nil {
@@ -284,7 +284,7 @@ func (r *orderRepository) ListByCustomerID(ctx context.Context, customerID uuidv
 			   order_date, confirmed_at, fulfilled_at, cancelled_at,
 			   contract_id, invoice_id,
 			   created_at, updated_at, deleted_at
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE customer_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3
@@ -315,7 +315,7 @@ func (r *orderRepository) ListByStatus(ctx context.Context, status order.OrderSt
 	var total int64
 	countQuery := `
 		SELECT COUNT(*)
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE status = $1 AND deleted_at IS NULL
 	`
 	if err := r.Get(ctx, &total, countQuery, string(status)); err != nil {
@@ -329,7 +329,7 @@ func (r *orderRepository) ListByStatus(ctx context.Context, status order.OrderSt
 			   order_date, confirmed_at, fulfilled_at, cancelled_at,
 			   contract_id, invoice_id,
 			   created_at, updated_at, deleted_at
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE status = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3
@@ -360,7 +360,7 @@ func (r *orderRepository) List(ctx context.Context, page, pageSize int) ([]*orde
 	var total int64
 	countQuery := `
 		SELECT COUNT(*)
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE deleted_at IS NULL
 	`
 	if err := r.Get(ctx, &total, countQuery); err != nil {
@@ -374,7 +374,7 @@ func (r *orderRepository) List(ctx context.Context, page, pageSize int) ([]*orde
 			   order_date, confirmed_at, fulfilled_at, cancelled_at,
 			   contract_id, invoice_id,
 			   created_at, updated_at, deleted_at
-		FROM order_mgmt_orders
+		FROM order_orders
 		WHERE deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2
@@ -402,7 +402,7 @@ func (r *orderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]
 	query := `
 		SELECT id, order_id, product_id, quantity,
 			   unit_price, total_amount, currency
-		FROM order_mgmt_order_lines
+		FROM order_lines
 		WHERE order_id = $1
 		ORDER BY created_at ASC
 	`
@@ -423,7 +423,7 @@ func (r *orderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]
 // CreateLine creates a new order line
 func (r *orderRepository) CreateLine(ctx context.Context, line *order.OrderLine) error {
 	query := `
-		INSERT INTO order_mgmt_order_lines (
+		INSERT INTO order_lines (
 			id, order_id, product_id, quantity,
 			unit_price, total_amount, currency
 		) VALUES (
@@ -448,7 +448,7 @@ func (r *orderRepository) CreateLine(ctx context.Context, line *order.OrderLine)
 // UpdateLine updates an order line
 func (r *orderRepository) UpdateLine(ctx context.Context, line *order.OrderLine) error {
 	query := `
-		UPDATE order_mgmt_order_lines
+		UPDATE order_lines
 		SET quantity = :quantity,
 			unit_price = :unit_price,
 			total_amount = :total_amount
@@ -468,7 +468,7 @@ func (r *orderRepository) UpdateLine(ctx context.Context, line *order.OrderLine)
 // DeleteLine deletes an order line
 func (r *orderRepository) DeleteLine(ctx context.Context, lineID uuidv7.UUID) error {
 	query := `
-		DELETE FROM order_mgmt_order_lines
+		DELETE FROM order_lines
 		WHERE id = $1
 	`
 

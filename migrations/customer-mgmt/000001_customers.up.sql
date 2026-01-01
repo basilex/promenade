@@ -8,11 +8,11 @@ CREATE TYPE customer_status AS ENUM ('lead', 'prospect', 'customer', 'churned');
 CREATE TYPE customer_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 
 -- Customers table
-CREATE TABLE customer_mgmt_customers (
+CREATE TABLE customer_customers (
     -- Identity
     id UUID PRIMARY KEY DEFAULT uuid_v7(),
     user_id UUID REFERENCES identity_users(id) ON DELETE SET NULL, -- Linked account (optional)
-    company_id UUID, -- B2B company reference (future: REFERENCES customer_mgmt_companies(id))
+    company_id UUID, -- B2B company reference (future: REFERENCES customer_companies(id))
     
     -- Basic Info
     name VARCHAR(255) NOT NULL,
@@ -44,30 +44,30 @@ CREATE TABLE customer_mgmt_customers (
 );
 
 -- Partial unique index for email (only for non-deleted rows)
-CREATE UNIQUE INDEX idx_customers_email_unique ON customer_mgmt_customers(email) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_customers_email_unique ON customer_customers(email) WHERE deleted_at IS NULL;
 
 -- Indexes for common queries
-CREATE INDEX idx_customers_user_id ON customer_mgmt_customers(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_company_id ON customer_mgmt_customers(company_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_email ON customer_mgmt_customers(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_status ON customer_mgmt_customers(status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_tier ON customer_mgmt_customers(tier) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_assigned_to ON customer_mgmt_customers(assigned_to) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_created_at ON customer_mgmt_customers(created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_tags ON customer_mgmt_customers USING gin(tags) WHERE deleted_at IS NULL; -- JSONB array search
+CREATE INDEX idx_customers_user_id ON customer_customers(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_company_id ON customer_customers(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_email ON customer_customers(email) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_status ON customer_customers(status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_tier ON customer_customers(tier) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_assigned_to ON customer_customers(assigned_to) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_created_at ON customer_customers(created_at DESC) WHERE deleted_at IS NULL;
+CREATE INDEX idx_customers_tags ON customer_customers USING gin(tags) WHERE deleted_at IS NULL; -- JSONB array search
 
 -- Trigger to auto-update updated_at
 CREATE TRIGGER trg_customers_updated_at
-    BEFORE UPDATE ON customer_mgmt_customers
+    BEFORE UPDATE ON customer_customers
     FOR EACH ROW
     EXECUTE FUNCTION tfn_entity_updated_at();
 
 -- Comments
-COMMENT ON TABLE customer_mgmt_customers IS 'Customer aggregate with Lead → Prospect → Customer → Churned lifecycle';
-COMMENT ON COLUMN customer_mgmt_customers.status IS 'Customer lifecycle stage (one-way transitions: lead → prospect → customer → churned)';
-COMMENT ON COLUMN customer_mgmt_customers.tier IS 'Subscription tier (free → basic → pro → enterprise, bidirectional)';
-COMMENT ON COLUMN customer_mgmt_customers.source IS 'Customer acquisition channel (website, referral, cold_call, etc.)';
-COMMENT ON COLUMN customer_mgmt_customers.tags IS 'Flexible JSONB array for customer segmentation (e.g., ["vip", "high-value"])';
-COMMENT ON COLUMN customer_mgmt_customers.converted_at IS 'Timestamp when lead/prospect became paying customer';
-COMMENT ON COLUMN customer_mgmt_customers.churned_at IS 'Timestamp when customer left';
-COMMENT ON COLUMN customer_mgmt_customers.churn_reason IS 'Explanation why customer churned (for analytics)';
+COMMENT ON TABLE customer_customers IS 'Customer aggregate with Lead → Prospect → Customer → Churned lifecycle';
+COMMENT ON COLUMN customer_customers.status IS 'Customer lifecycle stage (one-way transitions: lead → prospect → customer → churned)';
+COMMENT ON COLUMN customer_customers.tier IS 'Subscription tier (free → basic → pro → enterprise, bidirectional)';
+COMMENT ON COLUMN customer_customers.source IS 'Customer acquisition channel (website, referral, cold_call, etc.)';
+COMMENT ON COLUMN customer_customers.tags IS 'Flexible JSONB array for customer segmentation (e.g., ["vip", "high-value"])';
+COMMENT ON COLUMN customer_customers.converted_at IS 'Timestamp when lead/prospect became paying customer';
+COMMENT ON COLUMN customer_customers.churned_at IS 'Timestamp when customer left';
+COMMENT ON COLUMN customer_customers.churn_reason IS 'Explanation why customer churned (for analytics)';

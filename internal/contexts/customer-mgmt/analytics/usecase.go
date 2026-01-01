@@ -61,7 +61,7 @@ func (uc *useCase) GetCustomerOverview(ctx context.Context) (*CustomerOverview, 
 			COUNT(CASE WHEN created_at >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as new_this_month,
 			COUNT(CASE WHEN status = 'churned' AND updated_at >= DATE_TRUNC('month', CURRENT_DATE) THEN 1 END) as churned_this_month,
 			AVG(EXTRACT(EPOCH FROM (COALESCE(updated_at, CURRENT_TIMESTAMP) - created_at)) / 604800) as avg_lifetime_weeks
-		FROM customer_mgmt_customers
+		FROM customer_customers
 		WHERE deleted_at IS NULL
 	`
 
@@ -135,7 +135,7 @@ func (uc *useCase) GetCustomerLifecycle(ctx context.Context, period string) ([]C
 			COUNT(CASE WHEN status = 'prospect' THEN 1 END) as prospect_count,
 			COUNT(CASE WHEN status = 'customer' THEN 1 END) as customer_count,
 			COUNT(CASE WHEN status = 'churned' THEN 1 END) as churned_count
-		FROM customer_mgmt_customers
+		FROM customer_customers
 		WHERE deleted_at IS NULL 
 		  AND created_at >= CURRENT_DATE - INTERVAL '12 months'
 		GROUP BY period
@@ -178,7 +178,7 @@ func (uc *useCase) GetCustomerSegmentation(ctx context.Context) ([]CustomerSegme
 			COUNT(c.id) as count,
 			AVG(EXTRACT(EPOCH FROM (COALESCE(c.updated_at, CURRENT_TIMESTAMP) - c.created_at)) / 604800) as avg_lifetime_weeks,
 			COALESCE(SUM(d.value_cents), 0) as total_revenue_cents
-		FROM customer_mgmt_customers c
+		FROM customer_customers c
 		LEFT JOIN customer_deals d ON c.id = d.customer_id AND d.stage = 'closed_won' AND d.deleted_at IS NULL
 		WHERE c.deleted_at IS NULL
 		GROUP BY c.tier
@@ -300,7 +300,7 @@ func (uc *useCase) GetSalesRepPerformance(ctx context.Context, topN int) ([]Sale
 			COALESCE(SUM(CASE WHEN d.stage = 'closed_won' THEN d.value_cents ELSE 0 END), 0) as total_revenue_cents,
 			ROUND(COALESCE(AVG(CASE WHEN d.stage = 'closed_won' THEN d.value_cents END), 0)) as avg_deal_cents,
 			COALESCE(AVG(CASE WHEN d.actual_close_date IS NOT NULL THEN EXTRACT(EPOCH FROM (d.actual_close_date - d.created_at)) / 86400 END), 0) as avg_days_to_close
-		FROM customer_mgmt_customers c
+		FROM customer_customers c
 		LEFT JOIN customer_deals d ON c.id = d.customer_id AND d.deleted_at IS NULL
 		WHERE c.deleted_at IS NULL AND c.assigned_to IS NOT NULL
 		GROUP BY c.assigned_to
@@ -367,7 +367,7 @@ func (uc *useCase) GetSalesRepPerformanceByID(ctx context.Context, salesRepID uu
 			COALESCE(SUM(CASE WHEN d.stage = 'closed_won' THEN d.value_cents ELSE 0 END), 0) as total_revenue_cents,
 			ROUND(COALESCE(AVG(CASE WHEN d.stage = 'closed_won' THEN d.value_cents END), 0)) as avg_deal_cents,
 			COALESCE(AVG(CASE WHEN d.actual_close_date IS NOT NULL THEN EXTRACT(EPOCH FROM (d.actual_close_date - d.created_at)) / 86400 END), 0) as avg_days_to_close
-		FROM customer_mgmt_customers c
+		FROM customer_customers c
 		LEFT JOIN customer_deals d ON c.id = d.customer_id AND d.deleted_at IS NULL
 		WHERE c.deleted_at IS NULL AND c.assigned_to = $1
 		GROUP BY c.assigned_to

@@ -33,7 +33,7 @@ func setupBenchmarkDB(b *testing.B) *sqlx.DB {
 	// Clean all tables (DELETE instead of TRUNCATE to avoid locks)
 	tables := []string{
 		"customer_interactions",
-		"customer_mgmt_customers",
+		"customer_customers",
 		"identity_users",
 	}
 

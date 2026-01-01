@@ -108,7 +108,7 @@ func (tdb *TestDB) CleanAllTables() {
 		"customer_mgmt_interactions",
 		"customer_mgmt_deals",
 		"customer_mgmt_companies",
-		"customer_mgmt_customers",
+		"customer_customers",
 
 		// Identity Context tables
 		"identity_contacts",

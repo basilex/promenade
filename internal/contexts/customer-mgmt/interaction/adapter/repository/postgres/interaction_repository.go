@@ -277,7 +277,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 			NULL AS company_name,
 			u.email AS created_by_name
 		FROM customer_interactions i
-		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN customer_customers c ON i.customer_id = c.id
 		
 		LEFT JOIN identity_users u ON i.created_by = u.id
 		WHERE i.customer_id = $1 AND i.deleted_at IS NULL
@@ -332,7 +332,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 			NULL AS company_name,
 			u.email AS created_by_name
 		FROM customer_interactions i
-		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN customer_customers c ON i.customer_id = c.id
 		LEFT JOIN identity_users u ON i.created_by = u.id
 		WHERE i.company_id = $1 AND i.deleted_at IS NULL
 		ORDER BY i.started_at DESC
@@ -386,7 +386,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 			NULL AS company_name,
 			u.email AS created_by_name
 		FROM customer_interactions i
-		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN customer_customers c ON i.customer_id = c.id
 		
 		LEFT JOIN identity_users u ON i.created_by = u.id
 		WHERE i.type = $1 AND i.deleted_at IS NULL
@@ -441,7 +441,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 			NULL AS company_name,
 			u.email AS created_by_name
 		FROM customer_interactions i
-		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN customer_customers c ON i.customer_id = c.id
 		
 		LEFT JOIN identity_users u ON i.created_by = u.id
 		WHERE i.created_by = $1 AND i.deleted_at IS NULL
@@ -498,7 +498,7 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 			NULL AS company_name,
 			u.email AS created_by_name
 		FROM customer_interactions i
-		LEFT JOIN customer_mgmt_customers c ON i.customer_id = c.id
+		LEFT JOIN customer_customers c ON i.customer_id = c.id
 		
 		LEFT JOIN identity_users u ON i.created_by = u.id
 		WHERE i.follow_up_required = true 
