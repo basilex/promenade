@@ -150,11 +150,9 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 		t.Fatalf("errgroup wait failed: %v", err)
 	}
 
-	// Verify final state
-	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		repo := postgres.NewUserRepository(testDB.DB)
-		u, err := repo.GetByID(ctx, userID)
-		require.NoError(t, err)
-		assert.Equal(t, user.UserStatusActive, u.Status)
-	})
+	// Verify final state (use context.Background(), not a transaction)
+	repo := postgres.NewUserRepository(testDB.DB)
+	u, err := repo.GetByID(context.Background(), userID)
+	require.NoError(t, err)
+	assert.Equal(t, user.UserStatusActive, u.Status)
 }
