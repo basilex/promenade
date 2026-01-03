@@ -404,9 +404,15 @@ promenade/
         testutils.go      # Shared test utilities
         contexts/         # Mirror path: repository integration tests
  config/                     # Configuration files
-    app.dev.yaml          # Development (Memory bus, localhost DB)
-    app.test.yaml         # Testing
-    app.prod.yaml         # Production (Redis bus)
+    # PostgreSQL configurations
+    app.postgres-dev.yaml   # PostgreSQL + development
+    app.postgres-test.yaml  # PostgreSQL + testing
+    app.postgres-prod.yaml  # PostgreSQL + production
+    
+    # SQLite configurations
+    app.sqlite-dev.yaml     # SQLite + development
+    app.sqlite-test.yaml    # SQLite + testing
+    app.sqlite-prod.yaml    # SQLite + production
  docs/                       # Architecture documentation (8 guides)
      INDEX.md              # Documentation index
      CLEAN_ARCHITECTURE_SUMMARY.md # DDD with Bounded Contexts
@@ -859,14 +865,20 @@ Promenade uses **YAML configuration files** per environment with **environment v
 
 ```
 config/
- app.dev.yaml        # Development (Memory bus, localhost DB)
- app.test.yaml       # Testing (isolated test DB)
- app.prod.yaml       # Production (Redis bus, production DB)
+ # PostgreSQL configurations
+ app.postgres-dev.yaml   # PostgreSQL + development
+ app.postgres-test.yaml  # PostgreSQL + testing
+ app.postgres-prod.yaml  # PostgreSQL + production
+ 
+ # SQLite configurations
+ app.sqlite-dev.yaml     # SQLite + development
+ app.sqlite-test.yaml    # SQLite + testing
+ app.sqlite-prod.yaml    # SQLite + production
 ```
 
 ### Development Configuration
 
-**config/app.dev.yaml**
+**config/app.postgres-dev.yaml**
 
 ```yaml
 app:
@@ -915,7 +927,7 @@ logging:
 
 ### Production Configuration
 
-**config/app.prod.yaml**
+**config/app.postgres-prod.yaml**
 
 ```yaml
 # ... (same app/server sections)
@@ -978,12 +990,12 @@ if err != nil {
 }
 ```
 
-Environment is detected via `ENVIRONMENT` env var (defaults to `dev`):
+Environment is detected via `DATABASE_DRIVER` and `ENVIRONMENT` env vars:
 
 ```bash
-ENVIRONMENT=production ./bin/promenade   # Loads app.prod.yaml
-ENVIRONMENT=test ./bin/promenade        # Loads app.test.yaml
-./bin/promenade                         # Loads app.dev.yaml (default)
+DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade   # Loads app.postgres-prod.yaml
+DATABASE_DRIVER=sqlite ENVIRONMENT=test ./bin/promenade           # Loads app.sqlite-test.yaml
+DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade  # Loads app.postgres-dev.yaml (default)
 ```
 
 **See**: [internal/infrastructure/config/](internal/infrastructure/config/) for config implementation

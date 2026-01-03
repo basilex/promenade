@@ -156,7 +156,7 @@ moduleLogger.Debug("Module initialized")
 
 ### 5. Development vs Production
 
-**Development** (`config/app.dev.yaml`):
+**Development** (`config/app.postgres-dev.yaml`):
 ```yaml
 logging:
   level: "debug"
@@ -164,7 +164,7 @@ logging:
   add_source: true
 ```
 
-**Production** (`config/app.prod.yaml`):
+**Production** (`config/app.postgres-prod.yaml`):
 ```yaml
 logging:
   level: "info"

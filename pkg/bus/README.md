@@ -127,7 +127,7 @@ type RetryPolicy struct {
 
 ### YAML Configuration
 
-**Development** (`config/app.dev.yaml`):
+**Development** (`config/app.postgres-dev.yaml` or `config/app.sqlite-dev.yaml`):
 
 ```yaml
 bus:
@@ -140,7 +140,7 @@ bus:
   retry_multiplier: 2.0
 ```
 
-**Production** (`config/app.prod.yaml`):
+**Production** (`config/app.postgres-prod.yaml`):
 
 ```yaml
 database:
@@ -573,7 +573,7 @@ go tool cover -html=coverage.out
 ### Enable Debug Logging
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or app.sqlite-dev.yaml
 logging:
   level: "debug" # Enable debug logs
 ```

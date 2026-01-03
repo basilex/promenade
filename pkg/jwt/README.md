@@ -20,7 +20,7 @@
 
 ### 1. Configuration
 
-Add JWT section to `config/app.dev.yaml`:
+Add JWT section to your config file (e.g., `config/app.postgres-dev.yaml`):
 
 ```yaml
 jwt:
@@ -500,14 +500,14 @@ func RegisterRoutes(router *gin.Engine, jwtManager *jwt.Manager, handlers *Handl
 
 **❌ DON'T**:
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 jwt:
   secret: "weak-secret"  # Too short, predictable
 ```
 
 **✅ DO**:
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 jwt:
   secret: "${JWT_SECRET}"  # Load from environment variable
 ```

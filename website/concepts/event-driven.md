@@ -113,7 +113,7 @@ func (h *BillingHandler) HandleUserRegistered(ctx context.Context, e bus.Event) 
 **Configuration**:
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or app.sqlite-dev.yaml
 bus:
   adapter: "memory"
   worker_pool_size: 10
@@ -143,7 +143,7 @@ bus:
 **Configuration**:
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 database:
   redis:
     addr: "redis.prod.example.com:6379"
