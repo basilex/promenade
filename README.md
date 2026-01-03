@@ -450,7 +450,8 @@ make docker-up
 ```bash
 # Migrations run automatically on app startup
 # Or manually:
-make migrate
+make migrate-postgres  # PostgreSQL migrations
+make migrate-sqlite    # SQLite migrations
 ```
 
 ### 3. Start Application
@@ -593,10 +594,12 @@ make test-integration  # Integration tests with real DB (~5 seconds)
 make test-coverage     # HTML coverage report
 
 # Database
-make docker-up         # Start PostgreSQL
-make docker-down       # Stop PostgreSQL
-make db-reset          # Drop and recreate database
-make migrate           # Run all migrations
+make docker-up            # Start PostgreSQL
+make docker-down          # Stop PostgreSQL
+make db-reset             # Drop and recreate database
+make migrate-postgres     # Run all PostgreSQL migrations
+make migrate-sqlite       # Run all SQLite migrations
+make migrate-postgres-core # PostgreSQL: core migrations only
 
 # Documentation
 make swagger-all       # Generate API documentation

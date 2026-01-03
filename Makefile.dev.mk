@@ -82,48 +82,100 @@ db-reset:  ## Drop and recreate database (WARNING: all data lost!)
 db-fresh: db-reset migrate  ## Fresh database with all migrations
 	@echo "✓ Fresh database ready!"
 
-# Migrations
-migrate:  ## Run all migrations (core + shared + identity + customer-mgmt + order-mgmt)
-	@echo "Running all migrations..."
-	@$(MAKE) migrate-core
-	@$(MAKE) migrate-shared
-	@$(MAKE) migrate-identity
-	@$(MAKE) migrate-customer-mgmt
-	@$(MAKE) migrate-order-mgmt
-	@echo "✓ All migrations completed"
+# Migrations - PostgreSQL
+migrate-postgres:  ## Run all PostgreSQL migrations (core + all contexts)
+	@echo "Running all PostgreSQL migrations..."
+	@$(MAKE) migrate-postgres-core
+	@$(MAKE) migrate-postgres-shared
+	@$(MAKE) migrate-postgres-identity
+	@$(MAKE) migrate-postgres-customer-mgmt
+	@$(MAKE) migrate-postgres-order-mgmt
+	@echo "✓ All PostgreSQL migrations completed"
 
-migrate-core:  ## Run core migrations (extensions, auth, RBAC)
-	@echo "Running core migrations..."
+migrate-postgres-core:  ## Run PostgreSQL core migrations (extensions, auth, RBAC)
+	@echo "Running PostgreSQL core migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=core
 
-migrate-shared:  ## Run shared context migrations (reference data)
-	@echo "Running shared context migrations..."
+migrate-postgres-shared:  ## Run PostgreSQL shared context migrations (reference data)
+	@echo "Running PostgreSQL shared context migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=shared
 
-migrate-identity:  ## Run identity context migrations
-	@echo "Running identity context migrations..."
+migrate-postgres-identity:  ## Run PostgreSQL identity context migrations
+	@echo "Running PostgreSQL identity context migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=identity
 
-migrate-customer-mgmt:  ## Run customer management context migrations
-	@echo "Running customer management context migrations..."
+migrate-postgres-customer-mgmt:  ## Run PostgreSQL customer management migrations
+	@echo "Running PostgreSQL customer management migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=customer-mgmt
 
-migrate-order-mgmt:  ## Run order management context migrations
-	@echo "Running order management context migrations..."
+migrate-postgres-order-mgmt:  ## Run PostgreSQL order management migrations
+	@echo "Running PostgreSQL order management migrations..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=order-mgmt
 
-migrate-status:  ## Show migration status
-	@echo "Migration status:"
+migrate-postgres-status:  ## Show PostgreSQL migration status
+	@echo "PostgreSQL migration status:"
 	@go run cmd/migrate/main.go --cmd=status
 
-migrate-new:  ## Create new migration (Usage: make migrate-new CONTEXT=core NAME=add_table)
+migrate-postgres-new:  ## Create new PostgreSQL migration (Usage: make migrate-postgres-new CONTEXT=core NAME=add_table)
 	@if [ -z "$(CONTEXT)" ] || [ -z "$(NAME)" ]; then \
 		echo "Error: CONTEXT and NAME required"; \
-		echo "Usage: make migrate-new CONTEXT=core NAME=add_table"; \
-		echo "       make migrate-new CONTEXT=identity NAME=add_field"; \
+		echo "Usage: make migrate-postgres-new CONTEXT=core NAME=add_table"; \
+		echo "       make migrate-postgres-new CONTEXT=identity NAME=add_field"; \
 		exit 1; \
 	fi
 	@./scripts/create-migration.sh $(CONTEXT) $(NAME)
+
+# Migrations - SQLite
+migrate-sqlite:  ## Run all SQLite migrations (core + all contexts)
+	@echo "Running all SQLite migrations..."
+	@$(MAKE) migrate-sqlite-core
+	@$(MAKE) migrate-sqlite-shared
+	@$(MAKE) migrate-sqlite-identity
+	@$(MAKE) migrate-sqlite-customer-mgmt
+	@$(MAKE) migrate-sqlite-order-mgmt
+	@echo "✓ All SQLite migrations completed"
+
+migrate-sqlite-core:  ## Run SQLite core migrations (extensions, auth, RBAC)
+	@echo "Running SQLite core migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=core
+
+migrate-sqlite-shared:  ## Run SQLite shared context migrations (reference data)
+	@echo "Running SQLite shared context migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=shared
+
+migrate-sqlite-identity:  ## Run SQLite identity context migrations
+	@echo "Running SQLite identity context migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=identity
+
+migrate-sqlite-customer-mgmt:  ## Run SQLite customer management migrations
+	@echo "Running SQLite customer management migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=customer-mgmt
+
+migrate-sqlite-order-mgmt:  ## Run SQLite order management migrations
+	@echo "Running SQLite order management migrations..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=order-mgmt
+
+migrate-sqlite-status:  ## Show SQLite migration status
+	@echo "SQLite migration status:"
+	@go run cmd/migrate/main.go --cmd=status
+
+migrate-sqlite-new:  ## Create new SQLite migration (Usage: make migrate-sqlite-new CONTEXT=core NAME=add_table)
+	@if [ -z "$(CONTEXT)" ] || [ -z "$(NAME)" ]; then \
+		echo "Error: CONTEXT and NAME required"; \
+		echo "Usage: make migrate-sqlite-new CONTEXT=core NAME=add_table"; \
+		echo "       make migrate-sqlite-new CONTEXT=identity NAME=add_field"; \
+		exit 1; \
+	fi
+	@./scripts/create-migration.sh $(CONTEXT) $(NAME)
+
+# Migrations - MySQL (placeholder)
+migrate-mysql:  ## Run all MySQL migrations (coming soon)
+	@echo "⚠️  MySQL support coming soon"
+	@exit 1
+
+migrate-mysql-core:  ## Run MySQL core migrations (coming soon)
+	@echo "⚠️  MySQL support coming soon"
+	@exit 1
 
 # Seed data
 seed:  ## Seed all contexts with initial data
@@ -139,9 +191,9 @@ seed-identity:  ## Seed identity context (RBAC)
 	@go run cmd/seed/main.go --context=identity
 
 # Development workflows
-dev-postgres: docker-up migrate run  ## PostgreSQL development (Docker + migrations + API)
+dev-postgres: docker-up migrate-postgres run  ## PostgreSQL development (Docker + migrations + API)
 
-dev-postgres-fresh: docker-up db-fresh run  ## PostgreSQL fresh start with clean database
+dev-postgres-fresh: docker-up db-fresh migrate-postgres run  ## PostgreSQL fresh start with clean database
 
 dev-sqlite:  ## SQLite development (embedded, no Docker needed)
 	@echo "🚀 Starting Promenade with SQLite..."
