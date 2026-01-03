@@ -9,12 +9,12 @@ export default defineConfig({
   ignoreDeadLinks: true,
   
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/promenade/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/png', href: '/promenade/favicon.png' }],
     ['meta', { name: 'theme-color', content: '#818cf8' }],
   ],
 
   themeConfig: {
-    logo: '/logo.svg',
+    logo: '/logo.png',
     
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
