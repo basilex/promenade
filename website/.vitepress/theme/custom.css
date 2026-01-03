@@ -1,5 +1,25 @@
 /* Custom styles for Promenade Platform website */
 
+/* Softer background theme - not pure white */
+:root {
+  --vp-c-bg: #fafafa;
+  --vp-c-bg-alt: #f5f5f5;
+  --vp-c-bg-soft: #f8f8f8;
+}
+
+/* Dark theme adjustments */
+.dark {
+  --vp-c-bg: #1a1a1a;
+  --vp-c-bg-alt: #161616;
+  --vp-c-bg-soft: #242424;
+}
+
+/* Favicon - center it properly */
+.VPNav .logo img {
+  object-fit: contain;
+  object-position: center;
+}
+
 /* Feature Grid - Technical Foundation Section */
 .feature-grid {
   display: grid;
