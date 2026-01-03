@@ -414,7 +414,7 @@ redis-cli -h localhost -p 6379 ping
 **Debug**:
 ```bash
 # Check Event Bus config
-grep "adapter" config/app.dev.yaml
+grep "adapter" config/app.postgres-dev.yaml
 
 # Check Redis if using redis adapter
 redis-cli ping

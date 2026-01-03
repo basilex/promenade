@@ -83,7 +83,7 @@ Each config file contains:
 Production config uses environment variable overrides:
 
 ```yaml
-# app.prod.yaml
+# app.postgres-prod.yaml or app.sqlite-prod.yaml
 database:
   postgres:
     host: "${DB_HOST}"           # Required

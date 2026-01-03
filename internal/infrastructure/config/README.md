@@ -50,9 +50,15 @@ fmt.Println("Database host:", cfg.Database.Postgres.Host)
 
 ```
 config/
- app.dev.yaml      # Development (Memory bus, localhost DB)
- app.test.yaml     # Testing (test DB on port 5433)
- app.prod.yaml     # Production (Redis bus, env vars)
+ # PostgreSQL configurations
+ app.postgres-dev.yaml
+ app.postgres-test.yaml
+ app.postgres-prod.yaml
+ 
+ # SQLite configurations
+ app.sqlite-dev.yaml
+ app.sqlite-test.yaml
+ app.sqlite-prod.yaml
 ```
 
 ### Selection
@@ -60,12 +66,17 @@ config/
 **Environment variable** `ENVIRONMENT` determines which file to load:
 
 ```bash
-ENVIRONMENT=dev ./promenade        # Loads app.dev.yaml
-ENVIRONMENT=test ./promenade       # Loads app.test.yaml
-ENVIRONMENT=production ./promenade # Loads app.prod.yaml
+# PostgreSQL development
+DATABASE_DRIVER=postgres ENVIRONMENT=development ./promenade
+
+# SQLite development
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./promenade
+
+# PostgreSQL production
+DATABASE_DRIVER=postgres ENVIRONMENT=production ./promenade
 ```
 
-**Default**: `dev` if not specified
+**Defaults**: `DATABASE_DRIVER=postgres`, `ENVIRONMENT=development`
 
 ---
 
@@ -165,7 +176,7 @@ logging:
 **Sensitive values** should use environment variables in production:
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 database:
   postgres:
     host: "${DB_HOST}"           # Required

@@ -138,9 +138,12 @@ promenade/
  test/                       #  Testing
     integration/          #    Integration helpers
  config/                     #  Configuration
-    app.dev.yaml
-    app.test.yaml
-    app.prod.yaml
+    app.postgres-dev.yaml
+    app.postgres-test.yaml
+    app.postgres-prod.yaml
+    app.sqlite-dev.yaml
+    app.sqlite-test.yaml
+    app.sqlite-prod.yaml
  docs/                       #  Clean DDD docs (to be written)
  README.md                   #  New DDD-focused README
 ```

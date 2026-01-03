@@ -201,7 +201,7 @@ If you decide to use cookie-based authentication:
 ### Step 1: Update Configuration
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 server:
   cookie_auth: true  # Enable cookie-based auth
   csrf_enabled: true # Enable CSRF protection

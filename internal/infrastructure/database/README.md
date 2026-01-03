@@ -263,7 +263,7 @@ func (r *contactRepository) GetActiveContacts(ctx context.Context, userID uuidv7
 ### PostgreSQL Config
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 database:
   postgres:
     host: "localhost"

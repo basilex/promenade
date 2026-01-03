@@ -53,7 +53,7 @@ type Cache interface {
 
 ### YAML Configuration
 
-**Development** (`config/app.dev.yaml`):
+**Development** (`config/app.postgres-dev.yaml` or `config/app.sqlite-dev.yaml`):
 ```yaml
 cache:
   enabled: true
@@ -73,7 +73,7 @@ cache:
     session: "30m"
 ```
 
-**Production** (`config/app.prod.yaml`):
+**Production** (`config/app.postgres-prod.yaml`):
 ```yaml
 cache:
   enabled: true
@@ -90,7 +90,7 @@ cache:
     session: "1h"
 ```
 
-**Testing** (`config/app.test.yaml`):
+**Testing** (`config/app.postgres-test.yaml` or `config/app.sqlite-test.yaml`):
 ```yaml
 cache:
   enabled: false
@@ -503,7 +503,7 @@ func (m *CacheMetrics) HitRate() float64 {
 redis-cli -h localhost -p 6379 -n 2 PING
 
 # Check config
-grep -A 10 "cache:" config/app.dev.yaml
+grep -A 10 "cache:" config/app.postgres-dev.yaml
 
 # Check logs
 grep "Cache initialized" logs/app.log

@@ -267,7 +267,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 
 ### PostgreSQL
 
-**config/app.prod.yaml**:
+**config/app.postgres-prod.yaml**:
 ```yaml
 database:
   postgres:
@@ -281,7 +281,7 @@ database:
 
 ### SQLite
 
-**config/app.test.yaml**:
+**config/app.postgres-test.yaml**:
 ```yaml
 database:
   sqlite:
