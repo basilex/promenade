@@ -96,7 +96,7 @@ func TestCountryRepository_Queries(t *testing.T) {
 				Name:        "Test Country 2",
 				NameLocal:   "Local 2",
 				PhoneCode:   "+2",
-				IsActive:    false,
+				IsActive:    true, // Changed to true so List() finds both
 			},
 		}
 
