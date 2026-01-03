@@ -9,17 +9,17 @@
 ### 1. Use SQLite Configuration
 
 ```bash
-# Set environment to use SQLite config
-export ENVIRONMENT=sqlite
+# Use Makefile target (easiest)
+make dev-sqlite
 
-# Start application
-./bin/promenade
-```
+# Or manually with environment variables
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
 
-Or explicitly:
+# For testing
+DATABASE_DRIVER=sqlite ENVIRONMENT=test ./bin/promenade
 
-```bash
-go run cmd/api/*.go --config=config/app.sqlite.yaml
+# For production (single instance only!)
+DATABASE_DRIVER=sqlite ENVIRONMENT=production ./bin/promenade
 ```
 
 ### 2. Database File
@@ -35,13 +35,19 @@ SQLite creates database file at: `./data/promenade.db`
 
 ---
 
-## Configuration
+## Configuration Files
 
-**File**: `config/app.sqlite.yaml`
+Promenade uses **driver-environment** format:
+
+- `config/app.sqlite-dev.yaml` - Development with SQLite
+- `config/app.sqlite-test.yaml` - Testing with SQLite (in-memory)
+- `config/app.sqlite-prod.yaml` - Production with SQLite (single instance)
+
+**Example**: `config/app.sqlite-dev.yaml`
 
 ```yaml
 database:
-  driver: "sqlite"  # Switch to "postgres" for production
+  driver: "sqlite"  # Driver selection
   
   sqlite:
     path: "./data/promenade.db"  # Database file location

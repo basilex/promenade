@@ -1,0 +1,73 @@
+# SQLite Production Configuration
+# For single-instance production deployments (NOT recommended for multi-instance)
+
+app:
+  name: "Promenade Platform"
+  environment: "production"
+  version: "0.1.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8081
+  read_timeout: 30s
+  write_timeout: 30s
+
+# Database configuration - SQLite production mode
+database:
+  driver: "sqlite"
+  
+  # SQLite production database
+  sqlite:
+    path: "/var/lib/promenade/promenade.db"  # System-wide location
+    mode: "rwc"
+    cache: "shared"
+    max_open_conns: 1  # SQLite limitation
+    max_idle_conns: 1
+  
+  # PostgreSQL (unused in SQLite mode)
+  postgres:
+    host: "${DB_HOST}"
+    port: 5432
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    database: "promenade_prod"
+    sslmode: "require"
+  
+  # Redis - production instance (optional but recommended)
+  redis:
+    addr: "${REDIS_ADDR:-localhost:6379}"
+    password: "${REDIS_PASSWORD}"
+    pool_size: 20
+    max_retries: 3
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
+
+jwt:
+  secret: "${JWT_SECRET}"  # MUST be set via environment variable
+  access_token_duration: 15m
+  refresh_token_duration: 168h  # 7 days
+  issuer: "promenade-platform"
+
+logging:
+  level: "warn"  # Production: warn and above only
+  format: "json"
+  add_source: false
+
+# Event Bus - Memory adapter (or Redis if available)
+bus:
+  adapter: "memory"  # Use "redis" for multi-instance (but SQLite doesn't support multi-instance)
+  worker_pool_size: 10
+  buffer_size: 500
+  retry_attempts: 5
+  retry_delay: 1s
+  retry_max_delay: 30s
+  retry_multiplier: 2.0
+
+# Cache - Redis adapter (recommended for production)
+cache:
+  adapter: "redis"  # Use Redis for production caching
+  default_ttl: 1h
+  max_entries: 10000

@@ -199,21 +199,29 @@ type PermissionSection struct {
 }
 
 // LoadAppConfig loads the core application config from YAML
-// Supports environment-specific configs: app.dev.yaml, app.test.yaml, app.prod.yaml
+// Supports driver-environment configs: app.{driver}-{env}.yaml
+// Examples: app.postgres-dev.yaml, app.sqlite-test.yaml, app.mysql-prod.yaml
 func LoadAppConfig(configPath string) (*AppConfig, error) {
-	// If no path specified, auto-detect based on environment
+	// If no path specified, auto-detect based on driver and environment
 	if configPath == "" {
+		driver := os.Getenv("DATABASE_DRIVER")
+		if driver == "" {
+			driver = "postgres" // Default to PostgreSQL
+		}
+
 		env := os.Getenv("ENVIRONMENT")
 		if env == "" {
 			env = "development"
 		}
 
-		// Try environment-specific config first
-		envConfigPath := fmt.Sprintf("config/app.%s.yaml", getEnvSuffix(env))
+		// Build config path: app.{driver}-{env}.yaml
+		envSuffix := getEnvSuffix(env)
+		envConfigPath := fmt.Sprintf("config/app.%s-%s.yaml", driver, envSuffix)
+		
 		if _, err := os.Stat(envConfigPath); err == nil {
 			configPath = envConfigPath
 		} else {
-			// Fall back to generic app.yaml
+			// Fall back to generic app.yaml (backward compatibility)
 			configPath = "config/app.yaml"
 		}
 	}
@@ -243,8 +251,6 @@ func getEnvSuffix(env string) string {
 		return "test"
 	case "production", "prod":
 		return "prod"
-	case "sqlite":
-		return "sqlite"
 	default:
 		return "dev"
 	}

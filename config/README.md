@@ -4,32 +4,63 @@
 
 # Configuration Files
 
-**Environment-specific YAML configuration** for Promenade Platform.
+**Driver-environment YAML configuration** for Promenade Platform.
 
 ---
 
-## Files
+## File Naming Convention
+
+**Format**: `app.{driver}-{env}.yaml`
 
 ```
 config/
- app.dev.yaml       # Development (localhost, Memory bus)
- app.test.yaml      # Testing (test DB on port 5433)
- app.prod.yaml      # Production (env vars, Redis bus)
+ # PostgreSQL configurations
+ app.postgres-dev.yaml    # PostgreSQL + development
+ app.postgres-test.yaml   # PostgreSQL + testing
+ app.postgres-prod.yaml   # PostgreSQL + production
+ 
+ # SQLite configurations
+ app.sqlite-dev.yaml      # SQLite + development (embedded)
+ app.sqlite-test.yaml     # SQLite + testing (in-memory)
+ app.sqlite-prod.yaml     # SQLite + production (single instance)
+ 
+ # Future: MySQL, SQL Server, etc.
+ # app.mysql-dev.yaml
+ # app.sqlserver-prod.yaml
 ```
+
+**Benefits**:
+- ✅ Clear driver selection at file level
+- ✅ Easy to find all configs for specific database
+- ✅ Scalable for multiple database engines
+- ✅ Environment isolation per driver
 
 ---
 
 ## Usage
 
-Configuration is loaded automatically based on `ENVIRONMENT` variable:
+Configuration is loaded automatically based on **two** environment variables:
 
 ```bash
-ENVIRONMENT=dev ./promenade        # Uses app.dev.yaml
-ENVIRONMENT=test ./promenade       # Uses app.test.yaml
-ENVIRONMENT=production ./promenade # Uses app.prod.yaml
+# PostgreSQL development
+DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade
+
+# SQLite development
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
+
+# PostgreSQL production
+DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade
 ```
 
-**Default**: `dev`
+**Defaults**:
+- `DATABASE_DRIVER`: `postgres`
+- `ENVIRONMENT`: `development`
+
+**Makefile shortcuts**:
+```bash
+make dev           # PostgreSQL + development
+make dev-sqlite    # SQLite + development
+```
 
 ---
 

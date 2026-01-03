@@ -87,13 +87,18 @@ Promenade implements **database-agnostic architecture** supporting multiple SQL 
 **Quick Switch Example**:
 ```bash
 # PostgreSQL (production)
-ENVIRONMENT=production ./bin/promenade
+DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade
 
 # SQLite (development/demo)
-ENVIRONMENT=sqlite ./bin/promenade
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
 
-# Configuration via config/app.{env}.yaml
-driver: "postgres"  # or "sqlite"
+# Configuration files (driver-environment format)
+config/app.postgres-dev.yaml   # PostgreSQL + development
+config/app.postgres-test.yaml  # PostgreSQL + testing
+config/app.postgres-prod.yaml  # PostgreSQL + production
+config/app.sqlite-dev.yaml     # SQLite + development
+config/app.sqlite-test.yaml    # SQLite + testing
+config/app.sqlite-prod.yaml    # SQLite + production
 ```
 
 **See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md) | [config/SQLITE.md](config/SQLITE.md)
@@ -473,7 +478,7 @@ make build
 make dev-sqlite
 
 # Or manually
-ENVIRONMENT=sqlite ./bin/promenade
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
 ```
 
 Database creates at `./data/promenade.db` (auto-created directory).

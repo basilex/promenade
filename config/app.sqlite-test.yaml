@@ -1,0 +1,74 @@
+# SQLite Test Configuration
+# Isolated test database for automated testing
+
+app:
+  name: "Promenade Platform"
+  environment: "test"
+  version: "0.1.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8082  # Different port for test isolation
+  read_timeout: 5s
+  write_timeout: 5s
+
+# Database configuration - SQLite test mode
+database:
+  driver: "sqlite"
+  
+  # SQLite test database (in-memory or temporary file)
+  sqlite:
+    path: ":memory:"  # In-memory database (fastest for tests)
+    # path: "./data/test/promenade_test.db"  # Alternative: file-based test DB
+    mode: "rwc"
+    cache: "shared"
+    max_open_conns: 1
+    max_idle_conns: 1
+  
+  # PostgreSQL (unused in SQLite mode)
+  postgres:
+    host: "localhost"
+    port: 5433
+    user: "test"
+    password: "test"
+    database: "promenade_test"
+    sslmode: "disable"
+  
+  # Redis - test instance (optional)
+  redis:
+    addr: "localhost:6380"
+    password: ""
+    pool_size: 5
+    max_retries: 2
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
+
+jwt:
+  secret: "test-secret-key-do-not-use-in-production"
+  access_token_duration: 5m
+  refresh_token_duration: 24h
+  issuer: "promenade-test"
+
+logging:
+  level: "error"  # Reduce noise in tests
+  format: "text"
+  add_source: false
+
+# Event Bus - Memory adapter (fast for tests)
+bus:
+  adapter: "memory"
+  worker_pool_size: 2
+  buffer_size: 50
+  retry_attempts: 1
+  retry_delay: 10ms
+  retry_max_delay: 100ms
+  retry_multiplier: 2.0
+
+# Cache - NoOp adapter (no caching in tests)
+cache:
+  adapter: "noop"
+  default_ttl: 1m
+  max_entries: 100
