@@ -177,42 +177,42 @@ These are the ready-to-use business modules that save you months of development 
     <div class="icon">👥</div>
     <h3>Customer Management</h3>
     <p>Complete CRM with customer lifecycle (Lead → Prospect → Customer → Churned). B2C/B2B support, tier segmentation, sales pipeline tracking. 14 API endpoints with state machine validation.</p>
-    <a href="/concepts/customer-management" class="link">Explore Customer Management →</a>
+    <a href="concepts/customer-management" class="link">Explore Customer Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">💼</div>
     <h3>Deal Management</h3>
     <p>Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.</p>
-    <a href="/concepts/deal-management" class="link">Explore Deal Management →</a>
+    <a href="concepts/deal-management" class="link">Explore Deal Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📦</div>
     <h3>Order Management</h3>
     <p>Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.</p>
-    <a href="/concepts/order-management" class="link">Explore Order Management →</a>
+    <a href="concepts/order-management" class="link">Explore Order Management →</a>
   </div>
 
   <div class="feature">
     <div class="icon">🔐</div>
     <h3>User Authentication</h3>
     <p>Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.</p>
-    <a href="/guide/rbac" class="link">See Authentication Guide →</a>
+    <a href="guide/rbac" class="link">See Authentication Guide →</a>
   </div>
 
   <div class="feature">
     <div class="icon">💳</div>
     <h3>Billing & Invoicing</h3>
     <p>Generate invoices, track payments, manage subscriptions. Automatic billing cycles, payment reminders, revenue reporting. Integration-ready for payment gateways.</p>
-    <a href="/concepts/billing" class="link">Coming Q2 2026 →</a>
+    <a href="concepts/billing" class="link">Coming Q2 2026 →</a>
   </div>
 
   <div class="feature">
     <div class="icon">📊</div>
     <h3>Analytics & Reporting</h3>
     <p>Business dashboards, KPI tracking, revenue forecasts. Customer insights, sales reports, order analytics. Export to Excel, PDF, or integrate with BI tools.</p>
-    <a href="/concepts/analytics" class="link">Coming Q3 2026 →</a>
+    <a href="concepts/analytics" class="link">Coming Q3 2026 →</a>
   </div>
 </div>
 
@@ -434,7 +434,7 @@ Full API documentation: [API Reference](/reference/api-reference)
   <div class="step-content">
     <h4>Complete Guide</h4>
     <p>Full setup with authentication, production config</p>
-    <a href="/guide/getting-started">Getting Started →</a>
+    <a href="guide/getting-started">Getting Started →</a>
   </div>
 </div>
 
@@ -443,7 +443,7 @@ Full API documentation: [API Reference](/reference/api-reference)
   <div class="step-content">
     <h4>Architecture Deep-Dive</h4>
     <p>Understand how Bounded Contexts work</p>
-    <a href="/concepts/clean-architecture">Learn DDD →</a>
+    <a href="concepts/clean-architecture">Learn DDD →</a>
   </div>
 </div>
 
@@ -461,7 +461,7 @@ Full API documentation: [API Reference](/reference/api-reference)
   <div class="step-content">
     <h4>Developer Guide</h4>
     <p>Add new features, run tests, contribute</p>
-    <a href="/guide/development-workflow">Development →</a>
+    <a href="guide/development-workflow">Development →</a>
   </div>
 </div>
 
@@ -724,9 +724,9 @@ Full API documentation: [API Reference](/reference/api-reference)
 <div class="resource-category">
   <h3>📖 Documentation</h3>
   <ul>
-    <li><a href="/guide/getting-started">Getting Started Guide</a> - 5-minute setup</li>
-    <li><a href="/concepts/clean-architecture">Clean Architecture with DDD</a> - Core principles</li>
-    <li><a href="/guide/testing-patterns">Testing Patterns</a> - Three-tier testing strategy</li>
+    <li><a href="guide/getting-started">Getting Started Guide</a> - 5-minute setup</li>
+    <li><a href="concepts/clean-architecture">Clean Architecture with DDD</a> - Core principles</li>
+    <li><a href="guide/testing-patterns">Testing Patterns</a> - Three-tier testing strategy</li>
     <li><a href="/reference/api-reference">API Reference</a> - Complete REST documentation</li>
   </ul>
 </div>
@@ -736,28 +736,28 @@ Full API documentation: [API Reference](/reference/api-reference)
   <ul>
     <li><a href="https://github.com/basilex/promenade">GitHub Repository</a> - Source code & issues</li>
     <li><a href="https://github.com/basilex/promenade/actions">GitHub Actions</a> - CI/CD status</li>
-    <li><a href="/guide/development-workflow">Development Workflow</a> - Daily development process</li>
-    <li><a href="/guide/contributing">Contributing Guide</a> - How to contribute</li>
+    <li><a href="guide/development-workflow">Development Workflow</a> - Daily development process</li>
+    <li><a href="guide/contributing">Contributing Guide</a> - How to contribute</li>
   </ul>
 </div>
 
 <div class="resource-category">
   <h3>🎓 Learning</h3>
   <ul>
-    <li><a href="/concepts/bounded-contexts">Bounded Contexts Strategy</a> - Context isolation</li>
-    <li><a href="/concepts/event-driven">Event-Driven Architecture</a> - Event Bus deep dive</li>
-    <li><a href="/guide/rbac">RBAC Implementation</a> - Role-based access control</li>
-    <li><a href="/packages/">Package Library</a> - 10 reusable packages</li>
+    <li><a href="concepts/bounded-contexts">Bounded Contexts Strategy</a> - Context isolation</li>
+    <li><a href="concepts/event-driven">Event-Driven Architecture</a> - Event Bus deep dive</li>
+    <li><a href="guide/rbac">RBAC Implementation</a> - Role-based access control</li>
+    <li><a href="packages/">Package Library</a> - 10 reusable packages</li>
   </ul>
 </div>
 
 <div class="resource-category">
   <h3>🚀 Production</h3>
   <ul>
-    <li><a href="/guide/health-checks">Health Monitoring</a> - Dependency health checks</li>
-    <li><a href="/guide/caching">Caching Layer</a> - Redis-based caching</li>
-    <li><a href="/guide/rate-limiting">Rate Limiting</a> - IP-based protection</li>
-    <li><a href="/guide/production-deployment">Production Deployment</a> - Docker & Kubernetes</li>
+    <li><a href="guide/health-checks">Health Monitoring</a> - Dependency health checks</li>
+    <li><a href="guide/caching">Caching Layer</a> - Redis-based caching</li>
+    <li><a href="guide/rate-limiting">Rate Limiting</a> - IP-based protection</li>
+    <li><a href="guide/production-deployment">Production Deployment</a> - Docker & Kubernetes</li>
   </ul>
 </div>
 
@@ -766,7 +766,7 @@ Full API documentation: [API Reference](/reference/api-reference)
   <ul>
     <li><a href="/reference/test-coverage-report">Test Coverage Report</a> - 240+ tests, 90%+ coverage</li>
     <li><a href="/reference/bus-test-coverage">Event Bus Tests</a> - 67 tests, 377K events/sec</li>
-    <li><a href="/packages/uuidv7">UUID v7 Performance</a> - 2x faster inserts</li>
+    <li><a href="packages/uuidv7">UUID v7 Performance</a> - 2x faster inserts</li>
     <li><a href="https://github.com/basilex/promenade/actions">CI/CD Pipeline</a> - Build status & metrics</li>
   </ul>
 </div>
