@@ -243,6 +243,8 @@ func getEnvSuffix(env string) string {
 		return "test"
 	case "production", "prod":
 		return "prod"
+	case "sqlite":
+		return "sqlite"
 	default:
 		return "dev"
 	}
@@ -264,12 +266,21 @@ func (cfg *AppConfig) Validate() error {
 		return err
 	}
 
-	// Database validation (PostgreSQL)
-	if cfg.Database.Postgres.Host == "" {
-		return fmt.Errorf("database.postgres.host is required")
-	}
-	if cfg.Database.Postgres.Database == "" {
-		return fmt.Errorf("database.postgres.database is required")
+	// Database validation (driver-specific)
+	switch cfg.Database.Driver {
+	case "postgres":
+		if cfg.Database.Postgres.Host == "" {
+			return fmt.Errorf("database.postgres.host is required")
+		}
+		if cfg.Database.Postgres.Database == "" {
+			return fmt.Errorf("database.postgres.database is required")
+		}
+	case "sqlite":
+		if cfg.Database.SQLite.Path == "" {
+			return fmt.Errorf("database.sqlite.path is required")
+		}
+	default:
+		return fmt.Errorf("database.driver must be 'postgres' or 'sqlite'")
 	}
 
 	// Server validation
