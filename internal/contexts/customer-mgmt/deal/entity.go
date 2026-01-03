@@ -37,7 +37,6 @@ const (
 type Deal struct {
 	aggregate.BaseAggregate
 
-	ID         uuidv7.UUID
 	CustomerID uuidv7.UUID
 	CompanyID  *uuidv7.UUID
 
@@ -57,8 +56,6 @@ type Deal struct {
 
 	CloseReason string
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
 	DeletedAt *time.Time
 }
 
@@ -80,10 +77,8 @@ func NewDeal(customerID uuidv7.UUID, name string, value valueobject.Money, assig
 		return nil, fmt.Errorf("expected_close_date cannot be in the past")
 	}
 
-	now := time.Now()
 	return &Deal{
 		BaseAggregate:     aggregate.NewBaseAggregate(),
-		ID:                uuidv7.New(),
 		CustomerID:        customerID,
 		Name:              name,
 		Value:             value,
@@ -93,8 +88,6 @@ func NewDeal(customerID uuidv7.UUID, name string, value valueobject.Money, assig
 		Source:            DealSourceInbound,
 		ExpectedCloseDate: expectedCloseDate,
 		AssignedTo:        assignedTo,
-		CreatedAt:         now,
-		UpdatedAt:         now,
 	}, nil
 }
 
@@ -105,7 +98,7 @@ func (d *Deal) UpdateBasicInfo(name, description string) error {
 	}
 	d.Name = name
 	d.Description = description
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
@@ -116,7 +109,7 @@ func (d *Deal) UpdateValue(value valueobject.Money) error {
 	}
 	d.Value = value
 	d.Currency = value.Currency
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
@@ -132,7 +125,7 @@ func (d *Deal) MoveTo(stage DealStage) error {
 
 	d.Stage = stage
 	d.Probability = getDefaultProbability(stage)
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
@@ -150,7 +143,7 @@ func (d *Deal) MarkAsWon(reason string) error {
 	d.Probability = 100
 	d.ActualCloseDate = &now
 	d.CloseReason = reason
-	d.UpdatedAt = now
+	d.Touch()
 	return nil
 }
 
@@ -171,7 +164,7 @@ func (d *Deal) MarkAsLost(reason string) error {
 	d.Probability = 0
 	d.ActualCloseDate = &now
 	d.CloseReason = reason
-	d.UpdatedAt = now
+	d.Touch()
 	return nil
 }
 
@@ -184,7 +177,7 @@ func (d *Deal) UpdateProbability(probability int) error {
 		return fmt.Errorf("cannot change probability for closed deal")
 	}
 	d.Probability = probability
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
@@ -197,7 +190,7 @@ func (d *Deal) UpdateExpectedCloseDate(date time.Time) error {
 		return fmt.Errorf("cannot change expected close date for closed deal")
 	}
 	d.ExpectedCloseDate = date
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
@@ -207,20 +200,20 @@ func (d *Deal) AssignToSalesRep(userID uuidv7.UUID) error {
 		return fmt.Errorf("sales rep ID is required")
 	}
 	d.AssignedTo = userID
-	d.UpdatedAt = time.Now()
+	d.Touch()
 	return nil
 }
 
 // SetCompany links deal to a company
 func (d *Deal) SetCompany(companyID *uuidv7.UUID) {
 	d.CompanyID = companyID
-	d.UpdatedAt = time.Now()
+	d.Touch()
 }
 
 // SetSource sets deal source
 func (d *Deal) SetSource(source DealSource) {
 	d.Source = source
-	d.UpdatedAt = time.Now()
+	d.Touch()
 }
 
 // IsClosed returns true if deal is in terminal stage

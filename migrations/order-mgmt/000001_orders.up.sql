@@ -7,7 +7,7 @@
 
 CREATE TABLE IF NOT EXISTS order_orders (
     -- Identity
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
     order_number VARCHAR(50) UNIQUE NOT NULL,  -- ORD-2026-000001
     customer_id UUID NOT NULL,  -- References customer_customers (cross-context)
     company_id UUID NULL,       -- References customer_companies (B2B orders)
@@ -61,7 +61,7 @@ CREATE INDEX idx_orders_deleted_at ON order_orders (deleted_at) WHERE deleted_at
 
 CREATE TABLE IF NOT EXISTS order_lines (
     -- Identity
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
     order_id UUID NOT NULL REFERENCES order_orders (id) ON DELETE CASCADE,
     product_id UUID NOT NULL,  -- References warehouse_products (cross-context)
 

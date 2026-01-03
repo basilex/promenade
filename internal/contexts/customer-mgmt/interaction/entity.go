@@ -44,7 +44,6 @@ const (
 type Interaction struct {
 	aggregate.BaseAggregate
 
-	ID         uuidv7.UUID
 	CustomerID uuidv7.UUID
 	CompanyID  *uuidv7.UUID
 
@@ -65,8 +64,6 @@ type Interaction struct {
 	FollowUpDate     *time.Time
 	FollowUpNotes    string
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
 	DeletedAt *time.Time
 }
 
@@ -100,10 +97,8 @@ func NewInteraction(
 		return nil, fmt.Errorf("created_by is required")
 	}
 
-	now := time.Now()
 	return &Interaction{
 		BaseAggregate:    aggregate.NewBaseAggregate(),
-		ID:               uuidv7.New(),
 		CustomerID:       customerID,
 		CompanyID:        companyID,
 		Type:             interactionType,
@@ -114,8 +109,6 @@ func NewInteraction(
 		Attendees:        make([]uuidv7.UUID, 0),
 		StartedAt:        startedAt,
 		FollowUpRequired: false,
-		CreatedAt:        now,
-		UpdatedAt:        now,
 	}, nil
 }
 
@@ -130,14 +123,14 @@ func (i *Interaction) UpdateContent(subject, description string) error {
 
 	i.Subject = subject
 	i.Description = description
-	i.UpdatedAt = time.Now()
+	i.Touch()
 	return nil
 }
 
 // SetCompany sets or updates the company association
 func (i *Interaction) SetCompany(companyID *uuidv7.UUID) {
 	i.CompanyID = companyID
-	i.UpdatedAt = time.Now()
+	i.Touch()
 }
 
 // SetOutcome sets the interaction outcome
@@ -147,7 +140,7 @@ func (i *Interaction) SetOutcome(outcome InteractionOutcome) error {
 	}
 
 	i.Outcome = &outcome
-	i.UpdatedAt = time.Now()
+	i.Touch()
 	return nil
 }
 
@@ -163,7 +156,7 @@ func (i *Interaction) EndInteraction(endedAt time.Time) error {
 	duration := int(endedAt.Sub(i.StartedAt).Seconds())
 	i.EndedAt = &endedAt
 	i.DurationSec = &duration
-	i.UpdatedAt = time.Now()
+	i.Touch()
 	return nil
 }
 
@@ -182,14 +175,14 @@ func (i *Interaction) SetFollowUp(required bool, followUpDate *time.Time, notes 
 		i.FollowUpNotes = ""
 	}
 
-	i.UpdatedAt = time.Now()
+	i.Touch()
 	return nil
 }
 
 // AddAttendee adds a participant to the interaction
 func (i *Interaction) AddAttendee(attendeeID uuidv7.UUID) {
 	i.Attendees = append(i.Attendees, attendeeID)
-	i.UpdatedAt = time.Now()
+	i.Touch()
 }
 
 // RemoveAttendee removes a participant from the interaction
@@ -200,14 +193,14 @@ func (i *Interaction) RemoveAttendee(attendeeID uuidv7.UUID) {
 			break
 		}
 	}
-	i.UpdatedAt = time.Now()
+	i.Touch()
 }
 
 // Delete soft deletes the interaction
 func (i *Interaction) Delete() {
 	now := time.Now()
 	i.DeletedAt = &now
-	i.UpdatedAt = now
+	i.Touch()
 }
 
 // Validate performs comprehensive validation

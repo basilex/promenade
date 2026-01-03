@@ -13,6 +13,9 @@ type Timezone struct {
 	Name         string      `db:"name"`
 	Abbreviation string      `db:"abbreviation"`
 	UTCOffset    int         `db:"utc_offset"` // UTC offset in seconds
+	CountryCode  string      `db:"country_code"`
+	DSTOffset    *int        `db:"dst_offset"`
+	DisplayName  string      `db:"display_name"`
 	IsActive     bool        `db:"is_active"`
 }
 

@@ -9,12 +9,14 @@ import (
 
 // Language represents an ISO 639-1 language (Aggregate Root in Shared Context)
 type Language struct {
-	ID         uuidv7.UUID `db:"id"`
-	Code       string      `db:"code"`
-	Code3      string      `db:"code3"`
-	Name       string      `db:"name"`
-	NativeName string      `db:"native_name"`
-	IsActive   bool        `db:"is_active"`
+	ID             uuidv7.UUID `db:"id"`
+	Code           string      `db:"code"`
+	Code3          string      `db:"code3"`
+	Name           string      `db:"name"`
+	NativeName     string      `db:"native_name"`
+	Direction      string      `db:"direction"`
+	NativeSpeakers *int64      `db:"native_speakers"`
+	IsActive       bool        `db:"is_active"`
 }
 
 // NewLanguage creates a new Language entity with validation

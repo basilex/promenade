@@ -68,6 +68,24 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 
 **See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
 
+### Multi-Database Support
+
+Promenade implements **database-agnostic architecture** supporting multiple SQL databases:
+
+- **Dialect Pattern**: Abstracts SQL syntax differences (placeholders, JSON types)
+- **Supported Databases**: PostgreSQL (production), SQLite (dev/test), MySQL (planned), SQL Server (planned)
+- **JSONB Abstraction**: `jsonstore.Field[T]` works across all databases (JSONB → TEXT → JSON)
+- **UUID Generation**: All IDs generated in Go code (`uuidv7.New()`), not database defaults
+- **Timestamp Management**: Business logic calls `.Touch()` to update UpdatedAt (no database triggers)
+- **101 Tests**: pkg/database + pkg/jsonstore with 100% coverage
+
+**Key Features**:
+- Write queries with `?` placeholders, auto-convert to database-specific syntax ($1 for Postgres, ? for SQLite)
+- Store JSON as TEXT (cross-database compatible) with type-safe Go wrappers
+- Migrations work identically across databases (no vendor-specific DDL)
+
+**See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md)
+
 ### Health Checks
 
 Promenade provides **comprehensive health monitoring** for all dependencies:

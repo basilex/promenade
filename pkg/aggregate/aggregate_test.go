@@ -219,3 +219,142 @@ func TestAggregate_Timestamps(t *testing.T) {
 		assert.Equal(t, agg.CreatedAt, agg.UpdatedAt)
 	})
 }
+
+func TestBaseAggregate_Touch(t *testing.T) {
+	t.Run("updates UpdatedAt timestamp", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		initialUpdatedAt := agg.UpdatedAt
+
+		time.Sleep(10 * time.Millisecond)
+		agg.Touch()
+
+		assert.True(t, agg.UpdatedAt.After(initialUpdatedAt))
+	})
+
+	t.Run("does not change CreatedAt", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		initialCreatedAt := agg.CreatedAt
+
+		time.Sleep(10 * time.Millisecond)
+		agg.Touch()
+
+		assert.Equal(t, initialCreatedAt, agg.CreatedAt)
+	})
+
+	t.Run("does not change Version", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		initialVersion := agg.GetVersion()
+
+		agg.Touch()
+
+		assert.Equal(t, initialVersion, agg.GetVersion())
+	})
+
+	t.Run("can be called multiple times", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		previousUpdatedAt := agg.UpdatedAt
+
+		for i := 0; i < 3; i++ {
+			time.Sleep(5 * time.Millisecond)
+			agg.Touch()
+			assert.True(t, agg.UpdatedAt.After(previousUpdatedAt))
+			previousUpdatedAt = agg.UpdatedAt
+		}
+	})
+}
+
+func TestBaseAggregate_SetCreatedAt(t *testing.T) {
+	t.Run("sets CreatedAt timestamp", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		customTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+		agg.SetCreatedAt(customTime)
+
+		assert.Equal(t, customTime, agg.CreatedAt)
+	})
+}
+
+func TestBaseAggregate_SetUpdatedAt(t *testing.T) {
+	t.Run("sets UpdatedAt timestamp", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		customTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+		agg.SetUpdatedAt(customTime)
+
+		assert.Equal(t, customTime, agg.UpdatedAt)
+	})
+}
+
+func TestBaseAggregate_GetCreatedAt(t *testing.T) {
+	t.Run("returns CreatedAt timestamp", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+
+		createdAt := agg.GetCreatedAt()
+
+		assert.Equal(t, agg.CreatedAt, createdAt)
+	})
+}
+
+func TestBaseAggregate_GetUpdatedAt(t *testing.T) {
+	t.Run("returns UpdatedAt timestamp", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+
+		updatedAt := agg.GetUpdatedAt()
+
+		assert.Equal(t, agg.UpdatedAt, updatedAt)
+	})
+}
+
+// TestBaseAggregate_TouchVsIncrementVersion demonstrates the difference
+func TestBaseAggregate_TouchVsIncrementVersion(t *testing.T) {
+	t.Run("Touch updates timestamp only", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		initialVersion := agg.GetVersion()
+		initialUpdatedAt := agg.UpdatedAt
+
+		time.Sleep(10 * time.Millisecond)
+		agg.Touch()
+
+		assert.Equal(t, initialVersion, agg.GetVersion(), "Touch should not change version")
+		assert.True(t, agg.UpdatedAt.After(initialUpdatedAt), "Touch should update timestamp")
+	})
+
+	t.Run("IncrementVersion updates both", func(t *testing.T) {
+		agg := aggregate.NewBaseAggregate()
+		initialVersion := agg.GetVersion()
+		initialUpdatedAt := agg.UpdatedAt
+
+		time.Sleep(10 * time.Millisecond)
+		agg.IncrementVersion()
+
+		assert.Equal(t, initialVersion+1, agg.GetVersion(), "IncrementVersion should change version")
+		assert.True(t, agg.UpdatedAt.After(initialUpdatedAt), "IncrementVersion should update timestamp")
+	})
+}
+
+// TestCustomAggregateWithTouch demonstrates typical usage
+func TestCustomAggregateWithTouch(t *testing.T) {
+	type Customer struct {
+		aggregate.BaseAggregate
+		Name  string
+		Email string
+	}
+
+	t.Run("Touch in business method", func(t *testing.T) {
+		customer := Customer{
+			BaseAggregate: aggregate.NewBaseAggregate(),
+			Name:          "John Doe",
+			Email:         "john@example.com",
+		}
+		initialUpdatedAt := customer.UpdatedAt
+
+		// Simulate business method
+		time.Sleep(10 * time.Millisecond)
+		customer.Name = "Jane Doe"
+		customer.Touch() // Call after modification
+
+		assert.Equal(t, "Jane Doe", customer.Name)
+		assert.True(t, customer.UpdatedAt.After(initialUpdatedAt))
+		assert.Equal(t, 1, customer.GetVersion()) // Version unchanged
+	})
+}

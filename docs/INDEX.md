@@ -84,6 +84,21 @@
 
 ---
 
+### Multi-Database Support
+
+**Database-agnostic architecture** supporting multiple SQL databases.
+
+- **Dialect Pattern**: Abstracts SQL syntax differences (placeholders, JSON types)
+- **Supported**: PostgreSQL (production), SQLite (dev/test), MySQL (planned), SQL Server (planned)
+- **JSONB Abstraction**: `jsonstore.Field[T]` works across all databases
+- **UUID Generation**: All IDs in Go code (`uuidv7.New()`), not DB defaults
+- **Timestamp Management**: `.Touch()` updates timestamps (no DB triggers)
+- **Implementation**: [Database Adapters](guides/database-adapters.md) | [JSONB Strategy](guides/jsonb-strategy.md)
+
+**101 Tests**: pkg/database + pkg/jsonstore with 100% coverage
+
+---
+
 ### Customer Management
 
 **Complete CRM functionality** for B2C and B2B customer lifecycle management.

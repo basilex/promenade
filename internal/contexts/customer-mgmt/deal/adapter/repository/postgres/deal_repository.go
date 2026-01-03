@@ -75,7 +75,6 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 
 	// Create Deal aggregate
 	d := &deal.Deal{
-		ID:                id,
 		CustomerID:        customerID,
 		Name:              r.Name,
 		Value:             money,
@@ -85,9 +84,12 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 		Source:            deal.DealSource(r.Source),
 		ExpectedCloseDate: r.ExpectedCloseDate,
 		AssignedTo:        assignedTo,
-		CreatedAt:         r.CreatedAt,
-		UpdatedAt:         r.UpdatedAt,
 	}
+	
+	// Set BaseAggregate fields
+	d.BaseAggregate.ID = id
+	d.BaseAggregate.CreatedAt = r.CreatedAt
+	d.BaseAggregate.UpdatedAt = r.UpdatedAt
 
 	// Parse optional Company ID
 	if r.CompanyID.Valid {
@@ -124,7 +126,7 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 // fromEntity converts domain entity to database row
 func fromEntity(d *deal.Deal) *dealRow {
 	row := &dealRow{
-		ID:                d.ID.String(),
+		ID:                d.GetID().String(),
 		CustomerID:        d.CustomerID.String(),
 		Name:              d.Name,
 		ValueCents:        d.Value.Amount,
@@ -134,8 +136,8 @@ func fromEntity(d *deal.Deal) *dealRow {
 		Source:            string(d.Source),
 		ExpectedCloseDate: d.ExpectedCloseDate,
 		AssignedTo:        d.AssignedTo.String(),
-		CreatedAt:         d.CreatedAt,
-		UpdatedAt:         d.UpdatedAt,
+		CreatedAt:         d.GetCreatedAt(),
+		UpdatedAt:         d.GetUpdatedAt(),
 	}
 
 	// Optional Company ID

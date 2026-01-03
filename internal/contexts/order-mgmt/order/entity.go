@@ -24,8 +24,7 @@ const (
 type Order struct {
 	aggregate.BaseAggregate
 
-	// Identity
-	ID          uuidv7.UUID
+	// Identity (ID, CreatedAt, UpdatedAt inherited from BaseAggregate)
 	OrderNumber string // human-readable: ORD-2026-001
 	CustomerID  uuidv7.UUID
 	CompanyID   *uuidv7.UUID // optional (B2B)
@@ -48,9 +47,7 @@ type Order struct {
 	ContractID *uuidv7.UUID // references Contract (same context)
 	InvoiceID  *uuidv7.UUID // references Billing.Invoice
 
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	// Soft delete
 	DeletedAt *time.Time
 }
 
@@ -78,8 +75,7 @@ func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
 	orderNumber := generateOrderNumber(now)
 
 	return &Order{
-		BaseAggregate: aggregate.BaseAggregate{},
-		ID:            uuidv7.New(),
+		BaseAggregate: aggregate.NewBaseAggregate(),
 		OrderNumber:   orderNumber,
 		CustomerID:    customerID,
 		Lines:         []OrderLine{},
@@ -87,8 +83,6 @@ func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
 		Currency:      currency,
 		Status:        OrderStatusPending,
 		OrderDate:     now,
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}, nil
 }
 
@@ -135,7 +129,7 @@ func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice valueobje
 
 	o.Lines = append(o.Lines, line)
 	o.recalculateTotal()
-	o.UpdatedAt = time.Now()
+	o.Touch()
 
 	return nil
 }
@@ -161,7 +155,7 @@ func (o *Order) RemoveLine(lineID uuidv7.UUID) error {
 	// Remove line by index
 	o.Lines = append(o.Lines[:index], o.Lines[index+1:]...)
 	o.recalculateTotal()
-	o.UpdatedAt = time.Now()
+	o.Touch()
 
 	return nil
 }
@@ -184,7 +178,7 @@ func (o *Order) UpdateLineQuantity(lineID uuidv7.UUID, quantity int) error {
 				Currency: line.UnitPrice.Currency,
 			}
 			o.recalculateTotal()
-			o.UpdatedAt = time.Now()
+			o.Touch()
 			return nil
 		}
 	}
@@ -205,7 +199,7 @@ func (o *Order) Confirm() error {
 	now := time.Now()
 	o.Status = OrderStatusConfirmed
 	o.ConfirmedAt = &now
-	o.UpdatedAt = now
+	o.Touch()
 
 	return nil
 }
@@ -217,7 +211,7 @@ func (o *Order) StartProcessing() error {
 	}
 
 	o.Status = OrderStatusProcessing
-	o.UpdatedAt = time.Now()
+	o.Touch()
 
 	return nil
 }
@@ -231,7 +225,7 @@ func (o *Order) MarkFulfilled() error {
 	now := time.Now()
 	o.Status = OrderStatusFulfilled
 	o.FulfilledAt = &now
-	o.UpdatedAt = now
+	o.Touch()
 
 	return nil
 }
@@ -249,7 +243,7 @@ func (o *Order) Cancel() error {
 	now := time.Now()
 	o.Status = OrderStatusCancelled
 	o.CancelledAt = &now
-	o.UpdatedAt = now
+	o.Touch()
 
 	return nil
 }

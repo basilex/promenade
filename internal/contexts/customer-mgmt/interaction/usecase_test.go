@@ -192,10 +192,9 @@ func TestUseCase_GetInteraction(t *testing.T) {
 
 	t.Run("successful retrieval", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
-		expectedInteraction := &Interaction{
-			ID:   interactionID,
-			Type: InteractionTypeCall,
-		}
+		expectedInteraction := &Interaction{}
+		expectedInteraction.ID = interactionID
+		expectedInteraction.Type = InteractionTypeCall
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(expectedInteraction, nil)
@@ -203,7 +202,7 @@ func TestUseCase_GetInteraction(t *testing.T) {
 		interaction, err := uc.GetInteraction(ctx, interactionID)
 
 		require.NoError(t, err)
-		assert.Equal(t, interactionID, interaction.ID)
+		assert.Equal(t, interactionID, interaction.GetID())
 		mockRepo.AssertExpectations(t)
 	})
 
@@ -227,10 +226,10 @@ func TestUseCase_UpdateContent(t *testing.T) {
 	t.Run("successful update", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		existingInteraction := &Interaction{
-			ID:          interactionID,
 			Subject:     "Old subject",
 			Description: "Old description",
 		}
+		existingInteraction.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -265,9 +264,8 @@ func TestUseCase_SetOutcome(t *testing.T) {
 
 	t.Run("successful outcome set", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
-		existingInteraction := &Interaction{
-			ID: interactionID,
-		}
+		existingInteraction := &Interaction{}
+		existingInteraction.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -291,9 +289,9 @@ func TestUseCase_EndInteraction(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		startedAt := time.Now().Add(-30 * time.Minute)
 		existingInteraction := &Interaction{
-			ID:        interactionID,
 			StartedAt: startedAt,
 		}
+		existingInteraction.BaseAggregate.ID = interactionID
 		endedAt := time.Now()
 
 		mockRepo.On("GetByID", ctx, interactionID).
@@ -316,9 +314,8 @@ func TestUseCase_SetFollowUp(t *testing.T) {
 
 	t.Run("enable follow-up", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
-		existingInteraction := &Interaction{
-			ID: interactionID,
-		}
+		existingInteraction := &Interaction{}
+		existingInteraction.BaseAggregate.ID = interactionID
 		followUpDate := time.Now().Add(24 * time.Hour)
 
 		mockRepo.On("GetByID", ctx, interactionID).
@@ -338,10 +335,10 @@ func TestUseCase_SetFollowUp(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		followUpDate := time.Now().Add(24 * time.Hour)
 		existingInteraction := &Interaction{
-			ID:               interactionID,
 			FollowUpRequired: true,
 			FollowUpDate:     &followUpDate,
 		}
+		existingInteraction.BaseAggregate.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -365,9 +362,9 @@ func TestUseCase_AddAttendee(t *testing.T) {
 	t.Run("successful add", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		existingInteraction := &Interaction{
-			ID:        interactionID,
 			Attendees: []uuidv7.UUID{},
 		}
+		existingInteraction.BaseAggregate.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -391,9 +388,9 @@ func TestUseCase_RemoveAttendee(t *testing.T) {
 	t.Run("successful removal", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		existingInteraction := &Interaction{
-			ID:        interactionID,
 			Attendees: []uuidv7.UUID{attendeeID},
 		}
+		existingInteraction.BaseAggregate.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -442,9 +439,9 @@ func TestUseCase_ListByType(t *testing.T) {
 
 	t.Run("valid type", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
-		expectedInteractions := []*Interaction{
-			{ID: uuidv7.New(), Type: InteractionTypeCall},
-		}
+		inter := &Interaction{Type: InteractionTypeCall}
+		inter.BaseAggregate.ID = uuidv7.New()
+		expectedInteractions := []*Interaction{inter}
 
 		mockRepo.On("ListByType", ctx, string(InteractionTypeCall), 1, 20).
 			Return(expectedInteractions, int64(1), nil)
@@ -473,13 +470,12 @@ func TestUseCase_ListPendingFollowUps(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		followUpDate := time.Now().Add(24 * time.Hour)
-		expectedInteractions := []*Interaction{
-			{
-				ID:               uuidv7.New(),
-				FollowUpRequired: true,
-				FollowUpDate:     &followUpDate,
-			},
+		inter := &Interaction{
+			FollowUpRequired: true,
+			FollowUpDate:     &followUpDate,
 		}
+		inter.BaseAggregate.ID = uuidv7.New()
+		expectedInteractions := []*Interaction{inter}
 
 		mockRepo.On("ListPendingFollowUps", ctx, 1, 20).
 			Return(expectedInteractions, int64(1), nil)

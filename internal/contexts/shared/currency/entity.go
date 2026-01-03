@@ -15,6 +15,8 @@ type Currency struct {
 	Name          string      `db:"name"`
 	Symbol        string      `db:"symbol"`
 	DecimalPlaces int         `db:"decimal_places"`
+	Rounding      int         `db:"rounding"`
+	IsCrypto      bool        `db:"is_crypto"`
 	IsActive      bool        `db:"is_active"`
 }
 

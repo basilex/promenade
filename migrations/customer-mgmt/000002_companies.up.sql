@@ -40,7 +40,7 @@ COMMENT ON TYPE company_size IS 'Company size categories based on employee count
 -- Stores B2B customer information (business organizations)
 CREATE TABLE customer_companies (
     -- Primary Key
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
 
     -- Basic Information
     name VARCHAR(255) NOT NULL,                -- Company name (must be unique)
@@ -170,13 +170,6 @@ COMMENT ON INDEX idx_companies_type_size_active IS 'Filter by type and size with
 -- ============================================================================
 
 -- Auto-update updated_at timestamp
-CREATE TRIGGER trigger_companies_updated_at
-    BEFORE UPDATE ON customer_companies
-    FOR EACH ROW
-    EXECUTE FUNCTION tfn_entity_updated_at();
-
-COMMENT ON TRIGGER trigger_companies_updated_at ON customer_companies IS 'Auto-update updated_at on row modification';
-
 -- ============================================================================
 -- Initial Data (Optional - Reference Data)
 -- ============================================================================

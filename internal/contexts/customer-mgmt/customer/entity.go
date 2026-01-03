@@ -34,7 +34,6 @@ type Customer struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID        uuidv7.UUID
 	UserID    *uuidv7.UUID // Optional link to Identity.User
 	CompanyID *uuidv7.UUID // Optional (B2B) or nil (B2C)
 
@@ -52,9 +51,7 @@ type Customer struct {
 	AssignedTo uuidv7.UUID // Sales rep (Identity.User)
 	Tags       []string    // marketing, vip, high-value
 
-	// Lifecycle
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	// Lifecycle (CreatedAt, UpdatedAt from BaseAggregate)
 	LastContactedAt *time.Time // Last interaction timestamp
 	ConvertedAt     *time.Time // Timestamp when converted to paying customer
 	ChurnedAt       *time.Time
@@ -81,11 +78,8 @@ func NewCustomer(name, email, source string, assignedTo uuidv7.UUID) (*Customer,
 		return nil, fmt.Errorf("assigned sales rep is required")
 	}
 
-	now := time.Now()
-
 	return &Customer{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		Name:          name,
 		Email:         emailVO,
 		Status:        CustomerStatusLead,
@@ -93,8 +87,6 @@ func NewCustomer(name, email, source string, assignedTo uuidv7.UUID) (*Customer,
 		Source:        source,
 		AssignedTo:    assignedTo,
 		Tags:          []string{},
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}, nil
 }
 
@@ -117,7 +109,7 @@ func NewB2BCustomer(name, email, source string, companyID, assignedTo uuidv7.UUI
 func (c *Customer) SetPhone(phone string) error {
 	if phone == "" {
 		c.Phone = nil
-		c.UpdatedAt = time.Now()
+		c.Touch()
 		return nil
 	}
 
@@ -127,7 +119,7 @@ func (c *Customer) SetPhone(phone string) error {
 	}
 
 	c.Phone = &phoneVO
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -142,7 +134,7 @@ func (c *Customer) LinkToUser(userID uuidv7.UUID) error {
 	}
 
 	c.UserID = &userID
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -153,7 +145,7 @@ func (c *Customer) QualifyAsProspect() error {
 	}
 
 	c.Status = CustomerStatusProspect
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -166,7 +158,7 @@ func (c *Customer) ConvertToCustomer() error {
 	now := time.Now()
 	c.Status = CustomerStatusCustomer
 	c.ConvertedAt = &now
-	c.UpdatedAt = now
+	c.Touch()
 	return nil
 }
 
@@ -184,7 +176,7 @@ func (c *Customer) Churn(reason string) error {
 	c.Status = CustomerStatusChurned
 	c.ChurnedAt = &now
 	c.ChurnReason = reason
-	c.UpdatedAt = now
+	c.Touch()
 	return nil
 }
 
@@ -197,7 +189,7 @@ func (c *Customer) Reactivate() error {
 	c.Status = CustomerStatusCustomer
 	c.ChurnedAt = nil
 	c.ChurnReason = ""
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -212,7 +204,7 @@ func (c *Customer) Reassign(newRepID uuidv7.UUID) error {
 	}
 
 	c.AssignedTo = newRepID
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -227,7 +219,7 @@ func (c *Customer) UpgradeTier(newTier CustomerTier) error {
 	}
 
 	c.Tier = newTier
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -240,7 +232,7 @@ func (c *Customer) DowngradeTier(newTier CustomerTier) error {
 	// Validate downgrade path (opposite of upgrade)
 	if isValidTierUpgrade(newTier, c.Tier) {
 		c.Tier = newTier
-		c.UpdatedAt = time.Now()
+		c.Touch()
 		return nil
 	}
 
@@ -260,7 +252,7 @@ func (c *Customer) AddTag(tag string) error {
 	}
 
 	c.Tags = append(c.Tags, tag)
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -282,7 +274,7 @@ func (c *Customer) RemoveTag(tag string) error {
 	}
 
 	c.Tags = newTags
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 

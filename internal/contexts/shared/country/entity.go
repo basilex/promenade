@@ -9,14 +9,23 @@ import (
 
 // Country represents an ISO 3166-1 country (Aggregate Root in Shared Context)
 type Country struct {
-	ID          uuidv7.UUID `db:"id"`
-	Code        string      `db:"code"`
-	Code3       string      `db:"code3"`
-	NumericCode string      `db:"numeric_code"`
-	Name        string      `db:"name"`
-	NameLocal   string      `db:"name_local"`
-	PhoneCode   string      `db:"phone_code"`
-	IsActive    bool        `db:"is_active"`
+	ID           uuidv7.UUID    `db:"id"`
+	Code         string         `db:"code"`
+	Code3        string         `db:"code3"`
+	NumericCode  string         `db:"numeric_code"`
+	Name         string         `db:"name"`
+	NameLocal    string         `db:"name_local"`
+	PhoneCode    string         `db:"phone_code"`
+	Capital      string         `db:"capital"`
+	Region       string         `db:"region"`
+	Subregion    string         `db:"subregion"`
+	FlagEmoji    string         `db:"flag_emoji"`
+	Latitude     *float64       `db:"latitude"`
+	Longitude    *float64       `db:"longitude"`
+	AreaKm2      *int           `db:"area_km2"`
+	Population   *int64         `db:"population"`
+	Translations map[string]any `db:"translations"` // JSONB map
+	IsActive     bool           `db:"is_active"`
 }
 
 // NewCountry creates a new Country entity with validation

@@ -58,7 +58,6 @@ type orderLineRow struct {
 // toEntity converts orderRow to order.Order
 func (r *orderRow) toEntity() (*order.Order, error) {
 	o := &order.Order{
-		ID:          r.ID,
 		OrderNumber: r.OrderNumber,
 		CustomerID:  r.CustomerID,
 		CompanyID:   r.CompanyID,
@@ -71,6 +70,21 @@ func (r *orderRow) toEntity() (*order.Order, error) {
 		ContractID: r.ContractID,
 		InvoiceID:  r.InvoiceID,
 		Lines:      []order.OrderLine{}, // Will be loaded separately
+	}
+
+	// Set BaseAggregate fields manually
+	o.BaseAggregate.ID = r.ID
+	if r.CreatedAt.Valid {
+		o.BaseAggregate.CreatedAt = r.CreatedAt.Time
+	}
+	if r.UpdatedAt.Valid {
+		o.BaseAggregate.UpdatedAt = r.UpdatedAt.Time
+	}
+
+	// Set DeletedAt (entity field, not BaseAggregate)
+	if r.DeletedAt != nil && r.DeletedAt.Valid {
+		t := r.DeletedAt.Time
+		o.DeletedAt = &t
 	}
 
 	if r.OrderDate.Valid {
@@ -90,19 +104,6 @@ func (r *orderRow) toEntity() (*order.Order, error) {
 	if r.CancelledAt != nil && r.CancelledAt.Valid {
 		t := r.CancelledAt.Time
 		o.CancelledAt = &t
-	}
-
-	if r.CreatedAt.Valid {
-		o.CreatedAt = r.CreatedAt.Time
-	}
-
-	if r.UpdatedAt.Valid {
-		o.UpdatedAt = r.UpdatedAt.Time
-	}
-
-	if r.DeletedAt != nil && r.DeletedAt.Valid {
-		t := r.DeletedAt.Time
-		o.DeletedAt = &t
 	}
 
 	return o, nil
@@ -145,7 +146,7 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 	`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":            o.ID,
+		"id":            o.BaseAggregate.ID,
 		"order_number":  o.OrderNumber,
 		"customer_id":   o.CustomerID,
 		"company_id":    o.CompanyID,
@@ -158,8 +159,8 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 		"cancelled_at":  o.CancelledAt,
 		"contract_id":   o.ContractID,
 		"invoice_id":    o.InvoiceID,
-		"created_at":    o.CreatedAt,
-		"updated_at":    o.UpdatedAt,
+		"created_at":    o.BaseAggregate.CreatedAt,
+		"updated_at":    o.BaseAggregate.UpdatedAt,
 	})
 
 	return err
@@ -231,7 +232,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 	`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":           o.ID,
+		"id":           o.BaseAggregate.ID,
 		"order_number": o.OrderNumber,
 		"customer_id":  o.CustomerID,
 		"company_id":   o.CompanyID,
@@ -243,7 +244,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 		"cancelled_at": o.CancelledAt,
 		"contract_id":  o.ContractID,
 		"invoice_id":   o.InvoiceID,
-		"updated_at":   o.UpdatedAt,
+		"updated_at":   o.BaseAggregate.UpdatedAt,
 	})
 
 	return err

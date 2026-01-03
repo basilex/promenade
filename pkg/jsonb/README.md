@@ -1,12 +1,30 @@
 # JSONB Package
 
+> ⚠️ **DEPRECATED**: This package is PostgreSQL-specific. Use [pkg/jsonstore](../jsonstore/README.md) instead for cross-database compatibility.
+
 **Purpose:** PostgreSQL JSONB type wrappers with Scanner/Valuer  
-**Status:** Production-ready  
-**Tests:** 8 tests, 100% coverage
+**Status:** ⚠️ Deprecated (use `pkg/jsonstore`)  
+**Tests:** 8 tests, 100% coverage  
+**Maintained:** Yes (backward compatibility only)
 
 ---
 
-## Overview
+## Migration to jsonstore
+
+The new `jsonstore` package provides the same functionality but works with **all databases** (PostgreSQL, SQLite, MySQL, SQL Server):
+
+| Old (jsonb)                     | New (jsonstore)                      |
+|---------------------------------|--------------------------------------|
+| `jsonb.Map`                     | `jsonstore.Field[map[string]any]`    |
+| `jsonb.Array`                   | `jsonstore.Field[[]T]`               |
+| `jsonb.JSON[T]`                 | `jsonstore.Field[T]`                 |
+| PostgreSQL JSONB column         | TEXT column (any database)           |
+
+See [jsonstore README](../jsonstore/README.md) for full migration guide.
+
+---
+
+## Overview (Legacy)
 
 The `jsonb` package provides **type-safe wrappers** for PostgreSQL JSONB columns. It implements `sql.Scanner` and `driver.Valuer` interfaces, allowing seamless marshaling/unmarshaling between Go types and JSONB.
 

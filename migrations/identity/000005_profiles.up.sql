@@ -1,6 +1,6 @@
 -- Create identity_profiles table
 CREATE TABLE IF NOT EXISTS identity_profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     
     -- Display Information

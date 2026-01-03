@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
-	"github.com/basilex/promenade/pkg/jsonb"
+	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
@@ -35,12 +35,12 @@ type customerRow struct {
 	Name            string               `db:"name"`
 	Email           string               `db:"email"`
 	Phone           sql.NullString       `db:"phone"`
-	Status          string               `db:"status"`
-	Tier            string               `db:"tier"`
-	Source          string               `db:"source"`
-	AssignedTo      string               `db:"assigned_to"`
-	Tags            jsonb.JSON[[]string] `db:"tags"`
-	CreatedAt       time.Time            `db:"created_at"`
+	Status          string                       `db:"status"`
+	Tier            string                       `db:"tier"`
+	Source          string                       `db:"source"`
+	AssignedTo      string                       `db:"assigned_to"`
+	Tags            jsonstore.Field[[]string]    `db:"tags"`
+	CreatedAt       time.Time                    `db:"created_at"`
 	UpdatedAt       time.Time            `db:"updated_at"`
 	LastContactedAt sql.NullTime         `db:"last_contacted_at"`
 	ConvertedAt     sql.NullTime         `db:"converted_at"`
@@ -67,16 +67,18 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 	}
 
 	c := &customer.Customer{
-		ID:         id,
 		Name:       r.Name,
 		Email:      email,
 		Status:     customer.CustomerStatus(r.Status),
 		Tier:       customer.CustomerTier(r.Tier),
 		Source:     r.Source,
 		AssignedTo: assignedTo,
-		CreatedAt:  r.CreatedAt,
-		UpdatedAt:  r.UpdatedAt,
 	}
+	
+	// Set BaseAggregate fields
+	c.BaseAggregate.ID = id
+	c.BaseAggregate.CreatedAt = r.CreatedAt
+	c.BaseAggregate.UpdatedAt = r.UpdatedAt
 
 	// Optional UserID
 	if r.UserID.Valid {
@@ -105,9 +107,9 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 		c.Phone = &phone
 	}
 
-	// Tags (JSONB array)
-	if r.Tags.Valid {
-		c.Tags = r.Tags.Data
+	// Tags (JSON array stored as TEXT)
+	if !r.Tags.IsNull() {
+		c.Tags = r.Tags.Get()
 	}
 
 	// Optional timestamps
@@ -133,15 +135,15 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 // toRow converts domain entity to database row
 func toRow(c *customer.Customer) (*customerRow, error) {
 	row := &customerRow{
-		ID:         c.ID.String(),
+		ID:         c.GetID().String(),
 		Name:       c.Name,
 		Email:      c.Email.Value(),
 		Status:     string(c.Status),
 		Tier:       string(c.Tier),
 		Source:     c.Source,
 		AssignedTo: c.AssignedTo.String(),
-		CreatedAt:  c.CreatedAt,
-		UpdatedAt:  c.UpdatedAt,
+		CreatedAt:  c.GetCreatedAt(),
+		UpdatedAt:  c.GetUpdatedAt(),
 	}
 
 	// Optional UserID
@@ -159,12 +161,8 @@ func toRow(c *customer.Customer) (*customerRow, error) {
 		row.Phone = sql.NullString{String: c.Phone.Value(), Valid: true}
 	}
 
-	// Tags (JSONB array)
-	if len(c.Tags) > 0 {
-		row.Tags.Set(c.Tags)
-	} else {
-		row.Tags.Set([]string{})
-	}
+	// Tags (JSON array stored as TEXT)
+	row.Tags.Set(c.Tags)
 
 	// Optional timestamps
 	if c.LastContactedAt != nil {

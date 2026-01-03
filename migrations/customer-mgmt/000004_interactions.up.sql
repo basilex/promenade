@@ -52,7 +52,7 @@ COMMENT ON TYPE interaction_outcome IS 'Outcome or result of customer interactio
 -- Stores all customer interactions (calls, emails, meetings, notes)
 CREATE TABLE customer_interactions (
     -- Primary Key
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
 
     -- Relationships
     customer_id UUID NOT NULL,                  -- Link to customer (required)
@@ -69,7 +69,7 @@ CREATE TABLE customer_interactions (
 
     -- Participants
     created_by UUID NOT NULL,                   -- User who logged interaction
-    attendees JSONB DEFAULT '[]',               -- Array of attendee UUIDs (for meetings)
+    attendees TEXT,                             -- JSON array of attendee UUIDs stored as TEXT for cross-DB compatibility
 
     -- Timing
     started_at TIMESTAMPTZ NOT NULL,            -- When interaction started
@@ -151,22 +151,6 @@ CREATE INDEX idx_interactions_customer_started
     ON customer_interactions(customer_id, started_at DESC) 
     WHERE deleted_at IS NULL;
 
--- JSONB index for attendee searches
-CREATE INDEX idx_interactions_attendees 
-    ON customer_interactions USING gin(attendees);
-
--- ============================================================================
--- Triggers
--- ============================================================================
-
--- Auto-update updated_at timestamp
-CREATE TRIGGER trigger_interactions_updated_at
-    BEFORE UPDATE ON customer_interactions
-    FOR EACH ROW
-    EXECUTE FUNCTION tfn_entity_updated_at();
-
-COMMENT ON TRIGGER trigger_interactions_updated_at ON customer_interactions IS 'Ensures updated_at is always current';
-
 -- ============================================================================
 -- Comments
 -- ============================================================================
@@ -182,7 +166,7 @@ COMMENT ON COLUMN customer_interactions.outcome IS 'Result of interaction (succe
 COMMENT ON COLUMN customer_interactions.subject IS 'Subject or title of interaction';
 COMMENT ON COLUMN customer_interactions.description IS 'Detailed notes about interaction';
 COMMENT ON COLUMN customer_interactions.created_by IS 'User who logged this interaction';
-COMMENT ON COLUMN customer_interactions.attendees IS 'JSONB array of attendee UUIDs (for meetings)';
+COMMENT ON COLUMN customer_interactions.attendees IS 'JSON array of attendee UUIDs stored as TEXT (for meetings)';
 COMMENT ON COLUMN customer_interactions.started_at IS 'When interaction started';
 COMMENT ON COLUMN customer_interactions.ended_at IS 'When interaction ended';
 COMMENT ON COLUMN customer_interactions.duration_sec IS 'Duration in seconds (calculated)';

@@ -57,6 +57,43 @@ func (a *BaseAggregate) IncrementVersion() {
 	a.UpdatedAt = time.Now()
 }
 
+// Touch updates the UpdatedAt timestamp to the current time.
+// Call this method whenever the aggregate is modified to maintain accurate timestamps.
+// This replaces the need for database triggers.
+//
+// Example:
+//
+//	func (c *Customer) UpdateName(name string) error {
+//	    c.Name = name
+//	    c.Touch() // Update timestamp
+//	    return nil
+//	}
+func (a *BaseAggregate) Touch() {
+	a.UpdatedAt = time.Now()
+}
+
+// SetCreatedAt sets the CreatedAt timestamp.
+// Useful when restoring aggregates from the database or for testing.
+func (a *BaseAggregate) SetCreatedAt(t time.Time) {
+	a.CreatedAt = t
+}
+
+// SetUpdatedAt sets the UpdatedAt timestamp.
+// Useful when restoring aggregates from the database or for testing.
+func (a *BaseAggregate) SetUpdatedAt(t time.Time) {
+	a.UpdatedAt = t
+}
+
+// GetCreatedAt returns the creation timestamp.
+func (a *BaseAggregate) GetCreatedAt() time.Time {
+	return a.CreatedAt
+}
+
+// GetUpdatedAt returns the last update timestamp.
+func (a *BaseAggregate) GetUpdatedAt() time.Time {
+	return a.UpdatedAt
+}
+
 // NewBaseAggregate creates a new base aggregate with generated UUID v7 ID.
 // The version is initialized to 1, and both CreatedAt and UpdatedAt are set to now.
 func NewBaseAggregate() BaseAggregate {

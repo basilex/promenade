@@ -10,7 +10,7 @@ CREATE TYPE customer_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 -- Customers table
 CREATE TABLE customer_customers (
     -- Identity
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
     user_id UUID REFERENCES identity_users(id) ON DELETE SET NULL, -- Linked account (optional)
     company_id UUID, -- B2B company reference (future: REFERENCES customer_companies(id))
     
@@ -26,7 +26,7 @@ CREATE TABLE customer_customers (
     assigned_to UUID NOT NULL, -- Sales rep (future: REFERENCES identity_users(id))
     
     -- Metadata
-    tags JSONB DEFAULT '[]'::jsonb, -- Flexible tagging (e.g., ["vip", "high-value"])
+    tags TEXT, -- JSON array stored as TEXT for cross-DB compatibility (e.g., ["vip", "high-value"])
     
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -54,20 +54,13 @@ CREATE INDEX idx_customers_status ON customer_customers(status) WHERE deleted_at
 CREATE INDEX idx_customers_tier ON customer_customers(tier) WHERE deleted_at IS NULL;
 CREATE INDEX idx_customers_assigned_to ON customer_customers(assigned_to) WHERE deleted_at IS NULL;
 CREATE INDEX idx_customers_created_at ON customer_customers(created_at DESC) WHERE deleted_at IS NULL;
-CREATE INDEX idx_customers_tags ON customer_customers USING gin(tags) WHERE deleted_at IS NULL; -- JSONB array search
-
--- Trigger to auto-update updated_at
-CREATE TRIGGER trg_customers_updated_at
-    BEFORE UPDATE ON customer_customers
-    FOR EACH ROW
-    EXECUTE FUNCTION tfn_entity_updated_at();
 
 -- Comments
 COMMENT ON TABLE customer_customers IS 'Customer aggregate with Lead → Prospect → Customer → Churned lifecycle';
 COMMENT ON COLUMN customer_customers.status IS 'Customer lifecycle stage (one-way transitions: lead → prospect → customer → churned)';
 COMMENT ON COLUMN customer_customers.tier IS 'Subscription tier (free → basic → pro → enterprise, bidirectional)';
 COMMENT ON COLUMN customer_customers.source IS 'Customer acquisition channel (website, referral, cold_call, etc.)';
-COMMENT ON COLUMN customer_customers.tags IS 'Flexible JSONB array for customer segmentation (e.g., ["vip", "high-value"])';
+COMMENT ON COLUMN customer_customers.tags IS 'Flexible JSON array stored as TEXT for customer segmentation (e.g., ["vip", "high-value"])';
 COMMENT ON COLUMN customer_customers.converted_at IS 'Timestamp when lead/prospect became paying customer';
 COMMENT ON COLUMN customer_customers.churned_at IS 'Timestamp when customer left';
 COMMENT ON COLUMN customer_customers.churn_reason IS 'Explanation why customer churned (for analytics)';

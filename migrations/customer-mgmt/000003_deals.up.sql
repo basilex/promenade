@@ -41,7 +41,7 @@ COMMENT ON TYPE deal_source IS 'Deal origin channels for lead attribution';
 -- Stores sales opportunities and pipeline management
 CREATE TABLE customer_deals (
     -- Primary Key
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
 
     -- Relationships
     customer_id UUID NOT NULL,                  -- Link to customer (required)
@@ -164,18 +164,6 @@ COMMENT ON INDEX idx_deals_source IS 'Lead attribution analysis';
 COMMENT ON INDEX idx_deals_customer_stage IS 'Customer deal pipeline';
 COMMENT ON INDEX idx_deals_assigned_stage_value IS 'Sales rep weighted pipeline';
 COMMENT ON INDEX idx_deals_deleted_at IS 'Soft delete queries';
-
--- ============================================================================
--- Triggers
--- ============================================================================
-
--- Auto-update updated_at timestamp
-CREATE TRIGGER trigger_deals_updated_at
-    BEFORE UPDATE ON customer_deals
-    FOR EACH ROW
-    EXECUTE FUNCTION tfn_entity_updated_at();
-
-COMMENT ON TRIGGER trigger_deals_updated_at ON customer_deals IS 'Ensures updated_at is always current';
 
 -- ============================================================================
 -- Grants (Optional - adjust based on your roles)

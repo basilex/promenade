@@ -125,6 +125,19 @@ migrate-new:  ## Create new migration (Usage: make migrate-new CONTEXT=core NAME
 	fi
 	@./scripts/create-migration.sh $(CONTEXT) $(NAME)
 
+# Seed data
+seed:  ## Seed all contexts with initial data
+	@echo "Seeding database..."
+	@go run cmd/seed/main.go --context=all
+
+seed-shared:  ## Seed shared context (reference data)
+	@echo "Seeding shared context..."
+	@go run cmd/seed/main.go --context=shared
+
+seed-identity:  ## Seed identity context (RBAC)
+	@echo "Seeding identity context..."
+	@go run cmd/seed/main.go --context=identity
+
 # Development workflows
 dev: docker-up migrate run  ## Full dev environment (Docker + migrations + API)
 

@@ -68,7 +68,6 @@ func (r *companyRow) toEntity() (*company.Company, error) {
 	// Create Company aggregate
 	legalName := r.LegalName
 	c := &company.Company{
-		ID:            id,
 		Name:          r.Name,
 		LegalName:     &legalName,
 		Type:          company.CompanyType(r.Type),
@@ -76,9 +75,12 @@ func (r *companyRow) toEntity() (*company.Company, error) {
 		EmployeeCount: r.EmployeeCount,
 		Revenue:       r.Revenue,
 		Currency:      r.Currency,
-		CreatedAt:     r.CreatedAt,
-		UpdatedAt:     r.UpdatedAt,
 	}
+	
+	// Set BaseAggregate fields
+	c.ID = id
+	c.CreatedAt = r.CreatedAt
+	c.UpdatedAt = r.UpdatedAt
 
 	// Parse optional TaxID
 	if r.TaxID.Valid {
@@ -192,7 +194,7 @@ func toRow(c *company.Company) (*companyRow, error) {
 	}
 	
 	row := &companyRow{
-		ID:            c.ID.String(),
+		ID:            c.GetID().String(),
 		Name:          c.Name,
 		LegalName:     legalName,
 		Type:          string(c.Type),
@@ -200,8 +202,8 @@ func toRow(c *company.Company) (*companyRow, error) {
 		EmployeeCount: c.EmployeeCount,
 		Revenue: c.Revenue,
 		Currency:      c.Currency,
-		CreatedAt:     c.CreatedAt,
-		UpdatedAt:     c.UpdatedAt,
+		CreatedAt:     c.GetCreatedAt(),
+		UpdatedAt:     c.GetUpdatedAt(),
 	}
 
 	// Optional TaxID

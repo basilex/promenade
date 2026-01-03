@@ -17,6 +17,7 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 - **No ORM** - Raw SQL with sqlx + BaseRepository pattern
 - **UUID v7 Only** - Use `pkg/uuidv7.New()` for all IDs (time-ordered, 2x faster inserts)
 - **JWT Authentication** - Token-based auth with RBAC (15min access, 7 days refresh)
+- **Go 1.24+** - Modern Go with range-over-func and improved type inference
 
 ### 2. Bounded Contexts Structure
 
@@ -89,7 +90,7 @@ internal/contexts/identity/contact/
 **Repository with BaseRepository**:
 
 ```go
-// Repository interface in aggregate package
+// Repository interface in aggregate package (always IRepository or I{Entity}Repository)
 type IRepository interface {
     Create(ctx context.Context, contact *Contact) error
     GetByID(ctx context.Context, id uuidv7.UUID) (*Contact, error)
@@ -97,7 +98,7 @@ type IRepository interface {
     Delete(ctx context.Context, id uuidv7.UUID) error
 }
 
-// Implementation embeds BaseRepository
+// Implementation embeds BaseRepository (lowercase private struct)
 type contactRepository struct {
     *BaseRepository
 }
@@ -112,14 +113,14 @@ func NewContactRepository(db *sqlx.DB) IRepository {
 **Use Case Pattern**:
 
 ```go
-// Interface defines business operations
+// Interface defines business operations (always IUseCase)
 type IUseCase interface {
     CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*Contact, error)
     GetContact(ctx context.Context, contactID uuidv7.UUID) (*Contact, error)
     VerifyContact(ctx context.Context, contactID uuidv7.UUID) error
 }
 
-// Implementation (lowercase struct)
+// Implementation (lowercase struct, always "useCase")
 type useCase struct {
     repo IRepository
 }
@@ -134,15 +135,20 @@ func NewUseCase(repo IRepository) IUseCase {
 
 ```go
 // Publish event after aggregate state change
-event := bus.NewEvent("contact.verified", map[string]interface{}{
-    "contact_id": contact.ID.String(),
-    "user_id":    contact.UserID.String(),
-    "type":       contact.Type,
-})
-eventBus.Publish(ctx, event)
+event := bus.NewBaseEvent("contact.verified", contact.ID)
+if err := eventBus.Publish(ctx, bus.TopicContactVerified, event); err != nil {
+    // Log but don't fail - events are fire-and-forget
+    logger.FromContext(ctx).Error("Failed to publish event", slog.Any("error", err))
+}
 ```
 
 **Context Propagation**: Always pass `ctx` - carries transaction, logger, request ID, user info
+
+**Bootstrap Pattern** (see `cmd/api/bootstrap.go`):
+1. Logger initialization → Database connection → Migrations
+2. Redis → Cache → JWT + Token Revoker
+3. Event Bus → Health Checker
+4. Context routers → Server start
 
 ## Essential Workflows
 
@@ -159,10 +165,10 @@ eventBus.Publish(ctx, event)
 - `make test` - All tests with race detector (~40s, 240+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s)
 - `make test-smoke` - Smoke tests (mock-based, ~0.35s)
-- `make test-integration` - Integration tests with real DB (~2s, 24 tests, auto-starts test DB)
+- `make test-integration` - Integration tests with real DB (~2s, 24 tests ALL PASSING ✅)
 - `make test-benchmark` - Benchmark tests (performance measurement, 5s per benchmark)
 - `make test-coverage` - HTML coverage report
-- Test DB: `make test-db-start` / `make test-db-stop` (auto-managed by test-integration)
+- Test DB: Auto-starts on port 5433 with `promenade_test` database
 
 **Migrations** (namespace-based per context):
 

@@ -1,23 +1,26 @@
 // Package jsonb provides PostgreSQL JSONB type wrappers for Go structs.
-// This is the ONLY correct way to work with JSONB in Promenade.
 //
-// WHY THIS PACKAGE EXISTS:
-// PostgreSQL JSONB columns require special handling in Go. We MUST implement
-// sql.Scanner and driver.Valuer interfaces to allow sqlx to automatically
-// convert between Go types and PostgreSQL JSONB.
+// ⚠️ DEPRECATED: Use pkg/jsonstore instead for cross-database compatibility.
 //
-// USAGE:
+// This package is PostgreSQL-specific (JSONB type). The new pkg/jsonstore package
+// provides the same functionality but works with all databases (PostgreSQL, SQLite,
+// MySQL, SQL Server) by storing JSON as TEXT.
+//
+// Migration guide:
+//   - jsonb.Map → Use jsonstore.Field[map[string]any]
+//   - jsonb.Array → Use jsonstore.Field[[]T]
+//   - jsonb.JSON[T] → Use jsonstore.Field[T]
+//
+// This package remains for backward compatibility but will not receive new features.
+// See pkg/jsonstore/README.md for migration examples.
+//
+// LEGACY USAGE:
 //
 //	type MyStruct struct {
 //		Config jsonb.Map      `db:"config" json:"config"`           // JSONB object
 //		Tags   jsonb.Array    `db:"tags" json:"tags"`               // JSONB array
 //		Data   jsonb.JSON[T]  `db:"data" json:"data"`               // Generic typed JSONB
 //	}
-//
-// NEVER:
-//   - Use []byte + separate struct fields with manual Marshal/Unmarshal
-//   - Use map[string]interface{} directly without Scanner/Valuer
-//   - Create custom JSONB types in modules (reuse this package)
 package jsonb
 
 import (

@@ -7,7 +7,7 @@
 
 -- Contacts table (Contact aggregate)
 CREATE TABLE IF NOT EXISTS identity_contacts (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id UUID PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
     
     -- Contact type discriminator

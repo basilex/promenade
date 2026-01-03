@@ -36,7 +36,6 @@ const (
 type Company struct {
 	aggregate.BaseAggregate
 
-	ID                 uuidv7.UUID
 	Name               string
 	LegalName          *string
 	Type               CompanyType
@@ -61,9 +60,7 @@ type Company struct {
 	// Relationships
 	ParentCompanyID *uuidv7.UUID
 
-	// Timestamps
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	// Timestamps (CreatedAt, UpdatedAt from BaseAggregate)
 	DeletedAt *time.Time
 }
 
@@ -80,15 +77,12 @@ func NewCompany(name string, companyType string) (*Company, error) {
 
 	return &Company{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		Name:          name,
 		Type:          cType,
 		Size:          CompanySizeMicro,
 		EmployeeCount: 0,
 		Revenue:       0,
 		Currency:      "USD",
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}, nil
 }
 
@@ -108,7 +102,7 @@ func (c *Company) UpdateBasicInfo(name string, legalName *string, companyType st
 	c.Type = cType
 	c.TaxID = taxID
 	c.RegistrationNumber = registrationNumber
-	c.UpdatedAt = time.Now()
+	c.Touch()
 
 	return nil
 }
@@ -119,7 +113,7 @@ func (c *Company) UpdateContactInfo(website *string, email *valueobject.Email, p
 	c.Email = email
 	c.Phone = phone
 	c.Address = address
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // UpdateBusinessInfo updates company business information
@@ -142,7 +136,7 @@ func (c *Company) UpdateBusinessInfo(industry *string, size string, employeeCoun
 	c.EmployeeCount = employeeCount
 	c.Revenue = revenue
 	c.Currency = currency
-	c.UpdatedAt = time.Now()
+	c.Touch()
 
 	return nil
 }
@@ -154,7 +148,7 @@ func (c *Company) SetParentCompany(parentCompanyID *uuidv7.UUID) error {
 	}
 
 	c.ParentCompanyID = parentCompanyID
-	c.UpdatedAt = time.Now()
+	c.Touch()
 
 	return nil
 }
@@ -162,14 +156,14 @@ func (c *Company) SetParentCompany(parentCompanyID *uuidv7.UUID) error {
 // UpdateDescription updates company description
 func (c *Company) UpdateDescription(description *string) {
 	c.Description = description
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // Delete marks company as deleted (soft delete)
 func (c *Company) Delete() {
 	now := time.Now()
 	c.DeletedAt = &now
-	c.UpdatedAt = now
+	c.Touch()
 }
 
 // IsDeleted checks if company is deleted

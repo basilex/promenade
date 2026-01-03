@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -34,11 +34,11 @@ type interactionRow struct {
 	Type             string         `db:"type"`
 	Direction        string         `db:"direction"`
 	Outcome          *string        `db:"outcome"`
-	Subject          string         `db:"subject"`
-	Description      string         `db:"description"`
-	CreatedBy        uuidv7.UUID    `db:"created_by"`
-	AttendeesJSON    []byte         `db:"attendees"`
-	StartedAt        time.Time      `db:"started_at"`
+	Subject          string                          `db:"subject"`
+	Description      string                          `db:"description"`
+	CreatedBy        uuidv7.UUID                     `db:"created_by"`
+	Attendees        jsonstore.Field[[]uuidv7.UUID]  `db:"attendees"`
+	StartedAt        time.Time                       `db:"started_at"`
 	EndedAt          *time.Time     `db:"ended_at"`
 	DurationSec      *int           `db:"duration_sec"`
 	FollowUpRequired bool           `db:"follow_up_required"`
@@ -60,16 +60,10 @@ type interactionRowWithRelations struct {
 
 // toEntity converts database row to domain entity
 func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
-	// Parse attendees from JSONB
-	var attendees []uuidv7.UUID
-	if len(r.AttendeesJSON) > 0 && string(r.AttendeesJSON) != "null" {
-		if err := json.Unmarshal(r.AttendeesJSON, &attendees); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal attendees: %w", err)
-		}
-	}
+	// Get attendees from jsonstore.Field
+	attendees := r.Attendees.Get()
 
 	inter := &interaction.Interaction{
-		ID:               r.ID,
 		CustomerID:       r.CustomerID,
 		CompanyID:        r.CompanyID,
 		Type:             interaction.InteractionType(r.Type),
@@ -85,10 +79,13 @@ func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
 		FollowUpRequired: r.FollowUpRequired,
 		FollowUpDate:     r.FollowUpDate,
 		FollowUpNotes:    r.FollowUpNotes,
-		CreatedAt:        r.CreatedAt,
-		UpdatedAt:        r.UpdatedAt,
 		DeletedAt:        r.DeletedAt,
 	}
+	
+	// Set BaseAggregate fields
+	inter.ID = r.ID
+	inter.CreatedAt = r.CreatedAt
+	inter.UpdatedAt = r.UpdatedAt
 
 	if r.Outcome != nil {
 		outcome := interaction.InteractionOutcome(*r.Outcome)
@@ -100,14 +97,8 @@ func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
 
 // fromEntity converts domain entity to database row
 func fromEntity(inter *interaction.Interaction) (*interactionRow, error) {
-	// Marshal attendees to JSONB
-	attendeesJSON, err := json.Marshal(inter.Attendees)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal attendees: %w", err)
-	}
-
 	row := &interactionRow{
-		ID:               inter.ID,
+		ID:               inter.GetID(),
 		CustomerID:       inter.CustomerID,
 		CompanyID:        inter.CompanyID,
 		Type:             string(inter.Type),
@@ -116,17 +107,19 @@ func fromEntity(inter *interaction.Interaction) (*interactionRow, error) {
 		Subject:          inter.Subject,
 		Description:      inter.Description,
 		CreatedBy:        inter.CreatedBy,
-		AttendeesJSON:    attendeesJSON,
 		StartedAt:        inter.StartedAt,
 		EndedAt:          inter.EndedAt,
 		DurationSec:      inter.DurationSec,
 		FollowUpRequired: inter.FollowUpRequired,
 		FollowUpDate:     inter.FollowUpDate,
 		FollowUpNotes:    inter.FollowUpNotes,
-		CreatedAt:        inter.CreatedAt,
-		UpdatedAt:        inter.UpdatedAt,
+		CreatedAt:        inter.GetCreatedAt(),
+		UpdatedAt:        inter.GetUpdatedAt(),
 		DeletedAt:        inter.DeletedAt,
 	}
+
+	// Set attendees using jsonstore.Field
+	row.Attendees.Set(inter.Attendees)
 
 	if inter.Outcome != nil {
 		outcome := string(*inter.Outcome)
