@@ -58,8 +58,9 @@ DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade
 
 **Makefile shortcuts**:
 ```bash
-make dev           # PostgreSQL + development
+make dev-postgres  # PostgreSQL + development
 make dev-sqlite    # SQLite + development
+make dev-mysql     # MySQL + development (coming soon)
 ```
 
 ---

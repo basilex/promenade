@@ -456,12 +456,12 @@ make migrate
 ### 3. Start Application
 
 ```bash
-# Development mode (Docker + migrations + API)
-make dev
+# PostgreSQL development (Docker + migrations + API)
+make dev-postgres
 
 # Or build and run separately
 make build
-./bin/promenade
+DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade
 ```
 
 Server starts on **http://localhost:8081**
@@ -575,9 +575,11 @@ curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
 ```bash
 make help              # Show all available commands
 
-# Development
-make dev               # Full dev environment (Docker + migrations + API)
-make dev-fresh         # Fresh start with clean database
+# Development (driver-specific)
+make dev-postgres      # PostgreSQL development (Docker + migrations + API)
+make dev-postgres-fresh # PostgreSQL fresh start with clean database
+make dev-sqlite        # SQLite development (embedded, no Docker)
+make dev-mysql         # MySQL development (coming soon)
 make build             # Build binary
 make run               # Build and run
 make fmt               # Format code

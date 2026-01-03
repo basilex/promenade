@@ -56,7 +56,8 @@ help:  ## Show this help message
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
 	@echo ""
 	@echo "INFO Usage examples:"
-	@echo "  make dev              # Start API development server"
+	@echo "  make dev-postgres     # PostgreSQL development server"
+	@echo "  make dev-sqlite       # SQLite development server"
 	@echo "  make test             # Run all tests"
 	@echo "  make docker-run       # Build and run in Docker"
 	@echo ""

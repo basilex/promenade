@@ -139,14 +139,19 @@ seed-identity:  ## Seed identity context (RBAC)
 	@go run cmd/seed/main.go --context=identity
 
 # Development workflows
-dev: docker-up migrate run  ## Full dev environment (Docker + migrations + API)
+dev-postgres: docker-up migrate run  ## PostgreSQL development (Docker + migrations + API)
 
-dev-fresh: docker-up db-fresh run  ## Fresh start with clean database
+dev-postgres-fresh: docker-up db-fresh run  ## PostgreSQL fresh start with clean database
 
-dev-sqlite:  ## Run with SQLite embedded database (no Docker needed)
+dev-sqlite:  ## SQLite development (embedded, no Docker needed)
 	@echo "🚀 Starting Promenade with SQLite..."
 	@mkdir -p data
 	@DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade || (make build && DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade)
+
+dev-mysql:  ## MySQL development (planned - coming soon)
+	@echo "⚠️  MySQL support coming soon"
+	@echo "Usage: make dev-mysql (will use config/app.mysql-dev.yaml)"
+	@exit 1
 
 # CI simulation (run locally before push)
 ci-check: ci-lint ci-test ci-build  ## Run all CI checks locally (lint + test + build)
