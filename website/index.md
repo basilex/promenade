@@ -40,7 +40,7 @@ Promenade follows **strict Domain-Driven Design** principles with clear **Bounde
 - **Graceful Shutdown**: Ensures all events processed before shutdown
 - **67 Tests**: Comprehensive test coverage (100% passing)
 
-**See**: [pkg/bus/README.md](pkg/bus/README.md) for complete Event Bus documentation
+**See**: [Event Bus Package](/packages/bus) for complete Event Bus documentation
 
 ### Role-Based Access Control (RBAC)
 
@@ -53,7 +53,7 @@ Promenade implements **enterprise-grade RBAC** for fine-grained authorization:
 - **5 System Roles**: Pre-configured with 29+ permissions across all resources
 - **14 API Endpoints**: Complete management of roles and permissions
 
-**See**: [docs/RBAC.md](docs/RBAC.md) for complete RBAC implementation guide
+**See**: [RBAC Guide](/guide/rbac) for complete RBAC implementation guide
 
 ### Rate Limiting
 
@@ -66,7 +66,7 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 - **Memory Management**: Periodic cleanup prevents memory leaks
 - **10 Tests**: Comprehensive test coverage (100% passing)
 
-**See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
+**See**: [Rate Limiting Guide](/guide/rate-limiting) for complete Rate Limiting documentation
 
 ### Multi-Database Support
 
@@ -84,7 +84,7 @@ Promenade implements **database-agnostic architecture** supporting multiple SQL 
 - Store JSON as TEXT (cross-database compatible) with type-safe Go wrappers
 - Migrations work identically across databases (no vendor-specific DDL)
 
-**See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md)
+**See**: Architecture documentation for database adapter details
 
 ### Health Checks
 
@@ -103,7 +103,7 @@ Promenade provides **comprehensive health monitoring** for all dependencies:
 - `GET /health/redis` - Redis health (if configured)
 - `GET /health/bus` - Event Bus health
 
-**See**: [docs/HEALTH_CHECKS.md](docs/HEALTH_CHECKS.md) for complete Health Check documentation
+**See**: [Health Checks Guide](/guide/health-checks) for complete Health Check documentation
 
 ### Local CI Validation
 
@@ -126,7 +126,7 @@ make ci-test        # All tests + race detector
 make ci-build       # Test compilation
 ```
 
-**See**: [docs/guides/local-ci.md](docs/guides/local-ci.md) for complete Local CI Validation guide
+**See**: [Local CI Guide](/guide/local-ci) for complete Local CI Validation guide
 
 ### Caching Layer
 
@@ -144,7 +144,7 @@ Promenade implements **Redis-based caching** for improved performance and reduce
 - User data: Profiles, Customer records
 - Session data: Temporary state
 
-**See**: [docs/guides/caching.md](docs/guides/caching.md) for complete Caching implementation guide
+**See**: [Caching Guide](/guide/caching) for complete Caching implementation guide
 
 ### Customer Management
 
@@ -164,7 +164,7 @@ Promenade implements **complete CRM functionality** for B2C and B2B customer lif
 - Sales rep assignment
 - Integration with Identity and Order Management contexts
 
-**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md)
+**See**: [Customer Management Guide](/concepts/customer-management) | [Company Management Guide](/concepts/company-management) | [Deal Management Guide](/concepts/deal-management)
 
 ### Deal Management
 
@@ -187,7 +187,7 @@ Promenade provides **complete sales pipeline management** with deal lifecycle tr
 
 **Implementation Status**: All core business rules implemented in entity (`MoveToStage()`, `MarkWon()`, `MarkLost()`). Tested via HTTP API with 100% success rate.
 
-**See**: [docs/concepts/deal-management.md](docs/concepts/deal-management.md) for complete Deal Management guide
+**See**: [Deal Management](/concepts/deal-management) for complete Deal Management guide
 
 ### Interaction Management
 
@@ -211,7 +211,7 @@ Promenade provides **comprehensive customer interaction tracking** for calls, em
 
 **Implementation Status**: All core business rules implemented. N+1 optimization with LEFT JOIN. Fully tested with 74 tests + 2 benchmarks.
 
-**See**: [docs/concepts/interaction-management.md](docs/concepts/interaction-management.md) for complete Interaction Management guide
+**See**: [/concepts/interaction-management](/concepts/interaction-management) for complete Interaction Management guide
 
 ### Customer Analytics
 
@@ -242,7 +242,7 @@ Promenade implements **CQRS read models** for business intelligence and reportin
 
 **Implementation Status**: All 8 endpoints live in production. 15 tests (7 unit + 8 integration). CQRS pattern fully implemented.
 
-**See**: [Analytics README](internal/contexts/customer-mgmt/analytics/README.md) for complete API reference with request/response examples
+**See**: [Analytics README](/concepts/analytics) for complete API reference with request/response examples
 
 ### Order Management
 
@@ -258,7 +258,7 @@ Promenade provides **complete order lifecycle management** with state transition
 
 **Implementation Status**: All core business rules implemented in entity (`Confirm()`, `StartProcessing()`, `MarkFulfilled()`, `Cancel()`). Future: Inventory/Payment/Shipping integrations.
 
-**See**: [docs/concepts/order-management.md](docs/concepts/order-management.md) for complete Order Management guide
+**See**: [/concepts/order-management](/concepts/order-management) for complete Order Management guide
 
 ### Bounded Contexts
 
@@ -266,8 +266,8 @@ Promenade provides **complete order lifecycle management** with state transition
 | ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
 | **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
-| **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
+| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](/concepts/customer-management) \| [Analytics](/concepts/analytics) |
+| **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](/concepts/order-management)      |
 | **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
@@ -323,9 +323,9 @@ Promenade follows **strict design patterns** and **naming conventions** to ensur
 - Errors: `Err{Entity}{Condition}` (e.g., `ErrCustomerNotFound`)
 
 **Detailed Documentation**:
-- [Naming Conventions Guide](docs/guides/naming-conventions.md) - Files, directories, Go code
-- [Database Conventions Guide](docs/guides/database-conventions.md) - Tables, columns, indexes, migrations
-- [Architecture Patterns Guide](docs/guides/architecture-patterns.md) - Repository, UseCase, Handler implementations
+- [Naming Conventions Guide](/guide/naming-conventions) - Files, directories, Go code
+- [Database Conventions Guide](/guide/database-conventions) - Tables, columns, indexes, migrations
+- [Architecture Patterns Guide](/guide/architecture-patterns) - Repository, UseCase, Handler implementations
 
 ---
 
@@ -518,7 +518,7 @@ curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
 - **Refresh Token**: 7 days (to generate new access tokens)
 - **Algorithm**: HS256 (HMAC with SHA-256)
 
-**See**: [pkg/jwt/README.md](pkg/jwt/README.md) for detailed JWT documentation
+**See**: [/packages/jwt](/packages/jwt) for detailed JWT documentation
 
 ---
 
@@ -945,18 +945,18 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 
 | Package         | Purpose                               | Tests | Status     | Documentation                           |
 | --------------- | ------------------------------------- | ----- | ---------- | --------------------------------------- |
-| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md)             |
-| **jwt**         | JWT authentication & RBAC middleware  | 18    | Production | [README](pkg/jwt/README.md)             |
-| **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](pkg/logger/README.md)          |
-| **middleware**  | HTTP middleware (rate limit, CSRF)    | 25    | Production | [README](pkg/middleware/README.md)      |
-| **cache**       | Redis-based caching layer             | 8     | Production | [README](pkg/cache/README.md)           |
-| **migration**   | Namespace-based DB migrations         | 8     | Production | [README](pkg/migration/README.md)       |
-| **response**    | Standard HTTP responses               | 12    | Production | [README](pkg/response/README.md)        |
+| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](/packages/bus)             |
+| **jwt**         | JWT authentication & RBAC middleware  | 18    | Production | [README](/packages/jwt)             |
+| **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](/packages/logger)          |
+| **middleware**  | HTTP middleware (rate limit, CSRF)    | 25    | Production | [README](/packages/middleware)      |
+| **cache**       | Redis-based caching layer             | 8     | Production | [README](/packages/cache)           |
+| **migration**   | Namespace-based DB migrations         | 8     | Production | [README](/packages/migration)       |
+| **response**    | Standard HTTP responses               | 12    | Production | [README](/packages/response)        |
 | **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | [README](pkg/uuidv7/README.md)          |
-| **valueobject** | DDD Value Objects                     | 25    | Production | [README](pkg/valueobject/README.md)     |
-| **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](pkg/aggregate/README.md)       |
-| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
-| **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
+| **valueobject** | DDD Value Objects                     | 25    | Production | [README](/packages/valueobject)     |
+| **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](/packages/aggregate)       |
+| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](/packages/jsonb)           |
+| **saga**        | Distributed transaction orchestration | 28    | Production | [README](/packages/saga)            |
 
 **Total**: 229+ tests across 12 packages
 
@@ -1174,11 +1174,11 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 **Package Library**:
 
 - [Package Overview](pkg/README.md) - All shared packages documentation (~400 lines)
-- [Event Bus](pkg/bus/README.md) - Central communication hub (Memory/Redis adapters) (~600 lines)
-- [JWT Authentication](pkg/jwt/README.md) - Token generation, validation, RBAC middleware
+- [Event Bus](/packages/bus) - Central communication hub (Memory/Redis adapters) (~600 lines)
+- [JWT Authentication](/packages/jwt) - Token generation, validation, RBAC middleware
 - [UUID v7](pkg/uuidv7/README.md) - Time-ordered UUIDs for better performance
-- [Logger](pkg/logger/README.md) - Structured logging with context
-- [Value Objects](pkg/valueobject/README.md) - Email, Phone, Money, Address
+- [Logger](/packages/logger) - Structured logging with context
+- [Value Objects](/packages/valueobject) - Email, Phone, Money, Address
 
 **Infrastructure**:
 

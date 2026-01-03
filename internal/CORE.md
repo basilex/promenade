@@ -382,7 +382,7 @@ When working on core, ensure:
 
 - **[README.md](../README.md)** - Architecture overview
 - **[docs/INDEX.md](../docs/INDEX.md)** - Documentation index
-- **[docs/CLEAN_ARCHITECTURE_SUMMARY.md](../docs/CLEAN_ARCHITECTURE_SUMMARY.md)** - DDD with Bounded Contexts
+- **[docs/concepts/clean-architecture.md](../docs/concepts/clean-architecture.md)** - DDD with Bounded Contexts
 - **[docs/PHASE1_ARCHITECTURE_PREPARATION.md](../docs/PHASE1_ARCHITECTURE_PREPARATION.md)** - Migration roadmap
 - **[migrations/README.md](../migrations/README.md)** - Migration system
 

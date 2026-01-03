@@ -32,12 +32,12 @@ Comprehensive check of all markdown links in Promenade Platform documentation.
 Many links reference old documentation structure:
 
 **Old Paths** (no longer exist):
-- `docs/CLEAN_ARCHITECTURE_SUMMARY.md` → `docs/concepts/clean-architecture.md`
-- `docs/TESTING_PATTERNS.md` → `docs/guides/testing-patterns.md`
-- `docs/RBAC.md` → `docs/guides/rbac.md`
-- `docs/RATE_LIMITING.md` → `docs/guides/rate-limiting.md`
-- `docs/HEALTH_CHECKS.md` → `docs/guides/health-checks.md`
-- `docs/BUS_TEST_COVERAGE.md` → `docs/reference/bus-test-coverage.md`
+- `docs/concepts/clean-architecture.md` → `docs/concepts/clean-architecture.md`
+- `docs/guides/testing-patterns.md` → `docs/guides/testing-patterns.md`
+- `docs/guides/rbac.md` → `docs/guides/rbac.md`
+- `docs/guides/rate-limiting.md` → `docs/guides/rate-limiting.md`
+- `docs/guides/health-checks.md` → `docs/guides/health-checks.md`
+- `docs/reference/bus-test-coverage.md` → `docs/reference/bus-test-coverage.md`
 - `docs/README.md` → `docs/INDEX.md`
 
 **Affected Files**: ~40 files
@@ -106,14 +106,14 @@ Website uses VitePress routing (`/guide/`, `/concepts/`, `/packages/`):
 ### Phase 2: High Priority (Next)
 
 - [ ] Update all `docs/` files to use new structure paths
-  - Replace `CLEAN_ARCHITECTURE_SUMMARY.md` → `concepts/clean-architecture.md`
-  - Replace `TESTING_PATTERNS.md` → `guides/testing-patterns.md`
-  - Replace `RBAC.md` → `guides/rbac.md`
-  - Replace `BUS_TEST_COVERAGE.md` → `reference/bus-test-coverage.md`
+  - Replace `concepts/clean-architecture.md` → `concepts/clean-architecture.md`
+  - Replace `guides/testing-patterns.md` → `guides/testing-patterns.md`
+  - Replace `guides/rbac.md` → `guides/rbac.md`
+  - Replace `reference/bus-test-coverage.md` → `reference/bus-test-coverage.md`
 
 - [ ] Fix `internal/contexts/shared/README.md` links:
   ```diff
-  - [Clean Architecture](../../../docs/CLEAN_ARCHITECTURE_SUMMARY.md)
+  - [Clean Architecture](../../../docs/concepts/clean-architecture.md)
   + [Clean Architecture](../../../docs/concepts/clean-architecture.md)
   ```
 
@@ -152,13 +152,13 @@ Website uses VitePress routing (`/guide/`, `/concepts/`, `/packages/`):
 ### Find and Replace Pattern
 
 ```bash
-# Update all CLEAN_ARCHITECTURE_SUMMARY.md references
+# Update all concepts/clean-architecture.md references
 find docs -name "*.md" -type f -exec sed -i '' 's|CLEAN_ARCHITECTURE_SUMMARY\.md|concepts/clean-architecture.md|g' {} +
 
-# Update all TESTING_PATTERNS.md references
+# Update all guides/testing-patterns.md references
 find docs -name "*.md" -type f -exec sed -i '' 's|TESTING_PATTERNS\.md|guides/testing-patterns.md|g' {} +
 
-# Update all RBAC.md references
+# Update all guides/rbac.md references
 find docs -name "*.md" -type f -exec sed -i '' 's|RBAC\.md|guides/rbac.md|g' {} +
 ```
 

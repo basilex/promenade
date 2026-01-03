@@ -753,10 +753,10 @@ profile.TimezoneID = selectedTimezoneID
 ## Related Documentation
 
 - [Documentation Index](../../../docs/INDEX.md)
-- [Clean Architecture Summary](../../../docs/CLEAN_ARCHITECTURE_SUMMARY.md)
+- [Clean Architecture Summary](../../../docs/concepts/clean-architecture.md)
 - [Migrations README](../../../migrations/README.md)
 - [Event Bus Documentation](../../../pkg/bus/README.md)
-- [Testing Patterns](../../../docs/TESTING_PATTERNS.md)
+- [Testing Patterns](../../../docs/guides/testing-patterns.md)
 - [Testing Guide](../../../test/README.md)
 
 ---

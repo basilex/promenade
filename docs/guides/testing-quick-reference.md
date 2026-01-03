@@ -199,11 +199,11 @@ mockRepo.AssertExpectations(t)
 
 ## 📚 Full Documentation
 
-- [Testing Patterns Guide](TESTING_PATTERNS.md) - Comprehensive 800+ line guide
+- [Testing Patterns Guide](guides/testing-patterns.md) - Comprehensive 800+ line guide
 - [Testing Structure](../test/TESTING_STRUCTURE.md) - Directory organization
 - [Testing README](../test/README.md) - Overview
 
 ---
 
 **Last Updated**: 2025-12-28  
-**Quick Reference** - See [TESTING_PATTERNS.md](TESTING_PATTERNS.md) for complete details
+**Quick Reference** - See [guides/testing-patterns.md](guides/testing-patterns.md) for complete details

@@ -312,9 +312,9 @@ df2372a - refactor(test): delete smoke tests directory (47 tests, -3,236 lines)
 
 ## Related Documents
 
-- [REFACTORING_ROADMAP.md](REFACTORING_ROADMAP.md) - Master plan
+- [reference/refactoring-roadmap.md](reference/refactoring-roadmap.md) - Master plan
 - [PHASE1_TEST_AUDIT.md](PHASE1_TEST_AUDIT.md) - Test analysis
-- [TESTING_PATTERNS.md](TESTING_PATTERNS.md) - DDD testing guide
+- [guides/testing-patterns.md](guides/testing-patterns.md) - DDD testing guide
 - [test/README.md](../test/README.md) - Testing infrastructure
 
 ---

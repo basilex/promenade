@@ -11,7 +11,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 def is_external_link(link):
-    """Check if link is external (http/https/mailto)."""
+    """Check if link is external (http/https/mailto) or VitePress route."""
+    # VitePress routes start with / and are internal to the site
+    if link.startswith('/'):
+        return True
     return link.startswith(('http://', 'https://', 'mailto:', '#'))
 
 def resolve_path(base_file, link):

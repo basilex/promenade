@@ -89,7 +89,7 @@ TestRateLimiter_GetVisitorCount             PASS
 ```
 
 **Documentation:**
-- Created `docs/RATE_LIMITING.md` (680+ lines) - Complete implementation guide
+- Created `docs/guides/rate-limiting.md` (680+ lines) - Complete implementation guide
 - Updated `README.md` with Rate Limiting overview section
 
 ### 4. Token Revocation Mechanism (COMPLETED December 29, 2025)
@@ -346,8 +346,8 @@ SELECT * FROM customers WHERE status = ?  -- Need INDEX
 
 ## Related Documents
 
-- [Clean Architecture Summary](CLEAN_ARCHITECTURE_SUMMARY.md)
-- [Testing Patterns](TESTING_PATTERNS.md)
+- [Clean Architecture Summary](concepts/clean-architecture.md)
+- [Testing Patterns](guides/testing-patterns.md)
 - [AI Instructions](../.github/copilot-instructions.md)
 
 ---

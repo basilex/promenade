@@ -508,7 +508,7 @@ Server starts on http://localhost:8081
 **Перенести з README:**
 - Getting Started → guide/getting-started.md
 - Architecture → guide/architecture.md
-- Testing → guide/testing.md (з docs/TESTING_PATTERNS.md)
+- Testing → guide/testing.md (з docs/guides/testing-patterns.md)
 - Development → guide/development.md (з AI instructions)
 
 **Формат:**

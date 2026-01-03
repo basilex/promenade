@@ -74,7 +74,7 @@ make test-integration
 ## Related Documentation
 
 - [Testing Guide](../test/README.md)
-- [Testing Patterns](../docs/TESTING_PATTERNS.md)
+- [Testing Patterns](../docs/guides/testing-patterns.md)
 - [Makefile.test.mk](../Makefile.test.mk)
 
 ---

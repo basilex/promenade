@@ -884,7 +884,7 @@ go run cmd/migrate/main.go --cmd=up --namespace=identity
 
 - [JWT Package](../pkg/jwt/README.md) - JWT authentication
 - [Identity Context](../internal/contexts/identity/README.md) - Identity bounded context
-- [Testing Patterns](TESTING_PATTERNS.md) - Testing guide
+- [Testing Patterns](guides/testing-patterns.md) - Testing guide
 - [Main README](../README.md) - Project overview
 
 ---

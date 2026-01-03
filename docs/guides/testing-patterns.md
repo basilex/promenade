@@ -937,7 +937,7 @@ go tool cover -func=coverage.out | grep total
 - [Main Testing Guide](../test/README.md) - Testing overview
 - [Testing Structure](../test/TESTING_STRUCTURE.md) - Directory organization
 - [Integration Test Utilities](../test/integration/testutils.go) - Helper functions
-- [DDD Architecture](CLEAN_ARCHITECTURE_SUMMARY.md) - Domain-Driven Design principles
+- [DDD Architecture](concepts/clean-architecture.md) - Domain-Driven Design principles
 - [Event Bus Testing](../pkg/bus/README.md) - Event-driven testing
 
 ---
