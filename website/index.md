@@ -230,91 +230,91 @@ features:
   - icon: 🏗️
     title: Domain-Driven Design
     details: Pure DDD with Bounded Contexts, Aggregates, Value Objects, and Domain Events. Each context is autonomous with its own domain model and database schema.
-    link: /concepts/clean-architecture
+    link: /concepts/clean-architecture.md
     linkText: Learn DDD Architecture →
     
   - icon: ⚡
     title: Event-Driven Architecture
     details: Central Event Bus with Memory and Redis adapters. 377K events/sec throughput, automatic retry, panic recovery, and graceful shutdown.
-    link: /concepts/event-driven
+    link: /concepts/event-driven.md
     linkText: Explore Event Bus →
     
   - icon: 🔐
     title: JWT + RBAC Authentication
     details: Token-based authentication with Role-Based Access Control. 15-minute access tokens, 7-day refresh tokens, and Redis-backed token revocation.
-    link: /guide/rbac
+    link: /guide/rbac.md
     linkText: See RBAC Guide →
     
   - icon: 🎯
     title: Bounded Contexts
     details: 6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse, Analytics. Contexts communicate only via Event Bus.
-    link: /concepts/bounded-contexts
+    link: /concepts/bounded-contexts.md
     linkText: View All Contexts →
     
   - icon: 📊
     title: Three-Tier Testing
     details: Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.
-    link: /guide/testing-patterns
+    link: /guide/testing-patterns.md
     linkText: Read Testing Guide →
     
   - icon: 🚀
     title: Production-Ready
     details: Rate limiting (5/min login), health checks (4 endpoints), graceful shutdown, structured logging, database migrations, Docker support.
-    link: /guide/health-checks
+    link: /guide/health-checks.md
     linkText: Health Monitoring →
     
   - icon: 🔄
     title: Event Bus Adapters
     details: Switch between Memory (377K events/sec, dev) and Redis (distributed, prod) adapters with single config change. Zero code changes needed.
-    link: /packages/bus
+    link: /packages/bus.md
     linkText: Event Bus Docs →
     
   - icon: 🛡️
     title: Rate Limiting
     details: IP-based rate limiting with token bucket algorithm. Login 5/min, Register 3/min. Automatic cleanup prevents memory leaks. Production-ready.
-    link: /guide/rate-limiting
+    link: /guide/rate-limiting.md
     linkText: Rate Limiting Guide →
     
   - icon: 💚
     title: Health Checks
     details: Comprehensive health monitoring for PostgreSQL, Redis, Event Bus. 4 endpoints, 3 status levels (healthy/degraded/unhealthy), 5-second timeout.
-    link: /guide/health-checks
+    link: /guide/health-checks.md
     linkText: Health Check API →
     
   - icon: 🗄️
     title: Redis Caching
     details: Resource-specific TTL (Reference 1h-24h, User 10-30m, Session 30m-1h). Cache-aside pattern with write-through invalidation. Graceful degradation when Redis unavailable.
-    link: /guide/caching
+    link: /guide/caching.md
     linkText: Caching Guide →
     
   - icon: 💼
     title: Deal Management
     details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
-    link: /concepts/deal-management
+    link: /concepts/deal-management.md
     linkText: Deal Management Guide →
     
   - icon: 📦
     title: Order Management
     details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
-    link: /concepts/order-management
+    link: /concepts/order-management.md
     linkText: Order Management Guide →
     
   - icon: 🧩
     title: Value Objects
     details: Immutable domain primitives - Email, Phone, Money, Address, DateRange. Built-in validation, type safety, and business logic encapsulation.
-    link: /packages/valueobject
+    link: /packages/valueobject.md
     linkText: Value Objects →
     
   - icon: 🔑
     title: UUID v7 (Time-Ordered)
     details: Time-ordered UUIDs provide 2x faster database inserts than UUID v4, better B-tree index locality, and natural ordering by creation time.
-    link: /packages/uuidv7
+    link: /packages/uuidv7.md
     linkText: UUID v7 Benchmark →
     
   - icon: 📝
     title: Structured Logging
     details: Context-aware logging with slog wrapper. Request ID propagation, log levels (debug/info/warn/error), JSON format for production.
-    link: /packages/logger
+    link: /packages/logger.md
     linkText: Logger Package →
 ---
 
