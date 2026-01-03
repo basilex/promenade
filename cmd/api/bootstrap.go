@@ -108,15 +108,36 @@ func initLogger(cfg *config.AppConfig) error {
 	return nil
 }
 
-// initDatabase initializes PostgreSQL connection
+// initDatabase initializes database connection (PostgreSQL or SQLite)
 func initDatabase(cfg *config.AppConfig) (*sqlx.DB, error) {
-	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
-	if err != nil {
-		logger.Fatal("Failed to connect to database", slog.Any("error", err))
+	var db *sqlx.DB
+	var err error
+
+	switch cfg.Database.Driver {
+	case "postgres":
+		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
+		if err != nil {
+			logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
+			return nil, err
+		}
+		logger.Info("PostgreSQL connected successfully")
+
+	case "sqlite":
+		db, err = database.NewSQLiteConnection(&cfg.Database.SQLite)
+		if err != nil {
+			logger.Fatal("Failed to connect to SQLite", slog.Any("error", err))
+			return nil, err
+		}
+		logger.Info("SQLite connected successfully", slog.String("path", cfg.Database.SQLite.Path))
+
+	default:
+		logger.Fatal("Unsupported database driver",
+			slog.String("driver", cfg.Database.Driver),
+			slog.String("supported", "postgres, sqlite"),
+		)
 		return nil, err
 	}
 
-	logger.Info("Database connected successfully")
 	return db, nil
 }
 

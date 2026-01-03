@@ -1,0 +1,73 @@
+# SQLite Embedded Database Configuration
+# Perfect for demos, laptops, small deployments
+
+app:
+  name: "Promenade Platform"
+  environment: "sqlite"
+  version: "0.1.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8081
+  read_timeout: 10s
+  write_timeout: 10s
+
+# Database configuration - SQLite embedded mode
+database:
+  driver: "sqlite"  # Change to "postgres" for PostgreSQL
+  
+  # SQLite configuration (active when driver=sqlite)
+  sqlite:
+    path: "./data/promenade.db"  # Database file location
+    mode: "rwc"                   # read-write-create
+    cache: "shared"               # shared cache between connections
+    max_open_conns: 1             # SQLite best practice (single writer)
+    max_idle_conns: 1
+  
+  # PostgreSQL configuration (unused in SQLite mode)
+  postgres:
+    host: "localhost"
+    port: 5432
+    user: "system"
+    password: "passw0rd"
+    database: "promenade_dev"
+    sslmode: "disable"
+  
+  # Redis - optional (can run without Redis in embedded mode)
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    pool_size: 10
+    max_retries: 3
+    databases:
+      revocation: 0  # JWT token blacklist (fallback to in-memory if Redis unavailable)
+      bus: 1         # Event Bus (uses memory adapter if Redis unavailable)
+      cache: 2       # Cache layer (NoOp adapter if Redis unavailable)
+      sessions: 3    # User sessions
+
+jwt:
+  secret: "sqlite-demo-secret-change-in-production"
+  access_token_duration: 15m
+  refresh_token_duration: 168h  # 7 days
+  issuer: "promenade-platform"
+
+logging:
+  level: "info"
+  format: "text"
+  add_source: false
+
+# Event Bus - Memory adapter (no Redis needed)
+bus:
+  adapter: "memory"
+  worker_pool_size: 5
+  buffer_size: 100
+  retry_attempts: 3
+  retry_delay: 100ms
+  retry_max_delay: 5s
+  retry_multiplier: 2.0
+
+# Cache - NoOp adapter (no Redis needed, or use Redis if available)
+cache:
+  adapter: "noop"  # or "redis" if Redis is running
+  default_ttl: 1h
+  max_entries: 1000

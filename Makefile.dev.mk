@@ -143,6 +143,11 @@ dev: docker-up migrate run  ## Full dev environment (Docker + migrations + API)
 
 dev-fresh: docker-up db-fresh run  ## Fresh start with clean database
 
+dev-sqlite:  ## Run with SQLite embedded database (no Docker needed)
+	@echo "🚀 Starting Promenade with SQLite..."
+	@mkdir -p data
+	@ENVIRONMENT=sqlite ./bin/promenade || (make build && ENVIRONMENT=sqlite ./bin/promenade)
+
 # CI simulation (run locally before push)
 ci-check: ci-lint ci-test ci-build  ## Run all CI checks locally (lint + test + build)
 

@@ -43,8 +43,10 @@ type ServerSection struct {
 
 // DatabasesSection holds all database configurations
 type DatabasesSection struct {
-	Postgres PostgresSection `yaml:"postgres"`
-	Redis    RedisSection    `yaml:"redis"`
+	Driver   string          `yaml:"driver"`   // Database driver: "postgres", "sqlite", "mysql"
+	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config (when driver=postgres)
+	SQLite   SQLiteSection   `yaml:"sqlite"`   // SQLite config (when driver=sqlite)
+	Redis    RedisSection    `yaml:"redis"`    // Redis for cache/sessions/bus
 }
 
 // PostgresSection holds PostgreSQL configuration
@@ -59,6 +61,15 @@ type PostgresSection struct {
 	MaxIdleConns    int           `yaml:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `yaml:"conn_max_lifetime"`
 	ConnMaxIdleTime time.Duration `yaml:"conn_max_idle_time"`
+}
+
+// SQLiteSection holds SQLite configuration
+type SQLiteSection struct {
+	Path         string `yaml:"path"`           // Database file path (e.g., "./data/promenade.db")
+	Mode         string `yaml:"mode"`           // rwc (read-write-create), ro (read-only), memory
+	Cache        string `yaml:"cache"`          // shared, private
+	MaxOpenConns int    `yaml:"max_open_conns"` // Default: 1 (SQLite limitation)
+	MaxIdleConns int    `yaml:"max_idle_conns"` // Default: 1
 }
 
 type JWTSection struct {

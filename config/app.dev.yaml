@@ -14,6 +14,8 @@ server:
 
 # Centralized database configuration
 database:
+  driver: "postgres"  # Database driver: "postgres" or "sqlite"
+  
   # PostgreSQL - main database
   postgres:
     host: "localhost"
