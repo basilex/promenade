@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Softer theme for favicon -->
+  <defs>
+    <linearGradient id="faviconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f8f8;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:0.9" />
+    </linearGradient>
+    <linearGradient id="faviconLetter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded background -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#faviconBg)"/>
+  
+  <!-- Simple "P" for favicon - very rounded -->
+  <rect x="20" y="16" width="6" height="32" rx="4" fill="url(#faviconLetter)"/>
+  
+  <!-- Top curve of P - smoother -->
+  <path d="M 26 18 Q 38 18 38 26 Q 38 34 32 34 L 26 34" 
+        fill="none" 
+        stroke="url(#faviconLetter)" 
+        stroke-width="6" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+  <!-- Single dot for simplicity -->
+  <circle cx="26" cy="42" r="2.5" fill="#818cf8" opacity="0.6"/>
+</svg>

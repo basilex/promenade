@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Softer background gradient matching website theme -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f8f8;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="letterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:0.75" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:0.75" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Softer rounded square background - more rounded -->
+  <rect x="10" y="10" width="180" height="180" rx="48" fill="url(#bgGradient)"/>
+  
+  <!-- Abstract "P" letter - smoother curves -->
+  <!-- Vertical line of P - more rounded -->
+  <rect x="60" y="50" width="20" height="100" rx="12" fill="url(#letterGradient)"/>
+  
+  <!-- Top curve of P - smoother path representing promenade -->
+  <path d="M 80 60 Q 135 60 135 87 Q 135 114 105 114 L 80 114" 
+        fill="none" 
+        stroke="url(#letterGradient)" 
+        stroke-width="20" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+  <!-- Three dots representing workflow/journey - softer -->
+  <circle cx="60" cy="132" r="6" fill="#818cf8" opacity="0.5"/>
+  <circle cx="80" cy="132" r="6" fill="#a78bfa" opacity="0.5"/>
+  <circle cx="100" cy="132" r="6" fill="#c4b5fd" opacity="0.5"/>
+  
+  <!-- Softer network lines representing bounded contexts -->
+  <line x1="148" y1="72" x2="158" y2="62" stroke="#818cf8" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
+  <line x1="148" y1="92" x2="163" y2="97" stroke="#a78bfa" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
+  <line x1="148" y1="112" x2="158" y2="122" stroke="#c4b5fd" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
+  <circle cx="163" cy="62" r="5" fill="#818cf8" opacity="0.3"/>
+  <circle cx="168" cy="97" r="5" fill="#a78bfa" opacity="0.3"/>
+  <circle cx="163" cy="122" r="5" fill="#c4b5fd" opacity="0.3"/>
+</svg>
