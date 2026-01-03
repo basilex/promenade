@@ -84,7 +84,19 @@ Promenade implements **database-agnostic architecture** supporting multiple SQL 
 - Store JSON as TEXT (cross-database compatible) with type-safe Go wrappers
 - Migrations work identically across databases (no vendor-specific DDL)
 
-**See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md)
+**Quick Switch Example**:
+```bash
+# PostgreSQL (production)
+ENVIRONMENT=production ./bin/promenade
+
+# SQLite (development/demo)
+ENVIRONMENT=sqlite ./bin/promenade
+
+# Configuration via config/app.{env}.yaml
+driver: "postgres"  # or "sqlite"
+```
+
+**See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md) | [config/SQLITE.md](config/SQLITE.md)
 
 ### Health Checks
 
@@ -448,6 +460,37 @@ make build
 ```
 
 Server starts on **http://localhost:8081**
+
+### 3a. Alternative: SQLite Embedded Mode
+
+**No Docker required** - perfect for demos, laptops, quick testing:
+
+```bash
+# Build binary
+make build
+
+# Start with embedded SQLite database
+make dev-sqlite
+
+# Or manually
+ENVIRONMENT=sqlite ./bin/promenade
+```
+
+Database creates at `./data/promenade.db` (auto-created directory).
+
+**When to use SQLite**:
+- Local development without Docker
+- Sales demos on laptops
+- Quick prototyping
+- CI/CD testing
+- Single-user deployments
+
+**Limitations**:
+- Single writer (not for production with multiple instances)
+- No distributed transactions
+- Limited to 1 concurrent connection
+
+**See**: [config/SQLITE.md](config/SQLITE.md) for complete documentation
 
 ### 4. Health Check
 
