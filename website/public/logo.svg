@@ -1,41 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <!-- Softer background gradient matching website theme -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 160" width="180" height="160">
+  <!-- Background gradient matching site theme - more contrast -->
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f8f8f8;stop-opacity:0.8" />
-      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:0.8" />
+      <stop offset="0%" style="stop-color:#eef2ff;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:0.6" />
     </linearGradient>
     <linearGradient id="letterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:0.75" />
-      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:0.75" />
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#818cf8;stop-opacity:0.9" />
     </linearGradient>
   </defs>
   
-  <!-- Softer rounded square background - more rounded -->
-  <rect x="10" y="10" width="180" height="180" rx="48" fill="url(#bgGradient)"/>
+  <!-- Rounded background - wider aspect ratio -->
+  <rect x="8" y="8" width="164" height="144" rx="32" fill="url(#bgGradient)"/>
   
-  <!-- Abstract "P" letter - smoother curves -->
-  <!-- Vertical line of P - more rounded -->
-  <rect x="60" y="50" width="20" height="100" rx="12" fill="url(#letterGradient)"/>
+  <!-- Abstract "P" letter - more prominent -->
+  <!-- Vertical line of P -->
+  <rect x="50" y="40" width="22" height="90" rx="11" fill="url(#letterGradient)"/>
   
-  <!-- Top curve of P - smoother path representing promenade -->
-  <path d="M 80 60 Q 135 60 135 87 Q 135 114 105 114 L 80 114" 
+  <!-- Top curve of P - representing promenade -->
+  <path d="M 72 50 Q 125 50 125 75 Q 125 100 98 100 L 72 100" 
         fill="none" 
         stroke="url(#letterGradient)" 
-        stroke-width="20" 
+        stroke-width="22" 
         stroke-linecap="round"
         stroke-linejoin="round"/>
   
-  <!-- Three dots representing workflow/journey - softer -->
-  <circle cx="60" cy="132" r="6" fill="#818cf8" opacity="0.5"/>
-  <circle cx="80" cy="132" r="6" fill="#a78bfa" opacity="0.5"/>
-  <circle cx="100" cy="132" r="6" fill="#c4b5fd" opacity="0.5"/>
+  <!-- Three dots - workflow/journey -->
+  <circle cx="52" cy="118" r="5" fill="#6366f1" opacity="0.7"/>
+  <circle cx="72" cy="118" r="5" fill="#818cf8" opacity="0.7"/>
+  <circle cx="92" cy="118" r="5" fill="#a78bfa" opacity="0.7"/>
   
-  <!-- Softer network lines representing bounded contexts -->
-  <line x1="148" y1="72" x2="158" y2="62" stroke="#818cf8" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
-  <line x1="148" y1="92" x2="163" y2="97" stroke="#a78bfa" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
-  <line x1="148" y1="112" x2="158" y2="122" stroke="#c4b5fd" stroke-width="2.5" opacity="0.25" stroke-linecap="round"/>
-  <circle cx="163" cy="62" r="5" fill="#818cf8" opacity="0.3"/>
-  <circle cx="168" cy="97" r="5" fill="#a78bfa" opacity="0.3"/>
-  <circle cx="163" cy="122" r="5" fill="#c4b5fd" opacity="0.3"/>
+  <!-- Network lines - bounded contexts -->
+  <line x1="135" y1="62" x2="145" y2="52" stroke="#6366f1" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+  <line x1="135" y1="82" x2="150" y2="87" stroke="#818cf8" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+  <line x1="135" y1="102" x2="145" y2="112" stroke="#a78bfa" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+  <circle cx="150" cy="52" r="4.5" fill="#6366f1" opacity="0.5"/>
+  <circle cx="155" cy="87" r="4.5" fill="#818cf8" opacity="0.5"/>
+  <circle cx="150" cy="112" r="4.5" fill="#a78bfa" opacity="0.5"/>
 </svg>
