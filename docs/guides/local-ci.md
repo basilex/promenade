@@ -417,7 +417,7 @@ make test-integration
 
 ## Related Documentation
 
-- [Testing Guide](../test/README.md) - Testing structure
+- [Testing Guide](../../test/README.md) - Testing structure
 - [Testing Patterns](testing-patterns.md) - Comprehensive testing guide
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) - Contribution workflow
 
