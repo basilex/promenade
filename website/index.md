@@ -44,6 +44,8 @@ Promenade is a **ready-to-use business platform** that helps you manage customer
 
 </div>
 
+<div class="two-column-text">
+
 <div class="value-prop">
 
 ### Why It Matters for Your Business
@@ -83,6 +85,8 @@ Whether you're a 3-person startup or planning to process 10,000 orders per day, 
 
 </div>
 
+</div>
+
 <div class="value-prop">
 
 ### What You Get Out-of-the-Box
@@ -99,6 +103,8 @@ Whether you're a 3-person startup or planning to process 10,000 orders per day, 
 **Total development time saved: 10-13 months** of engineering work
 
 </div>
+
+<div class="two-column-text">
 
 <div class="value-prop">
 
@@ -123,6 +129,27 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 
 <div class="value-prop">
 
+### Who Should Use Promenade?
+
+✅ **Perfect Fit:**
+- B2B/B2C companies managing customers and orders
+- SaaS startups needing subscription billing
+- E-commerce platforms requiring order processing
+- Sales-driven companies with deal pipelines
+- Businesses that will grow beyond 1,000 customers
+
+❌ **Not Ideal For:**
+- Simple landing page websites (use WordPress)
+- Mobile-only apps with no backend needs
+- Pure analytics platforms (use Snowflake/BigQuery)
+- Real-time chat apps (use dedicated chat services)
+
+</div>
+
+</div>
+
+<div class="value-prop">
+
 ### Investment & ROI
 
 **Development Cost Comparison:**
@@ -138,25 +165,6 @@ Every feature has 240+ automated tests. When you add a new feature, tests run in
 - Revenue gained: If product brings $50K/month, you gain $550K revenue
 - Cost saved: $330K in development + $0 monthly licensing fees
 - **Total 1st year benefit: ~$880K**
-
-</div>
-
-<div class="value-prop">
-
-### Who Should Use Promenade?
-
-✅ **Perfect Fit:**
-- B2B/B2C companies managing customers and orders
-- SaaS startups needing subscription billing
-- E-commerce platforms requiring order processing
-- Sales-driven companies with deal pipelines
-- Businesses that will grow beyond 1,000 customers
-
-❌ **Not Ideal For:**
-- Simple landing page websites (use WordPress)
-- Mobile-only apps with no backend needs
-- Pure analytics platforms (use Snowflake/BigQuery)
-- Real-time chat apps (use dedicated chat services)
 
 </div>
 
