@@ -123,6 +123,8 @@ export default defineConfig({
             { text: 'JWT Authentication', link: '/packages/jwt' },
             { text: 'Cache', link: '/packages/cache' },
             { text: 'Logger', link: '/packages/logger' },
+            { text: 'Middleware', link: '/packages/middleware' },
+            { text: 'Database', link: '/packages/database' },
           ]
         },
         {
@@ -132,6 +134,7 @@ export default defineConfig({
             { text: 'Value Objects', link: '/packages/valueobject' },
             { text: 'Aggregates', link: '/packages/aggregate' },
             { text: 'Saga Pattern', link: '/packages/saga' },
+            { text: 'Reference Data', link: '/packages/ref' },
           ]
         },
         {
@@ -139,6 +142,7 @@ export default defineConfig({
           items: [
             { text: 'Response Helpers', link: '/packages/response' },
             { text: 'JSONB Utilities', link: '/packages/jsonb' },
+            { text: 'JSON Store', link: '/packages/jsonstore' },
             { text: 'Migrations', link: '/packages/migration' },
           ]
         }
