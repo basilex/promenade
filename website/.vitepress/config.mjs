@@ -32,7 +32,7 @@ export default defineConfig({
       { text: 'Contexts', link: '/contexts/identity' },
       { text: 'Packages', link: '/packages/bus' },
       {
-        text: 'v2.0',
+        text: 'v1.0',
         items: [
           { text: 'Changelog', link: 'https://github.com/basilex/promenade/releases' },
           { text: 'Contributing', link: '/guide/contributing' }
