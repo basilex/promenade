@@ -14,10 +14,12 @@
   --vp-c-bg-soft: #242424;
 }
 
-/* Favicon - center it properly */
+/* Logo - make it larger and centered */
 .VPNav .logo img {
   object-fit: contain;
   object-position: center;
+  height: 48px !important;
+  width: auto !important;
 }
 
 /* Feature Grid - Technical Foundation Section */
