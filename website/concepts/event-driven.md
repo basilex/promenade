@@ -579,7 +579,7 @@ func (s *OrderFulfillmentSaga) Start(ctx context.Context) error {
 ### Enable Debug Logging
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 logging:
   level: "debug"
 ```

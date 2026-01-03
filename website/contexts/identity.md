@@ -416,7 +416,7 @@ eventBus.Subscribe(bus.TopicUserRegistered, func(ctx context.Context, e bus.Even
 ## Configuration
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 jwt:
   secret: "your-secret-key-at-least-32-characters"
   access_token_duration: 15m

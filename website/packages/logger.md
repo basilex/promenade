@@ -238,7 +238,7 @@ logger.FromContext(ctx).Info("Request received") // Includes request_id
 ### Development (Text Format)
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 logging:
   level: "debug"
   format: "text"
@@ -256,7 +256,7 @@ logger.Init(logger.Config{
 ### Production (JSON Format)
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 logging:
   level: "info"
   format: "json"

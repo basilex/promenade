@@ -153,7 +153,7 @@ make lint              # Run linters
 
 ## Configuration
 
-Edit `config/app.dev.yaml`:
+Edit `config/app.postgres-dev.yaml` (or `config/app.sqlite-dev.yaml` for embedded database):
 
 ```yaml
 server:

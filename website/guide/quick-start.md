@@ -349,11 +349,11 @@ JWT_SECRET=$(openssl rand -base64 32) ./bin/promenade
 
 ### Configuration Files
 
-- `config/app.dev.yaml` - Development (Memory bus, localhost DB)
-- `config/app.test.yaml` - Testing (isolated test DB)
-- `config/app.prod.yaml` - Production (Redis bus, production DB)
+- `config/app.postgres-dev.yaml` or `config/app.sqlite-dev.yaml` - Development
+- `config/app.postgres-test.yaml` or `config/app.sqlite-test.yaml` - Testing
+- `config/app.postgres-prod.yaml` or `config/app.sqlite-prod.yaml` - Production
 
-**Example (`config/app.dev.yaml`)**:
+**Example (`config/app.postgres-dev.yaml`)**:
 ```yaml
 app:
   name: "Promenade Platform"

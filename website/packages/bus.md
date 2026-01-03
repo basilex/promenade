@@ -86,7 +86,7 @@ func (h *NotificationHandler) HandleUserRegistered(ctx context.Context, e bus.Ev
 ### Memory Adapter (Development)
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 bus:
   adapter: "memory"  # Fast in-process adapter
   worker_pool_size: 10
@@ -100,7 +100,7 @@ bus:
 ### Redis Adapter (Production)
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 database:
   redis:
     addr: "${REDIS_ADDR}"

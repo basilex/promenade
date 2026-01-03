@@ -256,7 +256,7 @@ make test-integration  # Integration tests (~5s)
 Environment-specific YAML configs with env var overrides:
 
 ```yaml
-# config/app.dev.yaml
+# config/app.postgres-dev.yaml or config/app.sqlite-dev.yaml
 app:
   name: "Promenade Platform"
   environment: "development"
@@ -271,7 +271,7 @@ bus:
 ```
 
 ```yaml
-# config/app.prod.yaml
+# config/app.postgres-prod.yaml
 database:
   postgres:
     host: "${DB_HOST}"           # Environment variable

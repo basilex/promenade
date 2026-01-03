@@ -16,8 +16,8 @@ git clone https://github.com/basilex/promenade.git
 cd promenade
 
 # 2. Configure production environment
-cp config/app.prod.yaml config/app.prod.local.yaml
-vim config/app.prod.local.yaml  # Set DB_PASSWORD, JWT_SECRET, etc.
+cp config/app.postgres-prod.yaml config/app.postgres-prod.local.yaml
+vim config/app.postgres-prod.local.yaml  # Set DB_PASSWORD, JWT_SECRET, etc.
 
 # 3. Start production stack
 docker compose -f docker/docker-compose.prod.yml up -d
@@ -179,7 +179,7 @@ docker push promenade/api:latest
 
 ### Production Config File
 
-**config/app.prod.yaml**:
+**config/app.postgres-prod.yaml**:
 ```yaml
 app:
   name: "Promenade Platform"
