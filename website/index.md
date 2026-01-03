@@ -287,13 +287,13 @@ features:
     link: /guide/caching
     linkText: Caching Guide →
     
-  - icon: 
+  - icon: 💼
     title: Deal Management
     details: Sales pipeline with deal lifecycle tracking (lead → qualified → proposal → negotiation → closed). Probability auto-calculation (10%→100%), win/loss tracking, pipeline statistics. 12 API endpoints production-ready.
     link: /concepts/deal-management
     linkText: Deal Management Guide →
     
-  - icon: �📦
+  - icon: 📦
     title: Order Management
     details: Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.
     link: /concepts/order-management
