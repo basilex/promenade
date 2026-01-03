@@ -7,131 +7,140 @@ import (
 	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/ref"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
+
+// newTimezone is a helper to create a timezone with all fields
+func newTimezone(name, abbreviation string, utcOffsetSeconds int, countryCode string, dstOffset *int, displayName string, isActive bool) *timezone.Timezone {
+	tz, _ := timezone.NewTimezone(name, abbreviation, utcOffsetSeconds)
+	tz.CountryCode = countryCode
+	tz.DSTOffset = dstOffset
+	tz.DisplayName = displayName
+	tz.IsActive = isActive
+	return tz
+}
 
 // TimezonesData returns reference timezone data for seeding (100+ IANA timezones)
 func TimezonesData() []*timezone.Timezone {
 	return []*timezone.Timezone{
 		// UTC & Special
-		{ID: uuidv7.New(), Name: "UTC", Abbreviation: "UTC", UTCOffset: 0, CountryCode: "", DSTOffset: ref.Int(0), DisplayName: "Coordinated Universal Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "GMT", Abbreviation: "GMT", UTCOffset: 0, CountryCode: "GB", DSTOffset: ref.Int(0), DisplayName: "Greenwich Mean Time", IsActive: true},
+		newTimezone("UTC", "UTC", 0, "", ref.Int(0), "Coordinated Universal Time", true),
+		newTimezone("GMT", "GMT", 0, "GB", ref.Int(0), "Greenwich Mean Time", true),
 
 		// Americas - North America
-		{ID: uuidv7.New(), Name: "America/New_York", Abbreviation: "EST", UTCOffset: -18000, CountryCode: "US", DSTOffset: ref.Int(3600), DisplayName: "Eastern Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Chicago", Abbreviation: "CST", UTCOffset: -21600, CountryCode: "US", DSTOffset: ref.Int(3600), DisplayName: "Central Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Denver", Abbreviation: "MST", UTCOffset: -25200, CountryCode: "US", DSTOffset: ref.Int(3600), DisplayName: "Mountain Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Los_Angeles", Abbreviation: "PST", UTCOffset: -28800, CountryCode: "US", DSTOffset: ref.Int(3600), DisplayName: "Pacific Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Anchorage", Abbreviation: "AKST", UTCOffset: -32400, CountryCode: "US", DSTOffset: ref.Int(3600), DisplayName: "Alaska Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Pacific/Honolulu", Abbreviation: "HST", UTCOffset: -36000, CountryCode: "US", DSTOffset: ref.Int(0), DisplayName: "Hawaii Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Toronto", Abbreviation: "EST", UTCOffset: -18000, CountryCode: "CA", DSTOffset: ref.Int(3600), DisplayName: "Eastern Time - Toronto", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Vancouver", Abbreviation: "PST", UTCOffset: -28800, CountryCode: "CA", DSTOffset: ref.Int(3600), DisplayName: "Pacific Time - Vancouver", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Mexico_City", Abbreviation: "CST", UTCOffset: -21600, CountryCode: "MX", DSTOffset: ref.Int(0), DisplayName: "Central Time - Mexico City", IsActive: true},
+		newTimezone("America/New_York", "EST", -18000, "US", ref.Int(3600), "Eastern Time", true),
+		newTimezone("America/Chicago", "CST", -21600, "US", ref.Int(3600), "Central Time", true),
+		newTimezone("America/Denver", "MST", -25200, "US", ref.Int(3600), "Mountain Time", true),
+		newTimezone("America/Los_Angeles", "PST", -28800, "US", ref.Int(3600), "Pacific Time", true),
+		newTimezone("America/Anchorage", "AKST", -32400, "US", ref.Int(3600), "Alaska Time", true),
+		newTimezone("Pacific/Honolulu", "HST", -36000, "US", ref.Int(0), "Hawaii Time", true),
+		newTimezone("America/Toronto", "EST", -18000, "CA", ref.Int(3600), "Eastern Time - Toronto", true),
+		newTimezone("America/Vancouver", "PST", -28800, "CA", ref.Int(3600), "Pacific Time - Vancouver", true),
+		newTimezone("America/Mexico_City", "CST", -21600, "MX", ref.Int(0), "Central Time - Mexico City", true),
 
 		// Americas - South America
-		{ID: uuidv7.New(), Name: "America/Sao_Paulo", Abbreviation: "BRT", UTCOffset: -10800, CountryCode: "BR", DSTOffset: ref.Int(0), DisplayName: "Brasilia Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Buenos_Aires", Abbreviation: "ART", UTCOffset: -10800, CountryCode: "AR", DSTOffset: ref.Int(0), DisplayName: "Argentina Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Santiago", Abbreviation: "CLT", UTCOffset: -14400, CountryCode: "CL", DSTOffset: ref.Int(3600), DisplayName: "Chile Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Bogota", Abbreviation: "COT", UTCOffset: -18000, CountryCode: "CO", DSTOffset: ref.Int(0), DisplayName: "Colombia Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Lima", Abbreviation: "PET", UTCOffset: -18000, CountryCode: "PE", DSTOffset: ref.Int(0), DisplayName: "Peru Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "America/Caracas", Abbreviation: "VET", UTCOffset: -14400, CountryCode: "VE", DSTOffset: ref.Int(0), DisplayName: "Venezuela Time", IsActive: true},
+		newTimezone("America/Sao_Paulo", "BRT", -10800, "BR", ref.Int(0), "Brasilia Time", true),
+		newTimezone("America/Buenos_Aires", "ART", -10800, "AR", ref.Int(0), "Argentina Time", true),
+		newTimezone("America/Santiago", "CLT", -14400, "CL", ref.Int(3600), "Chile Time", true),
+		newTimezone("America/Bogota", "COT", -18000, "CO", ref.Int(0), "Colombia Time", true),
+		newTimezone("America/Lima", "PET", -18000, "PE", ref.Int(0), "Peru Time", true),
+		newTimezone("America/Caracas", "VET", -14400, "VE", ref.Int(0), "Venezuela Time", true),
 
 		// Europe - Western
-		{ID: uuidv7.New(), Name: "Europe/London", Abbreviation: "GMT", UTCOffset: 0, CountryCode: "GB", DSTOffset: ref.Int(3600), DisplayName: "British Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Dublin", Abbreviation: "GMT", UTCOffset: 0, CountryCode: "IE", DSTOffset: ref.Int(3600), DisplayName: "Irish Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Lisbon", Abbreviation: "WET", UTCOffset: 0, CountryCode: "PT", DSTOffset: ref.Int(3600), DisplayName: "Western European Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Atlantic/Reykjavik", Abbreviation: "GMT", UTCOffset: 0, CountryCode: "IS", DSTOffset: ref.Int(0), DisplayName: "Iceland Time", IsActive: true},
+		newTimezone("Europe/London", "GMT", 0, "GB", ref.Int(3600), "British Time", true),
+		newTimezone("Europe/Dublin", "GMT", 0, "IE", ref.Int(3600), "Irish Time", true),
+		newTimezone("Europe/Lisbon", "WET", 0, "PT", ref.Int(3600), "Western European Time", true),
+		newTimezone("Atlantic/Reykjavik", "GMT", 0, "IS", ref.Int(0), "Iceland Time", true),
 
 		// Europe - Central
-		{ID: uuidv7.New(), Name: "Europe/Paris", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "FR", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Paris", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Berlin", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "DE", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Berlin", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Rome", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "IT", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Rome", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Madrid", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "ES", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Madrid", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Amsterdam", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "NL", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Amsterdam", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Brussels", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "BE", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Brussels", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Vienna", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "AT", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Vienna", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Zurich", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "CH", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Zurich", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Prague", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "CZ", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Prague", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Warsaw", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "PL", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Warsaw", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Budapest", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "HU", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Budapest", IsActive: true},
+		newTimezone("Europe/Paris", "CET", 3600, "FR", ref.Int(3600), "Central European Time - Paris", true),
+		newTimezone("Europe/Berlin", "CET", 3600, "DE", ref.Int(3600), "Central European Time - Berlin", true),
+		newTimezone("Europe/Rome", "CET", 3600, "IT", ref.Int(3600), "Central European Time - Rome", true),
+		newTimezone("Europe/Madrid", "CET", 3600, "ES", ref.Int(3600), "Central European Time - Madrid", true),
+		newTimezone("Europe/Amsterdam", "CET", 3600, "NL", ref.Int(3600), "Central European Time - Amsterdam", true),
+		newTimezone("Europe/Brussels", "CET", 3600, "BE", ref.Int(3600), "Central European Time - Brussels", true),
+		newTimezone("Europe/Vienna", "CET", 3600, "AT", ref.Int(3600), "Central European Time - Vienna", true),
+		newTimezone("Europe/Zurich", "CET", 3600, "CH", ref.Int(3600), "Central European Time - Zurich", true),
+		newTimezone("Europe/Prague", "CET", 3600, "CZ", ref.Int(3600), "Central European Time - Prague", true),
+		newTimezone("Europe/Warsaw", "CET", 3600, "PL", ref.Int(3600), "Central European Time - Warsaw", true),
+		newTimezone("Europe/Budapest", "CET", 3600, "HU", ref.Int(3600), "Central European Time - Budapest", true),
 
 		// Europe - Northern
-		{ID: uuidv7.New(), Name: "Europe/Stockholm", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "SE", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Stockholm", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Oslo", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "NO", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Oslo", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Copenhagen", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "DK", DSTOffset: ref.Int(3600), DisplayName: "Central European Time - Copenhagen", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Helsinki", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "FI", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Helsinki", IsActive: true},
+		newTimezone("Europe/Stockholm", "CET", 3600, "SE", ref.Int(3600), "Central European Time - Stockholm", true),
+		newTimezone("Europe/Oslo", "CET", 3600, "NO", ref.Int(3600), "Central European Time - Oslo", true),
+		newTimezone("Europe/Copenhagen", "CET", 3600, "DK", ref.Int(3600), "Central European Time - Copenhagen", true),
+		newTimezone("Europe/Helsinki", "EET", 7200, "FI", ref.Int(3600), "Eastern European Time - Helsinki", true),
 
 		// Europe - Eastern
-		{ID: uuidv7.New(), Name: "Europe/Kyiv", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "UA", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Kyiv", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Bucharest", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "RO", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Bucharest", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Sofia", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "BG", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Sofia", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Athens", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "GR", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Athens", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Riga", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "LV", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Riga", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Vilnius", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "LT", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Vilnius", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Tallinn", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "EE", DSTOffset: ref.Int(3600), DisplayName: "Eastern European Time - Tallinn", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Moscow", Abbreviation: "MSK", UTCOffset: 10800, CountryCode: "RU", DSTOffset: ref.Int(0), DisplayName: "Moscow Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Europe/Istanbul", Abbreviation: "TRT", UTCOffset: 10800, CountryCode: "TR", DSTOffset: ref.Int(0), DisplayName: "Turkey Time", IsActive: true},
+		newTimezone("Europe/Kyiv", "EET", 7200, "UA", ref.Int(3600), "Eastern European Time - Kyiv", true),
+		newTimezone("Europe/Bucharest", "EET", 7200, "RO", ref.Int(3600), "Eastern European Time - Bucharest", true),
+		newTimezone("Europe/Sofia", "EET", 7200, "BG", ref.Int(3600), "Eastern European Time - Sofia", true),
+		newTimezone("Europe/Athens", "EET", 7200, "GR", ref.Int(3600), "Eastern European Time - Athens", true),
+		newTimezone("Europe/Riga", "EET", 7200, "LV", ref.Int(3600), "Eastern European Time - Riga", true),
+		newTimezone("Europe/Vilnius", "EET", 7200, "LT", ref.Int(3600), "Eastern European Time - Vilnius", true),
+		newTimezone("Europe/Tallinn", "EET", 7200, "EE", ref.Int(3600), "Eastern European Time - Tallinn", true),
+		newTimezone("Europe/Moscow", "MSK", 10800, "RU", ref.Int(0), "Moscow Time", true),
+		newTimezone("Europe/Istanbul", "TRT", 10800, "TR", ref.Int(0), "Turkey Time", true),
 
 		// Asia - Middle East
-		{ID: uuidv7.New(), Name: "Asia/Dubai", Abbreviation: "GST", UTCOffset: 14400, CountryCode: "AE", DSTOffset: ref.Int(0), DisplayName: "Gulf Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Riyadh", Abbreviation: "AST", UTCOffset: 10800, CountryCode: "SA", DSTOffset: ref.Int(0), DisplayName: "Arabia Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Jerusalem", Abbreviation: "IST", UTCOffset: 7200, CountryCode: "IL", DSTOffset: ref.Int(3600), DisplayName: "Israel Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Tehran", Abbreviation: "IRST", UTCOffset: 12600, CountryCode: "IR", DSTOffset: ref.Int(3600), DisplayName: "Iran Time", IsActive: true},
+		newTimezone("Asia/Dubai", "GST", 14400, "AE", ref.Int(0), "Gulf Standard Time", true),
+		newTimezone("Asia/Riyadh", "AST", 10800, "SA", ref.Int(0), "Arabia Standard Time", true),
+		newTimezone("Asia/Jerusalem", "IST", 7200, "IL", ref.Int(3600), "Israel Time", true),
+		newTimezone("Asia/Tehran", "IRST", 12600, "IR", ref.Int(3600), "Iran Time", true),
 
 		// Asia - South
-		{ID: uuidv7.New(), Name: "Asia/Kolkata", Abbreviation: "IST", UTCOffset: 19800, CountryCode: "IN", DSTOffset: ref.Int(0), DisplayName: "India Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Karachi", Abbreviation: "PKT", UTCOffset: 18000, CountryCode: "PK", DSTOffset: ref.Int(0), DisplayName: "Pakistan Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Dhaka", Abbreviation: "BST", UTCOffset: 21600, CountryCode: "BD", DSTOffset: ref.Int(0), DisplayName: "Bangladesh Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Colombo", Abbreviation: "IST", UTCOffset: 19800, CountryCode: "LK", DSTOffset: ref.Int(0), DisplayName: "Sri Lanka Time", IsActive: true},
+		newTimezone("Asia/Kolkata", "IST", 19800, "IN", ref.Int(0), "India Standard Time", true),
+		newTimezone("Asia/Karachi", "PKT", 18000, "PK", ref.Int(0), "Pakistan Time", true),
+		newTimezone("Asia/Dhaka", "BST", 21600, "BD", ref.Int(0), "Bangladesh Time", true),
+		newTimezone("Asia/Colombo", "IST", 19800, "LK", ref.Int(0), "Sri Lanka Time", true),
 
 		// Asia - East
-		{ID: uuidv7.New(), Name: "Asia/Shanghai", Abbreviation: "CST", UTCOffset: 28800, CountryCode: "CN", DSTOffset: ref.Int(0), DisplayName: "China Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Hong_Kong", Abbreviation: "HKT", UTCOffset: 28800, CountryCode: "HK", DSTOffset: ref.Int(0), DisplayName: "Hong Kong Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Tokyo", Abbreviation: "JST", UTCOffset: 32400, CountryCode: "JP", DSTOffset: ref.Int(0), DisplayName: "Japan Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Seoul", Abbreviation: "KST", UTCOffset: 32400, CountryCode: "KR", DSTOffset: ref.Int(0), DisplayName: "Korea Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Taipei", Abbreviation: "CST", UTCOffset: 28800, CountryCode: "TW", DSTOffset: ref.Int(0), DisplayName: "Taiwan Time", IsActive: true},
+		newTimezone("Asia/Shanghai", "CST", 28800, "CN", ref.Int(0), "China Standard Time", true),
+		newTimezone("Asia/Hong_Kong", "HKT", 28800, "HK", ref.Int(0), "Hong Kong Time", true),
+		newTimezone("Asia/Tokyo", "JST", 32400, "JP", ref.Int(0), "Japan Standard Time", true),
+		newTimezone("Asia/Seoul", "KST", 32400, "KR", ref.Int(0), "Korea Standard Time", true),
+		newTimezone("Asia/Taipei", "CST", 28800, "TW", ref.Int(0), "Taiwan Time", true),
 
 		// Asia - Southeast
-		{ID: uuidv7.New(), Name: "Asia/Singapore", Abbreviation: "SGT", UTCOffset: 28800, CountryCode: "SG", DSTOffset: ref.Int(0), DisplayName: "Singapore Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Bangkok", Abbreviation: "ICT", UTCOffset: 25200, CountryCode: "TH", DSTOffset: ref.Int(0), DisplayName: "Indochina Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Ho_Chi_Minh", Abbreviation: "ICT", UTCOffset: 25200, CountryCode: "VN", DSTOffset: ref.Int(0), DisplayName: "Indochina Time - Vietnam", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Jakarta", Abbreviation: "WIB", UTCOffset: 25200, CountryCode: "ID", DSTOffset: ref.Int(0), DisplayName: "Western Indonesia Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Manila", Abbreviation: "PHT", UTCOffset: 28800, CountryCode: "PH", DSTOffset: ref.Int(0), DisplayName: "Philippine Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Asia/Kuala_Lumpur", Abbreviation: "MYT", UTCOffset: 28800, CountryCode: "MY", DSTOffset: ref.Int(0), DisplayName: "Malaysia Time", IsActive: true},
+		newTimezone("Asia/Singapore", "SGT", 28800, "SG", ref.Int(0), "Singapore Time", true),
+		newTimezone("Asia/Bangkok", "ICT", 25200, "TH", ref.Int(0), "Indochina Time", true),
+		newTimezone("Asia/Ho_Chi_Minh", "ICT", 25200, "VN", ref.Int(0), "Indochina Time - Vietnam", true),
+		newTimezone("Asia/Jakarta", "WIB", 25200, "ID", ref.Int(0), "Western Indonesia Time", true),
+		newTimezone("Asia/Manila", "PHT", 28800, "PH", ref.Int(0), "Philippine Time", true),
+		newTimezone("Asia/Kuala_Lumpur", "MYT", 28800, "MY", ref.Int(0), "Malaysia Time", true),
 
 		// Oceania
-		{ID: uuidv7.New(), Name: "Australia/Sydney", Abbreviation: "AEDT", UTCOffset: 39600, CountryCode: "AU", DSTOffset: ref.Int(3600), DisplayName: "Australian Eastern Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Australia/Melbourne", Abbreviation: "AEDT", UTCOffset: 39600, CountryCode: "AU", DSTOffset: ref.Int(3600), DisplayName: "Australian Eastern Time - Melbourne", IsActive: true},
-		{ID: uuidv7.New(), Name: "Australia/Brisbane", Abbreviation: "AEST", UTCOffset: 36000, CountryCode: "AU", DSTOffset: ref.Int(0), DisplayName: "Australian Eastern Time - Brisbane", IsActive: true},
-		{ID: uuidv7.New(), Name: "Australia/Perth", Abbreviation: "AWST", UTCOffset: 28800, CountryCode: "AU", DSTOffset: ref.Int(0), DisplayName: "Australian Western Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Australia/Adelaide", Abbreviation: "ACDT", UTCOffset: 37800, CountryCode: "AU", DSTOffset: ref.Int(3600), DisplayName: "Australian Central Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Pacific/Auckland", Abbreviation: "NZDT", UTCOffset: 46800, CountryCode: "NZ", DSTOffset: ref.Int(3600), DisplayName: "New Zealand Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Pacific/Fiji", Abbreviation: "FJT", UTCOffset: 43200, CountryCode: "FJ", DSTOffset: ref.Int(3600), DisplayName: "Fiji Time", IsActive: true},
+		newTimezone("Australia/Sydney", "AEDT", 39600, "AU", ref.Int(3600), "Australian Eastern Time", true),
+		newTimezone("Australia/Melbourne", "AEDT", 39600, "AU", ref.Int(3600), "Australian Eastern Time - Melbourne", true),
+		newTimezone("Australia/Brisbane", "AEST", 36000, "AU", ref.Int(0), "Australian Eastern Time - Brisbane", true),
+		newTimezone("Australia/Perth", "AWST", 28800, "AU", ref.Int(0), "Australian Western Time", true),
+		newTimezone("Australia/Adelaide", "ACDT", 37800, "AU", ref.Int(3600), "Australian Central Time", true),
+		newTimezone("Pacific/Auckland", "NZDT", 46800, "NZ", ref.Int(3600), "New Zealand Time", true),
+		newTimezone("Pacific/Fiji", "FJT", 43200, "FJ", ref.Int(3600), "Fiji Time", true),
 
 		// Africa
-		{ID: uuidv7.New(), Name: "Africa/Cairo", Abbreviation: "EET", UTCOffset: 7200, CountryCode: "EG", DSTOffset: ref.Int(0), DisplayName: "Eastern European Time - Cairo", IsActive: true},
-		{ID: uuidv7.New(), Name: "Africa/Johannesburg", Abbreviation: "SAST", UTCOffset: 7200, CountryCode: "ZA", DSTOffset: ref.Int(0), DisplayName: "South Africa Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Africa/Lagos", Abbreviation: "WAT", UTCOffset: 3600, CountryCode: "NG", DSTOffset: ref.Int(0), DisplayName: "West Africa Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Africa/Nairobi", Abbreviation: "EAT", UTCOffset: 10800, CountryCode: "KE", DSTOffset: ref.Int(0), DisplayName: "East Africa Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Africa/Casablanca", Abbreviation: "WET", UTCOffset: 0, CountryCode: "MA", DSTOffset: ref.Int(3600), DisplayName: "Western European Time - Casablanca", IsActive: true},
-		{ID: uuidv7.New(), Name: "Africa/Algiers", Abbreviation: "CET", UTCOffset: 3600, CountryCode: "DZ", DSTOffset: ref.Int(0), DisplayName: "Central European Time - Algiers", IsActive: true},
+		newTimezone("Africa/Cairo", "EET", 7200, "EG", ref.Int(0), "Eastern European Time - Cairo", true),
+		newTimezone("Africa/Johannesburg", "SAST", 7200, "ZA", ref.Int(0), "South Africa Time", true),
+		newTimezone("Africa/Lagos", "WAT", 3600, "NG", ref.Int(0), "West Africa Time", true),
+		newTimezone("Africa/Nairobi", "EAT", 10800, "KE", ref.Int(0), "East Africa Time", true),
+		newTimezone("Africa/Casablanca", "WET", 0, "MA", ref.Int(3600), "Western European Time - Casablanca", true),
+		newTimezone("Africa/Algiers", "CET", 3600, "DZ", ref.Int(0), "Central European Time - Algiers", true),
 
 		// Atlantic
-		{ID: uuidv7.New(), Name: "Atlantic/Azores", Abbreviation: "AZOT", UTCOffset: -3600, CountryCode: "PT", DSTOffset: ref.Int(3600), DisplayName: "Azores Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Atlantic/Cape_Verde", Abbreviation: "CVT", UTCOffset: -3600, CountryCode: "CV", DSTOffset: ref.Int(0), DisplayName: "Cape Verde Time", IsActive: true},
+		newTimezone("Atlantic/Azores", "AZOT", -3600, "PT", ref.Int(3600), "Azores Time", true),
+		newTimezone("Atlantic/Cape_Verde", "CVT", -3600, "CV", ref.Int(0), "Cape Verde Time", true),
 
 		// Indian Ocean
-		{ID: uuidv7.New(), Name: "Indian/Mauritius", Abbreviation: "MUT", UTCOffset: 14400, CountryCode: "MU", DSTOffset: ref.Int(0), DisplayName: "Mauritius Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Indian/Maldives", Abbreviation: "MVT", UTCOffset: 18000, CountryCode: "MV", DSTOffset: ref.Int(0), DisplayName: "Maldives Time", IsActive: true},
+		newTimezone("Indian/Mauritius", "MUT", 14400, "MU", ref.Int(0), "Mauritius Time", true),
+		newTimezone("Indian/Maldives", "MVT", 18000, "MV", ref.Int(0), "Maldives Time", true),
 
 		// Pacific Islands
-		{ID: uuidv7.New(), Name: "Pacific/Guam", Abbreviation: "ChST", UTCOffset: 36000, CountryCode: "GU", DSTOffset: ref.Int(0), DisplayName: "Chamorro Standard Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Pacific/Tahiti", Abbreviation: "TAHT", UTCOffset: -36000, CountryCode: "PF", DSTOffset: ref.Int(0), DisplayName: "Tahiti Time", IsActive: true},
-		{ID: uuidv7.New(), Name: "Pacific/Samoa", Abbreviation: "SST", UTCOffset: -39600, CountryCode: "WS", DSTOffset: ref.Int(0), DisplayName: "Samoa Standard Time", IsActive: true},
+		newTimezone("Pacific/Guam", "ChST", 36000, "GU", ref.Int(0), "Chamorro Standard Time", true),
+		newTimezone("Pacific/Tahiti", "TAHT", -36000, "PF", ref.Int(0), "Tahiti Time", true),
+		newTimezone("Pacific/Samoa", "SST", -39600, "WS", ref.Int(0), "Samoa Standard Time", true),
 
 		// Antarctica
-		{ID: uuidv7.New(), Name: "Antarctica/McMurdo", Abbreviation: "NZDT", UTCOffset: 46800, CountryCode: "AQ", DSTOffset: ref.Int(3600), DisplayName: "New Zealand Time - McMurdo", IsActive: true},
-		{ID: uuidv7.New(), Name: "Antarctica/Troll", Abbreviation: "UTC", UTCOffset: 0, CountryCode: "AQ", DSTOffset: ref.Int(7200), DisplayName: "Troll Time", IsActive: true},
+		newTimezone("Antarctica/McMurdo", "NZDT", 46800, "AQ", ref.Int(3600), "New Zealand Time - McMurdo", true),
+		newTimezone("Antarctica/Troll", "UTC", 0, "AQ", ref.Int(7200), "Troll Time", true),
 	}
 }
 

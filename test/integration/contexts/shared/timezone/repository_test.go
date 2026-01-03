@@ -10,7 +10,6 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	"github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/repository/postgres"
-	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -21,13 +20,10 @@ func TestTimezoneRepository_CRUD(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		tz := &timezone.Timezone{
-			ID:           uuidv7.New(),
-			Name:         "Test/Zone",
-			Abbreviation: "TST",
-			UTCOffset:    0,
-			IsActive:     true,
-		}
+		tz := func() *timezone.Timezone {
+			tz, _ := timezone.NewTimezone("Test/Zone", "TST", 0)
+			return tz
+		}()
 		require.NoError(t, repo.Create(ctx, tz))
 		found, err := repo.GetByID(ctx, tz.ID)
 		require.NoError(t, err)
@@ -47,13 +43,10 @@ func TestTimezoneRepository_Queries(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		tz := &timezone.Timezone{
-			ID:           uuidv7.New(),
-			Name:         "Test/Zone",
-			Abbreviation: "TST",
-			UTCOffset:    0,
-			IsActive:     true,
-		}
+		tz := func() *timezone.Timezone {
+			tz, _ := timezone.NewTimezone("Test/Zone", "TST", 0)
+			return tz
+		}()
 		require.NoError(t, repo.Create(ctx, tz))
 		found, err := repo.GetByName(ctx, "Test/Zone")
 		require.NoError(t, err)

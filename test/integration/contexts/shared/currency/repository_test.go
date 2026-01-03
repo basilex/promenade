@@ -10,7 +10,6 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/currency"
 	"github.com/basilex/promenade/internal/contexts/shared/currency/adapter/repository/postgres"
-	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -21,15 +20,11 @@ func TestCurrencyRepository_CRUD(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		c := &currency.Currency{
-			ID:            uuidv7.New(),
-			Code:          "TST",
-			NumericCode:   "999",
-			Name:          "Test Currency",
-			Symbol:        "T$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		c := func() *currency.Currency {
+			c, _ := currency.NewCurrency("TST", "Test Currency", "T$", 2)
+			c.NumericCode = "999"
+			return c
+		}()
 		require.NoError(t, repo.Create(ctx, c))
 		found, err := repo.GetByID(ctx, c.ID)
 		require.NoError(t, err)
@@ -49,15 +44,11 @@ func TestCurrencyRepository_Queries(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		c := &currency.Currency{
-			ID:            uuidv7.New(),
-			Code:          "TST",
-			NumericCode:   "999",
-			Name:          "Test",
-			Symbol:        "$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		c := func() *currency.Currency {
+			c, _ := currency.NewCurrency("TST", "Test", "$", 2)
+			c.NumericCode = "999"
+			return c
+		}()
 		require.NoError(t, repo.Create(ctx, c))
 		found, err := repo.GetByCode(ctx, "TST")
 		require.NoError(t, err)

@@ -64,16 +64,11 @@ func TestUseCase_GetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		expected := &Country{
-			ID:          id,
-			Code:        "UA",
-			Code3:       "UKR",
-			NumericCode: "804",
-			Name:        "Ukraine",
-			NameLocal:   "Україна",
-			PhoneCode:   "+380",
-			IsActive:    true,
-		}
+		expected, _ := NewCountry("UA", "Ukraine", "+380")
+		expected.Code3 = "UKR"
+		expected.NumericCode = "804"
+		expected.NameLocal = "Україна"
+		expected.IsActive = true
 
 		mockRepo.On("GetByID", ctx, id).Return(expected, nil).Once()
 
@@ -103,16 +98,11 @@ func TestUseCase_GetByCode(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := &Country{
-			ID:          uuidv7.New(),
-			Code:        "UA",
-			Code3:       "UKR",
-			NumericCode: "804",
-			Name:        "Ukraine",
-			NameLocal:   "Україна",
-			PhoneCode:   "+380",
-			IsActive:    true,
-		}
+		expected, _ := NewCountry("UA", "Ukraine", "+380")
+		expected.Code3 = "UKR"
+		expected.NumericCode = "804"
+		expected.NameLocal = "Україна"
+		expected.IsActive = true
 
 		mockRepo.On("GetByCode", ctx, "UA").Return(expected, nil).Once()
 
@@ -130,10 +120,11 @@ func TestUseCase_List(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := []*Country{
-			{ID: uuidv7.New(), Code: "UA", Name: "Ukraine", IsActive: true},
-			{ID: uuidv7.New(), Code: "US", Name: "United States", IsActive: true},
-		}
+		c1, _ := NewCountry("UA", "Ukraine", "+380")
+		c1.IsActive = true
+		c2, _ := NewCountry("US", "United States", "+1")
+		c2.IsActive = true
+		expected := []*Country{c1, c2}
 
 		mockRepo.On("List", ctx).Return(expected, nil).Once()
 
@@ -151,16 +142,11 @@ func TestUseCase_Create(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		country := &Country{
-			ID:          uuidv7.New(),
-			Code:        "UA",
-			Code3:       "UKR",
-			NumericCode: "804",
-			Name:        "Ukraine",
-			NameLocal:   "Україна",
-			PhoneCode:   "+380",
-			IsActive:    true,
-		}
+		country, _ := NewCountry("UA", "Ukraine", "+380")
+		country.Code3 = "UKR"
+		country.NumericCode = "804"
+		country.NameLocal = "Україна"
+		country.IsActive = true
 
 		mockRepo.On("Create", ctx, country).Return(nil).Once()
 
@@ -171,10 +157,8 @@ func TestUseCase_Create(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		country := &Country{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		country, _ := NewCountry("UA", "Ukraine", "+380")
+		country.Code = "" // Invalid: empty code
 
 		err := uc.Create(ctx, country)
 
@@ -190,16 +174,11 @@ func TestUseCase_Update(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		country := &Country{
-			ID:          uuidv7.New(),
-			Code:        "UA",
-			Code3:       "UKR",
-			NumericCode: "804",
-			Name:        "Ukraine Updated",
-			NameLocal:   "Україна",
-			PhoneCode:   "+380",
-			IsActive:    true,
-		}
+		country, _ := NewCountry("UA", "Ukraine Updated", "+380")
+		country.Code3 = "UKR"
+		country.NumericCode = "804"
+		country.NameLocal = "Україна"
+		country.IsActive = true
 
 		mockRepo.On("Update", ctx, country).Return(nil).Once()
 
@@ -210,10 +189,8 @@ func TestUseCase_Update(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		country := &Country{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		country, _ := NewCountry("UA", "Ukraine", "+380")
+		country.Code = "" // Invalid: empty code
 
 		err := uc.Update(ctx, country)
 
@@ -244,11 +221,7 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
-		entity := &Country{
-			ID:   id,
-			Code: "UA",
-			Name: "Ukraine",
-		}
+		entity, _ := NewCountry("UA", "Ukraine", "+380")
 		expectedErr := errors.New("delete failed")
 
 		// Delete method calls GetByID first for cache invalidation

@@ -11,19 +11,13 @@ import (
 )
 
 func TestToLanguageResponse(t *testing.T) {
-	id := uuidv7.New()
-	l := &language.Language{
-		ID:         id,
-		Code:       "en",
-		Code3:      "eng",
-		Name:       "English",
-		NativeName: "English",
-		IsActive:   true,
-	}
+	l, _ := language.NewLanguage("en", "English", "English")
+	l.Code3 = "eng"
+	l.IsActive = true
 
 	resp := ToLanguageResponse(l)
 
-	assert.Equal(t, id.String(), resp.ID)
+	assert.Equal(t, l.GetID().String(), resp.ID)
 	assert.Equal(t, "en", resp.Code)
 	assert.Equal(t, "eng", resp.Code3)
 	assert.Equal(t, "English", resp.Name)
@@ -32,10 +26,11 @@ func TestToLanguageResponse(t *testing.T) {
 }
 
 func TestToLanguageResponses(t *testing.T) {
-	languages := []*language.Language{
-		{ID: uuidv7.New(), Code: "en", Name: "English", NativeName: "English", IsActive: true},
-		{ID: uuidv7.New(), Code: "uk", Name: "Ukrainian", NativeName: "Українська", IsActive: true},
-	}
+	l1, _ := language.NewLanguage("en", "English", "English")
+	l1.IsActive = true
+	l2, _ := language.NewLanguage("uk", "Ukrainian", "Українська")
+	l2.IsActive = true
+	languages := []*language.Language{l1, l2}
 
 	responses := ToLanguageResponses(languages)
 

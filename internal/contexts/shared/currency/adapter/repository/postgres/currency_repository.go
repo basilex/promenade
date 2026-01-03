@@ -22,7 +22,7 @@ func NewRepository(db sqlx.ExtContext) currency.IRepository {
 func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*currency.Currency, error) {
 	var c currency.Currency
 	query := `
-		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active
+		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
 		WHERE id = $1 AND is_active = TRUE
 	`
@@ -36,7 +36,7 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*currency.Cur
 func (r *repository) GetByCode(ctx context.Context, code string) (*currency.Currency, error) {
 	var c currency.Currency
 	query := `
-		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active
+		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
 		WHERE code = $1 AND is_active = TRUE
 	`
@@ -50,7 +50,7 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*currency.Curr
 func (r *repository) List(ctx context.Context) ([]*currency.Currency, error) {
 	var currencies []*currency.Currency
 	query := `
-		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active
+		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
 		WHERE is_active = TRUE
 		ORDER BY name ASC
@@ -61,20 +61,20 @@ func (r *repository) List(ctx context.Context) ([]*currency.Currency, error) {
 
 func (r *repository) Create(ctx context.Context, c *currency.Currency) error {
 	query := `
-		INSERT INTO shared_currencies (id, code, numeric_code, name, symbol, decimal_places, is_active)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO shared_currencies (id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
-	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.NumericCode, c.Name, c.Symbol, c.DecimalPlaces, c.IsActive)
+	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.NumericCode, c.Name, c.Symbol, c.DecimalPlaces, c.IsActive, c.CreatedAt, c.UpdatedAt)
 	return err
 }
 
 func (r *repository) Update(ctx context.Context, c *currency.Currency) error {
 	query := `
 		UPDATE shared_currencies
-		SET code = $2, numeric_code = $3, name = $4, symbol = $5, decimal_places = $6, is_active = $7
+		SET code = $2, numeric_code = $3, name = $4, symbol = $5, decimal_places = $6, is_active = $7, updated_at = $8
 		WHERE id = $1
 	`
-	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.NumericCode, c.Name, c.Symbol, c.DecimalPlaces, c.IsActive)
+	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.NumericCode, c.Name, c.Symbol, c.DecimalPlaces, c.IsActive, c.UpdatedAt)
 	return err
 }
 

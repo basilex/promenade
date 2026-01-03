@@ -11,21 +11,15 @@ import (
 )
 
 func TestToCountryResponse(t *testing.T) {
-	id := uuidv7.New()
-	c := &country.Country{
-		ID:          id,
-		Code:        "UA",
-		Code3:       "UKR",
-		NumericCode: "804",
-		Name:        "Ukraine",
-		NameLocal:   "Україна",
-		PhoneCode:   "+380",
-		IsActive:    true,
-	}
+	c, _ := country.NewCountry("UA", "Ukraine", "+380")
+	c.Code3 = "UKR"
+	c.NumericCode = "804"
+	c.NameLocal = "Україна"
+	c.IsActive = true
 
 	resp := ToCountryResponse(c)
 
-	assert.Equal(t, id.String(), resp.ID)
+	assert.Equal(t, c.GetID().String(), resp.ID)
 	assert.Equal(t, "UA", resp.Code)
 	assert.Equal(t, "UKR", resp.Code3)
 	assert.Equal(t, "804", resp.NumericCode)
@@ -36,10 +30,11 @@ func TestToCountryResponse(t *testing.T) {
 }
 
 func TestToCountryResponses(t *testing.T) {
-	countries := []*country.Country{
-		{ID: uuidv7.New(), Code: "UA", Name: "Ukraine", PhoneCode: "+380", IsActive: true},
-		{ID: uuidv7.New(), Code: "US", Name: "United States", PhoneCode: "+1", IsActive: true},
-	}
+	c1, _ := country.NewCountry("UA", "Ukraine", "+380")
+	c1.IsActive = true
+	c2, _ := country.NewCountry("US", "United States", "+1")
+	c2.IsActive = true
+	countries := []*country.Country{c1, c2}
 
 	responses := ToCountryResponses(countries)
 

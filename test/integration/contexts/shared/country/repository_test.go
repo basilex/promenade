@@ -10,7 +10,6 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/country"
 	"github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository/postgres"
-	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -25,16 +24,13 @@ func TestCountryRepository_CRUD(t *testing.T) {
 		repo := postgres.NewRepository(tx)
 
 		// Create
-		c := &country.Country{
-			ID:          uuidv7.New(),
-			Code:        "TS",
-			Code3:       "TST",
-			NumericCode: "999",
-			Name:        "Test Country",
-			NameLocal:   "Test Country Local",
-			PhoneCode:   "+999",
-			IsActive:    true,
-		}
+		c := func() *country.Country {
+			c, _ := country.NewCountry("TS", "Test Country", "+999")
+			c.Code3 = "TST"
+			c.NumericCode = "999"
+			c.NameLocal = "Test Country Local"
+			return c
+		}()
 
 		err := repo.Create(ctx, c)
 		require.NoError(t, err, "Create should succeed")
@@ -78,26 +74,20 @@ func TestCountryRepository_Queries(t *testing.T) {
 
 		// Create test data
 		countries := []*country.Country{
-			{
-				ID:          uuidv7.New(),
-				Code:        "T1",
-				Code3:       "TS1",
-				NumericCode: "001",
-				Name:        "Test Country 1",
-				NameLocal:   "Local 1",
-				PhoneCode:   "+1",
-				IsActive:    true,
-			},
-			{
-				ID:          uuidv7.New(),
-				Code:        "T2",
-				Code3:       "TS2",
-				NumericCode: "002",
-				Name:        "Test Country 2",
-				NameLocal:   "Local 2",
-				PhoneCode:   "+2",
-				IsActive:    true, // Changed to true so List() finds both
-			},
+			func() *country.Country {
+				c, _ := country.NewCountry("T1", "Test Country 1", "+1")
+				c.Code3 = "TS1"
+				c.NumericCode = "001"
+				c.NameLocal = "Local 1"
+				return c
+			}(),
+			func() *country.Country {
+				c, _ := country.NewCountry("T2", "Test Country 2", "+2")
+				c.Code3 = "TS2"
+				c.NumericCode = "002"
+				c.NameLocal = "Local 2"
+				return c
+			}(),
 		}
 
 		for _, c := range countries {

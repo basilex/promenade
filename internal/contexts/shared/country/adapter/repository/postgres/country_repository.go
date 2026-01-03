@@ -22,7 +22,8 @@ func NewRepository(db sqlx.ExtContext) country.IRepository {
 func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*country.Country, error) {
 	var c country.Country
 	query := `
-		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active
+		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active,
+		       created_at, updated_at
 		FROM shared_countries
 		WHERE id = $1 AND is_active = TRUE
 	`
@@ -36,7 +37,8 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*country.Coun
 func (r *repository) GetByCode(ctx context.Context, code string) (*country.Country, error) {
 	var c country.Country
 	query := `
-		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active
+		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active,
+		       created_at, updated_at
 		FROM shared_countries
 		WHERE code = $1 AND is_active = TRUE
 	`
@@ -50,7 +52,8 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*country.Count
 func (r *repository) List(ctx context.Context) ([]*country.Country, error) {
 	var countries []*country.Country
 	query := `
-		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active
+		SELECT id, code, code3, numeric_code, name, name_local, phone_code, is_active,
+		       created_at, updated_at
 		FROM shared_countries
 		WHERE is_active = TRUE
 		ORDER BY name ASC
@@ -61,20 +64,20 @@ func (r *repository) List(ctx context.Context) ([]*country.Country, error) {
 
 func (r *repository) Create(ctx context.Context, c *country.Country) error {
 	query := `
-		INSERT INTO shared_countries (id, code, code3, numeric_code, name, name_local, phone_code, is_active)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO shared_countries (id, code, code3, numeric_code, name, name_local, phone_code, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
-	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.Code3, c.NumericCode, c.Name, c.NameLocal, c.PhoneCode, c.IsActive)
+	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.Code3, c.NumericCode, c.Name, c.NameLocal, c.PhoneCode, c.IsActive, c.CreatedAt, c.UpdatedAt)
 	return err
 }
 
 func (r *repository) Update(ctx context.Context, c *country.Country) error {
 	query := `
 		UPDATE shared_countries
-		SET code = $2, code3 = $3, numeric_code = $4, name = $5, name_local = $6, phone_code = $7, is_active = $8
+		SET code = $2, code3 = $3, numeric_code = $4, name = $5, name_local = $6, phone_code = $7, is_active = $8, updated_at = $9
 		WHERE id = $1
 	`
-	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.Code3, c.NumericCode, c.Name, c.NameLocal, c.PhoneCode, c.IsActive)
+	_, err := r.db.ExecContext(ctx, query, c.ID, c.Code, c.Code3, c.NumericCode, c.Name, c.NameLocal, c.PhoneCode, c.IsActive, c.UpdatedAt)
 	return err
 }
 

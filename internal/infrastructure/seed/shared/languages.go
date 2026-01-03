@@ -7,79 +7,88 @@ import (
 	"github.com/basilex/promenade/internal/contexts/shared/language"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/ref"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
+
+// newLanguage is a helper to create a language with all fields
+func newLanguage(code, code3, name, nativeName, direction string, nativeSpeakers *int64, isActive bool) *language.Language {
+	l, _ := language.NewLanguage(code, name, nativeName)
+	l.Code3 = code3
+	l.Direction = direction
+	l.NativeSpeakers = nativeSpeakers
+	l.IsActive = isActive
+	return l
+}
 
 // LanguagesData returns reference language data for seeding (50+ major world languages)
 func LanguagesData() []*language.Language {
 	return []*language.Language{
 		// Top 10 Most Spoken Languages
-		{ID: uuidv7.New(), Code: "en", Code3: "eng", Name: "English", NativeName: "English", Direction: "ltr", NativeSpeakers: ref.Int64(380000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "zh", Code3: "zho", Name: "Chinese", NativeName: "中文", Direction: "ltr", NativeSpeakers: ref.Int64(1300000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "hi", Code3: "hin", Name: "Hindi", NativeName: "हिन्दी", Direction: "ltr", NativeSpeakers: ref.Int64(602000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "es", Code3: "spa", Name: "Spanish", NativeName: "Español", Direction: "ltr", NativeSpeakers: ref.Int64(548000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "fr", Code3: "fra", Name: "French", NativeName: "Français", Direction: "ltr", NativeSpeakers: ref.Int64(274000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ar", Code3: "ara", Name: "Arabic", NativeName: "العربية", Direction: "rtl", NativeSpeakers: ref.Int64(274000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "bn", Code3: "ben", Name: "Bengali", NativeName: "বাংলা", Direction: "ltr", NativeSpeakers: ref.Int64(272000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "pt", Code3: "por", Name: "Portuguese", NativeName: "Português", Direction: "ltr", NativeSpeakers: ref.Int64(264000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ru", Code3: "rus", Name: "Russian", NativeName: "Русский", Direction: "ltr", NativeSpeakers: ref.Int64(258000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ur", Code3: "urd", Name: "Urdu", NativeName: "اردو", Direction: "rtl", NativeSpeakers: ref.Int64(231000000), IsActive: true},
+		newLanguage("en", "eng", "English", "English", "ltr", ref.Int64(380000000), true),
+		newLanguage("zh", "zho", "Chinese", "中文", "ltr", ref.Int64(1300000000), true),
+		newLanguage("hi", "hin", "Hindi", "हिन्दी", "ltr", ref.Int64(602000000), true),
+		newLanguage("es", "spa", "Spanish", "Español", "ltr", ref.Int64(548000000), true),
+		newLanguage("fr", "fra", "French", "Français", "ltr", ref.Int64(274000000), true),
+		newLanguage("ar", "ara", "Arabic", "العربية", "rtl", ref.Int64(274000000), true),
+		newLanguage("bn", "ben", "Bengali", "বাংলা", "ltr", ref.Int64(272000000), true),
+		newLanguage("pt", "por", "Portuguese", "Português", "ltr", ref.Int64(264000000), true),
+		newLanguage("ru", "rus", "Russian", "Русский", "ltr", ref.Int64(258000000), true),
+		newLanguage("ur", "urd", "Urdu", "اردو", "rtl", ref.Int64(231000000), true),
 
 		// European Languages
-		{ID: uuidv7.New(), Code: "de", Code3: "deu", Name: "German", NativeName: "Deutsch", Direction: "ltr", NativeSpeakers: ref.Int64(134000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "uk", Code3: "ukr", Name: "Ukrainian", NativeName: "Українська", Direction: "ltr", NativeSpeakers: ref.Int64(40000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "pl", Code3: "pol", Name: "Polish", NativeName: "Polski", Direction: "ltr", NativeSpeakers: ref.Int64(45000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "it", Code3: "ita", Name: "Italian", NativeName: "Italiano", Direction: "ltr", NativeSpeakers: ref.Int64(85000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "nl", Code3: "nld", Name: "Dutch", NativeName: "Nederlands", Direction: "ltr", NativeSpeakers: ref.Int64(25000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "sv", Code3: "swe", Name: "Swedish", NativeName: "Svenska", Direction: "ltr", NativeSpeakers: ref.Int64(13000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "no", Code3: "nor", Name: "Norwegian", NativeName: "Norsk", Direction: "ltr", NativeSpeakers: ref.Int64(5000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "da", Code3: "dan", Name: "Danish", NativeName: "Dansk", Direction: "ltr", NativeSpeakers: ref.Int64(6000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "fi", Code3: "fin", Name: "Finnish", NativeName: "Suomi", Direction: "ltr", NativeSpeakers: ref.Int64(5000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "cs", Code3: "ces", Name: "Czech", NativeName: "Čeština", Direction: "ltr", NativeSpeakers: ref.Int64(13000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "hu", Code3: "hun", Name: "Hungarian", NativeName: "Magyar", Direction: "ltr", NativeSpeakers: ref.Int64(13000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ro", Code3: "ron", Name: "Romanian", NativeName: "Română", Direction: "ltr", NativeSpeakers: ref.Int64(26000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "bg", Code3: "bul", Name: "Bulgarian", NativeName: "Български", Direction: "ltr", NativeSpeakers: ref.Int64(8000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "el", Code3: "ell", Name: "Greek", NativeName: "Ελληνικά", Direction: "ltr", NativeSpeakers: ref.Int64(13000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "sr", Code3: "srp", Name: "Serbian", NativeName: "Српски", Direction: "ltr", NativeSpeakers: ref.Int64(12000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "hr", Code3: "hrv", Name: "Croatian", NativeName: "Hrvatski", Direction: "ltr", NativeSpeakers: ref.Int64(7000000), IsActive: true},
+		newLanguage("de", "deu", "German", "Deutsch", "ltr", ref.Int64(134000000), true),
+		newLanguage("uk", "ukr", "Ukrainian", "Українська", "ltr", ref.Int64(40000000), true),
+		newLanguage("pl", "pol", "Polish", "Polski", "ltr", ref.Int64(45000000), true),
+		newLanguage("it", "ita", "Italian", "Italiano", "ltr", ref.Int64(85000000), true),
+		newLanguage("nl", "nld", "Dutch", "Nederlands", "ltr", ref.Int64(25000000), true),
+		newLanguage("sv", "swe", "Swedish", "Svenska", "ltr", ref.Int64(13000000), true),
+		newLanguage("no", "nor", "Norwegian", "Norsk", "ltr", ref.Int64(5000000), true),
+		newLanguage("da", "dan", "Danish", "Dansk", "ltr", ref.Int64(6000000), true),
+		newLanguage("fi", "fin", "Finnish", "Suomi", "ltr", ref.Int64(5000000), true),
+		newLanguage("cs", "ces", "Czech", "Čeština", "ltr", ref.Int64(13000000), true),
+		newLanguage("hu", "hun", "Hungarian", "Magyar", "ltr", ref.Int64(13000000), true),
+		newLanguage("ro", "ron", "Romanian", "Română", "ltr", ref.Int64(26000000), true),
+		newLanguage("bg", "bul", "Bulgarian", "Български", "ltr", ref.Int64(8000000), true),
+		newLanguage("el", "ell", "Greek", "Ελληνικά", "ltr", ref.Int64(13000000), true),
+		newLanguage("sr", "srp", "Serbian", "Српски", "ltr", ref.Int64(12000000), true),
+		newLanguage("hr", "hrv", "Croatian", "Hrvatski", "ltr", ref.Int64(7000000), true),
 
 		// Asian Languages
-		{ID: uuidv7.New(), Code: "ja", Code3: "jpn", Name: "Japanese", NativeName: "日本語", Direction: "ltr", NativeSpeakers: ref.Int64(125000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ko", Code3: "kor", Name: "Korean", NativeName: "한국어", Direction: "ltr", NativeSpeakers: ref.Int64(81000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "vi", Code3: "vie", Name: "Vietnamese", NativeName: "Tiếng Việt", Direction: "ltr", NativeSpeakers: ref.Int64(85000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "th", Code3: "tha", Name: "Thai", NativeName: "ไทย", Direction: "ltr", NativeSpeakers: ref.Int64(69000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "id", Code3: "ind", Name: "Indonesian", NativeName: "Bahasa Indonesia", Direction: "ltr", NativeSpeakers: ref.Int64(199000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ms", Code3: "msa", Name: "Malay", NativeName: "Bahasa Melayu", Direction: "ltr", NativeSpeakers: ref.Int64(290000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "tl", Code3: "tgl", Name: "Tagalog", NativeName: "Tagalog", Direction: "ltr", NativeSpeakers: ref.Int64(82000000), IsActive: true},
+		newLanguage("ja", "jpn", "Japanese", "日本語", "ltr", ref.Int64(125000000), true),
+		newLanguage("ko", "kor", "Korean", "한국어", "ltr", ref.Int64(81000000), true),
+		newLanguage("vi", "vie", "Vietnamese", "Tiếng Việt", "ltr", ref.Int64(85000000), true),
+		newLanguage("th", "tha", "Thai", "ไทย", "ltr", ref.Int64(69000000), true),
+		newLanguage("id", "ind", "Indonesian", "Bahasa Indonesia", "ltr", ref.Int64(199000000), true),
+		newLanguage("ms", "msa", "Malay", "Bahasa Melayu", "ltr", ref.Int64(290000000), true),
+		newLanguage("tl", "tgl", "Tagalog", "Tagalog", "ltr", ref.Int64(82000000), true),
 
 		// Middle Eastern Languages
-		{ID: uuidv7.New(), Code: "he", Code3: "heb", Name: "Hebrew", NativeName: "עברית", Direction: "rtl", NativeSpeakers: ref.Int64(9000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "tr", Code3: "tur", Name: "Turkish", NativeName: "Türkçe", Direction: "ltr", NativeSpeakers: ref.Int64(88000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "fa", Code3: "fas", Name: "Persian", NativeName: "فارسی", Direction: "rtl", NativeSpeakers: ref.Int64(110000000), IsActive: true},
+		newLanguage("he", "heb", "Hebrew", "עברית", "rtl", ref.Int64(9000000), true),
+		newLanguage("tr", "tur", "Turkish", "Türkçe", "ltr", ref.Int64(88000000), true),
+		newLanguage("fa", "fas", "Persian", "فارسی", "rtl", ref.Int64(110000000), true),
 
 		// Indian Subcontinent
-		{ID: uuidv7.New(), Code: "ta", Code3: "tam", Name: "Tamil", NativeName: "தமிழ்", Direction: "ltr", NativeSpeakers: ref.Int64(81000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "te", Code3: "tel", Name: "Telugu", NativeName: "తెలుగు", Direction: "ltr", NativeSpeakers: ref.Int64(93000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "mr", Code3: "mar", Name: "Marathi", NativeName: "मराठी", Direction: "ltr", NativeSpeakers: ref.Int64(95000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "gu", Code3: "guj", Name: "Gujarati", NativeName: "ગુજરાતી", Direction: "ltr", NativeSpeakers: ref.Int64(60000000), IsActive: true},
+		newLanguage("ta", "tam", "Tamil", "தமிழ்", "ltr", ref.Int64(81000000), true),
+		newLanguage("te", "tel", "Telugu", "తెలుగు", "ltr", ref.Int64(93000000), true),
+		newLanguage("mr", "mar", "Marathi", "मराठी", "ltr", ref.Int64(95000000), true),
+		newLanguage("gu", "guj", "Gujarati", "ગુજરાતી", "ltr", ref.Int64(60000000), true),
 
 		// African Languages
-		{ID: uuidv7.New(), Code: "sw", Code3: "swa", Name: "Swahili", NativeName: "Kiswahili", Direction: "ltr", NativeSpeakers: ref.Int64(200000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "am", Code3: "amh", Name: "Amharic", NativeName: "አማርኛ", Direction: "ltr", NativeSpeakers: ref.Int64(57000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "yo", Code3: "yor", Name: "Yoruba", NativeName: "Yorùbá", Direction: "ltr", NativeSpeakers: ref.Int64(50000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ha", Code3: "hau", Name: "Hausa", NativeName: "Hausa", Direction: "ltr", NativeSpeakers: ref.Int64(85000000), IsActive: true},
+		newLanguage("sw", "swa", "Swahili", "Kiswahili", "ltr", ref.Int64(200000000), true),
+		newLanguage("am", "amh", "Amharic", "አማርኛ", "ltr", ref.Int64(57000000), true),
+		newLanguage("yo", "yor", "Yoruba", "Yorùbá", "ltr", ref.Int64(50000000), true),
+		newLanguage("ha", "hau", "Hausa", "Hausa", "ltr", ref.Int64(85000000), true),
 
 		// Other Major Languages
-		{ID: uuidv7.New(), Code: "jv", Code3: "jav", Name: "Javanese", NativeName: "Basa Jawa", Direction: "ltr", NativeSpeakers: ref.Int64(82000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "pa", Code3: "pan", Name: "Punjabi", NativeName: "ਪੰਜਾਬੀ", Direction: "ltr", NativeSpeakers: ref.Int64(125000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "kn", Code3: "kan", Name: "Kannada", NativeName: "ಕನ್ನಡ", Direction: "ltr", NativeSpeakers: ref.Int64(56000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "ml", Code3: "mal", Name: "Malayalam", NativeName: "മലയാളം", Direction: "ltr", NativeSpeakers: ref.Int64(38000000), IsActive: true},
+		newLanguage("jv", "jav", "Javanese", "Basa Jawa", "ltr", ref.Int64(82000000), true),
+		newLanguage("pa", "pan", "Punjabi", "ਪੰਜਾਬੀ", "ltr", ref.Int64(125000000), true),
+		newLanguage("kn", "kan", "Kannada", "ಕನ್ನಡ", "ltr", ref.Int64(56000000), true),
+		newLanguage("ml", "mal", "Malayalam", "മലയാളം", "ltr", ref.Int64(38000000), true),
 
 		// Additional European
-		{ID: uuidv7.New(), Code: "sk", Code3: "slk", Name: "Slovak", NativeName: "Slovenčina", Direction: "ltr", NativeSpeakers: ref.Int64(5000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "lt", Code3: "lit", Name: "Lithuanian", NativeName: "Lietuvių", Direction: "ltr", NativeSpeakers: ref.Int64(3000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "lv", Code3: "lav", Name: "Latvian", NativeName: "Latviešu", Direction: "ltr", NativeSpeakers: ref.Int64(2000000), IsActive: true},
-		{ID: uuidv7.New(), Code: "et", Code3: "est", Name: "Estonian", NativeName: "Eesti", Direction: "ltr", NativeSpeakers: ref.Int64(1000000), IsActive: true},
+		newLanguage("sk", "slk", "Slovak", "Slovenčina", "ltr", ref.Int64(5000000), true),
+		newLanguage("lt", "lit", "Lithuanian", "Lietuvių", "ltr", ref.Int64(3000000), true),
+		newLanguage("lv", "lav", "Latvian", "Latviešu", "ltr", ref.Int64(2000000), true),
+		newLanguage("et", "est", "Estonian", "Eesti", "ltr", ref.Int64(1000000), true),
 	}
 }
 

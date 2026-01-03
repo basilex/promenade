@@ -11,20 +11,13 @@ import (
 )
 
 func TestToCurrencyResponse(t *testing.T) {
-	id := uuidv7.New()
-	c := &currency.Currency{
-		ID:            id,
-		Code:          "USD",
-		Name:          "US Dollar",
-		Symbol:        "$",
-		DecimalPlaces: 2,
-		NumericCode:   "840",
-		IsActive:      true,
-	}
+	c, _ := currency.NewCurrency("USD", "US Dollar", "$", 2)
+	c.NumericCode = "840"
+	c.IsActive = true
 
 	resp := ToCurrencyResponse(c)
 
-	assert.Equal(t, id.String(), resp.ID)
+	assert.Equal(t, c.GetID().String(), resp.ID)
 	assert.Equal(t, "USD", resp.Code)
 	assert.Equal(t, "US Dollar", resp.Name)
 	assert.Equal(t, "$", resp.Symbol)
@@ -34,10 +27,11 @@ func TestToCurrencyResponse(t *testing.T) {
 }
 
 func TestToCurrencyResponses(t *testing.T) {
-	currencies := []*currency.Currency{
-		{ID: uuidv7.New(), Code: "USD", Name: "US Dollar", Symbol: "$", DecimalPlaces: 2, IsActive: true},
-		{ID: uuidv7.New(), Code: "EUR", Name: "Euro", Symbol: "€", DecimalPlaces: 2, IsActive: true},
-	}
+	c1, _ := currency.NewCurrency("USD", "US Dollar", "$", 2)
+	c1.IsActive = true
+	c2, _ := currency.NewCurrency("EUR", "Euro", "€", 2)
+	c2.IsActive = true
+	currencies := []*currency.Currency{c1, c2}
 
 	responses := ToCurrencyResponses(currencies)
 

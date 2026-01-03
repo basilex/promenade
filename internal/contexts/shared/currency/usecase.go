@@ -149,6 +149,9 @@ func (uc *useCase) Update(ctx context.Context, currency *Currency) error {
 		return err
 	}
 	
+	// Update timestamp
+	currency.Touch()
+	
 	if err := uc.repo.Update(ctx, currency); err != nil {
 		return err
 	}

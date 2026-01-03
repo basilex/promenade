@@ -148,8 +148,9 @@ func (uc *useCase) Update(ctx context.Context, timezone *Timezone) error {
 	if err := timezone.Validate(); err != nil {
 		return err
 	}
-	
-	if err := uc.repo.Update(ctx, timezone); err != nil {
+		// Update timestamp
+	timezone.Touch()
+		if err := uc.repo.Update(ctx, timezone); err != nil {
 		return err
 	}
 	

@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Country represents an ISO 3166-1 country (Aggregate Root in Shared Context)
 type Country struct {
-	ID           uuidv7.UUID    `db:"id"`
+	aggregate.BaseAggregate
+
 	Code         string         `db:"code"`
 	Code3        string         `db:"code3"`
 	NumericCode  string         `db:"numeric_code"`
@@ -51,11 +53,11 @@ func NewCountry(code, name, phoneCode string) (*Country, error) {
 	}
 
 	return &Country{
-		ID:        uuidv7.New(),
-		Code:      code,
-		Name:      name,
-		PhoneCode: phoneCode,
-		IsActive:  true,
+		BaseAggregate: aggregate.NewBaseAggregate(),
+		Code:          code,
+		Name:          name,
+		PhoneCode:     phoneCode,
+		IsActive:      true,
 	}, nil
 }
 

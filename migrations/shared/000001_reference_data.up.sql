@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS shared_countries (
     population BIGINT,                         -- Country population (approximate)
     translations JSONB DEFAULT '{}'::jsonb,    -- Name translations (map: lang_code -> name)
     is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE INDEX idx_shared_countries_code ON shared_countries(code) WHERE is_active = true;
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS shared_currencies (
     rounding INTEGER DEFAULT 0,                -- Rounding mode (0=normal, 1=up, 2=down)
     is_crypto BOOLEAN DEFAULT false,           -- Is cryptocurrency
     is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE INDEX idx_shared_currencies_code ON shared_currencies(code) WHERE is_active = true;
@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS shared_languages (
     direction VARCHAR(3) DEFAULT 'ltr',        -- Text direction (ltr, rtl)
     native_speakers BIGINT,                    -- Number of native speakers (approximate)
     is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
     CONSTRAINT chk_language_direction CHECK (direction IN ('ltr', 'rtl'))
 );
 
@@ -104,8 +104,8 @@ CREATE TABLE IF NOT EXISTS shared_timezones (
     dst_offset INTEGER,                        -- DST offset in seconds (if applicable)
     display_name VARCHAR(100),                 -- Human-readable timezone name
     is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE INDEX idx_shared_timezones_name ON shared_timezones(name) WHERE is_active = true;

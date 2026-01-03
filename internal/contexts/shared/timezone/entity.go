@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Timezone represents an IANA timezone (Aggregate Root in Shared Context)
 type Timezone struct {
-	ID           uuidv7.UUID `db:"id"`
-	Name         string      `db:"name"`
-	Abbreviation string      `db:"abbreviation"`
-	UTCOffset    int         `db:"utc_offset"` // UTC offset in seconds
-	CountryCode  string      `db:"country_code"`
-	DSTOffset    *int        `db:"dst_offset"`
-	DisplayName  string      `db:"display_name"`
-	IsActive     bool        `db:"is_active"`
+	aggregate.BaseAggregate
+
+	Name         string `db:"name"`
+	Abbreviation string `db:"abbreviation"`
+	UTCOffset    int    `db:"utc_offset"` // UTC offset in seconds
+	CountryCode  string `db:"country_code"`
+	DSTOffset    *int   `db:"dst_offset"`
+	DisplayName  string `db:"display_name"`
+	IsActive     bool   `db:"is_active"`
 }
 
 // NewTimezone creates a new Timezone entity with validation
@@ -38,11 +40,11 @@ func NewTimezone(name, abbreviation string, utcOffsetSeconds int) (*Timezone, er
 	}
 
 	return &Timezone{
-		ID:           uuidv7.New(),
-		Name:         name,
-		Abbreviation: abbreviation,
-		UTCOffset:    utcOffsetSeconds,
-		IsActive:     true,
+		BaseAggregate: aggregate.NewBaseAggregate(),
+		Name:          name,
+		Abbreviation:  abbreviation,
+		UTCOffset:     utcOffsetSeconds,
+		IsActive:      true,
 	}, nil
 }
 

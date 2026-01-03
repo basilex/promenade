@@ -11,18 +11,12 @@ import (
 )
 
 func TestToTimezoneResponse(t *testing.T) {
-	id := uuidv7.New()
-	tz := &timezone.Timezone{
-		ID:           id,
-		Name:         "Europe/Kyiv",
-		Abbreviation: "EET",
-		UTCOffset:    7200, // +02:00 in seconds
-		IsActive:     true,
-	}
+	tz, _ := timezone.NewTimezone("Europe/Kyiv", "EET", 7200)
+	tz.IsActive = true
 
 	resp := ToTimezoneResponse(tz)
 
-	assert.Equal(t, id.String(), resp.ID)
+	assert.Equal(t, tz.GetID().String(), resp.ID)
 	assert.Equal(t, "Europe/Kyiv", resp.Name)
 	assert.Equal(t, "EET", resp.Abbreviation)
 	assert.Equal(t, "+02:00", resp.UTCOffset)
@@ -30,10 +24,11 @@ func TestToTimezoneResponse(t *testing.T) {
 }
 
 func TestToTimezoneResponses(t *testing.T) {
-	timezones := []*timezone.Timezone{
-		{ID: uuidv7.New(), Name: "Europe/Kyiv", Abbreviation: "EET", UTCOffset: 7200, IsActive: true},  // +02:00
-		{ID: uuidv7.New(), Name: "America/New_York", Abbreviation: "EST", UTCOffset: -18000, IsActive: true},  // -05:00
-	}
+	tz1, _ := timezone.NewTimezone("Europe/Kyiv", "EET", 7200)
+	tz1.IsActive = true
+	tz2, _ := timezone.NewTimezone("America/New_York", "EST", -18000)
+	tz2.IsActive = true
+	timezones := []*timezone.Timezone{tz1, tz2}
 
 	responses := ToTimezoneResponses(timezones)
 

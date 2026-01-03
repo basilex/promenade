@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Currency represents an ISO 4217 currency (Aggregate Root in Shared Context)
 type Currency struct {
-	ID            uuidv7.UUID `db:"id"`
-	Code          string      `db:"code"`
-	NumericCode   string      `db:"numeric_code"`
-	Name          string      `db:"name"`
-	Symbol        string      `db:"symbol"`
-	DecimalPlaces int         `db:"decimal_places"`
-	Rounding      int         `db:"rounding"`
-	IsCrypto      bool        `db:"is_crypto"`
-	IsActive      bool        `db:"is_active"`
+	aggregate.BaseAggregate
+
+	Code          string `db:"code"`
+	NumericCode   string `db:"numeric_code"`
+	Name          string `db:"name"`
+	Symbol        string `db:"symbol"`
+	DecimalPlaces int    `db:"decimal_places"`
+	Rounding      int    `db:"rounding"`
+	IsCrypto      bool   `db:"is_crypto"`
+	IsActive      bool   `db:"is_active"`
 }
 
 // NewCurrency creates a new Currency entity with validation
@@ -43,7 +45,7 @@ func NewCurrency(code, name, symbol string, decimalPlaces int) (*Currency, error
 	}
 
 	return &Currency{
-		ID:            uuidv7.New(),
+		BaseAggregate: aggregate.NewBaseAggregate(),
 		Code:          code,
 		Name:          name,
 		Symbol:        symbol,

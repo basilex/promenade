@@ -64,13 +64,8 @@ func TestUseCase_GetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		expected := &Timezone{
-			ID:           id,
-			Name:         "Europe/Kyiv",
-			Abbreviation: "EET",
-			UTCOffset:    7200, // +02:00
-			IsActive:     true,
-		}
+		expected, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		expected.IsActive = true
 
 		mockRepo.On("GetByID", ctx, id).Return(expected, nil).Once()
 
@@ -100,13 +95,8 @@ func TestUseCase_GetByName(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := &Timezone{
-			ID:           uuidv7.New(),
-			Name:         "Europe/Kyiv",
-			Abbreviation: "EET",
-			UTCOffset:    7200, // +02:00
-			IsActive:     true,
-		}
+		expected, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		expected.IsActive = true
 
 		mockRepo.On("GetByName", ctx, "Europe/Kyiv").Return(expected, nil).Once()
 
@@ -124,10 +114,11 @@ func TestUseCase_List(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := []*Timezone{
-			{ID: uuidv7.New(), Name: "Europe/Kyiv", Abbreviation: "EET", UTCOffset: 7200, IsActive: true},
-			{ID: uuidv7.New(), Name: "America/New_York", Abbreviation: "EST", UTCOffset: -18000, IsActive: true},
-		}
+		tz1, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		tz1.IsActive = true
+		tz2, _ := NewTimezone("America/New_York", "EST", -18000)
+		tz2.IsActive = true
+		expected := []*Timezone{tz1, tz2}
 
 		mockRepo.On("List", ctx).Return(expected, nil).Once()
 
@@ -145,13 +136,8 @@ func TestUseCase_Create(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		timezone := &Timezone{
-			ID:           uuidv7.New(),
-			Name:         "Europe/Kyiv",
-			Abbreviation: "EET",
-			UTCOffset:    7200, // +02:00
-			IsActive:     true,
-		}
+		timezone, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		timezone.IsActive = true
 
 		mockRepo.On("Create", ctx, timezone).Return(nil).Once()
 
@@ -162,10 +148,8 @@ func TestUseCase_Create(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		timezone := &Timezone{
-			ID:   uuidv7.New(),
-			Name: "", // Invalid: empty name
-		}
+		timezone, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		timezone.Name = "" // Invalid: empty name
 
 		err := uc.Create(ctx, timezone)
 
@@ -180,13 +164,8 @@ func TestUseCase_Update(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		timezone := &Timezone{
-			ID:           uuidv7.New(),
-			Name:         "Europe/Kyiv",
-			Abbreviation: "EEST",
-			UTCOffset:    10800, // +03:00 (summer time)
-			IsActive:     true,
-		}
+		timezone, _ := NewTimezone("Europe/Kyiv", "EEST", 10800)
+		timezone.IsActive = true
 
 		mockRepo.On("Update", ctx, timezone).Return(nil).Once()
 
@@ -197,10 +176,8 @@ func TestUseCase_Update(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		timezone := &Timezone{
-			ID:   uuidv7.New(),
-			Name: "", // Invalid: empty name
-		}
+		timezone, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
+		timezone.Name = "" // Invalid: empty name
 
 		err := uc.Update(ctx, timezone)
 
@@ -216,10 +193,7 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		entity := &Timezone{
-			ID:   id,
-			Name: "Europe/Kyiv",
-		}
+		entity, _ := NewTimezone("Europe/Kyiv", "EET", 7200)
 
 		// Delete method calls GetByID first for cache invalidation
 		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
@@ -234,11 +208,7 @@ func TestUseCase_Delete(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
 		expectedErr := errors.New("delete failed")
-		entity := &Timezone{
-			ID:           id,
-			Name:         "UTC",
-			Abbreviation: "UTC",
-		}
+		entity, _ := NewTimezone("UTC", "UTC", 0)
 
 		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(expectedErr).Once()

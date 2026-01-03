@@ -64,15 +64,9 @@ func TestUseCase_GetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		expected := &Currency{
-			ID:            id,
-			Code:          "USD",
-			NumericCode:   "840",
-			Name:          "US Dollar",
-			Symbol:        "$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		expected, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		expected.NumericCode = "840"
+		expected.IsActive = true
 
 		mockRepo.On("GetByID", ctx, id).Return(expected, nil).Once()
 
@@ -102,15 +96,9 @@ func TestUseCase_GetByCode(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := &Currency{
-			ID:            uuidv7.New(),
-			Code:          "USD",
-			NumericCode:   "840",
-			Name:          "US Dollar",
-			Symbol:        "$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		expected, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		expected.NumericCode = "840"
+		expected.IsActive = true
 
 		mockRepo.On("GetByCode", ctx, "USD").Return(expected, nil).Once()
 
@@ -128,10 +116,11 @@ func TestUseCase_List(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := []*Currency{
-			{ID: uuidv7.New(), Code: "USD", Name: "US Dollar", Symbol: "$", IsActive: true},
-			{ID: uuidv7.New(), Code: "EUR", Name: "Euro", Symbol: "€", IsActive: true},
-		}
+		c1, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		c1.IsActive = true
+		c2, _ := NewCurrency("EUR", "Euro", "€", 2)
+		c2.IsActive = true
+		expected := []*Currency{c1, c2}
 
 		mockRepo.On("List", ctx).Return(expected, nil).Once()
 
@@ -149,15 +138,9 @@ func TestUseCase_Create(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		currency := &Currency{
-			ID:            uuidv7.New(),
-			Code:          "USD",
-			NumericCode:   "840",
-			Name:          "US Dollar",
-			Symbol:        "$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		currency, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		currency.NumericCode = "840"
+		currency.IsActive = true
 
 		mockRepo.On("Create", ctx, currency).Return(nil).Once()
 
@@ -168,10 +151,8 @@ func TestUseCase_Create(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		currency := &Currency{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		currency, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		currency.Code = "" // Invalid: empty code
 
 		err := uc.Create(ctx, currency)
 
@@ -186,15 +167,9 @@ func TestUseCase_Update(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		currency := &Currency{
-			ID:            uuidv7.New(),
-			Code:          "USD",
-			NumericCode:   "840",
-			Name:          "US Dollar Updated",
-			Symbol:        "$",
-			DecimalPlaces: 2,
-			IsActive:      true,
-		}
+		currency, _ := NewCurrency("USD", "US Dollar Updated", "$", 2)
+		currency.NumericCode = "840"
+		currency.IsActive = true
 
 		mockRepo.On("Update", ctx, currency).Return(nil).Once()
 
@@ -205,10 +180,8 @@ func TestUseCase_Update(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		currency := &Currency{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		currency, _ := NewCurrency("USD", "US Dollar", "$", 2)
+		currency.Code = "" // Invalid: empty code
 
 		err := uc.Update(ctx, currency)
 
@@ -239,11 +212,7 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
-		entity := &Currency{
-			ID:   id,
-			Code: "USD",
-			Name: "US Dollar",
-		}
+		entity, _ := NewCurrency("USD", "US Dollar", "$", 2)
 		expectedErr := errors.New("delete failed")
 
 		// Delete method calls GetByID first for cache invalidation

@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Language represents an ISO 639-1 language (Aggregate Root in Shared Context)
 type Language struct {
-	ID             uuidv7.UUID `db:"id"`
-	Code           string      `db:"code"`
-	Code3          string      `db:"code3"`
-	Name           string      `db:"name"`
-	NativeName     string      `db:"native_name"`
-	Direction      string      `db:"direction"`
-	NativeSpeakers *int64      `db:"native_speakers"`
-	IsActive       bool        `db:"is_active"`
+	aggregate.BaseAggregate
+
+	Code           string `db:"code"`
+	Code3          string `db:"code3"`
+	Name           string `db:"name"`
+	NativeName     string `db:"native_name"`
+	Direction      string `db:"direction"`
+	NativeSpeakers *int64 `db:"native_speakers"`
+	IsActive       bool   `db:"is_active"`
 }
 
 // NewLanguage creates a new Language entity with validation
@@ -38,11 +40,11 @@ func NewLanguage(code, name, nativeName string) (*Language, error) {
 	}
 
 	return &Language{
-		ID:         uuidv7.New(),
-		Code:       code,
-		Name:       name,
-		NativeName: nativeName,
-		IsActive:   true,
+		BaseAggregate: aggregate.NewBaseAggregate(),
+		Code:          code,
+		Name:          name,
+		NativeName:    nativeName,
+		IsActive:      true,
 	}, nil
 }
 

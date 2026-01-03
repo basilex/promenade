@@ -140,6 +140,9 @@ func (uc *useCase) Update(ctx context.Context, country *Country) error {
 		return err
 	}
 
+	// Update timestamp
+	country.Touch()
+
 	if err := uc.repo.Update(ctx, country); err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ func NewRepository(db sqlx.ExtContext) language.IRepository {
 func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*language.Language, error) {
 	var l language.Language
 	query := `
-		SELECT id, code, code3, name, native_name, is_active
+		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
 		WHERE id = $1 AND is_active = TRUE
 	`
@@ -36,7 +36,7 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*language.Lan
 func (r *repository) GetByCode(ctx context.Context, code string) (*language.Language, error) {
 	var l language.Language
 	query := `
-		SELECT id, code, code3, name, native_name, is_active
+		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
 		WHERE code = $1 AND is_active = TRUE
 	`
@@ -50,7 +50,7 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*language.Lang
 func (r *repository) List(ctx context.Context) ([]*language.Language, error) {
 	var languages []*language.Language
 	query := `
-		SELECT id, code, code3, name, native_name, is_active
+		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
 		WHERE is_active = TRUE
 		ORDER BY name ASC
@@ -61,20 +61,20 @@ func (r *repository) List(ctx context.Context) ([]*language.Language, error) {
 
 func (r *repository) Create(ctx context.Context, l *language.Language) error {
 	query := `
-		INSERT INTO shared_languages (id, code, code3, name, native_name, is_active)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO shared_languages (id, code, code3, name, native_name, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
-	_, err := r.db.ExecContext(ctx, query, l.ID, l.Code, l.Code3, l.Name, l.NativeName, l.IsActive)
+	_, err := r.db.ExecContext(ctx, query, l.ID, l.Code, l.Code3, l.Name, l.NativeName, l.IsActive, l.CreatedAt, l.UpdatedAt)
 	return err
 }
 
 func (r *repository) Update(ctx context.Context, l *language.Language) error {
 	query := `
 		UPDATE shared_languages
-		SET code = $2, code3 = $3, name = $4, native_name = $5, is_active = $6
+		SET code = $2, code3 = $3, name = $4, native_name = $5, is_active = $6, updated_at = $7
 		WHERE id = $1
 	`
-	_, err := r.db.ExecContext(ctx, query, l.ID, l.Code, l.Code3, l.Name, l.NativeName, l.IsActive)
+	_, err := r.db.ExecContext(ctx, query, l.ID, l.Code, l.Code3, l.Name, l.NativeName, l.IsActive, l.UpdatedAt)
 	return err
 }
 

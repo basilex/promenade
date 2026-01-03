@@ -64,14 +64,9 @@ func TestUseCase_GetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		expected := &Language{
-			ID:         id,
-			Code:       "en",
-			Code3:      "eng",
-			Name:       "English",
-			NativeName: "English",
-			IsActive:   true,
-		}
+		expected, _ := NewLanguage("en", "English", "English")
+		expected.Code3 = "eng"
+		expected.IsActive = true
 
 		mockRepo.On("GetByID", ctx, id).Return(expected, nil).Once()
 
@@ -101,14 +96,9 @@ func TestUseCase_GetByCode(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := &Language{
-			ID:         uuidv7.New(),
-			Code:       "en",
-			Code3:      "eng",
-			Name:       "English",
-			NativeName: "English",
-			IsActive:   true,
-		}
+		expected, _ := NewLanguage("en", "English", "English")
+		expected.Code3 = "eng"
+		expected.IsActive = true
 
 		mockRepo.On("GetByCode", ctx, "en").Return(expected, nil).Once()
 
@@ -126,10 +116,11 @@ func TestUseCase_List(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		expected := []*Language{
-			{ID: uuidv7.New(), Code: "en", Name: "English", IsActive: true},
-			{ID: uuidv7.New(), Code: "uk", Name: "Ukrainian", IsActive: true},
-		}
+		l1, _ := NewLanguage("en", "English", "English")
+		l1.IsActive = true
+		l2, _ := NewLanguage("uk", "Ukrainian", "Українська")
+		l2.IsActive = true
+		expected := []*Language{l1, l2}
 
 		mockRepo.On("List", ctx).Return(expected, nil).Once()
 
@@ -147,14 +138,9 @@ func TestUseCase_Create(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		language := &Language{
-			ID:         uuidv7.New(),
-			Code:       "en",
-			Code3:      "eng",
-			Name:       "English",
-			NativeName: "English",
-			IsActive:   true,
-		}
+		language, _ := NewLanguage("en", "English", "English")
+		language.Code3 = "eng"
+		language.IsActive = true
 
 		mockRepo.On("Create", ctx, language).Return(nil).Once()
 
@@ -165,10 +151,8 @@ func TestUseCase_Create(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		language := &Language{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		language, _ := NewLanguage("en", "English", "English")
+		language.Code = "" // Invalid: empty code
 
 		err := uc.Create(ctx, language)
 
@@ -183,14 +167,9 @@ func TestUseCase_Update(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("success", func(t *testing.T) {
-		language := &Language{
-			ID:         uuidv7.New(),
-			Code:       "en",
-			Code3:      "eng",
-			Name:       "English Updated",
-			NativeName: "English",
-			IsActive:   true,
-		}
+		language, _ := NewLanguage("en", "English Updated", "English")
+		language.Code3 = "eng"
+		language.IsActive = true
 
 		mockRepo.On("Update", ctx, language).Return(nil).Once()
 
@@ -201,10 +180,8 @@ func TestUseCase_Update(t *testing.T) {
 	})
 
 	t.Run("validation_error", func(t *testing.T) {
-		language := &Language{
-			ID:   uuidv7.New(),
-			Code: "", // Invalid: empty code
-		}
+		language, _ := NewLanguage("en", "English", "English")
+		language.Code = "" // Invalid: empty code
 
 		err := uc.Update(ctx, language)
 
@@ -220,11 +197,7 @@ func TestUseCase_Delete(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := uuidv7.New()
-		entity := &Language{
-			ID:   id,
-			Code: "en",
-			Name: "English",
-		}
+		entity, _ := NewLanguage("en", "English", "English")
 
 		// Delete method calls GetByID first for cache invalidation
 		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
@@ -239,11 +212,7 @@ func TestUseCase_Delete(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		id := uuidv7.New()
 		expectedErr := errors.New("delete failed")
-		entity := &Language{
-			ID:   id,
-			Code: "en",
-			Name: "English",
-		}
+		entity, _ := NewLanguage("en", "English", "English")
 
 		mockRepo.On("GetByID", ctx, id).Return(entity, nil).Once()
 		mockRepo.On("Delete", ctx, id).Return(expectedErr).Once()

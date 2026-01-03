@@ -150,8 +150,9 @@ func (uc *useCase) Update(ctx context.Context, language *Language) error {
 	if err := language.Validate(); err != nil {
 		return err
 	}
-	
-	if err := uc.repo.Update(ctx, language); err != nil {
+		// Update timestamp
+	language.Touch()
+		if err := uc.repo.Update(ctx, language); err != nil {
 		return err
 	}
 	
