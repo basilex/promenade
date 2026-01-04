@@ -503,7 +503,7 @@ LIMIT 20;
 **Files Changed:**
 - `internal/contexts/identity/user/adapter/repository/postgres/user_repository.go` - Optimized ListUsers
 - `internal/contexts/identity/user/adapter/repository/postgres/user_repository_bench_test.go` - 4 benchmarks (239 lines)
-- `docs/work-in-progress/N+1_OPTIMIZATION.md` - Complete documentation (220+ lines)
+- `docs/reference/n-plus-one-optimization.md` - Complete documentation (220+ lines)
 
 **Production Impact:**
 - Before: 100 users → 101 queries → ~5-10 seconds under load

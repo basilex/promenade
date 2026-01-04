@@ -67,7 +67,7 @@ When changing table names (e.g., from `customer_mgmt_customers` to `customer_cus
 4. Update foreign key references
 5. Run all tests to verify
 
-**See**: [Table Naming Strategy Document](../work-in-progress/TABLE_NAMING_STRATEGY.md)
+**See**: [Table Naming Strategy Document](../reference/table-naming-strategy.md)
 
 ---
 
@@ -592,7 +592,7 @@ email VARCHAR(255)
 **See Also**:
 - [Naming Conventions Guide](naming-conventions.md) - Files, directories, Go code
 - [Architecture Patterns Guide](architecture-patterns.md) - Repository, UseCase, Handler patterns
-- [Table Naming Strategy](../work-in-progress/TABLE_NAMING_STRATEGY.md) - Migration decisions
+- [Table Naming Strategy](../reference/table-naming-strategy.md) - Migration decisions
 
 ---
 

@@ -153,7 +153,7 @@ make switch-sqlite-test && make test-all
 make switch-postgres-prod && make prod
 ```
 
-**See**: [Workspace State Management ADR](docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md) for complete architecture documentation
+**See**: [Workspace Management Guide](docs/guides/workspace-management.md) for complete architecture documentation
 
 ### Health Checks
 

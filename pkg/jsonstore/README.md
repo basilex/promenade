@@ -556,7 +556,8 @@ ALTER TABLE customers ADD CHECK (json_valid(tags));
 ## Related Documentation
 
 - [Database Package](../database/README.md) - Dialect abstraction
-- [Refactoring Plan](../../docs/work-in-progress/DB_AGNOSTIC_REFACTORING.md) - Migration guide
+- [Database Adapters Guide](../../docs/guides/database-adapters.md) - Multi-database support
+- [JSONB Strategy Guide](../../docs/guides/jsonb-strategy.md) - Cross-database JSON handling
 - [Testing Guide](../../test/README.md) - Multi-database testing
 
 ---

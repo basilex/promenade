@@ -109,7 +109,7 @@
 - **Environment Awareness**: Runners (`dev`, `test-all`, `prod`) enforce correct environment usage
 - **Modular Architecture**: Main Makefile (workspace + help) + specialized modules (dev/test/prod)
 - **Workspace Commands**: Go tools (`build`, `fmt`, `lint`) grouped logically with state management
-- **Implementation**: [Workspace State Management ADR](work-in-progress/WORKFLOW_STATE_MANAGEMENT.md)
+- **Implementation**: [Workspace Management Guide](guides/workspace-management.md)
 
 **Key Benefits**:
 - ✅ No command explosion (50+ commands work with all databases)
@@ -320,7 +320,10 @@ Technical specifications and detailed documentation:
 - [API Reference](reference/api-reference.md) - Complete HTTP API documentation
 - [Test Coverage Report](reference/test-coverage-report.md) - 240+ tests breakdown
 - [Bus Test Coverage](reference/bus-test-coverage.md) - Event Bus test report
-- [Index Audit Report](work-in-progress/INDEX_AUDIT_REPORT.md) - Database index analysis (13 tables, 60+ indexes)
+- [Index Audit Report](reference/index-audit-report.md) - Database index analysis (13 tables, 60+ indexes)
+- [Soft Delete Audit](reference/soft-delete-audit.md) - Soft delete implementation audit (78 queries, 100% compliance)
+- [N+1 Optimization](reference/n-plus-one-optimization.md) - Query optimization report (95% reduction)
+- [Table Naming Strategy](reference/table-naming-strategy.md) - Database table naming conventions
 - [Migration History](reference/migration-history.md) - Database schema evolution
 - [Configuration Reference](reference/configuration.md) - YAML config options
 

@@ -380,7 +380,8 @@ go test -bench=. ./pkg/database
 
 - [JSON Store Package](../jsonstore/README.md) - Database-agnostic JSON storage
 - [Testing Guide](../../test/README.md) - Multi-database testing
-- [Refactoring Plan](../../docs/work-in-progress/DB_AGNOSTIC_REFACTORING.md) - Complete migration guide
+- [Database Adapters Guide](../../docs/guides/database-adapters.md) - Multi-database support strategy
+- [JSONB Strategy Guide](../../docs/guides/jsonb-strategy.md) - Cross-database JSON handling
 
 ---
 

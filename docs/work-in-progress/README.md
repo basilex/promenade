@@ -24,20 +24,34 @@ This directory contains **living documents** that track:
 
 ## Current Documents
 
-### Phase 1 Progress
-
-- **PHASE1_ARCHITECTURE_PREPARATION.md** - Initial DDD architecture migration plan
-- **PHASE1_PROGRESS_REPORT.md** - Phase 1 completion report
-- **PHASE1_TEST_AUDIT.md** - Test coverage audit results
-- **PHASE1.3_OPTIMIZATION_COMPLETE.md** - Integration test optimization summary
-
 ### Active Tasks
 
-- **GAPS_AND_TODOS.md** - Priority tasks and technical debt tracking
+- **GAPS_AND_TODOS.md** - Priority tasks and technical debt tracking (living document)
 
-### Bug Fixes
+### Architecture Notes
 
-- **CI_FIX_INTEGRATION_TESTS.md** - CI/CD integration test fixes
+- **GITHUB_PAGES_SETUP.md** - GitHub Pages configuration notes
+- **LINK_AUDIT_REPORT.md** - Documentation links audit report
+
+### Phase 4 Progress
+
+- **PHASE4_CUSTOMER_MGMT_COMPLETE.md** - Customer Management context completion
+- **PHASE4_DETAILED_PLAN.md** - Phase 4 detailed implementation plan
+
+### Completed & Archived
+
+**Moved to stable documentation:**
+- ~~N+1_OPTIMIZATION.md~~ → [docs/reference/n-plus-one-optimization.md](../reference/n-plus-one-optimization.md)
+- ~~SOFT_DELETE_AUDIT_REPORT.md~~ → [docs/reference/soft-delete-audit.md](../reference/soft-delete-audit.md)
+- ~~INDEX_AUDIT_REPORT.md~~ → [docs/reference/index-audit-report.md](../reference/index-audit-report.md)
+- ~~TABLE_NAMING_STRATEGY.md~~ → [docs/reference/table-naming-strategy.md](../reference/table-naming-strategy.md)
+- ~~WORKFLOW_STATE_MANAGEMENT.md~~ → [docs/guides/workspace-management.md](../guides/workspace-management.md)
+
+**Removed (completed/obsolete):**
+- ~~GAPS_AND_TODOS_OLD.md~~ - Replaced by GAPS_AND_TODOS.md
+- ~~CI_FIX_INTEGRATION_TESTS.md~~ - Fixed and integrated
+- ~~DB_AGNOSTIC_REFACTORING.md~~ - Completed
+- ~~PHASE1*.md~~ - Phase 1 completed
 
 ---
 

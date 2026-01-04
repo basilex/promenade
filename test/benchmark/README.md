@@ -257,7 +257,7 @@ docker ps | grep promenade_test
 
 - [Test README](../README.md) - Complete testing guide
 - [Testing Patterns](../../docs/guides/testing-patterns.md) - Best practices
-- [N+1 Optimization](../../docs/work-in-progress/N+1_OPTIMIZATION.md) - Real-world example
+- [N+1 Optimization](../../docs/reference/n-plus-one-optimization.md) - Real-world example
 
 ---
 
