@@ -236,31 +236,283 @@ func (r *invoiceRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoice.Invoice, int, error) {
-	return nil, 0, fmt.Errorf("not implemented")
+	offset := (page - 1) * pageSize
+
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*)
+		FROM billing_invoices
+		WHERE customer_id = $1 AND deleted_at IS NULL
+	`
+	if err := r.Get(ctx, &total, countQuery, customerID); err != nil {
+		return nil, 0, fmt.Errorf("failed to count invoices: %w", err)
+	}
+
+	// Get invoices
+	query := `
+		SELECT id, invoice_number, customer_id, order_id,
+			   due_date, paid_date, status,
+			   subtotal_amount, tax_amount, total_amount, currency,
+			   created_at, updated_at, deleted_at
+		FROM billing_invoices
+		WHERE customer_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	var rows []invoiceRow
+	if err := r.Select(ctx, &rows, query, customerID, pageSize, offset); err != nil {
+		return nil, 0, fmt.Errorf("failed to list invoices by customer: %w", err)
+	}
+
+	invoices := make([]*invoice.Invoice, 0, len(rows))
+	for _, row := range rows {
+		inv, err := r.rowToEntity(&row)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Load line items
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
+		}
+		inv.Lines = lines
+
+		invoices = append(invoices, inv)
+	}
+
+	return invoices, total, nil
 }
 
 func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*invoice.Invoice, error) {
-	return nil, fmt.Errorf("not implemented")
+	query := `
+		SELECT id, invoice_number, customer_id, order_id,
+			   due_date, paid_date, status,
+			   subtotal_amount, tax_amount, total_amount, currency,
+			   created_at, updated_at, deleted_at
+		FROM billing_invoices
+		WHERE order_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+	`
+
+	var rows []invoiceRow
+	if err := r.Select(ctx, &rows, query, orderID); err != nil {
+		return nil, fmt.Errorf("failed to list invoices by order: %w", err)
+	}
+
+	invoices := make([]*invoice.Invoice, 0, len(rows))
+	for _, row := range rows {
+		inv, err := r.rowToEntity(&row)
+		if err != nil {
+			return nil, err
+		}
+
+		// Load line items
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load invoice lines: %w", err)
+		}
+		inv.Lines = lines
+
+		invoices = append(invoices, inv)
+	}
+
+	return invoices, nil
 }
 
 func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.InvoiceStatus, page, pageSize int) ([]*invoice.Invoice, int, error) {
-	return nil, 0, fmt.Errorf("not implemented")
+	offset := (page - 1) * pageSize
+
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*)
+		FROM billing_invoices
+		WHERE status = $1 AND deleted_at IS NULL
+	`
+	if err := r.Get(ctx, &total, countQuery, string(status)); err != nil {
+		return nil, 0, fmt.Errorf("failed to count invoices: %w", err)
+	}
+
+	// Get invoices
+	query := `
+		SELECT id, invoice_number, customer_id, order_id,
+			   due_date, paid_date, status,
+			   subtotal_amount, tax_amount, total_amount, currency,
+			   created_at, updated_at, deleted_at
+		FROM billing_invoices
+		WHERE status = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	var rows []invoiceRow
+	if err := r.Select(ctx, &rows, query, string(status), pageSize, offset); err != nil {
+		return nil, 0, fmt.Errorf("failed to list invoices by status: %w", err)
+	}
+
+	invoices := make([]*invoice.Invoice, 0, len(rows))
+	for _, row := range rows {
+		inv, err := r.rowToEntity(&row)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Load line items
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
+		}
+		inv.Lines = lines
+
+		invoices = append(invoices, inv)
+	}
+
+	return invoices, total, nil
 }
 
 func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
-	return nil, 0, fmt.Errorf("not implemented")
+	offset := (page - 1) * pageSize
+
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*)
+		FROM billing_invoices
+		WHERE status = $1
+		  AND due_date < NOW()
+		  AND deleted_at IS NULL
+	`
+	if err := r.Get(ctx, &total, countQuery, string(invoice.InvoiceStatusSent)); err != nil {
+		return nil, 0, fmt.Errorf("failed to count overdue invoices: %w", err)
+	}
+
+	// Get invoices
+	query := `
+		SELECT id, invoice_number, customer_id, order_id,
+			   due_date, paid_date, status,
+			   subtotal_amount, tax_amount, total_amount, currency,
+			   created_at, updated_at, deleted_at
+		FROM billing_invoices
+		WHERE status = $1
+		  AND due_date < NOW()
+		  AND deleted_at IS NULL
+		ORDER BY due_date ASC
+		LIMIT $2 OFFSET $3
+	`
+
+	var rows []invoiceRow
+	if err := r.Select(ctx, &rows, query, string(invoice.InvoiceStatusSent), pageSize, offset); err != nil {
+		return nil, 0, fmt.Errorf("failed to list overdue invoices: %w", err)
+	}
+
+	invoices := make([]*invoice.Invoice, 0, len(rows))
+	for _, row := range rows {
+		inv, err := r.rowToEntity(&row)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Load line items
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
+		}
+		inv.Lines = lines
+
+		invoices = append(invoices, inv)
+	}
+
+	return invoices, total, nil
 }
 
 func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
-	return nil, 0, fmt.Errorf("not implemented")
+	offset := (page - 1) * pageSize
+
+	// Get total count
+	var total int
+	countQuery := `
+		SELECT COUNT(*)
+		FROM billing_invoices
+		WHERE deleted_at IS NULL
+	`
+	if err := r.Get(ctx, &total, countQuery); err != nil {
+		return nil, 0, fmt.Errorf("failed to count invoices: %w", err)
+	}
+
+	// Get invoices
+	query := `
+		SELECT id, invoice_number, customer_id, order_id,
+			   due_date, paid_date, status,
+			   subtotal_amount, tax_amount, total_amount, currency,
+			   created_at, updated_at, deleted_at
+		FROM billing_invoices
+		WHERE deleted_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $1 OFFSET $2
+	`
+
+	var rows []invoiceRow
+	if err := r.Select(ctx, &rows, query, pageSize, offset); err != nil {
+		return nil, 0, fmt.Errorf("failed to list invoices: %w", err)
+	}
+
+	invoices := make([]*invoice.Invoice, 0, len(rows))
+	for _, row := range rows {
+		inv, err := r.rowToEntity(&row)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Load line items
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
+		}
+		inv.Lines = lines
+
+		invoices = append(invoices, inv)
+	}
+
+	return invoices, total, nil
 }
 
 func (r *invoiceRepository) CountByStatus(ctx context.Context, status invoice.InvoiceStatus) (int, error) {
-	return 0, fmt.Errorf("not implemented")
+	var count int
+	query := `
+		SELECT COUNT(*)
+		FROM billing_invoices
+		WHERE status = $1 AND deleted_at IS NULL
+	`
+
+	if err := r.Get(ctx, &count, query, string(status)); err != nil {
+		return 0, fmt.Errorf("failed to count invoices by status: %w", err)
+	}
+
+	return count, nil
 }
 
 func (r *invoiceRepository) GetTotalRevenue(ctx context.Context, from, to time.Time) (int64, error) {
-	return 0, fmt.Errorf("not implemented")
+	var total sql.NullInt64
+	query := `
+		SELECT COALESCE(SUM(total_amount), 0)
+		FROM billing_invoices
+		WHERE status = $1
+		  AND paid_date BETWEEN $2 AND $3
+		  AND deleted_at IS NULL
+	`
+
+	if err := r.Get(ctx, &total, query, string(invoice.InvoiceStatusPaid), from, to); err != nil {
+		return 0, fmt.Errorf("failed to calculate total revenue: %w", err)
+	}
+
+	if !total.Valid {
+		return 0, nil
+	}
+
+	return total.Int64, nil
 }
 
 func (r *invoiceRepository) CreateLine(ctx context.Context, line *invoice.InvoiceLine) error {
