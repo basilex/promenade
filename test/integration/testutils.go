@@ -263,8 +263,15 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("customer-mgmt migrations failed: %w", err)
 	}
 
-	// TODO: Add additional Bounded Context migrations here as they are created
-	// Examples: order-mgmt, billing, etc.
+	// Run order management context migrations
+	if err := mgr.MigrateNamespace(ctx, "order-mgmt"); err != nil {
+		return fmt.Errorf("order-mgmt migrations failed: %w", err)
+	}
+
+	// Run billing context migrations
+	if err := mgr.MigrateNamespace(ctx, "billing"); err != nil {
+		return fmt.Errorf("billing migrations failed: %w", err)
+	}
 
 	return nil
 }
