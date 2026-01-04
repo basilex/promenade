@@ -16,6 +16,7 @@ func TestValidate_ValidConfig(t *testing.T) {
 			Port: 8080,
 		},
 		Database: DatabasesSection{
+			Driver: "postgres",
 			Postgres: PostgresSection{
 				Host:     "localhost",
 				Database: "testdb",
@@ -96,6 +97,7 @@ func TestValidate_JWTSecretValidation(t *testing.T) {
 					Port: 8080,
 				},
 				Database: DatabasesSection{
+					Driver: "postgres",
 					Postgres: PostgresSection{
 						Host:     "localhost",
 						Database: "testdb",
@@ -158,6 +160,7 @@ func TestValidate_DatabaseValidation(t *testing.T) {
 					Port: 8080,
 				},
 				Database: DatabasesSection{
+					Driver: "postgres",
 					Postgres: PostgresSection{
 						Host:     tt.host,
 						Database: tt.database,
@@ -189,6 +192,7 @@ func TestValidate_ServerValidation(t *testing.T) {
 			Port: 0, // Invalid
 		},
 		Database: DatabasesSection{
+			Driver: "postgres",
 			Postgres: PostgresSection{
 				Host:     "localhost",
 				Database: "testdb",
