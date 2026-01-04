@@ -267,7 +267,7 @@ For developers and technical teams: the architectural patterns and infrastructur
 <div class="feature-card">
 <div class="feature-icon">📊</div>
 <h3>Three-Tier Testing</h3>
-<p>Professional test organization with 240+ tests. Unit tests (in-place), Smoke tests (mock-based), Integration tests (real DB). 90%+ coverage.</p>
+<p>Professional test organization with 250+ tests. Unit tests (in-place, fast), Integration tests (real DB, full validation), Benchmark tests (performance measurement). 90%+ coverage.</p>
 <a href="guide/testing-patterns">Read Testing Guide →</a>
 </div>
 
@@ -640,7 +640,7 @@ Full API documentation: [API Reference](/reference/api-reference)
 </div>
 
 <div class="testimonial">
-  <div class="quote">"The three-tier testing strategy is brilliant! Unit tests run in 5 seconds, smoke tests in 0.4s. We catch 90% of bugs before integration tests even start. Our CI/CD is blazing fast."</div>
+  <div class="quote">"The three-tier testing strategy is brilliant! Unit tests run in 5 seconds, integration tests provide full validation in 14s. We catch bugs early with real database testing. Our CI/CD pipeline is reliable and fast."</div>
   <div class="author">
     <img src="https://i.pravatar.cc/80?img=33" alt="Sarah Johnson" />
     <div>

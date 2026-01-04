@@ -21,8 +21,8 @@
 ### Three-Tier Strategy
 
 1. **Unit Tests** (in-place) - Fast feedback, isolated components (~5s)
-2. **Smoke Tests** (mirror path) - Mock-based handlers, no DB (~0.4s)
-3. **Integration Tests** (mirror path) - Real database, full E2E (~14s)
+2. **Integration Tests** (mirror path) - Real database, full E2E (~14s)
+3. **Benchmark Tests** (mirror path) - Performance measurement with real DB
 
 **See**: [Testing Patterns Guide](../guides/testing-patterns.md) for complete documentation
 
@@ -61,11 +61,6 @@
 - Contact UseCase: 52 tests, 70% coverage
 - Profile UseCase: 52 tests, 70% coverage
 
-**Smoke Tests** (mock-based):
-- User Handler: 15 tests
-- Contact Handler: 7 tests
-- Profile Handler: 8 tests
-
 **Integration Tests** (real DB):
 - User Repository: 32 tests
 - Contact Repository: 9 tests
@@ -83,12 +78,6 @@
 - Language Entity: Tests present
 - Timezone Entity: Tests present
 
-**Smoke Tests**:
-- Country Handler: 5 tests
-- Currency Handler: 5 tests
-- Language Handler: 5 tests
-- Timezone Handler: 5 tests
-
 **Integration Tests**:
 - Country Repository: 6 tests
 - Currency Repository: 6 tests
@@ -100,9 +89,6 @@
 ---
 
 #### Customer Management Context
-
-**Smoke Tests**:
-- Customer Handler: 18 tests
 
 **Integration Tests**:
 - Customer Repository: 14 tests

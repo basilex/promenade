@@ -713,17 +713,6 @@ func TestCompanyRepository_Update(t *testing.T)
 func TestCompanyRepository_Delete(t *testing.T)
 ```
 
-### Smoke Tests
-
-**Handler Tests** (`test/smoke/contexts/customer-mgmt/company/`):
-```go
-func TestHandler_Create(t *testing.T)
-func TestHandler_List(t *testing.T)
-func TestHandler_GetByID(t *testing.T)
-func TestHandler_UpdateBasicInfo(t *testing.T)
-func TestHandler_Delete(t *testing.T)
-```
-
 ---
 
 ## Error Handling

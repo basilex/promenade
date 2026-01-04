@@ -434,9 +434,6 @@ customer.customer.created → customer.company.add_contact
 **Integration Tests**:
 - [ ] repository_test.go - PostgreSQL operations
 
-**Smoke Tests**:
-- [ ] handler_test.go - HTTP handlers with mocks
-
 ---
 
 ## Future Enhancements
@@ -505,7 +502,6 @@ Customer Management is **production-ready** with 14 working endpoints, complete 
 ::: info Next Steps
 - Complete unit tests (entity, usecase)
 - Add integration tests (repository)
-- Add smoke tests (HTTP handlers)
 - Implement Company aggregate (B2B organizations)
 - Implement Deal aggregate (sales pipeline)
 - Implement domain event publishing

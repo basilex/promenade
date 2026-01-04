@@ -720,9 +720,6 @@ Order Cancelled → warehouse.inventory.release
 **Integration Tests** (planned):
 - [ ] repository_test.go - PostgreSQL operations with real database
 
-**Smoke Tests** (planned):
-- [ ] handler_test.go - HTTP handlers with mock use case
-
 ### Live Testing
 
 **Verification**: December 30, 2025  
