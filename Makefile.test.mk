@@ -81,11 +81,19 @@ test-coverage:  ## Generate test coverage report (no workspace needed)
 	@echo "Coverage report: coverage/coverage.html"
 
 test-db-start:  ## Start PostgreSQL test database on port 5433
-	@echo "Starting PostgreSQL test database on port 5433..."
-	docker-compose -f docker/docker-compose.test.yml up -d
-	@echo "Waiting for test database..."
-	@sleep 3
+	@if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
+		echo "ℹ️  CI/CD environment detected - using existing PostgreSQL service"; \
+	else \
+		echo "Starting PostgreSQL test database on port 5433..."; \
+		docker compose -f docker/docker-compose.test.yml up -d; \
+		echo "Waiting for test database..."; \
+		sleep 3; \
+	fi
 
 test-db-stop:  ## Stop test database
-	@echo "Stopping test database..."
-	docker-compose -f docker/docker-compose.test.yml down
+	@if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
+		echo "ℹ️  CI/CD environment detected - skipping database stop"; \
+	else \
+		echo "Stopping test database..."; \
+		docker compose -f docker/docker-compose.test.yml down; \
+	fi
