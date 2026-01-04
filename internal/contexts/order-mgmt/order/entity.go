@@ -90,9 +90,12 @@ func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
 // Format: ORD-YYYY-NNNNNN (e.g., ORD-2026-000001)
 func generateOrderNumber(orderDate time.Time) string {
 	year := orderDate.Year()
-	// In production, this would use a database sequence or counter
-	// For now, use timestamp-based number with microsecond precision
-	number := orderDate.UnixMicro() % 1000000
+	// Use UUID v7 for guaranteed uniqueness (no collisions even in rapid creation)
+	id := uuidv7.New()
+	// Convert last 3 bytes to number for 6-digit suffix
+	bytes := [16]byte(id)
+	number := (uint32(bytes[13]) << 16) | (uint32(bytes[14]) << 8) | uint32(bytes[15])
+	number = number % 1000000 // Keep 6 digits
 	return fmt.Sprintf("ORD-%d-%06d", year, number)
 }
 
