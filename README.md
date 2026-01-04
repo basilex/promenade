@@ -634,48 +634,63 @@ curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
 ```bash
 make help              # Show all available commands
 
-# Development (driver-specific)
-make dev-postgres      # PostgreSQL development (Docker + migrations + API)
-make dev-postgres-fresh # PostgreSQL fresh start with clean database
-make dev-sqlite        # SQLite development (embedded, no Docker)
-make dev-mysql         # MySQL development (coming soon)
-make build             # Build binary
-make run               # Build and run
-make fmt               # Format code
-make lint              # Run linters
+# Workspace Configuration (configure once, work anywhere)
+make switch-postgres-dev   # PostgreSQL + development
+make switch-postgres-test  # PostgreSQL + test
+make switch-postgres-prod  # PostgreSQL + production
+make switch-sqlite-dev     # SQLite + development (no Docker needed)
+make switch-sqlite-test    # SQLite + test
+make workspace             # Show current workspace configuration
 
-# Testing
-make test              # Run all tests (150+ tests, ~40 seconds with race detector)
-make test-unit         # Unit tests only (~5 seconds)
-make test-smoke        # Smoke tests (~0.3 seconds)
-make test-integration  # Integration tests with real DB (~5 seconds)
-make test-coverage     # HTML coverage report
+# Development Runners (environment-aware)
+make dev                   # Start development server (requires ENVIRONMENT=development)
+make dev-fresh             # Fresh start with clean database
+make build                 # Build binary
+make run                   # Build and run
+make fmt                   # Format code
+make lint                  # Run linters
 
-# Database
-make docker-up            # Start PostgreSQL
-make docker-down          # Stop PostgreSQL
-make db-reset             # Drop and recreate database
-make migrate-postgres     # Run all PostgreSQL migrations
-make migrate-sqlite       # Run all SQLite migrations
-make migrate-postgres-core # PostgreSQL: core migrations only
+# Testing (four-tier strategy)
+make test-all              # All tests runner (warns if not test environment)
+make test                  # All tests with race detector (~40s)
+make test-unit             # Unit tests only (~5s)
+make test-smoke            # Smoke tests (mock-based, ~0.35s)
+make test-integration      # Integration tests with real DB (~2s)
+make test-benchmark        # Benchmark tests (~5s per benchmark)
+make test-coverage         # HTML coverage report
 
-# Documentation
-make swagger-all       # Generate API documentation
+# Database Management
+make docker-up             # Start database containers (database-aware)
+make docker-down           # Stop database containers
+make db-reset              # Drop and recreate database
+make migrate               # Run all migrations (auto-detects driver)
+make migrate-core          # Core migrations only
+
+# Local CI Validation (run before push)
+make pre-push              # Run all CI checks locally (lint + test + build)
+make ci-lint               # Run golangci-lint (same as CI)
+make ci-test               # Run all tests (same as CI)
+make ci-build              # Test build (same as CI)
+
+# Production
+make prod                  # Production runner (requires ENVIRONMENT=production)
+make swagger-all           # Generate API documentation
 ```
 
 ---
 
 ## Testing
 
-Promenade uses a **three-tier testing strategy** with clear separation of concerns:
+Promenade uses a **four-tier testing strategy** with clear separation of concerns:
 
 ### Test Organization
 
-**Three-tier architecture**:
+**Four-tier architecture**:
 
 1. **Unit Tests** (in-place) - Fast feedback, test individual components
 2. **Smoke Tests** (`test/smoke/contexts/`) - Mock-based handler validation, no DB
 3. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
+4. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
 
 ```
 # Unit tests - alongside production code
@@ -704,22 +719,32 @@ test/integration/contexts/
  identity/
      contact/repository_test.go     # 9 repository integration tests
      profile/repository_test.go     # 17 repository integration subtests
+
+# Benchmark tests - mirror path structure (real DB)
+test/benchmark/contexts/
+ identity/
+    user/
+       repository_bench_test.go    # Repository performance benchmarks
 ```
 
 ### Running Tests
 
 ```bash
 # All tests (240+ tests, ~40 seconds with race detector)
-make test
+make test-all               # Runner with environment check
+make test                   # All tests with race detector
 
-# By type
-make test-unit              # Unit tests only (~5 seconds)
-make test-smoke             # Smoke tests (mock-based, ~0.4 seconds)
-make test-integration       # Integration tests with real DB (~14 seconds)
+# By type (four-tier strategy)
+make test-unit              # Unit tests only (~5s)
+make test-smoke             # Smoke tests (mock-based, ~0.35s)
+make test-integration       # Integration tests with real DB (~2s)
+make test-benchmark         # Benchmark tests (5s per benchmark)
+make test-benchmark-all     # Extended benchmarks (10s per benchmark)
 
 # By context
 go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/identity/... -v
+go test -bench=. ./test/benchmark/contexts/identity/user -v
 
 # By package
 go test ./pkg/jwt/... -v
@@ -728,6 +753,9 @@ go test ./pkg/logger/... -v
 
 # With coverage
 make test-coverage          # Generate HTML coverage report
+
+# Local CI validation (before push)
+make pre-push               # Run all CI checks (lint + test + build)
 ```
 
 ### Test Statistics
@@ -736,12 +764,14 @@ make test-coverage          # Generate HTML coverage report
 | -------------------------- | ----- | -------- | -------- | ----------- |
 | **pkg/jwt**                | 18    | 87%      | cached   | Unit        |
 | **pkg/bus**                | 67    | 100%     | ~2s      | Unit        |
-| **pkg/logger**             | 12    | 95%      | cached   | Unit        |
-| **pkg/uuidv7**             | 7     | 100%     | cached   | Unit        |
+| **pkg/logger**             | 15    | 95%      | cached   | Unit        |
+| **pkg/uuidv7**             | 10    | 100%     | cached   | Unit        |
 | **pkg/response**           | 13    | 100%     | cached   | Unit        |
 | **pkg/saga**               | 28    | 100%     | cached   | Unit        |
-| **pkg/migration**          | 4     | 90%      | cached   | Unit        |
+| **pkg/migration**          | 8     | 90%      | cached   | Unit        |
 | **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
+| **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
+| **pkg/cache**              | 8     | 85%      | cached   | Unit        |
 | **Identity User**          | 15    | 85%      | ~2.1s    | Smoke       |
 | **Identity Contact**       | 7     | -        | cached   | Smoke       |
 | **Identity Profile**       | 8     | -        | cached   | Smoke       |
@@ -750,28 +780,35 @@ make test-coverage          # Generate HTML coverage report
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
+| **User ListUsers (bench)** | 4     | -        | ~5s      | Benchmark   |
 
-**Total**: 240+ tests across 40+ packages, 90%+ average coverage
+**Total**: 250+ tests across 40+ packages, 90%+ average coverage
 
 ### Test Database
 
-Integration tests use a separate test database (automatically started):
+Integration and benchmark tests use a separate test database (automatically started):
 
 ```bash
 # Start test database (PostgreSQL on 5433, Redis on 6380)
-make test-db-start
+make test-db-start          # Automatically skipped in CI/CD environments
 
 # Run integration tests (starts DB automatically)
 make test-integration
 
+# Run benchmark tests (requires test DB)
+make test-benchmark
+
 # Stop test database
-make test-db-stop
+make test-db-stop           # Automatically skipped in CI/CD environments
 ```
+
+**CI/CD Awareness**: Test database commands detect CI environments (CI or GITHUB_ACTIONS) and skip Docker operations when PostgreSQL service is already running.
 
 **Mirror Path Navigation**: Tests mirror production code structure for easy discovery
 
 - `internal/contexts/shared/country/` → `test/smoke/contexts/shared/country/`
 - `internal/contexts/shared/country/` → `test/integration/contexts/shared/country/`
+- `internal/contexts/identity/user/` → `test/benchmark/contexts/identity/user/`
 
 **See**: [test/README.md](test/README.md) for complete testing documentation
 
