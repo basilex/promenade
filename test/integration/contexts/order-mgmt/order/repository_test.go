@@ -44,8 +44,8 @@ func TestOrderRepository_CRUD(t *testing.T) {
 
 		productID := uuidv7.New()
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
-		o.AddLine(productID, 2, unitPrice)
-		o.Confirm()
+		require.NoError(t, o.AddLine(productID, 2, unitPrice))
+		require.NoError(t, o.Confirm())
 		require.NoError(t, repo.Update(ctx, o))
 		
 		updated, _ := repo.GetByID(ctx, o.ID)
@@ -66,8 +66,8 @@ func TestOrderRepository_ListByCustomerID(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
 		require.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
@@ -91,8 +91,8 @@ func TestOrderRepository_ListByStatus(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
 		require.NoError(t, err)
 
 		o1, _ := order.NewOrder(customerID, "USD")
@@ -101,8 +101,8 @@ func TestOrderRepository_ListByStatus(t *testing.T) {
 		o2, _ := order.NewOrder(customerID, "USD")
 		productID := uuidv7.New()
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
-		o2.AddLine(productID, 1, unitPrice)
-		o2.Confirm()
+		require.NoError(t, o2.AddLine(productID, 1, unitPrice))
+		require.NoError(t, o2.Confirm())
 		require.NoError(t, repo.Create(ctx, o2))
 
 		pending, total, err := repo.ListByStatus(ctx, order.OrderStatusPending, 1, 10)
@@ -121,8 +121,8 @@ func TestOrderRepository_List(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
 		require.NoError(t, err)
 
 		for i := 0; i < 5; i++ {
@@ -146,19 +146,19 @@ func TestOrderRepository_OrderWithLines(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")
 		
 		productID1 := uuidv7.New()
 		unitPrice1, _ := valueobject.NewMoney(10000, "USD")
-		o.AddLine(productID1, 2, unitPrice1)
+		require.NoError(t, o.AddLine(productID1, 2, unitPrice1))
 		
 		productID2 := uuidv7.New()
 		unitPrice2, _ := valueobject.NewMoney(5000, "USD")
-		o.AddLine(productID2, 3, unitPrice2)
+		require.NoError(t, o.AddLine(productID2, 3, unitPrice2))
 		
 		require.NoError(t, repo.Create(ctx, o))
 
@@ -178,28 +178,28 @@ func TestOrderRepository_OrderLifecycle(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")
 		productID := uuidv7.New()
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
-		o.AddLine(productID, 1, unitPrice)
+		require.NoError(t, o.AddLine(productID, 1, unitPrice))
 		require.NoError(t, repo.Create(ctx, o))
 		assert.Equal(t, order.OrderStatusPending, o.Status)
 
-		o.Confirm()
+		require.NoError(t, o.Confirm())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ := repo.GetByID(ctx, o.ID)
 		assert.Equal(t, order.OrderStatusConfirmed, retrieved.Status)
 
-		o.StartProcessing()
+		require.NoError(t, o.StartProcessing())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ = repo.GetByID(ctx, o.ID)
 		assert.Equal(t, order.OrderStatusProcessing, retrieved.Status)
 
-		o.MarkFulfilled()
+		require.NoError(t, o.MarkFulfilled())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ = repo.GetByID(ctx, o.ID)
 		assert.Equal(t, order.OrderStatusFulfilled, retrieved.Status)

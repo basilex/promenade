@@ -50,7 +50,7 @@ func TestInvoiceRepository_CRUD(t *testing.T) {
 
 		// Update
 		money, _ := valueobject.NewMoney(5000, "USD")
-		inv.UpdateTaxAmount(money)
+		require.NoError(t, inv.UpdateTaxAmount(money))
 		require.NoError(t, repo.Update(ctx, inv))
 		updated, _ := repo.GetByID(ctx, inv.ID)
 		assert.Equal(t, int64(5000), updated.TaxAmount.Amount)
@@ -111,8 +111,8 @@ func TestInvoiceRepository_ListByStatus(t *testing.T) {
 		// Create and send invoice
 		inv2, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
-		inv2.AddLine("Test Item", 1, unitPrice)
-		inv2.MarkAsSent()
+		require.NoError(t, inv2.AddLine("Test Item", 1, unitPrice))
+		require.NoError(t, inv2.MarkAsSent())
 		require.NoError(t, repo.Create(ctx, inv2))
 
 		// List by status
@@ -172,10 +172,10 @@ func TestInvoiceRepository_GetTotalRevenue(t *testing.T) {
 		// Create and pay invoice
 		inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
-		inv.AddLine("Test Item", 1, unitPrice)
-		inv.MarkAsSent()
+		require.NoError(t, inv.AddLine("Test Item", 1, unitPrice))
+		require.NoError(t, inv.MarkAsSent())
 		paidDate := time.Now()
-		inv.MarkAsPaid(paidDate)
+		require.NoError(t, inv.MarkAsPaid(paidDate))
 		require.NoError(t, repo.Create(ctx, inv))
 
 		// Get total revenue
