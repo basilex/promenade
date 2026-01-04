@@ -26,8 +26,8 @@ func TestInvoiceRepository_CRUD(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer first (required for foreign key)
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)`,
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		// Create invoice
@@ -72,8 +72,8 @@ func TestInvoiceRepository_ListByCustomer(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)`,
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		// Create 3 invoices
@@ -100,8 +100,8 @@ func TestInvoiceRepository_ListByStatus(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)`,
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		// Create draft invoice
@@ -138,8 +138,8 @@ func TestInvoiceRepository_CountByStatus(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)`,
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		// Create 2 draft invoices
@@ -165,8 +165,8 @@ func TestInvoiceRepository_GetTotalRevenue(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)`,
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		// Create and pay invoice

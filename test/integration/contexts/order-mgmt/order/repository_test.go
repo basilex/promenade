@@ -24,8 +24,8 @@ func TestOrderRepository_CRUD(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, email, status, tier) VALUES ($1, $2, $3, $4)",
-			customerID, "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		o, err := order.NewOrder(customerID, "USD")
@@ -66,8 +66,8 @@ func TestOrderRepository_ListByCustomerID(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
@@ -91,8 +91,8 @@ func TestOrderRepository_ListByStatus(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		o1, _ := order.NewOrder(customerID, "USD")
@@ -121,8 +121,8 @@ func TestOrderRepository_List(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		for i := 0; i < 5; i++ {
@@ -146,8 +146,8 @@ func TestOrderRepository_OrderWithLines(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")
@@ -178,8 +178,8 @@ func TestOrderRepository_OrderLifecycle(t *testing.T) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier) VALUES ($1, $2, $3, $4, $5)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")
