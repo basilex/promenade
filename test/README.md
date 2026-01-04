@@ -15,7 +15,7 @@
 
 ## Test Organization
 
-Promenade uses **four-tier testing strategy** with clear separation:
+Promenade uses **three-tier testing strategy** with clear separation:
 
 ### 1. Unit Tests (In-Place)
 
@@ -37,23 +37,7 @@ internal/contexts/identity/contact/
          contact_repository_test.go  #  Repository tests
 ```
 
-### 2. Smoke Tests (Mirror Path, No DB)
-
-**Location**: `test/smoke/contexts/` (mirror path)  
-**Purpose**: Fast HTTP handler validation with mocks
-
-```
-test/smoke/contexts/
- shared/
-    country/handler_test.go      # Mock-based handler tests
-    currency/handler_test.go
-    language/handler_test.go
-    timezone/handler_test.go
- identity/
-     contact/handler_test.go
-```
-
-### 3. Integration Tests (Mirror Path, With DB)
+### 2. Integration Tests (Mirror Path, With DB)
 
 **Location**: `test/integration/contexts/` (mirror path)  
 **Purpose**: Full E2E testing with real database
@@ -74,7 +58,7 @@ test/integration/
          bus_integration_test.go
 ```
 
-### 4. Benchmark Tests (Mirror Path, With DB)
+### 3. Benchmark Tests (Mirror Path, With DB)
 
 **Location**: `test/benchmark/contexts/` (mirror path)  
 **Purpose**: Performance measurement and optimization validation
@@ -104,9 +88,6 @@ test/benchmark/
 # Unit tests only (in-place, fast)
 go test ./... -short -v
 
-# Smoke tests (mock-based handlers, no DB)
-make test-smoke
-
 # Integration tests (with real DB)
 make test-integration
 
@@ -122,8 +103,7 @@ make test
 | Type            | Location                      | Database   | Speed         | Run When              |
 | --------------- | ----------------------------- | ---------- | ------------- | --------------------- |
 | **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save            |
-| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~0.35s) | Every commit          |
-| **Integration** | `/test/integration/contexts/` | Real DB    | Slow (~30s)   | Before merge          |
+| **Integration** | `/test/integration/contexts/` | Real DB    | Medium (~14s) | Before merge          |
 | **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations   |
 
 # Context-specific tests
@@ -151,7 +131,6 @@ go tool cover -html=coverage.out
 ```bash
 make test                 # All tests
 make test-unit            # Unit tests only (fast, < 5s)
-make test-smoke           # Smoke tests (mock-based handlers)
 make test-integration     # Integration tests (with real DB)
 make test-benchmark       # Benchmark tests (auto DB setup, 5s per benchmark)
 make test-benchmark-all   # Extended benchmarks (10s per benchmark)
@@ -179,10 +158,6 @@ internal/contexts/identity/
          http/handler/
              profile_handler_test.go  # Handler unit tests
 
-test/smoke/contexts/identity/
- contact/handler_test.go    # 7 smoke tests
- profile/handler_test.go    # 8 smoke tests
-
 test/integration/contexts/identity/
  contact/repository_test.go  # 9 integration tests
  profile/repository_test.go  # 17 integration subtests
@@ -201,12 +176,6 @@ internal/contexts/shared/
  currency/
  language/
  timezone/
-
-test/smoke/contexts/shared/
- country/handler_test.go    # 5 smoke tests
- currency/handler_test.go   # 5 smoke tests
- language/handler_test.go   # 5 smoke tests
- timezone/handler_test.go   # 5 smoke tests
 
 test/integration/contexts/shared/
  country/repository_test.go  # 6 integration tests
@@ -256,8 +225,7 @@ make test                    # All tests (240+ tests, ~40s with race detector)
 
 ```bash
 make test-unit              # Unit tests only (~5s)
-make test-smoke             # Smoke tests (mock-based, ~0.4s)
-make test-integration       # Integration tests (real DB, ~6s)
+make test-integration       # Integration tests (real DB, ~14s)
 make test-coverage          # HTML coverage report
 ```
 
@@ -266,12 +234,10 @@ make test-coverage          # HTML coverage report
 ```bash
 # Identity Context
 go test ./internal/contexts/identity/... -v
-go test ./test/smoke/contexts/identity/... -v
 go test ./test/integration/contexts/identity/... -v
 
 # Shared Context
 go test ./internal/contexts/shared/... -v
-go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/shared/... -v
 
 # Package Tests
@@ -363,7 +329,7 @@ func TestEntity_Method(t *testing.T) {
 ### Dependencies
 
 - **testify/assert**: `github.com/stretchr/testify/assert`
-- **testify/mock**: `github.com/stretchr/testify/mock` (for smoke tests)
+- **testify/require**: `github.com/stretchr/testify/require`
 - **UUID v7**: `github.com/basilex/promenade/pkg/uuidv7`
 
 ---
@@ -401,48 +367,7 @@ func TestContact_NewEmailContact(t *testing.T) {
 }
 ```
 
-### 2. Smoke Tests (Mock-Based)
-
-Create in mirror path:
-
-```bash
-# Example: test/smoke/contexts/identity/contact/handler_test.go
-mkdir -p test/smoke/contexts/identity/contact
-touch test/smoke/contexts/identity/contact/handler_test.go
-```
-
-Write test with mock:
-
-```go
-package contact_test
-
-import (
-    "testing"
-    "github.com/stretchr/testify/mock"
-    "github.com/gin-gonic/gin"
-)
-
-type MockContactUseCase struct {
-    mock.Mock
-}
-
-func (m *MockContactUseCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contact.Contact, error) {
-    args := m.Called(ctx, userID, email, label, isPrimary)
-    if args.Get(0) == nil {
-        return nil, args.Error(1)
-    }
-    return args.Get(0).(*contact.Contact), args.Error(1)
-}
-
-func TestHandler_CreateEmailContact(t *testing.T) {
-    gin.SetMode(gin.TestMode)
-    mockUC := new(MockContactUseCase)
-    handler := NewContactHandler(mockUC)
-    // ... test logic
-}
-```
-
-### 3. Integration Tests (With DB)
+### 2. Integration Tests (With DB)
 
 Create in mirror path:
 
@@ -521,10 +446,10 @@ make test-unit || exit 1
 
 ## What We Test
 
-**Unit Tests**: Entities, use cases, value objects  
- **Smoke Tests**: HTTP handlers with mocks  
- **Integration Tests**: Repositories with real database  
- **Package Tests**: Shared utilities (bus, logger, uuidv7)
+**Unit Tests**: Entities, use cases, value objects, handlers  
+**Integration Tests**: Repositories with real database  
+**Benchmark Tests**: Performance measurement and optimization validation  
+**Package Tests**: Shared utilities (bus, logger, uuidv7)
 
 **Not Yet**: End-to-end tests, UI tests, load tests
 

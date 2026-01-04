@@ -214,11 +214,11 @@
 **Three-tier testing** with clear separation and professional organization.
 
 - **Unit Tests**: In-place, fast feedback (~5s)
-- **Smoke Tests**: Mock-based handlers, no DB (~0.4s)
 - **Integration Tests**: Real database, full E2E (~14s)
+- **Benchmark Tests**: Performance measurement with real DB
 - **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md)
 
-**240+ tests**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
+**250+ tests**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
 
 ---
 

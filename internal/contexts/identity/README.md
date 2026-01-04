@@ -210,10 +210,9 @@ func (p *Profile) Validate() error
 
 **Tests:**
 
--  Unit tests: `entity_test.go` (35 tests, 96% coverage)
--  Unit tests: `usecase_test.go` (52 tests, 70% coverage)
--  Smoke tests: `test/smoke/contexts/identity/profile/handler_test.go` (8 tests)
--  Integration tests: `test/integration/contexts/identity/profile/repository_test.go` (6 test functions, 17 subtests)
+- ✅ Unit tests: `entity_test.go` (35 tests, 96% coverage)
+- ✅ Unit tests: `usecase_test.go` (52 tests, 70% coverage)
+- ✅ Integration tests: `test/integration/contexts/identity/profile/repository_test.go` (6 test functions, 17 subtests)
 
 ---
 

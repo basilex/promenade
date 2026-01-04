@@ -193,12 +193,11 @@ config/app.sqlite-test.yaml    # SQLite + testing (in-memory)
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
-**Testing** (four-tier strategy):
+**Testing** (three-tier strategy):
 
-- `make test` - All tests with race detector (~40s, 240+ tests)
+- `make test` - All tests with race detector (~40s, 250+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s)
-- `make test-smoke` - Smoke tests (mock-based, ~0.35s)
-- `make test-integration` - Integration tests with real DB (~2s, 24 tests ALL PASSING ✅)
+- `make test-integration` - Integration tests with real DB (~14s, ALL PASSING ✅)
 - `make test-benchmark` - Benchmark tests (performance measurement, 5s per benchmark)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
@@ -767,20 +766,17 @@ r.cache.DeletePattern(ctx, "countries:*")
 
 ## Testing Strategy
 
-**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional smoke/integration/benchmark tests in mirror path structure
+**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional integration/benchmark tests in mirror path structure
 
-**Four-Tier Test Strategy**:
+**Three-Tier Test Strategy**:
 
 1. **Unit Tests** (in-place): Fast feedback, test individual components
    - Location: Same directory as production code (`entity_test.go`, `usecase_test.go`)
    - Run: `make test-unit` (~5s)
-2. **Smoke Tests** (`test/smoke/contexts/`): Mock-based handler validation, no DB
-   - Location: Mirror path structure (e.g., `test/smoke/contexts/shared/country/handler_test.go`)
-   - Run: `make test-smoke` (~0.3s)
-3. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
+2. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
    - Location: Mirror path structure (e.g., `test/integration/contexts/identity/contact/repository_test.go`)
-   - Run: `make test-integration` (~2s, auto-starts test DB)
-4. **Benchmark Tests** (`test/benchmark/contexts/`): Performance measurement with real database
+   - Run: `make test-integration` (~14s, auto-starts test DB)
+3. **Benchmark Tests** (`test/benchmark/contexts/`): Performance measurement with real database
    - Location: Mirror path structure (e.g., `test/benchmark/contexts/identity/user/repository_bench_test.go`)
    - Run: `make test-benchmark` (~5s per benchmark, auto-starts test DB)
    - Purpose: Validate optimizations (e.g., N+1 query fixes), measure query performance
@@ -790,14 +786,12 @@ r.cache.DeletePattern(ctx, "countries:*")
 ```bash
 make test                      # All tests with race detector (~40s)
 make test-unit                 # Unit tests only (~5s)
-make test-smoke                # Smoke tests (mock-based, ~0.35s)
-make test-integration          # Integration tests with real DB (~2s)
+make test-integration          # Integration tests with real DB (~14s)
 make test-benchmark            # Benchmark tests (5s per benchmark)
 make test-coverage             # HTML coverage report
 
 # Context-specific tests
 go test ./internal/contexts/identity/... -v
-go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/identity/... -v
 go test -bench=. ./test/benchmark/contexts/identity/user -v
 
@@ -807,7 +801,7 @@ go test ./pkg/uuidv7/... -v
 go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 240+ tests across 40+ packages, 90%+ average coverage
+**Test Statistics**: 250+ tests across 40+ packages, 90%+ average coverage
 
 **Example Entity Test**:
 
@@ -836,45 +830,6 @@ func TestUseCase_CreateEmailContact(t *testing.T) {
     assert.NoError(t, err)
     assert.NotNil(t, contact)
     assert.True(t, mockRepo.CreateCalled)
-}
-```
-
-**Smoke Test Pattern** (mock-based handlers):
-
-```go
-// Create mock UseCase (testify/mock)
-type MockUserUseCase struct {
-    mock.Mock
-}
-
-func (m *MockUserUseCase) Register(ctx context.Context, email, name, password string) (*user.User, error) {
-    args := m.Called(ctx, email, name, password)
-    if args.Get(0) == nil {
-        return nil, args.Error(1)
-    }
-    return args.Get(0).(*user.User), args.Error(1)
-}
-
-// Test handler with mock
-func TestHandler_Register(t *testing.T) {
-    gin.SetMode(gin.TestMode)
-    mockUC := new(MockUserUseCase)
-    handler := userHTTP.NewUserHandler(mockUC, jwtManager)
-    
-    // Setup expectations
-    mockUser := &user.User{ID: uuidv7.New(), Email: valueobject.MustNewEmail("test@example.com")}
-    mockUC.On("Register", mock.Anything, "test@example.com", "Test User", "password123").
-        Return(mockUser, nil)
-    
-    // Make request
-    w := httptest.NewRecorder()
-    c, _ := gin.CreateTestContext(w)
-    c.Request = httptest.NewRequest("POST", "/", bytes.NewBufferString(`{"email":"test@example.com","name":"Test User","password":"password123"}`))
-    
-    handler.Register(c)
-    
-    assert.Equal(t, http.StatusCreated, w.Code)
-    mockUC.AssertExpectations(t)
 }
 ```
 

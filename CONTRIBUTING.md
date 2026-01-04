@@ -63,7 +63,7 @@ promenade/
 │   └── ...              # Other contexts
 ├── pkg/                 # Shared packages (bus, logger, uuidv7, etc.)
 ├── migrations/          # Database migrations (namespace-based)
-├── test/                # Three-tier testing (unit, smoke, integration)
+├── test/                # Three-tier testing (unit, integration, benchmark)
 └── docs/                # Documentation
 ```
 
@@ -166,17 +166,17 @@ var ErrEmailAlreadyExists = errors.New("email already exists")
 - Location: Same directory as production code (`*_test.go`)
 - Run: `make test-unit` (~5s)
 
-**2. Smoke Tests** (mock-based)
-
-- Test HTTP handlers with mocked dependencies
-- Location: `test/smoke/contexts/{context}/{aggregate}/`
-- Run: `make test-smoke` (~0.4s)
-
-**3. Integration Tests** (real DB)
+**2. Integration Tests** (real DB)
 
 - Test repositories with real PostgreSQL
 - Location: `test/integration/contexts/{context}/{aggregate}/`
-- Run: `make test-integration` (~6s)
+- Run: `make test-integration` (~14s)
+
+**3. Benchmark Tests** (performance)
+
+- Measure and validate performance optimizations
+- Location: `test/benchmark/contexts/{context}/{aggregate}/`
+- Run: `make test-benchmark` (~5s per benchmark)
 
 ### Writing Tests
 
@@ -254,7 +254,7 @@ feat(identity): add Profile aggregate with personal info
 - Implement ProfileUseCase with 13 update methods
 - Add HTTP handler with 15 endpoints
 - Add 87 unit tests (83.5% coverage)
-- Add 8 smoke tests and 17 integration subtests
+- Add 17 integration tests
 
 Closes #42
 
@@ -315,7 +315,6 @@ Brief description of changes
 ## Testing
 
 - [ ] Unit tests added/updated
-- [ ] Smoke tests added/updated
 - [ ] Integration tests added/updated
 - [ ] All tests pass
 

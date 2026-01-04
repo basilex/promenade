@@ -722,39 +722,6 @@ func TestUseCase_CreateRole(t *testing.T) {
 }
 ```
 
-### Smoke Tests
-
-**Location:** `test/smoke/contexts/identity/permission/`, `test/smoke/contexts/identity/role/`
-
-Mock-based handler tests without database:
-
-```go
-func TestPermissionHandler_Create(t *testing.T) {
-    gin.SetMode(gin.TestMode)
-    mockUC := new(MockPermissionUseCase)
-    handler := NewPermissionHandler(mockUC)
-    
-    // Setup mock expectations
-    mockPerm := &permission.Permission{
-        ID: uuidv7.New(),
-        Resource: "users",
-        Action: "create",
-    }
-    mockUC.On("CreatePermission", mock.Anything, "users", "create", "desc").
-        Return(mockPerm, nil)
-    
-    // Make request
-    w := httptest.NewRecorder()
-    c, _ := gin.CreateTestContext(w)
-    c.Request = httptest.NewRequest("POST", "/", body)
-    
-    handler.Create(c)
-    
-    assert.Equal(t, 201, w.Code)
-    mockUC.AssertExpectations(t)
-}
-```
-
 ### Integration Tests
 
 **Location:** `test/integration/contexts/identity/permission/`, `test/integration/contexts/identity/role/`
@@ -783,7 +750,6 @@ func TestPermissionRepository_Create(t *testing.T) {
 
 - Permission aggregate: 45+ tests
 - Role aggregate: 50+ tests
-- HTTP handlers: 14+ smoke tests
 - Repository: 20+ integration tests
 
 ---

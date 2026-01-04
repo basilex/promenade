@@ -61,15 +61,17 @@ go test ./test/integration/contexts/identity/... -v
 go test ./test/integration/contexts/shared/country -v
 ```
 
-## Difference from Smoke Tests
+## Key Characteristics
 
-| Aspect   | Smoke Tests             | Integration Tests             |
-| -------- | ----------------------- | ----------------------------- |
-| Location | `/test/smoke/contexts/` | `/test/integration/contexts/` |
-| Database |  No (mocks)           |  Yes (real)                 |
-| Speed    |  Fast (~0.35s)        |  Slower (~30s)              |
-| Purpose  | Quick validation        | Full E2E testing              |
-| When     | Every commit            | Before merge/deploy           |
+| Aspect   | Integration Tests             |
+| -------- | ----------------------------- |
+| Location | `/test/integration/contexts/` |
+| Database | ✅ Yes (real)                 |
+| Speed    | Medium (~14s for all)         |
+| Purpose  | Full E2E validation           |
+| When     | Before merge/deploy           |
+
+Integration tests use real database connections to validate SQL queries, foreign key constraints, transactions, and full repository behavior. Unlike unit tests with mocks, these catch real database issues.
 
 ## Writing Integration Tests
 

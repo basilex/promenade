@@ -450,11 +450,10 @@ promenade/
     order-mgmt/           # Order Management context migrations
  test/                       # Testing infrastructure
     README.md             # Testing structure documentation
-    smoke/                # Smoke tests (mock-based, no DB)
-       contexts/         # Mirror path: handlers smoke tests
     integration/          # Integration tests (real DB)
         testutils.go      # Shared test utilities
         contexts/         # Mirror path: repository integration tests
+    benchmark/            # Benchmark tests (performance measurement)
  config/                     # Configuration files
     # PostgreSQL configurations
     app.postgres-dev.yaml   # PostgreSQL + development
@@ -480,7 +479,7 @@ promenade/
 - **internal/contexts/**: Bounded contexts (autonomous, isolated)
 - **pkg/**: Shared packages (context-agnostic, reusable across all contexts)
 - **migrations/**: Namespace-based migrations (run in order: core → shared → identity)
-- **test/**: Three-tier testing (unit in-place, smoke/integration in mirror path)
+- **test/**: Three-tier testing (unit in-place, integration/benchmark in mirror path)
 - **config/**: Environment-specific YAML configs (dev/test/prod)
 
 ---
@@ -650,12 +649,11 @@ make run                   # Build and run
 make fmt                   # Format code
 make lint                  # Run linters
 
-# Testing (four-tier strategy)
+# Testing (three-tier strategy)
 make test-all              # All tests runner (warns if not test environment)
 make test                  # All tests with race detector (~40s)
 make test-unit             # Unit tests only (~5s)
-make test-smoke            # Smoke tests (mock-based, ~0.35s)
-make test-integration      # Integration tests with real DB (~2s)
+make test-integration      # Integration tests with real DB (~14s)
 make test-benchmark        # Benchmark tests (~5s per benchmark)
 make test-coverage         # HTML coverage report
 
@@ -681,16 +679,15 @@ make swagger-all           # Generate API documentation
 
 ## Testing
 
-Promenade uses a **four-tier testing strategy** with clear separation of concerns:
+Promenade uses a **three-tier testing strategy** with clear separation of concerns:
 
 ### Test Organization
 
-**Four-tier architecture**:
+**Three-tier architecture**:
 
 1. **Unit Tests** (in-place) - Fast feedback, test individual components
-2. **Smoke Tests** (`test/smoke/contexts/`) - Mock-based handler validation, no DB
-3. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
-4. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
+2. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
+3. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
 
 ```
 # Unit tests - alongside production code
@@ -699,16 +696,6 @@ internal/contexts/identity/contact/
  entity_test.go              #  Entity unit tests
  usecase.go
  usecase_test.go             #  UseCase unit tests
-
-# Smoke tests - mirror path structure (mock-based)
-test/smoke/contexts/
- shared/
-    country/handler_test.go    # 5 handler smoke tests
-    currency/handler_test.go   # 5 handler smoke tests
-    ...
- identity/
-     contact/handler_test.go    # 7 handler smoke tests
-     profile/handler_test.go    # 8 handler smoke tests
 
 # Integration tests - mirror path structure (real DB)
 test/integration/contexts/
@@ -734,15 +721,13 @@ test/benchmark/contexts/
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
-# By type (four-tier strategy)
+# By type (three-tier strategy)
 make test-unit              # Unit tests only (~5s)
-make test-smoke             # Smoke tests (mock-based, ~0.35s)
-make test-integration       # Integration tests with real DB (~2s)
+make test-integration       # Integration tests with real DB (~14s)
 make test-benchmark         # Benchmark tests (5s per benchmark)
 make test-benchmark-all     # Extended benchmarks (10s per benchmark)
 
 # By context
-go test ./test/smoke/contexts/shared/... -v
 go test ./test/integration/contexts/identity/... -v
 go test -bench=. ./test/benchmark/contexts/identity/user -v
 
@@ -772,14 +757,11 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
 | **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
 | **pkg/cache**              | 8     | 85%      | cached   | Unit        |
-| **Identity User**          | 15    | 85%      | ~2.1s    | Smoke       |
-| **Identity Contact**       | 7     | -        | cached   | Smoke       |
-| **Identity Profile**       | 8     | -        | cached   | Smoke       |
-| **Customer Management**    | 18    | -        | ~1.6s    | Smoke       |
-| **Shared (all contexts)**  | 20    | -        | cached   | Smoke       |
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
+| **Billing (integration)**  | 5     | -        | ~1.2s    | Integration |
+| **Order-mgmt (integration)** | 6  | -        | ~1.5s    | Integration |
 | **User ListUsers (bench)** | 4     | -        | ~5s      | Benchmark   |
 
 **Total**: 250+ tests across 40+ packages, 90%+ average coverage
@@ -806,7 +788,6 @@ make test-db-stop           # Automatically skipped in CI/CD environments
 
 **Mirror Path Navigation**: Tests mirror production code structure for easy discovery
 
-- `internal/contexts/shared/country/` → `test/smoke/contexts/shared/country/`
 - `internal/contexts/shared/country/` → `test/integration/contexts/shared/country/`
 - `internal/contexts/identity/user/` → `test/benchmark/contexts/identity/user/`
 
@@ -1221,7 +1202,6 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Repository implementations (PostgreSQL)
 - [x] HTTP API (REST with Gin) - all 3 aggregates
 - [x] Unit tests (85+ tests per aggregate)
-- [x] Smoke tests (12 User + 7 Contact + 8 Profile tests)
 - [x] Integration tests (32 User + 9 Contact + 17 Profile subtests)
 - [x] Password policies (8+ chars, digit, letter, bcrypt hashing)
 - [x] Account management (status: active/suspended/banned, locking after failed logins)

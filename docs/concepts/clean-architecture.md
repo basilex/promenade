@@ -99,7 +99,6 @@ All bounded contexts following DDD principles:
 
 ###  Old Tests
 
-- `test/smoke/` - Smoke tests
 - `test/stress/` - Stress tests
 - `test/integration/fixtures.go` - Old fixtures with monolithic dependencies
 
