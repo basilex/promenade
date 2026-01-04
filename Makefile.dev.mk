@@ -191,11 +191,11 @@ migrate-customer-mgmt: validate-env  ## Run customer management migrations
 migrate-order-mgmt: validate-env  ## Run order management migrations
 	@echo "Running order management migrations ($(DATABASE_DRIVER))..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=order-mgmt
-billing: validate-env  ## Run billing context migrations
+
+migrate-billing: validate-env  ## Run billing context migrations
 	@echo "Running billing context migrations ($(DATABASE_DRIVER))..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=billing
 
-migrate-
 migrate-status: validate-env  ## Show migration status
 	@echo "Migration status ($(DATABASE_DRIVER)):"
 	@go run cmd/migrate/main.go --cmd=status
