@@ -3,6 +3,7 @@ package order_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -23,9 +24,10 @@ func TestOrderRepository_CRUD(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		o, err := order.NewOrder(customerID, "USD")
@@ -65,14 +67,16 @@ func TestOrderRepository_ListByCustomerID(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
 			o, _ := order.NewOrder(customerID, "USD")
 			require.NoError(t, repo.Create(ctx, o))
+			time.Sleep(10 * time.Millisecond) // Ensure unique timestamp-based order_number
 		}
 
 		orders, total, err := repo.ListByCustomerID(ctx, customerID, 1, 10)
@@ -90,13 +94,15 @@ func TestOrderRepository_ListByStatus(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		o1, _ := order.NewOrder(customerID, "USD")
 		require.NoError(t, repo.Create(ctx, o1))
+		time.Sleep(10 * time.Millisecond) // Ensure unique timestamp-based order_number
 
 		o2, _ := order.NewOrder(customerID, "USD")
 		productID := uuidv7.New()
@@ -120,14 +126,16 @@ func TestOrderRepository_List(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		for i := 0; i < 5; i++ {
 			o, _ := order.NewOrder(customerID, "USD")
 			require.NoError(t, repo.Create(ctx, o))
+			time.Sleep(10 * time.Millisecond) // Ensure unique timestamp-based order_number
 		}
 
 		orders, total, err := repo.List(ctx, 1, 3)
@@ -145,9 +153,10 @@ func TestOrderRepository_OrderWithLines(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")
@@ -177,9 +186,10 @@ func TestOrderRepository_OrderLifecycle(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewOrderRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
-		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)",
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, "INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		o, _ := order.NewOrder(customerID, "USD")

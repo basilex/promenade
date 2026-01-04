@@ -91,8 +91,8 @@ func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
 func generateOrderNumber(orderDate time.Time) string {
 	year := orderDate.Year()
 	// In production, this would use a database sequence or counter
-	// For now, use timestamp-based number
-	number := orderDate.Unix() % 1000000
+	// For now, use timestamp-based number with microsecond precision
+	number := orderDate.UnixMicro() % 1000000
 	return fmt.Sprintf("ORD-%d-%06d", year, number)
 }
 

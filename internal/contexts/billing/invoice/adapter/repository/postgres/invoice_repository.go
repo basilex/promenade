@@ -59,34 +59,29 @@ func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) er
 			subtotal_amount, tax_amount, total_amount, currency,
 			issue_date, due_date, paid_date, status,
 			created_at, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		) VALUES (
+			:id, :invoice_no, :customer_id, :order_id,
+			:subtotal_amount, :tax_amount, :total_amount, :currency,
+			:issue_date, :due_date, :paid_date, :status,
+			:created_at, :updated_at
+		)`
 
-	var orderID interface{}
-	if inv.OrderID != nil {
-		orderID = inv.OrderID.String()
-	}
-
-	var paidDate interface{}
-	if inv.PaidDate != nil {
-		paidDate = inv.PaidDate
-	}
-
-	_, err := r.Exec(ctx, query,
-		inv.ID.String(),
-		inv.InvoiceNo,
-		inv.CustomerID.String(),
-		orderID,
-		inv.SubtotalAmount.Amount,
-		inv.TaxAmount.Amount,
-		inv.TotalAmount.Amount,
-		inv.Currency,
-		inv.IssueDate,
-		inv.DueDate,
-		paidDate,
-		string(inv.Status),
-		inv.CreatedAt,
-		inv.UpdatedAt,
-	)
+	_, err := r.NamedExec(ctx, query, map[string]interface{}{
+		"id":               inv.ID.String(),
+		"invoice_no":       inv.InvoiceNo,
+		"customer_id":      inv.CustomerID.String(),
+		"order_id":         inv.OrderID,
+		"subtotal_amount":  inv.SubtotalAmount.Amount,
+		"tax_amount":       inv.TaxAmount.Amount,
+		"total_amount":     inv.TotalAmount.Amount,
+		"currency":         inv.Currency,
+		"issue_date":       inv.IssueDate,
+		"due_date":         inv.DueDate,
+		"paid_date":        inv.PaidDate,
+		"status":           string(inv.Status),
+		"created_at":       inv.CreatedAt,
+		"updated_at":       inv.UpdatedAt,
+	})
 
 	if err != nil {
 		return fmt.Errorf("failed to create invoice: %w", err)
@@ -108,7 +103,7 @@ func (r *invoiceRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*invoi
 			   issue_date, due_date, paid_date, status,
 			   created_at, updated_at, deleted_at
 		FROM billing_invoices
-		WHERE id = ? AND deleted_at IS NULL`
+		WHERE id = $1 AND deleted_at IS NULL`
 
 	var row invoiceRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
@@ -139,7 +134,7 @@ func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string
 			   issue_date, due_date, paid_date, status,
 			   created_at, updated_at, deleted_at
 		FROM billing_invoices
-		WHERE invoice_no = ? AND deleted_at IS NULL`
+		WHERE invoice_no = $1 AND deleted_at IS NULL`
 
 	var row invoiceRow
 	if err := r.Get(ctx, &row, query, invoiceNo); err != nil {
@@ -167,37 +162,27 @@ func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string
 func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) error {
 	query := `
 		UPDATE billing_invoices
-		SET invoice_no = ?, customer_id = ?, order_id = ?,
-			subtotal_amount = ?, tax_amount = ?, total_amount = ?, currency = ?,
-			issue_date = ?, due_date = ?, paid_date = ?, status = ?,
-			updated_at = ?
-		WHERE id = ? AND deleted_at IS NULL`
+		SET invoice_no = :invoice_no, customer_id = :customer_id, order_id = :order_id,
+			subtotal_amount = :subtotal_amount, tax_amount = :tax_amount, total_amount = :total_amount, currency = :currency,
+			issue_date = :issue_date, due_date = :due_date, paid_date = :paid_date, status = :status,
+			updated_at = :updated_at
+		WHERE id = :id AND deleted_at IS NULL`
 
-	var orderID interface{}
-	if inv.OrderID != nil {
-		orderID = inv.OrderID.String()
-	}
-
-	var paidDate interface{}
-	if inv.PaidDate != nil {
-		paidDate = inv.PaidDate
-	}
-
-	result, err := r.Exec(ctx, query,
-		inv.InvoiceNo,
-		inv.CustomerID.String(),
-		orderID,
-		inv.SubtotalAmount.Amount,
-		inv.TaxAmount.Amount,
-		inv.TotalAmount.Amount,
-		inv.Currency,
-		inv.IssueDate,
-		inv.DueDate,
-		paidDate,
-		string(inv.Status),
-		inv.UpdatedAt,
-		inv.ID.String(),
-	)
+	result, err := r.NamedExec(ctx, query, map[string]interface{}{
+		"invoice_no":       inv.InvoiceNo,
+		"customer_id":      inv.CustomerID.String(),
+		"order_id":         inv.OrderID,
+		"subtotal_amount":  inv.SubtotalAmount.Amount,
+		"tax_amount":       inv.TaxAmount.Amount,
+		"total_amount":     inv.TotalAmount.Amount,
+		"currency":         inv.Currency,
+		"issue_date":       inv.IssueDate,
+		"due_date":         inv.DueDate,
+		"paid_date":        inv.PaidDate,
+		"status":           string(inv.Status),
+		"updated_at":       inv.UpdatedAt,
+		"id":               inv.ID.String(),
+	})
 
 	if err != nil {
 		return fmt.Errorf("failed to update invoice: %w", err)
@@ -216,7 +201,7 @@ func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) er
 }
 
 func (r *invoiceRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
-	query := `UPDATE billing_invoices SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL`
+	query := `UPDATE billing_invoices SET deleted_at = $1 WHERE id = $2 AND deleted_at IS NULL`
 
 	result, err := r.Exec(ctx, query, time.Now(), id.String())
 	if err != nil {
@@ -251,7 +236,7 @@ func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv
 
 	// Get invoices
 	query := `
-		SELECT id, invoice_number, customer_id, order_id,
+		SELECT id, invoice_no, customer_id, order_id,
 			   due_date, paid_date, status,
 			   subtotal_amount, tax_amount, total_amount, currency,
 			   created_at, updated_at, deleted_at
@@ -288,7 +273,7 @@ func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv
 
 func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*invoice.Invoice, error) {
 	query := `
-		SELECT id, invoice_number, customer_id, order_id,
+		SELECT id, invoice_no, customer_id, order_id,
 			   due_date, paid_date, status,
 			   subtotal_amount, tax_amount, total_amount, currency,
 			   created_at, updated_at, deleted_at
@@ -338,7 +323,7 @@ func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.Inv
 
 	// Get invoices
 	query := `
-		SELECT id, invoice_number, customer_id, order_id,
+		SELECT id, invoice_no, customer_id, order_id,
 			   due_date, paid_date, status,
 			   subtotal_amount, tax_amount, total_amount, currency,
 			   created_at, updated_at, deleted_at
@@ -520,18 +505,21 @@ func (r *invoiceRepository) CreateLine(ctx context.Context, line *invoice.Invoic
 		INSERT INTO billing_invoice_lines (
 			id, invoice_id, description, quantity, unit_price, amount,
 			created_at, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+		) VALUES (
+			:id, :invoice_id, :description, :quantity, :unit_price, :amount,
+			:created_at, :updated_at
+		)`
 
-	_, err := r.Exec(ctx, query,
-		line.ID.String(),
-		line.InvoiceID.String(),
-		line.Description,
-		line.Quantity,
-		line.UnitPrice.Amount,
-		line.Amount.Amount,
-		line.CreatedAt,
-		line.UpdatedAt,
-	)
+	_, err := r.NamedExec(ctx, query, map[string]interface{}{
+		"id":          line.ID.String(),
+		"invoice_id":  line.InvoiceID.String(),
+		"description": line.Description,
+		"quantity":    line.Quantity,
+		"unit_price":  line.UnitPrice.Amount,
+		"amount":      line.Amount.Amount,
+		"created_at":  line.CreatedAt,
+		"updated_at":  line.UpdatedAt,
+	})
 
 	if err != nil {
 		return fmt.Errorf("failed to create invoice line: %w", err)
@@ -541,7 +529,7 @@ func (r *invoiceRepository) CreateLine(ctx context.Context, line *invoice.Invoic
 }
 
 func (r *invoiceRepository) DeleteLine(ctx context.Context, lineID uuidv7.UUID) error {
-	query := `DELETE FROM billing_invoice_lines WHERE id = ?`
+	query := `DELETE FROM billing_invoice_lines WHERE id = $1`
 
 	result, err := r.Exec(ctx, query, lineID.String())
 	if err != nil {
@@ -565,7 +553,7 @@ func (r *invoiceRepository) GetLinesByInvoiceID(ctx context.Context, invoiceID u
 		SELECT id, invoice_id, description, quantity, unit_price, amount,
 			   created_at, updated_at
 		FROM billing_invoice_lines
-		WHERE invoice_id = ?
+		WHERE invoice_id = $1
 		ORDER BY created_at ASC`
 
 	var rows []invoiceLineRow
@@ -586,7 +574,7 @@ func (r *invoiceRepository) GetLinesByInvoiceID(ctx context.Context, invoiceID u
 }
 
 func (r *invoiceRepository) ExistsByInvoiceNo(ctx context.Context, invoiceNo string) (bool, error) {
-	query := `SELECT EXISTS(SELECT 1 FROM billing_invoices WHERE invoice_no = ? AND deleted_at IS NULL)`
+	query := `SELECT EXISTS(SELECT 1 FROM billing_invoices WHERE invoice_no = $1 AND deleted_at IS NULL)`
 	var exists bool
 	err := r.Get(ctx, &exists, query, invoiceNo)
 	if err == sql.ErrNoRows {
@@ -602,7 +590,7 @@ func (r *invoiceRepository) GenerateInvoiceNumber(ctx context.Context) (string, 
 	query := `
 		SELECT invoice_no
 		FROM billing_invoices
-		WHERE invoice_no LIKE ?
+		WHERE invoice_no LIKE $1
 		ORDER BY invoice_no DESC
 		LIMIT 1`
 

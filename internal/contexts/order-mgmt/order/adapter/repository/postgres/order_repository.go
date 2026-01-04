@@ -162,8 +162,18 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 		"created_at":    o.CreatedAt,
 		"updated_at":    o.UpdatedAt,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	// Create order lines
+	for i := range o.Lines {
+		if err := r.CreateLine(ctx, &o.Lines[i]); err != nil {
+			return fmt.Errorf("failed to create order line: %w", err)
+		}
+	}
+
+	return nil
 }
 
 // GetByID retrieves an order by its ID
@@ -186,7 +196,19 @@ func (r *orderRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*order.O
 		return nil, fmt.Errorf("failed to get order: %w", err)
 	}
 
-	return row.toEntity()
+	o, err := row.toEntity()
+	if err != nil {
+		return nil, err
+	}
+
+	// Load order lines
+	lines, err := r.GetLines(ctx, o.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load order lines: %w", err)
+	}
+	o.Lines = lines
+
+	return o, nil
 }
 
 // GetByOrderNumber retrieves an order by its order number
