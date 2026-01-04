@@ -15,6 +15,7 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 - **Value Objects** - Immutable domain concepts (Email, Phone, Money, Address)
 - **Domain Events** - Asynchronous communication via Event Bus (Memory/Redis adapters)
 - **No ORM** - Raw SQL with sqlx + BaseRepository pattern
+- **Multi-Database** - PostgreSQL (production), SQLite (dev/demo), MySQL (planned) via dialect abstraction
 - **UUID v7 Only** - Use `pkg/uuidv7.New()` for all IDs (time-ordered, 2x faster inserts)
 - **JWT Authentication** - Token-based auth with RBAC (15min access, 7 days refresh)
 - **Go 1.24+** - Modern Go with range-over-func and improved type inference
@@ -150,13 +151,45 @@ if err := eventBus.Publish(ctx, bus.TopicContactVerified, event); err != nil {
 3. Event Bus → Health Checker
 4. Context routers → Server start
 
+### Multi-Database Support
+
+**Database-agnostic architecture** via dialect abstraction (`pkg/database/dialect.go`):
+
+- **PostgreSQL**: Production (default), native JSONB, UUID, full features
+- **SQLite**: Development/demos, embedded, zero config, TEXT for JSONB/UUID
+- **MySQL**: Planned, JSON type, CHAR(36) for UUID
+
+**Switching databases**:
+
+```bash
+# PostgreSQL (production)
+DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade
+
+# SQLite (development, no Docker needed)
+DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
+# Or: make dev-sqlite
+
+# Configuration files (driver-environment format)
+config/app.postgres-dev.yaml   # PostgreSQL + development
+config/app.sqlite-dev.yaml     # SQLite + development
+config/app.sqlite-test.yaml    # SQLite + testing (in-memory)
+```
+
+**Key patterns**:
+- Write queries with `?` placeholders, auto-convert to `$1` (Postgres) or `?` (SQLite)
+- Store JSON as TEXT (cross-database), type-safe via `jsonstore.Field[T]`
+- UUID generation in Go code (`uuidv7.New()`), not database defaults
+- Timestamp management via `.Touch()` method (no database triggers)
+
 ## Essential Workflows
 
 ### Make Commands (use `make help` for full list)
 
 **Development**:
 
-- `make dev` - Start Postgres, run migrations, start app
+- `make dev-postgres` - PostgreSQL development (Docker + migrations + API)
+- `make dev-sqlite` - SQLite development (embedded, no Docker needed)
+- `make dev-postgres-fresh` - PostgreSQL fresh start with clean database
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
@@ -172,13 +205,12 @@ if err := eventBus.Publish(ctx, bus.TopicContactVerified, event); err != nil {
 
 **Migrations** (namespace-based per context):
 
-- `make migrate` - Run all migrations (core → shared → identity → customer-mgmt → order-mgmt)
-- `make migrate-core` - Core migrations (UUID v7 extensions, auth, RBAC)
-- `make migrate-shared` - Shared context migrations (reference data)
-- `make migrate-identity` - Identity context migrations
-- `make migrate-customer-mgmt` - Customer Management context migrations
-- `make migrate-order-mgmt` - Order Management context migrations
-- `make migrate-new CONTEXT=identity NAME=xxx` - Create new migration
+- `make migrate-postgres` - Run all PostgreSQL migrations (core → all contexts)
+- `make migrate-sqlite` - Run all SQLite migrations (core → all contexts)
+- `make migrate-postgres-core` - PostgreSQL core migrations only
+- `make migrate-sqlite-core` - SQLite core migrations only
+- `make migrate-postgres-new CONTEXT=identity NAME=xxx` - Create new migration
+- Migration order: core → shared → identity → customer-mgmt → order-mgmt
 
 **Docker**:
 
@@ -436,6 +468,29 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 - Context: Always pass `ctx` for tx/logger propagation
 - Logger: `logger.FromContext(ctx)` not global logger
 
+**JSON Storage** (cross-database pattern via `pkg/jsonstore`):
+
+```go
+// Store arrays/objects as JSON TEXT (works on Postgres JSONB and SQLite TEXT)
+type Customer struct {
+    Tags jsonstore.Field[[]string]  // Type-safe JSON field
+}
+
+// In entity
+customer.Tags.Set([]string{"vip", "enterprise"})
+tags := customer.Tags.Get()  // []string
+
+// In repository (database-agnostic)
+query := `INSERT INTO customers (id, tags) VALUES ($1, $2)`
+tagsJSON := customer.Tags.MarshalJSON()  // Handles nil safely
+```
+
+**Key benefits**:
+- Type-safe: Generic `Field[T]` ensures compile-time safety
+- Cross-database: Works on Postgres JSONB and SQLite TEXT
+- Nil-safe: Empty arrays serialize as `[]` not `null`
+- Zero config: No database-specific code needed
+
 ## Customer Management & Deal Pipeline
 
 **Customer Context** (`internal/contexts/customer-mgmt/customer/`):
@@ -594,6 +649,44 @@ func (o *Order) Cancel(reason string) error
    ```
 
 5. **Migrations**: `make migrate-new CONTEXT={context} NAME=add_{aggregate}_table`
+
+## CQRS for Analytics (Customer Management)
+
+**When to use CQRS**: For read-heavy analytical queries that span multiple aggregates.
+
+**Pattern**: Analytics module (`internal/contexts/customer-mgmt/analytics/`)
+
+```go
+// NO repository interface - direct SQL for optimal reads
+type Analytics struct {
+    db *sqlx.DB
+}
+
+// Denormalized query with LEFT JOIN across aggregates
+func (a *Analytics) GetCustomerOverview(ctx context.Context) (*CustomerOverview, error) {
+    query := `
+        SELECT 
+            COUNT(DISTINCT c.id) as total_customers,
+            COUNT(DISTINCT d.id) as total_deals,
+            COUNT(DISTINCT i.id) as total_interactions
+        FROM customer_customers c
+        LEFT JOIN customer_deals d ON d.customer_id = c.id
+        LEFT JOIN customer_interactions i ON i.customer_id = c.id
+        WHERE c.deleted_at IS NULL
+    `
+    var overview CustomerOverview
+    err := a.db.GetContext(ctx, &overview, query)
+    return &overview, err
+}
+```
+
+**Key differences from regular aggregates**:
+- NO repository pattern (direct DB access)
+- NO business logic (read-only reporting)
+- Denormalized queries (performance > normalization)
+- Separate read models from write models
+
+**See**: [Analytics README](internal/contexts/customer-mgmt/analytics/README.md) for complete CQRS implementation
 
 ## Event Bus & Configuration
 

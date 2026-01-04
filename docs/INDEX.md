@@ -99,6 +99,28 @@
 
 ---
 
+### Workspace Management
+
+**Explicit workspace state management** for seamless multi-database development.
+
+- **Single Source of Truth**: `.promenade.workspace` file defines `DATABASE_DRIVER` and `ENVIRONMENT`
+- **Fail-Fast Validation**: Commands validate workspace before execution
+- **Smart Switchers**: 9 commands cover all database × environment combinations
+- **Environment Awareness**: Runners (`dev`, `test-all`, `prod`) enforce correct environment usage
+- **Modular Architecture**: Main Makefile (workspace + help) + specialized modules (dev/test/prod)
+- **Workspace Commands**: Go tools (`build`, `fmt`, `lint`) grouped logically with state management
+- **Implementation**: [Workspace State Management ADR](work-in-progress/WORKFLOW_STATE_MANAGEMENT.md)
+
+**Key Benefits**:
+- ✅ No command explosion (50+ commands work with all databases)
+- ✅ Prevents wrong environment execution (fail-fast validation)
+- ✅ Natural developer workflow (configure once, work anywhere)
+- ✅ Clear state visibility (`make workspace` shows current config)
+
+**Example**: `make switch-postgres-dev && make dev` → PostgreSQL development ready
+
+---
+
 ### Customer Management
 
 **Complete CRM functionality** for B2C and B2B customer lifecycle management.

@@ -34,6 +34,10 @@ go.work.sum
 .env.test
 .env.production
 
+# Workspace state (local configuration)
+.promenade.workspace
+.promenade.workspace.bak
+
 # IDE & Editors
 .vscode/
 .idea/

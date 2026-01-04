@@ -1,0 +1,52 @@
+# Promenade Environment Configuration
+# ==================================
+# Copy this file to .promenade.env and customize for your setup
+# cp .promenade.env.example .promenade.env
+
+# Database Driver Selection
+# -------------------------
+# Options: postgres | sqlite | mysql
+# Default: postgres
+DATABASE_DRIVER=postgres
+
+# Environment Selection
+# ---------------------
+# Options: development | test | production
+# Default: development
+ENVIRONMENT=development
+
+# Optional: Database Connection Overrides
+# ----------------------------------------
+# Uncomment to override defaults from config/app.{driver}-{env}.yaml
+
+# PostgreSQL
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_USER=system
+# DB_PASSWORD=passw0rd
+# DB_NAME=promenade_dev
+# DB_SSLMODE=disable
+
+# SQLite
+# DB_PATH=./data/promenade.db
+
+# Redis
+# REDIS_ADDR=localhost:6379
+# REDIS_PASSWORD=
+
+# JWT
+# JWT_SECRET=your-secret-key-at-least-32-characters
+
+# Server
+# SERVER_PORT=8081
+# SERVER_HOST=0.0.0.0
+
+# Logging
+# LOG_LEVEL=debug  # debug | info | warn | error
+
+# Notes:
+# ------
+# 1. .promenade.env is git-ignored (local only)
+# 2. Use 'make switch-postgres' / 'make switch-sqlite' for quick switching
+# 3. All make commands read this file automatically
+# 4. See docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md for details

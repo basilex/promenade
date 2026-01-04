@@ -1,37 +1,178 @@
-.PHONY: help
+.PHONY: help validate-env workspace
+.PHONY: install build clean fmt lint
+.PHONY: switch-postgres-dev switch-postgres-test switch-postgres-prod
+.PHONY: switch-sqlite-dev switch-sqlite-test switch-sqlite-prod
+.PHONY: switch-mysql-dev switch-mysql-test switch-mysql-prod
 
 # ============================================================================
-# Promenade - Modular Makefile System
+# Promenade - Modular Makefile System with Workspace State Management
 # ============================================================================
-# Main Makefile - Common variables and environment configuration
-# Targets are organized in separate modules:
-#   - Makefile.dev.mk   → Development workflow (install, build, lint)
-#   - Makefile.test.mk  → Testing infrastructure (unit, integration, coverage)
-#   - Makefile.prod.mk  → Production/DevOps (docker, migrations, swagger)
+# Main Makefile - Workspace configuration and common entry points
+# Workspace state: .promenade.workspace (DATABASE_DRIVER + ENVIRONMENT)
+#
+# This file contains:
+#   - Workspace switchers (switch-{driver}-{env})
+#   - Environment validation (validate-env, status)
+#   - Help system
+#
+# Modules:
+#   - Makefile.dev.mk   → Development workflow (dev, build, docker, migrations)
+#   - Makefile.test.mk  → Testing infrastructure (test-all, test, benchmarks)
+#   - Makefile.prod.mk  → Production deployment (prod, docker-build, swagger)
+#
+# Quick Start:
+#   1. Configure workspace: make switch-postgres-dev
+#   2. Start development: make dev
+#   3. Run tests: make switch-sqlite-test && make test-all
+#
+# See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md
 # ============================================================================
+
+# Load workspace configuration (if exists)
+-include .promenade.workspace
+export
 
 # Common variables
 APP_NAME=promenade
 VERSION?=0.1.0
-ENV?=dev
-DOCKER_IMAGE_TAG=$(VERSION)-$(ENV)
+DOCKER_IMAGE_TAG=$(VERSION)-$(DATABASE_DRIVER)-$(ENVIRONMENT)
 
-# Docker Compose files per environment
+# Docker Compose files (database-specific)
 DOCKER_COMPOSE_DEV=docker compose -f docker/docker-compose.dev.yml
 DOCKER_COMPOSE_TEST=docker compose -f docker/docker-compose.test.yml
 DOCKER_COMPOSE_PROD=docker compose -f docker/docker-compose.prod.yml
 
-# Database connection defaults (can be overridden)
-# Note: Application uses config/app.{env}.yaml for runtime configuration
-DB_USER ?= postgres
-DB_PASSWORD ?= postgres
-DB_HOST ?= localhost
-DB_PORT ?= 5432
-DB_NAME ?= promenade
-DB_SSLMODE ?= disable
+# ============================================================================
+# Environment Validation & Status
+# ============================================================================
 
-DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)
-MIGRATE=migrate -path migrations -database "$(DB_URL)"
+validate-env:  ## Validate .promenade.workspace exists and is configured
+	@if [ ! -f .promenade.workspace ]; then \
+		echo "❌ .promenade.workspace not found!"; \
+		echo ""; \
+		echo "💡 Quick start:"; \
+		echo "   cp .promenade.workspace.example .promenade.workspace"; \
+		echo "   OR"; \
+		echo "   make switch-postgres-dev  # PostgreSQL + development"; \
+		echo "   make switch-sqlite-dev    # SQLite + development"; \
+		echo ""; \
+		echo "📖 See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"; \
+		exit 1; \
+	fi
+	@if [ -z "$(DATABASE_DRIVER)" ]; then \
+		echo "❌ DATABASE_DRIVER not set in .promenade.workspace"; \
+		exit 1; \
+	fi
+	@if [ -z "$(ENVIRONMENT)" ]; then \
+		echo "❌ ENVIRONMENT not set in .promenade.workspace"; \
+		exit 1; \
+	fi
+
+workspace:  ## Show current workspace configuration
+	@echo "=================================="
+	@echo "  Promenade Workspace Status"
+	@echo "=================================="
+	@if [ -f .promenade.workspace ]; then \
+		echo ""; \
+		echo "📄 .promenade.workspace:"; \
+		cat .promenade.workspace | grep -v '^#' | grep -v '^$$'; \
+		echo ""; \
+		echo "✅ Configuration loaded"; \
+	else \
+		echo ""; \
+		echo "❌ .promenade.workspace not found"; \
+		echo "💡 Run: make switch-postgres-dev OR make switch-sqlite-dev"; \
+	fi
+	@echo ""
+
+# ============================================================================
+# Go Workspace Commands (database/environment agnostic)
+# ============================================================================
+
+install:  ## Install development dependencies
+	@echo "Installing development dependencies..."
+	go mod download
+	go mod tidy
+
+build:  ## Build the application
+	@echo "Building Promenade..."
+	@mkdir -p bin
+	go build -o bin/promenade ./cmd/api
+
+clean:  ## Clean build artifacts
+	@echo "Cleaning build artifacts..."
+	rm -rf bin/
+	rm -rf tmp/
+
+fmt:  ## Format code
+	@echo "Formatting code..."
+	go fmt ./...
+
+lint:  ## Run linters
+	@echo "Running linters..."
+	golangci-lint run ./...
+
+# ============================================================================# Configuration Switchers (driver-environment)
+# Naming: switch-{driver}-{env} matches config files app.{driver}-{env}.yaml
+# Usage: Set once, then use runners (dev, test-all, prod)
+# ============================================================================
+
+# PostgreSQL configurations
+switch-postgres-dev:  ## Switch to: PostgreSQL + development (→ app.postgres-dev.yaml)
+	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
+	@echo "ENVIRONMENT=development" >> .promenade.workspace
+	@echo "✅ Switched to: postgres + development"
+	@echo "💡 Next: make dev"
+
+switch-postgres-test:  ## Switch to: PostgreSQL + test (→ app.postgres-test.yaml)
+	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
+	@echo "ENVIRONMENT=test" >> .promenade.workspace
+	@echo "✅ Switched to: postgres + test"
+	@echo "💡 Next: make test-all"
+
+switch-postgres-prod:  ## Switch to: PostgreSQL + production (→ app.postgres-prod.yaml)
+	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
+	@echo "ENVIRONMENT=production" >> .promenade.workspace
+	@echo "⚠️  Switched to: postgres + PRODUCTION"
+	@echo "⚠️  Make sure you know what you're doing!"
+
+# SQLite configurations
+switch-sqlite-dev:  ## Switch to: SQLite + development (→ app.sqlite-dev.yaml)
+	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
+	@echo "ENVIRONMENT=development" >> .promenade.workspace
+	@echo "✅ Switched to: sqlite + development"
+	@echo "💡 Next: make dev (no Docker needed)"
+
+switch-sqlite-test:  ## Switch to: SQLite + test (→ app.sqlite-test.yaml)
+	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
+	@echo "ENVIRONMENT=test" >> .promenade.workspace
+	@echo "✅ Switched to: sqlite + test"
+	@echo "💡 Next: make test-all (no Docker needed)"
+
+switch-sqlite-prod:  ## Switch to: SQLite + production (→ app.sqlite-prod.yaml)
+	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
+	@echo "ENVIRONMENT=production" >> .promenade.workspace
+	@echo "⚠️  Switched to: sqlite + PRODUCTION"
+	@echo "⚠️  SQLite in production: single-writer only!"
+
+# MySQL configurations (planned)
+switch-mysql-dev:  ## Switch to: MySQL + development (→ app.mysql-dev.yaml - planned)
+	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
+	@echo "ENVIRONMENT=development" >> .promenade.workspace
+	@echo "✅ Switched to: mysql + development"
+	@echo "⚠️  MySQL support coming soon"
+
+switch-mysql-test:  ## Switch to: MySQL + test (→ app.mysql-test.yaml - planned)
+	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
+	@echo "ENVIRONMENT=test" >> .promenade.workspace
+	@echo "✅ Switched to: mysql + test"
+	@echo "⚠️  MySQL support coming soon"
+
+switch-mysql-prod:  ## Switch to: MySQL + production (→ app.mysql-prod.yaml - planned)
+	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
+	@echo "ENVIRONMENT=production" >> .promenade.workspace
+	@echo "⚠️  Switched to: mysql + PRODUCTION"
+	@echo "⚠️  MySQL support coming soon"
 
 # Include modular makefiles
 include Makefile.dev.mk
@@ -43,21 +184,40 @@ include Makefile.prod.mk
 
 help:  ## Show this help message
 	@echo "================================================================"
-	@echo "          Promenade - Available Commands                        "
+	@echo "   Promenade - Workspace-Based Makefile System                 "
 	@echo "================================================================"
 	@echo ""
-	@echo "DEV DEVELOPMENT (Makefile.dev.mk)"
-	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
+	@if [ -f .promenade.workspace ]; then \
+		echo "📄 Current Workspace:"; \
+		cat .promenade.workspace | grep -v '^#' | grep -v '^$$' | sed 's/^/   /'; \
+		echo ""; \
+	else \
+		echo "⚠️  No workspace configured!"; \
+		echo "💡 Run: make switch-postgres-dev OR make switch-sqlite-dev"; \
+		echo ""; \
+	fi
+	@echo "🔧 SWITCHERS"
+	@awk 'BEGIN {FS = ":.*##"} /^switch-[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo " TESTING (Makefile.test.mk)"
-	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.test.mk
+	@echo "🔍 WORKSPACE"
+	@awk 'BEGIN {FS = ":.*##"} /^(workspace|validate-env):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "PROD PRODUCTION (Makefile.prod.mk)"
-	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
+	@echo "⚙️  GO WORKSPACE COMMANDS"
+	@awk 'BEGIN {FS = ":.*##"} /^(install|build|clean|fmt|lint):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "INFO Usage examples:"
-	@echo "  make dev-postgres     # PostgreSQL development server"
-	@echo "  make dev-sqlite       # SQLite development server"
-	@echo "  make test             # Run all tests"
-	@echo "  make docker-run       # Build and run in Docker"
+	@echo "🛠️  DEVELOPMENT (Makefile.dev.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^(dev|dev-fresh|build|run|install|clean|fmt|lint|docker-up|docker-down|docker-logs|docker-ps|docker-clean|db-create|db-drop|db-reset|db-fresh|migrate|migrate-core|migrate-shared|migrate-identity|migrate-customer-mgmt|migrate-order-mgmt|migrate-status|migrate-new|seed|seed-shared|seed-identity|ci-check|ci-lint|ci-test|ci-build|pre-push):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
+	@echo ""
+	@echo "🧪 TESTING (Makefile.test.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^test[a-zA-Z_-]*:.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.test.mk
+	@echo ""
+	@echo "🐳 PRODUCTION (Makefile.prod.mk)"
+	@awk 'BEGIN {FS = ":.*##"} /^(prod|docker-build|docker-push|docker-run|swagger-generate|swagger-all):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
+	@echo ""
+	@echo "📖 Quick Start:"
+	@echo "   make switch-postgres-dev  # Configure workspace"
+	@echo "   make dev                  # Start development"
+	@echo "   make workspace            # Show current config"
+	@echo ""
+	@echo "📚 Documentation: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"
 	@echo ""

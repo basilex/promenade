@@ -103,6 +103,58 @@ config/app.sqlite-prod.yaml    # SQLite + production
 
 **See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md) | [config/SQLITE.md](config/SQLITE.md)
 
+### Workspace Management
+
+Promenade implements **explicit workspace state management** for seamless multi-database development:
+
+**Design Philosophy**:
+- **Single Source of Truth**: `.promenade.workspace` file defines `DATABASE_DRIVER` and `ENVIRONMENT`
+- **Fail-Fast Validation**: Commands validate workspace before execution
+- **Smart Switchers**: 9 commands cover all database × environment combinations
+- **Environment Awareness**: Runners (`dev`, `test-all`, `prod`) enforce correct environment usage
+
+**Core Commands**:
+```bash
+# Configure workspace (one-time)
+make switch-postgres-dev   # PostgreSQL + development
+make switch-sqlite-test    # SQLite + testing
+make switch-postgres-prod  # PostgreSQL + production
+
+# Check current state
+make workspace             # Show DATABASE_DRIVER + ENVIRONMENT
+
+# Use environment-aware runners
+make dev                   # Requires ENVIRONMENT=development
+make test-all              # Warns if not ENVIRONMENT=test
+make prod                  # Requires ENVIRONMENT=production
+
+# Workspace commands (no validation needed)
+make build                 # Go compilation
+make fmt                   # Code formatting
+make lint                  # Linting
+```
+
+**Architecture Benefits**:
+- ✅ No command explosion (50+ commands work with all databases)
+- ✅ Prevents wrong environment execution (fail-fast validation)
+- ✅ Natural developer workflow (configure once, work anywhere)
+- ✅ Clear state visibility (`make workspace` always shows current config)
+- ✅ Modular Makefile system (main + dev/test/prod modules)
+
+**Example Workflow**:
+```bash
+# Day 1: PostgreSQL development
+make switch-postgres-dev && make dev
+
+# Day 2: SQLite testing  
+make switch-sqlite-test && make test-all
+
+# Day 3: Production deployment
+make switch-postgres-prod && make prod
+```
+
+**See**: [Workspace State Management ADR](docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md) for complete architecture documentation
+
 ### Health Checks
 
 Promenade provides **comprehensive health monitoring** for all dependencies:
