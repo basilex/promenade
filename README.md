@@ -337,7 +337,7 @@ Promenade provides **complete order lifecycle management** with state transition
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
 | **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
-| **Billing**             | Invoice, Payment, Subscription        | Billing and payments          | 📋 Planned Q2 2026 | Coming soon                                 |
+| **Billing**             | Invoice ✅, Payment ✅, Subscription 📋 | Billing and payments          | 🚧 In Progress    | [Guide](docs/concepts/billing-management.md)   |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
