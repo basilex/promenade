@@ -211,12 +211,13 @@
 
 ### Testing Strategy
 
-**Three-tier testing** with clear separation and professional organization.
+**Four-tier testing** with clear separation and professional organization.
 
 - **Unit Tests**: In-place, fast feedback (~5s)
+- **Smoke Tests**: HTTP handler validation, no DB (~2s) - **123 tests, 100% pass rate** ✅
 - **Integration Tests**: Real database, full E2E (~14s)
 - **Benchmark Tests**: Performance measurement with real DB
-- **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md)
+- **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md) | [Smoke Tests Guide](../test/smoke/README.md)
 
 **250+ tests**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
 

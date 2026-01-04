@@ -649,10 +649,11 @@ make run                   # Build and run
 make fmt                   # Format code
 make lint                  # Run linters
 
-# Testing (three-tier strategy)
+# Testing (four-tier strategy)
 make test-all              # All tests runner (warns if not test environment)
 make test                  # All tests with race detector (~40s)
 make test-unit             # Unit tests only (~5s)
+make test-smoke            # Smoke tests (handler validation, no DB, ~2s)
 make test-integration      # Integration tests with real DB (~14s)
 make test-benchmark        # Benchmark tests (~5s per benchmark)
 make test-coverage         # HTML coverage report
@@ -679,15 +680,16 @@ make swagger-all           # Generate API documentation
 
 ## Testing
 
-Promenade uses a **three-tier testing strategy** with clear separation of concerns:
+Promenade uses a **four-tier testing strategy** with clear separation of concerns:
 
 ### Test Organization
 
-**Three-tier architecture**:
+**Four-tier architecture**:
 
 1. **Unit Tests** (in-place) - Fast feedback, test individual components
-2. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
-3. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
+2. **Smoke Tests** (`test/smoke/contexts/`) - HTTP handler validation (80/20 rule)
+3. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
+4. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
 
 ```
 # Unit tests - alongside production code
@@ -696,6 +698,17 @@ internal/contexts/identity/contact/
  entity_test.go              #  Entity unit tests
  usecase.go
  usecase_test.go             #  UseCase unit tests
+
+# Smoke tests - mirror path structure (NO DB, HTTP validation)
+test/smoke/contexts/
+ identity/
+    user/handler_test.go      # 8 tests
+    contact/handler_test.go   # 8 tests
+    ...
+ customer-mgmt/
+    customer/handler_test.go  # 12 tests (most complex - 23-method mock)
+    ...
+ # Total: 123 tests across 15 handlers (100% pass rate) ✅
 
 # Integration tests - mirror path structure (real DB)
 test/integration/contexts/
@@ -721,14 +734,16 @@ test/benchmark/contexts/
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
-# By type (three-tier strategy)
+# By type (four-tier strategy)
 make test-unit              # Unit tests only (~5s)
+make test-smoke             # Smoke tests (handler validation, no DB, ~2s)
 make test-integration       # Integration tests with real DB (~14s)
 make test-benchmark         # Benchmark tests (5s per benchmark)
 make test-benchmark-all     # Extended benchmarks (10s per benchmark)
 
 # By context
 go test ./test/integration/contexts/identity/... -v
+go test ./test/smoke/contexts/... -v
 go test -bench=. ./test/benchmark/contexts/identity/user -v
 
 # By package
@@ -757,6 +772,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
 | **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
 | **pkg/cache**              | 8     | 85%      | cached   | Unit        |
+| **Smoke (all contexts)**   | 123   | -        | ~0.5s    | Smoke       |
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
@@ -1192,7 +1208,7 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Project structure (Bounded Contexts)
 - [x] Event Bus (Memory + Redis adapters)
 - [x] Database migrations system
-- [x] Testing infrastructure (three-tier strategy)
+- [x] Testing infrastructure (four-tier strategy: unit, smoke, integration, benchmark)
 
 ### Phase 2: Identity Context (Completed ✅)
 
@@ -1289,8 +1305,9 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 - [Rate Limiting](docs/guides/rate-limiting.md) - IP-based protection for authentication
 - [Health Checks](docs/guides/health-checks.md) - Dependency monitoring and alerting
 - [Local CI Validation](docs/guides/local-ci.md) - Run GitHub Actions checks locally before push
-- [Testing Patterns](docs/guides/testing-patterns.md) - Three-tier testing strategy (~965 lines)
+- [Testing Patterns](docs/guides/testing-patterns.md) - Four-tier testing strategy (~965 lines)
 - [Testing Quick Reference](docs/guides/testing-quick-reference.md) - One-page cheat sheet
+- [Smoke Tests Guide](test/smoke/README.md) - Complete HTTP handler validation guide (~450 lines)
 
 **Technical Reference**:
 

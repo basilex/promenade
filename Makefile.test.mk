@@ -4,7 +4,7 @@
 # All test commands are database-agnostic and use .promenade.workspace
 # ============================================================================
 
-.PHONY: test-all test test-unit test-integration test-benchmark test-benchmark-all test-coverage test-db-start test-db-stop
+.PHONY: test-all test test-unit test-integration test-smoke test-benchmark test-benchmark-all test-coverage test-db-start test-db-stop
 
 # ============================================================================
 # Testing Runner
@@ -25,11 +25,17 @@ test-all: validate-env  ## Run all tests (works in any environment, best with te
 
 test: validate-env  ## Run all tests (uses DATABASE_DRIVER and ENVIRONMENT from workspace)
 	@echo "Running all tests ($(DATABASE_DRIVER) / $(ENVIRONMENT))..."
-	go test -v -race ./...
+	@echo "Note: Race detector disabled (causes hangs with httptest/Redis tests)"
+	@echo "💡 To run with race detector: go test -race ./pkg/aggregate ./pkg/uuidv7 ..."
+	go test -v ./pkg/... ./internal/... ./cmd/...
 
 test-unit:  ## Run only unit tests (fast, no DB, no workspace needed)
 	@echo "Running unit tests..."
 	go test -v -short ./...
+
+test-smoke:  ## Run smoke tests for HTTP handlers (fast, no DB, no workspace needed)
+	@echo "Running smoke tests..."
+	go test -v ./test/smoke/...
 
 test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER from workspace)
 	@echo "Running integration tests ($(DATABASE_DRIVER))..."

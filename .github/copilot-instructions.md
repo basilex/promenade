@@ -183,39 +183,93 @@ config/app.sqlite-test.yaml    # SQLite + testing (in-memory)
 
 ## Essential Workflows
 
-### Make Commands (use `make help` for full list)
+### Workspace Management (CRITICAL - Read First!)
 
-**Development**:
+**Core Concept**: `.promenade.workspace` file defines `DATABASE_DRIVER` and `ENVIRONMENT` for all commands.
 
-- `make dev-postgres` - PostgreSQL development (Docker + migrations + API)
-- `make dev-sqlite` - SQLite development (embedded, no Docker needed)
-- `make dev-postgres-fresh` - PostgreSQL fresh start with clean database
+**Configure once, work anywhere**:
+
+```bash
+# Switch to PostgreSQL + development
+make switch-postgres-dev    # Creates .promenade.workspace with postgres+dev
+make dev                    # Runs development server (validates workspace)
+
+# Switch to SQLite + testing
+make switch-sqlite-test     # Updates .promenade.workspace to sqlite+test
+make test-all               # Runs all tests (validates workspace)
+
+# Check current configuration
+make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
+```
+
+**9 Switchers** (driver-environment combos):
+- `make switch-postgres-dev` → PostgreSQL + development (default)
+- `make switch-postgres-test` → PostgreSQL + test
+- `make switch-postgres-prod` → PostgreSQL + production
+- `make switch-sqlite-dev` → SQLite + development (no Docker needed)
+- `make switch-sqlite-test` → SQLite + test
+- `make switch-sqlite-prod` → SQLite + production
+- `make switch-mysql-dev` → MySQL + development (planned)
+- `make switch-mysql-test` → MySQL + test (planned)
+- `make switch-mysql-prod` → MySQL + production (planned)
+
+**Environment-Aware Runners** (validate workspace before execution):
+- `make dev` - Development server (requires ENVIRONMENT=development)
+- `make test-all` - All tests (warns if not ENVIRONMENT=test)
+- `make prod` - Production runner (requires ENVIRONMENT=production)
+
+**Workspace Commands** (database/environment agnostic):
+- `make workspace` - Show current DATABASE_DRIVER + ENVIRONMENT
+- `make build` - Build binary (no validation needed)
+- `make fmt` - Format code (no validation needed)
+- `make lint` - Run linters (no validation needed)
+
+**See**: [Workspace Management Guide](docs/guides/workspace-management.md) for complete architecture
+
+### Make Commands (Modular System)
+
+**Makefile Structure**:
+- `Makefile` - Main (workspace switchers, validation, help)
+- `Makefile.dev.mk` - Development workflow (dev, docker, migrations)
+- `Makefile.test.mk` - Testing infrastructure (test-all, benchmarks)
+- `Makefile.prod.mk` - Production deployment (prod, swagger)
+
+**Development** (from Makefile.dev.mk):
+
+- `make dev` - Run development server (validates workspace, requires ENVIRONMENT=development)
+- `make dev-fresh` - Fresh start with clean database
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
-**Testing** (three-tier strategy):
+**Testing** (from Makefile.test.mk, three-tier strategy):
 
+- `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
 - `make test` - All tests with race detector (~40s, 250+ tests)
-- `make test-unit` - Unit tests only (fast, ~5s)
-- `make test-integration` - Integration tests with real DB (~14s, ALL PASSING ✅)
-- `make test-benchmark` - Benchmark tests (performance measurement, 5s per benchmark)
+- `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
+- `make test-integration` - Integration tests with real DB (~14s, validates workspace)
+- `make test-benchmark` - Benchmark tests (performance measurement, validates workspace)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
 
-**Migrations** (namespace-based per context):
+**Migrations** (database-agnostic via workspace):
 
-- `make migrate-postgres` - Run all PostgreSQL migrations (core → all contexts)
-- `make migrate-sqlite` - Run all SQLite migrations (core → all contexts)
-- `make migrate-postgres-core` - PostgreSQL core migrations only
-- `make migrate-sqlite-core` - SQLite core migrations only
-- `make migrate-postgres-new CONTEXT=identity NAME=xxx` - Create new migration
-- Migration order: core → shared → identity → customer-mgmt → order-mgmt
+- `make migrate` - Run all migrations (auto-detects DATABASE_DRIVER from workspace)
+- `make migrate-core` - Core migrations only
+- `make migrate-shared` - Shared context migrations
+- `make migrate-identity` - Identity context migrations
+- `make migrate-customer-mgmt` - Customer management migrations
+- `make migrate-order-mgmt` - Order management migrations
+- `make migrate-billing` - Billing migrations
+- `make migrate-status` - Show migration status
+- `make migrate-new CONTEXT=identity NAME=xxx` - Create new migration
+- Migration order: core → shared → identity → customer-mgmt → order-mgmt → billing
 
-**Docker**:
+**Docker** (database-aware via workspace):
 
-- `make docker-up` - Start PostgreSQL (localhost:5432)
-- `make docker-down` - Stop PostgreSQL
+- `make docker-up` - Start database containers (auto-detects DATABASE_DRIVER, skips for SQLite)
+- `make docker-down` - Stop containers
 - `make docker-ps` - Show running containers
+- `make docker-clean` - Remove all containers and volumes
 
 **Local CI Validation** (run before every push):
 
@@ -766,17 +820,22 @@ r.cache.DeletePattern(ctx, "countries:*")
 
 ## Testing Strategy
 
-**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional integration/benchmark tests in mirror path structure
+**Test Organization**: Tests live alongside code (`*_test.go` in same directory) with additional integration/benchmark/smoke tests in mirror path structure
 
-**Three-Tier Test Strategy**:
+**Four-Tier Test Strategy**:
 
 1. **Unit Tests** (in-place): Fast feedback, test individual components
    - Location: Same directory as production code (`entity_test.go`, `usecase_test.go`)
    - Run: `make test-unit` (~5s)
-2. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
+2. **Smoke Tests** (`test/smoke/contexts/`): HTTP handler validation (80/20 rule)
+   - Location: Mirror path structure (e.g., `test/smoke/contexts/order-mgmt/order/handler_test.go`)
+   - Run: `make test-smoke` (~2s, no DB needed)
+   - Purpose: Verify HTTP status codes, response format, routing, error mapping
+   - Coverage: 2 tests per handler (success + not found)
+3. **Integration Tests** (`test/integration/contexts/`): Full E2E with real database
    - Location: Mirror path structure (e.g., `test/integration/contexts/identity/contact/repository_test.go`)
    - Run: `make test-integration` (~14s, auto-starts test DB)
-3. **Benchmark Tests** (`test/benchmark/contexts/`): Performance measurement with real database
+4. **Benchmark Tests** (`test/benchmark/contexts/`): Performance measurement with real database
    - Location: Mirror path structure (e.g., `test/benchmark/contexts/identity/user/repository_bench_test.go`)
    - Run: `make test-benchmark` (~5s per benchmark, auto-starts test DB)
    - Purpose: Validate optimizations (e.g., N+1 query fixes), measure query performance
@@ -786,12 +845,14 @@ r.cache.DeletePattern(ctx, "countries:*")
 ```bash
 make test                      # All tests with race detector (~40s)
 make test-unit                 # Unit tests only (~5s)
+make test-smoke                # Smoke tests for handlers (~2s, no DB)
 make test-integration          # Integration tests with real DB (~14s)
 make test-benchmark            # Benchmark tests (5s per benchmark)
 make test-coverage             # HTML coverage report
 
 # Context-specific tests
 go test ./internal/contexts/identity/... -v
+go test ./test/smoke/contexts/order-mgmt/order -v
 go test ./test/integration/contexts/identity/... -v
 go test -bench=. ./test/benchmark/contexts/identity/user -v
 
@@ -802,6 +863,103 @@ go test ./pkg/jwt/... -v
 ```
 
 **Test Statistics**: 250+ tests across 40+ packages, 90%+ average coverage
+
+**DTO Testing Guidelines**:
+
+**✅ WRITE DTO tests for**:
+- Complex transformation logic (value objects: Email, Phone, Address, Money)
+- JSONB fields with custom marshaling
+- Conditional logic for nullable/optional fields
+- Nested structures with multiple levels
+
+**❌ SKIP DTO tests for**:
+- Simple field-to-field mappings
+- Straightforward struct copying
+- Already covered by handler integration tests
+- Read-only responses without transformation
+
+**Examples with DTO tests**: Contact (value objects), User (JSONB roles), Profile (many nullables), Customer (JSONB tags)  
+**Examples without DTO tests**: Order, Deal, Interaction, Analytics, Company (simple structures, covered by handlers)
+
+**Smoke Testing Pattern**:
+
+**Purpose**: Validate HTTP handlers with minimal effort (80/20 rule)  
+**Location**: `test/smoke/contexts/{context}/{aggregate}/handler_test.go`  
+**Coverage**: 2 tests per handler minimum (success + error case)  
+**Run**: `make test-smoke` (~2s, no database needed)
+
+**Key Characteristics**:
+- Mock UseCase with function fields (no external dependencies)
+- Test HTTP status codes (200, 201, 404, 400, 500)
+- Validate response format (`{"status":"success","data":{...}}`)
+- No database, no complex business logic
+- Fast execution (< 100ms per test)
+
+**Example**:
+```go
+// test/smoke/contexts/order-mgmt/order/handler_test.go
+package order_test
+
+import (
+    "testing"
+    "github.com/basilex/promenade/test/smoke"
+)
+
+// MockOrderUseCase with function fields
+type MockOrderUseCase struct {
+    GetByIDFunc func(ctx context.Context, id uuid.UUID) (*order.Order, error)
+}
+
+func TestOrderHandler_GetByID_Success(t *testing.T) {
+    router := smoke.SetupRouter()
+    
+    // Mock UseCase returns fake order
+    mockUC := &MockOrderUseCase{
+        GetByIDFunc: func(ctx context.Context, id uuid.UUID) (*order.Order, error) {
+            return fakeOrder(), nil
+        },
+    }
+    
+    handler := orderHTTP.NewOrderHandler(mockUC)
+    router.GET("/orders/:id", handler.GetByID)
+    
+    // Test request
+    resp := smoke.MakeRequest(t, router, "GET", "/orders/"+smoke.FakeUUID(), nil)
+    smoke.AssertSuccessResponse(t, resp, 200)
+}
+
+func TestOrderHandler_GetByID_NotFound(t *testing.T) {
+    router := smoke.SetupRouter()
+    
+    mockUC := &MockOrderUseCase{
+        GetByIDFunc: func(ctx context.Context, id uuid.UUID) (*order.Order, error) {
+            return nil, order.ErrOrderNotFound
+        },
+    }
+    
+    handler := orderHTTP.NewOrderHandler(mockUC)
+    router.GET("/orders/:id", handler.GetByID)
+    
+    resp := smoke.MakeRequest(t, router, "GET", "/orders/"+smoke.FakeUUID(), nil)
+    smoke.AssertErrorResponse(t, resp, 404, "ORDER_NOT_FOUND")
+}
+```
+
+**Helper Utilities** (`test/smoke/testutils.go`):
+- `SetupRouter()` - Gin test router
+- `MakeRequest(t, router, method, path, body)` - HTTP request helper
+- `AssertSuccessResponse(t, resp, expectedCode)` - Validate success response
+- `AssertErrorResponse(t, resp, expectedCode, expectedErrorCode)` - Validate error response
+- `FakeUUID()` - Generate test UUID v7
+
+**When to Write Smoke Tests**:
+- ✅ For all HTTP handlers (2 tests each minimum)
+- ✅ When adding new endpoints
+- ✅ Before integration tests (faster feedback)
+- ❌ Not for complex business logic (use integration tests)
+- ❌ Not for repository methods (use integration tests with real DB)
+
+**See**: [test/smoke/README.md](../test/smoke/README.md) for complete smoke testing guide
 
 **Example Entity Test**:
 
@@ -1044,12 +1202,14 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 **Debugging Quick Reference**:
 
-- **DB Connection**: `make docker-ps` → check Postgres on 5432, test DB on 5433
-- **Test Failures**: Start with `make test-unit` (~5s), then `make test-integration` (~2s)
+- **Workspace Not Configured**: Run `make workspace` to check state, then `make switch-postgres-dev` or `make switch-sqlite-dev`
+- **Wrong Environment**: `make dev` requires ENVIRONMENT=development, `make test-all` warns if not test
+- **DB Connection**: `make docker-ps` → check Postgres on 5432, test DB on 5433 (SQLite: no Docker needed)
+- **Test Failures**: Start with `make test-unit` (~5s, no workspace), then `make test-integration` (~14s, needs workspace)
 - **Migration Issues**: Check `schema_migrations` table, verify namespace (`core/`, `shared/`, `identity/`, `customer-mgmt/`, `order-mgmt/`)
-- **Context Won't Load**: Verify router imported and registered in `cmd/api/main.go`
+- **Context Won't Load**: Verify router imported and registered in `cmd/api/bootstrap.go`
 - **Event Bus Issues**: Check adapter config (`memory` for dev, `redis` for prod) in `config/app.{env}.yaml`
-- **Integration Test DB**: Auto-started on port 5433, uses `promenade_test` database (Docker container)
+- **Integration Test DB**: Auto-started on port 5433, uses `promenade_test` database (Docker container for Postgres)
 
 ## Code Review Checklist
 
@@ -1101,6 +1261,8 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - [ ] Integration tests for repository methods
 - [ ] Test file: `{filename}_test.go` in same directory
 - [ ] Manual mocks created in `mocks_test.go` if needed (inline structs)
+- [ ] DTO tests ONLY for complex cases (value objects, JSONB, conditional logic)
+- [ ] Skip DTO tests for simple field-to-field mappings (covered by handler tests)
 
 **Red Flags** (automatic rejection):
 
@@ -1117,15 +1279,17 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 | File                                                           | Purpose                           |
 | -------------------------------------------------------------- | --------------------------------- |
 | [cmd/api/main.go](../cmd/api/main.go)                          | Entry point, context registration |
-| [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk) | All workflows (modular)           |
+| [cmd/api/bootstrap.go](../cmd/api/bootstrap.go)                | Dependency injection & initialization |
+| [Makefile](../Makefile) + [Makefile.\*.mk](../Makefile.dev.mk) | All workflows (modular system)           |
+| [.promenade.workspace](../.promenade.workspace.example)        | Workspace state (DATABASE_DRIVER + ENVIRONMENT) |
 | [pkg/uuidv7/uuidv7.go](../pkg/uuidv7/uuidv7.go)                | Time-ordered UUIDs                |
 | [pkg/jwt/README.md](../pkg/jwt/README.md)                      | JWT authentication docs           |
 | [pkg/bus/README.md](../pkg/bus/README.md)                      | Event Bus documentation           |
 | [internal/infrastructure/database/transaction.go][tx]          | Transaction management            |
 | [internal/contexts/shared/router.go][shared]                   | Shared context router             |
 | [internal/contexts/identity/router.go][identity]               | Identity context router           |
-| [docs/GAPS_AND_TODOS.md](../docs/GAPS_AND_TODOS.md)            | Current work items & priorities   |
-| [docs/](../docs/)                                              | Architecture guides (20+ docs)    |
+| [docs/work-in-progress/](../docs/work-in-progress/)            | Current work items & TODOs        |
+| [docs/](../docs/)                                              | Architecture guides (30+ docs)    |
 | [test/README.md](../test/README.md)                            | Testing guide                     |
 
 [tx]: ../internal/infrastructure/database/transaction.go
@@ -1134,4 +1298,4 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 ---
 
-**For comprehensive documentation**: [README.md](../README.md) | [docs/INDEX.md](../docs/INDEX.md) | [docs/CLEAN_ARCHITECTURE_SUMMARY.md](../docs/CLEAN_ARCHITECTURE_SUMMARY.md)
+**For comprehensive documentation**: [README.md](../README.md) | [docs/INDEX.md](../docs/INDEX.md) | [docs/concepts/clean-architecture.md](../docs/concepts/clean-architecture.md)

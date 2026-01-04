@@ -15,7 +15,7 @@
 
 ## Test Organization
 
-Promenade uses **three-tier testing strategy** with clear separation:
+Promenade uses **four-tier testing strategy** with clear separation:
 
 ### 1. Unit Tests (In-Place)
 
@@ -37,7 +37,50 @@ internal/contexts/identity/contact/
          contact_repository_test.go  #  Repository tests
 ```
 
-### 2. Integration Tests (Mirror Path, With DB)
+### 2. Smoke Tests (Mirror Path, No DB)
+
+**Location**: `test/smoke/contexts/` (mirror path)  
+**Purpose**: HTTP handler validation (80/20 rule)  
+**Status**: ✅ **COMPLETE** - 15/15 handlers, 123 tests, 100% pass rate
+
+```
+test/smoke/
+ README.md                   # Smoke testing guide
+ testutils.go                # Helper utilities (5 functions)
+ contexts/                   # Mirror path structure
+    identity/               # 5 handlers, 43 tests
+       user/handler_test.go
+       contact/handler_test.go
+       profile/handler_test.go
+       role/handler_test.go
+       permission/handler_test.go
+    customer-mgmt/          # 4 handlers, 34 tests
+       company/handler_test.go
+       customer/handler_test.go  # Most complex: 12 tests, 23-method mock
+       deal/handler_test.go
+       interaction/handler_test.go
+    order-mgmt/             # 1 handler, 10 tests
+       order/handler_test.go
+    shared/                 # 4 handlers, 36 tests
+       country/handler_test.go
+       currency/handler_test.go
+       language/handler_test.go
+       timezone/handler_test.go
+```
+
+**Key Characteristics**:
+- Mock UseCase with function fields + nil-check methods
+- Test HTTP status codes (200/201/404/400/500)
+- Validate response format (`{"status":"success"}`)
+- No database dependencies (pure mocks)
+- Fast execution (~0.5s for all 123 tests, cached)
+- 6-12 tests per handler (simple to complex)
+- Error code patterns vary by context:
+  - Identity/Order Management: Simple "NOT_FOUND"
+  - Customer Management: Standard helpers (NotFound, BadRequest, InternalError)
+  - Shared: Entity-specific codes (COUNTRY_NOT_FOUND, VALIDATION_ERROR, 204 Delete)
+
+### 3. Integration Tests (Mirror Path, With DB)
 
 **Location**: `test/integration/contexts/` (mirror path)  
 **Purpose**: Full E2E testing with real database
@@ -58,7 +101,7 @@ test/integration/
          bus_integration_test.go
 ```
 
-### 3. Benchmark Tests (Mirror Path, With DB)
+### 4. Benchmark Tests (Mirror Path, With DB)
 
 **Location**: `test/benchmark/contexts/` (mirror path)  
 **Purpose**: Performance measurement and optimization validation
@@ -88,6 +131,9 @@ test/benchmark/
 # Unit tests only (in-place, fast)
 go test ./... -short -v
 
+# Smoke tests (handler validation, no DB)
+make test-smoke                     # Run all 123 smoke tests
+
 # Integration tests (with real DB)
 make test-integration
 
@@ -98,11 +144,14 @@ make test-benchmark
 make test
 ```
 
+**📚 Detailed Smoke Test Documentation**: See [test/smoke/README.md](smoke/README.md) for comprehensive guide with patterns, examples, and all discovered highlights.
+
 ### Test Comparison
 
 | Type            | Location                      | Database   | Speed         | Run When              |
 | --------------- | ----------------------------- | ---------- | ------------- | --------------------- |
 | **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save            |
+| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~2s)    | Before commit         |
 | **Integration** | `/test/integration/contexts/` | Real DB    | Medium (~14s) | Before merge          |
 | **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations   |
 
@@ -163,6 +212,32 @@ test/integration/contexts/identity/
  profile/repository_test.go  # 17 integration subtests
 ```
 
+### Smoke Tests (Handler Validation)
+
+```
+test/smoke/contexts/
+ identity/
+    user/handler_test.go      # 8 tests
+    contact/handler_test.go   # 8 tests
+    profile/handler_test.go   # 9 tests
+    role/handler_test.go      # 9 tests
+    permission/handler_test.go # 9 tests
+ customer-mgmt/
+    company/handler_test.go   # 8 tests
+    customer/handler_test.go  # 12 tests (23-method mock - most complex)
+    deal/handler_test.go      # 8 tests
+    interaction/handler_test.go # 6 tests
+ order-mgmt/
+    order/handler_test.go     # 10 tests
+ shared/
+    country/handler_test.go   # 9 tests
+    currency/handler_test.go  # 9 tests
+    language/handler_test.go  # 9 tests
+    timezone/handler_test.go  # 9 tests
+
+**Total: 123 smoke tests across 15 handlers (100% pass rate)**
+```
+
 ### Shared Context (Reference Data)
 
 ```
@@ -218,13 +293,14 @@ pkg/
 ### All Tests
 
 ```bash
-make test                    # All tests (240+ tests, ~40s with race detector)
+make test                 # All tests (240+ tests, ~40s with race detector)
 ```
 
 ### By Type
 
 ```bash
 make test-unit              # Unit tests only (~5s)
+make test-smoke             # Smoke tests for handlers (~2s, no DB)
 make test-integration       # Integration tests (real DB, ~14s)
 make test-coverage          # HTML coverage report
 ```
@@ -447,6 +523,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
+**Smoke Tests**: HTTP handlers with mocks (123 tests across 15 handlers) ✅  
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)
@@ -466,4 +543,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | Unit tests only | Fast execution
+**Test Status**: All tests passing | 123 smoke tests (100% pass rate) | 250+ total tests
