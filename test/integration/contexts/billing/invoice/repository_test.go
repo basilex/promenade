@@ -26,8 +26,9 @@ func TestInvoiceRepository_CRUD(t *testing.T) {
 		customerID := uuidv7.New()
 
 		// Create customer first (required for foreign key)
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		// Create invoice
@@ -70,15 +71,19 @@ func TestInvoiceRepository_ListByCustomer(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInvoiceRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		// Create 3 invoices
 		for i := 0; i < 3; i++ {
 			inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+			invoiceNo, err := repo.GenerateInvoiceNumber(ctx)
+			require.NoError(t, err)
+			inv.InvoiceNo = invoiceNo
 			require.NoError(t, repo.Create(ctx, inv))
 		}
 
@@ -98,18 +103,25 @@ func TestInvoiceRepository_ListByStatus(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInvoiceRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		// Create draft invoice
 		inv1, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		invoiceNo1, err := repo.GenerateInvoiceNumber(ctx)
+		require.NoError(t, err)
+		inv1.InvoiceNo = invoiceNo1
 		require.NoError(t, repo.Create(ctx, inv1))
 
 		// Create and send invoice
 		inv2, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		invoiceNo2, err := repo.GenerateInvoiceNumber(ctx)
+		require.NoError(t, err)
+		inv2.InvoiceNo = invoiceNo2
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
 		require.NoError(t, inv2.AddLine("Test Item", 1, unitPrice))
 		require.NoError(t, inv2.MarkAsSent())
@@ -136,15 +148,19 @@ func TestInvoiceRepository_CountByStatus(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInvoiceRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		// Create 2 draft invoices
 		for i := 0; i < 2; i++ {
 			inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+			invoiceNo, err := repo.GenerateInvoiceNumber(ctx)
+			require.NoError(t, err)
+			inv.InvoiceNo = invoiceNo
 			require.NoError(t, repo.Create(ctx, inv))
 		}
 
@@ -163,10 +179,11 @@ func TestInvoiceRepository_GetTotalRevenue(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInvoiceRepository(testDB.DB)
 		customerID := uuidv7.New()
+		assignedTo := uuidv7.New() // Sales rep ID (mock)
 
 		// Create customer
-		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct")
+		_, err := tx.ExecContext(ctx, `INSERT INTO customer_customers (id, name, email, status, tier, source, assigned_to) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
 		// Create and pay invoice

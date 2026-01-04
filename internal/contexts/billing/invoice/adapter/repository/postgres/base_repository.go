@@ -32,6 +32,12 @@ func (r *BaseRepository) Exec(ctx context.Context, query string, args ...interfa
 	return executor.ExecContext(ctx, query, args...)
 }
 
+// NamedExec executes a named query
+func (r *BaseRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	executor := r.getExecutor(ctx)
+	return sqlx.NamedExecContext(ctx, executor, query, arg)
+}
+
 func (r *BaseRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
 	if tx, ok := database.GetTx(ctx); ok {
 		return tx
