@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/basilex/promenade/internal/contexts/billing"
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/identity"
 	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
@@ -51,6 +52,7 @@ func (s *Server) SetupRoutes() {
 	identityRouter := identity.NewRouter(s.app.DB, s.app.JWTManager, s.app.TokenRevoker)
 	customerMgmtRouter := customermgmt.NewRouter(s.app.DB)
 	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB)
+	billingRouter := billing.NewRouter(s.app.DB)
 
 	// API routes
 	api := s.router.Group("/api")
@@ -69,6 +71,7 @@ func (s *Server) SetupRoutes() {
 			identityRouter.RegisterRoutes(v1)     // Users, Contacts, Profiles, Roles, Permissions
 			customerMgmtRouter.RegisterRoutes(v1) // Customers
 			orderMgmtRouter.RegisterRoutes(v1)    // Orders
+			billingRouter.RegisterRoutes(v1)      // Invoices, Payments, Subscriptions
 		}
 	}
 }
