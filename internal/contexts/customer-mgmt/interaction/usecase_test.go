@@ -291,7 +291,7 @@ func TestUseCase_EndInteraction(t *testing.T) {
 		existingInteraction := &Interaction{
 			StartedAt: startedAt,
 		}
-		existingInteraction.BaseAggregate.ID = interactionID
+		existingInteraction.ID = interactionID
 		endedAt := time.Now()
 
 		mockRepo.On("GetByID", ctx, interactionID).
@@ -315,7 +315,7 @@ func TestUseCase_SetFollowUp(t *testing.T) {
 	t.Run("enable follow-up", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		existingInteraction := &Interaction{}
-		existingInteraction.BaseAggregate.ID = interactionID
+		existingInteraction.ID = interactionID
 		followUpDate := time.Now().Add(24 * time.Hour)
 
 		mockRepo.On("GetByID", ctx, interactionID).
@@ -338,7 +338,7 @@ func TestUseCase_SetFollowUp(t *testing.T) {
 			FollowUpRequired: true,
 			FollowUpDate:     &followUpDate,
 		}
-		existingInteraction.BaseAggregate.ID = interactionID
+		existingInteraction.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -364,7 +364,7 @@ func TestUseCase_AddAttendee(t *testing.T) {
 		existingInteraction := &Interaction{
 			Attendees: []uuidv7.UUID{},
 		}
-		existingInteraction.BaseAggregate.ID = interactionID
+		existingInteraction.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -390,7 +390,7 @@ func TestUseCase_RemoveAttendee(t *testing.T) {
 		existingInteraction := &Interaction{
 			Attendees: []uuidv7.UUID{attendeeID},
 		}
-		existingInteraction.BaseAggregate.ID = interactionID
+		existingInteraction.ID = interactionID
 
 		mockRepo.On("GetByID", ctx, interactionID).
 			Return(existingInteraction, nil)
@@ -440,7 +440,7 @@ func TestUseCase_ListByType(t *testing.T) {
 	t.Run("valid type", func(t *testing.T) {
 		uc, mockRepo := createTestUseCase()
 		inter := &Interaction{Type: InteractionTypeCall}
-		inter.BaseAggregate.ID = uuidv7.New()
+		inter.ID = uuidv7.New()
 		expectedInteractions := []*Interaction{inter}
 
 		mockRepo.On("ListByType", ctx, string(InteractionTypeCall), 1, 20).
@@ -474,7 +474,7 @@ func TestUseCase_ListPendingFollowUps(t *testing.T) {
 			FollowUpRequired: true,
 			FollowUpDate:     &followUpDate,
 		}
-		inter.BaseAggregate.ID = uuidv7.New()
+		inter.ID = uuidv7.New()
 		expectedInteractions := []*Interaction{inter}
 
 		mockRepo.On("ListPendingFollowUps", ctx, 1, 20).

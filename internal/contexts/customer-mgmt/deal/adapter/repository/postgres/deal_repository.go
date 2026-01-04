@@ -87,9 +87,9 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 	}
 	
 	// Set BaseAggregate fields
-	d.BaseAggregate.ID = id
-	d.BaseAggregate.CreatedAt = r.CreatedAt
-	d.BaseAggregate.UpdatedAt = r.UpdatedAt
+	d.ID = id
+	d.CreatedAt = r.CreatedAt
+	d.UpdatedAt = r.UpdatedAt
 
 	// Parse optional Company ID
 	if r.CompanyID.Valid {

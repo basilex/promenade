@@ -73,12 +73,12 @@ func (r *orderRow) toEntity() (*order.Order, error) {
 	}
 
 	// Set BaseAggregate fields manually
-	o.BaseAggregate.ID = r.ID
+	o.ID = r.ID
 	if r.CreatedAt.Valid {
-		o.BaseAggregate.CreatedAt = r.CreatedAt.Time
+		o.CreatedAt = r.CreatedAt.Time
 	}
 	if r.UpdatedAt.Valid {
-		o.BaseAggregate.UpdatedAt = r.UpdatedAt.Time
+		o.UpdatedAt = r.UpdatedAt.Time
 	}
 
 	// Set DeletedAt (entity field, not BaseAggregate)
@@ -146,7 +146,7 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 	`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":            o.BaseAggregate.ID,
+		"id":            o.ID,
 		"order_number":  o.OrderNumber,
 		"customer_id":   o.CustomerID,
 		"company_id":    o.CompanyID,
@@ -159,8 +159,8 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 		"cancelled_at":  o.CancelledAt,
 		"contract_id":   o.ContractID,
 		"invoice_id":    o.InvoiceID,
-		"created_at":    o.BaseAggregate.CreatedAt,
-		"updated_at":    o.BaseAggregate.UpdatedAt,
+		"created_at":    o.CreatedAt,
+		"updated_at":    o.UpdatedAt,
 	})
 
 	return err
@@ -232,7 +232,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 	`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":           o.BaseAggregate.ID,
+		"id":           o.ID,
 		"order_number": o.OrderNumber,
 		"customer_id":  o.CustomerID,
 		"company_id":   o.CompanyID,
@@ -244,7 +244,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 		"cancelled_at": o.CancelledAt,
 		"contract_id":  o.ContractID,
 		"invoice_id":   o.InvoiceID,
-		"updated_at":   o.BaseAggregate.UpdatedAt,
+		"updated_at":   o.UpdatedAt,
 	})
 
 	return err

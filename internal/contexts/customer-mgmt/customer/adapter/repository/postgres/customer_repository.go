@@ -76,9 +76,9 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 	}
 	
 	// Set BaseAggregate fields
-	c.BaseAggregate.ID = id
-	c.BaseAggregate.CreatedAt = r.CreatedAt
-	c.BaseAggregate.UpdatedAt = r.UpdatedAt
+	c.ID = id
+	c.CreatedAt = r.CreatedAt
+	c.UpdatedAt = r.UpdatedAt
 
 	// Optional UserID
 	if r.UserID.Valid {
