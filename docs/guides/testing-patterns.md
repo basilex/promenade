@@ -8,9 +8,9 @@
 
 1. [Testing Philosophy](#-testing-philosophy)
 2. [Three-Tier Testing Strategy](#-three-tier-testing-strategy)
-3. [Integration Test Pattern](#-integration-test-pattern)
-4. [Smoke Test Pattern](#-smoke-test-pattern)
-5. [Unit Test Pattern](#-unit-test-pattern)
+3. [Unit Test Pattern](#-unit-test-pattern)
+4. [Integration Test Pattern](#-integration-test-pattern)
+5. [Benchmark Test Pattern](#-benchmark-test-pattern)
 6. [Best Practices](#-best-practices)
 7. [Common Pitfalls](#-common-pitfalls)
 8. [Test Coverage Requirements](#-test-coverage-requirements)
@@ -22,8 +22,8 @@
 Promenade follows **strict DDD principles** with **three-tier testing strategy**:
 
 1. **Unit Tests** - Fast feedback, test business logic in isolation
-2. **Smoke Tests** - Mock-based handler validation, NO database
-3. **Integration Tests** - Full E2E with real database
+2. **Integration Tests** - Full E2E with real database
+3. **Benchmark Tests** - Performance measurement and optimization validation
 
 **Key Principle**: Each test type has **ONE standardized pattern** - максимальна ідентичність патерну для легкого розуміння та підтримки.
 
@@ -34,18 +34,18 @@ Promenade follows **strict DDD principles** with **three-tier testing strategy**
 ### Overview
 
 ```
-Unit Tests (in-place)          → Fast (5s)   → Business logic
-Smoke Tests (mock-based)       → Fast (0.4s) → Handler HTTP contracts
-Integration Tests (real DB)    → Slow (6s)   → Repository E2E
+Unit Tests (in-place)          → Fast (5s)    → Business logic
+Integration Tests (real DB)    → Medium (14s) → Repository E2E + Full validation
+Benchmark Tests (real DB)      → Variable     → Performance measurement
 ```
 
 ### When to Use Each Type
 
 | Test Type       | When to Use                             | What to Test                   | Dependencies    |
 | --------------- | --------------------------------------- | ------------------------------ | --------------- |
-| **Unit**        | Business logic, entities, value objects | Domain rules, validation       | None (mocks)    |
-| **Smoke**       | HTTP handlers, API contracts            | Request/response, status codes | Mock UseCase    |
+| **Unit**        | Business logic, entities, value objects | Domain rules, validation       | None (pure Go)  |
 | **Integration** | Repository, database queries            | SQL operations, transactions   | Real PostgreSQL |
+| **Benchmark**   | After optimizations, N+1 fixes          | Query performance, memory      | Real PostgreSQL |
 
 ---
 
@@ -204,239 +204,6 @@ go test ./test/integration/contexts/identity/user -v
 
 # With coverage
 go test ./test/integration/... -cover
-```
-
----
-
-## 🟡 Smoke Test Pattern
-
-### Purpose
-
-**Fast validation** of HTTP handler contracts **without database**. Mock all UseCase dependencies.
-
-### Directory Structure
-
-**Mirror path structure**:
-
-```
-internal/contexts/identity/user/adapter/http/
- handler.go
-
-test/smoke/contexts/identity/user/
- handler_test.go                ← mirrors adapter/http/
-```
-
-### Standardized Pattern
-
-```go
-package user_test
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
-	"github.com/basilex/promenade/internal/contexts/identity/user"
-	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
-	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-//  ЕТАЛОННИЙ ПАТЕРН для smoke тестів:
-
-// 1. MockUseCase - імплементує ВСІ методи з IUseCase interface
-type MockUserUseCase struct {
-	mock.Mock
-}
-
-func (m *MockUserUseCase) Register(ctx context.Context, email, name, password string) (*user.User, error) {
-	args := m.Called(ctx, email, name, password)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*user.User), args.Error(1)
-}
-
-func (m *MockUserUseCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*user.User, error) {
-	args := m.Called(ctx, userID)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*user.User), args.Error(1)
-}
-
-// ... implement ALL IUseCase methods
-
-// 2. Router setup - gin test mode
-func setupUserRouter() *gin.Engine {
-	gin.SetMode(gin.TestMode)
-	return gin.New()
-}
-
-// 3. ONE test function for entire handler
-func TestUserHandler_Smoke(t *testing.T) {
-	mockUC := new(MockUserUseCase)
-	handler := userHTTP.NewUserHandler(mockUC)
-	router := setupUserRouter()
-
-	// Register routes
-	router.POST("/users/register", handler.Register)
-	router.GET("/users/:id", handler.GetByID)
-	router.POST("/users/:id/suspend", handler.Suspend)
-
-	// 4. SUBTEST for each endpoint
-	t.Run("Register returns 201", func(t *testing.T) {
-		userID := uuidv7.New()
-
-		// Create mock entity (no real hashing/validation needed)
-		u := &user.User{
-			ID:           userID,
-			PasswordHash: "hashedPassword",
-			Status:       user.UserStatusActive,
-		}
-
-		// Mock usecase call
-		mockUC.On("Register", mock.Anything, "test@example.com", "Test User", "password123").Return(u, nil).Once()
-
-		// HTTP request
-		reqBody := userHTTP.RegisterRequest{
-			Email:    "test@example.com",
-			Name:     "Test User",
-			Password: "password123",
-		}
-		body, _ := json.Marshal(reqBody)
-		req := httptest.NewRequest(http.MethodPost, "/users/register", bytes.NewBuffer(body))
-		req.Header.Set("Content-Type", "application/json")
-		w := httptest.NewRecorder()
-		router.ServeHTTP(w, req)
-
-		// Assertions
-		assert.Equal(t, http.StatusCreated, w.Code, "Register should return 201")
-		mockUC.AssertExpectations(t)
-	})
-
-	t.Run("GetByID returns 200", func(t *testing.T) {
-		userID := uuidv7.New()
-		u := &user.User{
-			ID:           userID,
-			PasswordHash: "hashedPassword",
-			Status:       user.UserStatusActive,
-		}
-
-		mockUC.On("GetUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(u, nil).Once()
-
-		req := httptest.NewRequest(http.MethodGet, "/users/"+userID.String(), nil)
-		w := httptest.NewRecorder()
-		router.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusOK, w.Code, "GetByID should return 200")
-		mockUC.AssertExpectations(t)
-	})
-
-	t.Run("Suspend returns 200", func(t *testing.T) {
-		userID := uuidv7.New()
-		u := &user.User{
-			ID:           userID,
-			PasswordHash: "hashedPassword",
-			Status:       user.UserStatusSuspended,
-		}
-
-		// ⚠️ ВАЖЛИВО: Handler може викликати КІЛЬКА методів UseCase
-		// Додати mock для ВСІХ викликів
-		mockUC.On("SuspendUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Once()
-		mockUC.On("GetUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(u, nil).Once() // Handler retrieves updated user
-
-		req := httptest.NewRequest(http.MethodPost, "/users/"+userID.String()+"/suspend", nil)
-		w := httptest.NewRecorder()
-		router.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusOK, w.Code, "Suspend should return 200")
-		mockUC.AssertExpectations(t)
-	})
-}
-```
-
-### Key Rules
-
-####  DO
-
-1. **Implement ALL IUseCase methods** - Mock must satisfy interface completely
-2. **Use gin.TestMode** - Disable debug logging
-3. **ONE test function per handler** - TestXxxHandler_Smoke with subtests
-4. **Mock ALL usecase calls** - Handler may call multiple methods (not just primary operation)
-5. **Create entities directly** - No need for factory methods (NewEntity)
-6. **AssertExpectations in each subtest** - Verify all mocks were called
-
-####  DON'T
-
-1. **DON'T use real database** - Smoke tests are mock-only
-2. **DON'T call factory methods** - Create entity structs directly
-3. **DON'T forget secondary mock calls** - Many handlers call GetEntity after main operation
-4. **DON'T test business logic** - Only HTTP contract (status codes, request/response)
-5. **DON'T use testify/suite** - Keep it simple with subtests
-
-### Critical Pattern: Multiple Mock Calls
-
-Many handlers call **UseCase method + GetEntity** to return updated entity:
-
-```go
-// Handler.go
-func (h *UserHandler) VerifyEmail(c *gin.Context) {
-	// Primary operation
-	err := h.usecase.VerifyEmail(ctx, userID)
-	if err != nil {
-		// handle error
-	}
-
-	// SECOND CALL - retrieve updated user
-	user, err := h.usecase.GetUser(ctx, userID)
-	if err != nil {
-		// handle error
-	}
-
-	response.Success(c, ToUserResponse(user))
-}
-```
-
-**Smoke test MUST mock BOTH calls**:
-
-```go
-t.Run("VerifyEmail returns 200", func(t *testing.T) {
-	userID := uuidv7.New()
-	u := &user.User{ID: userID, Status: user.UserStatusActive}
-
-	// ⚠️ Mock PRIMARY call
-	mockUC.On("VerifyEmail", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Once()
-
-	// ⚠️ Mock SECONDARY call (handler retrieves updated user)
-	mockUC.On("GetUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(u, nil).Once()
-
-	req := httptest.NewRequest(http.MethodPost, "/users/"+userID.String()+"/verify-email", nil)
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	mockUC.AssertExpectations(t)
-})
-```
-
-### Running Smoke Tests
-
-```bash
-# All smoke tests
-make test-smoke
-
-# Specific context
-go test ./test/smoke/contexts/identity/... -v
-
-# Specific aggregate
-go test ./test/smoke/contexts/identity/user -v
 ```
 
 ---
@@ -675,6 +442,130 @@ go test ./internal/contexts/identity/user -cover
 
 ---
 
+## 🟠 Benchmark Test Pattern
+
+### Purpose
+
+**Performance measurement** and **optimization validation** with real database. Used to validate N+1 query fixes, measure query performance, and track performance regressions.
+
+### Directory Structure
+
+**Mirror path structure** in `test/benchmark/contexts/`:
+
+```
+test/benchmark/contexts/identity/user/
+ repository_bench_test.go    ← Benchmark tests with real DB
+
+internal/contexts/identity/user/
+ adapter/repository/postgres/
+    user_repository.go        ← Production repository
+```
+
+### Standardized Pattern
+
+```go
+package user_test
+
+import (
+	"context"
+	"testing"
+
+	"github.com/basilex/promenade/internal/contexts/identity/user"
+	"github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	"github.com/basilex/promenade/test/integration"
+)
+
+// BenchmarkUserRepository_ListUsers measures query performance
+func BenchmarkUserRepository_ListUsers(b *testing.B) {
+	// Setup real database with test data
+	db := integration.SetupTestDBWithCleanTables(&testing.T{})
+	repo := postgres.NewUserRepository(db.DB)
+	ctx := context.Background()
+
+	// Create test data
+	for i := 0; i < 100; i++ {
+		u, _ := user.NewUser("user"+strconv.Itoa(i)+"@example.com", "password123")
+		_ = repo.Create(ctx, u)
+	}
+
+	// Reset timer before benchmark loop
+	b.ResetTimer()
+
+	// Benchmark loop
+	for i := 0; i < b.N; i++ {
+		_, err := repo.ListUsers(ctx, 1, 20)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+// BenchmarkUserRepository_ListUsers_WithRoles measures N+1 fix
+func BenchmarkUserRepository_ListUsers_WithRoles(b *testing.B) {
+	db := integration.SetupTestDBWithCleanTables(&testing.T{})
+	repo := postgres.NewUserRepository(db.DB)
+	ctx := context.Background()
+
+	// Create test data with roles
+	for i := 0; i < 100; i++ {
+		u, _ := user.NewUser("user"+strconv.Itoa(i)+"@example.com", "password123")
+		_ = repo.Create(ctx, u)
+		// Assign roles
+		_ = repo.AssignRole(ctx, u.ID, "user")
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := repo.ListUsers(ctx, 1, 20)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+```
+
+### Key Rules
+
+#### ✅ DO
+
+1. **Use real database** - Benchmarks measure real query performance
+2. **Create test data** - Populate database with realistic dataset
+3. **Reset timer** - Call `b.ResetTimer()` after setup
+4. **Measure specific operations** - Benchmark individual methods
+5. **Compare before/after** - Run benchmarks before and after optimizations
+
+#### ❌ DON'T
+
+1. **DON'T use mocks** - Benchmarks need real database
+2. **DON'T forget ResetTimer** - Setup time skews results
+3. **DON'T test trivial operations** - Focus on expensive operations (queries, aggregations)
+4. **DON'T ignore memory** - Use `-benchmem` flag to track allocations
+
+### Running Benchmark Tests
+
+```bash
+# All benchmarks (5s per benchmark)
+make test-benchmark
+
+# Extended benchmarks (10s per benchmark)
+make test-benchmark-all
+
+# Specific benchmark
+go test -bench=. ./test/benchmark/contexts/identity/user -v
+
+# With memory stats
+go test -bench=. -benchmem ./test/benchmark/contexts/identity/user
+
+# Compare before/after optimization
+go test -bench=ListUsers -benchmem ./test/benchmark/contexts/identity/user > before.txt
+# Apply optimization
+go test -bench=ListUsers -benchmem ./test/benchmark/contexts/identity/user > after.txt
+benchcmp before.txt after.txt
+```
+
+---
+
 ##  Best Practices
 
 ### General
@@ -819,46 +710,6 @@ func TestUserRepository_Create(t *testing.T) {
 }
 ```
 
-### Smoke Tests
-
-####  Forgetting secondary mock calls
-
-```go
-//  BAD - missing GetUser mock
-t.Run("VerifyEmail returns 200", func(t *testing.T) {
-	mockUC.On("VerifyEmail", mock.Anything, userID).Return(nil).Once()
-	// Handler ALSO calls GetUser but no mock! → PANIC
-})
-```
-
-```go
-//  GOOD - mock ALL handler calls
-t.Run("VerifyEmail returns 200", func(t *testing.T) {
-	u := &user.User{ID: userID}
-	mockUC.On("VerifyEmail", mock.Anything, userID).Return(nil).Once()
-	mockUC.On("GetUser", mock.Anything, userID).Return(u, nil).Once() // Don't forget!
-})
-```
-
-####  Using factory methods
-
-```go
-//  BAD - NewUser hashes password, validates email (unnecessary in smoke test)
-u, err := user.NewUser("test@example.com", "password123")
-if err != nil {
-	// Handle validation error in smoke test!?
-}
-```
-
-```go
-//  GOOD - create struct directly
-u := &user.User{
-	ID:           uuidv7.New(),
-	PasswordHash: "hashedPassword", // No real hashing
-	Status:       user.UserStatusActive,
-}
-```
-
 ### Unit Tests
 
 ####  Testing implementation details
@@ -906,7 +757,7 @@ mockRepo.AssertExpectations(t) // Fails if Create not called exactly once
 | **Entities**      | 95%+     | Core business logic          |
 | **Use Cases**     | 85%+     | Business operations          |
 | **Repositories**  | 80%+     | Data access                  |
-| **Handlers**      | 70%+     | HTTP contracts (smoke tests) |
+| **Handlers**      | 70%+     | HTTP contracts (unit tests)  |
 | **Value Objects** | 95%+     | Domain primitives            |
 
 ### Overall Project
@@ -946,11 +797,11 @@ go tool cover -func=coverage.out | grep total
 
 Before writing tests, verify:
 
-- [ ] Correct test type (unit/smoke/integration)?
+- [ ] Correct test type (unit/integration/benchmark)?
 - [ ] Using standardized pattern?
-- [ ] Mirror path structure (integration/smoke)?
+- [ ] Mirror path structure for integration tests?
 - [ ] SetupTestDBWithCleanTables for integration tests?
-- [ ] Mock ALL usecase calls for smoke tests?
+- [ ] Real database for integration tests?
 - [ ] Table-driven tests for multiple scenarios?
 - [ ] Clear, descriptive test names?
 - [ ] AssertExpectations for all mocks?
