@@ -52,6 +52,12 @@ jobs:
           go mod download
           go mod tidy
 
+      - name: Setup workspace configuration
+        run: |
+          echo "DATABASE_DRIVER=postgres" > .promenade.workspace
+          echo "ENVIRONMENT=test" >> .promenade.workspace
+          cat .promenade.workspace
+
       - name: Run migrations
         env:
           DB_HOST: localhost
