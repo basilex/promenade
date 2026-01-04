@@ -60,8 +60,7 @@ type Company struct {
 	// Relationships
 	ParentCompanyID *uuidv7.UUID
 
-	// Timestamps (CreatedAt, UpdatedAt from BaseAggregate)
-	DeletedAt *time.Time
+	// Timestamps (CreatedAt, UpdatedAt, DeletedAt from BaseAggregate)
 }
 
 // NewCompany creates a new company with required fields

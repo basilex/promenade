@@ -1,9 +1,9 @@
 -- Create billing_invoices table
 CREATE TABLE billing_invoices (
-    id VARCHAR(36) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     invoice_no VARCHAR(50) NOT NULL UNIQUE,
-    customer_id VARCHAR(36) NOT NULL,
-    order_id VARCHAR(36),
+    customer_id UUID NOT NULL,
+    order_id UUID,
     subtotal_amount BIGINT NOT NULL DEFAULT 0,
     tax_amount BIGINT NOT NULL DEFAULT 0,
     total_amount BIGINT NOT NULL DEFAULT 0,
@@ -19,8 +19,8 @@ CREATE TABLE billing_invoices (
 
 -- Create billing_invoice_lines table
 CREATE TABLE billing_invoice_lines (
-    id VARCHAR(36) PRIMARY KEY,
-    invoice_id VARCHAR(36) NOT NULL,
+    id UUID PRIMARY KEY,
+    invoice_id UUID NOT NULL,
     description TEXT NOT NULL,
     quantity INTEGER NOT NULL DEFAULT 1,
     unit_price BIGINT NOT NULL DEFAULT 0,

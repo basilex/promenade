@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -52,8 +53,7 @@ func TestNewProfile(t *testing.T) {
 
 func TestProfile_UpdateDisplayName(t *testing.T) {
 	profile := &Profile{
-		ID:          uuidv7.New(),
-		UserID:      uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 		DisplayName: "Original Name",
 	}
 
@@ -76,8 +76,7 @@ func TestProfile_UpdateDisplayName(t *testing.T) {
 
 func TestProfile_UpdateBio(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid bio", func(t *testing.T) {
@@ -101,8 +100,7 @@ func TestProfile_UpdateBio(t *testing.T) {
 
 func TestProfile_UpdateAvatar(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid HTTPS URL", func(t *testing.T) {
@@ -130,8 +128,7 @@ func TestProfile_UpdateAvatar(t *testing.T) {
 
 func TestProfile_UpdatePersonalInfo(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid personal info", func(t *testing.T) {
@@ -157,8 +154,7 @@ func TestProfile_UpdatePersonalInfo(t *testing.T) {
 
 func TestProfile_UpdateGender(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 		Gender: GenderNotSpecify,
 	}
 
@@ -180,8 +176,7 @@ func TestProfile_UpdateGender(t *testing.T) {
 
 func TestProfile_UpdateDateOfBirth(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid date of birth", func(t *testing.T) {
@@ -212,8 +207,7 @@ func TestProfile_UpdateDateOfBirth(t *testing.T) {
 
 func TestProfile_UpdateLocalization(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid localization", func(t *testing.T) {
@@ -244,8 +238,7 @@ func TestProfile_UpdateLocalization(t *testing.T) {
 
 func TestProfile_UpdateSocialLinks(t *testing.T) {
 	profile := &Profile{
-		ID:     uuidv7.New(),
-		UserID: uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 	}
 
 	t.Run("valid social links", func(t *testing.T) {
@@ -276,8 +269,7 @@ func TestProfile_UpdateSocialLinks(t *testing.T) {
 
 func TestProfile_Visibility(t *testing.T) {
 	profile := &Profile{
-		ID:       uuidv7.New(),
-		UserID:   uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 		IsPublic: true,
 	}
 
@@ -294,8 +286,7 @@ func TestProfile_Visibility(t *testing.T) {
 
 func TestProfile_Status(t *testing.T) {
 	profile := &Profile{
-		ID:       uuidv7.New(),
-		UserID:   uuidv7.New(),
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 		IsActive: true,
 	}
 
@@ -313,6 +304,7 @@ func TestProfile_Status(t *testing.T) {
 func TestProfile_GetFullName(t *testing.T) {
 	t.Run("full name", func(t *testing.T) {
 		profile := &Profile{
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 			FirstName:  "John",
 			MiddleName: "Michael",
 			LastName:   "Doe",
@@ -322,6 +314,7 @@ func TestProfile_GetFullName(t *testing.T) {
 
 	t.Run("no middle name", func(t *testing.T) {
 		profile := &Profile{
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 			FirstName: "John",
 			LastName:  "Doe",
 		}
@@ -330,6 +323,7 @@ func TestProfile_GetFullName(t *testing.T) {
 
 	t.Run("only first name", func(t *testing.T) {
 		profile := &Profile{
+		BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
 			FirstName: "John",
 		}
 		assert.Equal(t, "John", profile.GetFullName())
@@ -344,18 +338,17 @@ func TestProfile_GetFullName(t *testing.T) {
 func TestProfile_Validate(t *testing.T) {
 	t.Run("valid profile", func(t *testing.T) {
 		profile := &Profile{
-			ID:          uuidv7.New(),
 			UserID:      uuidv7.New(),
 			DisplayName: "John Doe",
 			Gender:      GenderMale,
 		}
+		profile.ID = uuidv7.New()
 		err := profile.Validate()
 		assert.NoError(t, err)
 	})
 
 	t.Run("missing ID", func(t *testing.T) {
 		profile := &Profile{
-			UserID:      uuidv7.New(),
 			DisplayName: "John Doe",
 		}
 		err := profile.Validate()
@@ -364,7 +357,6 @@ func TestProfile_Validate(t *testing.T) {
 
 	t.Run("missing user ID", func(t *testing.T) {
 		profile := &Profile{
-			ID:          uuidv7.New(),
 			DisplayName: "John Doe",
 		}
 		err := profile.Validate()
@@ -372,21 +364,18 @@ func TestProfile_Validate(t *testing.T) {
 	})
 
 	t.Run("missing display name", func(t *testing.T) {
-		profile := &Profile{
-			ID:     uuidv7.New(),
-			UserID: uuidv7.New(),
-		}
+		profile := &Profile{}
 		err := profile.Validate()
 		assert.Error(t, err)
 	})
 
 	t.Run("invalid gender", func(t *testing.T) {
 		profile := &Profile{
-			ID:          uuidv7.New(),
 			UserID:      uuidv7.New(),
 			DisplayName: "John Doe",
 			Gender:      Gender("invalid"),
 		}
+		profile.ID = uuidv7.New()
 		err := profile.Validate()
 		assert.Error(t, err)
 		assert.Equal(t, ErrInvalidGender, err)

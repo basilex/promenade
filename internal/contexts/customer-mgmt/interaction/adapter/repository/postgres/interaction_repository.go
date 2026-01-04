@@ -79,24 +79,26 @@ func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
 		FollowUpRequired: r.FollowUpRequired,
 		FollowUpDate:     r.FollowUpDate,
 		FollowUpNotes:    r.FollowUpNotes,
-		DeletedAt:        r.DeletedAt,
-	}
-	
-	// Set BaseAggregate fields
-	inter.ID = r.ID
-	inter.CreatedAt = r.CreatedAt
-	inter.UpdatedAt = r.UpdatedAt
-
-	if r.Outcome != nil {
-		outcome := interaction.InteractionOutcome(*r.Outcome)
-		inter.Outcome = &outcome
-	}
-
-	return inter, nil
 }
 
-// fromEntity converts domain entity to database row
-func fromEntity(inter *interaction.Interaction) (*interactionRow, error) {
+// Set BaseAggregate fields
+inter.ID = r.ID
+inter.CreatedAt = r.CreatedAt
+inter.UpdatedAt = r.UpdatedAt
+if r.DeletedAt != nil {
+	inter.DeletedAt = r.DeletedAt
+}
+
+if r.Outcome != nil {
+	outcome := interaction.InteractionOutcome(*r.Outcome)
+	inter.Outcome = &outcome
+}
+
+return inter, nil
+}
+
+// toRow converts domain entity to database row
+func toRow(inter *interaction.Interaction) *interactionRow {
 	row := &interactionRow{
 		ID:               inter.GetID(),
 		CustomerID:       inter.CustomerID,
@@ -126,15 +128,12 @@ func fromEntity(inter *interaction.Interaction) (*interactionRow, error) {
 		row.Outcome = &outcome
 	}
 
-	return row, nil
+	return row
 }
 
 // Create creates a new interaction
 func (r *interactionRepository) Create(ctx context.Context, inter *interaction.Interaction) error {
-	row, err := fromEntity(inter)
-	if err != nil {
-		return fmt.Errorf("failed to convert entity: %w", err)
-	}
+	row := toRow(inter)
 
 	query := `
 		INSERT INTO customer_interactions (
@@ -151,7 +150,7 @@ func (r *interactionRepository) Create(ctx context.Context, inter *interaction.I
 			:created_at, :updated_at
 		)`
 
-	_, err = r.NamedExec(ctx, query, row)
+	_, err := r.NamedExec(ctx, query, row)
 	if err != nil {
 		return fmt.Errorf("failed to insert interaction: %w", err)
 	}
@@ -185,10 +184,7 @@ func (r *interactionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*i
 // Update updates an existing interaction
 func (r *interactionRepository) Update(ctx context.Context, inter *interaction.Interaction) error {
 	inter.UpdatedAt = time.Now()
-	row, err := fromEntity(inter)
-	if err != nil {
-		return fmt.Errorf("failed to convert entity: %w", err)
-	}
+	row := toRow(inter)
 
 	query := `
 		UPDATE customer_interactions SET

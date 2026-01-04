@@ -6,6 +6,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
@@ -27,8 +28,9 @@ const (
 
 // User is an aggregate root representing a user account in the system
 type User struct {
+	aggregate.BaseAggregate
+
 	// Identity
-	ID    uuidv7.UUID
 	Email valueobject.Email
 
 	// Authentication
@@ -44,11 +46,6 @@ type User struct {
 	LastLoginAt      *time.Time
 	FailedLoginCount int
 	LockedUntil      *time.Time
-
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
 }
 
 // NewUser creates a new user with email and password
@@ -70,17 +67,14 @@ func NewUser(email, password string) (*User, error) {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	now := time.Now()
 	return &User{
-		ID:               uuidv7.New(),
+		BaseAggregate:    aggregate.NewBaseAggregate(),
 		Email:            emailVO,
 		PasswordHash:     passwordHash,
 		Status:           UserStatusActive,
 		EmailVerified:    false,
 		FailedLoginCount: 0,
 		Roles:            []string{"user"}, // Default role
-		CreatedAt:        now,
-		UpdatedAt:        now,
 	}, nil
 }
 
@@ -101,7 +95,7 @@ func (u *User) ChangePassword(newPassword string) error {
 	}
 
 	u.PasswordHash = passwordHash
-	u.UpdatedAt = time.Now()
+	u.Touch()
 	return nil
 }
 
@@ -119,13 +113,13 @@ func (u *User) RecordLogin() {
 	u.LastLoginAt = &now
 	u.FailedLoginCount = 0
 	u.LockedUntil = nil
-	u.UpdatedAt = now
+	u.Touch()
 }
 
 // RecordFailedLogin increments failed login count and locks account if necessary
 func (u *User) RecordFailedLogin() {
 	u.FailedLoginCount++
-	u.UpdatedAt = time.Now()
+	u.Touch()
 
 	// Lock account after 5 failed attempts for 30 minutes
 	if u.FailedLoginCount >= 5 {
@@ -146,31 +140,31 @@ func (u *User) IsLocked() bool {
 func (u *User) UnlockAccount() {
 	u.LockedUntil = nil
 	u.FailedLoginCount = 0
-	u.UpdatedAt = time.Now()
+	u.Touch()
 }
 
 // Activate activates the user account
 func (u *User) Activate() {
 	u.Status = UserStatusActive
-	u.UpdatedAt = time.Now()
+	u.Touch()
 }
 
 // Deactivate deactivates the user account
 func (u *User) Deactivate() {
 	u.Status = UserStatusInactive
-	u.UpdatedAt = time.Now()
+	u.Touch()
 }
 
 // Suspend suspends the user account
 func (u *User) Suspend() {
 	u.Status = UserStatusSuspended
-	u.UpdatedAt = time.Now()
+	u.Touch()
 }
 
 // Ban bans the user account
 func (u *User) Ban() {
 	u.Status = UserStatusBanned
-	u.UpdatedAt = time.Now()
+	u.Touch()
 }
 
 // IsActive checks if the user account is active

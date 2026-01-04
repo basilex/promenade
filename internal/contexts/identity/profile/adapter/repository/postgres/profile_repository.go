@@ -55,15 +55,16 @@ type profileRow struct {
 // toEntity converts database row to domain entity
 func (r *profileRow) toEntity() *profile.Profile {
 	p := &profile.Profile{
-		ID:          r.ID,
 		UserID:      r.UserID,
 		DisplayName: r.DisplayName,
 		Gender:      profile.Gender(r.Gender),
 		IsPublic:    r.IsPublic,
 		IsActive:    r.IsActive,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
 	}
+	// Initialize BaseAggregate fields
+	p.ID = r.ID
+	p.CreatedAt = r.CreatedAt
+	p.UpdatedAt = r.UpdatedAt
 
 	if r.Bio.Valid {
 		p.Bio = r.Bio.String
@@ -117,14 +118,14 @@ func (r *profileRow) toEntity() *profile.Profile {
 // fromEntity converts domain entity to database row
 func fromEntity(p *profile.Profile) *profileRow {
 	row := &profileRow{
-		ID:          p.ID,
+		ID:          p.GetID(),
 		UserID:      p.UserID,
 		DisplayName: p.DisplayName,
 		Gender:      string(p.Gender),
 		IsPublic:    p.IsPublic,
 		IsActive:    p.IsActive,
-		CreatedAt:   p.CreatedAt,
-		UpdatedAt:   p.UpdatedAt,
+		CreatedAt:   p.GetCreatedAt(),
+		UpdatedAt:   p.GetUpdatedAt(),
 	}
 
 	if p.Bio != "" {

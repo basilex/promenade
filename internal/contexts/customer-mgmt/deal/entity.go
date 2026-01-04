@@ -55,8 +55,6 @@ type Deal struct {
 	AssignedTo uuidv7.UUID
 
 	CloseReason string
-
-	DeletedAt *time.Time
 }
 
 // NewDeal creates a new deal

@@ -46,9 +46,6 @@ type Order struct {
 	// References (to other contexts)
 	ContractID *uuidv7.UUID // references Contract (same context)
 	InvoiceID  *uuidv7.UUID // references Billing.Invoice
-
-	// Soft delete
-	DeletedAt *time.Time
 }
 
 // OrderLine represents a line item in an order

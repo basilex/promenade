@@ -51,12 +51,11 @@ type Customer struct {
 	AssignedTo uuidv7.UUID // Sales rep (Identity.User)
 	Tags       []string    // marketing, vip, high-value
 
-	// Lifecycle (CreatedAt, UpdatedAt from BaseAggregate)
+	// Lifecycle (CreatedAt, UpdatedAt, DeletedAt from BaseAggregate)
 	LastContactedAt *time.Time // Last interaction timestamp
 	ConvertedAt     *time.Time // Timestamp when converted to paying customer
 	ChurnedAt       *time.Time
-	ChurnReason     string     // Reason for churn
-	DeletedAt       *time.Time // Soft delete
+	ChurnReason     string // Reason for churn
 }
 
 // NewCustomer creates a new customer (Lead status)

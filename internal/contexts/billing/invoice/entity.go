@@ -13,7 +13,6 @@ type Invoice struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID        uuidv7.UUID
 	InvoiceNo string // INV-2026-000001 (auto-generated)
 
 	// Relations
@@ -36,11 +35,6 @@ type Invoice struct {
 
 	// Line Items (embedded)
 	Lines []InvoiceLine
-
-	// Audit
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
 }
 
 // InvoiceLine represents a line item in an invoice
@@ -87,7 +81,7 @@ func NewInvoice(customerID uuidv7.UUID, dueDate time.Time, currency string) (*In
 	total, _ := valueobject.NewMoney(0, currency)
 
 	return &Invoice{
-		ID:             uuidv7.New(),
+		BaseAggregate:  aggregate.NewBaseAggregate(),
 		CustomerID:     customerID,
 		IssueDate:      now,
 		DueDate:        dueDate,
@@ -97,8 +91,6 @@ func NewInvoice(customerID uuidv7.UUID, dueDate time.Time, currency string) (*In
 		TaxAmount:      tax,
 		TotalAmount:    total,
 		Lines:          []InvoiceLine{},
-		CreatedAt:      now,
-		UpdatedAt:      now,
 	}, nil
 }
 
@@ -303,9 +295,4 @@ func (i *Invoice) Validate() error {
 	}
 
 	return nil
-}
-
-// Touch updates the UpdatedAt timestamp
-func (i *Invoice) Touch() {
-	i.UpdatedAt = time.Now()
 }

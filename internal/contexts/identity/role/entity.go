@@ -3,10 +3,8 @@ package role
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Role represents a user role in the system
@@ -15,18 +13,12 @@ type Role struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID          uuidv7.UUID
 	Name        string // unique, lowercase identifier (e.g., "admin", "user", "manager")
 	DisplayName string // Human-readable name for UI (e.g., "System Administrator")
 
 	// Metadata
 	Description string
 	IsSystem    bool // System roles cannot be deleted
-
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
 }
 
 // NewRole creates a new role
@@ -39,16 +31,12 @@ func NewRole(name, displayName, description string) (*Role, error) {
 		return nil, fmt.Errorf("display name is required")
 	}
 
-	now := time.Now()
 	return &Role{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		Name:          strings.ToLower(strings.TrimSpace(name)),
 		DisplayName:   strings.TrimSpace(displayName),
 		Description:   strings.TrimSpace(description),
 		IsSystem:      false,
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}, nil
 }
 
@@ -66,7 +54,7 @@ func NewSystemRole(name, displayName, description string) (*Role, error) {
 // UpdateDescription updates the role description
 func (r *Role) UpdateDescription(description string) {
 	r.Description = strings.TrimSpace(description)
-	r.UpdatedAt = time.Now()
+	r.Touch()
 }
 
 // UpdateDisplayName updates the role display name
@@ -76,7 +64,7 @@ func (r *Role) UpdateDisplayName(displayName string) error {
 		return fmt.Errorf("display name cannot be empty")
 	}
 	r.DisplayName = trimmed
-	r.UpdatedAt = time.Now()
+	r.Touch()
 	return nil
 }
 

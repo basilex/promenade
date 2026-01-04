@@ -140,10 +140,10 @@ func TestUseCase_GetProfile(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:          profileID,
 			UserID:      userID,
 			DisplayName: "John Doe",
 		}
+		profile.ID = profileID
 		repo.profiles[profileID] = profile
 		uc := NewUseCase(repo)
 
@@ -170,10 +170,10 @@ func TestUseCase_GetProfileByUserID(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:          profileID,
 			UserID:      userID,
 			DisplayName: "John Doe",
 		}
+		profile.ID = profileID
 		repo.profilesByUser[userID] = profile
 		uc := NewUseCase(repo)
 
@@ -200,10 +200,10 @@ func TestUseCase_UpdateDisplayName(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:          profileID,
 			UserID:      userID,
 			DisplayName: "Old Name",
 		}
+		profile.ID = profileID
 		repo.profiles[profileID] = profile
 		uc := NewUseCase(repo)
 
@@ -216,10 +216,10 @@ func TestUseCase_UpdateDisplayName(t *testing.T) {
 	t.Run("invalid display name", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:          profileID,
 			UserID:      userID,
 			DisplayName: "Old Name",
 		}
+		profile.ID = profileID
 		repo.profiles[profileID] = profile
 		uc := NewUseCase(repo)
 
@@ -235,9 +235,9 @@ func TestUseCase_UpdateBio(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -255,9 +255,9 @@ func TestUseCase_UpdateAvatar(t *testing.T) {
 	t.Run("valid URL", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:     profileID,
 			UserID: userID,
 		}
+		profile.ID = profileID
 		repo.profiles[profileID] = profile
 		uc := NewUseCase(repo)
 
@@ -270,9 +270,9 @@ func TestUseCase_UpdateAvatar(t *testing.T) {
 	t.Run("invalid URL", func(t *testing.T) {
 		repo := newMockRepository()
 		profile := &Profile{
-			ID:     profileID,
 			UserID: userID,
 		}
+		profile.ID = profileID
 		repo.profiles[profileID] = profile
 		uc := NewUseCase(repo)
 
@@ -288,9 +288,9 @@ func TestUseCase_UpdatePersonalInfo(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -309,9 +309,9 @@ func TestUseCase_UpdateGender(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -328,9 +328,9 @@ func TestUseCase_UpdateDateOfBirth(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -348,9 +348,9 @@ func TestUseCase_UpdateLocalization(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -369,9 +369,9 @@ func TestUseCase_UpdateSocialLinks(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -392,10 +392,10 @@ func TestUseCase_Visibility(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:       profileID,
 		UserID:   userID,
 		IsPublic: true,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -419,10 +419,10 @@ func TestUseCase_Status(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:       profileID,
 		UserID:   userID,
 		IsActive: true,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -446,9 +446,9 @@ func TestUseCase_DeleteProfile(t *testing.T) {
 
 	repo := newMockRepository()
 	profile := &Profile{
-		ID:     profileID,
 		UserID: userID,
 	}
+	profile.ID = profileID
 	repo.profiles[profileID] = profile
 	uc := NewUseCase(repo)
 
@@ -465,18 +465,18 @@ func TestUseCase_ListPublicProfiles(t *testing.T) {
 	repo := newMockRepository()
 	// Add public profile
 	publicProfile := &Profile{
-		ID:       uuidv7.New(),
 		UserID:   uuidv7.New(),
 		IsPublic: true,
 	}
+	publicProfile.ID = uuidv7.New()
 	repo.profiles[publicProfile.ID] = publicProfile
 
 	// Add private profile
 	privateProfile := &Profile{
-		ID:       uuidv7.New(),
 		UserID:   uuidv7.New(),
 		IsPublic: false,
 	}
+	privateProfile.ID = uuidv7.New()
 	repo.profiles[privateProfile.ID] = privateProfile
 
 	uc := NewUseCase(repo)

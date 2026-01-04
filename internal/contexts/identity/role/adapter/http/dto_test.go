@@ -16,14 +16,14 @@ func TestToRoleResponse(t *testing.T) {
 
 	t.Run("regular role", func(t *testing.T) {
 		r := &role.Role{
-			ID:          roleID,
 			Name:        "manager",
 			DisplayName: "Manager",
 			Description: "Team manager role",
 			IsSystem:    false,
-			CreatedAt:   now,
-			UpdatedAt:   now,
 		}
+		r.ID = roleID
+		r.CreatedAt = now
+		r.UpdatedAt = now
 
 		resp := ToRoleResponse(r)
 
@@ -38,14 +38,14 @@ func TestToRoleResponse(t *testing.T) {
 
 	t.Run("system role", func(t *testing.T) {
 		r := &role.Role{
-			ID:          roleID,
 			Name:        "admin",
 			DisplayName: "Administrator",
 			Description: "System administrator",
 			IsSystem:    true,
-			CreatedAt:   now,
-			UpdatedAt:   now,
 		}
+		r.ID = roleID
+		r.CreatedAt = now
+		r.UpdatedAt = now
 
 		resp := ToRoleResponse(r)
 
@@ -80,40 +80,42 @@ func TestToRoleListResponse(t *testing.T) {
 	})
 
 	t.Run("list with multiple roles", func(t *testing.T) {
-		roles := []*role.Role{
-			{
-				ID:          uuidv7.New(),
-				Name:        "admin",
-				DisplayName: "Administrator",
-				Description: "System administrator",
-				IsSystem:    true,
-				CreatedAt:   now,
-				UpdatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "user",
-				DisplayName: "User",
-				Description: "Regular user",
-				IsSystem:    true,
-				CreatedAt:   now,
-				UpdatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "manager",
-				DisplayName: "Manager",
-				Description: "Team manager",
-				IsSystem:    false,
-				CreatedAt:   now,
-				UpdatedAt:   now,
-			},
+		adminRole := &role.Role{
+			Name:        "admin",
+			DisplayName: "Administrator",
+			Description: "System administrator",
+			IsSystem:    true,
 		}
-		total := 3
+		adminRole.ID = uuidv7.New()
+		adminRole.CreatedAt = now
+		adminRole.UpdatedAt = now
 
-		resp := ToRoleListResponse(roles, total, 20, 0)
+		userRole := &role.Role{
+			Name:        "user",
+			DisplayName: "User",
+			Description: "Regular user",
+			IsSystem:    true,
+		}
+		userRole.ID = uuidv7.New()
+		userRole.CreatedAt = now
+		userRole.UpdatedAt = now
 
-		assert.NotNil(t, resp)
+	managerRole := &role.Role{
+		Name:        "manager",
+		DisplayName: "Manager",
+		Description: "Team manager",
+		IsSystem:    false,
+	}
+	managerRole.ID = uuidv7.New()
+	managerRole.CreatedAt = now
+	managerRole.UpdatedAt = now
+
+	roles := []*role.Role{adminRole, userRole, managerRole}
+	total := 3
+
+	resp := ToRoleListResponse(roles, total, 20, 0)
+
+	assert.NotNil(t, resp)
 		assert.Equal(t, 3, resp.Total)
 		assert.Equal(t, 20, resp.Limit)
 		assert.Equal(t, 0, resp.Offset)
@@ -127,26 +129,27 @@ func TestToRoleListResponse(t *testing.T) {
 	})
 
 	t.Run("list with pagination", func(t *testing.T) {
-		roles := []*role.Role{
-			{
-				ID:          uuidv7.New(),
-				Name:        "role1",
-				DisplayName: "Role 1",
-				Description: "First role",
-				IsSystem:    false,
-				CreatedAt:   now,
-				UpdatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "role2",
-				DisplayName: "Role 2",
-				Description: "Second role",
-				IsSystem:    false,
-				CreatedAt:   now,
-				UpdatedAt:   now,
-			},
+		role1 := &role.Role{
+			Name:        "role1",
+			DisplayName: "Role 1",
+			Description: "First role",
+			IsSystem:    false,
 		}
+		role1.ID = uuidv7.New()
+		role1.CreatedAt = now
+		role1.UpdatedAt = now
+
+		role2 := &role.Role{
+			Name:        "role2",
+			DisplayName: "Role 2",
+			Description: "Second role",
+			IsSystem:    false,
+		}
+		role2.ID = uuidv7.New()
+		role2.CreatedAt = now
+		role2.UpdatedAt = now
+
+		roles := []*role.Role{role1, role2}
 		total := 10
 
 		resp := ToRoleListResponse(roles, total, 2, 5)

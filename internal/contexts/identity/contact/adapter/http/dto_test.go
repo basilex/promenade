@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
+	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
@@ -19,14 +20,14 @@ func TestToContactResponse(t *testing.T) {
 	t.Run("email contact", func(t *testing.T) {
 		email, _ := valueobject.NewEmail("test@example.com")
 		c := &contact.Contact{
-			ID:         contactID,
-			UserID:     userID,
-			Type:       contact.ContactTypeEmail,
-			Label:      "Work",
-			Email:      &email,
-			IsPrimary:  true,
-			IsVerified: false,
-			IsPublic:   true,
+			BaseAggregate: aggregate.BaseAggregate{ID: contactID},
+			UserID:        userID,
+			Type:          contact.ContactTypeEmail,
+			Label:         "Work",
+			Email:         &email,
+			IsPrimary:     true,
+			IsVerified:    false,
+			IsPublic:      true,
 		}
 
 		resp := ToContactResponse(c)
@@ -47,14 +48,14 @@ func TestToContactResponse(t *testing.T) {
 	t.Run("phone contact", func(t *testing.T) {
 		phone, _ := valueobject.NewPhone("+380501234567")
 		c := &contact.Contact{
-			ID:         contactID,
-			UserID:     userID,
-			Type:       contact.ContactTypePhone,
-			Label:      "Mobile",
-			Phone:      &phone,
-			IsPrimary:  false,
-			IsVerified: true,
-			IsPublic:   false,
+			BaseAggregate: aggregate.BaseAggregate{ID: contactID},
+			UserID:        userID,
+			Type:          contact.ContactTypePhone,
+			Label:         "Mobile",
+			Phone:         &phone,
+			IsPrimary:     false,
+			IsVerified:    true,
+			IsPublic:      false,
 		}
 
 		resp := ToContactResponse(c)
@@ -71,14 +72,14 @@ func TestToContactResponse(t *testing.T) {
 	t.Run("address contact", func(t *testing.T) {
 		addr, _ := valueobject.NewAddress("123 Main St", "Kyiv", "01001", "UA")
 		c := &contact.Contact{
-			ID:         contactID,
-			UserID:     userID,
-			Type:       contact.ContactTypeAddress,
-			Label:      "Home",
-			Address:    &addr,
-			IsPrimary:  false,
-			IsVerified: false,
-			IsPublic:   true,
+			BaseAggregate: aggregate.BaseAggregate{ID: contactID},
+			UserID:        userID,
+			Type:          contact.ContactTypeAddress,
+			Label:         "Home",
+			Address:       &addr,
+			IsPrimary:     false,
+			IsVerified:    false,
+			IsPublic:      true,
 		}
 
 		resp := ToContactResponse(c)
@@ -102,18 +103,18 @@ func TestToContactListResponse(t *testing.T) {
 
 	contacts := []*contact.Contact{
 		{
-			ID:     uuidv7.New(),
-			UserID: userID,
-			Type:   contact.ContactTypeEmail,
-			Label:  "Work",
-			Email:  &email1,
+			BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
+			UserID:        userID,
+			Type:          contact.ContactTypeEmail,
+			Label:         "Work",
+			Email:         &email1,
 		},
 		{
-			ID:     uuidv7.New(),
-			UserID: userID,
-			Type:   contact.ContactTypeEmail,
-			Label:  "Personal",
-			Email:  &email2,
+			BaseAggregate: aggregate.BaseAggregate{ID: uuidv7.New()},
+			UserID:        userID,
+			Type:          contact.ContactTypeEmail,
+			Label:         "Personal",
+			Email:         &email2,
 		},
 	}
 

@@ -16,13 +16,13 @@ func TestToPermissionResponse(t *testing.T) {
 
 	t.Run("regular permission", func(t *testing.T) {
 		p := &permission.Permission{
-			ID:          permissionID,
 			Name:        "users:create",
 			Resource:    "users",
 			Action:      "create",
 			Description: "Create new users",
-			CreatedAt:   now,
 		}
+		p.ID = permissionID
+		p.CreatedAt = now
 
 		resp := ToPermissionResponse(p)
 
@@ -36,13 +36,13 @@ func TestToPermissionResponse(t *testing.T) {
 
 	t.Run("permission without description", func(t *testing.T) {
 		p := &permission.Permission{
-			ID:          permissionID,
 			Name:        "users:read",
 			Resource:    "users",
 			Action:      "read",
 			Description: "",
-			CreatedAt:   now,
 		}
+		p.ID = permissionID
+		p.CreatedAt = now
 
 		resp := ToPermissionResponse(p)
 
@@ -77,40 +77,43 @@ func TestToPermissionListResponse(t *testing.T) {
 	})
 
 	t.Run("list with multiple permissions", func(t *testing.T) {
-		permissions := []*permission.Permission{
-			{
-				ID:          uuidv7.New(),
-				Name:        "users:create",
-				Resource:    "users",
-				Action:      "create",
-				Description: "Create users",
-				CreatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "users:read",
-				Resource:    "users",
-				Action:      "read",
-				Description: "Read users",
-				CreatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "users:update",
-				Resource:    "users",
-				Action:      "update",
-				Description: "Update users",
-				CreatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "users:delete",
-				Resource:    "users",
-				Action:      "delete",
-				Description: "Delete users",
-				CreatedAt:   now,
-			},
+		perm1 := &permission.Permission{
+			Name:        "users:create",
+			Resource:    "users",
+			Action:      "create",
+			Description: "Create users",
 		}
+		perm1.ID = uuidv7.New()
+		perm1.CreatedAt = now
+
+		perm2 := &permission.Permission{
+			Name:        "users:read",
+			Resource:    "users",
+			Action:      "read",
+			Description: "Read users",
+		}
+		perm2.ID = uuidv7.New()
+		perm2.CreatedAt = now
+
+		perm3 := &permission.Permission{
+			Name:        "users:update",
+			Resource:    "users",
+			Action:      "update",
+			Description: "Update users",
+		}
+		perm3.ID = uuidv7.New()
+		perm3.CreatedAt = now
+
+		perm4 := &permission.Permission{
+			Name:        "users:delete",
+			Resource:    "users",
+			Action:      "delete",
+			Description: "Delete users",
+		}
+		perm4.ID = uuidv7.New()
+		perm4.CreatedAt = now
+
+		permissions := []*permission.Permission{perm1, perm2, perm3, perm4}
 		total := 4
 
 		resp := ToPermissionListResponse(permissions, total, 20, 0)
@@ -129,24 +132,25 @@ func TestToPermissionListResponse(t *testing.T) {
 	})
 
 	t.Run("list with pagination", func(t *testing.T) {
-		permissions := []*permission.Permission{
-			{
-				ID:          uuidv7.New(),
-				Name:        "perm1:read",
-				Resource:    "perm1",
-				Action:      "read",
-				Description: "First permission",
-				CreatedAt:   now,
-			},
-			{
-				ID:          uuidv7.New(),
-				Name:        "perm2:write",
-				Resource:    "perm2",
-				Action:      "write",
-				Description: "Second permission",
-				CreatedAt:   now,
-			},
+		perm1 := &permission.Permission{
+			Name:        "perm1:read",
+			Resource:    "perm1",
+			Action:      "read",
+			Description: "First permission",
 		}
+		perm1.ID = uuidv7.New()
+		perm1.CreatedAt = now
+
+		perm2 := &permission.Permission{
+			Name:        "perm2:write",
+			Resource:    "perm2",
+			Action:      "write",
+			Description: "Second permission",
+		}
+		perm2.ID = uuidv7.New()
+		perm2.CreatedAt = now
+
+		permissions := []*permission.Permission{perm1, perm2}
 		total := 15
 
 		resp := ToPermissionListResponse(permissions, total, 2, 10)

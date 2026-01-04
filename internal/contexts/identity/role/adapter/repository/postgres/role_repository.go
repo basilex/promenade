@@ -38,33 +38,34 @@ type roleRow struct {
 
 // toEntity converts database row to domain entity
 func (r *roleRow) toEntity() (*roleentity.Role, error) {
-	var deletedAt *time.Time
-	if r.DeletedAt.Valid {
-		deletedAt = &r.DeletedAt.Time
-	}
-
-	return &roleentity.Role{
-		ID:          r.ID,
+	role := &roleentity.Role{
 		Name:        r.Name,
 		DisplayName: r.DisplayName,
 		Description: r.Description,
 		IsSystem:    r.IsSystem,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
-		DeletedAt:   deletedAt,
-	}, nil
+	}
+	// Initialize BaseAggregate fields
+	role.ID = r.ID
+	role.CreatedAt = r.CreatedAt
+	role.UpdatedAt = r.UpdatedAt
+	if r.DeletedAt.Valid {
+		deletedTime := r.DeletedAt.Time
+		role.DeletedAt = &deletedTime
+	}
+
+	return role, nil
 }
 
 // fromEntity converts domain entity to database row
 func fromRoleEntity(r *roleentity.Role) *roleRow {
 	row := &roleRow{
-		ID:          r.ID,
+		ID:          r.GetID(),
 		Name:        r.Name,
 		DisplayName: r.DisplayName,
 		Description: r.Description,
 		IsSystem:    r.IsSystem,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
+		CreatedAt:   r.GetCreatedAt(),
+		UpdatedAt:   r.GetUpdatedAt(),
 	}
 
 	if r.DeletedAt != nil {

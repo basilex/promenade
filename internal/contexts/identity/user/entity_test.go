@@ -290,11 +290,11 @@ func TestUser_Validate(t *testing.T) {
 
 	t.Run("missing email", func(t *testing.T) {
 		user := &User{
-			ID:           uuidv7.New(),
 			Email:        valueobject.Email{}, // Empty value object
 			PasswordHash: "hash",
 			Status:       UserStatusActive,
 		}
+		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "email is required")
@@ -303,11 +303,11 @@ func TestUser_Validate(t *testing.T) {
 	t.Run("missing password hash", func(t *testing.T) {
 		email, _ := valueobject.NewEmail("test@example.com")
 		user := &User{
-			ID:           uuidv7.New(),
 			Email:        email,
 			PasswordHash: "",
 			Status:       UserStatusActive,
 		}
+		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "password hash is required")
@@ -316,11 +316,11 @@ func TestUser_Validate(t *testing.T) {
 	t.Run("invalid status", func(t *testing.T) {
 		email, _ := valueobject.NewEmail("test@example.com")
 		user := &User{
-			ID:           uuidv7.New(),
 			Email:        email,
 			PasswordHash: "hash",
 			Status:       "invalid",
 		}
+		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid user status")

@@ -63,8 +63,6 @@ type Interaction struct {
 	FollowUpRequired bool
 	FollowUpDate     *time.Time
 	FollowUpNotes    string
-
-	DeletedAt *time.Time
 }
 
 // NewInteraction creates a new interaction

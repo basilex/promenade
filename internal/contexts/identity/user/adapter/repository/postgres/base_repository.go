@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -49,4 +50,10 @@ func (r *BaseRepository) Exec(ctx context.Context, query string, args ...any) (s
 func (r *BaseRepository) NamedExec(ctx context.Context, query string, arg any) (sql.Result, error) {
 	executor := r.getExecutor(ctx)
 	return sqlx.NamedExecContext(ctx, executor, query, arg)
+}
+
+// parseTime parses RFC3339 timestamp string to time.Time
+func parseTime(s string) time.Time {
+	t, _ := time.Parse(time.RFC3339, s)
+	return t
 }

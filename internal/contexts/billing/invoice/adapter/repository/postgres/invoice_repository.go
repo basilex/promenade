@@ -641,8 +641,7 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 	tax, _ := valueobject.NewMoney(row.TaxAmount, row.Currency)
 	total, _ := valueobject.NewMoney(row.TotalAmount, row.Currency)
 
-	return &invoice.Invoice{
-		ID:             id,
+	inv := &invoice.Invoice{
 		InvoiceNo:      row.InvoiceNo,
 		CustomerID:     customerID,
 		OrderID:        orderID,
@@ -654,10 +653,18 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 		DueDate:        row.DueDate,
 		PaidDate:       paidDate,
 		Status:         invoice.InvoiceStatus(row.Status),
-		CreatedAt:      row.CreatedAt,
-		UpdatedAt:      row.UpdatedAt,
 		Lines:          []invoice.InvoiceLine{},
-	}, nil
+	}
+	
+	// Set BaseAggregate fields
+	inv.ID = id
+	inv.CreatedAt = row.CreatedAt
+	inv.UpdatedAt = row.UpdatedAt
+	if row.DeletedAt.Valid {
+		inv.DeletedAt = &row.DeletedAt.Time
+	}
+	
+	return inv, nil
 }
 
 func (r *invoiceRepository) lineRowToEntity(row *invoiceLineRow) (*invoice.InvoiceLine, error) {

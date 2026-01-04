@@ -38,33 +38,34 @@ type permissionRow struct {
 
 // toEntity converts database row to domain entity
 func (r *permissionRow) toEntity() (*permission.Permission, error) {
-	var deletedAt *time.Time
-	if r.DeletedAt.Valid {
-		deletedAt = &r.DeletedAt.Time
-	}
-
-	return &permission.Permission{
-		ID:          r.ID,
+	perm := &permission.Permission{
 		Name:        r.Name,
 		Resource:    r.Resource,
 		Action:      r.Action,
 		Description: r.Description,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
-		DeletedAt:   deletedAt,
-	}, nil
+	}
+	// Initialize BaseAggregate fields
+	perm.ID = r.ID
+	perm.CreatedAt = r.CreatedAt
+	perm.UpdatedAt = r.UpdatedAt
+	if r.DeletedAt.Valid {
+		deletedTime := r.DeletedAt.Time
+		perm.DeletedAt = &deletedTime
+	}
+
+	return perm, nil
 }
 
 // fromEntity converts domain entity to database row
 func fromPermissionEntity(p *permission.Permission) *permissionRow {
 	row := &permissionRow{
-		ID:          p.ID,
+		ID:          p.GetID(),
 		Name:        p.Name,
 		Resource:    p.Resource,
 		Action:      p.Action,
 		Description: p.Description,
-		CreatedAt:   p.CreatedAt,
-		UpdatedAt:   p.UpdatedAt,
+		CreatedAt:   p.GetCreatedAt(),
+		UpdatedAt:   p.GetUpdatedAt(),
 	}
 
 	if p.DeletedAt != nil {

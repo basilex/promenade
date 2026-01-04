@@ -142,7 +142,8 @@ func TestUseCase_Register(t *testing.T) {
 		repo.On("Create", ctx, mock.Anything).Return(nil)
 		
 		// Mock role assignment
-		userRole := &role.Role{ID: uuidv7.New(), Name: "user"}
+		userRole := &role.Role{Name: "user"}
+		userRole.ID = uuidv7.New()
 		roleRepo.On("GetByName", ctx, "user").Return(userRole, nil)
 		roleRepo.On("AssignRoleToUser", ctx, mock.Anything, userRole.ID, mock.Anything).Return(nil)
 		

@@ -32,7 +32,6 @@ type Profile struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID     uuidv7.UUID
 	UserID uuidv7.UUID
 
 	// Display Information
@@ -63,10 +62,6 @@ type Profile struct {
 	// Privacy & Status
 	IsPublic bool // Profile visibility
 	IsActive bool // Profile status
-
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
 // NewProfile creates a new profile
@@ -82,18 +77,14 @@ func NewProfile(userID uuidv7.UUID, displayName string) (*Profile, error) {
 	}
 
 	displayName = strings.TrimSpace(displayName)
-	now := time.Now()
 
 	profile := &Profile{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		UserID:        userID,
 		DisplayName:   displayName,
 		Gender:        GenderNotSpecify,
 		IsPublic:      true, // Default to public
 		IsActive:      true, // Default to active
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}
 
 	return profile, nil
@@ -114,7 +105,7 @@ func (p *Profile) UpdateDisplayName(displayName string) error {
 	}
 
 	p.DisplayName = displayName
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -127,7 +118,7 @@ func (p *Profile) UpdateBio(bio string) error {
 	}
 
 	p.Bio = bio
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -140,7 +131,7 @@ func (p *Profile) UpdateAvatar(avatarURL string) error {
 	}
 
 	p.AvatarURL = avatarURL
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -163,7 +154,7 @@ func (p *Profile) UpdatePersonalInfo(firstName, lastName, middleName string) err
 	p.FirstName = firstName
 	p.LastName = lastName
 	p.MiddleName = middleName
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -174,7 +165,7 @@ func (p *Profile) UpdateGender(gender Gender) error {
 	}
 
 	p.Gender = gender
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -195,7 +186,7 @@ func (p *Profile) UpdateDateOfBirth(dateOfBirth *time.Time) error {
 	}
 
 	p.DateOfBirth = dateOfBirth
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -218,7 +209,7 @@ func (p *Profile) UpdateLocalization(timezone, language, country string) error {
 	p.Timezone = timezone
 	p.Language = strings.ToLower(language)
 	p.Country = strings.ToUpper(country)
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
@@ -247,32 +238,32 @@ func (p *Profile) UpdateSocialLinks(website, linkedin, twitter, github, facebook
 	p.GitHub = strings.TrimSpace(github)
 	p.Facebook = strings.TrimSpace(facebook)
 	p.Instagram = strings.TrimSpace(instagram)
-	p.UpdatedAt = time.Now()
+	p.Touch()
 	return nil
 }
 
 // SetPublic sets profile visibility to public
 func (p *Profile) SetPublic() {
 	p.IsPublic = true
-	p.UpdatedAt = time.Now()
+	p.Touch()
 }
 
 // SetPrivate sets profile visibility to private
 func (p *Profile) SetPrivate() {
 	p.IsPublic = false
-	p.UpdatedAt = time.Now()
+	p.Touch()
 }
 
 // Activate activates the profile
 func (p *Profile) Activate() {
 	p.IsActive = true
-	p.UpdatedAt = time.Now()
+	p.Touch()
 }
 
 // Deactivate deactivates the profile
 func (p *Profile) Deactivate() {
 	p.IsActive = false
-	p.UpdatedAt = time.Now()
+	p.Touch()
 }
 
 // GetFullName returns the full name (FirstName MiddleName LastName)

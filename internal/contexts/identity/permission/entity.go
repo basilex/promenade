@@ -3,10 +3,8 @@ package permission
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // Permission represents a specific permission in the system
@@ -15,7 +13,6 @@ type Permission struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID   uuidv7.UUID
 	Name string // unique identifier (e.g., "users:read", "customers:write")
 
 	// Resource and Action
@@ -24,11 +21,6 @@ type Permission struct {
 
 	// Metadata
 	Description string
-
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time // Soft delete support
 }
 
 // NewPermission creates a new permission
@@ -47,16 +39,12 @@ func NewPermission(resource, action, description string) (*Permission, error) {
 
 	name := fmt.Sprintf("%s:%s", resource, action)
 
-	now := time.Now()
 	return &Permission{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		Name:          name,
 		Resource:      strings.ToLower(strings.TrimSpace(resource)),
 		Action:        strings.ToLower(strings.TrimSpace(action)),
 		Description:   strings.TrimSpace(description),
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}, nil
 }
 
@@ -80,7 +68,7 @@ func (p *Permission) Validate() error {
 // UpdateDescription updates the permission description
 func (p *Permission) UpdateDescription(description string) {
 	p.Description = strings.TrimSpace(description)
-	p.UpdatedAt = time.Now()
+	p.Touch()
 }
 
 // validateResource validates resource name

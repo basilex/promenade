@@ -91,7 +91,7 @@ internal/contexts/identity/contact/
 **Repository with BaseRepository**:
 
 ```go
-// Repository interface in aggregate package (always IRepository or I{Entity}Repository)
+// Repository interface in aggregate package (usually IRepository)
 type IRepository interface {
     Create(ctx context.Context, contact *Contact) error
     GetByID(ctx context.Context, id uuidv7.UUID) (*Contact, error)
@@ -111,10 +111,12 @@ func NewContactRepository(db *sqlx.DB) IRepository {
 }
 ```
 
+**EXCEPTION**: Customer Management uses `ICustomerRepository` (entity-specific name)
+
 **Use Case Pattern**:
 
 ```go
-// Interface defines business operations (always IUseCase)
+// Interface defines business operations (usually IUseCase)
 type IUseCase interface {
     CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*Contact, error)
     GetContact(ctx context.Context, contactID uuidv7.UUID) (*Contact, error)
@@ -131,6 +133,8 @@ func NewUseCase(repo IRepository) IUseCase {
     return &useCase{repo: repo}
 }
 ```
+
+**EXCEPTION**: Customer Management uses `ICustomerUseCase` (entity-specific name)
 
 **Domain Events** (via Event Bus):
 
@@ -241,15 +245,98 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 - `make build` - Build binary
 - `make lint` / `make fmt` - Code quality checks
 
-**Testing** (from Makefile.test.mk, three-tier strategy):
+**Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
 - `make test` - All tests with race detector (~40s, 250+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
+- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.5s, 123 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
 - `make test-benchmark` - Benchmark tests (performance measurement, validates workspace)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
+
+**Smoke Testing**: 123 tests across 15 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
+
+**Smoke Testing Pattern**:
+
+**Purpose**: Validate HTTP handlers with minimal effort (80/20 rule)  
+**Location**: `test/smoke/contexts/{context}/{aggregate}/handler_test.go`  
+**Coverage**: 2 tests per handler minimum (success + error case)  
+**Run**: `make test-smoke` (~2s, no database needed)
+
+**Key Characteristics**:
+- Mock UseCase with function fields (no external dependencies)
+- Test HTTP status codes (200, 201, 404, 400, 500)
+- Validate response format (`{"status":"success","data":{...}}`)
+- No database, no complex business logic
+- Fast execution (< 100ms per test)
+
+**Example**:
+```go
+// test/smoke/contexts/order-mgmt/order/handler_test.go
+package order_test
+
+import (
+    "testing"
+    "github.com/basilex/promenade/test/smoke"
+)
+
+// MockOrderUseCase with function fields
+type MockOrderUseCase struct {
+    GetByIDFunc func(ctx context.Context, id uuid.UUID) (*order.Order, error)
+}
+
+func TestOrderHandler_GetByID_Success(t *testing.T) {
+    router := smoke.SetupRouter()
+    
+    // Mock UseCase returns fake order
+    mockUC := &MockOrderUseCase{
+        GetByIDFunc: func(ctx context.Context, id uuid.UUID) (*order.Order, error) {
+            return fakeOrder(), nil
+        },
+    }
+    
+    handler := orderHTTP.NewOrderHandler(mockUC)
+    router.GET("/orders/:id", handler.GetByID)
+    
+    // Test request
+    resp := smoke.MakeRequest(t, router, "GET", "/orders/"+smoke.FakeUUID(), nil)
+    smoke.AssertSuccessResponse(t, resp, 200)
+}
+
+func TestOrderHandler_GetByID_NotFound(t *testing.T) {
+    router := smoke.SetupRouter()
+    
+    mockUC := &MockOrderUseCase{
+        GetByIDFunc: func(ctx context.Context, id uuid.UUID) (*order.Order, error) {
+            return nil, order.ErrOrderNotFound
+        },
+    }
+    
+    handler := orderHTTP.NewOrderHandler(mockUC)
+    router.GET("/orders/:id", handler.GetByID)
+    
+    resp := smoke.MakeRequest(t, router, "GET", "/orders/"+smoke.FakeUUID(), nil)
+    smoke.AssertErrorResponse(t, resp, 404, "ORDER_NOT_FOUND")
+}
+```
+
+**Helper Utilities** (`test/smoke/testutils.go`):
+- `SetupRouter()` - Gin test router
+- `MakeRequest(t, router, method, path, body)` - HTTP request helper
+- `AssertSuccessResponse(t, resp, expectedCode)` - Validate success response
+- `AssertErrorResponse(t, resp, expectedCode, expectedErrorCode)` - Validate error response
+- `FakeUUID()` - Generate test UUID v7
+
+**When to Write Smoke Tests**:
+- ✅ For all HTTP handlers (2 tests each minimum)
+- ✅ When adding new endpoints
+- ✅ Before integration tests (faster feedback)
+- ❌ Not for complex business logic (use integration tests)
+- ❌ Not for repository methods (use integration tests with real DB)
+
+**See**: [test/smoke/README.md](../test/smoke/README.md) for complete smoke testing guide
 
 **Migrations** (database-agnostic via workspace):
 
@@ -1218,6 +1305,8 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 ### Naming Consistency
 
 - [ ] All interfaces: `I{Entity}UseCase`, `I{Entity}Repository` (full words, no abbreviations)
+  - **Exception**: Most contexts use `IUseCase` and `IRepository` (generic names)
+  - **Exception**: Customer Management uses `ICustomerUseCase`, `ICustomerRepository` (entity-specific)
 - [ ] All structs: lowercase `useCase`, `{entity}Repository` (useCase is generic, repos are entity-specific)
 - [ ] All constructors: `NewUseCase() IUseCase` (NEVER `New{Entity}UseCase`) and `New{Entity}Repository()`
 - [ ] All handlers: `{Entity}Handler struct { {entity}UC usecase.I{Entity}UseCase }`

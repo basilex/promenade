@@ -48,7 +48,6 @@ type contactRow struct {
 // toEntity converts database row to domain entity
 func (r *contactRow) toEntity() (*contact.Contact, error) {
 	c := &contact.Contact{
-		ID:         r.ID,
 		UserID:     r.UserID,
 		Type:       contact.ContactType(r.ContactType),
 		Label:      r.Label,
@@ -56,6 +55,10 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 		IsVerified: r.IsVerified,
 		IsPublic:   r.IsPublic,
 	}
+	// Initialize BaseAggregate fields
+	c.ID = r.ID
+	c.CreatedAt = parseTime(r.CreatedAt)
+	c.UpdatedAt = parseTime(r.UpdatedAt)
 
 	// Populate value object based on contact type
 	switch c.Type {
@@ -105,7 +108,7 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 // fromEntity converts domain entity to database row
 func fromEntity(c *contact.Contact) *contactRow {
 	row := &contactRow{
-		ID:          c.ID,
+		ID:          c.GetID(),
 		UserID:      c.UserID,
 		ContactType: string(c.Type),
 		Label:       c.Label,

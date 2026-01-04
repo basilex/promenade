@@ -56,13 +56,16 @@ func (r *userRow) toEntity() (*user.User, error) {
 	}
 
 	u := &user.User{
-		ID:               r.ID,
 		Email:            emailVO,
 		PasswordHash:     r.PasswordHash,
 		Status:           user.UserStatus(r.Status),
 		EmailVerified:    r.EmailVerified,
 		FailedLoginCount: r.FailedLoginCount,
 	}
+	// Initialize BaseAggregate fields
+	u.ID = r.ID
+	u.CreatedAt = parseTime(r.CreatedAt)
+	u.UpdatedAt = parseTime(r.UpdatedAt)
 
 	if r.EmailVerifiedAt.Valid {
 		u.EmailVerifiedAt = &r.EmailVerifiedAt.Time
@@ -80,7 +83,7 @@ func (r *userRow) toEntity() (*user.User, error) {
 // fromEntity converts domain entity to database row
 func fromEntity(u *user.User) *userRow {
 	row := &userRow{
-		ID:               u.ID,
+		ID:               u.GetID(),
 		Email:            u.Email.Value(),
 		PasswordHash:     u.PasswordHash,
 		Status:           string(u.Status),

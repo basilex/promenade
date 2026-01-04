@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -31,7 +30,6 @@ type Contact struct {
 	aggregate.BaseAggregate
 
 	// Identity
-	ID     uuidv7.UUID
 	UserID uuidv7.UUID
 
 	// Type and Label
@@ -47,10 +45,6 @@ type Contact struct {
 	IsPrimary  bool // Only one primary contact per user per type
 	IsVerified bool // Whether contact has been verified
 	IsPublic   bool // Whether contact is visible to others
-
-	// Lifecycle
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
 // NewContact creates a new contact with email
@@ -63,18 +57,14 @@ func NewContact(userID uuidv7.UUID, contactType ContactType, label string) (*Con
 		return nil, fmt.Errorf("label is required")
 	}
 
-	now := time.Now()
 	contact := &Contact{
 		BaseAggregate: aggregate.NewBaseAggregate(),
-		ID:            uuidv7.New(),
 		UserID:        userID,
 		Type:          contactType,
 		Label:         label,
 		IsPrimary:     false,
 		IsVerified:    false,
 		IsPublic:      false,
-		CreatedAt:     now,
-		UpdatedAt:     now,
 	}
 
 	return contact, nil
@@ -139,7 +129,7 @@ func (c *Contact) SetEmail(email string) error {
 	}
 
 	c.Email = &emailVO
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -155,7 +145,7 @@ func (c *Contact) SetPhone(phone string) error {
 	}
 
 	c.Phone = &phoneVO
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
@@ -170,44 +160,44 @@ func (c *Contact) SetAddress(street, city, country, postalCode string) error {
 		return fmt.Errorf("invalid address: %w", err)
 	}
 	c.Address = &addressVO
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
 // SetAsPrimary marks this contact as primary
 func (c *Contact) SetAsPrimary() {
 	c.IsPrimary = true
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // UnsetAsPrimary unmarks this contact as primary
 func (c *Contact) UnsetAsPrimary() {
 	c.IsPrimary = false
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // Verify marks contact as verified
 func (c *Contact) Verify() {
 	c.IsVerified = true
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // Unverify marks contact as not verified
 func (c *Contact) Unverify() {
 	c.IsVerified = false
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // MakePublic makes contact visible to others
 func (c *Contact) MakePublic() {
 	c.IsPublic = true
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // MakePrivate makes contact private
 func (c *Contact) MakePrivate() {
 	c.IsPublic = false
-	c.UpdatedAt = time.Now()
+	c.Touch()
 }
 
 // UpdateLabel updates the contact label
@@ -216,7 +206,7 @@ func (c *Contact) UpdateLabel(label string) error {
 		return fmt.Errorf("label cannot be empty")
 	}
 	c.Label = label
-	c.UpdatedAt = time.Now()
+	c.Touch()
 	return nil
 }
 
