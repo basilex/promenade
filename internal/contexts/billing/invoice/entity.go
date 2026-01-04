@@ -297,8 +297,8 @@ func (i *Invoice) Validate() error {
 		return ErrInvoiceInvalidCurrency
 	}
 
-	// Sent invoices must have lines
-	if i.Status != InvoiceStatusDraft && len(i.Lines) == 0 {
+	// Sent/Paid invoices must have lines (cancelled/void are exempt)
+	if (i.Status == InvoiceStatusSent || i.Status == InvoiceStatusOverdue || i.Status == InvoiceStatusPaid) && len(i.Lines) == 0 {
 		return ErrInvoiceNoLines
 	}
 
