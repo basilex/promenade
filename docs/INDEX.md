@@ -75,6 +75,21 @@
 
 ---
 
+### API Versioning
+
+**URL-based versioning strategy** for safe API evolution without breaking clients.
+
+- **Versioning Approach**: URL-based (`/api/v1`, `/api/v2`) - clear, cacheable, simple
+- **Deprecation Policy**: 12-month support window, RFC 8594 compliant headers
+- **Breaking Changes**: 7 categories with clear definitions (field removal, type changes, etc.)
+- **Migration Guides**: Templates with before/after code examples
+- **Version Detection**: API endpoints for checking version status and sunset dates
+- **Implementation**: [Versioning Strategy](guides/api-versioning.md) | [Practical Examples](guides/api-versioning-examples.md)
+
+**37 middleware tests**, 100% passing | Production-ready deprecation/sunset middleware
+
+---
+
 ### Health Monitoring
 
 **Comprehensive health checks** monitor all dependencies with graceful degradation.
@@ -331,6 +346,8 @@ Fundamental architectural principles and design patterns:
 Step-by-step implementation guides:
 
 - [Getting Started](guides/getting-started.md) - Quick start, installation, first steps
+- [API Versioning Strategy](guides/api-versioning.md) - URL-based versioning, deprecation policy, RFC 8594 headers
+- [API Versioning Examples](guides/api-versioning-examples.md) - Practical code examples for versioning implementation
 - [Local CI Validation](guides/local-ci.md) - Run GitHub Actions checks locally before push
 - [RBAC Implementation](guides/rbac.md) - Roles, permissions, JWT integration
 - [Rate Limiting](guides/rate-limiting.md) - IP-based protection for authentication

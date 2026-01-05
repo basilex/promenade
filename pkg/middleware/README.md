@@ -1,18 +1,82 @@
 # Middleware Package
 
-**HTTP middleware collection** for Gin framework providing cross-cutting concerns like rate limiting, CSRF protection, and request handling.
+**HTTP middleware collection** for Gin framework providing cross-cutting concerns like rate limiting, CSRF protection, API versioning, and request handling.
 
 ---
 
 ## Overview
 
-The `pkg/middleware` package contains reusable HTTP middleware components that can be applied to routes or route groups in the Gin web framework. These middleware handle security, rate limiting, and other cross-cutting concerns.
+The `pkg/middleware` package contains reusable HTTP middleware components that can be applied to routes or route groups in the Gin web framework. These middleware handle security, rate limiting, API versioning, and other cross-cutting concerns.
 
 ---
 
 ## Available Middleware
 
-### 1. Rate Limiter
+### 1. API Versioning (NEW)
+
+**API deprecation and sunset management** with RFC 8594 compliant headers for safe API evolution.
+
+**Key Features**:
+- Deprecation headers (RFC 8594 compliant)
+- Sunset enforcement (410 Gone after sunset date)
+- Version logging for analytics
+- Successor version linking
+- Migration guide references
+
+**Usage**:
+
+```go
+import (
+    "github.com/basilex/promenade/pkg/middleware"
+    "time"
+)
+
+// Deprecate entire v1 API
+v1 := router.Group("/api/v1")
+v1.Use(middleware.DeprecateEndpoint(
+    time.Date(2027, 6, 1, 0, 0, 0, 0, time.UTC),
+    "/api/v2",
+))
+
+// Sunset old version (returns 410 Gone)
+oldV1 := router.Group("/api/v1")
+oldV1.Use(middleware.SunsetVersion(
+    time.Date(2027, 6, 1, 0, 0, 0, 0, time.UTC),
+    "/api/v2",
+    "https://docs.promenade.example.com/migration/v1-to-v2",
+))
+
+// Log version usage
+router.Use(middleware.VersionLogger())
+```
+
+**Response Headers** (Deprecation):
+```http
+Deprecation: true
+Sunset: Sun, 01 Jun 2027 00:00:00 GMT
+Link: </api/v2>; rel="successor-version"
+X-API-Warn: This API version is deprecated and will be removed on 2027-06-01
+```
+
+**Response** (Sunset - 410 Gone):
+```json
+{
+  "status": "error",
+  "error": {
+    "code": "API_VERSION_SUNSET",
+    "message": "API version was sunset on 2027-06-01. Please migrate to the successor version.",
+    "details": {
+      "sunset_date": "2027-06-01",
+      "successor_version": "/api/v2",
+      "migration_guide": "https://docs.promenade.example.com/migration/v1-to-v2"
+    }
+  }
+}
+```
+
+**See**: [API Versioning Strategy](../../docs/guides/api-versioning.md) | [Practical Examples](../../docs/guides/api-versioning-examples.md)
+
+### 2. Rate Limiter
 
 **IP-based rate limiting** using token bucket algorithm to prevent abuse and brute-force attacks.
 
@@ -380,6 +444,8 @@ func NewRateLimiters() *RateLimiters {
 
 ## Related Documentation
 
+- [API Versioning Strategy](../../docs/guides/api-versioning.md) - Complete versioning policy
+- [API Versioning Examples](../../docs/guides/api-versioning-examples.md) - Practical code examples
 - [Rate Limiting Guide](../../docs/guides/rate-limiting.md)
 - [CSRF Protection Guide](../../docs/guides/csrf-protection.md)
 - [JWT Middleware](../jwt/README.md)
@@ -388,7 +454,6 @@ func NewRateLimiters() *RateLimiters {
 
 ---
 
-**Last Updated**: December 31, 2025  
+**Last Updated**: January 5, 2026  
 **Status**: Production-ready  
-**Test Coverage**: 25 tests, 93% coverage  
-**Maintainer**: Promenade Team
+**Test Coverage**: 37 tests, 95% coverage (25 rate limit/CSRF + 12 versioning)  
