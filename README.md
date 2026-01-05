@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-240+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-420+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
@@ -337,7 +337,7 @@ Promenade provides **complete order lifecycle management** with state transition
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
 | **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
-| **Billing**             | Invoice ✅, Payment ✅, Subscription 📋 | Billing and payments          | ✅ Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
+| **Billing**             | Invoice ✅, Payment ✅, Subscription ✅ | Billing and payments          | ✅ Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
@@ -730,7 +730,7 @@ test/benchmark/contexts/
 ### Running Tests
 
 ```bash
-# All tests (360+ tests, ~60 seconds with race detector)
+# All tests (420+ tests, ~60 seconds with race detector)
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
@@ -776,11 +776,12 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
-| **Billing (integration)**  | 5     | -        | ~1.2s    | Integration |
+| **Billing (integration)**  | 16    | -        | ~1.5s    | Integration |
+| **Subscription (unit+smoke)** | 51 | 100%     | ~1.0s    | Unit+Smoke  |
 | **Order-mgmt (integration)** | 6  | -        | ~1.5s    | Integration |
 | **User ListUsers (bench)** | 4     | -        | ~5s      | Benchmark   |
 
-**Total**: 360+ tests across 45+ packages, 90%+ average coverage
+**Total**: 420+ tests across 45+ packages, 90%+ average coverage
 
 ### Test Database
 
@@ -1248,7 +1249,16 @@ id := uuidv7.New()  // Time-ordered UUID
 - [ ] Contract aggregate - Planned Q1 2026
 - [ ] Fulfillment saga (payment → inventory → shipping) - Planned Q2 2026
 
-### Phase 6: Analytics & Reporting (Planned Q2 2026)
+### Phase 6: Billing Context (Completed ✅)
+
+- [x] Invoice aggregate (generation, management, 8 endpoints) - **COMPLETED Dec 27, 2025**
+- [x] Payment aggregate (processing, reconciliation, 8 endpoints) - **COMPLETED Dec 28, 2025**
+- [x] Subscription aggregate (lifecycle, status transitions, 8 endpoints) - **COMPLETED Jan 5, 2026**
+- [x] Complete test coverage (120 tests: 58 entity + 35 usecase + 11 integration + 16 smoke)
+- [ ] Payment gateway integration - Planned Q1 2026
+- [ ] Recurring billing automation - Planned Q2 2026
+
+### Phase 7: Analytics & Reporting (Planned Q2 2026)
 
 - [ ] CQRS read models
 - [ ] Dashboards
@@ -1311,7 +1321,7 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 **Technical Reference**:
 
-- [Test Coverage Report](docs/reference/test-coverage-report.md) - 360+ tests breakdown
+- [Test Coverage Report](docs/reference/test-coverage-report.md) - 420+ tests breakdown
 - [Bus Test Coverage](docs/reference/bus-test-coverage.md) - Event Bus test report (67 tests, 100% passing)
 - [Refactoring Roadmap](docs/reference/refactoring-roadmap.md) - Technical debt and improvements
 

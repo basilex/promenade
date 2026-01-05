@@ -273,7 +273,7 @@ Fixes #38
 docs: update README with Profile aggregate examples
 
 - Add Profile aggregate code example
-- Update test statistics (360+ tests)
+- Update test statistics (420+ tests)
 - Update roadmap (Phase 2 complete)
 ```
 

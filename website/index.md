@@ -57,7 +57,7 @@ Instead of building everything from scratch (which takes 6-12 months), start wit
 Start with what you need today. Customer tracking? That's ready. Add order management when you make first sales. Enable billing when you're ready to charge. No expensive rewrites, no vendor lock-in.
 
 **Built for Scale**  
-Whether you're a 3-person startup or planning to process 10,000 orders per day, the same architecture works. The system is battle-tested with 240+ automated quality checks running on every change.
+Whether you're a 3-person startup or planning to process 10,000 orders per day, the same architecture works. The system is battle-tested with 420+ automated quality checks running on every change.
 
 </div>
 
@@ -123,7 +123,7 @@ Enterprise-level security: encrypted passwords, token-based authentication, role
 Health checks every 30 seconds. If database goes down, you know within seconds. Automatic alerts integrate with Slack/PagerDuty.
 
 **Tested**  
-Every feature has 360+ automated tests. When you add a new feature, tests run in 60 seconds and tell you if something breaks.
+Every feature has 420+ automated tests. When you add a new feature, tests run in 60 seconds and tell you if something breaks.
 
 </div>
 
@@ -266,8 +266,8 @@ For developers and technical teams: the architectural patterns and infrastructur
 
 <div class="feature-card">
 <div class="feature-icon">📊</div>
-<h3>Three-Tier Testing</h3>
-<p>Professional test organization with 360+ tests. Unit tests (in-place, fast), Integration tests (real DB, full validation), Benchmark tests (performance measurement). 90%+ coverage.</p>
+<h3>Four-Tier Testing</h3>
+<p>Professional test organization with 420+ tests. Unit tests (in-place, fast), Smoke tests (mock handlers), Integration tests (real DB, full validation), Benchmark tests (performance measurement). 90%+ coverage.</p>
 <a href="guide/testing-patterns">Read Testing Guide →</a>
 </div>
 
@@ -704,7 +704,7 @@ Full API documentation: [API Reference](/reference/api-reference)
     <div class="label">Events/sec (Memory Bus)</div>
   </div>
   <div class="stat">
-    <div class="number">240+</div>
+    <div class="number">420+</div>
     <div class="label">Tests (90% Coverage)</div>
   </div>
   <div class="stat">

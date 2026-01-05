@@ -8,7 +8,7 @@
 
 | Metric                  | Value        |
 | ----------------------- | ------------ |
-| **Total Tests**         | 240+         |
+| **Total Tests**         | 420+         |
 | **Average Coverage**    | 90%+         |
 | **Test Execution Time** | ~40s (all)   |
 | **Test Organization**   | 3-tier       |
@@ -102,7 +102,7 @@
 ### Quick Commands
 
 ```bash
-# All tests (360+ tests, ~60s with race detector)
+# All tests (420+ tests, ~60s with race detector)
 make test
 
 # By type
@@ -227,5 +227,5 @@ go test ./pkg/jwt/... -v
 ---
 
 **Last Updated**: December 29, 2025  
-**Status**: 360+ tests, 90%+ average coverage  
+**Status**: 420+ tests, 90%+ average coverage  
 **Maintainer**: Promenade Team

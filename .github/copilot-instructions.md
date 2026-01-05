@@ -41,7 +41,7 @@ Each context is autonomous with:
   - Role & Permission: RBAC implementation ✅ Production
 - **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer ✅ | Company ✅ | Deal ✅ | Interaction ✅ | Analytics ✅ (all Production)
 - **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
-- **Billing** (✅ Production) - Invoice ✅, Payment ✅, Subscription (planned Q2 2026)
+- **Billing** (✅ Production) - Invoice ✅, Payment ✅, Subscription ✅ (all Production)
 - **Warehouse** (planned Q3 2026) - Inventory management
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
@@ -288,7 +288,7 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 **Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
-- `make test` - All tests with race detector (~60s, 360+ tests)
+- `make test` - All tests with race detector (~60s, 420+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
 - `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.5s, 123 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
@@ -989,7 +989,7 @@ go test ./pkg/uuidv7/... -v
 go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 360+ tests across 45+ packages, 90%+ average coverage
+**Test Statistics**: 420+ tests across 45+ packages, 90%+ average coverage
 
 **DTO Testing Guidelines**:
 

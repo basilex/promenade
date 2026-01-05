@@ -249,7 +249,7 @@
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
 | **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | ✅ Production | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | [Order Guide](concepts/order-management.md)                   |
-| **Billing**             | ✅ Production | Invoice ✅, Payment ✅, Subscription 📋 | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
+| **Billing**             | ✅ Production | Invoice ✅, Payment ✅, Subscription ✅ | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
@@ -319,7 +319,7 @@ Step-by-step implementation guides:
 Technical specifications and detailed documentation:
 
 - [API Reference](reference/api-reference.md) - Complete HTTP API documentation
-- [Test Coverage Report](reference/test-coverage-report.md) - 240+ tests breakdown
+- [Test Coverage Report](reference/test-coverage-report.md) - 420+ tests breakdown
 - [Bus Test Coverage](reference/bus-test-coverage.md) - Event Bus test report
 - [Index Audit Report](reference/index-audit-report.md) - Database index analysis (13 tables, 60+ indexes)
 - [Soft Delete Audit](reference/soft-delete-audit.md) - Soft delete implementation audit (78 queries, 100% compliance)
@@ -356,7 +356,7 @@ Technical specifications and detailed documentation:
 ## 📊 Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 360+ tests, 90%+ average coverage
+- **Tests**: 420+ tests, 90%+ average coverage
 - **Documentation**: 15,000+ lines across 30+ files
 - **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
@@ -386,6 +386,12 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 ---
 
 ## 📝 Recent Updates
+
+**January 5, 2026**:
+- ✅ Subscription aggregate completed (8 endpoints, 120 tests)
+- ✅ Billing context fully operational (Invoice, Payment, Subscription)
+- ✅ Comprehensive test coverage (58 entity + 35 usecase + 11 integration + 16 smoke)
+- ✅ All lint issues resolved (0 issues)
 
 **January 1, 2026**:
 - ✅ Local CI Validation implementation (5 Makefile commands)

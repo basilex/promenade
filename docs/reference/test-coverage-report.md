@@ -8,21 +8,22 @@
 
 | Metric                  | Value        |
 | ----------------------- | ------------ |
-| **Total Tests**         | 240+         |
+| **Total Tests**         | 420+         |
 | **Average Coverage**    | 90%+         |
-| **Test Execution Time** | ~40s (all)   |
-| **Test Organization**   | 3-tier       |
-| **Packages Tested**     | 40+          |
+| **Test Execution Time** | ~60s (all)   |
+| **Test Organization**   | 4-tier       |
+| **Packages Tested**     | 45+          |
 
 ---
 
 ## Test Organization
 
-### Three-Tier Strategy
+### Four-Tier Strategy
 
 1. **Unit Tests** (in-place) - Fast feedback, isolated components (~5s)
-2. **Smoke Tests** (mirror path) - Mock-based handlers, no DB (~0.4s)
+2. **Smoke Tests** (mirror path) - Mock-based handlers, no DB (~2s)
 3. **Integration Tests** (mirror path) - Real database, full E2E (~14s)
+4. **Benchmark Tests** (mirror path) - Performance measurement with real DB
 
 **See**: [Testing Patterns Guide](../guides/testing-patterns.md) for complete documentation
 
@@ -116,7 +117,7 @@
 ### Quick Commands
 
 ```bash
-# All tests (360+ tests, ~60s with race detector)
+# All tests (420+ tests, ~60s with race detector)
 make test
 
 # By type
@@ -241,5 +242,5 @@ go test ./pkg/jwt/... -v
 ---
 
 **Last Updated**: December 29, 2025  
-**Status**: 240+ tests, 90%+ average coverage  
+**Status**: 420+ tests, 90%+ average coverage  
 **Maintainer**: Promenade Team
