@@ -490,23 +490,42 @@ type Pagination struct {
 
 ## Integration with Tools
 
-### Postman
+### Postman Collection
 
-**Import OpenAPI spec**:
+**Pre-built Postman collection** with 120+ endpoints, authentication flow, and test scripts.
+
+**Quick Import**:
+
+1. Open Postman
+2. Click **Import**
+3. Select files from `postman/` directory:
+   - `Promenade_API.postman_collection.json` (collection)
+   - `Development.postman_environment.json` (environment)
+4. Select **Development** environment (top-right dropdown)
+
+**Or import via URL**:
+```
+https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.postman_collection.json
+```
+
+**Features**:
+- ✅ 120+ endpoints organized by context
+- ✅ Auto-save JWT tokens after login
+- ✅ Auto-refresh expired tokens
+- ✅ Pre-configured environments (Dev/Staging/Prod)
+- ✅ Test scripts for response validation
+- ✅ Authentication flow examples
+
+**Complete guide**: [postman/README.md](../../postman/README.md)
+
+**Alternative: Import OpenAPI spec directly**:
 
 1. Open Postman
 2. **Import** → **Link**
 3. Enter: `http://localhost:8081/api/docs/doc.json`
 4. **Import**
 
-**Or download and import**:
-
-```bash
-curl http://localhost:8081/api/docs/doc.json > promenade-api.json
-# Import promenade-api.json in Postman
-```
-
-**Environment setup**:
+**Manual environment setup** (if not using pre-built):
 
 ```json
 {
@@ -514,7 +533,8 @@ curl http://localhost:8081/api/docs/doc.json > promenade-api.json
   "values": [
     {"key": "base_url", "value": "http://localhost:8081"},
     {"key": "api_version", "value": "v1"},
-    {"key": "access_token", "value": ""}
+    {"key": "access_token", "value": ""},
+    {"key": "refresh_token", "value": ""}
   ]
 }
 ```
