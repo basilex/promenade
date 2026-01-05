@@ -2,7 +2,7 @@
 
 **Business Intelligence & Reporting** for Customer Management context with real-time dashboards and metrics.
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Endpoints**: 8 HTTP GET routes  
 **Architecture**: CQRS pattern with denormalized queries
 
@@ -27,23 +27,23 @@ Customer Analytics implements **CQRS read models** optimized for analytical quer
 ### CQRS Pattern
 
 ```
-┌─────────────────────────────────────────┐
-│   Write Model (Commands)                │
-│   - Customer CRUD                       │
-│   - Deal CRUD                           │
-│   - Interaction CRUD                    │
-│   - Repository Pattern                  │
-└─────────────────────────────────────────┘
-                  │
-                  │ Database
-                  ▼
-┌─────────────────────────────────────────┐
-│   Read Model (Queries)                  │
-│   - Analytics (this module)             │
-│   - Direct SQL (no repository)          │
-│   - Denormalized views                  │
-│   - Optimized for reporting             │
-└─────────────────────────────────────────┘
+
+   Write Model (Commands)                
+   - Customer CRUD                       
+   - Deal CRUD                           
+   - Interaction CRUD                    
+   - Repository Pattern                  
+
+                  
+                   Database
+                  
+
+   Read Model (Queries)                  
+   - Analytics (this module)             
+   - Direct SQL (no repository)          
+   - Denormalized views                  
+   - Optimized for reporting             
+
 ```
 
 **Why CQRS for Analytics?**
@@ -360,7 +360,7 @@ go test ./test/integration/contexts/customer-mgmt/analytics -v
 **Test Coverage**: 15 tests, 100% passing  
 **Maintainer**: Promenade Team
 
-### 📑 Custom Reports
+###  Custom Reports
 
 **Report Builder**:
 - Drag-and-drop report designer
@@ -374,7 +374,7 @@ go test ./test/integration/contexts/customer-mgmt/analytics -v
 - CSV for raw data
 - API access for integrations
 
-### 🔮 Revenue Forecasting
+###  Revenue Forecasting
 
 **Predictive Analytics**:
 - Sales pipeline forecast
@@ -387,7 +387,7 @@ go test ./test/integration/contexts/customer-mgmt/analytics -v
 - Test pricing strategy impact
 - Simulate market conditions
 
-### 🎯 Customer Insights
+###  Customer Insights
 
 **Segmentation Analysis**:
 - RFM (Recency, Frequency, Monetary) scoring
@@ -401,7 +401,7 @@ go test ./test/integration/contexts/customer-mgmt/analytics -v
 - Win-back campaign targeting
 - Loyalty program effectiveness
 
-### 📊 Sales Analytics
+###  Sales Analytics
 
 **Pipeline Analysis**:
 - Deal stage duration

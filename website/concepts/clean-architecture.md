@@ -26,7 +26,7 @@
 All bounded contexts following DDD principles:
 
 - **identity/** - User & Contact aggregates ( In Progress)
-- **customer-mgmt/** - Customer, Company, Deal, Interaction, Analytics (✅ All Production)
+- **customer-mgmt/** - Customer, Company, Deal, Interaction, Analytics ( All Production)
 - **order-mgmt/** - Order, OrderItem, Fulfillment ( Planned)
 - **billing/** - Invoice, Payment, Subscription ( Planned)
 - **warehouse/** - Inventory management ( Planned)

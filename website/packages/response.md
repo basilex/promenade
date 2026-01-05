@@ -391,12 +391,12 @@ func (h *UserHandler) Delete(c *gin.Context) {
 
 ### DO
 
-✅ **Use specific error codes**:
+ **Use specific error codes**:
 ```go
 response.NotFound(c, "USER_NOT_FOUND", "User not found")
 ```
 
-✅ **Check domain errors**:
+ **Check domain errors**:
 ```go
 if errors.Is(err, ErrUserNotFound) {
     response.NotFound(c, "USER_NOT_FOUND", err.Error())
@@ -404,19 +404,19 @@ if errors.Is(err, ErrUserNotFound) {
 }
 ```
 
-✅ **Provide clear error messages**:
+ **Provide clear error messages**:
 ```go
 response.BadRequest(c, "VALIDATION_ERROR", "Email must be a valid email address")
 ```
 
-✅ **Use pagination for lists**:
+ **Use pagination for lists**:
 ```go
 response.Paginated(c, users, pagination)
 ```
 
 ### DON'T
 
-❌ **Don't expose internal errors**:
+ **Don't expose internal errors**:
 ```go
 // Bad
 response.InternalError(c, "DB_ERROR", "pq: duplicate key value violates unique constraint")
@@ -425,7 +425,7 @@ response.InternalError(c, "DB_ERROR", "pq: duplicate key value violates unique c
 response.Conflict(c, "EMAIL_EXISTS", "Email already registered")
 ```
 
-❌ **Don't use generic error codes**:
+ **Don't use generic error codes**:
 ```go
 // Bad
 response.NotFound(c, "NOT_FOUND", "Not found")

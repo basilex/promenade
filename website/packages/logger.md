@@ -276,7 +276,7 @@ logger.Init(logger.Config{
 
 ### DO
 
-✅ **Use structured fields**:
+ **Use structured fields**:
 ```go
 logger.Info("User created", 
     "user_id", userID.String(),
@@ -284,13 +284,13 @@ logger.Info("User created",
 )
 ```
 
-✅ **Use context logger in handlers**:
+ **Use context logger in handlers**:
 ```go
 log := logger.FromContext(ctx)
 log.Info("Processing request")
 ```
 
-✅ **Log errors with context**:
+ **Log errors with context**:
 ```go
 if err != nil {
     logger.Error("Database error", 
@@ -300,7 +300,7 @@ if err != nil {
 }
 ```
 
-✅ **Use appropriate log levels**:
+ **Use appropriate log levels**:
 - DEBUG: Development debugging
 - INFO: Normal operations
 - WARN: Potential issues
@@ -308,7 +308,7 @@ if err != nil {
 
 ### DON'T
 
-❌ **Don't use string concatenation**:
+ **Don't use string concatenation**:
 ```go
 // Bad
 logger.Info("User " + userID + " created")
@@ -317,7 +317,7 @@ logger.Info("User " + userID + " created")
 logger.Info("User created", "user_id", userID)
 ```
 
-❌ **Don't log sensitive data**:
+ **Don't log sensitive data**:
 ```go
 // Bad
 logger.Info("Login attempt", "password", password)
@@ -326,7 +326,7 @@ logger.Info("Login attempt", "password", password)
 logger.Info("Login attempt", "email", email)
 ```
 
-❌ **Don't use global logger in domain logic**:
+ **Don't use global logger in domain logic**:
 ```go
 // Bad (in usecase)
 logger.Info("Creating user")

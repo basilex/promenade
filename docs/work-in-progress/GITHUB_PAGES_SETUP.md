@@ -53,14 +53,14 @@ git push origin dev
 ## Expected Workflow Output
 
 ```
-✓ Build (build)
+ Build (build)
   - Checkout code
   - Setup Node.js
   - Install dependencies
   - Build VitePress
   - Upload artifact
 
-✓ Deploy (deploy)
+ Deploy (deploy)
   - Deploy to GitHub Pages
 ```
 

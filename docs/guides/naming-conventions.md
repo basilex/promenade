@@ -44,20 +44,20 @@ internal/contexts/{context}/{aggregate}/
 ```bash
 $ tree internal/contexts/customer-mgmt/company
 internal/contexts/customer-mgmt/company/
-├── entity.go
-├── entity_test.go
-├── repository.go
-├── usecase.go
-├── usecase_test.go
-├── errors.go
-└── adapter/
-    ├── http/
-    │   ├── handler.go
-    │   ├── dto.go
-    │   └── dto_test.go
-    └── repository/postgres/
-        ├── base_repository.go
-        └── company_repository.go
+ entity.go
+ entity_test.go
+ repository.go
+ usecase.go
+ usecase_test.go
+ errors.go
+ adapter/
+     http/
+        handler.go
+        dto.go
+        dto_test.go
+     repository/postgres/
+         base_repository.go
+         company_repository.go
 ```
 
 **Why This Structure?**
@@ -71,7 +71,7 @@ internal/contexts/customer-mgmt/company/
 
 Promenade follows **progressive complexity** - start simple, evolve when needed.
 
-#### Phase 1: Simple Structure (CURRENT ✅)
+#### Phase 1: Simple Structure (CURRENT )
 
 **When to use**: Aggregates with 1-10 files (most cases)
 
@@ -90,7 +90,7 @@ adapter/http/
 
 **Status**: All 21 aggregates currently use this structure
 
-#### Phase 2: Organized Structure (FUTURE 📋)
+#### Phase 2: Organized Structure (FUTURE )
 
 **When to use**: Aggregates with 10-20 files, multiple concerns
 
@@ -111,7 +111,7 @@ adapter/http/
 - 10+ DTO structs in `dto.go` (200+ lines)
 - Multiple concerns mixing in one file
 
-#### Phase 3: Complex Structure (FUTURE 📋)
+#### Phase 3: Complex Structure (FUTURE )
 
 **When to use**: Large aggregates with many operations, versioned APIs
 
@@ -153,7 +153,7 @@ When transitioning between phases:
 
 ### Current Decision
 
-**Status**: Phase 1 (Simple Structure) ✅  
+**Status**: Phase 1 (Simple Structure)   
 **Review Date**: When any aggregate reaches 10+ files  
 **Philosophy**: "Make it work, make it right, make it fast" - we're at "make it work"
 
@@ -624,7 +624,7 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
 
 ## Anti-Patterns to Avoid
 
-### ❌ DON'T
+###  DON'T
 
 ```go
 // DON'T: Abbreviations in interfaces
@@ -647,7 +647,7 @@ var ErrNotFound                      // Use ErrCustomerNotFound
 type user_repository struct {}       // Use userRepository (camelCase)
 ```
 
-### ✅ DO
+###  DO
 
 ```go
 // DO: Full interface names

@@ -32,10 +32,10 @@ func (s *UserService) Register(email, password string) error {
 ```
 
 **Problems**:
-- ❌ Tight coupling (3 services in one method)
-- ❌ Synchronous - registration blocks waiting for customer/billing
-- ❌ Cascade failures - if billing is down, registration fails
-- ❌ Hard to add new features (need to modify UserService)
+-  Tight coupling (3 services in one method)
+-  Synchronous - registration blocks waiting for customer/billing
+-  Cascade failures - if billing is down, registration fails
+-  Hard to add new features (need to modify UserService)
 
 **With Events**:
 
@@ -65,10 +65,10 @@ func (h *BillingHandler) HandleUserRegistered(ctx context.Context, e bus.Event) 
 ```
 
 **Benefits**:
-- ✅ Loose coupling - services don't know about each other
-- ✅ Asynchronous - registration returns immediately
-- ✅ Resilient - if billing is down, retry policy handles it
-- ✅ Extensible - add new listener without changing publisher
+-  Loose coupling - services don't know about each other
+-  Asynchronous - registration returns immediately
+-  Resilient - if billing is down, retry policy handles it
+-  Extensible - add new listener without changing publisher
 
 ---
 
@@ -77,24 +77,24 @@ func (h *BillingHandler) HandleUserRegistered(ctx context.Context, e bus.Event) 
 ### Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                    Event Bus (Abstraction)                │
-│                                                           │
-│  Interface: Publish, Subscribe, Unsubscribe, Close       │
-│  Events: BaseEvent (type, aggregateID, timestamp)        │
-│  Handlers: EventHandler func(ctx, event) error           │
-└───────────────────┬──────────────────────────────────────┘
-                    │
-        ┌───────────┴───────────┐
-        │                       │
-        ▼                       ▼
-┌───────────────┐       ┌───────────────┐
-│Memory Adapter │       │Redis Adapter  │
-│               │       │               │
-│In-process     │       │Distributed    │
-│377K ev/sec    │       │Persistent     │
-│Dev/Test       │       │Production     │
-└───────────────┘       └───────────────┘
+
+                    Event Bus (Abstraction)                
+                                                           
+  Interface: Publish, Subscribe, Unsubscribe, Close       
+  Events: BaseEvent (type, aggregateID, timestamp)        
+  Handlers: EventHandler func(ctx, event) error           
+
+                    
+        
+                               
+                               
+       
+Memory Adapter        Redis Adapter  
+                                     
+In-process            Distributed    
+377K ev/sec           Persistent     
+Dev/Test              Production     
+       
 ```
 
 **Factory Pattern**: `bus.NewBus(config)` creates adapter based on config
@@ -487,7 +487,7 @@ func (s *OrderFulfillmentSaga) Start(ctx context.Context) error {
 
 ## Best Practices
 
-### DO ✅
+### DO 
 
 - **Publish after commit** to ensure consistency
 - **Use topic constants** to prevent typos
@@ -497,7 +497,7 @@ func (s *OrderFulfillmentSaga) Start(ctx context.Context) error {
 - **Log publish errors** but don't fail operation
 - **Return nil for permanent errors** to skip retry
 
-### DON'T ❌
+### DON'T 
 
 - **DON'T publish before commit** (risk inconsistency)
 - **DON'T hardcode topic strings**

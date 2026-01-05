@@ -92,7 +92,7 @@ type User struct {
 
 func NewUser(email string) *User {
     return &User{
-        ID:      uuidv7.New(),  // ✅ Always use uuidv7.New()
+        ID:      uuidv7.New(),  //  Always use uuidv7.New()
         Email:   email,
         Created: time.Now(),
     }
@@ -288,11 +288,11 @@ if id == uuidv7.Nil {
 
 ```
 01JGABC-1234-7DEF-89AB-CDEF01234567
-└──┬──┘ └─┬┘ └┬┘└──────┬──────────┘
-   │      │   │        └─ Random data
-   │      │   └─ Version (7) + Random
-   │      └─ Timestamp continuation
-   └─ Timestamp (milliseconds)
+  
+                     Random data
+             Version (7) + Random
+          Timestamp continuation
+    Timestamp (milliseconds)
 ```
 
 ---
@@ -301,57 +301,57 @@ if id == uuidv7.Nil {
 
 ### DO
 
-✅ **Always use `uuidv7.New()`**:
+ **Always use `uuidv7.New()`**:
 ```go
-id := uuidv7.New()  // ✅ Correct
+id := uuidv7.New()  //  Correct
 ```
 
-✅ **Use as primary keys**:
+ **Use as primary keys**:
 ```go
 type Entity struct {
     ID uuidv7.UUID `db:"id"`
 }
 ```
 
-✅ **Extract timestamps when needed**:
+ **Extract timestamps when needed**:
 ```go
 createdAt := uuidv7.ExtractTime(entity.ID)
 ```
 
-✅ **Use in database indexes**:
+ **Use in database indexes**:
 ```sql
 CREATE INDEX idx_users_id ON users(id);  -- Efficient B-tree
 ```
 
 ### DON'T
 
-❌ **Don't use `uuid.New()` (v4)**:
+ **Don't use `uuid.New()` (v4)**:
 ```go
-// ❌ Wrong (random UUID v4)
+//  Wrong (random UUID v4)
 id := uuid.New()
 
-// ✅ Correct (time-ordered UUID v7)
+//  Correct (time-ordered UUID v7)
 id := uuidv7.New()
 ```
 
-❌ **Don't convert to string unnecessarily**:
+ **Don't convert to string unnecessarily**:
 ```go
-// ❌ Inefficient
+//  Inefficient
 idStr := id.String()
 db.Exec("SELECT * FROM users WHERE id = ?", idStr)
 
-// ✅ Use UUID directly
+//  Use UUID directly
 db.Exec("SELECT * FROM users WHERE id = ?", id)
 ```
 
-❌ **Don't rely on timestamp for security**:
+ **Don't rely on timestamp for security**:
 ```go
-// ❌ Bad - timestamp is predictable
+//  Bad - timestamp is predictable
 if uuidv7.ExtractTime(token) > time.Now() {
     return errors.New("invalid token")
 }
 
-// ✅ Use cryptographically secure tokens
+//  Use cryptographically secure tokens
 ```
 
 ---
@@ -392,14 +392,14 @@ func BenchmarkUUIDv7_New(b *testing.B) {
 import "github.com/google/uuid"
 
 type User struct {
-    ID uuid.UUID  // ❌ Random UUID v4
+    ID uuid.UUID  //  Random UUID v4
 }
 
 // After (UUID v7)
 import "github.com/basilex/promenade/pkg/uuidv7"
 
 type User struct {
-    ID uuidv7.UUID  // ✅ Time-ordered UUID v7
+    ID uuidv7.UUID  //  Time-ordered UUID v7
 }
 ```
 
@@ -409,7 +409,7 @@ type User struct {
 // Before
 func NewUser(email string) *User {
     return &User{
-        ID:    uuid.New(),  // ❌ UUID v4
+        ID:    uuid.New(),  //  UUID v4
         Email: email,
     }
 }
@@ -417,7 +417,7 @@ func NewUser(email string) *User {
 // After
 func NewUser(email string) *User {
     return &User{
-        ID:    uuidv7.New(),  // ✅ UUID v7
+        ID:    uuidv7.New(),  //  UUID v7
         Email: email,
     }
 }

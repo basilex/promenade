@@ -22,23 +22,23 @@ Customer Analytics implements **CQRS read models** optimized for analytical quer
 ### CQRS Pattern
 
 ```
-┌─────────────────────────────────────────┐
-│   Write Model (Commands)                │
-│   - Customer CRUD                       │
-│   - Deal CRUD                           │
-│   - Interaction CRUD                    │
-│   - Repository Pattern                  │
-└─────────────────────────────────────────┘
-                  │
-                  │ Database
-                  ▼
-┌─────────────────────────────────────────┐
-│   Read Model (Queries)                  │
-│   - Analytics (this module)             │
-│   - Direct SQL (no repository)          │
-│   - Denormalized views                  │
-│   - Optimized for reporting             │
-└─────────────────────────────────────────┘
+
+   Write Model (Commands)                
+   - Customer CRUD                       
+   - Deal CRUD                           
+   - Interaction CRUD                    
+   - Repository Pattern                  
+
+                  
+                   Database
+                  
+
+   Read Model (Queries)                  
+   - Analytics (this module)             
+   - Direct SQL (no repository)          
+   - Denormalized views                  
+   - Optimized for reporting             
+
 ```
 
 **Why CQRS for Analytics?**
@@ -506,7 +506,7 @@ REFRESH MATERIALIZED VIEW customer_analytics_summary;
 
 ---
 
-**Status**: ✅ Production-ready  
+**Status**:  Production-ready  
 **Endpoints**: 8 GET endpoints  
 **Test Coverage**: 15 tests (7 unit + 8 integration)  
 **Last Updated**: 2026-01-01

@@ -24,7 +24,7 @@ func LanguagesData() []*language.Language {
 	return []*language.Language{
 		// Top 10 Most Spoken Languages
 		newLanguage("en", "eng", "English", "English", "ltr", ref.Int64(380000000), true),
-		newLanguage("zh", "zho", "Chinese", "中文", "ltr", ref.Int64(1300000000), true),
+		newLanguage("zh", "zho", "Chinese", "", "ltr", ref.Int64(1300000000), true),
 		newLanguage("hi", "hin", "Hindi", "हिन्दी", "ltr", ref.Int64(602000000), true),
 		newLanguage("es", "spa", "Spanish", "Español", "ltr", ref.Int64(548000000), true),
 		newLanguage("fr", "fra", "French", "Français", "ltr", ref.Int64(274000000), true),
@@ -53,8 +53,8 @@ func LanguagesData() []*language.Language {
 		newLanguage("hr", "hrv", "Croatian", "Hrvatski", "ltr", ref.Int64(7000000), true),
 
 		// Asian Languages
-		newLanguage("ja", "jpn", "Japanese", "日本語", "ltr", ref.Int64(125000000), true),
-		newLanguage("ko", "kor", "Korean", "한국어", "ltr", ref.Int64(81000000), true),
+		newLanguage("ja", "jpn", "Japanese", "", "ltr", ref.Int64(125000000), true),
+		newLanguage("ko", "kor", "Korean", "", "ltr", ref.Int64(81000000), true),
 		newLanguage("vi", "vie", "Vietnamese", "Tiếng Việt", "ltr", ref.Int64(85000000), true),
 		newLanguage("th", "tha", "Thai", "ไทย", "ltr", ref.Int64(69000000), true),
 		newLanguage("id", "ind", "Indonesian", "Bahasa Indonesia", "ltr", ref.Int64(199000000), true),

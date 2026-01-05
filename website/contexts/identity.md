@@ -161,38 +161,38 @@ POST   /api/v1/identity/users/register       # Register new user
 POST   /api/v1/identity/users/login          # Login with credentials
 POST   /api/v1/identity/auth/refresh         # Refresh access token
 POST   /api/v1/identity/auth/revoke          # Logout (revoke token)
-GET    /api/v1/identity/users/me             # Get current user 🔒
-PUT    /api/v1/identity/users/me/password    # Change password 🔒
-GET    /api/v1/identity/users                # List all users 🔒
-GET    /api/v1/identity/users/:id            # Get user by ID 🔒
-PUT    /api/v1/identity/users/:id/suspend    # Suspend user 🔒 (admin)
-PUT    /api/v1/identity/users/:id/ban        # Ban user 🔒 (admin)
+GET    /api/v1/identity/users/me             # Get current user 
+PUT    /api/v1/identity/users/me/password    # Change password 
+GET    /api/v1/identity/users                # List all users 
+GET    /api/v1/identity/users/:id            # Get user by ID 
+PUT    /api/v1/identity/users/:id/suspend    # Suspend user  (admin)
+PUT    /api/v1/identity/users/:id/ban        # Ban user  (admin)
 ```
 
 ### Contact Management
 
 ```http
-POST   /api/v1/identity/contacts             # Create contact 🔒
-GET    /api/v1/identity/contacts             # List user contacts 🔒
-GET    /api/v1/identity/contacts/:id         # Get contact 🔒
-PUT    /api/v1/identity/contacts/:id         # Update contact 🔒
-DELETE /api/v1/identity/contacts/:id         # Delete contact 🔒
-PUT    /api/v1/identity/contacts/:id/verify  # Verify contact 🔒
-PUT    /api/v1/identity/contacts/:id/primary # Set as primary 🔒
+POST   /api/v1/identity/contacts             # Create contact 
+GET    /api/v1/identity/contacts             # List user contacts 
+GET    /api/v1/identity/contacts/:id         # Get contact 
+PUT    /api/v1/identity/contacts/:id         # Update contact 
+DELETE /api/v1/identity/contacts/:id         # Delete contact 
+PUT    /api/v1/identity/contacts/:id/verify  # Verify contact 
+PUT    /api/v1/identity/contacts/:id/primary # Set as primary 
 ```
 
 ### Profile Management
 
 ```http
-POST   /api/v1/identity/profiles             # Create profile 🔒
-GET    /api/v1/identity/profiles/:id         # Get profile 🔒
-PUT    /api/v1/identity/profiles/:id         # Update profile 🔒
-DELETE /api/v1/identity/profiles/:id         # Delete profile 🔒
-PUT    /api/v1/identity/profiles/:id/visibility # Update visibility 🔒
+POST   /api/v1/identity/profiles             # Create profile 
+GET    /api/v1/identity/profiles/:id         # Get profile 
+PUT    /api/v1/identity/profiles/:id         # Update profile 
+DELETE /api/v1/identity/profiles/:id         # Delete profile 
+PUT    /api/v1/identity/profiles/:id/visibility # Update visibility 
 GET    /api/v1/identity/public/profiles      # List public profiles
 ```
 
-🔒 = Requires JWT authentication
+ = Requires JWT authentication
 
 ## Value Objects
 

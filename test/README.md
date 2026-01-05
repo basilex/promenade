@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**: ✅ **COMPLETE** - 15/15 handlers, 123 tests, 100% pass rate
+**Status**:  **COMPLETE** - 15/15 handlers, 123 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -144,7 +144,7 @@ make test-benchmark
 make test
 ```
 
-**📚 Detailed Smoke Test Documentation**: See [test/smoke/README.md](smoke/README.md) for comprehensive guide with patterns, examples, and all discovered highlights.
+** Detailed Smoke Test Documentation**: See [test/smoke/README.md](smoke/README.md) for comprehensive guide with patterns, examples, and all discovered highlights.
 
 ### Test Comparison
 
@@ -523,7 +523,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (123 tests across 15 handlers) ✅  
+**Smoke Tests**: HTTP handlers with mocks (123 tests across 15 handlers)   
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)

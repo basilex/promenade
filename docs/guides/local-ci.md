@@ -130,22 +130,22 @@ make pre-push
 
 **Output**:
 ```
-🔍 Running golangci-lint...
-✅ Lint passed
+ Running golangci-lint...
+ Lint passed
 
-🧪 Running unit tests...
-✅ Unit tests passed
+ Running unit tests...
+ Unit tests passed
 
-🧪 Running integration tests...
-✅ Integration tests passed
+ Running integration tests...
+ Integration tests passed
 
-🧪 Running race detector...
-✅ Race detector passed
+ Running race detector...
+ Race detector passed
 
-🔨 Testing build...
-✅ Build passed
+ Testing build...
+ Build passed
 
-🎉 All CI checks passed! Safe to push.
+ All CI checks passed! Safe to push.
 ```
 
 ### 4. Push
@@ -154,7 +154,7 @@ make pre-push
 git push origin dev
 ```
 
-CI will pass because you already validated locally! ✅
+CI will pass because you already validated locally! 
 
 ---
 
@@ -173,10 +173,10 @@ make ci-lint
 #### errcheck (unchecked errors)
 
 ```go
-// ❌ Bad
+//  Bad
 db.Close()
 
-// ✅ Good
+//  Good
 _ = db.Close()  // Explicit ignore
 // or
 if err := db.Close(); err != nil {
@@ -187,22 +187,22 @@ if err := db.Close(); err != nil {
 #### staticcheck (code simplification)
 
 ```go
-// ❌ Bad (QF1008: unnecessary embedded field selector)
+//  Bad (QF1008: unnecessary embedded field selector)
 user, err := row.userRow.toEntity()
 
-// ✅ Good
+//  Good
 user, err := row.toEntity()
 ```
 
 #### unused (dead code)
 
 ```go
-// ❌ Bad (function never used)
+//  Bad (function never used)
 func parseOptionalUUID(s *string) (*uuidv7.UUID, error) {
     // ... implementation
 }
 
-// ✅ Good - delete the function entirely
+//  Good - delete the function entirely
 ```
 
 ---
@@ -312,31 +312,31 @@ chmod +x .git/hooks/pre-push
 ci-check: ci-lint ci-test ci-build  ## Run all CI checks locally (lint + test + build)
 
 ci-lint:  ## Run linters (same as CI)
-	@echo "🔍 Running golangci-lint..."
-	@golangci-lint run --timeout=5m || (echo "❌ Lint failed" && exit 1)
-	@echo "✅ Lint passed"
+	@echo " Running golangci-lint..."
+	@golangci-lint run --timeout=5m || (echo " Lint failed" && exit 1)
+	@echo " Lint passed"
 
 ci-test:  ## Run all tests (same as CI)
-	@echo "🧪 Running unit tests..."
-	@make test-unit || (echo "❌ Unit tests failed" && exit 1)
-	@echo "✅ Unit tests passed"
+	@echo " Running unit tests..."
+	@make test-unit || (echo " Unit tests failed" && exit 1)
+	@echo " Unit tests passed"
 	@echo ""
-	@echo "🧪 Running integration tests..."
-	@make test-integration || (echo "❌ Integration tests failed" && exit 1)
-	@echo "✅ Integration tests passed"
+	@echo " Running integration tests..."
+	@make test-integration || (echo " Integration tests failed" && exit 1)
+	@echo " Integration tests passed"
 	@echo ""
-	@echo "🧪 Running race detector..."
-	@go test -race ./... > /dev/null 2>&1 || (echo "❌ Race detector failed" && exit 1)
-	@echo "✅ Race detector passed"
+	@echo " Running race detector..."
+	@go test -race ./... > /dev/null 2>&1 || (echo " Race detector failed" && exit 1)
+	@echo " Race detector passed"
 
 ci-build:  ## Test build (same as CI)
-	@echo "🔨 Testing build..."
-	@make build > /dev/null || (echo "❌ Build failed" && exit 1)
-	@echo "✅ Build passed"
+	@echo " Testing build..."
+	@make build > /dev/null || (echo " Build failed" && exit 1)
+	@echo " Build passed"
 
 pre-push: ci-check  ## Alias for ci-check (run before git push)
 	@echo ""
-	@echo "🎉 All CI checks passed! Safe to push."
+	@echo " All CI checks passed! Safe to push."
 ```
 
 ---
@@ -349,7 +349,7 @@ pre-push: ci-check  ## Alias for ci-check (run before git push)
 |------------------------|-----------------|
 | **Total Tests**        | 420+ tests      |
 | **Lint Issues Fixed**  | 26 issues       |
-| **golangci-lint**      | 0 issues ✅     |
+| **golangci-lint**      | 0 issues      |
 | **Local CI Duration**  | ~60s            |
 | **GitHub CI Duration** | ~5min (with VM) |
 | **Time Saved**         | 4min per push   |
@@ -362,19 +362,19 @@ pre-push: ci-check  ## Alias for ci-check (run before git push)
 
 ### DO
 
-✅ **Run `make ci-lint`** after every significant change  
-✅ **Run `make pre-push`** before every push  
-✅ **Fix lint issues** immediately (don't accumulate)  
-✅ **Use `_ = err`** for intentional error ignores  
-✅ **Add comments** when ignoring errors (`// Safe to ignore`)
+ **Run `make ci-lint`** after every significant change  
+ **Run `make pre-push`** before every push  
+ **Fix lint issues** immediately (don't accumulate)  
+ **Use `_ = err`** for intentional error ignores  
+ **Add comments** when ignoring errors (`// Safe to ignore`)
 
 ### DON'T
 
-❌ **Don't push without running** `make ci-check`  
-❌ **Don't ignore lint warnings** ("I'll fix later")  
-❌ **Don't disable linters** without good reason  
-❌ **Don't commit commented code** (triggers unused)  
-❌ **Don't skip tests** to "save time"
+ **Don't push without running** `make ci-check`  
+ **Don't ignore lint warnings** ("I'll fix later")  
+ **Don't disable linters** without good reason  
+ **Don't commit commented code** (triggers unused)  
+ **Don't skip tests** to "save time"
 
 ---
 

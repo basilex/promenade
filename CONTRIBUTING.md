@@ -56,15 +56,15 @@ make dev
 
 ```
 promenade/
-├── cmd/api/              # Application entry point
-├── internal/contexts/    # Bounded Contexts (DDD)
-│   ├── shared/          # Reference data (Country, Currency, etc.)
-│   ├── identity/        # User, Contact, Profile aggregates
-│   └── ...              # Other contexts
-├── pkg/                 # Shared packages (bus, logger, uuidv7, etc.)
-├── migrations/          # Database migrations (namespace-based)
-├── test/                # Three-tier testing (unit, integration, benchmark)
-└── docs/                # Documentation
+ cmd/api/              # Application entry point
+ internal/contexts/    # Bounded Contexts (DDD)
+    shared/          # Reference data (Country, Currency, etc.)
+    identity/        # User, Contact, Profile aggregates
+    ...              # Other contexts
+ pkg/                 # Shared packages (bus, logger, uuidv7, etc.)
+ migrations/          # Database migrations (namespace-based)
+ test/                # Three-tier testing (unit, integration, benchmark)
+ docs/                # Documentation
 ```
 
 ---

@@ -99,16 +99,16 @@ func TestUserRepository_Create(t *testing.T) {
 ### Key Rules
 
 **DO:**
-- ✅ Use `SetupTestDBWithCleanTables(t)` - TRUNCATE all tables at start
-- ✅ Static emails for single-entity tests - No UUID pollution
-- ✅ `require.NoError` for critical checks - Stop test on failure
-- ✅ `assert` for expectations - Continue to see all failures
+-  Use `SetupTestDBWithCleanTables(t)` - TRUNCATE all tables at start
+-  Static emails for single-entity tests - No UUID pollution
+-  `require.NoError` for critical checks - Stop test on failure
+-  `assert` for expectations - Continue to see all failures
 
 **DON'T:**
-- ❌ Use `SetupTestDB(t)` - Doesn't clean between functions (causes duplicate key errors)
-- ❌ Use `WithTransaction` - Requires repository signature changes
-- ❌ Share state between test functions - Each function is independent
-- ❌ Use random data generators - Use predictable test data
+-  Use `SetupTestDB(t)` - Doesn't clean between functions (causes duplicate key errors)
+-  Use `WithTransaction` - Requires repository signature changes
+-  Share state between test functions - Each function is independent
+-  Use random data generators - Use predictable test data
 
 ---
 
@@ -195,18 +195,18 @@ func TestUserHandler_Smoke(t *testing.T) {
 ### Key Rules
 
 **DO:**
-- ✅ Implement ALL IUseCase methods - Mock must satisfy interface completely
-- ✅ Use `gin.TestMode` - Disable debug logging
-- ✅ ONE test function per handler with subtests
-- ✅ Mock ALL usecase calls - Handler may call multiple methods
-- ✅ Create entities directly - No need for factory methods
-- ✅ `AssertExpectations` in each subtest
+-  Implement ALL IUseCase methods - Mock must satisfy interface completely
+-  Use `gin.TestMode` - Disable debug logging
+-  ONE test function per handler with subtests
+-  Mock ALL usecase calls - Handler may call multiple methods
+-  Create entities directly - No need for factory methods
+-  `AssertExpectations` in each subtest
 
 **DON'T:**
-- ❌ Use real database - Smoke tests are mock-only
-- ❌ Call factory methods - Create entity structs directly
-- ❌ Forget secondary mock calls - Many handlers call GetEntity after operation
-- ❌ Test business logic - Only HTTP contract (status codes, request/response)
+-  Use real database - Smoke tests are mock-only
+-  Call factory methods - Create entity structs directly
+-  Forget secondary mock calls - Many handlers call GetEntity after operation
+-  Test business logic - Only HTTP contract (status codes, request/response)
 
 ---
 
@@ -400,12 +400,12 @@ go test ./pkg/... -v
 ### Naming Convention
 
 ```go
-// ✅ Good
+//  Good
 func TestUser_NewUser_InvalidEmail_ReturnsError(t *testing.T) {}
 func TestUserRepository_Create_DuplicateEmail_ReturnsError(t *testing.T) {}
 func TestUserHandler_Register_MissingPassword_Returns400(t *testing.T) {}
 
-// ❌ Bad
+//  Bad
 func TestUser(t *testing.T) {}
 func Test1(t *testing.T) {}
 ```
@@ -427,7 +427,7 @@ assert.Contains(t, err.Error(), "expected substring")
 
 ### Integration Tests
 
-**❌ Using SetupTestDB instead of SetupTestDBWithCleanTables**
+** Using SetupTestDB instead of SetupTestDBWithCleanTables**
 
 ```go
 // BAD - shared DB, duplicate key errors
@@ -437,7 +437,7 @@ db := integration.SetupTestDB(t)
 db := integration.SetupTestDBWithCleanTables(t)
 ```
 
-**❌ Over-using UUID in emails**
+** Over-using UUID in emails**
 
 ```go
 // BAD - unnecessary UUID pollution
@@ -449,7 +449,7 @@ email := "test@example.com"
 
 ### Smoke Tests
 
-**❌ Forgetting secondary mock calls**
+** Forgetting secondary mock calls**
 
 ```go
 // BAD - missing GetUser mock
@@ -461,7 +461,7 @@ mockUC.On("VerifyEmail", mock.Anything, userID).Return(nil).Once()
 mockUC.On("GetUser", mock.Anything, userID).Return(u, nil).Once()
 ```
 
-**❌ Using factory methods**
+** Using factory methods**
 
 ```go
 // BAD - NewUser hashes password, validates email
@@ -477,7 +477,7 @@ u := &user.User{
 
 ### Unit Tests
 
-**❌ Not using mock.AssertExpectations**
+** Not using mock.AssertExpectations**
 
 ```go
 // BAD - no verification

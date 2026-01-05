@@ -21,7 +21,7 @@ The Shared Context (Shared Kernel) manages **reference data** used across all bo
 
 ## Status
 
-✅ **Production-ready**
+ **Production-ready**
 
 ## Aggregates
 

@@ -67,21 +67,21 @@ type Customer struct {
 ### Customer Status (Lifecycle)
 
 ```
-┌──────┐   QualifyAsProspect   ┌──────────┐   ConvertToCustomer   ┌──────────┐
-│ Lead │ ───────────────────> │ Prospect │ ───────────────────> │ Customer │
-└──────┘                       └──────────┘                       └──────────┘
-                                                                         │
-                                                                         │ Churn
+   QualifyAsProspect      ConvertToCustomer   
+ Lead  >  Prospect  >  Customer 
+                                              
+                                                                         
+                                                                          Churn
                                                                          v
-                                                                   ┌─────────┐
-                                                                   │ Churned │
-                                                                   └─────────┘
-                                                                         │
-                                                                         │ Reactivate
+                                                                   
+                                                                    Churned 
+                                                                   
+                                                                         
+                                                                          Reactivate
                                                                          v
-                                                                   ┌──────────┐
-                                                                   │ Customer │
-                                                                   └──────────┘
+                                                                   
+                                                                    Customer 
+                                                                   
 ```
 
 ### Customer Tiers

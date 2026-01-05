@@ -134,13 +134,13 @@ git checkout -b test/integration-tests
 ### Good Commit Messages
 
 ```bash
-# ✅ GOOD
+#  GOOD
 feat(customer): add export to CSV feature
 fix(auth): prevent JWT token reuse after logout
 docs(api): add examples for deal endpoints
 test(order): add integration tests for order state machine
 
-# ❌ BAD
+#  BAD
 update files
 fix bug
 WIP
@@ -601,7 +601,7 @@ git push origin feature/customer-notes
 
 ## Common Pitfalls
 
-### ❌ Don't Do This
+###  Don't Do This
 
 1. **Commit directly to `main` or `dev`**
    ```bash
@@ -640,7 +640,7 @@ git push origin feature/customer-notes
    id := uuidv7.New()  // UUID v7 (time-ordered, 2x faster)
    ```
 
-### ✅ Do This Instead
+###  Do This Instead
 
 1. Always create feature branch
 2. Write tests first (TDD)
@@ -674,4 +674,4 @@ git push origin feature/customer-notes
 
 ---
 
-**Happy coding!** 🚀
+**Happy coding!** 

@@ -4,7 +4,7 @@
 
 ## Available Contexts
 
-### Identity Context ✅
+### Identity Context 
 
 **Status**: Production  
 **Aggregates**: User, Contact, Profile  
@@ -18,7 +18,7 @@ Manages user authentication, authorization, and contact information.
 - Email, phone, address management
 - User profiles with social links
 
-### Shared Context ✅
+### Shared Context 
 
 **Status**: Production  
 **Aggregates**: Country, Currency, Language, Timezone  
@@ -32,7 +32,7 @@ Provides reference data for all contexts (read-only).
 - Language codes (ISO 639-1)
 - IANA timezone database
 
-### Customer Management ✅
+### Customer Management 
 
 **Status**: Production  
 **Aggregates**: Customer, Company, Deal, Interaction, Analytics  
@@ -47,7 +47,7 @@ Complete CRM functionality for managing customers, companies, deals, and sales p
 - Interaction tracking (calls, emails, meetings, notes)
 - Real-time analytics and reporting (CQRS read models)
 
-### Order Management 📅
+### Order Management 
 
 **Status**: Planned (Q2 2026)  
 **Aggregates**: Order, OrderItem, Fulfillment
@@ -60,7 +60,7 @@ Order processing and tracking system.
 - Fulfillment saga (payment → inventory → shipping)
 - Integration with Customer context
 
-### Billing 📅
+### Billing 
 
 **Status**: Planned (Q2 2026)  
 **Aggregates**: Invoice, Payment, Subscription
@@ -73,7 +73,7 @@ Billing and payment processing.
 - Subscription management
 - Integration with Order context
 
-### Warehouse 📅
+### Warehouse 
 
 **Status**: Planned (Q3 2026)  
 **Aggregates**: Product, Inventory, Warehouse
@@ -92,17 +92,17 @@ Each context follows the same pattern:
 
 ```
 internal/contexts/{context}/
-├── {aggregate}/
-│   ├── entity.go              # Domain entity
-│   ├── entity_test.go         # Tests
-│   ├── repository.go          # Repository interface
-│   ├── usecase.go            # Business logic
-│   ├── usecase_test.go       # Tests
-│   └── adapter/
-│       ├── http/handler/      # HTTP handlers
-│       └── repository/postgres/ # PostgreSQL implementation
-├── router.go                  # Context router
-└── README.md                  # Context documentation
+ {aggregate}/
+    entity.go              # Domain entity
+    entity_test.go         # Tests
+    repository.go          # Repository interface
+    usecase.go            # Business logic
+    usecase_test.go       # Tests
+    adapter/
+        http/handler/      # HTTP handlers
+        repository/postgres/ # PostgreSQL implementation
+ router.go                  # Context router
+ README.md                  # Context documentation
 ```
 
 ## Context Communication
@@ -110,10 +110,10 @@ internal/contexts/{context}/
 **Rule**: Contexts communicate ONLY via Event Bus (no direct dependencies).
 
 ```go
-// ❌ DON'T - Direct import
+//  DON'T - Direct import
 import "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 
-// ✅ DO - Event Bus
+//  DO - Event Bus
 event := bus.NewBaseEvent("user.registered", userID)
 eventBus.Publish(ctx, bus.TopicUserRegistered, event)
 ```

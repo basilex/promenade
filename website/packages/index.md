@@ -4,7 +4,7 @@
 
 ## Available Packages
 
-### Event Bus 🚀
+### Event Bus 
 
 **Location**: `pkg/bus/`  
 **Documentation**: [Event Bus](/packages/bus)
@@ -23,7 +23,7 @@ event := bus.NewBaseEvent("user.registered", userID)
 eventBus.Publish(ctx, bus.TopicUserRegistered, event)
 ```
 
-### JWT Authentication 🔐
+### JWT Authentication 
 
 **Location**: `pkg/jwt/`  
 **Status**: Production-ready  
@@ -43,7 +43,7 @@ tokenPair, _ := jwtManager.GenerateTokenPair(userID, email, roles)
 // Returns: access token (15min) + refresh token (7 days)
 ```
 
-### UUID v7 ⚡
+### UUID v7 
 
 **Location**: `pkg/uuidv7/`  
 **Status**: Production-ready  
@@ -57,7 +57,7 @@ id := uuidv7.New()  // Time-ordered UUID (RFC 9562)
 ts := uuidv7.ExtractTime(id)  // Get timestamp
 ```
 
-### Logger 📝
+### Logger 
 
 **Location**: `pkg/logger/`  
 **Status**: Production-ready  
@@ -73,7 +73,7 @@ logger.Info("User registered",
 )
 ```
 
-### Response Helper 📦
+### Response Helper 
 
 **Location**: `pkg/response/`  
 **Status**: Production-ready  
@@ -88,7 +88,7 @@ response.Error(c, 404, "USER_NOT_FOUND", "...")    // Error
 response.Paginated(c, users, total, page, pageSize) // Paginated
 ```
 
-### Value Objects 💎
+### Value Objects 
 
 **Location**: `pkg/valueobject/`  
 **Status**: Production-ready  
@@ -103,7 +103,7 @@ phone, err := valueobject.NewPhone("+380", "501234567")
 money, err := valueobject.NewMoney(100.50, "USD")
 ```
 
-### Migration Manager 🗄️
+### Migration Manager 
 
 **Location**: `pkg/migration/`  
 **Status**: Production-ready  
@@ -117,7 +117,7 @@ make migrate-new CONTEXT=identity NAME=add_users
 make migrate-identity
 ```
 
-### Aggregate Pattern 🏗️
+### Aggregate Pattern 
 
 **Location**: `pkg/aggregate/`  
 **Status**: Production-ready  
@@ -134,7 +134,7 @@ type User struct {
 }
 ```
 
-### JSONB Utilities 📊
+### JSONB Utilities 
 
 **Location**: `pkg/jsonb/`  
 **Status**: Production-ready  
@@ -148,7 +148,7 @@ data := map[string]interface{}{"key": "value"}
 jsonbData := jsonb.Marshal(data)  // For PostgreSQL JSONB column
 ```
 
-### Saga Pattern 🔄
+### Saga Pattern 
 
 **Location**: `pkg/saga/`  
 **Status**: Production-ready  
@@ -178,7 +178,7 @@ saga.Execute(ctx)
 | **aggregate**   | 5     | 90%      | Production |
 | **jsonb**       | 8     | 95%      | Production |
 | **saga**        | 28    | 100%     | Production |
-| **Total**       | **217** | **95%** | ✅        |
+| **Total**       | **217** | **95%** |         |
 
 ## Usage in Contexts
 

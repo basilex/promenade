@@ -6,8 +6,8 @@
 
 Customer Management is a **Bounded Context** that handles all CRM (Customer Relationship Management) functionality. This is where business relationships are managed, distinct from technical user authentication (Identity context).
 
-**Status**: ✅ Production-ready (December 2025)  
-**Aggregates**: Customer, Company, Deal, Interaction (all ✅ Production)  
+**Status**:  Production-ready (December 2025)  
+**Aggregates**: Customer, Company, Deal, Interaction (all  Production)  
 **Endpoints**: 14 HTTP routes  
 **Database**: 1 table with soft delete (+ 3 planned)
 
@@ -15,17 +15,17 @@ Customer Management is a **Bounded Context** that handles all CRM (Customer Rela
 
 ## Key Features
 
-### 🎯 Customer Lifecycle Management
+###  Customer Lifecycle Management
 Track customers through full lifecycle from lead to churned customer.
 
 **State Machine**:
 ```
-┌──────┐  Qualify  ┌──────────┐  Convert  ┌──────────┐  Churn  ┌─────────┐
-│ Lead │ ────────> │ Prospect │ ────────> │ Customer │ ──────> │ Churned │
-└──────┘           └──────────┘           └──────────┘         └─────────┘
-                                                │                     │
-                                                │    Reactivate       │
-                                                └─────────────────────┘
+  Qualify    Convert    Churn  
+ Lead  >  Prospect  >  Customer  >  Churned 
+                               
+                                                                     
+                                                    Reactivate       
+                                                
 ```
 
 **States**:
@@ -34,7 +34,7 @@ Track customers through full lifecycle from lead to churned customer.
 - **Customer**: Active paying customer
 - **Churned**: Lost customer (can reactivate)
 
-### 👥 B2C & B2B Support
+###  B2C & B2B Support
 Handle both individual consumers and business contacts.
 
 ```bash
@@ -61,7 +61,7 @@ curl -X POST http://localhost:8081/api/v1/customer-mgmt/customers \
   }'
 ```
 
-### 🏢 Customer Segmentation
+###  Customer Segmentation
 Organize by tier and flexible tags.
 
 **Tiers**:
@@ -72,7 +72,7 @@ Organize by tier and flexible tags.
 
 **Tags**: `["vip", "high-value", "marketing", "support"]` (JSONB array)
 
-### 📊 Sales Pipeline
+###  Sales Pipeline
 Assign customers to sales representatives, track source and status.
 
 ```bash
@@ -114,7 +114,7 @@ curl -X PUT http://localhost:8081/api/v1/customer-mgmt/customers/{id}/tags \
 | PUT | `/api/v1/customer-mgmt/customers/:id/tier` | Upgrade/downgrade tier |
 | PUT | `/api/v1/customer-mgmt/customers/:id/tags` | Update tags |
 
-**Total**: 14 endpoints ✅
+**Total**: 14 endpoints 
 
 ---
 
@@ -242,7 +242,7 @@ curl http://localhost:8081/api/v1/customer-mgmt/customers/$CUSTOMER_ID
 
 ### Indexes
 
-✅ Optimized for common queries:
+ Optimized for common queries:
 - `idx_customers_email` - Email lookup (UNIQUE, LOWER(email))
 - `idx_customers_user` - User lookup (WHERE deleted_at IS NULL)
 - `idx_customers_company` - Company lookup
@@ -266,8 +266,8 @@ curl http://localhost:8081/api/v1/customer-mgmt/customers/$CUSTOMER_ID
 - Churned → Prospect (Reactivate)
 
 **Invalid**:
-- ❌ Lead → Customer (must qualify first)
-- ❌ Churned → Customer directly (must reactivate to prospect)
+-  Lead → Customer (must qualify first)
+-  Churned → Customer directly (must reactivate to prospect)
 
 ### Validation Rules
 

@@ -33,15 +33,15 @@ Each context is autonomous with:
 
 **Available Contexts**:
 
-- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only) ✅ Production
-- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile, Role, Permission aggregates ✅ Production
-  - User: Registration, authentication, password management ✅
-  - Contact: Email, phone, address management ✅
-  - Profile: Personal info, bio, avatar, localization ✅
-  - Role & Permission: RBAC implementation ✅ Production
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer ✅ | Company ✅ | Deal ✅ | Interaction ✅ | Analytics ✅ (all Production)
-- **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
-- **Billing** (✅ Production) - Invoice ✅, Payment ✅, Subscription ✅ (all Production)
+- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only)  Production
+- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile, Role, Permission aggregates  Production
+  - User: Registration, authentication, password management 
+  - Contact: Email, phone, address management 
+  - Profile: Personal info, bio, avatar, localization 
+  - Role & Permission: RBAC implementation  Production
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer  | Company  | Deal  | Interaction  | Analytics  (all Production)
+- **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate  Production | OrderLine entity  | Contract, Fulfillment planned
+- **Billing** ( Production) - Invoice , Payment , Subscription  (all Production)
 - **Warehouse** (planned Q3 2026) - Inventory management
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
@@ -99,12 +99,12 @@ type Contact struct {
     // ... other fields
 }
 
-// ❌ NEVER DO THIS - Field duplication
+//  NEVER DO THIS - Field duplication
 type WrongContact struct {
     aggregate.BaseAggregate
-    ID        uuidv7.UUID  // ❌ DUPLICATE - already in BaseAggregate
-    CreatedAt time.Time    // ❌ DUPLICATE - already in BaseAggregate
-    UpdatedAt time.Time    // ❌ DUPLICATE - already in BaseAggregate
+    ID        uuidv7.UUID  //  DUPLICATE - already in BaseAggregate
+    CreatedAt time.Time    //  DUPLICATE - already in BaseAggregate
+    UpdatedAt time.Time    //  DUPLICATE - already in BaseAggregate
 }
 
 // Factory method - BaseAggregate auto-initializes ID, CreatedAt, UpdatedAt
@@ -115,13 +115,13 @@ func NewContact(userID uuidv7.UUID) *Contact {
     }
 }
 
-// ✅ Use Touch() for timestamp updates
+//  Use Touch() for timestamp updates
 func (c *Contact) Verify() {
     c.IsVerified = true
     c.Touch()  // Updates UpdatedAt via BaseAggregate
 }
 
-// ✅ Use GetID() for ID access
+//  Use GetID() for ID access
 func (r *contactRepository) Update(ctx context.Context, contact *Contact) error {
     query := `UPDATE contacts SET ... WHERE id = $1`
     return r.Exec(ctx, query, contact.GetID())  // Not contact.ID
@@ -370,11 +370,11 @@ func TestOrderHandler_GetByID_NotFound(t *testing.T) {
 - `FakeUUID()` - Generate test UUID v7
 
 **When to Write Smoke Tests**:
-- ✅ For all HTTP handlers (2 tests each minimum)
-- ✅ When adding new endpoints
-- ✅ Before integration tests (faster feedback)
-- ❌ Not for complex business logic (use integration tests)
-- ❌ Not for repository methods (use integration tests with real DB)
+-  For all HTTP handlers (2 tests each minimum)
+-  When adding new endpoints
+-  Before integration tests (faster feedback)
+-  Not for complex business logic (use integration tests)
+-  Not for repository methods (use integration tests with real DB)
 
 **See**: [test/smoke/README.md](../test/smoke/README.md) for complete smoke testing guide
 
@@ -993,13 +993,13 @@ go test ./pkg/jwt/... -v
 
 **DTO Testing Guidelines**:
 
-**✅ WRITE DTO tests for**:
+** WRITE DTO tests for**:
 - Complex transformation logic (value objects: Email, Phone, Address, Money)
 - JSONB fields with custom marshaling
 - Conditional logic for nullable/optional fields
 - Nested structures with multiple levels
 
-**❌ SKIP DTO tests for**:
+** SKIP DTO tests for**:
 - Simple field-to-field mappings
 - Straightforward struct copying
 - Already covered by handler integration tests
@@ -1080,11 +1080,11 @@ func TestOrderHandler_GetByID_NotFound(t *testing.T) {
 - `FakeUUID()` - Generate test UUID v7
 
 **When to Write Smoke Tests**:
-- ✅ For all HTTP handlers (2 tests each minimum)
-- ✅ When adding new endpoints
-- ✅ Before integration tests (faster feedback)
-- ❌ Not for complex business logic (use integration tests)
-- ❌ Not for repository methods (use integration tests with real DB)
+-  For all HTTP handlers (2 tests each minimum)
+-  When adding new endpoints
+-  Before integration tests (faster feedback)
+-  Not for complex business logic (use integration tests)
+-  Not for repository methods (use integration tests with real DB)
 
 **See**: [test/smoke/README.md](../test/smoke/README.md) for complete smoke testing guide
 
@@ -1142,12 +1142,12 @@ func TestUserRepository_Create(t *testing.T) {
 
 1. **Unique Constraint Violations**: Add UUID suffix to test emails in loops
    ```go
-   // ❌ WRONG - duplicate emails in loop
+   //  WRONG - duplicate emails in loop
    for i := 0; i < 3; i++ {
        email := fmt.Sprintf("test_%d@example.com", i)
    }
    
-   // ✅ CORRECT - unique emails with UUID suffix
+   //  CORRECT - unique emails with UUID suffix
    for i := 0; i < 3; i++ {
        email := fmt.Sprintf("test_%s_%d@example.com", uuidv7.New().String()[:8], i)
    }
@@ -1155,13 +1155,13 @@ func TestUserRepository_Create(t *testing.T) {
 
 2. **Transaction Rollback Tests**: Don't use `t.FailNow()` in transaction tests
    ```go
-   // ❌ WRONG - t.FailNow() prevents rollback verification
+   //  WRONG - t.FailNow() prevents rollback verification
    tx, _ := db.BeginTx(ctx, nil)
    if err != nil {
        t.FailNow()  // Code after this never runs!
    }
    
-   // ✅ CORRECT - manual transaction + separate verification
+   //  CORRECT - manual transaction + separate verification
    tx, _ := db.BeginTx(ctx, nil)
    ctx = database.SetTxToContext(ctx, tx)
    // ... test code ...
@@ -1171,10 +1171,10 @@ func TestUserRepository_Create(t *testing.T) {
 
 3. **Pagination Parameters**: pageSize before page number
    ```go
-   // ❌ WRONG - page=10, pageSize=0 → LIMIT 0
+   //  WRONG - page=10, pageSize=0 → LIMIT 0
    users, _ := repo.ListUsers(ctx, 10, 0)
    
-   // ✅ CORRECT - page=1, pageSize=10
+   //  CORRECT - page=1, pageSize=10
    users, _ := repo.ListUsers(ctx, 1, 10)
    ```
 
@@ -1361,8 +1361,8 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 **Top Mistakes**:
 
 1. **BaseAggregate Field Duplication** (FIXED Jan 2026): NEVER duplicate ID, CreatedAt, UpdatedAt in entities - already in BaseAggregate
-   - ❌ `type Entity struct { aggregate.BaseAggregate; ID uuid.UUID }` - WRONG
-   - ✅ `type Entity struct { aggregate.BaseAggregate }` - CORRECT
+   -  `type Entity struct { aggregate.BaseAggregate; ID uuid.UUID }` - WRONG
+   -  `type Entity struct { aggregate.BaseAggregate }` - CORRECT
    - Always use `entity.Touch()` instead of `entity.UpdatedAt = time.Now()`
    - Always use `entity.GetID()` instead of `entity.ID` in repositories
 2. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)

@@ -9,13 +9,13 @@
 Promenade uses **OpenAPI 3.0** specification with **Swagger UI** to provide interactive, self-documenting REST API. All endpoints across 5 bounded contexts are automatically documented from code annotations.
 
 **Key Features**:
-- ✅ 120+ documented endpoints
-- ✅ Interactive Swagger UI for testing
-- ✅ OpenAPI 3.0 JSON/YAML export
-- ✅ Request/Response schemas with examples
-- ✅ Authentication flows (JWT Bearer tokens)
-- ✅ Error code documentation
-- ✅ Auto-generated from code annotations
+-  120+ documented endpoints
+-  Interactive Swagger UI for testing
+-  OpenAPI 3.0 JSON/YAML export
+-  Request/Response schemas with examples
+-  Authentication flows (JWT Bearer tokens)
+-  Error code documentation
+-  Auto-generated from code annotations
 
 ---
 
@@ -173,13 +173,13 @@ func (h *OrderHandler) Create(c *gin.Context) {
 // @Failure 500 {object} response.Response "Internal server error"
 ```
 
-**⚠️ Common Mistakes**:
+** Common Mistakes**:
 
 ```go
-// ❌ WRONG - ErrorResponse doesn't exist as type
+//  WRONG - ErrorResponse doesn't exist as type
 // @Failure 400 {object} response.ErrorResponse
 
-// ✅ CORRECT - Use response.Response
+//  CORRECT - Use response.Response
 // @Failure 400 {object} response.Response
 ```
 
@@ -191,12 +191,12 @@ func (h *OrderHandler) Create(c *gin.Context) {
 
 | Context                | Aggregates                   | Endpoints | Documentation |
 | ---------------------- | ---------------------------- | --------- | ------------- |
-| **Identity**           | User, Contact, Profile, Role, Permission | 35        | ✅ Complete    |
-| **Customer Management** | Customer, Company, Deal, Interaction, Analytics | 48        | ✅ Complete    |
-| **Order Management**   | Order (full lifecycle)       | 14        | ✅ Complete    |
-| **Billing**            | Invoice, Payment, Subscription | 22        | ✅ Complete    |
-| **Shared**             | Country, Currency, Language, Timezone | 9         | ✅ Complete    |
-| **Infrastructure**     | Health Checks                | 4         | ✅ Complete    |
+| **Identity**           | User, Contact, Profile, Role, Permission | 35        |  Complete    |
+| **Customer Management** | Customer, Company, Deal, Interaction, Analytics | 48        |  Complete    |
+| **Order Management**   | Order (full lifecycle)       | 14        |  Complete    |
+| **Billing**            | Invoice, Payment, Subscription | 22        |  Complete    |
+| **Shared**             | Country, Currency, Language, Timezone | 9         |  Complete    |
+| **Infrastructure**     | Health Checks                | 4         |  Complete    |
 
 **Total**: **120+ endpoints** across **5 bounded contexts**
 
@@ -300,12 +300,12 @@ Response:
 
 ### Protected Endpoints
 
-Endpoints requiring authentication are marked with lock icon 🔒 in Swagger UI.
+Endpoints requiring authentication are marked with lock icon  in Swagger UI.
 
 **Example**:
-- 🔒 `GET /api/v1/identity/users` - Requires JWT
-- 🔓 `POST /api/v1/identity/users/register` - Public
-- 🔓 `POST /api/v1/identity/users/login` - Public
+-  `GET /api/v1/identity/users` - Requires JWT
+-  `POST /api/v1/identity/users/register` - Public
+-  `POST /api/v1/identity/users/login` - Public
 
 ---
 
@@ -509,12 +509,12 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 ```
 
 **Features**:
-- ✅ 120+ endpoints organized by context
-- ✅ Auto-save JWT tokens after login
-- ✅ Auto-refresh expired tokens
-- ✅ Pre-configured environments (Dev/Staging/Prod)
-- ✅ Test scripts for response validation
-- ✅ Authentication flow examples
+-  120+ endpoints organized by context
+-  Auto-save JWT tokens after login
+-  Auto-refresh expired tokens
+-  Pre-configured environments (Dev/Staging/Prod)
+-  Test scripts for response validation
+-  Authentication flow examples
 
 **Complete guide**: [postman/README.md](../../postman/README.md)
 
@@ -618,17 +618,17 @@ cannot find type definition: response.ErrorResponse
 ```
 
 **Solution**: Use correct types from `pkg/response`:
-- ✅ `response.Response`
-- ❌ `response.ErrorResponse` (function, not type)
-- ❌ `response.SuccessResponse` (function, not type)
+-  `response.Response`
+-  `response.ErrorResponse` (function, not type)
+-  `response.SuccessResponse` (function, not type)
 
 **4. Authentication not working in Swagger UI**
 
 **Checklist**:
-- ✅ JWT token obtained via `/api/v1/identity/users/login`
-- ✅ Token format: `Bearer <access_token>` (with space)
-- ✅ Token not expired (15 minutes validity)
-- ✅ "Authorize" button clicked after entering token
+-  JWT token obtained via `/api/v1/identity/users/login`
+-  Token format: `Bearer <access_token>` (with space)
+-  Token not expired (15 minutes validity)
+-  "Authorize" button clicked after entering token
 
 ---
 
@@ -637,20 +637,20 @@ cannot find type definition: response.ErrorResponse
 ### Documentation Standards
 
 **DO**:
-- ✅ Write clear, concise summaries (1 line)
-- ✅ Add detailed descriptions for complex operations
-- ✅ Document all parameters (path, query, body)
-- ✅ Include example request/response bodies
-- ✅ Document all possible error codes
-- ✅ Group related endpoints with same `@Tags`
-- ✅ Keep annotations up-to-date with code changes
+-  Write clear, concise summaries (1 line)
+-  Add detailed descriptions for complex operations
+-  Document all parameters (path, query, body)
+-  Include example request/response bodies
+-  Document all possible error codes
+-  Group related endpoints with same `@Tags`
+-  Keep annotations up-to-date with code changes
 
 **DON'T**:
-- ❌ Skip `@Summary` or `@Description`
-- ❌ Use incorrect type references
-- ❌ Forget to document error responses
-- ❌ Leave endpoints without `@Tags`
-- ❌ Hardcode URLs in descriptions (use relative paths)
+-  Skip `@Summary` or `@Description`
+-  Use incorrect type references
+-  Forget to document error responses
+-  Leave endpoints without `@Tags`
+-  Hardcode URLs in descriptions (use relative paths)
 
 ### Versioning
 

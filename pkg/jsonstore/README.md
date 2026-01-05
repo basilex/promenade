@@ -12,12 +12,12 @@ The `jsonstore` package provides a **generic `Field[T]` type** that seamlessly h
 
 ## Features
 
-- ✅ **Type-Safe**: Generic `Field[T]` for any JSON-serializable type
-- ✅ **Database-Agnostic**: Works with PostgreSQL, SQLite, MySQL, SQL Server
-- ✅ **Automatic Marshaling**: JSON encoding/decoding handled automatically
-- ✅ **NULL Support**: Proper handling of NULL database values
-- ✅ **Deep Copy**: `Clone()` method for safe copies
-- ✅ **Zero Dependencies**: Uses only standard library `encoding/json`
+-  **Type-Safe**: Generic `Field[T]` for any JSON-serializable type
+-  **Database-Agnostic**: Works with PostgreSQL, SQLite, MySQL, SQL Server
+-  **Automatic Marshaling**: JSON encoding/decoding handled automatically
+-  **NULL Support**: Proper handling of NULL database values
+-  **Deep Copy**: `Clone()` method for safe copies
+-  **Zero Dependencies**: Uses only standard library `encoding/json`
 
 ---
 
@@ -435,9 +435,9 @@ db.Exec("INSERT INTO customers (name, tags) VALUES ($1, $2)",
 
 ### PostgreSQL (Native JSONB)
 
-- ✅ **Fast**: GIN indexes, native operators (@>, ->, ->>)
-- ✅ **Storage**: Compressed binary format
-- ✅ **Queries**: Index-optimized searches
+-  **Fast**: GIN indexes, native operators (@>, ->, ->>)
+-  **Storage**: Compressed binary format
+-  **Queries**: Index-optimized searches
 
 ```sql
 -- GIN index for array searches
@@ -449,9 +449,9 @@ SELECT * FROM customers WHERE tags @> '["vip"]'::jsonb;
 
 ### SQLite (TEXT)
 
-- ⚠️ **Slower**: No JSON indexes, TEXT storage
-- ✅ **Simple**: json_extract functions available
-- ⚠️ **Queries**: Full table scans for complex queries
+-  **Slower**: No JSON indexes, TEXT storage
+-  **Simple**: json_extract functions available
+-  **Queries**: Full table scans for complex queries
 
 **Recommendation**: Filter in Go for SQLite:
 
@@ -496,7 +496,7 @@ go test -bench=. ./pkg/jsonstore
 
 ## Best Practices
 
-### DO ✅
+### DO 
 
 - Use `Field[T]` for all JSON columns in entities
 - Initialize with `NewField()` in constructors
@@ -504,7 +504,7 @@ go test -bench=. ./pkg/jsonstore
 - Use database-specific optimizations when available
 - Test with both PostgreSQL and SQLite
 
-### DON'T ❌
+### DON'T 
 
 - Don't access `.value` directly (use `Get()` method)
 - Don't mutate returned values without calling `Set()`
@@ -562,7 +562,7 @@ ALTER TABLE customers ADD CHECK (json_valid(tags));
 
 ---
 
-**Status**: ✅ Production Ready  
+**Status**:  Production Ready  
 **Version**: 1.0.0  
 **Test Coverage**: TBD  
 **Maintainer**: Promenade Team  

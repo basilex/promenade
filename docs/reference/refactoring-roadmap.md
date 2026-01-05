@@ -8,7 +8,7 @@
 
 ## Поточний стан (Snapshot)
 
-### ✅ Що працює
+###  Що працює
 - [x] VitePress сайт на GitHub Pages (https://basilex.github.io/promenade/)
 - [x] GitHub Actions CI/CD pipeline (тести + deploy)
 - [x] 240+ тестів (unit + smoke + integration)
@@ -16,14 +16,14 @@
 - [x] 5 bounded contexts (Identity, Customer, Shared готові)
 - [x] Event Bus (Memory + Redis), JWT, Logger, UUID v7
 
-### ⚠️ Проблеми
+###  Проблеми
 1. **Тести** - багато mock-based smoke tests без реальної цінності, костилі з `testing.Short()`
 2. **Документація** - розрізнена (README vs сайт), багато не потрапило на сайт
 3. **Docker** - старий docker-compose.yml замість сучасного compose.yaml
 4. **Головна сторінка** - порожня, немає концептів і навігації
 5. **CI костилі** - skip checks, hardcoded ports, test-db dependency
 
-### 📊 Статистика
+###  Статистика
 - **Tests**: 240+ (50% можна видалити)
 - **Docs**: ~15,000 ліній документації (розкидані)
 - **Docker files**: 3 застарілих файли
@@ -234,7 +234,7 @@ jobs:
 - Tests: 240 → ~50-80
 - Test coverage: 90% → 95%+ (на критичному коді)
 - CI time: ~40s → ~15s (unit only)
-- Maintainability: 🔴 → 🟢
+- Maintainability:  → 
 
 **Deliverables:**
 - [ ] Видалено test/smoke/
@@ -334,8 +334,8 @@ DOCKER_COMPOSE_PROD=$(DOCKER_COMPOSE) -f docker/compose.prod.yaml
 # Development
 docker-up:  ## Start development stack
 	$(DOCKER_COMPOSE_DEV) up -d
-	@echo "✓ PostgreSQL: localhost:5432"
-	@echo "✓ Redis: localhost:6379"
+	@echo " PostgreSQL: localhost:5432"
+	@echo " Redis: localhost:6379"
 
 docker-down:  ## Stop development stack
 	$(DOCKER_COMPOSE_DEV) down
@@ -346,7 +346,7 @@ docker-logs:  ## Show container logs
 # Testing
 test-db-start:  ## Start test database
 	$(DOCKER_COMPOSE_TEST) up -d
-	@echo "✓ Test DB: localhost:5433"
+	@echo " Test DB: localhost:5433"
 
 test-db-stop:  ## Stop test database
 	$(DOCKER_COMPOSE_TEST) down
@@ -603,7 +603,7 @@ Modern backend platform built with Domain-Driven Design.
 
 ## Documentation
 
-📚 **Full documentation**: https://basilex.github.io/promenade/
+ **Full documentation**: https://basilex.github.io/promenade/
 
 - [Architecture Guide](https://basilex.github.io/promenade/guide/architecture)
 - [Bounded Contexts](https://basilex.github.io/promenade/contexts/)
@@ -806,13 +806,13 @@ npm run docs:build  # Check for broken links
 
 ## Наступні кроки
 
-1. ✅ Прочитати цей документ
+1.  Прочитати цей документ
 2. ⏳ Почати з Фази 1 (очистка тестів)
 3. ⏳ Відпрацювати план покроково
 4. ⏳ Регулярні check-ins (кінець кожної фази)
 
 ---
 
-**Status**: 🔴 Planning → 🟡 In Progress → 🟢 Complete  
+**Status**:  Planning →  In Progress →  Complete  
 **Last Updated**: December 29, 2025  
 **Owner**: Promenade Team

@@ -6,7 +6,7 @@
 
 Company Management is an **aggregate within Customer Management context** that handles all B2B customer organization functionality. This is where corporate entities, subsidiaries, and business relationships are managed.
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Aggregate**: Company (within Customer Management context)  
 **Endpoints**: 14 HTTP routes  
 **Database**: 1 table (`customer_companies`) with soft delete  
@@ -16,7 +16,7 @@ Company Management is an **aggregate within Customer Management context** that h
 
 ## Key Features
 
-### 🏢 Corporate Entity Management
+###  Corporate Entity Management
 Track business organizations with full legal and contact information.
 
 **Company Types**:
@@ -34,15 +34,15 @@ Track business organizations with full legal and contact information.
 - **Large**: 251-1,000 employees
 - **Enterprise**: 1,000+ employees
 
-### 🌳 Hierarchical Structure
+###  Hierarchical Structure
 Support parent-subsidiary relationships for corporate groups.
 
 **Example Hierarchy**:
 ```
 Acme Corporation (Parent)
-├── Acme Europe GmbH (Subsidiary)
-├── Acme Asia Ltd (Subsidiary)
-└── Acme Americas Inc (Subsidiary)
+ Acme Europe GmbH (Subsidiary)
+ Acme Asia Ltd (Subsidiary)
+ Acme Americas Inc (Subsidiary)
 ```
 
 **Business Rules**:
@@ -50,7 +50,7 @@ Acme Corporation (Parent)
 - Circular references prevented
 - Query subsidiaries by parent ID
 
-### 📋 Comprehensive Business Info
+###  Comprehensive Business Info
 Track complete business profile including legal, contact, and financial information.
 
 **Information Categories**:
@@ -826,7 +826,7 @@ var (
 ---
 
 **Last Updated**: December 31, 2025  
-**Status**: Production-ready ✅  
+**Status**: Production-ready   
 **Endpoints**: 14 HTTP routes  
 **Tests**: 24 tests (100% passing)  
 **Maintainer**: Promenade Team

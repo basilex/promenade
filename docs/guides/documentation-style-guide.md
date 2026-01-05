@@ -28,12 +28,12 @@
 
 **Prohibited Examples**:
 ```markdown
-❌ ✅ Production (checkmark emoji)
-❌ 📋 Planned (clipboard emoji)
-❌ 🚀 Ready to launch (rocket emoji)
-❌ 🎯 Core Concepts (target emoji)
-❌ 🏗️ Architecture (building emoji)
-❌ 📚 Documentation (books emoji)
+  Production (checkmark emoji)
+  Planned (clipboard emoji)
+  Ready to launch (rocket emoji)
+  Core Concepts (target emoji)
+  Architecture (building emoji)
+  Documentation (books emoji)
 ```
 
 ### ALLOWED: Text-Based Status Indicators
@@ -41,11 +41,11 @@
 **Use text** to indicate status:
 
 ```markdown
-✓ Production      (Plain text "Production")
-✓ In Progress     (Plain text "In Progress")
-✓ Planned Q3'26   (Plain text with quarter)
-✓ Deprecated      (Plain text "Deprecated")
-✓ Experimental    (Plain text "Experimental")
+ Production      (Plain text "Production")
+ In Progress     (Plain text "In Progress")
+ Planned Q3'26   (Plain text with quarter)
+ Deprecated      (Plain text "Deprecated")
+ Experimental    (Plain text "Experimental")
 ```
 
 **Example - Bounded Contexts Table**:
@@ -62,9 +62,9 @@
 ```markdown
 | Context      | Status           |
 |--------------|------------------|
-| Identity     | ✅ Production    |
-| Billing      | ✅ Production    |
-| Warehouse    | 📋 Planned Q3'26 |
+| Identity     |  Production    |
+| Billing      |  Production    |
+| Warehouse    |  Planned Q3'26 |
 ```
 
 ---
@@ -84,9 +84,9 @@
 
 **NOT**:
 ```markdown
-# 🎯 Main Title
-## 🏗️ Architecture
-### 📚 Documentation
+#  Main Title
+##  Architecture
+###  Documentation
 ```
 
 ### Lists
@@ -121,9 +121,9 @@
 
 **NOT**:
 ```markdown
-🔥 Hot feature
-⚡ Fast performance
-💡 Pro tip
+ Hot feature
+ Fast performance
+ Pro tip
 ```
 
 ### Status Indicators
@@ -132,16 +132,16 @@
 
 | Concept              | Use This          | NOT This     |
 | -------------------- | ----------------- | ------------ |
-| Completed            | Production        | ✅ or 🎉     |
-| In development       | In Progress       | 🏗️ or ⚙️     |
-| Planned              | Planned Q3'26     | 📋 or 🗓️     |
-| Warning              | **Warning:**      | ⚠️           |
-| Error                | **Error:**        | ❌           |
-| Success              | **Success:**      | ✅           |
-| Info                 | **Note:**         | ℹ️           |
-| Documentation        | Guide, README     | 📚 or 📖     |
-| Performance          | Optimized         | ⚡ or 🚀     |
-| Security             | Secure            | 🔒 or 🛡️     |
+| Completed            | Production        |  or      |
+| In development       | In Progress       |  or      |
+| Planned              | Planned Q3'26     |  or      |
+| Warning              | **Warning:**      |            |
+| Error                | **Error:**        |            |
+| Success              | **Success:**      |            |
+| Info                 | **Note:**         | ℹ           |
+| Documentation        | Guide, README     |  or      |
+| Performance          | Optimized         |  or      |
+| Security             | Secure            |  or      |
 
 ---
 
@@ -164,14 +164,14 @@
 
 **NOT**:
 ```markdown
-## 🚀 Quick Start
-## 🏗️ Architecture Overview
-## 📚 API Reference
-## ⚙️ Configuration Options
-## 🧪 Testing Guide
-## 🔧 Troubleshooting
-## ✨ Best Practices
-## 🔗 Related Documentation
+##  Quick Start
+##  Architecture Overview
+##  API Reference
+##  Configuration Options
+##  Testing Guide
+##  Troubleshooting
+##  Best Practices
+##  Related Documentation
 ```
 
 ---
@@ -192,9 +192,9 @@ func CreateCustomer(ctx context.Context, req *CreateCustomerRequest) (*Customer,
 
 **NOT**:
 ```go
-// 🎯 CreateCustomer creates a new customer
-// ✅ Returns customer on success
-// ❌ Returns error if email exists
+//  CreateCustomer creates a new customer
+//  Returns customer on success
+//  Returns error if email exists
 func CreateCustomer(ctx context.Context, req *CreateCustomerRequest) (*Customer, error) {
     // Implementation
 }
@@ -216,13 +216,13 @@ Closes #123
 
 **NOT**:
 ```bash
-feat(api): ✨ Add Postman collection 🚀
+feat(api):  Add Postman collection 
 
-- ✅ Generate collection
-- 📝 Add environments
-- 📚 Update docs
+-  Generate collection
+-  Add environments
+-  Update docs
 
-🎉 Closes #123
+ Closes #123
 ```
 
 ---
@@ -232,18 +232,18 @@ feat(api): ✨ Add Postman collection 🚀
 **Use descriptive, lowercase, hyphenated names**:
 
 ```
-api-documentation.md          ✓ Correct
-testing-patterns.md           ✓ Correct
-customer-management.md        ✓ Correct
-rate-limiting.md              ✓ Correct
+api-documentation.md           Correct
+testing-patterns.md            Correct
+customer-management.md         Correct
+rate-limiting.md               Correct
 ```
 
 **NOT**:
 ```
-API-Documentation.md          ✗ PascalCase
-testing_patterns.md           ✗ snake_case
-CustomerManagement.md         ✗ PascalCase
-rate_limiting.md              ✗ snake_case
+API-Documentation.md           PascalCase
+testing_patterns.md            snake_case
+CustomerManagement.md          PascalCase
+rate_limiting.md               snake_case
 ```
 
 ---
@@ -550,20 +550,20 @@ fi
 ### BEFORE (with emoji)
 
 ```markdown
-# 🎯 Core Features
+#  Core Features
 
-## 🚀 Quick Start
+##  Quick Start
 
-✅ Production-ready  
-📋 Planned features  
-🔥 High performance  
-💡 Pro tip: Use caching
+ Production-ready  
+ Planned features  
+ High performance  
+ Pro tip: Use caching
 
-### 🏗️ Architecture
+###  Architecture
 
-- ✅ Event Bus (377K events/sec)
-- ✅ JWT Authentication
-- 📋 API Versioning (planned)
+-  Event Bus (377K events/sec)
+-  JWT Authentication
+-  API Versioning (planned)
 ```
 
 ### AFTER (professional)

@@ -76,15 +76,15 @@ eventBus.Subscribe(bus.TopicContactVerified, func(ctx context.Context, e bus.Eve
 ### 3. Clean Architecture Layers
 
 ```
-┌─────────────────────────────────────────┐
-│           HTTP Handlers (Gin)           │ ← Adapter Layer
-├─────────────────────────────────────────┤
-│          Use Cases (Business Logic)     │ ← Application Layer
-├─────────────────────────────────────────┤
-│    Aggregates + Value Objects (Domain)  │ ← Domain Layer
-├─────────────────────────────────────────┤
-│   Repository (PostgreSQL + Redis)       │ ← Infrastructure Layer
-└─────────────────────────────────────────┘
+
+           HTTP Handlers (Gin)            ← Adapter Layer
+
+          Use Cases (Business Logic)      ← Application Layer
+
+    Aggregates + Value Objects (Domain)   ← Domain Layer
+
+   Repository (PostgreSQL + Redis)        ← Infrastructure Layer
+
 ```
 
 **Dependency Rule**: Inner layers never depend on outer layers.
@@ -95,22 +95,22 @@ Each context follows the same pattern:
 
 ```
 internal/contexts/{context}/
-├── {aggregate}/
-│   ├── entity.go              # Domain entity (aggregate root)
-│   ├── entity_test.go         # Entity tests
-│   ├── repository.go          # Repository interface
-│   ├── usecase.go            # Business logic (use cases)
-│   ├── usecase_test.go       # Use case tests
-│   └── adapter/
-│       ├── http/
-│       │   └── handler/
-│       │       ├── {aggregate}_handler.go  # HTTP handlers
-│       │       └── dto/
-│       │           └── {aggregate}_dto.go  # Data transfer objects
-│       └── repository/postgres/
-│           ├── base_repository.go         # BaseRepository (per context)
-│           └── {aggregate}_repository.go  # PostgreSQL implementation
-└── router.go                  # Context router (registers routes)
+ {aggregate}/
+    entity.go              # Domain entity (aggregate root)
+    entity_test.go         # Entity tests
+    repository.go          # Repository interface
+    usecase.go            # Business logic (use cases)
+    usecase_test.go       # Use case tests
+    adapter/
+        http/
+           handler/
+               {aggregate}_handler.go  # HTTP handlers
+               dto/
+                   {aggregate}_dto.go  # Data transfer objects
+        repository/postgres/
+            base_repository.go         # BaseRepository (per context)
+            {aggregate}_repository.go  # PostgreSQL implementation
+ router.go                  # Context router (registers routes)
 ```
 
 ### Example: Identity Context

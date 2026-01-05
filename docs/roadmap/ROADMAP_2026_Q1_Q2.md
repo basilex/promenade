@@ -1,14 +1,14 @@
 # Promenade Platform Roadmap Q1-Q2 2026
 
-**Статус**: 🎯 Active Development  
+**Статус**:  Active Development  
 **Період**: January - June 2026  
 **Остання оновлення**: January 5, 2026
 
 ---
 
-## 📊 Поточний статус (Baseline)
+##  Поточний статус (Baseline)
 
-### ✅ Завершені контексти (Production-ready)
+###  Завершені контексти (Production-ready)
 - **Shared Context** - Reference data (Country, Currency, Language, Timezone)
 - **Identity Context** - User, Contact, Profile, Role, Permission (RBAC)
 - **Customer Management** - Customer, Company, Deal, Interaction, Analytics
@@ -19,29 +19,29 @@
 
 ---
 
-## 🎯 Стратегічні цілі Q1-Q2 2026
+##  Стратегічні цілі Q1-Q2 2026
 
-### 1️⃣ **Developer Experience** (Q1)
+### 1⃣ **Developer Experience** (Q1)
 - API Documentation & Tooling
 - Developer Portal з прикладами
 
-### 2️⃣ **E-commerce Foundation** (Q1-Q2)
+### 2⃣ **E-commerce Foundation** (Q1-Q2)
 - Warehouse Context (Inventory Management)
 - Contract aggregate (Order Management)
 - Fulfillment Saga (повна автоматизація)
 
-### 3️⃣ **Payment Integration** (Q1)
+### 3⃣ **Payment Integration** (Q1)
 - Stripe/PayPal Gateway
 - Recurring Billing Automation
 
-### 4️⃣ **Enterprise Features** (Q2)
+### 4⃣ **Enterprise Features** (Q2)
 - Audit Logging
 - GDPR Compliance
 - Advanced Security
 
 ---
 
-## 📈 Execution Plan (з залежностями)
+##  Execution Plan (з залежностями)
 
 ```mermaid
 graph TD
@@ -56,10 +56,10 @@ graph TD
 
 ---
 
-## 🚀 Phase 1: API Documentation & Developer Experience
+##  Phase 1: API Documentation & Developer Experience
 **Timeline**: Week 1-2 (Jan 6 - Jan 17, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: None ✅ (Quick win!)
+**Status**:  Planned  
+**Dependencies**: None  (Quick win!)
 
 ### Objectives
 - Автоматична генерація Swagger/OpenAPI 3.0 spec
@@ -102,10 +102,10 @@ graph TD
   - Error codes reference
 
 **Acceptance Criteria**:
-- ✅ Swagger UI accessible at `/api/docs`
-- ✅ 80+ endpoints documented in OpenAPI spec
-- ✅ Postman collection with 80+ requests
-- ✅ All 5 contexts documented (Identity, Customer, Order, Billing, Shared)
+-  Swagger UI accessible at `/api/docs`
+-  80+ endpoints documented in OpenAPI spec
+-  Postman collection with 80+ requests
+-  All 5 contexts documented (Identity, Customer, Order, Billing, Shared)
 
 **Deliverables**:
 - `docs/swagger.yaml` (OpenAPI 3.0 spec)
@@ -115,10 +115,10 @@ graph TD
 
 ---
 
-## 🏪 Phase 2: Warehouse Context (Inventory Management)
+##  Phase 2: Warehouse Context (Inventory Management)
 **Timeline**: Week 3-4 (Jan 20 - Jan 31, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: None ✅
+**Status**:  Planned  
+**Dependencies**: None 
 
 ### Objectives
 - Inventory tracking (stock levels, locations)
@@ -184,11 +184,11 @@ internal/contexts/warehouse/
   - Indexes on (product_id, location), (created_at)
 
 **Acceptance Criteria**:
-- ✅ 24 endpoints working (Inventory + StockMovement)
-- ✅ 80+ tests passing
-- ✅ Integration with Order Management (reservation flow)
-- ✅ Migrations applied successfully
-- ✅ Low stock alert system working
+-  24 endpoints working (Inventory + StockMovement)
+-  80+ tests passing
+-  Integration with Order Management (reservation flow)
+-  Migrations applied successfully
+-  Low stock alert system working
 
 **Deliverables**:
 - Warehouse Context code (2 aggregates)
@@ -198,10 +198,10 @@ internal/contexts/warehouse/
 
 ---
 
-## 📝 Phase 3: Contract Aggregate (Order Management)
+##  Phase 3: Contract Aggregate (Order Management)
 **Timeline**: Week 5 (Feb 3 - Feb 7, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: None ✅
+**Status**:  Planned  
+**Dependencies**: None 
 
 ### Objectives
 - Legal agreements for orders
@@ -254,10 +254,10 @@ internal/contexts/order-mgmt/contract/
   - Indexes on (order_id, customer_id, status)
 
 **Acceptance Criteria**:
-- ✅ 12 endpoints working
-- ✅ 70+ tests passing
-- ✅ Contract lifecycle enforced
-- ✅ Integration with Order aggregate
+-  12 endpoints working
+-  70+ tests passing
+-  Contract lifecycle enforced
+-  Integration with Order aggregate
 
 **Deliverables**:
 - Contract aggregate code
@@ -267,10 +267,10 @@ internal/contexts/order-mgmt/contract/
 
 ---
 
-## 🔄 Phase 4: Fulfillment Saga (Distributed Transaction)
+##  Phase 4: Fulfillment Saga (Distributed Transaction)
 **Timeline**: Week 6-7 (Feb 10 - Feb 21, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: ⚠️ Phase 2 (Warehouse), Phase 3 (Contract)
+**Status**:  Planned  
+**Dependencies**:  Phase 2 (Warehouse), Phase 3 (Contract)
 
 ### Objectives
 - Координація distributed transaction: Order → Payment → Inventory → Shipping
@@ -342,11 +342,11 @@ internal/contexts/order-mgmt/fulfillment/
   - Dashboard (future)
 
 **Acceptance Criteria**:
-- ✅ Complete fulfillment flow working end-to-end
-- ✅ All compensation scenarios tested
-- ✅ 70+ tests passing (steps + compensations + integration)
-- ✅ Saga completes in <5 seconds (happy path)
-- ✅ 100% compensation success rate
+-  Complete fulfillment flow working end-to-end
+-  All compensation scenarios tested
+-  70+ tests passing (steps + compensations + integration)
+-  Saga completes in <5 seconds (happy path)
+-  100% compensation success rate
 
 **Deliverables**:
 - FulfillmentSaga implementation
@@ -356,10 +356,10 @@ internal/contexts/order-mgmt/fulfillment/
 
 ---
 
-## 💳 Phase 5: Payment Gateway Integration
+##  Phase 5: Payment Gateway Integration
 **Timeline**: Week 8-9 (Feb 24 - Mar 7, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: ⚠️ Потребує API keys (Stripe/PayPal)
+**Status**:  Planned  
+**Dependencies**:  Потребує API keys (Stripe/PayPal)
 
 ### Objectives
 - Stripe integration для card payments
@@ -432,11 +432,11 @@ internal/contexts/billing/payment/
   - Dead letter queue для failed payments
 
 **Acceptance Criteria**:
-- ✅ Stripe payments working end-to-end
-- ✅ PayPal payments working end-to-end
-- ✅ Webhooks handling async notifications
-- ✅ 80+ tests passing
-- ✅ No card data stored (PCI compliance)
+-  Stripe payments working end-to-end
+-  PayPal payments working end-to-end
+-  Webhooks handling async notifications
+-  80+ tests passing
+-  No card data stored (PCI compliance)
 
 **Deliverables**:
 - Payment gateway abstraction
@@ -446,17 +446,17 @@ internal/contexts/billing/payment/
 - Tests
 
 **Security Considerations**:
-- ⚠️ NEVER store card numbers
-- ⚠️ Use Stripe Payment Intents (not legacy Charges API)
-- ⚠️ Verify webhook signatures
-- ⚠️ Use idempotency keys for retries
+-  NEVER store card numbers
+-  Use Stripe Payment Intents (not legacy Charges API)
+-  Verify webhook signatures
+-  Use idempotency keys for retries
 
 ---
 
-## 🔄 Phase 6: Recurring Billing Automation
+##  Phase 6: Recurring Billing Automation
 **Timeline**: Week 10-11 (Mar 10 - Mar 21, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: ⚠️ Phase 5 (Payment Gateway)
+**Status**:  Planned  
+**Dependencies**:  Phase 5 (Payment Gateway)
 
 ### Objectives
 - Автоматична генерація інвойсів для subscriptions
@@ -522,11 +522,11 @@ internal/contexts/billing/recurring/
   - Logs для debugging
 
 **Acceptance Criteria**:
-- ✅ Invoices автоматично генеруються щодня
-- ✅ Payments автоматично обробляються
-- ✅ Failed payments retry 3 times
-- ✅ Subscriptions auto-suspend після failures
-- ✅ 120+ tests passing
+-  Invoices автоматично генеруються щодня
+-  Payments автоматично обробляються
+-  Failed payments retry 3 times
+-  Subscriptions auto-suspend після failures
+-  120+ tests passing
 
 **Deliverables**:
 - Recurring billing engine
@@ -536,10 +536,10 @@ internal/contexts/billing/recurring/
 
 ---
 
-## 🔒 Phase 7: Audit Logging & GDPR Compliance
+##  Phase 7: Audit Logging & GDPR Compliance
 **Timeline**: Week 12-13 (Mar 24 - Apr 4, 2026)  
-**Status**: 📋 Planned  
-**Dependencies**: None ✅
+**Status**:  Planned  
+**Dependencies**: None 
 
 ### Objectives
 - Audit trail для всіх critical operations
@@ -609,11 +609,11 @@ internal/contexts/identity/gdpr/
   - Tests: 20+
 
 **Acceptance Criteria**:
-- ✅ All critical operations logged
-- ✅ GDPR export working (JSON download)
-- ✅ GDPR deletion working (anonymization)
-- ✅ Consent management API working
-- ✅ 130+ tests passing
+-  All critical operations logged
+-  GDPR export working (JSON download)
+-  GDPR deletion working (anonymization)
+-  Consent management API working
+-  130+ tests passing
 
 **Deliverables**:
 - Audit Log system
@@ -623,7 +623,7 @@ internal/contexts/identity/gdpr/
 
 ---
 
-## 📊 Success Metrics
+##  Success Metrics
 
 ### Developer Experience
 - [ ] Swagger UI доступний
@@ -657,25 +657,25 @@ internal/contexts/identity/gdpr/
 
 ---
 
-## 🎯 Q1-Q2 2026 Milestones
+##  Q1-Q2 2026 Milestones
 
 ### Q1 2026 (Jan-Mar)
-- ✅ **Week 1-2**: API Documentation complete
-- ✅ **Week 3-4**: Warehouse Context complete
-- ✅ **Week 5**: Contract Aggregate complete
-- ✅ **Week 6-7**: Fulfillment Saga complete
-- ✅ **Week 8-9**: Payment Gateway Integration complete
-- ✅ **Week 10-11**: Recurring Billing complete
+-  **Week 1-2**: API Documentation complete
+-  **Week 3-4**: Warehouse Context complete
+-  **Week 5**: Contract Aggregate complete
+-  **Week 6-7**: Fulfillment Saga complete
+-  **Week 8-9**: Payment Gateway Integration complete
+-  **Week 10-11**: Recurring Billing complete
 
 ### Q2 2026 (Apr-Jun)
-- ✅ **Week 12-13**: Audit & GDPR complete
-- 🎯 **Week 14+**: Production deployment & monitoring
-- 🎯 **Week 16+**: Performance optimization
-- 🎯 **Week 18+**: Advanced features based на feedback
+-  **Week 12-13**: Audit & GDPR complete
+-  **Week 14+**: Production deployment & monitoring
+-  **Week 16+**: Performance optimization
+-  **Week 18+**: Advanced features based на feedback
 
 ---
 
-## 🚧 Risks & Mitigation
+##  Risks & Mitigation
 
 ### Technical Risks
 | Risk | Impact | Probability | Mitigation |
@@ -694,7 +694,7 @@ internal/contexts/identity/gdpr/
 
 ---
 
-## 📝 Notes
+##  Notes
 
 ### Configuration Required
 - [ ] Stripe API keys (test + production)
@@ -722,15 +722,15 @@ internal/contexts/identity/gdpr/
 
 ---
 
-## 🎉 Success Definition
+##  Success Definition
 
 **Q1-Q2 2026 вважається успішним якщо:**
-- ✅ All 7 phases completed
-- ✅ 800+ tests passing (420 base + 380 new)
-- ✅ 0 critical bugs in production
-- ✅ API documentation 100% complete
-- ✅ Payment gateway integration working
-- ✅ GDPR compliance achieved
-- ✅ Performance targets met (latency <100ms p99)
+-  All 7 phases completed
+-  800+ tests passing (420 base + 380 new)
+-  0 critical bugs in production
+-  API documentation 100% complete
+-  Payment gateway integration working
+-  GDPR compliance achieved
+-  Performance targets met (latency <100ms p99)
 
-**Готові до production SaaS платформи!** 🚀
+**Готові до production SaaS платформи!** 

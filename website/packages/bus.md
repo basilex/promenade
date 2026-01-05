@@ -272,21 +272,21 @@ func TestBus_PublishSubscribe(t *testing.T) {
 
 ### DO
 
-- ✅ Use topic constants (`bus.TopicUserRegistered`)
-- ✅ Publish after successful database commit
-- ✅ Log publish errors but don't fail operation
-- ✅ Return `nil` for permanent errors (skip retry)
-- ✅ Use context for cancellation
-- ✅ Keep handlers idempotent
+-  Use topic constants (`bus.TopicUserRegistered`)
+-  Publish after successful database commit
+-  Log publish errors but don't fail operation
+-  Return `nil` for permanent errors (skip retry)
+-  Use context for cancellation
+-  Keep handlers idempotent
 
 ### DON'T
 
-- ❌ Don't hardcode topic strings
-- ❌ Don't publish before database commit
-- ❌ Don't panic in handlers
-- ❌ Don't block in handlers
-- ❌ Don't share state between handler invocations
-- ❌ Don't use bus for synchronous RPC
+-  Don't hardcode topic strings
+-  Don't publish before database commit
+-  Don't panic in handlers
+-  Don't block in handlers
+-  Don't share state between handler invocations
+-  Don't use bus for synchronous RPC
 
 ## Performance Metrics
 
@@ -324,10 +324,10 @@ if err := bus.Health(ctx); err != nil {
 **Rule**: Contexts communicate ONLY via Event Bus:
 
 ```go
-// ❌ DON'T - Direct import
+//  DON'T - Direct import
 import "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 
-// ✅ DO - Event Bus
+//  DO - Event Bus
 event := bus.NewBaseEvent("user.registered", userID)
 eventBus.Publish(ctx, bus.TopicUserRegistered, event)
 ```

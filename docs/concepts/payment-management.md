@@ -16,7 +16,7 @@ Payment Management is part of the **Billing Bounded Context** that handles payme
 - **Query Operations**: Find payments by ID, number, customer, invoice, or status
 - **Reporting**: Calculate totals by customer, invoice, or status
 
-**Status**: ✅ Production-ready (January 2026)  
+**Status**:  Production-ready (January 2026)  
 **Aggregate**: Payment  
 **Routes**: 14 HTTP endpoints  
 **Database**: 1 table with soft delete support

@@ -1,6 +1,6 @@
 # Promenade Platform Documentation
 
-🚀 **Built with VitePress** - Modern, fast, and beautiful documentation for Promenade Platform.
+ **Built with VitePress** - Modern, fast, and beautiful documentation for Promenade Platform.
 
 ## Quick Start
 
@@ -43,24 +43,24 @@ This will:
 
 ```
 website/
-├── .vitepress/
-│   ├── config.mjs           # VitePress configuration
-│   └── theme/              # Custom theme (optional)
-├── index.md                # Landing page (Hero + Features)
-├── guide/                  # Documentation guides
-│   ├── getting-started.md
-│   ├── architecture.md
-│   ├── testing.md
-│   └── api-reference.md
-├── contexts/               # Bounded Contexts docs
-│   ├── identity.md
-│   ├── shared.md
-│   └── customer.md
-├── packages/               # Package library docs
-│   ├── bus.md
-│   ├── jwt.md
-│   └── logger.md
-└── public/                 # Static assets (images, icons)
+ .vitepress/
+    config.mjs           # VitePress configuration
+    theme/              # Custom theme (optional)
+ index.md                # Landing page (Hero + Features)
+ guide/                  # Documentation guides
+    getting-started.md
+    architecture.md
+    testing.md
+    api-reference.md
+ contexts/               # Bounded Contexts docs
+    identity.md
+    shared.md
+    customer.md
+ packages/               # Package library docs
+    bus.md
+    jwt.md
+    logger.md
+ public/                 # Static assets (images, icons)
 ```
 
 ## Adding New Pages
@@ -151,4 +151,4 @@ export default defineConfig({
 
 ---
 
-**Built with ❤️ and VitePress**
+**Built with  and VitePress**

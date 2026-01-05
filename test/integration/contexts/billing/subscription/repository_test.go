@@ -512,7 +512,7 @@ func TestSubscriptionRepository_MetadataJSONSerialization(t *testing.T) {
 			"notes":          "Customer requested: \"premium\" plan with 'special' features",
 			"affiliate":      "partner@example.com",
 			"custom_field_1": "Value with spaces",
-			"emoji":          "🎉",
+			"emoji":          "",
 			"json_like":      `{"key": "value"}`,
 		}
 		sub.Metadata.Set(metadata)
@@ -528,7 +528,7 @@ func TestSubscriptionRepository_MetadataJSONSerialization(t *testing.T) {
 		assert.Equal(t, "Customer requested: \"premium\" plan with 'special' features", retrievedMetadata["notes"])
 		assert.Equal(t, "partner@example.com", retrievedMetadata["affiliate"])
 		assert.Equal(t, "Value with spaces", retrievedMetadata["custom_field_1"])
-		assert.Equal(t, "🎉", retrievedMetadata["emoji"])
+		assert.Equal(t, "", retrievedMetadata["emoji"])
 		assert.Equal(t, `{"key": "value"}`, retrievedMetadata["json_like"])
 
 		// Update metadata

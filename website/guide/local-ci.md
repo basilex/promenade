@@ -27,7 +27,7 @@ make ci-test        # All tests + race detector
 make ci-build       # Test compilation
 ```
 
-**Result**: ✅ All CI checks pass locally → push with confidence
+**Result**:  All CI checks pass locally → push with confidence
 
 ---
 
@@ -45,22 +45,22 @@ make pre-push
 
 **Output**:
 ```
-🔍 Running golangci-lint...
-✅ Lint passed
+ Running golangci-lint...
+ Lint passed
 
-🧪 Running unit tests...
-✅ Unit tests passed
+ Running unit tests...
+ Unit tests passed
 
-🧪 Running integration tests...
-✅ Integration tests passed
+ Running integration tests...
+ Integration tests passed
 
-🧪 Running race detector...
-✅ Race detector passed
+ Running race detector...
+ Race detector passed
 
-🔨 Testing build...
-✅ Build passed
+ Testing build...
+ Build passed
 
-🎉 All CI checks passed! Safe to push.
+ All CI checks passed! Safe to push.
 ```
 
 ---
@@ -145,7 +145,7 @@ make pre-push
 git push origin dev
 ```
 
-CI will pass because you already validated locally! ✅
+CI will pass because you already validated locally! 
 
 ---
 
@@ -154,10 +154,10 @@ CI will pass because you already validated locally! ✅
 ### errcheck (unchecked errors)
 
 ```go
-// ❌ Bad
+//  Bad
 db.Close()
 
-// ✅ Good
+//  Good
 _ = db.Close()  // Explicit ignore
 // or
 if err := db.Close(); err != nil {
@@ -168,22 +168,22 @@ if err := db.Close(); err != nil {
 ### staticcheck (code simplification)
 
 ```go
-// ❌ Bad (QF1008: unnecessary embedded field selector)
+//  Bad (QF1008: unnecessary embedded field selector)
 user, err := row.userRow.toEntity()
 
-// ✅ Good
+//  Good
 user, err := row.toEntity()
 ```
 
 ### unused (dead code)
 
 ```go
-// ❌ Bad (function never used)
+//  Bad (function never used)
 func parseOptionalUUID(s *string) (*uuidv7.UUID, error) {
     // ... implementation
 }
 
-// ✅ Good - delete the function entirely
+//  Good - delete the function entirely
 ```
 
 ---
@@ -253,11 +253,11 @@ Now every `git push` runs validation automatically!
 
 ## Benefits
 
-✅ **Faster Feedback**: Catch issues in seconds, not minutes  
-✅ **Save Resources**: Reduce GitHub Actions usage  
-✅ **Better Code Quality**: Lint catches issues before review  
-✅ **Productivity**: No context switching while waiting for CI  
-✅ **Confidence**: Push knowing CI will pass
+ **Faster Feedback**: Catch issues in seconds, not minutes  
+ **Save Resources**: Reduce GitHub Actions usage  
+ **Better Code Quality**: Lint catches issues before review  
+ **Productivity**: No context switching while waiting for CI  
+ **Confidence**: Push knowing CI will pass
 
 ---
 

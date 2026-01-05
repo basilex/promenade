@@ -1,6 +1,6 @@
 # Billing & Invoicing
 
-**Status**: 📋 Planned Q2 2026
+**Status**:  Planned Q2 2026
 
 Complete billing system with invoice generation, payment tracking, and subscription management.
 
@@ -14,7 +14,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 
 ## Planned Features
 
-### 💳 Invoice Management
+###  Invoice Management
 
 **Invoice Generation**:
 - Create invoices from orders automatically
@@ -34,7 +34,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 - Print-ready PDF format
 - Electronic invoicing (e-invoicing)
 
-### 💰 Payment Tracking
+###  Payment Tracking
 
 **Payment Methods**:
 - Credit/debit cards (Stripe, PayPal integration)
@@ -54,7 +54,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 - Refund processing
 - Chargeback handling
 
-### 🔄 Subscription Management
+###  Subscription Management
 
 **Subscription Plans**:
 - Monthly, quarterly, annual billing
@@ -74,7 +74,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 - Upgrade/downgrade trends
 - LTV (Lifetime Value) calculation
 
-### 📊 Revenue Recognition
+###  Revenue Recognition
 
 **Accounting Compliance**:
 - ASC 606 / IFRS 15 standards
@@ -88,7 +88,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 - Tax liability reports
 - Revenue forecast
 
-### 🔔 Automated Reminders
+###  Automated Reminders
 
 **Payment Reminders**:
 - 7 days before due date
@@ -102,7 +102,7 @@ The **Billing** context will provide end-to-end billing capabilities, from invoi
 - Card expiration alerts
 - Dunning management (retry failed payments)
 
-### 🌍 Multi-Currency Support
+###  Multi-Currency Support
 
 **Currency Handling**:
 - 150+ currencies supported

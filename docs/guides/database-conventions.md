@@ -40,14 +40,14 @@ shared_languages
 shared_timezones
 
 -- Customer Management Context (4 tables)
-customer_customers     -- NOT customer_mgmt_customers ❌
+customer_customers     -- NOT customer_mgmt_customers 
 customer_companies
 customer_deals
 customer_interactions
 
 -- Order Management Context (2 tables)
-order_orders          -- NOT order_mgmt_orders ❌
-order_lines           -- NOT order_mgmt_order_lines ❌
+order_orders          -- NOT order_mgmt_orders 
+order_lines           -- NOT order_mgmt_order_lines 
 ```
 
 ### Rationale
@@ -518,33 +518,33 @@ COMMENT ON COLUMN customer_customers.assigned_to IS 'Sales rep assigned to this 
 
 ## Anti-Patterns to Avoid
 
-### ❌ DON'T
+###  DON'T
 
 ```sql
 -- DON'T: Use mgmt suffix
-CREATE TABLE customer_mgmt_customers   -- Use customer_customers ✅
+CREATE TABLE customer_mgmt_customers   -- Use customer_customers 
 
 -- DON'T: Use camelCase
-CREATE TABLE customerCustomers         -- Use customer_customers ✅
+CREATE TABLE customerCustomers         -- Use customer_customers 
 
 -- DON'T: Abbreviate
-CREATE TABLE cust_customers            -- Use customer_customers ✅
-CREATE INDEX idx_cust_email            -- Use idx_customers_email ✅
+CREATE TABLE cust_customers            -- Use customer_customers 
+CREATE INDEX idx_cust_email            -- Use idx_customers_email 
 
 -- DON'T: Use generic names
-CREATE INDEX idx_email                 -- Use idx_customers_email ✅
-CREATE INDEX idx_status                -- Use idx_customers_status ✅
+CREATE INDEX idx_email                 -- Use idx_customers_email 
+CREATE INDEX idx_status                -- Use idx_customers_status 
 
 -- DON'T: Forget WHERE clause for soft delete
 CREATE INDEX idx_customers_status ON customer_customers (status);
--- Use with WHERE deleted_at IS NULL ✅
+-- Use with WHERE deleted_at IS NULL 
 
 -- DON'T: Use TEXT for fixed-length strings
-currency TEXT                          -- Use VARCHAR(3) ✅
-email TEXT                             -- Use VARCHAR(255) ✅
+currency TEXT                          -- Use VARCHAR(3) 
+email TEXT                             -- Use VARCHAR(255) 
 ```
 
-### ✅ DO
+###  DO
 
 ```sql
 -- DO: Use {context}_{aggregate} pattern

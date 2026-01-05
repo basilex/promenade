@@ -66,12 +66,12 @@ A **Saga** is a sequence of local transactions where each transaction updates da
 ### Saga Pattern
 
 ```
-Step 1: Reserve Inventory ───┐
-                             │ Success → Continue
-Step 2: Charge Payment ──────┤
-                             │ Success → Continue
-Step 3: Create Shipment ─────┤
-                             │ Failure → Compensate
+Step 1: Reserve Inventory 
+                              Success → Continue
+Step 2: Charge Payment 
+                              Success → Continue
+Step 3: Create Shipment 
+                              Failure → Compensate
                              ↓
 Compensation (Reverse Order):
   3. Cancel Shipment

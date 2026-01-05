@@ -425,13 +425,13 @@ limiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)
 
 | Feature              | Custom Middleware | go-limiter | tollbooth |
 |----------------------|-------------------|------------|-----------|
-| IP-based tracking    | ✅                | ✅         | ✅        |
-| Per-route limits     | ✅                | ✅         | ✅        |
-| Memory cleanup       | ✅                | ❌         | ❌        |
-| Zero dependencies    | ✅ (stdlib)       | ❌         | ❌        |
-| Custom error format  | ✅                | ❌         | ❌        |
-| Thread-safe          | ✅                | ✅         | ✅        |
-| Distributed (Redis)  | ❌ (future)       | ✅         | ✅        |
+| IP-based tracking    |                 |          |         |
+| Per-route limits     |                 |          |         |
+| Memory cleanup       |                 |          |         |
+| Zero dependencies    |  (stdlib)       |          |         |
+| Custom error format  |                 |          |         |
+| Thread-safe          |                 |          |         |
+| Distributed (Redis)  |  (future)       |          |         |
 
 **Verdict:** Custom middleware provides control, simplicity, and integration with existing error handling.
 
@@ -444,8 +444,8 @@ limiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)
 **Check:**
 1. Middleware applied to route?
    ```go
-   router.POST("/login", limiter.Limit(), handler) // ✅ Correct
-   router.POST("/login", handler) // ❌ Missing middleware
+   router.POST("/login", limiter.Limit(), handler) //  Correct
+   router.POST("/login", handler) //  Missing middleware
    ```
 2. Correct IP extraction?
    ```go

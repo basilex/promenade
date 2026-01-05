@@ -55,7 +55,7 @@ func CurrenciesData() []*currency.Currency {
 
 		// Middle East
 		newCurrency("AED", "784", "UAE Dirham", "د.إ", 2, 0, false, true),
-		newCurrency("SAR", "682", "Saudi Riyal", "﷼", 2, 0, false, true),
+		newCurrency("SAR", "682", "Saudi Riyal", "", 2, 0, false, true),
 		newCurrency("ILS", "376", "Israeli Shekel", "₪", 2, 0, false, true),
 		newCurrency("TRY", "949", "Turkish Lira", "₺", 2, 0, false, true),
 

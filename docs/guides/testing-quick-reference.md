@@ -14,7 +14,7 @@
 
 ---
 
-## 🔵 Integration Test Pattern
+##  Integration Test Pattern
 
 ```go
 package user_test
@@ -42,7 +42,7 @@ func TestUserRepository_Create(t *testing.T) {
 
 ---
 
-## 🟡 Smoke Test Pattern
+##  Smoke Test Pattern
 
 ```go
 package user_test
@@ -100,7 +100,7 @@ func TestUserHandler_Smoke(t *testing.T) {
 
 ---
 
-## 🟢 Unit Test Pattern
+##  Unit Test Pattern
 
 ```go
 package user
@@ -138,7 +138,7 @@ func TestUser_NewUser(t *testing.T) {
 
 ---
 
-## ⚙️ Running Tests
+##  Running Tests
 
 ```bash
 # All tests
@@ -160,7 +160,7 @@ make test-coverage
 
 ---
 
-## 🚨 Common Mistakes
+##  Common Mistakes
 
 ### Integration
 
@@ -197,7 +197,7 @@ mockRepo.AssertExpectations(t)
 
 ---
 
-## 📚 Full Documentation
+##  Full Documentation
 
 - [Testing Patterns Guide](guides/testing-patterns.md) - Comprehensive 800+ line guide
 - [Testing Structure](../test/TESTING_STRUCTURE.md) - Directory organization

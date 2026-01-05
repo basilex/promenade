@@ -24,11 +24,11 @@
 - Difficult to refactor
 
 **With Bounded Contexts**:
-- ✅ Clear boundaries - each context owns its domain
-- ✅ Independent deployment - update one without affecting others
-- ✅ Team autonomy - different teams work on different contexts
-- ✅ Technology diversity - choose best tool per context
-- ✅ Resilience - one context failure doesn't crash system
+-  Clear boundaries - each context owns its domain
+-  Independent deployment - update one without affecting others
+-  Team autonomy - different teams work on different contexts
+-  Technology diversity - choose best tool per context
+-  Resilience - one context failure doesn't crash system
 
 ---
 
@@ -81,11 +81,11 @@
 **Purpose**: CRM functionality - customers, companies, deals, interactions
 
 **Aggregates**:
-- Customer ✅ (lifecycle, segmentation, contact info)
-- Company ✅ (B2B legal entities, hierarchies)
-- Deal ✅ (sales pipeline tracking)
-- Interaction ✅ (calls, emails, meetings, notes)
-- Analytics ✅ (CQRS read models)
+- Customer  (lifecycle, segmentation, contact info)
+- Company  (B2B legal entities, hierarchies)
+- Deal  (sales pipeline tracking)
+- Interaction  (calls, emails, meetings, notes)
+- Analytics  (CQRS read models)
 
 **Database**: `customer_*` tables  
 **Communication**: Publishes events (customer.created, deal.won)  
@@ -143,36 +143,36 @@
 **Rule**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 ```
-┌─────────────┐                    ┌──────────────┐
-│  Identity   │   user.registered  │   Customer   │
-│   Context   │  ─────────────────>│  Management  │
-│             │                    │   Context    │
-└─────────────┘                    └──────────────┘
-       │                                  │
-       │ contact.verified                │ customer.created
-       ▼                                  ▼
-┌─────────────────────────────────────────────────┐
-│             Event Bus (Memory/Redis)             │
-│                                                  │
-│  Topics: identity.*, customer.*, order.*        │
-│  Retry: 3 attempts, exponential backoff         │
-│  Performance: 377K events/sec (Memory)          │
-└─────────────────────────────────────────────────┘
-       ▲                                  ▲
-       │ order.created                   │ payment.received
-       │                                  │
-┌─────────────┐                    ┌──────────────┐
-│    Order    │                    │   Billing    │
-│   Context   │                    │   Context    │
-│             │                    │              │
-└─────────────┘                    └──────────────┘
+                    
+  Identity      user.registered     Customer   
+   Context     >  Management  
+                                    Context    
+                    
+                                         
+        contact.verified                 customer.created
+                                         
+
+             Event Bus (Memory/Redis)             
+                                                  
+  Topics: identity.*, customer.*, order.*        
+  Retry: 3 attempts, exponential backoff         
+  Performance: 377K events/sec (Memory)          
+
+                                         
+        order.created                    payment.received
+                                         
+                    
+    Order                           Billing    
+   Context                          Context    
+                                               
+                    
 ```
 
 **Benefits**:
-- ✅ Asynchronous - no blocking calls
-- ✅ Decoupled - contexts don't know about each other
-- ✅ Resilient - retry policy handles transient failures
-- ✅ Scalable - can add new contexts without changing existing ones
+-  Asynchronous - no blocking calls
+-  Decoupled - contexts don't know about each other
+-  Resilient - retry policy handles transient failures
+-  Scalable - can add new contexts without changing existing ones
 
 **Event Bus Documentation**: [pkg/bus/README.md](../../pkg/bus/README.md)
 
@@ -365,14 +365,14 @@ make migrate-customer-mgmt # Customer Management only
 
 ### What Belongs in a Context?
 
-**✅ Include**:
+** Include**:
 
 - Aggregates with strong cohesion
 - Related use cases
 - Domain events for the context
 - Value objects used only in this context
 
-**❌ Exclude**:
+** Exclude**:
 
 - Shared value objects (put in `pkg/valueobject/`)
 - Infrastructure concerns (put in `internal/infrastructure/`)
@@ -405,7 +405,7 @@ make migrate-customer-mgmt # Customer Management only
 
 ## Best Practices
 
-### DO ✅
+### DO 
 
 - **Keep contexts small** - 3-5 aggregates per context is ideal
 - **Use Event Bus** for all cross-context communication
@@ -413,7 +413,7 @@ make migrate-customer-mgmt # Customer Management only
 - **Document context README** with aggregates, events, and integration points
 - **Test in isolation** - each context should have its own test suite
 
-### DON'T ❌
+### DON'T 
 
 - **DON'T share database tables** between contexts
 - **DON'T import other context packages** (use Event Bus)

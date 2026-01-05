@@ -1,57 +1,57 @@
 # Phase 4: Customer Management - Детальний План
 
 **Дата**: 3 січня 2026  
-**Статус**: 🎯 Ready to Start  
+**Статус**:  Ready to Start  
 **Оцінка**: 3 дні (Days 9-11)
 
 ---
 
-## 📊 Поточний стан (Baseline Audit)
+##  Поточний стан (Baseline Audit)
 
-### ✅ Що ВЖЕ зроблено:
+###  Що ВЖЕ зроблено:
 
-1. **JSONB → TEXT міграція** ✅
+1. **JSONB → TEXT міграція** 
    - Customer.tags: `TEXT` (не JSONB)
    - Interaction.attendees: `TEXT` (не JSONB)
    - Обидві колонки вже cross-DB compatible
 
-2. **jsonstore.Field[T] впровадження** ✅
+2. **jsonstore.Field[T] впровадження** 
    - Customer: `jsonstore.Field[[]string]` для tags
    - Interaction: `jsonstore.Field[[]uuidv7.UUID]` для attendees
    - Repository вже використовує Get()/Set()
 
-3. **UUID DEFAULT видалено** ✅
+3. **UUID DEFAULT видалено** 
    - Всі 4 міграції не мають `DEFAULT uuid_v7()`
    - ID генерується в Go через конструктори
 
 4. **Структура міграцій**:
    ```
    migrations/customer-mgmt/
-   ├── 000001_customers.up.sql     (id UUID PRIMARY KEY)
-   ├── 000002_companies.up.sql     (id UUID PRIMARY KEY)
-   ├── 000003_deals.up.sql         (id UUID PRIMARY KEY)
-   └── 000004_interactions.up.sql  (id UUID PRIMARY KEY)
+    000001_customers.up.sql     (id UUID PRIMARY KEY)
+    000002_companies.up.sql     (id UUID PRIMARY KEY)
+    000003_deals.up.sql         (id UUID PRIMARY KEY)
+    000004_interactions.up.sql  (id UUID PRIMARY KEY)
    ```
 
-### ❌ Що ТРЕБА зробити:
+###  Що ТРЕБА зробити:
 
-1. **Timestamp управління** ❌
+1. **Timestamp управління** 
    - `DEFAULT CURRENT_TIMESTAMP` ще є в міграціях
    - `updated_at` trigger не використовується (немає trigger)
    - Entity методи не викликають `Touch()`
 
-2. **BaseAggregate Integration** ❌
+2. **BaseAggregate Integration** 
    - Entity не embed BaseAggregate
    - Немає версіонування (optimistic locking)
    - Немає Touch() викликів в business методах
 
-3. **Testing** ❌
+3. **Testing** 
    - Потрібні тести для Touch()
    - Потрібні тести для jsonstore з реальною БД
 
 ---
 
-## 🎯 Phase 4 Tasks (Детально)
+##  Phase 4 Tasks (Детально)
 
 ### Task 4.1: Entity Enhancement (30 min)
 
@@ -75,7 +75,7 @@ type Customer struct {
 
 // After:
 type Customer struct {
-    aggregate.BaseAggregate  // ✅ Embed BaseAggregate
+    aggregate.BaseAggregate  //  Embed BaseAggregate
     ID         uuidv7.UUID
     Name       string
     // ... fields
@@ -100,7 +100,7 @@ type Customer struct {
 ```go
 func NewCustomer(name string, email valueobject.Email, source string, assignedTo uuidv7.UUID) (*Customer, error) {
     return &Customer{
-        BaseAggregate: aggregate.NewBase(),  // ✅ Initialize
+        BaseAggregate: aggregate.NewBase(),  //  Initialize
         ID:            uuidv7.New(),
         Name:          name,
         Email:         email,
@@ -170,9 +170,9 @@ func (r *customerRow) toEntity() (*Customer, error) {
     
     c := &customer.Customer{
         BaseAggregate: aggregate.BaseAggregate{
-            CreatedAt: r.CreatedAt,  // ✅ Set from DB
-            UpdatedAt: r.UpdatedAt,  // ✅ Set from DB
-            Version:   r.Version,    // ✅ Optimistic locking
+            CreatedAt: r.CreatedAt,  //  Set from DB
+            UpdatedAt: r.UpdatedAt,  //  Set from DB
+            Version:   r.Version,    //  Optimistic locking
         },
         ID:    id,
         Name:  r.Name,
@@ -189,9 +189,9 @@ func fromEntity(c *customer.Customer) *customerRow {
         ID:        c.ID.String(),
         Name:      c.Name,
         // ...
-        CreatedAt: c.GetCreatedAt(),  // ✅ From BaseAggregate
-        UpdatedAt: c.GetUpdatedAt(),  // ✅ From BaseAggregate
-        Version:   c.GetVersion(),    // ✅ For optimistic locking
+        CreatedAt: c.GetCreatedAt(),  //  From BaseAggregate
+        UpdatedAt: c.GetUpdatedAt(),  //  From BaseAggregate
+        Version:   c.GetVersion(),    //  For optimistic locking
     }
     // ... nullable fields
     return row
@@ -201,7 +201,7 @@ func fromEntity(c *customer.Customer) *customerRow {
 **Update() - використати IncrementVersion()**:
 ```go
 func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) error {
-    c.IncrementVersion()  // ✅ Bumps version + updates timestamp
+    c.IncrementVersion()  //  Bumps version + updates timestamp
     
     row := fromEntity(c)
     query := `
@@ -209,10 +209,10 @@ func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) e
             name = :name,
             email = :email,
             status = :status,
-            updated_at = :updated_at,  -- ✅ Explicit from Go
-            version = :version          -- ✅ For optimistic locking
+            updated_at = :updated_at,  --  Explicit from Go
+            version = :version          --  For optimistic locking
         WHERE id = :id
-          AND version = :version - 1    -- ✅ Check old version
+          AND version = :version - 1    --  Check old version
           AND deleted_at IS NULL
     `
     result, err := r.NamedExec(ctx, query, row)
@@ -245,7 +245,7 @@ updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
 **Аналогічно**: Companies, Deals, Interactions
 
-**⚠️ ВАЖЛИВО**: Не створювати нові файли міграцій! Редагувати існуючі.
+** ВАЖЛИВО**: Не створювати нові файли міграцій! Редагувати існуючі.
 
 ---
 
@@ -262,8 +262,8 @@ func NewCustomer(name string, email valueobject.Email, source string, assignedTo
     }
     
     return &Customer{
-        BaseAggregate: aggregate.NewBase(),  // ✅ Version=1, Now timestamps
-        ID:            uuidv7.New(),         // ✅ Time-ordered UUID
+        BaseAggregate: aggregate.NewBase(),  //  Version=1, Now timestamps
+        ID:            uuidv7.New(),         //  Time-ordered UUID
         Name:          name,
         Email:         email,
         Status:        CustomerStatusLead,   // Default
@@ -364,9 +364,9 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 
 ---
 
-## 📋 Checklist
+##  Checklist
 
-### Phase 4.1: Entity Enhancement ✅ / ❌
+### Phase 4.1: Entity Enhancement  / 
 - [ ] Customer: Embed BaseAggregate
 - [ ] Customer: Add Touch() to 11 methods
 - [ ] Company: Embed BaseAggregate
@@ -376,7 +376,7 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 - [ ] Interaction: Embed BaseAggregate
 - [ ] Interaction: Add Touch() to 9 methods
 
-### Phase 4.2: Repository Enhancement ✅ / ❌
+### Phase 4.2: Repository Enhancement  / 
 - [ ] Customer repository: BaseAggregate integration
 - [ ] Customer repository: Optimistic locking in Update()
 - [ ] Company repository: BaseAggregate integration
@@ -386,19 +386,19 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 - [ ] Interaction repository: BaseAggregate integration
 - [ ] Interaction repository: Optimistic locking in Update()
 
-### Phase 4.3: Migration Cleanup ✅ / ❌
+### Phase 4.3: Migration Cleanup  / 
 - [ ] 000001_customers.up.sql: Remove CURRENT_TIMESTAMP defaults
 - [ ] 000002_companies.up.sql: Remove CURRENT_TIMESTAMP defaults
 - [ ] 000003_deals.up.sql: Remove CURRENT_TIMESTAMP defaults
 - [ ] 000004_interactions.up.sql: Remove CURRENT_TIMESTAMP defaults
 
-### Phase 4.4: Constructor Updates ✅ / ❌
+### Phase 4.4: Constructor Updates  / 
 - [ ] Customer: Initialize BaseAggregate in NewCustomer()
 - [ ] Company: Initialize BaseAggregate in NewCompany()
 - [ ] Deal: Initialize BaseAggregate in NewDeal()
 - [ ] Interaction: Initialize BaseAggregate in NewInteraction()
 
-### Phase 4.5: Testing ✅ / ❌
+### Phase 4.5: Testing  / 
 - [ ] Customer: Touch() unit tests
 - [ ] Company: Touch() unit tests
 - [ ] Deal: Touch() unit tests
@@ -415,7 +415,7 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 
 ---
 
-## ⏱️ Time Estimates
+## ⏱ Time Estimates
 
 | Task | Subtasks | Estimated Time | Priority |
 |------|----------|----------------|----------|
@@ -430,7 +430,7 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 
 ---
 
-## 🚨 Risk Assessment
+##  Risk Assessment
 
 ### High Risk:
 1. **Optimistic Locking Breaking Change**
@@ -462,26 +462,26 @@ func TestInteractionRepository_AttendeesJSONStore(t *testing.T) {
 
 ---
 
-## ✅ Success Criteria
+##  Success Criteria
 
 **Phase 4 is complete when**:
 
-1. ✅ All 4 entities embed `BaseAggregate`
-2. ✅ All business methods call `Touch()`
-3. ✅ All repositories use `IncrementVersion()` in Update()
-4. ✅ All migrations have no `DEFAULT CURRENT_TIMESTAMP`
-5. ✅ Optimistic locking works (version check in UPDATE)
-6. ✅ JSONStore continues working (tags, attendees)
-7. ✅ All existing tests pass
-8. ✅ New tests added (Touch(), optimistic locking, JSONStore)
-9. ✅ Integration tests pass with real database
-10. ✅ No regressions in API endpoints
+1.  All 4 entities embed `BaseAggregate`
+2.  All business methods call `Touch()`
+3.  All repositories use `IncrementVersion()` in Update()
+4.  All migrations have no `DEFAULT CURRENT_TIMESTAMP`
+5.  Optimistic locking works (version check in UPDATE)
+6.  JSONStore continues working (tags, attendees)
+7.  All existing tests pass
+8.  New tests added (Touch(), optimistic locking, JSONStore)
+9.  Integration tests pass with real database
+10.  No regressions in API endpoints
 
 **Test Coverage Target**: 90%+ (maintain current level)
 
 ---
 
-## 📖 References
+##  References
 
 - [DB Agnostic Refactoring Plan](DB_AGNOSTIC_REFACTORING.md) - Main document
 - [pkg/aggregate/README.md](../../pkg/aggregate/README.md) - BaseAggregate docs

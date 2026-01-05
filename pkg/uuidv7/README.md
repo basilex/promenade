@@ -248,11 +248,11 @@ var Nil = uuid.Nil
 
 ```
 01JGABC-1234-7890-abcd-ef0123456789
-└─┬──┘ └─┬─┘ └─┬─┘ └──────┬──────┘
-  │      │     │           └── Random data (62 bits)
-  │      │     └── Version 7 + Random (16 bits)
-  │      └── Random data (12 bits)
-  └── Unix timestamp ms (48 bits)
+   
+                         Random data (62 bits)
+              Version 7 + Random (16 bits)
+         Random data (12 bits)
+   Unix timestamp ms (48 bits)
 ```
 
 ---

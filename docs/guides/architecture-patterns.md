@@ -484,7 +484,7 @@ internal/contexts/{context}/{aggregate}/adapter/http/
 
 ### Handler Pattern Evolution Strategy
 
-**Current Structure** (Phase 1 - Simple) ✅:
+**Current Structure** (Phase 1 - Simple) :
 ```
 adapter/http/
   handler.go        # All HTTP handlers in single file
@@ -494,12 +494,12 @@ adapter/http/
 ```
 
 **When to Use**:
-- ✅ **Now**: 1-10 endpoints per aggregate (CURRENT: all 21 aggregates)
-- ✅ **Simplicity**: Easy navigation, no package overhead
-- ✅ **Team**: Small teams (1-5 developers)
-- ✅ **Benefits**: Fast development, minimal structure, clear ownership
+-  **Now**: 1-10 endpoints per aggregate (CURRENT: all 21 aggregates)
+-  **Simplicity**: Easy navigation, no package overhead
+-  **Team**: Small teams (1-5 developers)
+-  **Benefits**: Fast development, minimal structure, clear ownership
 
-**Future Structure** (Phase 2 - Organized) 📋:
+**Future Structure** (Phase 2 - Organized) :
 ```
 adapter/http/
   handlers/
@@ -515,10 +515,10 @@ adapter/http/
 ```
 
 **When to Migrate**:
-- 📋 **10+ endpoints** in single handler.go (file exceeds 500 lines)
-- 📋 **Multiple developers** working on same aggregate simultaneously
-- 📋 **Merge conflicts** in handler.go become frequent
-- 📋 **Endpoint grouping** needed (public vs internal, v1 vs v2)
+-  **10+ endpoints** in single handler.go (file exceeds 500 lines)
+-  **Multiple developers** working on same aggregate simultaneously
+-  **Merge conflicts** in handler.go become frequent
+-  **Endpoint grouping** needed (public vs internal, v1 vs v2)
 
 **Benefits of Phase 2**:
 - Clear endpoint separation (one file per operation)
@@ -526,7 +526,7 @@ adapter/http/
 - Easier code review (smaller diffs)
 - Better endpoint discoverability
 
-**Future Structure** (Phase 3 - Versioned APIs) 📋:
+**Future Structure** (Phase 3 - Versioned APIs) :
 ```
 adapter/http/
   v1/
@@ -547,10 +547,10 @@ adapter/http/
 ```
 
 **When to Migrate**:
-- 📋 **API versioning** required (breaking changes)
-- 📋 **20+ endpoints** with multiple versions
-- 📋 **Large team** (10+ developers)
-- 📋 **Microservices** with independent deployment
+-  **API versioning** required (breaking changes)
+-  **20+ endpoints** with multiple versions
+-  **Large team** (10+ developers)
+-  **Microservices** with independent deployment
 
 **Benefits of Phase 3**:
 - API versioning support (backward compatibility)
@@ -567,12 +567,12 @@ adapter/http/
 6. **Validate consistency**: Ensure all aggregates follow chosen pattern
 
 **Current Decision** (Review quarterly):
-- ✅ **Simple structure** works well for current scale (1-10 endpoints)
-- ✅ **Consistent** across all 21 aggregates in production
-- ✅ **Low cognitive load** - easy to find code
-- ✅ **Fast development** - no navigation overhead
-- ⚠️ **Monitor**: File size, merge conflicts, team feedback
-- 📋 **Trigger**: First aggregate to exceed 10 endpoints or 500 lines
+-  **Simple structure** works well for current scale (1-10 endpoints)
+-  **Consistent** across all 21 aggregates in production
+-  **Low cognitive load** - easy to find code
+-  **Fast development** - no navigation overhead
+-  **Monitor**: File size, merge conflicts, team feedback
+-  **Trigger**: First aggregate to exceed 10 endpoints or 500 lines
 
 **Philosophy**: *"Make it work, make it right, make it fast"* - we're at "make it work". Don't add complexity until metrics justify it. Simple structure is a feature, not a limitation!
 

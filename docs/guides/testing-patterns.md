@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Table of Contents
+##  Table of Contents
 
 1. [Testing Philosophy](#-testing-philosophy)
 2. [Three-Tier Testing Strategy](#-three-tier-testing-strategy)
@@ -29,7 +29,7 @@ Promenade follows **strict DDD principles** with **three-tier testing strategy**
 
 ---
 
-## 🏗 Three-Tier Testing Strategy
+##  Three-Tier Testing Strategy
 
 ### Overview
 
@@ -49,7 +49,7 @@ Benchmark Tests (real DB)      → Variable     → Performance measurement
 
 ---
 
-## 🔵 Integration Test Pattern
+##  Integration Test Pattern
 
 ### Directory Structure
 
@@ -208,7 +208,7 @@ go test ./test/integration/... -cover
 
 ---
 
-## 🟢 Unit Test Pattern
+##  Unit Test Pattern
 
 ### Purpose
 
@@ -442,7 +442,7 @@ go test ./internal/contexts/identity/user -cover
 
 ---
 
-## 🟠 Benchmark Test Pattern
+##  Benchmark Test Pattern
 
 ### Purpose
 
@@ -527,7 +527,7 @@ func BenchmarkUserRepository_ListUsers_WithRoles(b *testing.B) {
 
 ### Key Rules
 
-#### ✅ DO
+####  DO
 
 1. **Use real database** - Benchmarks measure real query performance
 2. **Create test data** - Populate database with realistic dataset
@@ -535,7 +535,7 @@ func BenchmarkUserRepository_ListUsers_WithRoles(b *testing.B) {
 4. **Measure specific operations** - Benchmark individual methods
 5. **Compare before/after** - Run benchmarks before and after optimizations
 
-#### ❌ DON'T
+####  DON'T
 
 1. **DON'T use mocks** - Benchmarks need real database
 2. **DON'T forget ResetTimer** - Setup time skews results
@@ -632,7 +632,7 @@ mockRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 ---
 
-## ⚠️ Common Pitfalls
+##  Common Pitfalls
 
 ### Integration Tests
 
@@ -783,7 +783,7 @@ go tool cover -func=coverage.out | grep total
 
 ---
 
-## 📚 Additional Resources
+##  Additional Resources
 
 - [Main Testing Guide](../test/README.md) - Testing overview
 - [Testing Structure](../test/TESTING_STRUCTURE.md) - Directory organization
@@ -793,7 +793,7 @@ go tool cover -func=coverage.out | grep total
 
 ---
 
-## 🎓 Summary Checklist
+##  Summary Checklist
 
 Before writing tests, verify:
 

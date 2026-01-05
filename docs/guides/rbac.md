@@ -765,9 +765,9 @@ func TestPermissionRepository_Create(t *testing.T) {
 - Pattern: `resource:action` (e.g., `users:create`)
 
 **DON'T:**
-- Use camelCase: `Users:Create` ❌
-- Use spaces: `users create` ❌
-- Use unclear actions: `users:modify` ❌
+- Use camelCase: `Users:Create` 
+- Use spaces: `users create` 
+- Use unclear actions: `users:modify` 
 
 ### Role Design
 

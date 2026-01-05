@@ -353,7 +353,7 @@ func TestCustomerRepository_Tags(t *testing.T) {
 
 ## Best Practices
 
-### DO's ✅
+### DO's 
 
 1. **Use specific types**: `Field[[]string]` not `Field[interface{}]`
 2. **Initialize with empty values**: `jsonstore.NewField([]string{})` not NULL
@@ -361,7 +361,7 @@ func TestCustomerRepository_Tags(t *testing.T) {
 4. **Clone for modifications**: `tags := field.Clone(); modify(tags); field.Set(tags)`
 5. **Check IsNull()**: Handle NULL gracefully in business logic
 
-### DON'Ts ❌
+### DON'Ts 
 
 1. **Don't use NULL for collections**: Use empty arrays instead
 2. **Don't modify Get() result directly**: Clone first (Get() returns pointer)
@@ -375,13 +375,13 @@ func TestCustomerRepository_Tags(t *testing.T) {
 
 ### When to Use JSONB
 
-✅ **Good Use Cases**:
+ **Good Use Cases**:
 - Arrays of primitives (tags, IDs, categories)
 - Flexible metadata (settings, config)
 - Sparse data (optional fields)
 - Audit logs (history, changes)
 
-❌ **Bad Use Cases**:
+ **Bad Use Cases**:
 - Large objects (>1MB)
 - Frequently queried relational data
 - Data with strict schema

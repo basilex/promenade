@@ -30,7 +30,7 @@ jwt:
   issuer: "promenade-platform"
 ```
 
-**⚠️ Security**: Use strong secrets in production (at least 32 characters, random)
+** Security**: Use strong secrets in production (at least 32 characters, random)
 
 ### 2. Initialize Manager
 
@@ -498,14 +498,14 @@ func RegisterRoutes(router *gin.Engine, jwtManager *jwt.Manager, handlers *Handl
 
 ### Secret Key Management
 
-**❌ DON'T**:
+** DON'T**:
 ```yaml
 # config/app.postgres-prod.yaml
 jwt:
   secret: "weak-secret"  # Too short, predictable
 ```
 
-**✅ DO**:
+** DO**:
 ```yaml
 # config/app.postgres-prod.yaml
 jwt:
@@ -574,15 +574,15 @@ go tool cover -html=coverage.out
 | **Total**           | **18**| **87%**  |
 
 **Test Coverage**:
-- Token generation: ✅
-- Token validation: ✅
-- Token refresh: ✅
-- Claims extraction: ✅
-- Role checking: ✅
-- Middleware authentication: ✅
-- Middleware authorization: ✅
-- Context helpers (GetUserID, GetClaims): ✅
-- Panic recovery: ✅
+- Token generation: 
+- Token validation: 
+- Token refresh: 
+- Claims extraction: 
+- Role checking: 
+- Middleware authentication: 
+- Middleware authorization: 
+- Context helpers (GetUserID, GetClaims): 
+- Panic recovery: 
 
 ---
 
@@ -591,60 +591,60 @@ go tool cover -html=coverage.out
 ### Token Flow
 
 ```
-┌─────────────┐
-│   Client    │
-└──────┬──────┘
-       │ 1. POST /auth/login (email, password)
-       ▼
-┌─────────────────────────────────────┐
-│  Server: Login Handler              │
-│  - Validate credentials             │
-│  - Generate token pair              │
-└──────┬──────────────────────────────┘
-       │ 2. Return {access_token, refresh_token}
-       ▼
-┌─────────────┐
-│   Client    │ Store tokens
-│  (Memory)   │
-└──────┬──────┘
-       │ 3. GET /api/users/me
-       │    Authorization: Bearer <access_token>
-       ▼
-┌─────────────────────────────────────┐
-│  Server: AuthMiddleware             │
-│  - Extract token from header        │
-│  - Validate token                   │
-│  - Store claims in context          │
-└──────┬──────────────────────────────┘
-       │ 4. Handler accesses claims
-       ▼
-┌─────────────────────────────────────┐
-│  Protected Handler                  │
-│  claims := jwt.GetClaims(c)         │
-│  userID := claims.UserID            │
-└─────────────────────────────────────┘
+
+   Client    
+
+        1. POST /auth/login (email, password)
+       
+
+  Server: Login Handler              
+  - Validate credentials             
+  - Generate token pair              
+
+        2. Return {access_token, refresh_token}
+       
+
+   Client     Store tokens
+  (Memory)   
+
+        3. GET /api/users/me
+           Authorization: Bearer <access_token>
+       
+
+  Server: AuthMiddleware             
+  - Extract token from header        
+  - Validate token                   
+  - Store claims in context          
+
+        4. Handler accesses claims
+       
+
+  Protected Handler                  
+  claims := jwt.GetClaims(c)         
+  userID := claims.UserID            
+
 ```
 
 ### Token Refresh Flow
 
 ```
-┌─────────────┐
-│   Client    │ Access token expired
-└──────┬──────┘
-       │ 1. POST /auth/refresh
-       │    {refresh_token: "..."}
-       ▼
-┌─────────────────────────────────────┐
-│  Server: Refresh Handler            │
-│  - Validate refresh token           │
-│  - Generate new token pair          │
-└──────┬──────────────────────────────┘
-       │ 2. Return new {access_token, refresh_token}
-       ▼
-┌─────────────┐
-│   Client    │ Update stored tokens
-│  (Memory)   │
-└─────────────┘
+
+   Client     Access token expired
+
+        1. POST /auth/refresh
+           {refresh_token: "..."}
+       
+
+  Server: Refresh Handler            
+  - Validate refresh token           
+  - Generate new token pair          
+
+        2. Return new {access_token, refresh_token}
+       
+
+   Client     Update stored tokens
+  (Memory)   
+
 ```
 
 ---
@@ -712,12 +712,12 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 
 ### Current Features
 
-- ✅ Token generation (access + refresh)
-- ✅ Token validation
-- ✅ Custom claims (user_id, email, roles)
-- ✅ RBAC helpers (HasRole, HasAnyRole, HasAllRoles)
-- ✅ Gin middleware (auth + RBAC)
-- ✅ Context helpers
+-  Token generation (access + refresh)
+-  Token validation
+-  Custom claims (user_id, email, roles)
+-  RBAC helpers (HasRole, HasAnyRole, HasAllRoles)
+-  Gin middleware (auth + RBAC)
+-  Context helpers
 
 ### Planned Features
 

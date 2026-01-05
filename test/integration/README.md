@@ -66,7 +66,7 @@ go test ./test/integration/contexts/shared/country -v
 | Aspect   | Integration Tests             |
 | -------- | ----------------------------- |
 | Location | `/test/integration/contexts/` |
-| Database | ✅ Yes (real)                 |
+| Database |  Yes (real)                 |
 | Speed    | Medium (~14s for all)         |
 | Purpose  | Full E2E validation           |
 | When     | Before merge/deploy           |

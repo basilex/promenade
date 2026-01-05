@@ -71,26 +71,26 @@ An **aggregate** is a cluster of domain objects that can be treated as a single 
 ### Aggregate Root Pattern
 
 ```
-┌─────────────────────────────────────┐
-│         User (Root)                 │
-│  - ID: UUID                         │
-│  - Email: string                    │
-│  - Version: int                     │
-│                                     │
-│  ┌─────────────────────────────┐   │
-│  │   Contacts (Entities)       │   │
-│  │  - Email contacts           │   │
-│  │  - Phone contacts           │   │
-│  │  - Address contacts         │   │
-│  └─────────────────────────────┘   │
-│                                     │
-│  ┌─────────────────────────────┐   │
-│  │   Profile (Value Object)    │   │
-│  │  - DisplayName              │   │
-│  │  - Bio                      │   │
-│  │  - AvatarURL                │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
+
+         User (Root)                 
+  - ID: UUID                         
+  - Email: string                    
+  - Version: int                     
+                                     
+     
+     Contacts (Entities)          
+    - Email contacts              
+    - Phone contacts              
+    - Address contacts            
+     
+                                     
+     
+     Profile (Value Object)       
+    - DisplayName                 
+    - Bio                         
+    - AvatarURL                   
+     
+
 ```
 
 **Rules:**

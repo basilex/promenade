@@ -186,7 +186,7 @@ make migrate-customer-mgmt    # Customer Management only
 
 ## Best Practices
 
-### DO ✅
+### DO 
 
 - **Always pass context** to repository methods
 - **Use transactions** for multi-table operations
@@ -195,7 +195,7 @@ make migrate-customer-mgmt    # Customer Management only
 - **Use BaseRepository** for common operations
 - **Close connections** with `defer db.Close()`
 
-### DON'T ❌
+### DON'T 
 
 - **DON'T use uuid.New()** (use uuidv7.New() instead)
 - **DON'T forget soft delete filter** in SELECT queries

@@ -386,7 +386,7 @@ Technical specifications and detailed documentation:
 
 ---
 
-## 📊 Project Statistics
+##  Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
 - **Tests**: 420+ tests, 90%+ average coverage
@@ -397,7 +397,7 @@ Technical specifications and detailed documentation:
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Read our [Contributing Guide](guides/contributing.md) to learn about:
 
@@ -408,7 +408,7 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 
 ---
 
-## � Work In Progress
+##  Work In Progress
 
 **Active development** tasks and progress tracking:
 
@@ -418,7 +418,7 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 
 ---
 
-## 📝 Recent Updates
+##  Recent Updates
 
 **January 5, 2026**:
 - Subscription aggregate completed (8 endpoints, 120 tests)

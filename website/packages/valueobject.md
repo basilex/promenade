@@ -473,15 +473,15 @@ func NewPhoneContact(userID uuidv7.UUID, phoneStr, label string) (*Contact, erro
 
 ### DO
 
-✅ **Use value objects for domain concepts**:
+ **Use value objects for domain concepts**:
 ```go
 type User struct {
-    Email valueobject.Email  // ✅ Type-safe
-    Phone valueobject.Phone  // ✅ Validated
+    Email valueobject.Email  //  Type-safe
+    Phone valueobject.Phone  //  Validated
 }
 ```
 
-✅ **Validate on creation**:
+ **Validate on creation**:
 ```go
 email, err := valueobject.NewEmail(input)
 if err != nil {
@@ -489,7 +489,7 @@ if err != nil {
 }
 ```
 
-✅ **Use immutability**:
+ **Use immutability**:
 ```go
 // Value objects are immutable
 email1 := valueobject.MustNewEmail("john@example.com")
@@ -499,7 +499,7 @@ email2 := valueobject.MustNewEmail("jane@example.com")
 user.Email = email2
 ```
 
-✅ **Compare by value**:
+ **Compare by value**:
 ```go
 if user.Email.Equals(other.Email) {
     // Same email address
@@ -508,41 +508,41 @@ if user.Email.Equals(other.Email) {
 
 ### DON'T
 
-❌ **Don't use primitive types**:
+ **Don't use primitive types**:
 ```go
-// ❌ Bad (no validation)
+//  Bad (no validation)
 type User struct {
     Email string
     Phone string
 }
 
-// ✅ Good (validated value objects)
+//  Good (validated value objects)
 type User struct {
     Email valueobject.Email
     Phone valueobject.Phone
 }
 ```
 
-❌ **Don't bypass validation**:
+ **Don't bypass validation**:
 ```go
-// ❌ Bad
+//  Bad
 user.Email = "invalid-email"
 
-// ✅ Good
+//  Good
 email, err := valueobject.NewEmail("valid@example.com")
 if err == nil {
     user.Email = email
 }
 ```
 
-❌ **Don't expose internal state**:
+ **Don't expose internal state**:
 ```go
-// ❌ Bad
+//  Bad
 type Email struct {
     Value string  // Public field
 }
 
-// ✅ Good
+//  Good
 type Email struct {
     value string  // Private field
 }

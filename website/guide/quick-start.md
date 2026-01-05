@@ -28,7 +28,7 @@ make docker-up
 # Wait for PostgreSQL to be ready (3 seconds)
 ```
 
-✅ PostgreSQL is now running on `localhost:5432`
+ PostgreSQL is now running on `localhost:5432`
 
 ---
 
@@ -59,7 +59,7 @@ make build
 ./bin/promenade
 ```
 
-✅ Server starts on **http://localhost:8081**
+ Server starts on **http://localhost:8081**
 
 ---
 
@@ -136,7 +136,7 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login \
 }
 ```
 
-💡 **Copy the `access_token` - you'll need it for protected endpoints!**
+ **Copy the `access_token` - you'll need it for protected endpoints!**
 
 ### Create Profile (Protected)
 
@@ -477,15 +477,15 @@ make swagger-all       # Generate API documentation
 
 ---
 
-## Success! 🎉
+## Success! 
 
 You now have Promenade running locally with:
 
-- ✅ PostgreSQL database with all migrations
-- ✅ API server on http://localhost:8081
-- ✅ User registration and authentication
-- ✅ Profile and contact management
-- ✅ Reference data (countries, currencies, etc.)
+-  PostgreSQL database with all migrations
+-  API server on http://localhost:8081
+-  User registration and authentication
+-  Profile and contact management
+-  Reference data (countries, currencies, etc.)
 
 **Next Steps:**
 1. Explore the [API Reference](/guide/api-reference) for all available endpoints
@@ -493,4 +493,4 @@ You now have Promenade running locally with:
 3. Check out [Testing Strategy](/guide/testing) to write your own tests
 4. See [RBAC Guide](/guide/rbac) for authorization patterns
 
-Happy coding! 🚀
+Happy coding! 

@@ -1,13 +1,13 @@
 # Table Naming Strategy - Analysis & Decision
 
 **Date**: 2026-01-01  
-**Status**: 🔴 CRITICAL - Requires decision before further development
+**Status**:  CRITICAL - Requires decision before further development
 
 ---
 
 ## Current State (Inconsistent)
 
-### ✅ Consistent Contexts
+###  Consistent Contexts
 
 **Identity Context** (11 tables):
 ```
@@ -34,7 +34,7 @@ shared_timezones
 ```
 Pattern: `shared_<aggregate>`
 
-### ⚠️ Inconsistent Contexts
+###  Inconsistent Contexts
 
 **Customer Management Context** (4 tables):
 ```
@@ -79,7 +79,7 @@ Looking at migration order:
 
 ## Options Analysis
 
-### Option 1: `<context>_<aggregate>` (SHORT - without mgmt) ✅ RECOMMENDED
+### Option 1: `<context>_<aggregate>` (SHORT - without mgmt)  RECOMMENDED
 
 **Pattern**:
 ```
@@ -96,18 +96,18 @@ shared_countries    (already correct)
 ```
 
 **Pros**:
-- ✅ Shorter, cleaner
-- ✅ Consistent with Identity & Shared contexts
-- ✅ Logical: `customer_deals` = deals in customer context
-- ✅ No redundancy (`customer_mgmt` sounds like "customer management management")
-- ✅ Future-proof: easier to type, less DB storage
+-  Shorter, cleaner
+-  Consistent with Identity & Shared contexts
+-  Logical: `customer_deals` = deals in customer context
+-  No redundancy (`customer_mgmt` sounds like "customer management management")
+-  Future-proof: easier to type, less DB storage
 
 **Cons**:
-- ❌ Requires renaming 3 tables:
+-  Requires renaming 3 tables:
   - `customer_mgmt_customers` → `customer_customers`
   - `order_mgmt_orders` → `order_orders`
   - `order_mgmt_order_lines` → `order_lines`
-- ❌ Breaking change (but early in development)
+-  Breaking change (but early in development)
 
 **Migration effort**: 3 tables × 1 migration each = **3 new migrations**
 
@@ -130,14 +130,14 @@ shared_countries            (exception)
 ```
 
 **Pros**:
-- ✅ Keeps `customer_mgmt_customers` and `order_mgmt_*` as-is
-- ✅ No breaking changes for existing tables
+-  Keeps `customer_mgmt_customers` and `order_mgmt_*` as-is
+-  No breaking changes for existing tables
 
 **Cons**:
-- ❌ Longer, more verbose
-- ❌ Inconsistent with Identity & Shared (11+4=15 tables without mgmt)
-- ❌ Redundant (`customer_mgmt` = customer management context)
-- ❌ Requires renaming 3 customer tables:
+-  Longer, more verbose
+-  Inconsistent with Identity & Shared (11+4=15 tables without mgmt)
+-  Redundant (`customer_mgmt` = customer management context)
+-  Requires renaming 3 customer tables:
   - `customer_deals` → `customer_mgmt_deals`
   - `customer_companies` → `customer_mgmt_companies`
   - `customer_interactions` → `customer_mgmt_interactions`
@@ -165,20 +165,20 @@ shared_countries    (already correct)
 ```
 
 **Pros**:
-- ✅ Very short (`crm_` instead of `customer_`)
-- ✅ Domain-driven (CRM is ubiquitous language)
+-  Very short (`crm_` instead of `customer_`)
+-  Domain-driven (CRM is ubiquitous language)
 
 **Cons**:
-- ❌ Breaks established pattern (Identity & Shared use full context name)
-- ❌ `orders_orders` looks weird
-- ❌ Less clear for new developers (what is "crm"?)
-- ❌ Requires renaming ALL 6 tables in customer-mgmt and order-mgmt
+-  Breaks established pattern (Identity & Shared use full context name)
+-  `orders_orders` looks weird
+-  Less clear for new developers (what is "crm"?)
+-  Requires renaming ALL 6 tables in customer-mgmt and order-mgmt
 
 **Migration effort**: 6 tables × 1 migration each = **6 new migrations**
 
 ---
 
-## Recommendation: Option 1 ✅
+## Recommendation: Option 1 
 
 ### Rationale
 
@@ -191,7 +191,7 @@ shared_countries    (already correct)
 ### Proposed Final State
 
 ```sql
--- Identity Context (11 tables) ✅ No changes
+-- Identity Context (11 tables)  No changes
 identity_users
 identity_contacts
 identity_profiles
@@ -204,28 +204,28 @@ identity_password_reset_tokens
 identity_email_verification_tokens
 identity_login_attempts
 
--- Shared Context (4 tables) ✅ No changes
+-- Shared Context (4 tables)  No changes
 shared_countries
 shared_currencies
 shared_languages
 shared_timezones
 
--- Customer Management Context (4 tables) ⚠️ 1 rename needed
+-- Customer Management Context (4 tables)  1 rename needed
 customer_customers         ← rename from customer_mgmt_customers
-customer_deals             ✅ already correct
-customer_companies         ✅ already correct
-customer_interactions      ✅ already correct
+customer_deals              already correct
+customer_companies          already correct
+customer_interactions       already correct
 
--- Order Management Context (2 tables) ⚠️ 2 renames needed
+-- Order Management Context (2 tables)  2 renames needed
 order_orders               ← rename from order_mgmt_orders
 order_lines                ← rename from order_mgmt_order_lines
 
--- Future: Billing Context (0 tables) ✅ Will follow pattern
+-- Future: Billing Context (0 tables)  Will follow pattern
 billing_invoices
 billing_payments
 billing_subscriptions
 
--- Future: Warehouse Context (0 tables) ✅ Will follow pattern
+-- Future: Warehouse Context (0 tables)  Will follow pattern
 warehouse_inventory
 warehouse_stock_movements
 ```
@@ -342,5 +342,5 @@ ALTER TABLE order_mgmt_order_lines RENAME TO order_lines;
 ---
 
 **Status**: Awaiting decision  
-**Priority**: 🔴 HIGH - Should decide before next aggregate implementation  
+**Priority**:  HIGH - Should decide before next aggregate implementation  
 **Impact**: Breaking change but fixable with migrations

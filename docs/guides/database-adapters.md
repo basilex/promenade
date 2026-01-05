@@ -193,12 +193,12 @@ type Customer struct {
 
 **Example**:
 ```go
-// ❌ Old (database-specific)
+//  Old (database-specific)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v7()
 );
 
-// ✅ New (database-agnostic)
+//  New (database-agnostic)
 CREATE TABLE users (
     id UUID PRIMARY KEY
 );
@@ -308,12 +308,12 @@ migrations/
 **Run Order**: `core → shared → identity → customer-mgmt → order-mgmt`
 
 **Database-Agnostic Rules**:
-1. ❌ No UUID defaults in CREATE TABLE
-2. ❌ No UPDATE triggers for timestamps
-3. ❌ No database functions in constraints
-4. ✅ Generate UUIDs in Go (`uuidv7.New()`)
-5. ✅ Update timestamps in Go (`.Touch()`)
-6. ✅ Use TEXT for JSON (SQLite compatible)
+1.  No UUID defaults in CREATE TABLE
+2.  No UPDATE triggers for timestamps
+3.  No database functions in constraints
+4.  Generate UUIDs in Go (`uuidv7.New()`)
+5.  Update timestamps in Go (`.Touch()`)
+6.  Use TEXT for JSON (SQLite compatible)
 
 **Example Migration**:
 ```sql

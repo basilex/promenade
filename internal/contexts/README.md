@@ -163,9 +163,9 @@ Each context follows this structure:
 **Directory:** `internal/contexts/billing/`  
 **Aggregates:**
 
-- **Subscription** ✅ - Subscription lifecycle (trial, active, paused, cancelled, expired)
-- **Invoice** ✅ - Invoice generation and management
-- **Payment** ✅ - Payment processing and reconciliation
+- **Subscription**  - Subscription lifecycle (trial, active, paused, cancelled, expired)
+- **Invoice**  - Invoice generation and management
+- **Payment**  - Payment processing and reconciliation
 
 **Responsibilities:**
 

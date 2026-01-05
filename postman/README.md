@@ -87,7 +87,7 @@ const response = pm.response.json();
 if (response.status === "success" && response.data.access_token) {
     pm.environment.set("access_token", response.data.access_token);
     pm.environment.set("refresh_token", response.data.refresh_token);
-    console.log("✅ Tokens saved to environment");
+    console.log(" Tokens saved to environment");
 }
 ```
 
@@ -207,7 +207,7 @@ Postman auto-injects `{{access_token}}` from environment variables.
 // Check if access token is expired
 const accessToken = pm.environment.get("access_token");
 if (!accessToken) {
-    console.log("⚠️ No access token - please login first");
+    console.log(" No access token - please login first");
     return;
 }
 
@@ -219,7 +219,7 @@ try {
     
     // Refresh if token expires in < 1 minute
     if (expiresAt - now < 60000) {
-        console.log("🔄 Token expiring soon, refreshing...");
+        console.log(" Token expiring soon, refreshing...");
         
         const refreshToken = pm.environment.get("refresh_token");
         const baseUrl = pm.environment.get("base_url");
@@ -239,19 +239,19 @@ try {
             }
         }, (err, res) => {
             if (err) {
-                console.error("❌ Token refresh failed:", err);
+                console.error(" Token refresh failed:", err);
             } else {
                 const data = res.json();
                 if (data.status === "success") {
                     pm.environment.set("access_token", data.data.access_token);
                     pm.environment.set("refresh_token", data.data.refresh_token);
-                    console.log("✅ Token refreshed successfully");
+                    console.log(" Token refreshed successfully");
                 }
             }
         });
     }
 } catch (e) {
-    console.error("❌ Failed to parse token:", e);
+    console.error(" Failed to parse token:", e);
 }
 ```
 

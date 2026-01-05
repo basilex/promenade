@@ -6,7 +6,7 @@
 
 Deal Management is an **aggregate within Customer Management context** that handles all sales opportunity tracking functionality. This is where sales pipeline, deal stages, and revenue forecasting are managed.
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Aggregate**: Deal (within Customer Management context)  
 **Endpoints**: 12 HTTP routes  
 **Database**: 1 table (`customer_deals`) with soft delete  
@@ -16,7 +16,7 @@ Deal Management is an **aggregate within Customer Management context** that hand
 
 ## Key Features
 
-### 🎯 Deal Lifecycle Management
+###  Deal Lifecycle Management
 Track deals through sales pipeline stages with automatic probability calculation.
 
 **Stages**:
@@ -29,21 +29,21 @@ Track deals through sales pipeline stages with automatic probability calculation
 
 **Stage Transitions**:
 ```
-┌──────┐         ┌───────────┐         ┌──────────┐         ┌─────────────┐
-│ Lead │ ──────> │ Qualified │ ──────> │ Proposal │ ──────> │ Negotiation │
-└──────┘         └───────────┘         └──────────┘         └─────────────┘
-   │                                                                │
-   │                                                                │
-   ├──────────────────────────────────────────────────────────────>│
-   │                           Skip stages allowed                  │
-   │                                                                │
+                           
+ Lead  >  Qualified  >  Proposal  >  Negotiation 
+                           
+                                                                   
+                                                                   
+   >
+                              Skip stages allowed                  
+                                                                   
    v                                                                v
-┌──────────────┐                                          ┌──────────────┐
-│ Closed Lost  │                                          │ Closed Won   │
-└──────────────┘                                          └──────────────┘
+                                          
+ Closed Lost                                             Closed Won   
+                                          
 ```
 
-### 💰 Money Handling
+###  Money Handling
 Deal values stored as **cents** in database for precision, displayed as dollars in API.
 
 **Example**:
@@ -54,7 +54,7 @@ Deal values stored as **cents** in database for precision, displayed as dollars 
 }
 ```
 
-### 📊 Pipeline Analytics
+###  Pipeline Analytics
 Real-time statistics for sales pipeline management.
 
 **Available Statistics**:
@@ -724,30 +724,30 @@ CREATE TRIGGER trg_deals_updated_at
 **24 Tests** (100% passing)
 
 **Entity Tests** (`entity_test.go`):
-- ✅ Create deal with valid data
-- ✅ Validate required fields (customer_id, assigned_to, name, value)
-- ✅ Stage transition validation
-- ✅ Probability auto-calculation per stage
-- ✅ Win/Loss state transitions
-- ✅ Terminal stage protection
+-  Create deal with valid data
+-  Validate required fields (customer_id, assigned_to, name, value)
+-  Stage transition validation
+-  Probability auto-calculation per stage
+-  Win/Loss state transitions
+-  Terminal stage protection
 
 **Use Case Tests** (`usecase_test.go`):
-- ✅ Create deal business logic
-- ✅ Update basic info
-- ✅ Update value
-- ✅ Move to stage (with validation)
-- ✅ Mark as won/lost
-- ✅ List with pagination
-- ✅ Filter by stage
-- ✅ Pipeline statistics
-- ✅ Won deals statistics
+-  Create deal business logic
+-  Update basic info
+-  Update value
+-  Move to stage (with validation)
+-  Mark as won/lost
+-  List with pagination
+-  Filter by stage
+-  Pipeline statistics
+-  Won deals statistics
 
 **Repository Tests** (`repository_test.go`):
-- ✅ Create and retrieve
-- ✅ Update operations
-- ✅ Soft delete
-- ✅ List with filters
-- ✅ Statistics queries
+-  Create and retrieve
+-  Update operations
+-  Soft delete
+-  List with filters
+-  Statistics queries
 
 ### Running Tests
 
@@ -849,16 +849,16 @@ eventBus.Subscribe(bus.TopicDealWon, func(ctx context.Context, event bus.Event) 
 ### 1. Deal Naming Convention
 Use descriptive names that identify the opportunity:
 ```
-✅ Good: "Enterprise License + Support", "Cloud Migration Project"
-❌ Bad: "Deal 1", "Customer ABC"
+ Good: "Enterprise License + Support", "Cloud Migration Project"
+ Bad: "Deal 1", "Customer ABC"
 ```
 
 ### 2. Stage Progression
 Progress deals through stages sequentially when possible:
 ```
-✅ Recommended: lead → qualified → proposal → negotiation → closed_won
-⚠️  Allowed: lead → proposal (skip stages)
-❌ Avoid: closed_won → negotiation (cannot move from terminal)
+ Recommended: lead → qualified → proposal → negotiation → closed_won
+  Allowed: lead → proposal (skip stages)
+ Avoid: closed_won → negotiation (cannot move from terminal)
 ```
 
 ### 3. Value Updates
@@ -926,17 +926,17 @@ curl -X PUT /api/v1/customer-mgmt/deals/:id/value \
 
 ## Roadmap
 
-### Current Features (✅ Implemented)
-- ✅ Deal CRUD operations
-- ✅ Stage-based pipeline management
-- ✅ Automatic probability calculation
-- ✅ Win/Loss tracking
-- ✅ Pipeline statistics
-- ✅ Money handling (cents precision)
-- ✅ Soft delete support
-- ✅ 24 tests (100% passing)
+### Current Features ( Implemented)
+-  Deal CRUD operations
+-  Stage-based pipeline management
+-  Automatic probability calculation
+-  Win/Loss tracking
+-  Pipeline statistics
+-  Money handling (cents precision)
+-  Soft delete support
+-  24 tests (100% passing)
 
-### Planned Features (📋 Q1 2026)
+### Planned Features ( Q1 2026)
 - [ ] Deal activities timeline (calls, emails, meetings)
 - [ ] Deal notes and attachments
 - [ ] Deal collaborators (multiple sales reps)
@@ -945,7 +945,7 @@ curl -X PUT /api/v1/customer-mgmt/deals/:id/value \
 - [ ] Deal conversion analytics
 - [ ] Integration with email/calendar
 
-### Future Enhancements (📋 Q2 2026)
+### Future Enhancements ( Q2 2026)
 - [ ] Deal templates for common scenarios
 - [ ] Automated lead scoring
 - [ ] AI-powered close date prediction

@@ -30,10 +30,10 @@ config/
 ```
 
 **Benefits**:
-- ✅ Clear driver selection at file level
-- ✅ Easy to find all configs for specific database
-- ✅ Scalable for multiple database engines
-- ✅ Environment isolation per driver
+-  Clear driver selection at file level
+-  Easy to find all configs for specific database
+-  Scalable for multiple database engines
+-  Environment isolation per driver
 
 ---
 

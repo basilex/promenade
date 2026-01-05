@@ -6,7 +6,7 @@
 
 ## Current Status
 
-**CSRF Protection: NOT REQUIRED** ✅
+**CSRF Protection: NOT REQUIRED** 
 
 Promenade uses **Bearer JWT tokens** in `Authorization` header for authentication, which is **safe from CSRF attacks by design**.
 
@@ -144,15 +144,15 @@ go test ./pkg/middleware -v
 
 | Test                                | Status | Description                          |
 | ----------------------------------- | ------ | ------------------------------------ |
-| TestDefaultCSRFConfig               | ✅      | Default configuration                |
-| TestCSRFMiddleware_SkipSafeMethods  | ✅      | GET/HEAD/OPTIONS bypass CSRF         |
-| TestCSRFMiddleware_ValidToken       | ✅      | Valid token passes                   |
-| TestCSRFMiddleware_MissingCookie    | ✅      | Missing cookie rejected (403)        |
-| TestCSRFMiddleware_MissingHeader    | ✅      | Missing header rejected (403)        |
-| TestCSRFMiddleware_TokenMismatch    | ✅      | Mismatched tokens rejected (403)     |
-| TestCSRFMiddleware_CustomErrorHandler | ✅    | Custom error handling                |
-| TestGenerateCSRFToken               | ✅      | Token generation                     |
-| TestGetCSRFToken                    | ✅      | Token retrieval from context         |
+| TestDefaultCSRFConfig               |       | Default configuration                |
+| TestCSRFMiddleware_SkipSafeMethods  |       | GET/HEAD/OPTIONS bypass CSRF         |
+| TestCSRFMiddleware_ValidToken       |       | Valid token passes                   |
+| TestCSRFMiddleware_MissingCookie    |       | Missing cookie rejected (403)        |
+| TestCSRFMiddleware_MissingHeader    |       | Missing header rejected (403)        |
+| TestCSRFMiddleware_TokenMismatch    |       | Mismatched tokens rejected (403)     |
+| TestCSRFMiddleware_CustomErrorHandler |     | Custom error handling                |
+| TestGenerateCSRFToken               |       | Token generation                     |
+| TestGetCSRFToken                    |       | Token retrieval from context         |
 
 **Total**: 13 tests, 100% passing
 
@@ -183,14 +183,14 @@ go test ./pkg/middleware -v
 
 Promenade uses **multiple security layers**:
 
-1. **Bearer JWT Tokens** ✅ - Primary defense (CSRF-safe by design)
-2. **Token Expiration** ✅ - 15-minute access tokens
-3. **Token Revocation** ✅ - Redis blacklist for logout
-4. **HTTPS Only** ✅ - Encrypted communication
-5. **Rate Limiting** ✅ - IP-based protection (Login: 5/min)
-6. **RBAC** ✅ - Role-based access control
-7. **CORS** ✅ - Cross-origin resource sharing restrictions
-8. **CSRF Middleware** 📋 - Available for cookie-based auth (if needed)
+1. **Bearer JWT Tokens**  - Primary defense (CSRF-safe by design)
+2. **Token Expiration**  - 15-minute access tokens
+3. **Token Revocation**  - Redis blacklist for logout
+4. **HTTPS Only**  - Encrypted communication
+5. **Rate Limiting**  - IP-based protection (Login: 5/min)
+6. **RBAC**  - Role-based access control
+7. **CORS**  - Cross-origin resource sharing restrictions
+8. **CSRF Middleware**  - Available for cookie-based auth (if needed)
 
 ---
 
@@ -252,10 +252,10 @@ fetch('/api/users', {
 
 | Feature                  | Bearer Tokens (Current) | Cookie-Based Auth     |
 | ------------------------ | ----------------------- | --------------------- |
-| CSRF Protection          | Not needed ✅            | Required ⚠️            |
-| XSS Protection           | Vulnerable ⚠️            | Better (HttpOnly) ✅   |
-| Mobile Apps              | Easy ✅                  | Complex ⚠️             |
-| CORS                     | Simple ✅                | Complex ⚠️             |
+| CSRF Protection          | Not needed             | Required             |
+| XSS Protection           | Vulnerable             | Better (HttpOnly)    |
+| Mobile Apps              | Easy                   | Complex              |
+| CORS                     | Simple                 | Complex              |
 | Token Storage            | localStorage            | Cookies               |
 | Auto-attachment          | Manual                  | Automatic             |
 | Logout                   | Delete token            | Clear cookie + CSRF   |

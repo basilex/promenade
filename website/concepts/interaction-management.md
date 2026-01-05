@@ -8,7 +8,7 @@
 
 **Interaction aggregate** tracks all customer touchpoints - phone calls, emails, meetings, and notes - with comprehensive metadata, participant tracking, and follow-up management.
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Endpoints**: 14 HTTP routes  
 **Database**: 1 table with JSONB attendees
 

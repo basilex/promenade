@@ -15,7 +15,7 @@ Invoice Management is part of the **Billing Bounded Context** that handles the c
 - **Query Operations**: Find invoices by ID, number, customer, or status
 - **Pagination**: Efficient listing with standard pagination support
 
-**Status**: ✅ Production-ready (January 2026)  
+**Status**:  Production-ready (January 2026)  
 **Aggregate**: Invoice  
 **Routes**: 14 HTTP endpoints  
 **Database**: 1 table with soft delete support

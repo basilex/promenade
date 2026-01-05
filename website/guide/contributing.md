@@ -46,7 +46,7 @@ make test
 make dev
 ```
 
-✅ **Success**: Server running on http://localhost:8081
+ **Success**: Server running on http://localhost:8081
 
 ---
 
@@ -86,25 +86,25 @@ git push origin feature/my-awesome-feature
 
 ```
 promenade/
-├── cmd/
-│   ├── api/              # HTTP server entry point
-│   └── migrate/          # Migration CLI
-├── internal/
-│   ├── contexts/         # Bounded Contexts (DDD)
-│   │   ├── shared/      # Reference data
-│   │   ├── identity/    # User management
-│   │   └── customer-mgmt/ # CRM
-│   └── infrastructure/   # Config, DB, etc.
-├── pkg/                  # Shared packages
-│   ├── bus/             # Event Bus
-│   ├── jwt/             # JWT auth
-│   ├── logger/          # Logging
-│   └── uuidv7/          # UUID v7
-├── migrations/           # Database migrations
-├── test/                 # Three-tier tests
-│   ├── smoke/           # Mock-based tests
-│   └── integration/     # DB tests
-└── docs/                 # Documentation
+ cmd/
+    api/              # HTTP server entry point
+    migrate/          # Migration CLI
+ internal/
+    contexts/         # Bounded Contexts (DDD)
+       shared/      # Reference data
+       identity/    # User management
+       customer-mgmt/ # CRM
+    infrastructure/   # Config, DB, etc.
+ pkg/                  # Shared packages
+    bus/             # Event Bus
+    jwt/             # JWT auth
+    logger/          # Logging
+    uuidv7/          # UUID v7
+ migrations/           # Database migrations
+ test/                 # Three-tier tests
+    smoke/           # Mock-based tests
+    integration/     # DB tests
+ docs/                 # Documentation
 ```
 
 ---
@@ -136,26 +136,26 @@ golangci-lint run --fix
 3. **Naming Conventions**:
 
 ```go
-// ✅ Interfaces: I prefix + PascalCase
+//  Interfaces: I prefix + PascalCase
 type IUserRepository interface {}
 type ICustomerUseCase interface {}
 
-// ✅ Implementations: lowercase private
+//  Implementations: lowercase private
 type userRepository struct {}
 type useCase struct {}
 
-// ✅ Constructors: New{Entity} or NewUseCase
+//  Constructors: New{Entity} or NewUseCase
 func NewUserRepository(db *sqlx.DB) IUserRepository
 func NewUseCase(repo IRepository) IUseCase
 
-// ✅ Methods: PascalCase
+//  Methods: PascalCase
 func (r *userRepository) Create(ctx context.Context, user *User) error
 
-// ✅ Constants: SCREAMING_SNAKE_CASE or PascalCase
+//  Constants: SCREAMING_SNAKE_CASE or PascalCase
 const DefaultPageSize = 20
 const UserStatusActive = "active"
 
-// ✅ Variables: camelCase
+//  Variables: camelCase
 var userCount int
 var isActive bool
 ```
@@ -163,19 +163,19 @@ var isActive bool
 4. **Error Handling**:
 
 ```go
-// ✅ Always handle errors
+//  Always handle errors
 if err := repo.Create(ctx, user); err != nil {
     return fmt.Errorf("failed to create user: %w", err)
 }
 
-// ✅ Use error wrapping
+//  Use error wrapping
 return fmt.Errorf("validation failed: %w", err)
 
-// ✅ Define domain errors
+//  Define domain errors
 var ErrUserNotFound = errors.New("user not found")
 var ErrEmailAlreadyExists = errors.New("email already exists")
 
-// ✅ Check specific errors
+//  Check specific errors
 if errors.Is(err, ErrUserNotFound) {
     response.Error(c, http.StatusNotFound, "USER_NOT_FOUND", err.Error())
     return
@@ -185,13 +185,13 @@ if errors.Is(err, ErrUserNotFound) {
 5. **Context Propagation**:
 
 ```go
-// ✅ Always pass context as first parameter
+//  Always pass context as first parameter
 func (uc *useCase) CreateUser(ctx context.Context, email, password string) (*User, error)
 
-// ✅ Use context for logging
+//  Use context for logging
 logger.FromContext(ctx).Info("user created", slog.String("user_id", userID.String()))
 
-// ✅ Pass context to all repository calls
+//  Pass context to all repository calls
 err := uc.repo.Create(ctx, user)
 ```
 
@@ -593,10 +593,10 @@ npm run docs:build
 **Solution**: Use `SetupTestDBWithCleanTables(t)` instead of `SetupTestDB(t)`
 
 ```go
-// ❌ Wrong
+//  Wrong
 db := integration.SetupTestDB(t)
 
-// ✅ Correct
+//  Correct
 db := integration.SetupTestDBWithCleanTables(t)
 ```
 
@@ -607,10 +607,10 @@ db := integration.SetupTestDBWithCleanTables(t)
 **Solution**: Handle all error returns
 
 ```go
-// ❌ Wrong
+//  Wrong
 db.Close()
 
-// ✅ Correct
+//  Correct
 defer func() {
     if err := db.Close(); err != nil {
         logger.Error("failed to close db", slog.Any("error", err))
@@ -659,4 +659,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to Promenade!** 🚀
+**Thank you for contributing to Promenade!** 

@@ -12,11 +12,11 @@ The `database` package provides a **unified interface** for working with differe
 
 ## Features
 
-- ✅ **Dialect Abstraction**: Postgres ($1), SQLite (?), MySQL (?), SQL Server (@p1)
-- ✅ **Type Mapping**: UUID, JSON, TIMESTAMP differences handled automatically
-- ✅ **Feature Detection**: RETURNING, JSON indexes, native UUID support
-- ✅ **SQL Safety**: Identifier validation, quote escaping, injection prevention
-- ✅ **Placeholder Conversion**: Auto-convert $1 style to database-specific format
+-  **Dialect Abstraction**: Postgres ($1), SQLite (?), MySQL (?), SQL Server (@p1)
+-  **Type Mapping**: UUID, JSON, TIMESTAMP differences handled automatically
+-  **Feature Detection**: RETURNING, JSON indexes, native UUID support
+-  **SQL Safety**: Identifier validation, quote escaping, injection prevention
+-  **Placeholder Conversion**: Auto-convert $1 style to database-specific format
 
 ---
 
@@ -24,11 +24,11 @@ The `database` package provides a **unified interface** for working with differe
 
 | Database     | Status         | Dialect           | Native UUID | Native JSON | Indexes  |
 | ------------ | -------------- | ----------------- | ----------- | ----------- | -------- |
-| PostgreSQL   | ✅ Production  | `postgres.Dialect` | YES         | JSONB       | GIN      |
-| SQLite       | ✅ Production  | `sqlite.Dialect`   | NO (TEXT)   | NO (TEXT)   | Standard |
-| MySQL        | 📋 Planned     | `mysql.Dialect`    | NO (CHAR)   | JSON        | Generated|
-| SQL Server   | 📋 Planned     | `mssql.Dialect`    | NO (NCHAR)  | NO (NVARCHAR)| Standard|
-| CockroachDB  | 📋 Future      | Uses `postgres`    | YES         | JSONB       | GIN      |
+| PostgreSQL   |  Production  | `postgres.Dialect` | YES         | JSONB       | GIN      |
+| SQLite       |  Production  | `sqlite.Dialect`   | NO (TEXT)   | NO (TEXT)   | Standard |
+| MySQL        |  Planned     | `mysql.Dialect`    | NO (CHAR)   | JSON        | Generated|
+| SQL Server   |  Planned     | `mssql.Dialect`    | NO (NCHAR)  | NO (NVARCHAR)| Standard|
+| CockroachDB  |  Future      | Uses `postgres`    | YES         | JSONB       | GIN      |
 
 ---
 
@@ -348,7 +348,7 @@ go test -bench=. ./pkg/database
 
 ## Best Practices
 
-### DO ✅
+### DO 
 
 - Use `dialect.Placeholder(n)` for all parameterized queries
 - Check feature support with `SupportsXxx()` methods
@@ -356,7 +356,7 @@ go test -bench=. ./pkg/database
 - Validate identifiers with `ValidateIdentifier()` before use
 - Use database-specific optimizations when available (fallback for others)
 
-### DON'T ❌
+### DON'T 
 
 - Don't hardcode $1, $2 placeholders (use `Placeholder()`)
 - Don't assume all databases support RETURNING
@@ -385,7 +385,7 @@ go test -bench=. ./pkg/database
 
 ---
 
-**Status**: ✅ Production Ready  
+**Status**:  Production Ready  
 **Version**: 1.0.0  
 **Maintainer**: Promenade Team  
 **Last Updated**: January 3, 2026

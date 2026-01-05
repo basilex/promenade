@@ -141,13 +141,13 @@ go test ./pkg/ref -cover
 
 ## When to Use
 
-✅ **Use when**:
+ **Use when**:
 - Creating struct literals with optional/nullable fields
 - Seeding database with test data
 - Working with API models that have optional fields
 - Any time you need a pointer to a literal value
 
-❌ **Don't use when**:
+ **Don't use when**:
 - Variable is already a pointer
 - You can use a named variable
 - Working with non-optional fields

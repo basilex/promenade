@@ -373,24 +373,24 @@ type MigrationStatus struct {
 
 - **Use meaningful names**
   ```
-  000001_create_users_table.up.sql          ✓ Clear
-  000002_add_email_verification.up.sql      ✓ Descriptive
-  000001_changes.up.sql                     ✗ Vague
+  000001_create_users_table.up.sql           Clear
+  000002_add_email_verification.up.sql       Descriptive
+  000001_changes.up.sql                      Vague
   ```
 
 ### DON'T
 
 - **Don't modify applied migrations** - Create new migration instead
   ```
-  ✗ Edit: 000001_create_users.up.sql
-  ✓ Create: 000002_modify_users_table.up.sql
+   Edit: 000001_create_users.up.sql
+   Create: 000002_modify_users_table.up.sql
   ```
 
 - **Don't skip version numbers** - Keep sequential order
   ```
-  000001_create_users.up.sql        ✓
-  000002_add_contacts.up.sql        ✓
-  000005_add_profiles.up.sql        ✗ Skipped 3 and 4
+  000001_create_users.up.sql        
+  000002_add_contacts.up.sql        
+  000005_add_profiles.up.sql         Skipped 3 and 4
   ```
 
 - **Don't use DROP DATABASE/DROP SCHEMA** - Too dangerous

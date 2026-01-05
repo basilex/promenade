@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Table of Contents
+##  Table of Contents
 
 1. [Testing Philosophy](#-testing-philosophy)
 2. [Three-Tier Testing Strategy](#-three-tier-testing-strategy)
@@ -29,7 +29,7 @@ Promenade follows **strict DDD principles** with **three-tier testing strategy**
 
 ---
 
-## 🏗 Three-Tier Testing Strategy
+##  Three-Tier Testing Strategy
 
 ### Overview
 
@@ -49,7 +49,7 @@ Integration Tests (real DB)    → Slow (6s)   → Repository E2E
 
 ---
 
-## 🔵 Integration Test Pattern
+##  Integration Test Pattern
 
 ### Directory Structure
 
@@ -208,7 +208,7 @@ go test ./test/integration/... -cover
 
 ---
 
-## 🟡 Smoke Test Pattern
+##  Smoke Test Pattern
 
 ### Purpose
 
@@ -347,7 +347,7 @@ func TestUserHandler_Smoke(t *testing.T) {
 			Status:       user.UserStatusSuspended,
 		}
 
-		// ⚠️ ВАЖЛИВО: Handler може викликати КІЛЬКА методів UseCase
+		//  ВАЖЛИВО: Handler може викликати КІЛЬКА методів UseCase
 		// Додати mock для ВСІХ викликів
 		mockUC.On("SuspendUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Once()
 		mockUC.On("GetUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(u, nil).Once() // Handler retrieves updated user
@@ -411,10 +411,10 @@ t.Run("VerifyEmail returns 200", func(t *testing.T) {
 	userID := uuidv7.New()
 	u := &user.User{ID: userID, Status: user.UserStatusActive}
 
-	// ⚠️ Mock PRIMARY call
+	//  Mock PRIMARY call
 	mockUC.On("VerifyEmail", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Once()
 
-	// ⚠️ Mock SECONDARY call (handler retrieves updated user)
+	//  Mock SECONDARY call (handler retrieves updated user)
 	mockUC.On("GetUser", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(u, nil).Once()
 
 	req := httptest.NewRequest(http.MethodPost, "/users/"+userID.String()+"/verify-email", nil)
@@ -441,7 +441,7 @@ go test ./test/smoke/contexts/identity/user -v
 
 ---
 
-## 🟢 Unit Test Pattern
+##  Unit Test Pattern
 
 ### Purpose
 
@@ -741,7 +741,7 @@ mockRepo.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 ---
 
-## ⚠️ Common Pitfalls
+##  Common Pitfalls
 
 ### Integration Tests
 
@@ -932,7 +932,7 @@ go tool cover -func=coverage.out | grep total
 
 ---
 
-## 📚 Additional Resources
+##  Additional Resources
 
 - [Main Testing Guide](../test/README.md) - Testing overview
 - [Testing Structure](../test/TESTING_STRUCTURE.md) - Directory organization
@@ -942,7 +942,7 @@ go tool cover -func=coverage.out | grep total
 
 ---
 
-## 🎓 Summary Checklist
+##  Summary Checklist
 
 Before writing tests, verify:
 

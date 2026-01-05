@@ -1,9 +1,9 @@
 # JSONB Package
 
-> ⚠️ **DEPRECATED**: This package is PostgreSQL-specific. Use [pkg/jsonstore](../jsonstore/README.md) instead for cross-database compatibility.
+>  **DEPRECATED**: This package is PostgreSQL-specific. Use [pkg/jsonstore](../jsonstore/README.md) instead for cross-database compatibility.
 
 **Purpose:** PostgreSQL JSONB type wrappers with Scanner/Valuer  
-**Status:** ⚠️ Deprecated (use `pkg/jsonstore`)  
+**Status:**  Deprecated (use `pkg/jsonstore`)  
 **Tests:** 8 tests, 100% coverage  
 **Maintained:** Yes (backward compatibility only)
 

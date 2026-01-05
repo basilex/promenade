@@ -106,19 +106,19 @@ curl -X GET http://localhost:8081/api/v1/identity/users/me \
 
 ```
 promenade/
-├── cmd/api/              # Application entry point
-├── internal/
-│   ├── contexts/         # Bounded Contexts (DDD)
-│   │   ├── identity/     # User, Contact, Profile
-│   │   ├── shared/       # Reference data
-│   │   └── customer-mgmt/# Customer, Company, Deal
-│   └── infrastructure/   # Config, Database
-├── pkg/                  # Shared packages
-│   ├── bus/             # Event Bus
-│   ├── jwt/             # Authentication
-│   └── uuidv7/          # Time-ordered UUIDs
-├── migrations/          # Database migrations
-└── test/                # Three-tier testing
+ cmd/api/              # Application entry point
+ internal/
+    contexts/         # Bounded Contexts (DDD)
+       identity/     # User, Contact, Profile
+       shared/       # Reference data
+       customer-mgmt/# Customer, Company, Deal
+    infrastructure/   # Config, Database
+ pkg/                  # Shared packages
+    bus/             # Event Bus
+    jwt/             # Authentication
+    uuidv7/          # Time-ordered UUIDs
+ migrations/          # Database migrations
+ test/                # Three-tier testing
 ```
 
 ## Available Commands

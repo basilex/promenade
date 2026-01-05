@@ -6,7 +6,7 @@
 
 Customer Management is a **Bounded Context** that handles all CRM (Customer Relationship Management) functionality. This is where business relationships are managed, distinct from technical user authentication (Identity context).
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Aggregates**: Customer (+ Company, Deal, Interaction planned)  
 **Endpoints**: 14 HTTP routes  
 **Database**: 1 table with soft delete (+ 3 planned)
@@ -15,7 +15,7 @@ Customer Management is a **Bounded Context** that handles all CRM (Customer Rela
 
 ## Key Features
 
-### 🎯 Customer Lifecycle Management
+###  Customer Lifecycle Management
 Track customers through full lifecycle from lead to churned customer.
 
 **States**:
@@ -26,15 +26,15 @@ Track customers through full lifecycle from lead to churned customer.
 
 **State Transitions**:
 ```
-┌──────┐  Qualify  ┌──────────┐  Convert  ┌──────────┐  Churn  ┌─────────┐
-│ Lead │ ────────> │ Prospect │ ────────> │ Customer │ ──────> │ Churned │
-└──────┘           └──────────┘           └──────────┘         └─────────┘
-                                                │                     │
-                                                │    Reactivate       │
-                                                └─────────────────────┘
+  Qualify    Convert    Churn  
+ Lead  >  Prospect  >  Customer  >  Churned 
+                               
+                                                                     
+                                                    Reactivate       
+                                                
 ```
 
-### 👥 B2C & B2B Support
+###  B2C & B2B Support
 Handle both individual consumers and business contacts.
 
 **B2C (Business-to-Consumer)**:
@@ -63,7 +63,7 @@ Handle both individual consumers and business contacts.
 }
 ```
 
-### 🏢 Customer Segmentation
+###  Customer Segmentation
 Organize customers by tier and tags.
 
 **Tiers**:
@@ -74,7 +74,7 @@ Organize customers by tier and tags.
 
 **Tags**: `["vip", "high-value", "marketing", "support"]`
 
-### 📊 Sales Pipeline Tracking
+###  Sales Pipeline Tracking
 Assign customers to sales representatives, track source and status.
 
 ```bash
@@ -110,7 +110,7 @@ curl -X PUT http://localhost:8081/api/v1/customer-mgmt/customers/{id}/assign \
 | PUT | `/api/v1/customer-mgmt/customers/:id/tier` | Upgrade/downgrade tier |
 | PUT | `/api/v1/customer-mgmt/customers/:id/tags` | Update tags |
 
-**Total**: 14 endpoints ✅
+**Total**: 14 endpoints 
 
 ---
 
@@ -272,7 +272,7 @@ curl "http://localhost:8081/api/v1/customer-mgmt/customers?assigned_to={user_id}
 
 ### Indexes
 
-✅ Optimized for common queries:
+ Optimized for common queries:
 - `idx_customers_email` - Email lookup (UNIQUE, LOWER(email))
 - `idx_customers_user` - User lookup (WHERE deleted_at IS NULL)
 - `idx_customers_company` - Company lookup
@@ -296,8 +296,8 @@ curl "http://localhost:8081/api/v1/customer-mgmt/customers?assigned_to={user_id}
 - `churned` → `prospect` (Reactivate)
 
 **Invalid transitions**:
-- ❌ `lead` → `customer` (must qualify first)
-- ❌ `churned` → `customer` directly (must reactivate to prospect)
+-  `lead` → `customer` (must qualify first)
+-  `churned` → `customer` directly (must reactivate to prospect)
 
 ### Validation Rules
 
@@ -410,20 +410,20 @@ customer.customer.created → customer.company.add_contact
 
 ## Testing
 
-### Live Testing ✅
+### Live Testing 
 
 **Verification**: December 30, 2025  
 **Status**: All 14 endpoints tested and working
 
 **Test Results**:
-- ✅ Create customer (201 Created, validations working)
-- ✅ Qualify lead (state transition validated)
-- ✅ Convert prospect (business rules enforced)
-- ✅ Assign to rep (FK constraint working)
-- ✅ Update tier (tier validation correct)
-- ✅ Add tags (JSONB array working)
-- ✅ List customers (pagination working)
-- ✅ Query by email (unique lookup fast)
+-  Create customer (201 Created, validations working)
+-  Qualify lead (state transition validated)
+-  Convert prospect (business rules enforced)
+-  Assign to rep (FK constraint working)
+-  Update tier (tier validation correct)
+-  Add tags (JSONB array working)
+-  List customers (pagination working)
+-  Query by email (unique lookup fast)
 
 ### Test Coverage (Planned)
 

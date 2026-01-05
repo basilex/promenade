@@ -164,9 +164,9 @@ go test ./pkg/middleware -cover
 
 | Component      | Tests | Coverage | Status |
 |---------------|-------|----------|--------|
-| Rate Limiter  | 10    | 95%      | ✅     |
-| CSRF          | 15    | 92%      | ✅     |
-| **Total**     | **25**| **93%**  | ✅     |
+| Rate Limiter  | 10    | 95%      |      |
+| CSRF          | 15    | 92%      |      |
+| **Total**     | **25**| **93%**  |      |
 
 ---
 
@@ -207,61 +207,61 @@ go test ./pkg/middleware -cover
 ### Rate Limiter Flow
 
 ```
-┌─────────────┐
-│   Request   │
-└──────┬──────┘
-       │ 1. Extract IP address
-       ▼
-┌─────────────────────────────────────┐
-│  RateLimiter.Limit()                │
-│  - Get or create limiter for IP     │
-│  - Check if request allowed         │
-└──────┬──────────────────────────────┘
-       │ 2. Check token bucket
-       ▼
-┌─────────────────────────────────────┐
-│  rate.Limiter.Allow()               │
-│  - Token bucket algorithm           │
-└──────┬──────────────────────────────┘
-       │
-       ├─ Allowed → Continue to handler
-       │
-       └─ Denied → 429 Too Many Requests
+
+   Request   
+
+        1. Extract IP address
+       
+
+  RateLimiter.Limit()                
+  - Get or create limiter for IP     
+  - Check if request allowed         
+
+        2. Check token bucket
+       
+
+  rate.Limiter.Allow()               
+  - Token bucket algorithm           
+
+       
+        Allowed → Continue to handler
+       
+        Denied → 429 Too Many Requests
 ```
 
 ### CSRF Flow
 
 ```
-┌─────────────┐
-│   Browser   │
-└──────┬──────┘
-       │ 1. First request (any method)
-       ▼
-┌─────────────────────────────────────┐
-│  CSRF Middleware                    │
-│  - Generate token                   │
-│  - Set cookie with token            │
-│  - Set header X-CSRF-Token          │
-└──────┬──────────────────────────────┘
-       │ 2. Cookie + Header returned
-       ▼
-┌─────────────┐
-│   Browser   │ Stores cookie, reads header
-└──────┬──────┘
-       │ 3. POST/PUT/DELETE request
-       │    Cookie: csrf_token=...
-       │    X-CSRF-Token: ...
-       ▼
-┌─────────────────────────────────────┐
-│  CSRF Middleware                    │
-│  - Extract token from header        │
-│  - Extract token from cookie        │
-│  - Compare tokens                   │
-└──────┬──────────────────────────────┘
-       │
-       ├─ Match → Continue to handler
-       │
-       └─ Mismatch → 403 Forbidden
+
+   Browser   
+
+        1. First request (any method)
+       
+
+  CSRF Middleware                    
+  - Generate token                   
+  - Set cookie with token            
+  - Set header X-CSRF-Token          
+
+        2. Cookie + Header returned
+       
+
+   Browser    Stores cookie, reads header
+
+        3. POST/PUT/DELETE request
+           Cookie: csrf_token=...
+           X-CSRF-Token: ...
+       
+
+  CSRF Middleware                    
+  - Extract token from header        
+  - Extract token from cookie        
+  - Compare tokens                   
+
+       
+        Match → Continue to handler
+       
+        Mismatch → 403 Forbidden
 ```
 
 ---

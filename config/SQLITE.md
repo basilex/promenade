@@ -27,11 +27,11 @@ DATABASE_DRIVER=sqlite ENVIRONMENT=production ./bin/promenade
 SQLite creates database file at: `./data/promenade.db`
 
 **Features**:
-- ✅ Single file database
-- ✅ No server process needed
-- ✅ Perfect for demos and development
-- ✅ Fast queries (in-memory possible)
-- ✅ Zero configuration
+-  Single file database
+-  No server process needed
+-  Perfect for demos and development
+-  Fast queries (in-memory possible)
+-  Zero configuration
 
 ---
 
@@ -100,7 +100,7 @@ SQLite has some limitations compared to PostgreSQL:
 
 ## Use Cases
 
-### ✅ Perfect For
+###  Perfect For
 
 - **Demos & Presentations**: No database server setup
 - **Laptop Development**: Work offline, no Docker needed
@@ -108,7 +108,7 @@ SQLite has some limitations compared to PostgreSQL:
 - **Testing**: Fast in-memory tests
 - **Embedded Systems**: Single executable + data file
 
-### ❌ Not Recommended For
+###  Not Recommended For
 
 - **High Concurrency**: > 100 simultaneous writes/sec
 - **Large Datasets**: > 1M records
@@ -218,6 +218,6 @@ cp ./backups/promenade-20260103.db ./data/promenade.db
 
 ---
 
-**Status**: ✅ Production-ready for embedded use cases  
+**Status**:  Production-ready for embedded use cases  
 **SQLite Version**: 3.45+ (via go-sqlite3 driver)  
 **Last Updated**: January 3, 2026

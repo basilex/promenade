@@ -14,7 +14,7 @@ Order Management is a **Bounded Context** that handles the complete order lifecy
 - **Query Operations**: Find orders by ID, number, customer, or status
 - **Pagination**: Efficient listing with standard pagination support
 
-**Status**: ✅ Production-ready (December 2025)  
+**Status**:  Production-ready (December 2025)  
 **Aggregates**: Order, OrderLine  
 **Routes**: 14 HTTP endpoints  
 **Database**: 2 tables with soft delete support
@@ -96,24 +96,24 @@ type OrderLine struct {
 ### State Machine
 
 ```
-   ┌─────────┐
-   │ pending │ ← Initial state (order created, no lines yet)
-   └────┬────┘
-        │ Confirm (requires: total > 0)
-        ▼
-   ┌───────────┐
-   │ confirmed │ ← Order confirmed by customer/admin
-   └─────┬─────┘
-         │ StartProcessing
-         ▼
-   ┌────────────┐
-   │ processing │ ← Order being fulfilled
-   └──────┬─────┘
-          │ MarkFulfilled
-          ▼
-   ┌───────────┐
-   │ fulfilled │ ← Final state (success)
-   └───────────┘
+   
+    pending  ← Initial state (order created, no lines yet)
+   
+         Confirm (requires: total > 0)
+        
+   
+    confirmed  ← Order confirmed by customer/admin
+   
+          StartProcessing
+         
+   
+    processing  ← Order being fulfilled
+   
+           MarkFulfilled
+          
+   
+    fulfilled  ← Final state (success)
+   
 
    Any state (except fulfilled) → cancelled
 ```
@@ -123,35 +123,35 @@ type OrderLine struct {
 All business rules are **fully implemented** in Order aggregate (`entity.go`):
 
 **Confirm Order** (pending → confirmed):
-- ✅ **IMPLEMENTED**: Order must have at least one line item (`ErrOrderEmpty`)
-- ✅ **IMPLEMENTED**: Status must be `pending` (`ErrInvalidOrderStatus`)
-- ✅ **IMPLEMENTED**: Cannot confirm if already confirmed/processing/fulfilled
-- ❌ **BLOCKED**: Cannot confirm cancelled order (checked by status validation)
-- 📋 **FUTURE**: Inventory reservation (Warehouse integration)
+-  **IMPLEMENTED**: Order must have at least one line item (`ErrOrderEmpty`)
+-  **IMPLEMENTED**: Status must be `pending` (`ErrInvalidOrderStatus`)
+-  **IMPLEMENTED**: Cannot confirm if already confirmed/processing/fulfilled
+-  **BLOCKED**: Cannot confirm cancelled order (checked by status validation)
+-  **FUTURE**: Inventory reservation (Warehouse integration)
 
 **Start Processing** (confirmed → processing):
-- ✅ **IMPLEMENTED**: Order must be `confirmed` first (`ErrInvalidOrderStatus`)
-- ✅ **IMPLEMENTED**: Cannot process from other states (pending/fulfilled/cancelled)
-- 📋 **FUTURE**: Inventory check (Warehouse context integration)
-- 📋 **FUTURE**: Payment verification (Billing context integration)
+-  **IMPLEMENTED**: Order must be `confirmed` first (`ErrInvalidOrderStatus`)
+-  **IMPLEMENTED**: Cannot process from other states (pending/fulfilled/cancelled)
+-  **FUTURE**: Inventory check (Warehouse context integration)
+-  **FUTURE**: Payment verification (Billing context integration)
 
 **Mark Fulfilled** (processing → fulfilled):
-- ✅ **IMPLEMENTED**: Order must be in `processing` state (`ErrInvalidOrderStatus`)
-- ✅ **IMPLEMENTED**: Cannot fulfill from pending/confirmed/cancelled states
-- ✅ **IMPLEMENTED**: Fulfilled is terminal state (no further transitions)
-- ✅ **IMPLEMENTED**: Timestamp tracking (`FulfilledAt`)
-- 📋 **FUTURE**: Delivery confirmation (tracking integration)
-- 📋 **FUTURE**: Shipment verification
+-  **IMPLEMENTED**: Order must be in `processing` state (`ErrInvalidOrderStatus`)
+-  **IMPLEMENTED**: Cannot fulfill from pending/confirmed/cancelled states
+-  **IMPLEMENTED**: Fulfilled is terminal state (no further transitions)
+-  **IMPLEMENTED**: Timestamp tracking (`FulfilledAt`)
+-  **FUTURE**: Delivery confirmation (tracking integration)
+-  **FUTURE**: Shipment verification
 
 **Cancel Order** (any → cancelled):
-- ✅ **IMPLEMENTED**: Can cancel from any state **except** `fulfilled` and `cancelled`
-- ✅ **IMPLEMENTED**: Cannot cancel already cancelled order (`ErrOrderAlreadyCancelled`)
-- ✅ **IMPLEMENTED**: Cannot cancel fulfilled order (terminal state protection)
-- ✅ **IMPLEMENTED**: Timestamp tracking (`CancelledAt`)
-- ✅ **IMPLEMENTED**: Helper method `IsCancellable()` for UI validation
-- 📋 **FUTURE**: Cancellation reason tracking
-- 📋 **FUTURE**: Refund processing (Billing context integration)
-- 📋 **FUTURE**: Inventory release (Warehouse context integration)
+-  **IMPLEMENTED**: Can cancel from any state **except** `fulfilled` and `cancelled`
+-  **IMPLEMENTED**: Cannot cancel already cancelled order (`ErrOrderAlreadyCancelled`)
+-  **IMPLEMENTED**: Cannot cancel fulfilled order (terminal state protection)
+-  **IMPLEMENTED**: Timestamp tracking (`CancelledAt`)
+-  **IMPLEMENTED**: Helper method `IsCancellable()` for UI validation
+-  **FUTURE**: Cancellation reason tracking
+-  **FUTURE**: Refund processing (Billing context integration)
+-  **FUTURE**: Inventory release (Warehouse context integration)
 
 ---
 
@@ -166,26 +166,26 @@ All state transitions and validations are implemented in `order/entity.go`:
 // AddLine adds a new product line to the order
 func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice valueobject.Money) error {
     if o.Status != OrderStatusPending {
-        return ErrOrderAlreadyConfirmed  // ✅ Prevents editing confirmed orders
+        return ErrOrderAlreadyConfirmed  //  Prevents editing confirmed orders
     }
     // Validation: productID, quantity > 0, price >= 0, currency match
-    // ✅ Automatic total recalculation
+    //  Automatic total recalculation
 }
 
 // RemoveLine removes a line item from the order
 func (o *Order) RemoveLine(lineID uuidv7.UUID) error {
     if o.Status != OrderStatusPending {
-        return ErrOrderAlreadyConfirmed  // ✅ Prevents editing confirmed orders
+        return ErrOrderAlreadyConfirmed  //  Prevents editing confirmed orders
     }
-    // ✅ Automatic total recalculation
+    //  Automatic total recalculation
 }
 
 // UpdateLineQuantity updates quantity of a line item
 func (o *Order) UpdateLineQuantity(lineID uuidv7.UUID, quantity int) error {
     if o.Status != OrderStatusPending {
-        return ErrOrderAlreadyConfirmed  // ✅ Prevents editing confirmed orders
+        return ErrOrderAlreadyConfirmed  //  Prevents editing confirmed orders
     }
-    // ✅ Automatic subtotal and total recalculation
+    //  Automatic subtotal and total recalculation
 }
 ```
 
@@ -194,20 +194,20 @@ func (o *Order) UpdateLineQuantity(lineID uuidv7.UUID, quantity int) error {
 // Confirm marks order as ready for processing
 func (o *Order) Confirm() error {
     if o.Status != OrderStatusPending {
-        return ErrInvalidOrderStatus  // ✅ Must be pending
+        return ErrInvalidOrderStatus  //  Must be pending
     }
     if len(o.Lines) == 0 {
-        return ErrOrderEmpty  // ✅ Requires at least one line item
+        return ErrOrderEmpty  //  Requires at least one line item
     }
     o.Status = OrderStatusConfirmed
-    o.ConfirmedAt = &now  // ✅ Timestamp tracking
+    o.ConfirmedAt = &now  //  Timestamp tracking
     return nil
 }
 
 // StartProcessing moves order to processing status
 func (o *Order) StartProcessing() error {
     if o.Status != OrderStatusConfirmed {
-        return ErrInvalidOrderStatus  // ✅ Must be confirmed first
+        return ErrInvalidOrderStatus  //  Must be confirmed first
     }
     o.Status = OrderStatusProcessing
     return nil
@@ -216,23 +216,23 @@ func (o *Order) StartProcessing() error {
 // MarkFulfilled marks order as completed
 func (o *Order) MarkFulfilled() error {
     if o.Status != OrderStatusProcessing {
-        return ErrInvalidOrderStatus  // ✅ Must be processing
+        return ErrInvalidOrderStatus  //  Must be processing
     }
     o.Status = OrderStatusFulfilled
-    o.FulfilledAt = &now  // ✅ Timestamp tracking
+    o.FulfilledAt = &now  //  Timestamp tracking
     return nil
 }
 
 // Cancel cancels the order (from any non-terminal state)
 func (o *Order) Cancel() error {
     if o.Status == OrderStatusCancelled {
-        return ErrOrderAlreadyCancelled  // ✅ Already cancelled
+        return ErrOrderAlreadyCancelled  //  Already cancelled
     }
     if o.Status == OrderStatusFulfilled {
-        return fmt.Errorf("cannot cancel fulfilled order")  // ✅ Terminal state protection
+        return fmt.Errorf("cannot cancel fulfilled order")  //  Terminal state protection
     }
     o.Status = OrderStatusCancelled
-    o.CancelledAt = &now  // ✅ Timestamp tracking
+    o.CancelledAt = &now  //  Timestamp tracking
     return nil
 }
 ```
@@ -241,20 +241,20 @@ func (o *Order) Cancel() error {
 ```go
 // IsEditable returns true if order can be modified
 func (o *Order) IsEditable() bool {
-    return o.Status == OrderStatusPending  // ✅ Only pending orders editable
+    return o.Status == OrderStatusPending  //  Only pending orders editable
 }
 
 // IsCancellable returns true if order can be cancelled
 func (o *Order) IsCancellable() bool {
     return o.Status != OrderStatusCancelled && 
-           o.Status != OrderStatusFulfilled  // ✅ Not terminal
+           o.Status != OrderStatusFulfilled  //  Not terminal
 }
 
 // recalculateTotal updates order total from all line items
 func (o *Order) recalculateTotal() {
     var total int64
     for _, line := range o.Lines {
-        total += line.Total.Amount  // ✅ Automatic calculation
+        total += line.Total.Amount  //  Automatic calculation
     }
     o.Total = valueobject.Money{Amount: total, Currency: o.Currency}
 }
@@ -284,9 +284,9 @@ var (
 **order_mgmt_orders table**:
 ```sql
 -- Business rule enforcement at database level
-CONSTRAINT check_total CHECK (total >= 0)  -- ✅ Non-negative totals
+CONSTRAINT check_total CHECK (total >= 0)  --  Non-negative totals
 CONSTRAINT fk_customer FOREIGN KEY (customer_id) 
-    REFERENCES customer_mgmt_customers(id)  -- ✅ Valid customer required
+    REFERENCES customer_mgmt_customers(id)  --  Valid customer required
 
 -- Performance indexes
 CREATE INDEX idx_orders_customer ON order_mgmt_orders(customer_id);
@@ -297,10 +297,10 @@ CREATE INDEX idx_orders_created ON order_mgmt_orders(created_at DESC);
 **order_mgmt_order_lines table**:
 ```sql
 -- Business rule enforcement at database level
-CONSTRAINT check_quantity CHECK (quantity > 0)  -- ✅ Positive quantities
-CONSTRAINT check_price CHECK (unit_price >= 0)  -- ✅ Non-negative prices
+CONSTRAINT check_quantity CHECK (quantity > 0)  --  Positive quantities
+CONSTRAINT check_price CHECK (unit_price >= 0)  --  Non-negative prices
 CONSTRAINT fk_order FOREIGN KEY (order_id) 
-    REFERENCES order_mgmt_orders(id) ON DELETE CASCADE  -- ✅ Cascade delete
+    REFERENCES order_mgmt_orders(id) ON DELETE CASCADE  --  Cascade delete
 
 -- Performance indexes
 CREATE INDEX idx_order_lines_order ON order_mgmt_order_lines(order_id);
@@ -723,16 +723,16 @@ Order Cancelled → warehouse.inventory.release
 ### Live Testing
 
 **Verification**: December 30, 2025  
-**Status**: ✅ All 14 endpoints tested and working
+**Status**:  All 14 endpoints tested and working
 
 **Test Results**:
-- ✅ Create order (201 Created, order_number generated)
-- ✅ Add order lines (total calculation correct)
-- ✅ Confirm order (state transition validated)
-- ✅ Start processing (business rules enforced)
-- ✅ Mark fulfilled (final state reached)
-- ✅ List orders (pagination working)
-- ✅ Query by number/customer/status (all working)
+-  Create order (201 Created, order_number generated)
+-  Add order lines (total calculation correct)
+-  Confirm order (state transition validated)
+-  Start processing (business rules enforced)
+-  Mark fulfilled (final state reached)
+-  List orders (pagination working)
+-  Query by number/customer/status (all working)
 
 **See**: [ORDER_MGMT_VERIFICATION.md](../../ORDER_MGMT_VERIFICATION.md) for complete test report
 
@@ -743,11 +743,11 @@ Order Cancelled → warehouse.inventory.release
 ### Database Optimization
 
 **Indexes**:
-- ✅ customer_id (FK lookup)
-- ✅ status (filtering)
-- ✅ created_at DESC (sorting)
-- ✅ deleted_at (soft delete queries)
-- ✅ order_number (unique lookup)
+-  customer_id (FK lookup)
+-  status (filtering)
+-  created_at DESC (sorting)
+-  deleted_at (soft delete queries)
+-  order_number (unique lookup)
 
 **Query Patterns**:
 - Single order: ~5-10ms (indexed by ID)
@@ -787,7 +787,7 @@ Order Cancelled → warehouse.inventory.release
 ---
 
 **Last Updated**: December 30, 2025  
-**Status**: ✅ Production-ready  
+**Status**:  Production-ready  
 **Routes**: 14 endpoints  
 **Test Coverage**: Live tested, unit/integration tests planned  
 **Maintainer**: Promenade Team
