@@ -192,21 +192,21 @@ Link: </api/v2/customers>; rel="successor-version"
 ```
 Month 0: New version released (v2)
   ↓
-  ├─ Deprecation announcement
-  ├─ Migration guide published
-  └─ Deprecation headers added to v1
+   Deprecation announcement
+   Migration guide published
+   Deprecation headers added to v1
 
 Month 6: Deprecation reminder
   ↓
-  └─ Email to all API consumers
+   Email to all API consumers
 
 Month 9: Final warning
   ↓
-  └─ Email + dashboard notification
+   Email + dashboard notification
 
 Month 12: Sunset (v1 disabled)
   ↓
-  └─ v1 returns 410 Gone
+   v1 returns 410 Gone
 ```
 
 ### Deprecation Headers
@@ -292,13 +292,13 @@ When releasing v2, create comprehensive migration guide:
 ```
 January 2027: v2 released, v1 active
   ↓
-  ├─ /api/v1/* → Active (12 months remaining)
-  └─ /api/v2/* → Active (current)
+   /api/v1/* → Active (12 months remaining)
+   /api/v2/* → Active (current)
 
 January 2028: v1 sunset
   ↓
-  ├─ /api/v1/* → 410 Gone
-  └─ /api/v2/* → Active
+   /api/v1/* → 410 Gone
+   /api/v2/* → Active
 ```
 
 **Benefits**:

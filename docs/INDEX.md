@@ -345,6 +345,13 @@ Fundamental architectural principles and design patterns:
 
 Step-by-step implementation guides:
 
+**Developer Portal**:
+- [Quick Start Guide](guides/quick-start.md) - 5-minute practical tutorial with curl examples
+- [Authentication Flow](guides/authentication-flow.md) - Complete JWT authentication documentation
+- [Common Use Cases](guides/common-use-cases.md) - 7 real-world business scenarios
+- [Troubleshooting Guide](guides/troubleshooting.md) - Common issues and solutions
+
+**API & Integration**:
 - [Getting Started](guides/getting-started.md) - Quick start, installation, first steps
 - [API Versioning Strategy](guides/api-versioning.md) - URL-based versioning, deprecation policy, RFC 8594 headers
 - [API Versioning Examples](guides/api-versioning-examples.md) - Practical code examples for versioning implementation
@@ -384,7 +391,10 @@ Technical specifications and detailed documentation:
 
 ### For Developers
 
-- **New to project?** → [Getting Started](guides/getting-started.md)
+- **New to project?** → [Quick Start Guide](guides/quick-start.md) (5-minute tutorial)
+- **Authentication?** → [Authentication Flow](guides/authentication-flow.md) (JWT + RBAC)
+- **Real workflows?** → [Common Use Cases](guides/common-use-cases.md) (7 scenarios)
+- **Issues?** → [Troubleshooting Guide](guides/troubleshooting.md)
 - **Writing tests?** → [Testing Quick Reference](guides/testing-quick-reference.md)
 - **Adding aggregate?** → [Development Workflow](guides/development-workflow.md)
 - **Need API docs?** → [API Reference](reference/api-reference.md)

@@ -145,7 +145,7 @@ X-API-Warn: This API version is deprecated and will be removed on 2027-06-01. Pl
 // ListV1 lists all customers (DEPRECATED - use /api/v2/customers)
 //
 // @Summary      List customers (v1 - DEPRECATED)
-// @Description  ⚠️ DEPRECATED: This endpoint will be removed on 2027-06-01. Use /api/v2/customers instead.
+// @Description   DEPRECATED: This endpoint will be removed on 2027-06-01. Use /api/v2/customers instead.
 // @Description  **Migration Guide**: https://docs.promenade.example.com/migration/v1-to-v2#customers
 // @Description  **Breaking Changes**: Response field `fullName` renamed to `full_name` (snake_case)
 // @Tags         Customers (Deprecated)
@@ -348,7 +348,7 @@ curl https://api.promenade.example.com/api/v2
 // GetUser retrieves user by ID (v1 - DEPRECATED)
 //
 // @Summary      Get user by ID (DEPRECATED)
-// @Description  ⚠️ DEPRECATED: This endpoint will be removed on 2027-06-01.
+// @Description   DEPRECATED: This endpoint will be removed on 2027-06-01.
 // @Description  **Successor**: GET /api/v2/users/:id
 // @Description  **Migration Guide**: https://docs.promenade.example.com/migration/v1-to-v2#users
 // @Description  **Breaking Changes**:
@@ -396,7 +396,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 ### Swagger UI Display
 
 The `@Deprecated` tag will show:
-- ⚠️ Warning icon next to endpoint
+-  Warning icon next to endpoint
 - "Deprecated" badge in Swagger UI
 - Deprecation notice in description
 - Migration guide link
