@@ -13,7 +13,7 @@
 > **Not a traditional CRM** — Promenade is a **modular platform** that grows with your needs.  
 > Start with customer management, add orders when needed, integrate billing when ready.
 
-📚 **[View Full Documentation](https://basilex.github.io/promenade/)** | 🚀 **[Quick Start Guide](https://basilex.github.io/promenade/guide/getting-started)** | 📖 **[API Reference](https://basilex.github.io/promenade/guide/api-reference)**
+**Documentation**: [View Full Documentation](https://basilex.github.io/promenade/) | [Quick Start Guide](https://basilex.github.io/promenade/guide/getting-started) | [API Reference](https://basilex.github.io/promenade/guide/api-reference)
 
 ---
 
@@ -213,11 +213,11 @@ make lint                  # Linting
 ```
 
 **Architecture Benefits**:
-- ✅ No command explosion (50+ commands work with all databases)
-- ✅ Prevents wrong environment execution (fail-fast validation)
-- ✅ Natural developer workflow (configure once, work anywhere)
-- ✅ Clear state visibility (`make workspace` always shows current config)
-- ✅ Modular Makefile system (main + dev/test/prod modules)
+- No command explosion (50+ commands work with all databases)
+- Prevents wrong environment execution (fail-fast validation)
+- Natural developer workflow (configure once, work anywhere)
+- Clear state visibility (`make workspace` always shows current config)
+- Modular Makefile system (main + dev/test/prod modules)
 
 **Example Workflow**:
 ```bash
@@ -397,8 +397,8 @@ Promenade provides **complete order lifecycle management** with state transition
 
 - **Order Creation**: Create orders with currency support for customers
 - **Line Items**: Add/remove/update products with automatic total calculation
-- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled) - **fully enforced** ✅
-- **Business Rules**: All validations implemented (line count, status checks, terminal state protection) ✅
+- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled) - fully enforced
+- **Business Rules**: All validations implemented (line count, status checks, terminal state protection)
 - **Money Handling**: Type-safe Money value object (cents-based precision)
 - **14 API Endpoints**: Complete CRUD + business logic operations
 - **Auto-generated Numbers**: ORD-YYYY-NNNNNN format for easy tracking
@@ -409,14 +409,14 @@ Promenade provides **complete order lifecycle management** with state transition
 
 ### Bounded Contexts
 
-| Context                 | Aggregates                            | Description                   | Status           | Documentation                                  |
-| ----------------------- | ------------------------------------- | ----------------------------- | ---------------- | ---------------------------------------------- |
-| **Shared**              | Country, Currency, Language, Timezone | Reference data (read-only)    | ✅ Production     | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
-| **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
-| **Billing**             | Invoice ✅, Payment ✅, Subscription ✅ | Billing and payments          | ✅ Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
-| **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
+| Context                 | Aggregates                                                  | Description                   | Status        | Documentation                                  |
+| ----------------------- | ----------------------------------------------------------- | ----------------------------- | ------------- | ---------------------------------------------- |
+| **Shared**              | Country, Currency, Language, Timezone                       | Reference data (read-only)    | Production    | [README](internal/contexts/shared/README.md)   |
+| **Identity**            | User, Contact, Profile, Role, Permission                    | User management & RBAC        | Production    | [README](internal/contexts/identity/README.md) |
+| **Customer Management** | Customer, Company, Deal, Interaction, Analytics (all live)  | CRM, sales pipeline & BI      | Production    | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
+| **Order Management**    | Order, OrderLine (live) \| Contract, Fulfillment (planned) | Order processing              | Production    | [Guide](docs/concepts/order-management.md)      |
+| **Billing**             | Invoice, Payment, Subscription (all live)                   | Billing and payments          | Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
+| **Warehouse**           | Inventory, Stock                                            | Inventory management          | Planned Q3'26 | Coming soon                                    |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
@@ -786,7 +786,7 @@ test/smoke/contexts/
  customer-mgmt/
     customer/handler_test.go  # 12 tests (most complex - 23-method mock)
     ...
- # Total: 123 tests across 15 handlers (100% pass rate) ✅
+ # Total: 123 tests across 15 handlers (100% pass rate)
 
 # Integration tests - mirror path structure (real DB)
 test/integration/contexts/
@@ -1289,7 +1289,7 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Database migrations system
 - [x] Testing infrastructure (four-tier strategy: unit, smoke, integration, benchmark)
 
-### Phase 2: Identity Context (Completed ✅)
+### Phase 2: Identity Context (Complete)
 
 - [x] Contact aggregate (email, phone, address)
 - [x] Profile aggregate (personal info, social links, localization)
@@ -1301,7 +1301,7 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Password policies (8+ chars, digit, letter, bcrypt hashing)
 - [x] Account management (status: active/suspended/banned, locking after failed logins)
 
-### Phase 3: Authentication & Authorization (Completed)
+### Phase 3: Authentication & Authorization (Complete)
 
 - [x] JWT authentication (token generation, validation)
 - [x] JWT middleware for protected endpoints
@@ -1313,21 +1313,21 @@ id := uuidv7.New()  // Time-ordered UUID
 - [x] Role management API (7 endpoints)
 - [x] Permission management API (7 endpoints)
 
-### Phase 4: Customer Management Context (Completed ✅)
+### Phase 4: Customer Management Context (Complete)
 
 - [x] Customer aggregate (lifecycle, segmentation)
 - [x] Company aggregate (B2B support, 14 endpoints)
 - [x] Deal aggregate (pipeline, stages, 12 endpoints)
 - [x] Interaction aggregate (calls, emails, meetings, 14 endpoints) - **COMPLETED Dec 31, 2025**
 
-### Phase 5: Order Management Context (Completed ✅)
+### Phase 5: Order Management Context (Complete)
 
 - [x] Order aggregate (creation, fulfillment, 14 endpoints)
 - [x] OrderLine entity (integrated with Order)
 - [ ] Contract aggregate - Planned Q1 2026
 - [ ] Fulfillment saga (payment → inventory → shipping) - Planned Q2 2026
 
-### Phase 6: Billing Context (Completed ✅)
+### Phase 6: Billing Context (Complete)
 
 - [x] Invoice aggregate (generation, management, 8 endpoints) - **COMPLETED Dec 27, 2025**
 - [x] Payment aggregate (processing, reconciliation, 8 endpoints) - **COMPLETED Dec 28, 2025**

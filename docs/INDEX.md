@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Core Concepts
+## Core Concepts
 
 ### Domain-Driven Design (DDD)
 
@@ -144,10 +144,10 @@
 - **Implementation**: [Workspace Management Guide](guides/workspace-management.md)
 
 **Key Benefits**:
-- ✅ No command explosion (50+ commands work with all databases)
-- ✅ Prevents wrong environment execution (fail-fast validation)
-- ✅ Natural developer workflow (configure once, work anywhere)
-- ✅ Clear state visibility (`make workspace` shows current config)
+- No command explosion (50+ commands work with all databases)
+- Prevents wrong environment execution (fail-fast validation)
+- Natural developer workflow (configure once, work anywhere)
+- Clear state visibility (`make workspace` shows current config)
 
 **Example**: `make switch-postgres-dev && make dev` → PostgreSQL development ready
 
@@ -246,7 +246,7 @@
 **Four-tier testing** with clear separation and professional organization.
 
 - **Unit Tests**: In-place, fast feedback (~5s)
-- **Smoke Tests**: HTTP handler validation, no DB (~2s) - **123 tests, 100% pass rate** ✅
+- **Smoke Tests**: HTTP handler validation, no DB (~2s) - **123 tests, 100% pass rate**
 - **Integration Tests**: Real database, full E2E (~14s)
 - **Benchmark Tests**: Performance measurement with real DB
 - **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md) | [Smoke Tests Guide](../test/smoke/README.md)
@@ -261,8 +261,8 @@
 
 - **Order Creation**: Create orders with currency support
 - **Line Items**: Add/remove/update products with automatic totals
-- **State Machine**: pending → confirmed → processing → fulfilled - **fully enforced** ✅
-- **Business Rules**: All validations implemented in entity methods ✅
+- **State Machine**: pending → confirmed → processing → fulfilled - **fully enforced**
+- **Business Rules**: All validations implemented in entity methods
 - **Money Handling**: Type-safe Money value object (cents-based)
 - **14 Endpoints**: Complete CRUD + business logic
 - **Implementation**: [Order Management Guide](concepts/order-management.md)
@@ -271,18 +271,18 @@
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Bounded Contexts
 
-| Context                 | Status      | Aggregates                            | Documentation                                     |
-| ----------------------- | ----------- | ------------------------------------- | ------------------------------------------------- |
-| **Shared**              | ✅ Production | Country, Currency, Language, Timezone | [Context Guide](../internal/contexts/shared/README.md)      |
-| **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
-| **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
-| **Order Management**    | ✅ Production | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | [Order Guide](concepts/order-management.md)                   |
-| **Billing**             | ✅ Production | Invoice ✅, Payment ✅, Subscription ✅ | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
-| **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
+| Context                 | Status     | Aggregates                                                  | Documentation                                     |
+| ----------------------- | ---------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| **Shared**              | Production | Country, Currency, Language, Timezone                       | [Context Guide](../internal/contexts/shared/README.md)      |
+| **Identity**            | Production | User, Contact, Profile, Role, Permission                    | [Context Guide](../internal/contexts/identity/README.md)    |
+| **Customer Management** | Production | Customer, Company, Deal, Interaction, Analytics (all live)  | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
+| **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
+| **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
+| **Warehouse**           | Planned Q3'26 | Inventory, Stock                                         | Coming soon                                       |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 
@@ -311,7 +311,7 @@
 
 ---
 
-## 📚 Documentation Sections
+## Documentation Sections
 
 ### Concepts
 
@@ -345,6 +345,7 @@ Step-by-step implementation guides:
 - [Naming Conventions](guides/naming-conventions.md) - Files, directories, Go code naming standards
 - [Database Conventions](guides/database-conventions.md) - Tables, columns, indexes, migrations
 - [Architecture Patterns](guides/architecture-patterns.md) - Repository, UseCase, Handler, Value Object patterns
+- [Documentation Style Guide](guides/documentation-style-guide.md) - **Official policy**: Professional text-based documentation (no emoji)
 
 ### Reference
 
@@ -362,7 +363,7 @@ Technical specifications and detailed documentation:
 
 ---
 
-## 🚀 Quick Links
+## Quick Links
 
 ### For Developers
 
@@ -420,30 +421,30 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 ## 📝 Recent Updates
 
 **January 5, 2026**:
-- ✅ Subscription aggregate completed (8 endpoints, 120 tests)
-- ✅ Billing context fully operational (Invoice, Payment, Subscription)
-- ✅ Comprehensive test coverage (58 entity + 35 usecase + 11 integration + 16 smoke)
-- ✅ All lint issues resolved (0 issues)
+- Subscription aggregate completed (8 endpoints, 120 tests)
+- Billing context fully operational (Invoice, Payment, Subscription)
+- Comprehensive test coverage (58 entity + 35 usecase + 11 integration + 16 smoke)
+- All lint issues resolved (0 issues)
 
 **January 1, 2026**:
-- ✅ Local CI Validation implementation (5 Makefile commands)
-- ✅ Comprehensive documentation review and updates
-- ✅ Go 1.24+ sync across all files
-- ✅ All 26 linting issues fixed (100% clean)
+- Local CI Validation implementation (5 Makefile commands)
+- Comprehensive documentation review and updates
+- Go 1.24+ sync across all files
+- All 26 linting issues fixed (100% clean)
 
 **December 31, 2025**:
-- ✅ Interaction aggregate completed (14 endpoints, 74 tests)
-- ✅ N+1 query optimization with LEFT JOIN
-- ✅ Customer Management context fully operational
+- Interaction aggregate completed (14 endpoints, 74 tests)
+- N+1 query optimization with LEFT JOIN
+- Customer Management context fully operational
 
 **December 29, 2025**:
-- ✅ Health Checks implementation (21 tests)
-- ✅ Documentation restructuring
-- ✅ Website sync with docs/
+- Health Checks implementation (21 tests)
+- Documentation restructuring
+- Website sync with docs/
 
 **December 28, 2025**:
-- ✅ Integration test optimization (78→24 tests, -69%)
-- ✅ Go 1.22+ syntax modernization
+- Integration test optimization (78→24 tests, -69%)
+- Go 1.22+ syntax modernization
 
 ---
 
