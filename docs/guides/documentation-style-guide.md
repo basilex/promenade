@@ -447,9 +447,74 @@ ok  github.com/basilex/promenade/pkg/jwt  0.456s
 
 ## Enforcement
 
+### Automated Emoji Cleaner
+
+**Professional automation tool** for emoji removal and policy enforcement.
+
+**Tool**: `scripts/clean-emojies.py` (v2.0.0)
+
+**Features**:
+- Scans all documentation and code files (.md, .go, .yaml, .yml, .json, .toml)
+- Three operating modes: dry-run (default), apply, check (CI)
+- Detailed reporting with line numbers and emoji counts
+- Safe by default (dry-run shows changes without modifying)
+- CI integration for preventing new emoji commits
+
+**Usage**:
+
+```bash
+# Dry-run: Show what would change (safe)
+make clean-emoji
+# OR
+python3 scripts/clean-emojies.py
+
+# Actually remove emoji from files
+make clean-emoji-apply
+# OR
+python3 scripts/clean-emojies.py --apply
+
+# CI mode: Exit 1 if emoji found (for pre-commit hooks)
+make check-emoji
+# OR
+python3 scripts/clean-emojies.py --check
+
+# Show help
+python3 scripts/clean-emojies.py --help
+```
+
+**Integration with CI/CD**:
+
+Add to `.github/workflows/ci.yml`:
+
+```yaml
+- name: Check for emoji violations
+  run: make check-emoji
+```
+
+**Statistics** (as of January 5, 2026):
+- Processed: 463 files
+- Files with emoji detected: 106
+- Total emoji found: 2,926
+- Coverage: docs/, website/, pkg/, internal/, test/, code files
+
 ### Pre-Commit Checks
 
-**Add to `.git/hooks/pre-commit`** (optional):
+**Add to `.git/hooks/pre-commit`** (optional, manual approach):
+
+```bash
+#!/bin/bash
+
+# Check for emoji in staged files using automated tool
+if ! python3 scripts/clean-emojies.py --check; then
+    echo ""
+    echo "Error: Emoji detected in codebase"
+    echo "Run 'make clean-emoji-apply' to fix automatically"
+    echo "See: docs/guides/documentation-style-guide.md"
+    exit 1
+fi
+```
+
+**OR use simple pattern matching**:
 
 ```bash
 #!/bin/bash
@@ -458,7 +523,7 @@ ok  github.com/basilex/promenade/pkg/jwt  0.456s
 EMOJI_PATTERN="[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]"
 
 if git diff --cached --name-only | xargs grep -P "$EMOJI_PATTERN" > /dev/null 2>&1; then
-    echo "❌ Error: Emoji detected in staged files"
+    echo "Error: Emoji detected in staged files"
     echo "Please remove emoji and use text instead"
     echo "See: docs/guides/documentation-style-guide.md"
     exit 1

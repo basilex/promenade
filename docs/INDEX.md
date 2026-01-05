@@ -345,7 +345,7 @@ Step-by-step implementation guides:
 - [Naming Conventions](guides/naming-conventions.md) - Files, directories, Go code naming standards
 - [Database Conventions](guides/database-conventions.md) - Tables, columns, indexes, migrations
 - [Architecture Patterns](guides/architecture-patterns.md) - Repository, UseCase, Handler, Value Object patterns
-- [Documentation Style Guide](guides/documentation-style-guide.md) - **Official policy**: Professional text-based documentation (no emoji)
+- [Documentation Style Guide](guides/documentation-style-guide.md) - Official no-emoji policy with automated enforcement (`scripts/clean-emojies.py`)
 
 ### Reference
 

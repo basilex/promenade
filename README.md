@@ -1352,9 +1352,29 @@ This is a learning project focused on DDD architecture. Contributions welcome!
 2. Create feature branch (`git checkout -b feature/amazing-feature`)
 3. Follow DDD principles and existing patterns
 4. Write tests (maintain 80%+ coverage)
-5. Commit changes (`git commit -m 'Add amazing feature'`)
-6. Push to branch (`git push origin feature/amazing-feature`)
-7. Open Pull Request
+5. **Follow documentation style guide** (no emoji - see below)
+6. Commit changes (`git commit -m 'Add amazing feature'`)
+7. Push to branch (`git push origin feature/amazing-feature`)
+8. Open Pull Request
+
+### Documentation Style Policy
+
+**Official Policy**: Professional text-based documentation (no emoji)
+
+Promenade maintains **professional documentation standards** without emoji for:
+- **Professionalism**: Enterprise software requires business-appropriate language
+- **Accessibility**: Screen readers and universal platform support
+- **Clarity**: Text is always clearer than symbols
+- **Searchability**: Text-based status indicators are easier to grep and search
+
+**Automated Enforcement**:
+```bash
+make check-emoji              # Check for emoji violations (CI mode)
+make clean-emoji              # Show files with emoji (dry-run)
+make clean-emoji-apply        # Remove emoji automatically
+```
+
+**See**: [Documentation Style Guide](docs/guides/documentation-style-guide.md) for complete policy and examples
 
 ---
 
@@ -1393,6 +1413,7 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 - [Rate Limiting](docs/guides/rate-limiting.md) - IP-based protection for authentication
 - [Health Checks](docs/guides/health-checks.md) - Dependency monitoring and alerting
 - [Local CI Validation](docs/guides/local-ci.md) - Run GitHub Actions checks locally before push
+- [Documentation Style Guide](docs/guides/documentation-style-guide.md) - Professional standards (no emoji policy)
 - [Testing Patterns](docs/guides/testing-patterns.md) - Four-tier testing strategy (~965 lines)
 - [Testing Quick Reference](docs/guides/testing-quick-reference.md) - One-page cheat sheet
 - [Smoke Tests Guide](test/smoke/README.md) - Complete HTTP handler validation guide (~450 lines)

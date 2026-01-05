@@ -119,13 +119,13 @@ lint:  ## Run linters
 # ============================================================================
 
 clean-emoji:  ## Show files with emoji (dry-run, safe)
-	@python3 scripts/clean-docs.py
+	@python3 scripts/clean-emojies.py
 
 clean-emoji-apply:  ## Remove emoji from files (MODIFIES files)
-	@python3 scripts/clean-docs.py --apply
+	@python3 scripts/clean-emojies.py --apply
 
 check-emoji:  ## Check for emoji violations (CI mode, exit 1 if found)
-	@python3 scripts/clean-docs.py --check
+	@python3 scripts/clean-emojies.py --check
 
 # ============================================================================
 # Configuration Switchers (driver-environment)
