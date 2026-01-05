@@ -59,6 +59,22 @@
 
 ---
 
+### Postman Collection
+
+**Pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing.
+
+- **Auto-Generated**: OpenAPI spec → Postman collection (33K lines)
+- **Multi-Environment**: Dev/Staging/Prod configs with pre-configured variables
+- **Authentication Flow**: Auto-save JWT tokens after login, auto-refresh expired tokens
+- **Test Automation**: Pre-request and test scripts for validation and token management
+- **Newman Integration**: CI/CD ready with `newman run` command
+- **Common Workflows**: 5 documented use cases (auth, customer, pipeline, order, billing)
+- **Implementation**: [Postman Collection Guide](../postman/README.md)
+
+**Quick Start**: Import `postman/Promenade_API.postman_collection.json` + `Development.postman_environment.json`
+
+---
+
 ### Health Monitoring
 
 **Comprehensive health checks** monitor all dependencies with graceful degradation.

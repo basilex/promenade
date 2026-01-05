@@ -104,6 +104,48 @@ make dev
 
 **See**: [docs/guides/api-documentation.md](docs/guides/api-documentation.md) for complete Swagger documentation guide
 
+### Postman Collection
+
+Promenade provides **pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing scripts.
+
+**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 120+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
+
+**Design**:
+- **Auto-Generated**: OpenAPI spec → Postman collection via openapi-to-postmanv2 tool
+- **Multi-Environment**: Separate configs for Development (localhost), Staging, Production
+- **Authentication Flow**: Auto-save JWT tokens after login, auto-refresh expired tokens
+- **Test Automation**: Pre-request and test scripts for validation and token management
+- **CI/CD Ready**: Newman CLI integration for automated API testing in pipelines
+
+**Key Features**:
+- **120+ Endpoints**: Complete collection organized by 5 bounded contexts
+- **Auto-Save Tokens**: Login request automatically saves access/refresh tokens to environment
+- **Auto-Refresh**: Pre-request script detects expired tokens and refreshes automatically
+- **3 Environments**: Dev/Staging/Prod with pre-configured base URLs and credentials
+- **Test Scripts**: Automatic response validation (status codes, response structure, timing)
+- **Common Workflows**: 5 documented use cases (auth flow, customer creation, sales pipeline, order processing, billing)
+- **Newman Integration**: Run collection in CI/CD with `newman run` command
+
+**Quick Start**:
+```bash
+# Import in Postman
+1. Open Postman → Import
+2. Select: postman/Promenade_API.postman_collection.json
+3. Import environment: postman/Development.postman_environment.json
+4. Select "Development" environment (top-right)
+5. Ready to test!
+```
+
+**Collection Structure**:
+- Identity Context: 35 endpoints (Users, Contacts, Profiles, Roles, Permissions)
+- Customer Management: 48 endpoints (Customers, Companies, Deals, Interactions)
+- Order Management: 14 endpoints (Orders, Line Items, State Transitions)
+- Billing: 22 endpoints (Invoices, Payments, Subscriptions)
+- Shared: 9 endpoints (Countries, Currencies, Languages, Timezones)
+- Infrastructure: 4 endpoints (Health Checks)
+
+**See**: [postman/README.md](postman/README.md) for complete Postman collection guide
+
 ### Multi-Database Support
 
 Promenade implements **database-agnostic architecture** supporting multiple SQL databases:
