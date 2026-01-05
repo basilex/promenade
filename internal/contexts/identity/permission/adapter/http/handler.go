@@ -32,9 +32,9 @@ func NewPermissionHandler(usecase permission.IUseCase) *PermissionHandler {
 // @Produce json
 // @Param request body CreatePermissionRequest true "Permission creation request"
 // @Success 201 {object} PermissionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 409 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions [post]
 func (h *PermissionHandler) Create(c *gin.Context) {
 	var req CreatePermissionRequest
@@ -69,9 +69,9 @@ func (h *PermissionHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Permission UUID"
 // @Success 200 {object} PermissionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions/{id} [get]
 func (h *PermissionHandler) GetByID(c *gin.Context) {
 	idStr := c.Param("id")
@@ -102,9 +102,9 @@ func (h *PermissionHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param name path string true "Permission name (resource:action)"
 // @Success 200 {object} PermissionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions/name/{name} [get]
 func (h *PermissionHandler) GetByName(c *gin.Context) {
 	name := c.Param("name")
@@ -135,9 +135,9 @@ func (h *PermissionHandler) GetByName(c *gin.Context) {
 // @Param id path string true "Permission UUID"
 // @Param request body UpdatePermissionRequest true "Permission update request"
 // @Success 200 {object} PermissionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions/{id} [put]
 func (h *PermissionHandler) Update(c *gin.Context) {
 	idStr := c.Param("id")
@@ -178,9 +178,9 @@ func (h *PermissionHandler) Update(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Permission UUID"
 // @Success 204
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions/{id} [delete]
 func (h *PermissionHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
@@ -212,8 +212,8 @@ func (h *PermissionHandler) Delete(c *gin.Context) {
 // @Param limit query int false "Limit" default(20)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {object} PermissionListResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /permissions [get]
 func (h *PermissionHandler) List(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -236,8 +236,8 @@ func (h *PermissionHandler) List(c *gin.Context) {
 // @Produce json
 // @Param roleId path string true "Role UUID"
 // @Success 200 {array} PermissionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles/{roleId}/permissions [get]
 func (h *PermissionHandler) GetRolePermissions(c *gin.Context) {
 	roleIDStr := c.Param("roleId")

@@ -1,0 +1,6122 @@
+basePath: /api/v1
+definitions:
+  github_com_basilex_promenade_pkg_response.Error:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  github_com_basilex_promenade_pkg_response.Pagination:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      pages:
+        type: integer
+      total:
+        type: integer
+    type: object
+  github_com_basilex_promenade_pkg_response.Response:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Error'
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Pagination'
+      status:
+        type: string
+    type: object
+  internal_contexts_billing_invoice_adapter_http.AddLineItemRequest:
+    properties:
+      description:
+        maxLength: 500
+        minLength: 1
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+      unit_price:
+        description: Amount in cents
+        minimum: 0
+        type: integer
+    required:
+    - description
+    - quantity
+    - unit_price
+    type: object
+  internal_contexts_billing_invoice_adapter_http.CreateInvoiceRequest:
+    properties:
+      currency:
+        type: string
+      customer_id:
+        type: string
+      due_date:
+        description: RFC3339 format
+        type: string
+      order_id:
+        type: string
+    required:
+    - currency
+    - customer_id
+    - due_date
+    type: object
+  internal_contexts_billing_invoice_adapter_http.InvoiceLineResponse:
+    properties:
+      amount:
+        description: Total in cents
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      quantity:
+        type: integer
+      unit_price:
+        description: Amount in cents
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_billing_invoice_adapter_http.InvoiceResponse:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      customer_id:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: string
+      invoice_no:
+        type: string
+      issue_date:
+        type: string
+      lines:
+        items:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceLineResponse'
+        type: array
+      order_id:
+        type: string
+      paid_date:
+        type: string
+      status:
+        type: string
+      subtotal_amount:
+        description: Amount in cents
+        type: integer
+      tax_amount:
+        description: Amount in cents
+        type: integer
+      total_amount:
+        description: Amount in cents
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_billing_invoice_adapter_http.MarkAsPaidRequest:
+    properties:
+      paid_date:
+        description: RFC3339 format
+        type: string
+    required:
+    - paid_date
+    type: object
+  internal_contexts_billing_invoice_adapter_http.UpdateLineItemRequest:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
+    type: object
+  internal_contexts_billing_invoice_adapter_http.UpdateTaxRequest:
+    properties:
+      tax_amount:
+        description: Amount in cents
+        minimum: 0
+        type: integer
+    required:
+    - tax_amount
+    type: object
+  internal_contexts_billing_payment_adapter_http.AddNoteRequest:
+    properties:
+      note:
+        type: string
+    required:
+    - note
+    type: object
+  internal_contexts_billing_payment_adapter_http.CompletePaymentRequest:
+    properties:
+      transaction_id:
+        type: string
+    required:
+    - transaction_id
+    type: object
+  internal_contexts_billing_payment_adapter_http.CreatePaymentRequest:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+      customer_id:
+        type: string
+      invoice_id:
+        type: string
+      method:
+        type: string
+      notes:
+        type: string
+      processed_by:
+        type: string
+    required:
+    - amount
+    - currency
+    - customer_id
+    - method
+    type: object
+  internal_contexts_billing_payment_adapter_http.FailPaymentRequest:
+    properties:
+      reason:
+        type: string
+    required:
+    - reason
+    type: object
+  internal_contexts_billing_payment_adapter_http.LinkInvoiceRequest:
+    properties:
+      invoice_id:
+        type: string
+    required:
+    - invoice_id
+    type: object
+  internal_contexts_billing_payment_adapter_http.PaymentResponse:
+    properties:
+      amount:
+        type: integer
+      bank_account:
+        type: string
+      card_brand:
+        type: string
+      card_last4:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      customer_id:
+        type: string
+      failure_reason:
+        type: string
+      id:
+        type: string
+      invoice_id:
+        type: string
+      method:
+        type: string
+      notes:
+        type: string
+      payment_no:
+        type: string
+      payment_provider:
+        type: string
+      processed_at:
+        type: string
+      processed_by:
+        type: string
+      refunded_amount:
+        type: integer
+      refunded_at:
+        type: string
+      status:
+        type: string
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_billing_payment_adapter_http.RefundPaymentRequest:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+    required:
+    - amount
+    - currency
+    type: object
+  internal_contexts_billing_payment_adapter_http.SetCardDetailsRequest:
+    properties:
+      brand:
+        type: string
+      last4:
+        type: string
+    required:
+    - brand
+    - last4
+    type: object
+  internal_contexts_billing_payment_adapter_http.SetProviderRequest:
+    properties:
+      provider:
+        type: string
+    required:
+    - provider
+    type: object
+  internal_contexts_billing_payment_adapter_http.TotalResponse:
+    properties:
+      currency:
+        type: string
+      total:
+        type: integer
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse:
+    properties:
+      companies:
+        items:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse:
+    properties:
+      address_line1:
+        type: string
+      address_line2:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      employee_count:
+        type: integer
+      id:
+        type: string
+      industry:
+        type: string
+      legal_name:
+        type: string
+      name:
+        type: string
+      parent_company_id:
+        type: string
+      phone:
+        type: string
+      phone_country_code:
+        type: string
+      postal_code:
+        type: string
+      registration_number:
+        type: string
+      revenue:
+        type: integer
+      size:
+        type: string
+      state_province:
+        type: string
+      tax_id:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      website:
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.CreateCompanyRequest:
+    properties:
+      address_line1:
+        maxLength: 255
+        type: string
+      address_line2:
+        maxLength: 255
+        type: string
+      city:
+        maxLength: 100
+        type: string
+      country:
+        description: ISO 3166-1 alpha-2
+        type: string
+      currency:
+        description: ISO 4217
+        type: string
+      description:
+        maxLength: 2000
+        type: string
+      email:
+        type: string
+      employee_count:
+        minimum: 0
+        type: integer
+      industry:
+        maxLength: 100
+        type: string
+      legal_name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      parent_company_id:
+        type: string
+      phone:
+        type: string
+      phone_country_code:
+        type: string
+      postal_code:
+        maxLength: 20
+        type: string
+      registration_number:
+        maxLength: 100
+        type: string
+      revenue:
+        minimum: 0
+        type: integer
+      size:
+        enum:
+        - micro
+        - small
+        - medium
+        - large
+        - enterprise
+        type: string
+      state_province:
+        maxLength: 100
+        type: string
+      tax_id:
+        maxLength: 50
+        type: string
+      type:
+        enum:
+        - llc
+        - corporation
+        - sole_proprietor
+        - partnership
+        - non_profit
+        - other
+        type: string
+      website:
+        type: string
+    required:
+    - currency
+    - legal_name
+    - name
+    - size
+    - type
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.SetParentCompanyRequest:
+    properties:
+      parent_company_id:
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBasicInfoRequest:
+    properties:
+      legal_name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      tax_id:
+        maxLength: 50
+        type: string
+      type:
+        enum:
+        - llc
+        - corporation
+        - sole_proprietor
+        - partnership
+        - non_profit
+        - other
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBusinessInfoRequest:
+    properties:
+      currency:
+        type: string
+      employee_count:
+        minimum: 0
+        type: integer
+      industry:
+        maxLength: 100
+        type: string
+      revenue:
+        minimum: 0
+        type: integer
+      size:
+        enum:
+        - micro
+        - small
+        - medium
+        - large
+        - enterprise
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyContactInfoRequest:
+    properties:
+      address_line1:
+        maxLength: 255
+        type: string
+      address_line2:
+        maxLength: 255
+        type: string
+      city:
+        maxLength: 100
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      phone_country_code:
+        type: string
+      postal_code:
+        maxLength: 20
+        type: string
+      state_province:
+        maxLength: 100
+        type: string
+      website:
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyDescriptionRequest:
+    properties:
+      description:
+        maxLength: 2000
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.CreateDealRequest:
+    properties:
+      assigned_to:
+        type: string
+      company_id:
+        type: string
+      currency:
+        description: ISO 4217
+        type: string
+      customer_id:
+        type: string
+      expected_close_date:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      source:
+        enum:
+        - website
+        - referral
+        - cold_call
+        - email
+        - social_media
+        - event
+        type: string
+      value:
+        minimum: 0
+        type: integer
+    required:
+    - currency
+    - customer_id
+    - expected_close_date
+    - name
+    - value
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.DealResponse:
+    properties:
+      actual_close_date:
+        type: string
+      assigned_to:
+        type: string
+      company_id:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      customer_id:
+        type: string
+      deleted_at:
+        type: string
+      expected_close_date:
+        type: string
+      id:
+        type: string
+      lost_reason:
+        type: string
+      name:
+        type: string
+      probability:
+        type: integer
+      source:
+        type: string
+      stage:
+        type: string
+      updated_at:
+        type: string
+      value:
+        type: integer
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsLostRequest:
+    properties:
+      close_date:
+        type: string
+      lost_reason:
+        maxLength: 500
+        type: string
+    required:
+    - close_date
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsWonRequest:
+    properties:
+      close_date:
+        type: string
+    required:
+    - close_date
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.MoveDealToStageRequest:
+    properties:
+      stage:
+        enum:
+        - lead
+        - qualified
+        - proposal
+        - negotiation
+        - closed_won
+        - closed_lost
+        type: string
+    required:
+    - stage
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.PipelineStatsResponse:
+    properties:
+      stats:
+        additionalProperties:
+          format: int64
+          type: integer
+        type: object
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealBasicInfoRequest:
+    properties:
+      expected_close_date:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealValueRequest:
+    properties:
+      currency:
+        type: string
+      value:
+        minimum: 0
+        type: integer
+    required:
+    - currency
+    - value
+    type: object
+  internal_contexts_customer-mgmt_deal_adapter_http.WonDealsResponse:
+    properties:
+      count:
+        type: integer
+      total_value:
+        type: integer
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.AddAttendeeRequest:
+    properties:
+      attendee_id:
+        type: string
+    required:
+    - attendee_id
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.CreateInteractionRequest:
+    properties:
+      company_id:
+        type: string
+      created_by:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      direction:
+        type: string
+      started_at:
+        type: string
+      subject:
+        type: string
+      type:
+        type: string
+    required:
+    - created_by
+    - customer_id
+    - direction
+    - started_at
+    - subject
+    - type
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.EndInteractionRequest:
+    properties:
+      ended_at:
+        type: string
+    required:
+    - ended_at
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse:
+    properties:
+      attendees:
+        items:
+          type: string
+        type: array
+      company_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      direction:
+        type: string
+      duration_sec:
+        type: integer
+      ended_at:
+        type: string
+      follow_up_date:
+        type: string
+      follow_up_notes:
+        type: string
+      follow_up_required:
+        type: boolean
+      id:
+        type: string
+      outcome:
+        type: string
+      started_at:
+        type: string
+      subject:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.SetFollowUpRequest:
+    properties:
+      follow_up_date:
+        type: string
+      notes:
+        type: string
+      required:
+        type: boolean
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.SetOutcomeRequest:
+    properties:
+      outcome:
+        type: string
+    required:
+    - outcome
+    type: object
+  internal_contexts_customer-mgmt_interaction_adapter_http.UpdateContentRequest:
+    properties:
+      description:
+        type: string
+      subject:
+        type: string
+    required:
+    - subject
+    type: object
+  internal_contexts_identity_permission_adapter_http.CreatePermissionRequest:
+    properties:
+      action:
+        maxLength: 50
+        minLength: 2
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      resource:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - action
+    - resource
+    type: object
+  internal_contexts_identity_permission_adapter_http.PermissionListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      permissions:
+        items:
+          $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  internal_contexts_identity_permission_adapter_http.PermissionResponse:
+    properties:
+      action:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      resource:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_identity_permission_adapter_http.UpdatePermissionRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+    type: object
+  internal_contexts_identity_profile_adapter_http.CreateProfileRequest:
+    properties:
+      display_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - display_name
+    type: object
+  internal_contexts_identity_profile_adapter_http.ProfileResponse:
+    properties:
+      avatar_url:
+        type: string
+      bio:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      display_name:
+        type: string
+      facebook:
+        type: string
+      first_name:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      github:
+        type: string
+      id:
+        type: string
+      instagram:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      language:
+        type: string
+      last_name:
+        type: string
+      linkedin:
+        type: string
+      middle_name:
+        type: string
+      timezone:
+        type: string
+      twitter:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      website:
+        type: string
+    type: object
+  internal_contexts_identity_role_adapter_http.CreateRoleRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      display_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      name:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - display_name
+    - name
+    type: object
+  internal_contexts_identity_role_adapter_http.RoleListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      roles:
+        items:
+          $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  internal_contexts_identity_role_adapter_http.RoleResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      display_name:
+        type: string
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_identity_role_adapter_http.UpdateRoleRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      display_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - display_name
+    type: object
+  internal_contexts_identity_user_adapter_http.AuthResponse:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: string
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+      user:
+        $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+    type: object
+  internal_contexts_identity_user_adapter_http.ChangePasswordRequest:
+    properties:
+      new_password:
+        maxLength: 72
+        minLength: 8
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  internal_contexts_identity_user_adapter_http.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  internal_contexts_identity_user_adapter_http.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  internal_contexts_identity_user_adapter_http.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        maxLength: 72
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  internal_contexts_identity_user_adapter_http.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      email_verified:
+        type: boolean
+      email_verified_at:
+        type: string
+      id:
+        type: string
+      last_login_at:
+        type: string
+      roles:
+        description: User roles for authorization
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.AddOrderLineRequest:
+    properties:
+      currency:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+      unit_price:
+        description: Amount in cents
+        minimum: 0
+        type: integer
+    required:
+    - currency
+    - product_id
+    - quantity
+    - unit_price
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.CreateOrderRequest:
+    properties:
+      company_id:
+        type: string
+      currency:
+        type: string
+      customer_id:
+        type: string
+    required:
+    - currency
+    - customer_id
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.MoneyResponse:
+    properties:
+      amount:
+        description: Amount in cents
+        type: integer
+      currency:
+        description: ISO 4217 currency code
+        type: string
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.OrderLineResponse:
+    properties:
+      id:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      total:
+        $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse'
+      unit_price:
+        $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse'
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.OrderResponse:
+    properties:
+      cancelled_at:
+        type: string
+      company_id:
+        type: string
+      confirmed_at:
+        type: string
+      contract_id:
+        type: string
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      fulfilled_at:
+        type: string
+      id:
+        type: string
+      invoice_id:
+        type: string
+      lines:
+        items:
+          $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderLineResponse'
+        type: array
+      order_date:
+        type: string
+      order_number:
+        type: string
+      status:
+        type: string
+      total:
+        $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse'
+      updated_at:
+        type: string
+    type: object
+  internal_contexts_order-mgmt_order_adapter_http.UpdateOrderLineRequest:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
+    type: object
+  internal_contexts_shared_country_adapter_http.CountryResponse:
+    properties:
+      code:
+        type: string
+      code3:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      name_local:
+        type: string
+      numeric_code:
+        type: string
+      phone_code:
+        type: string
+    type: object
+  internal_contexts_shared_country_adapter_http.CreateCountryRequest:
+    properties:
+      code:
+        type: string
+      code3:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      name_local:
+        maxLength: 100
+        type: string
+      numeric_code:
+        type: string
+      phone_code:
+        type: string
+    required:
+    - code
+    - name
+    - phone_code
+    type: object
+  internal_contexts_shared_country_adapter_http.UpdateCountryRequest:
+    properties:
+      code3:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      name_local:
+        maxLength: 100
+        type: string
+      numeric_code:
+        type: string
+      phone_code:
+        type: string
+    required:
+    - name
+    - phone_code
+    type: object
+  internal_contexts_shared_currency_adapter_http.CurrencyResponse:
+    properties:
+      code:
+        type: string
+      decimal_places:
+        type: integer
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      numeric_code:
+        type: string
+      symbol:
+        type: string
+    type: object
+  internal_contexts_shared_language_adapter_http.LanguageResponse:
+    properties:
+      code:
+        type: string
+      code3:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      native_name:
+        type: string
+    type: object
+  internal_contexts_shared_timezone_adapter_http.TimezoneResponse:
+    properties:
+      abbreviation:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      utc_offset:
+        type: string
+    type: object
+  internal_infrastructure_health.Check:
+    properties:
+      duration_ms:
+        $ref: '#/definitions/time.Duration'
+      message:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/internal_infrastructure_health.Status'
+      timestamp:
+        type: string
+    type: object
+  internal_infrastructure_health.Report:
+    properties:
+      checks:
+        additionalProperties:
+          $ref: '#/definitions/internal_infrastructure_health.Check'
+        type: object
+      status:
+        $ref: '#/definitions/internal_infrastructure_health.Status'
+      timestamp:
+        type: string
+      version:
+        type: string
+    type: object
+  internal_infrastructure_health.Status:
+    enum:
+    - healthy
+    - degraded
+    - unhealthy
+    type: string
+    x-enum-varnames:
+    - StatusHealthy
+    - StatusDegraded
+    - StatusUnhealthy
+  time.Duration:
+    enum:
+    - -9223372036854775808
+    - 9223372036854775807
+    - 1
+    - 1000
+    - 1000000
+    - 1000000000
+    - 60000000000
+    - 3600000000000
+    format: int64
+    type: integer
+    x-enum-varnames:
+    - minDuration
+    - maxDuration
+    - Nanosecond
+    - Microsecond
+    - Millisecond
+    - Second
+    - Minute
+    - Hour
+host: localhost:8081
+info:
+  contact:
+    email: alexander.vasilenko@gmail.com
+    name: API Support
+    url: https://github.com/basilex/promenade
+  description: Modern backend platform for customer management, orders, and business
+    workflows with clean DDD architecture
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Promenade Platform
+  version: 0.1.0
+paths:
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Generate new access token using refresh token
+      parameters:
+      - description: Refresh token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_user_adapter_http.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Refresh access token
+      tags:
+      - auth
+  /auth/revoke:
+    post:
+      consumes:
+      - application/json
+      description: Revoke the current JWT access token (logout)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Revoke current token
+      tags:
+      - auth
+  /billing/payments:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List payments
+      tags:
+      - Payments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment data
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.CreatePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create payment
+      tags:
+      - Payments
+  /billing/payments/{id}:
+    delete:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete payment
+      tags:
+      - Payments
+    get:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get payment by ID
+      tags:
+      - Payments
+  /billing/payments/{id}/cancel:
+    post:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Cancel payment
+      tags:
+      - Payments
+  /billing/payments/{id}/card-details:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Card details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.SetCardDetailsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set card details
+      tags:
+      - Payments
+  /billing/payments/{id}/complete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Transaction ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.CompletePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Complete payment
+      tags:
+      - Payments
+  /billing/payments/{id}/fail:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Failure reason
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.FailPaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Fail payment
+      tags:
+      - Payments
+  /billing/payments/{id}/link-invoice:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Invoice ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.LinkInvoiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Link payment to invoice
+      tags:
+      - Payments
+  /billing/payments/{id}/notes:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Note
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.AddNoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add note
+      tags:
+      - Payments
+  /billing/payments/{id}/process:
+    post:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Process payment
+      tags:
+      - Payments
+  /billing/payments/{id}/provider:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Provider
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.SetProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set payment provider
+      tags:
+      - Payments
+  /billing/payments/{id}/refund:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Refund data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.RefundPaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Refund payment
+      tags:
+      - Payments
+  /billing/payments/customer/{customerId}:
+    get:
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customerId
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List payments by customer
+      tags:
+      - Payments
+  /billing/payments/invoice/{invoiceId}:
+    get:
+      parameters:
+      - description: Invoice ID
+        in: path
+        name: invoiceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List payments by invoice
+      tags:
+      - Payments
+  /billing/payments/number/{number}:
+    get:
+      parameters:
+      - description: Payment number
+        in: path
+        name: number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get payment by number
+      tags:
+      - Payments
+  /billing/payments/status/{status}:
+    get:
+      parameters:
+      - description: Payment status
+        in: path
+        name: status
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List payments by status
+      tags:
+      - Payments
+  /billing/payments/totals/customer/{customerId}:
+    get:
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.TotalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get total by customer
+      tags:
+      - Payments
+  /billing/payments/totals/invoice/{invoiceId}:
+    get:
+      parameters:
+      - description: Invoice ID
+        in: path
+        name: invoiceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.TotalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get total by invoice
+      tags:
+      - Payments
+  /billing/payments/transaction/{txId}:
+    get:
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: txId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get payment by transaction ID
+      tags:
+      - Payments
+  /countries:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all active countries with ISO codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List all countries
+      tags:
+      - Reference Data
+    post:
+      consumes:
+      - application/json
+      description: Create a new country with ISO codes
+      parameters:
+      - description: Country data
+        in: body
+        name: country
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_shared_country_adapter_http.CreateCountryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new country
+      tags:
+      - Reference Data
+  /countries/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get country details by ISO 3166-1 alpha-2 code
+      parameters:
+      - description: Country Code (ISO 3166-1 alpha-2, e.g., US, UA, DE)
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get country by ISO code
+      tags:
+      - Reference Data
+  /countries/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a country by ID
+      parameters:
+      - description: Country ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a country
+      tags:
+      - Reference Data
+    put:
+      consumes:
+      - application/json
+      description: Update country details by ID
+      parameters:
+      - description: Country ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Country data
+        in: body
+        name: country
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_shared_country_adapter_http.UpdateCountryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update a country
+      tags:
+      - Reference Data
+  /currencies:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all active currencies with ISO codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_shared_currency_adapter_http.CurrencyResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List all currencies
+      tags:
+      - Reference Data
+  /currencies/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get currency details by ISO 4217 code
+      parameters:
+      - description: Currency Code (ISO 4217, e.g., USD, EUR, UAH)
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_currency_adapter_http.CurrencyResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get currency by ISO code
+      tags:
+      - Reference Data
+  /customer-mgmt/analytics/customers/lifecycle:
+    get:
+      consumes:
+      - application/json
+      description: Returns customer state transitions over time periods (month/week/quarter)
+      parameters:
+      - default: month
+        description: Time period granularity
+        enum:
+        - month
+        - week
+        - quarter
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer lifecycle data
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get customer lifecycle transitions
+      tags:
+      - Customer Analytics
+  /customer-mgmt/analytics/customers/overview:
+    get:
+      consumes:
+      - application/json
+      description: Returns high-level customer statistics including counts by state/tier,
+        new/churned this month
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer overview statistics
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get customer overview statistics
+      tags:
+      - Customer Analytics
+  /customer-mgmt/analytics/customers/segmentation:
+    get:
+      consumes:
+      - application/json
+      description: Returns customer distribution by segments (tiers) with revenue
+        data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer segmentation data
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get customer segmentation
+      tags:
+      - Customer Analytics
+  /customer-mgmt/analytics/deals/conversions:
+    get:
+      consumes:
+      - application/json
+      description: Returns conversion rates between deal stages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deal conversion rates
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get deal conversion rates
+      tags:
+      - Deal Analytics
+  /customer-mgmt/analytics/deals/pipeline:
+    get:
+      consumes:
+      - application/json
+      description: Returns pipeline statistics including total deals, value, and breakdown
+        by stage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deal pipeline statistics
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get deal pipeline statistics
+      tags:
+      - Deal Analytics
+  /customer-mgmt/analytics/interactions/insights:
+    get:
+      consumes:
+      - application/json
+      description: Returns interaction analytics including counts by type/outcome
+        and average duration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Interaction insights
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get interaction insights
+      tags:
+      - Interaction Analytics
+  /customer-mgmt/analytics/revenue/time-series:
+    get:
+      consumes:
+      - application/json
+      description: Returns revenue data over time with specified granularity
+      parameters:
+      - description: Start date
+        example: "2025-01-01"
+        format: date
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: End date
+        example: "2025-12-31"
+        format: date
+        in: query
+        name: end_date
+        required: true
+        type: string
+      - default: month
+        description: Time granularity
+        enum:
+        - day
+        - week
+        - month
+        in: query
+        name: granularity
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Revenue time series data
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get revenue time series
+      tags:
+      - Revenue Analytics
+  /customer-mgmt/analytics/sales-reps/performance:
+    get:
+      consumes:
+      - application/json
+      description: Returns top N sales reps by performance metrics or specific sales
+        rep data
+      parameters:
+      - default: 10
+        description: Number of top performers to return
+        in: query
+        maximum: 100
+        minimum: 1
+        name: top_n
+        type: integer
+      - description: Specific sales rep UUID to filter
+        format: uuid
+        in: query
+        name: sales_rep_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sales rep performance data
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Sales rep not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get sales rep performance
+      tags:
+      - Sales Analytics
+  /customer-mgmt/companies:
+    get:
+      description: Retrieve a paginated list of companies
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse'
+        "400":
+          description: Invalid pagination
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List all companies
+      tags:
+      - Companies
+    post:
+      consumes:
+      - application/json
+      description: Create a new company (B2B customer)
+      parameters:
+      - description: Company creation data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CreateCompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Company already exists
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Create a new company
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}:
+    delete:
+      description: Soft-delete a company
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Delete company
+      tags:
+      - Companies
+    get:
+      description: Retrieve a company by its ID
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get company by ID
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/basic-info:
+    put:
+      consumes:
+      - application/json
+      description: Update name, legal name, type, or tax ID
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Basic info update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBasicInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update company basic info
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/business-info:
+    put:
+      consumes:
+      - application/json
+      description: Update industry, size, employee count, revenue, or currency
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Business info update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBusinessInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update company business info
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/contact-info:
+    put:
+      consumes:
+      - application/json
+      description: Update website, email, phone, or address
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Contact info update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyContactInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update company contact info
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/description:
+    put:
+      consumes:
+      - application/json
+      description: Update the company description
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Description update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyDescriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update company description
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/parent:
+    put:
+      consumes:
+      - application/json
+      description: Set or update the parent company (for subsidiary relationships)
+      parameters:
+      - description: Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Parent company ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.SetParentCompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Set parent company
+      tags:
+      - Companies
+  /customer-mgmt/companies/{id}/subsidiaries:
+    get:
+      description: Retrieve a paginated list of subsidiaries (child companies) for
+        a parent company
+      parameters:
+      - description: Parent Company ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse'
+        "400":
+          description: Invalid ID or pagination
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List subsidiaries of a company
+      tags:
+      - Companies
+  /customer-mgmt/companies/industry/{industry}:
+    get:
+      description: Retrieve a paginated list of companies filtered by industry
+      parameters:
+      - description: Industry name
+        in: path
+        name: industry
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse'
+        "400":
+          description: Invalid pagination
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List companies by industry
+      tags:
+      - Companies
+  /customer-mgmt/companies/name/{name}:
+    get:
+      description: Retrieve a company by its name
+      parameters:
+      - description: Company name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get company by name
+      tags:
+      - Companies
+  /customer-mgmt/companies/size/{size}:
+    get:
+      description: Retrieve a paginated list of companies filtered by size
+      parameters:
+      - description: Company size
+        enum:
+        - micro
+        - small
+        - medium
+        - large
+        - enterprise
+        in: path
+        name: size
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse'
+        "400":
+          description: Invalid size or pagination
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List companies by size
+      tags:
+      - Companies
+  /customer-mgmt/companies/tax/{taxId}:
+    get:
+      description: Retrieve a company by its tax ID
+      parameters:
+      - description: Tax ID
+        in: path
+        name: taxId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse'
+        "404":
+          description: Company not found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get company by tax ID
+      tags:
+      - Companies
+  /customer-mgmt/deals:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of all deals
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List deals
+      tags:
+      - Deals
+    post:
+      consumes:
+      - application/json
+      description: Create a new deal in the sales pipeline
+      parameters:
+      - description: Deal creation data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.CreateDealRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Create a new deal
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a deal
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Delete deal
+      tags:
+      - Deals
+    get:
+      consumes:
+      - application/json
+      description: Get a single deal by ID
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get deal by ID
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}/basic-info:
+    put:
+      consumes:
+      - application/json
+      description: Update deal name and expected close date
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealBasicInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update deal basic info
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}/lost:
+    post:
+      consumes:
+      - application/json
+      description: Mark a deal as lost with close date and reason
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Close data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsLostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Mark deal as lost
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}/stage:
+    put:
+      consumes:
+      - application/json
+      description: Move deal to a new stage in the pipeline
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Stage data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MoveDealToStageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Move deal to stage
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}/value:
+    put:
+      consumes:
+      - application/json
+      description: Update deal value and currency
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealValueRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Update deal value
+      tags:
+      - Deals
+  /customer-mgmt/deals/{id}/won:
+    post:
+      consumes:
+      - application/json
+      description: Mark a deal as won with close date
+      parameters:
+      - description: Deal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Close data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsWonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Mark deal as won
+      tags:
+      - Deals
+  /customer-mgmt/deals/stage/{stage}:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of deals in a specific stage
+      parameters:
+      - description: Deal stage
+        enum:
+        - lead
+        - qualified
+        - proposal
+        - negotiation
+        - closed_won
+        - closed_lost
+        in: path
+        name: stage
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: List deals by stage
+      tags:
+      - Deals
+  /customer-mgmt/deals/stats/pipeline:
+    get:
+      consumes:
+      - application/json
+      description: Get count of deals by stage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.PipelineStatsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get pipeline statistics
+      tags:
+      - Deals
+  /customer-mgmt/deals/stats/won:
+    get:
+      consumes:
+      - application/json
+      description: Get count and total value of won deals
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.WonDealsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      security:
+      - Bearer: []
+      summary: Get won deals statistics
+      tags:
+      - Deals
+  /customer-mgmt/interactions:
+    get:
+      description: List all interactions with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List interactions
+      tags:
+      - interactions
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer/company interaction
+      parameters:
+      - description: Interaction data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.CreateInteractionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new interaction
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}:
+    delete:
+      description: Soft delete an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete an interaction
+      tags:
+      - interactions
+    get:
+      description: Get a specific interaction by its ID
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get interaction by ID
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/attendees:
+    post:
+      consumes:
+      - application/json
+      description: Add a participant to an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attendee data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.AddAttendeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add an attendee
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/attendees/{attendee_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a participant from an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attendee ID
+        in: path
+        name: attendee_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove an attendee
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/content:
+    put:
+      consumes:
+      - application/json
+      description: Update subject and description of an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Content data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.UpdateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update interaction content
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/end:
+    put:
+      consumes:
+      - application/json
+      description: Mark an interaction as ended with end time
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: End time data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.EndInteractionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: End an interaction
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/followup:
+    put:
+      consumes:
+      - application/json
+      description: Configure follow-up requirements for an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Follow-up data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.SetFollowUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set follow-up requirements
+      tags:
+      - interactions
+  /customer-mgmt/interactions/{id}/outcome:
+    put:
+      consumes:
+      - application/json
+      description: Set the outcome of an interaction
+      parameters:
+      - description: Interaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Outcome data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.SetOutcomeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set interaction outcome
+      tags:
+      - interactions
+  /customer-mgmt/interactions/company/{company_id}:
+    get:
+      description: List all interactions for a specific company
+      parameters:
+      - description: Company ID
+        in: path
+        name: company_id
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List interactions by company
+      tags:
+      - interactions
+  /customer-mgmt/interactions/customer/{customer_id}:
+    get:
+      description: List all interactions for a specific customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List interactions by customer
+      tags:
+      - interactions
+  /customer-mgmt/interactions/pending-followups:
+    get:
+      description: List all interactions with pending follow-ups
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List pending follow-ups
+      tags:
+      - interactions
+  /customer-mgmt/interactions/type/{type}:
+    get:
+      description: List all interactions of a specific type
+      parameters:
+      - description: Interaction Type (call, email, meeting, note, sms, chat)
+        in: path
+        name: type
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List interactions by type
+      tags:
+      - interactions
+  /health:
+    get:
+      description: Returns health status of all dependencies (database, redis, event
+        bus)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All systems healthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Report'
+        "503":
+          description: One or more systems unhealthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Report'
+      summary: Check all dependencies
+      tags:
+      - Health
+  /health/bus:
+    get:
+      description: Returns Event Bus health status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event Bus healthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+        "503":
+          description: Event Bus unhealthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+      summary: Check Event Bus health
+      tags:
+      - Health
+  /health/db:
+    get:
+      description: Returns PostgreSQL database health status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Database healthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+        "503":
+          description: Database unhealthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+      summary: Check database health
+      tags:
+      - Health
+  /health/redis:
+    get:
+      description: Returns Redis health status (if configured)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Redis healthy or not configured
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+        "503":
+          description: Redis unhealthy
+          schema:
+            $ref: '#/definitions/internal_infrastructure_health.Check'
+      summary: Check Redis health
+      tags:
+      - Health
+  /invoices:
+    get:
+      description: Retrieve invoices with pagination and optional filters
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 20, max: 100)'
+        in: query
+        name: page_size
+        type: integer
+      - description: Filter by customer ID
+        in: query
+        name: customer_id
+        type: string
+      - description: Filter by order ID
+        in: query
+        name: order_id
+        type: string
+      - description: Filter by status (draft/sent/paid/overdue/cancelled/void)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List invoices
+      tags:
+      - invoices
+    post:
+      consumes:
+      - application/json
+      description: Create a new draft invoice with auto-generated invoice number
+      parameters:
+      - description: Invoice creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.CreateInvoiceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create invoice
+      tags:
+      - invoices
+  /invoices/{id}:
+    delete:
+      description: Soft delete a draft invoice (only draft status allowed)
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete invoice
+      tags:
+      - invoices
+    get:
+      description: Retrieve invoice details by ID
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get invoice by ID
+      tags:
+      - invoices
+  /invoices/{id}/cancel:
+    post:
+      description: Cancel an invoice (cannot cancel paid/void/cancelled invoices)
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Cancel invoice
+      tags:
+      - invoices
+  /invoices/{id}/lines:
+    post:
+      consumes:
+      - application/json
+      description: Add a line item to a draft invoice
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.AddLineItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add line item
+      tags:
+      - invoices
+  /invoices/{id}/lines/{lineId}:
+    delete:
+      description: Remove a line item from a draft invoice
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line Item ID (UUID)
+        in: path
+        name: lineId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove line item
+      tags:
+      - invoices
+    put:
+      consumes:
+      - application/json
+      description: Update the quantity of a line item in a draft invoice
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line Item ID (UUID)
+        in: path
+        name: lineId
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.UpdateLineItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update line item
+      tags:
+      - invoices
+  /invoices/{id}/pay:
+    post:
+      consumes:
+      - application/json
+      description: Mark a sent invoice as paid
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payment date
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.MarkAsPaidRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Mark as paid
+      tags:
+      - invoices
+  /invoices/{id}/send:
+    post:
+      description: Mark a draft invoice as sent (requires at least one line item)
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Send invoice
+      tags:
+      - invoices
+  /invoices/{id}/tax:
+    put:
+      consumes:
+      - application/json
+      description: Update the tax amount on a draft invoice
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tax amount
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.UpdateTaxRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update tax amount
+      tags:
+      - invoices
+  /invoices/{id}/void:
+    post:
+      description: Void an invoice for accounting purposes (cannot void paid/void/cancelled
+        invoices)
+      parameters:
+      - description: Invoice ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Void invoice
+      tags:
+      - invoices
+  /invoices/number/{number}:
+    get:
+      description: Retrieve invoice details by invoice number
+      parameters:
+      - description: Invoice Number (e.g., INV-2026-000001)
+        in: path
+        name: number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get invoice by number
+      tags:
+      - invoices
+  /invoices/overdue:
+    get:
+      description: Retrieve overdue invoices with pagination
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 20, max: 100)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List overdue invoices
+      tags:
+      - invoices
+  /languages:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all active languages with ISO codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_shared_language_adapter_http.LanguageResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List all languages
+      tags:
+      - Reference Data
+  /languages/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get language details by ISO 639-1 code
+      parameters:
+      - description: Language Code (ISO 639-1, e.g., en, uk, de)
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_language_adapter_http.LanguageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get language by ISO code
+      tags:
+      - Reference Data
+  /orders:
+    get:
+      description: List all orders with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List orders
+      tags:
+      - orders
+    post:
+      consumes:
+      - application/json
+      description: Create a new order
+      parameters:
+      - description: Order details
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create order
+      tags:
+      - orders
+  /orders/{id}:
+    get:
+      description: Get order details by ID
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get order by ID
+      tags:
+      - orders
+  /orders/{id}/cancel:
+    post:
+      description: Cancel an order (any status → cancelled)
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Cancel order
+      tags:
+      - orders
+  /orders/{id}/confirm:
+    post:
+      description: Confirm an order (pending → confirmed)
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Confirm order
+      tags:
+      - orders
+  /orders/{id}/fulfill:
+    post:
+      description: Mark an order as fulfilled (processing → fulfilled)
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Mark order as fulfilled
+      tags:
+      - orders
+  /orders/{id}/lines:
+    post:
+      consumes:
+      - application/json
+      description: Add a new line item to an order
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line details
+        in: body
+        name: line
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.AddOrderLineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add line to order
+      tags:
+      - orders
+  /orders/{id}/lines/{line_id}:
+    delete:
+      description: Remove a line item from an order
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line ID (UUID)
+        in: path
+        name: line_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove line from order
+      tags:
+      - orders
+    put:
+      consumes:
+      - application/json
+      description: Update the quantity of a line item in an order
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line ID (UUID)
+        in: path
+        name: line_id
+        required: true
+        type: string
+      - description: New quantity
+        in: body
+        name: quantity
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.UpdateOrderLineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update line quantity
+      tags:
+      - orders
+  /orders/{id}/process:
+    post:
+      description: Start processing an order (confirmed → processing)
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Start processing order
+      tags:
+      - orders
+  /orders/customer/{customer_id}:
+    get:
+      description: List all orders for a specific customer
+      parameters:
+      - description: Customer ID (UUID)
+        in: path
+        name: customer_id
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List orders by customer
+      tags:
+      - orders
+  /orders/number/{order_number}:
+    get:
+      description: Get order details by order number
+      parameters:
+      - description: Order Number (e.g., ORD-2025-000001)
+        in: path
+        name: order_number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get order by order number
+      tags:
+      - orders
+  /orders/status/{status}:
+    get:
+      description: List all orders with a specific status
+      parameters:
+      - description: Status
+        enum:
+        - pending
+        - confirmed
+        - processing
+        - fulfilled
+        - cancelled
+        in: path
+        name: status
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List orders by status
+      tags:
+      - orders
+  /permissions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of permissions
+      parameters:
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List permissions
+      tags:
+      - permissions
+    post:
+      consumes:
+      - application/json
+      description: Create a new permission with resource and action
+      parameters:
+      - description: Permission creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.CreatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new permission
+      tags:
+      - permissions
+  /permissions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a permission
+      parameters:
+      - description: Permission UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete permission
+      tags:
+      - permissions
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a permission by its UUID
+      parameters:
+      - description: Permission UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get permission by ID
+      tags:
+      - permissions
+    put:
+      consumes:
+      - application/json
+      description: Update an existing permission's description
+      parameters:
+      - description: Permission UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Permission update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.UpdatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update permission
+      tags:
+      - permissions
+  /permissions/name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a permission by its name (resource:action)
+      parameters:
+      - description: Permission name (resource:action)
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get permission by name
+      tags:
+      - permissions
+  /profiles:
+    post:
+      consumes:
+      - application/json
+      description: Create a new profile for a user
+      parameters:
+      - description: Profile creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_profile_adapter_http.CreateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create new profile
+      tags:
+      - profiles
+  /profiles/{id}:
+    get:
+      description: Retrieve a profile by its ID
+      parameters:
+      - description: Profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get profile by ID
+      tags:
+      - profiles
+  /profiles/public:
+    get:
+      description: Retrieve a list of public profiles
+      parameters:
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse'
+            type: array
+      summary: List public profiles
+      tags:
+      - profiles
+  /profiles/user/{user_id}:
+    get:
+      description: Retrieve a profile by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get profile by user ID
+      tags:
+      - profiles
+  /roles:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of roles
+      parameters:
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List roles
+      tags:
+      - roles
+    post:
+      consumes:
+      - application/json
+      description: Create a new role with name and display name
+      parameters:
+      - description: Role creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_role_adapter_http.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new role
+      tags:
+      - roles
+  /roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a role (system roles are protected)
+      parameters:
+      - description: Role UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete role
+      tags:
+      - roles
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a role by its UUID
+      parameters:
+      - description: Role UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get role by ID
+      tags:
+      - roles
+    put:
+      consumes:
+      - application/json
+      description: Update an existing role's display name and description
+      parameters:
+      - description: Role UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Role update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_role_adapter_http.UpdateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update role
+      tags:
+      - roles
+  /roles/{roleId}/permissions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all permissions assigned to a role
+      parameters:
+      - description: Role UUID
+        in: path
+        name: roleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get role permissions
+      tags:
+      - permissions
+  /roles/name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a role by its name
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get role by name
+      tags:
+      - roles
+  /timezones:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all active timezones with IANA names
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/internal_contexts_shared_timezone_adapter_http.TimezoneResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List all timezones
+      tags:
+      - Reference Data
+  /timezones/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get timezone details by IANA timezone name
+      parameters:
+      - description: Timezone Name (IANA, e.g., Europe/Kyiv, America/New_York)
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_contexts_shared_timezone_adapter_http.TimezoneResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get timezone by IANA name
+      tags:
+      - Reference Data
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: List all users with pagination
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 20)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List users
+      tags:
+      - users
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user details by ID
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get user by ID
+      tags:
+      - users
+  /users/{id}/activate:
+    put:
+      consumes:
+      - application/json
+      description: Activate suspended or banned user account (admin only)
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate user account
+      tags:
+      - users
+  /users/{id}/ban:
+    put:
+      consumes:
+      - application/json
+      description: Ban user account (admin only)
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Ban user account
+      tags:
+      - users
+  /users/{id}/password:
+    put:
+      consumes:
+      - application/json
+      description: Change user password (requires old password)
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Password change request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_user_adapter_http.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Change user password
+      tags:
+      - users
+  /users/{id}/suspend:
+    put:
+      consumes:
+      - application/json
+      description: Suspend user account (admin only)
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Suspend user account
+      tags:
+      - users
+  /users/{id}/unlock:
+    put:
+      consumes:
+      - application/json
+      description: Unlock account that was locked due to failed login attempts
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Unlock user account
+      tags:
+      - users
+  /users/{id}/verify-email:
+    post:
+      consumes:
+      - application/json
+      description: Mark user email as verified
+      parameters:
+      - description: User ID (UUID v7)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Verify user email
+      tags:
+      - users
+  /users/{userId}/roles:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all roles assigned to a user
+      parameters:
+      - description: User UUID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get user roles
+      tags:
+      - roles
+  /users/email/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Get user details by email address
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get user by email
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_user_adapter_http.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Login user
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with email and password
+      parameters:
+      - description: Registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_contexts_identity_user_adapter_http.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_contexts_identity_user_adapter_http.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Register a new user
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"

@@ -32,9 +32,9 @@ func NewRoleHandler(usecase role.IUseCase) *RoleHandler {
 // @Produce json
 // @Param request body CreateRoleRequest true "Role creation request"
 // @Success 201 {object} RoleResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 409 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles [post]
 func (h *RoleHandler) Create(c *gin.Context) {
 	var req CreateRoleRequest
@@ -69,9 +69,9 @@ func (h *RoleHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Role UUID"
 // @Success 200 {object} RoleResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles/{id} [get]
 func (h *RoleHandler) GetByID(c *gin.Context) {
 	idStr := c.Param("id")
@@ -102,9 +102,9 @@ func (h *RoleHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param name path string true "Role name"
 // @Success 200 {object} RoleResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles/name/{name} [get]
 func (h *RoleHandler) GetByName(c *gin.Context) {
 	name := c.Param("name")
@@ -135,9 +135,9 @@ func (h *RoleHandler) GetByName(c *gin.Context) {
 // @Param id path string true "Role UUID"
 // @Param request body UpdateRoleRequest true "Role update request"
 // @Success 200 {object} RoleResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles/{id} [put]
 func (h *RoleHandler) Update(c *gin.Context) {
 	idStr := c.Param("id")
@@ -179,10 +179,10 @@ func (h *RoleHandler) Update(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Role UUID"
 // @Success 204
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 403 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 403 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles/{id} [delete]
 func (h *RoleHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
@@ -218,8 +218,8 @@ func (h *RoleHandler) Delete(c *gin.Context) {
 // @Param limit query int false "Limit" default(20)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {object} RoleListResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /roles [get]
 func (h *RoleHandler) List(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -242,8 +242,8 @@ func (h *RoleHandler) List(c *gin.Context) {
 // @Produce json
 // @Param userId path string true "User UUID"
 // @Success 200 {array} RoleResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{userId}/roles [get]
 func (h *RoleHandler) GetUserRoles(c *gin.Context) {
 	userIDStr := c.Param("userId")

@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/basilex/promenade/internal/contexts/billing"
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
@@ -12,6 +14,8 @@ import (
 	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
 	"github.com/basilex/promenade/internal/contexts/shared"
 	"github.com/basilex/promenade/internal/infrastructure/health"
+
+	_ "github.com/basilex/promenade/docs/swagger" // Import generated docs
 )
 
 // Server holds HTTP server configuration
@@ -46,6 +50,9 @@ func (s *Server) SetupRoutes() {
 	// Health checks
 	healthHandler := health.NewHandler(s.app.HealthChecker)
 	healthHandler.RegisterRoutes(s.router)
+
+	// Swagger UI documentation
+	s.router.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Initialize context routers
 	sharedRouter := shared.NewRouter(s.app.DB, s.app.CacheClient)

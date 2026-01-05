@@ -6,6 +6,7 @@
 /api
 /main
 bin/
+seed
 *.exe
 *.exe~
 *.dll

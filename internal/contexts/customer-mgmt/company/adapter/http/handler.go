@@ -32,9 +32,9 @@ func NewCompanyHandler(companyUC company.IUseCase) *CompanyHandler {
 // @Produce json
 // @Param body body CreateCompanyRequest true "Company creation data"
 // @Success 201 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 409 {object} response.ErrorResponse "Company already exists"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response "Company already exists"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies [post]
 // @Security Bearer
 func (h *CompanyHandler) Create(c *gin.Context) {
@@ -112,9 +112,9 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Company ID (UUID)"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid ID"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid ID"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id} [get]
 // @Security Bearer
 func (h *CompanyHandler) GetByID(c *gin.Context) {
@@ -144,8 +144,8 @@ func (h *CompanyHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param name path string true "Company name"
 // @Success 200 {object} CompanyResponse
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/name/{name} [get]
 // @Security Bearer
 func (h *CompanyHandler) GetByName(c *gin.Context) {
@@ -175,8 +175,8 @@ func (h *CompanyHandler) GetByName(c *gin.Context) {
 // @Produce json
 // @Param taxId path string true "Tax ID"
 // @Success 200 {object} CompanyResponse
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/tax/{taxId} [get]
 // @Security Bearer
 func (h *CompanyHandler) GetByTaxID(c *gin.Context) {
@@ -207,8 +207,8 @@ func (h *CompanyHandler) GetByTaxID(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {object} CompanyListResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid pagination"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid pagination"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies [get]
 // @Security Bearer
 func (h *CompanyHandler) List(c *gin.Context) {
@@ -232,8 +232,8 @@ func (h *CompanyHandler) List(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {object} CompanyListResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid pagination"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid pagination"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/industry/{industry} [get]
 // @Security Bearer
 func (h *CompanyHandler) ListByIndustry(c *gin.Context) {
@@ -263,8 +263,8 @@ func (h *CompanyHandler) ListByIndustry(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {object} CompanyListResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid size or pagination"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid size or pagination"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/size/{size} [get]
 // @Security Bearer
 func (h *CompanyHandler) ListBySize(c *gin.Context) {
@@ -295,8 +295,8 @@ func (h *CompanyHandler) ListBySize(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {object} CompanyListResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid ID or pagination"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid ID or pagination"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/subsidiaries [get]
 // @Security Bearer
 func (h *CompanyHandler) ListSubsidiaries(c *gin.Context) {
@@ -328,9 +328,9 @@ func (h *CompanyHandler) ListSubsidiaries(c *gin.Context) {
 // @Param id path string true "Company ID (UUID)"
 // @Param body body UpdateCompanyBasicInfoRequest true "Basic info update data"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid data"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid data"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/basic-info [put]
 // @Security Bearer
 func (h *CompanyHandler) UpdateBasicInfo(c *gin.Context) {
@@ -386,9 +386,9 @@ func (h *CompanyHandler) UpdateBasicInfo(c *gin.Context) {
 // @Param id path string true "Company ID (UUID)"
 // @Param body body UpdateCompanyContactInfoRequest true "Contact info update data"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid data"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid data"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/contact-info [put]
 // @Security Bearer
 func (h *CompanyHandler) UpdateContactInfo(c *gin.Context) {
@@ -456,9 +456,9 @@ func (h *CompanyHandler) UpdateContactInfo(c *gin.Context) {
 // @Param id path string true "Company ID (UUID)"
 // @Param body body UpdateCompanyBusinessInfoRequest true "Business info update data"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid data"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid data"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/business-info [put]
 // @Security Bearer
 func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
@@ -522,9 +522,9 @@ func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
 // @Param id path string true "Company ID (UUID)"
 // @Param body body SetParentCompanyRequest true "Parent company ID"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid data"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid data"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/parent [put]
 // @Security Bearer
 func (h *CompanyHandler) SetParentCompany(c *gin.Context) {
@@ -568,9 +568,9 @@ func (h *CompanyHandler) SetParentCompany(c *gin.Context) {
 // @Param id path string true "Company ID (UUID)"
 // @Param body body UpdateCompanyDescriptionRequest true "Description update data"
 // @Success 200 {object} CompanyResponse
-// @Failure 400 {object} response.ErrorResponse "Invalid data"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid data"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/description [put]
 // @Security Bearer
 func (h *CompanyHandler) UpdateDescription(c *gin.Context) {
@@ -606,9 +606,9 @@ func (h *CompanyHandler) UpdateDescription(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Company ID (UUID)"
 // @Success 200 {object} map[string]string
-// @Failure 400 {object} response.ErrorResponse "Invalid ID"
-// @Failure 404 {object} response.ErrorResponse "Company not found"
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response "Invalid ID"
+// @Failure 404 {object} response.Response "Company not found"
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id} [delete]
 // @Security Bearer
 func (h *CompanyHandler) Delete(c *gin.Context) {

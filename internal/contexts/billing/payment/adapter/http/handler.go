@@ -31,8 +31,8 @@ func NewPaymentHandler(usecase payment.IUseCase) *PaymentHandler {
 // @Produce json
 // @Param payment body CreatePaymentRequest true "Payment data"
 // @Success 201 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments [post]
 func (h *PaymentHandler) Create(c *gin.Context) {
 	var req CreatePaymentRequest
@@ -98,8 +98,8 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Payment ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id} [get]
 func (h *PaymentHandler) GetByID(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -127,8 +127,8 @@ func (h *PaymentHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param number path string true "Payment number"
 // @Success 200 {object} PaymentResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/number/{number} [get]
 func (h *PaymentHandler) GetByNumber(c *gin.Context) {
 	paymentNo := c.Param("number")
@@ -152,8 +152,8 @@ func (h *PaymentHandler) GetByNumber(c *gin.Context) {
 // @Produce json
 // @Param txId path string true "Transaction ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/transaction/{txId} [get]
 func (h *PaymentHandler) GetByTransactionID(c *gin.Context) {
 	transactionID := c.Param("txId")
@@ -175,9 +175,9 @@ func (h *PaymentHandler) GetByTransactionID(c *gin.Context) {
 // @Summary Delete payment
 // @Tags Payments
 // @Param id path string true "Payment ID"
-// @Success 200 {object} response.SuccessResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id} [delete]
 func (h *PaymentHandler) Delete(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -205,7 +205,7 @@ func (h *PaymentHandler) Delete(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {array} PaymentResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 500 {object} response.Response
 // @Router /billing/payments [get]
 func (h *PaymentHandler) List(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -228,8 +228,8 @@ func (h *PaymentHandler) List(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {array} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/customer/{customerId} [get]
 func (h *PaymentHandler) ListByCustomer(c *gin.Context) {
 	customerID, err := ParseUUID(c.Param("customerId"))
@@ -256,8 +256,8 @@ func (h *PaymentHandler) ListByCustomer(c *gin.Context) {
 // @Produce json
 // @Param invoiceId path string true "Invoice ID"
 // @Success 200 {array} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/invoice/{invoiceId} [get]
 func (h *PaymentHandler) ListByInvoice(c *gin.Context) {
 	invoiceID, err := ParseUUID(c.Param("invoiceId"))
@@ -283,7 +283,7 @@ func (h *PaymentHandler) ListByInvoice(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {array} PaymentResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/status/{status} [get]
 func (h *PaymentHandler) ListByStatus(c *gin.Context) {
 	status := payment.PaymentStatus(c.Param("status"))
@@ -308,9 +308,9 @@ func (h *PaymentHandler) ListByStatus(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body LinkInvoiceRequest true "Invoice ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/link-invoice [post]
 func (h *PaymentHandler) LinkToInvoice(c *gin.Context) {
 	paymentID, err := ParseUUID(c.Param("id"))
@@ -356,8 +356,8 @@ func (h *PaymentHandler) LinkToInvoice(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Payment ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/process [post]
 func (h *PaymentHandler) ProcessPayment(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -399,9 +399,9 @@ func (h *PaymentHandler) ProcessPayment(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body CompletePaymentRequest true "Transaction ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/complete [post]
 func (h *PaymentHandler) CompletePayment(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -443,9 +443,9 @@ func (h *PaymentHandler) CompletePayment(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body FailPaymentRequest true "Failure reason"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/fail [post]
 func (h *PaymentHandler) FailPayment(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -487,9 +487,9 @@ func (h *PaymentHandler) FailPayment(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body RefundPaymentRequest true "Refund data"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/refund [post]
 func (h *PaymentHandler) RefundPayment(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -539,8 +539,8 @@ func (h *PaymentHandler) RefundPayment(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Payment ID"
 // @Success 200 {object} PaymentResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/cancel [post]
 func (h *PaymentHandler) CancelPayment(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -576,9 +576,9 @@ func (h *PaymentHandler) CancelPayment(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body SetCardDetailsRequest true "Card details"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/card-details [put]
 func (h *PaymentHandler) SetCardDetails(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -620,9 +620,9 @@ func (h *PaymentHandler) SetCardDetails(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body SetProviderRequest true "Provider"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/provider [put]
 func (h *PaymentHandler) SetProvider(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -664,9 +664,9 @@ func (h *PaymentHandler) SetProvider(c *gin.Context) {
 // @Param id path string true "Payment ID"
 // @Param request body AddNoteRequest true "Note"
 // @Success 200 {object} PaymentResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/{id}/notes [post]
 func (h *PaymentHandler) AddNote(c *gin.Context) {
 	id, err := ParseUUID(c.Param("id"))
@@ -706,8 +706,8 @@ func (h *PaymentHandler) AddNote(c *gin.Context) {
 // @Produce json
 // @Param customerId path string true "Customer ID"
 // @Success 200 {object} TotalResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/totals/customer/{customerId} [get]
 func (h *PaymentHandler) GetTotalByCustomer(c *gin.Context) {
 	customerID, err := ParseUUID(c.Param("customerId"))
@@ -734,8 +734,8 @@ func (h *PaymentHandler) GetTotalByCustomer(c *gin.Context) {
 // @Produce json
 // @Param invoiceId path string true "Invoice ID"
 // @Success 200 {object} TotalResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /billing/payments/totals/invoice/{invoiceId} [get]
 func (h *PaymentHandler) GetTotalByInvoice(c *gin.Context) {
 	invoiceID, err := ParseUUID(c.Param("invoiceId"))

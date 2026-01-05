@@ -26,7 +26,7 @@ func NewAnalyticsHandler(analyticsUC analytics.IUseCase) *AnalyticsHandler {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{} "Customer overview statistics"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/customers/overview [get]
 func (h *AnalyticsHandler) GetCustomerOverview(c *gin.Context) {
 	overview, err := h.analyticsUC.GetCustomerOverview(c.Request.Context())
@@ -45,8 +45,8 @@ func (h *AnalyticsHandler) GetCustomerOverview(c *gin.Context) {
 // @Produce json
 // @Param period query string false "Time period granularity" Enums(month, week, quarter) default(month)
 // @Success 200 {array} map[string]interface{} "Customer lifecycle data"
-// @Failure 400 {object} response.ErrorResponse "Invalid request"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 400 {object} response.Response "Invalid request"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/customers/lifecycle [get]
 func (h *AnalyticsHandler) GetCustomerLifecycle(c *gin.Context) {
 	var req CustomerLifecycleRequest
@@ -76,7 +76,7 @@ func (h *AnalyticsHandler) GetCustomerLifecycle(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {array} map[string]interface{} "Customer segmentation data"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/customers/segmentation [get]
 func (h *AnalyticsHandler) GetCustomerSegmentation(c *gin.Context) {
 	segments, err := h.analyticsUC.GetCustomerSegmentation(c.Request.Context())
@@ -94,7 +94,7 @@ func (h *AnalyticsHandler) GetCustomerSegmentation(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{} "Deal pipeline statistics"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/deals/pipeline [get]
 func (h *AnalyticsHandler) GetDealPipeline(c *gin.Context) {
 	pipeline, err := h.analyticsUC.GetDealPipeline(c.Request.Context())
@@ -112,7 +112,7 @@ func (h *AnalyticsHandler) GetDealPipeline(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {array} map[string]interface{} "Deal conversion rates"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/deals/conversions [get]
 func (h *AnalyticsHandler) GetDealConversions(c *gin.Context) {
 	conversions, err := h.analyticsUC.GetDealConversions(c.Request.Context())
@@ -132,9 +132,9 @@ func (h *AnalyticsHandler) GetDealConversions(c *gin.Context) {
 // @Param top_n query int false "Number of top performers to return" default(10) minimum(1) maximum(100)
 // @Param sales_rep_id query string false "Specific sales rep UUID to filter" format(uuid)
 // @Success 200 {array} map[string]interface{} "Sales rep performance data"
-// @Failure 400 {object} response.ErrorResponse "Invalid request"
-// @Failure 404 {object} response.ErrorResponse "Sales rep not found"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 400 {object} response.Response "Invalid request"
+// @Failure 404 {object} response.Response "Sales rep not found"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/sales-reps/performance [get]
 func (h *AnalyticsHandler) GetSalesRepPerformance(c *gin.Context) {
 	var req SalesRepPerformanceRequest
@@ -186,8 +186,8 @@ func (h *AnalyticsHandler) GetSalesRepPerformance(c *gin.Context) {
 // @Param end_date query string true "End date" format(date) example(2025-12-31)
 // @Param granularity query string false "Time granularity" Enums(day, week, month) default(month)
 // @Success 200 {array} map[string]interface{} "Revenue time series data"
-// @Failure 400 {object} response.ErrorResponse "Invalid request"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 400 {object} response.Response "Invalid request"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/revenue/time-series [get]
 func (h *AnalyticsHandler) GetRevenueTimeSeries(c *gin.Context) {
 	var req RevenueTimeSeriesRequest
@@ -218,7 +218,7 @@ func (h *AnalyticsHandler) GetRevenueTimeSeries(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{} "Interaction insights"
-// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /customer-mgmt/analytics/interactions/insights [get]
 func (h *AnalyticsHandler) GetInteractionInsights(c *gin.Context) {
 	insights, err := h.analyticsUC.GetInteractionInsights(c.Request.Context())

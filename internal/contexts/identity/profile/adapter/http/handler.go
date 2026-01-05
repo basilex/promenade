@@ -32,8 +32,8 @@ func NewProfileHandler(usecase profile.IUseCase) *ProfileHandler {
 // @Produce json
 // @Param request body CreateProfileRequest true "Profile creation request"
 // @Success 201 {object} ProfileResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /profiles [post]
 func (h *ProfileHandler) Create(c *gin.Context) {
 	var req CreateProfileRequest
@@ -72,8 +72,8 @@ func (h *ProfileHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Profile ID"
 // @Success 200 {object} ProfileResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
 // @Router /profiles/{id} [get]
 func (h *ProfileHandler) GetByID(c *gin.Context) {
 	profileID := c.Param("id")
@@ -108,8 +108,8 @@ func (h *ProfileHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param user_id path string true "User ID"
 // @Success 200 {object} ProfileResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
 // @Router /profiles/user/{user_id} [get]
 func (h *ProfileHandler) GetByUserID(c *gin.Context) {
 	userID := c.Param("user_id")

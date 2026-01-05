@@ -32,8 +32,8 @@ func NewDealHandler(dealUC deal.IUseCase) *DealHandler {
 // @Produce json
 // @Param body body CreateDealRequest true "Deal creation data"
 // @Success 201 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals [post]
 // @Security Bearer
 func (h *DealHandler) Create(c *gin.Context) {
@@ -95,9 +95,9 @@ func (h *DealHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id} [get]
 // @Security Bearer
 func (h *DealHandler) GetByID(c *gin.Context) {
@@ -129,9 +129,9 @@ func (h *DealHandler) GetByID(c *gin.Context) {
 // @Param id path string true "Deal ID"
 // @Param body body UpdateDealBasicInfoRequest true "Update data"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id}/basic-info [put]
 // @Security Bearer
 func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
@@ -176,9 +176,9 @@ func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
 // @Param id path string true "Deal ID"
 // @Param body body UpdateDealValueRequest true "Update data"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id}/value [put]
 // @Security Bearer
 func (h *DealHandler) UpdateValue(c *gin.Context) {
@@ -216,9 +216,9 @@ func (h *DealHandler) UpdateValue(c *gin.Context) {
 // @Param id path string true "Deal ID"
 // @Param body body MoveDealToStageRequest true "Stage data"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id}/stage [put]
 // @Security Bearer
 func (h *DealHandler) MoveToStage(c *gin.Context) {
@@ -256,9 +256,9 @@ func (h *DealHandler) MoveToStage(c *gin.Context) {
 // @Param id path string true "Deal ID"
 // @Param body body MarkDealAsWonRequest true "Close data"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id}/won [post]
 // @Security Bearer
 func (h *DealHandler) MarkAsWon(c *gin.Context) {
@@ -296,9 +296,9 @@ func (h *DealHandler) MarkAsWon(c *gin.Context) {
 // @Param id path string true "Deal ID"
 // @Param body body MarkDealAsLostRequest true "Close data"
 // @Success 200 {object} DealResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id}/lost [post]
 // @Security Bearer
 func (h *DealHandler) MarkAsLost(c *gin.Context) {
@@ -339,9 +339,9 @@ func (h *DealHandler) MarkAsLost(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Success 204
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/{id} [delete]
 // @Security Bearer
 func (h *DealHandler) Delete(c *gin.Context) {
@@ -372,9 +372,9 @@ func (h *DealHandler) Delete(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.PaginatedResponse{data=[]DealResponse}
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=[]DealResponse}
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals [get]
 // @Security Bearer
 func (h *DealHandler) List(c *gin.Context) {
@@ -406,9 +406,9 @@ func (h *DealHandler) List(c *gin.Context) {
 // @Param stage path string true "Deal stage" Enums(lead, qualified, proposal, negotiation, closed_won, closed_lost)
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.PaginatedResponse{data=[]DealResponse}
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response{data=[]DealResponse}
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/stage/{stage} [get]
 // @Security Bearer
 func (h *DealHandler) ListByStage(c *gin.Context) {
@@ -439,7 +439,7 @@ func (h *DealHandler) ListByStage(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} PipelineStatsResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/stats/pipeline [get]
 // @Security Bearer
 func (h *DealHandler) GetPipelineStats(c *gin.Context) {
@@ -459,7 +459,7 @@ func (h *DealHandler) GetPipelineStats(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} WonDealsResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/stats/won [get]
 // @Security Bearer
 func (h *DealHandler) GetWonDeals(c *gin.Context) {

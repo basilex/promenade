@@ -37,8 +37,8 @@ func NewUserHandler(usecase user.IUseCase, jwtManager *jwt.Manager, tokenRevoker
 // @Produce json
 // @Param request body RegisterRequest true "Registration request"
 // @Success 201 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	var req RegisterRequest
@@ -73,9 +73,9 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Produce json
 // @Param request body LoginRequest true "Login request"
 // @Success 200 {object} AuthResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	var req LoginRequest
@@ -134,9 +134,9 @@ func (h *UserHandler) Login(c *gin.Context) {
 // @Produce json
 // @Param request body RefreshTokenRequest true "Refresh token request"
 // @Success 200 {object} AuthResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/refresh [post]
 func (h *UserHandler) RefreshToken(c *gin.Context) {
 	var req RefreshTokenRequest
@@ -194,9 +194,9 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id} [get]
 func (h *UserHandler) GetByID(c *gin.Context) {
 	userID := c.Param("id")
@@ -232,9 +232,9 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param email path string true "User email"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/email/{email} [get]
 func (h *UserHandler) GetByEmail(c *gin.Context) {
 	email := c.Param("email")
@@ -264,9 +264,9 @@ func (h *UserHandler) GetByEmail(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/verify-email [post]
 func (h *UserHandler) VerifyEmail(c *gin.Context) {
 	userID := c.Param("id")
@@ -310,9 +310,9 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 // @Param id path string true "User ID (UUID v7)"
 // @Param request body ChangePasswordRequest true "Password change request"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/password [put]
 func (h *UserHandler) ChangePassword(c *gin.Context) {
 	userID := c.Param("id")
@@ -374,9 +374,9 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/suspend [put]
 func (h *UserHandler) Suspend(c *gin.Context) {
 	userID := c.Param("id")
@@ -419,9 +419,9 @@ func (h *UserHandler) Suspend(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/ban [put]
 func (h *UserHandler) Ban(c *gin.Context) {
 	userID := c.Param("id")
@@ -464,9 +464,9 @@ func (h *UserHandler) Ban(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/activate [put]
 func (h *UserHandler) Activate(c *gin.Context) {
 	userID := c.Param("id")
@@ -509,9 +509,9 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // @Produce json
 // @Param id path string true "User ID (UUID v7)"
 // @Success 200 {object} UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users/{id}/unlock [put]
 func (h *UserHandler) Unlock(c *gin.Context) {
 	userID := c.Param("id")
@@ -555,8 +555,8 @@ func (h *UserHandler) Unlock(c *gin.Context) {
 // @Param page query int false "Page number (default: 1)"
 // @Param page_size query int false "Page size (default: 20)"
 // @Success 200 {object} []UserResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /users [get]
 func (h *UserHandler) List(c *gin.Context) {
 	// Parse pagination parameters
@@ -599,9 +599,9 @@ func (h *UserHandler) List(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.SuccessResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Success 200 {object} response.Response
+// @Failure 401 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /auth/revoke [post]
 func (h *UserHandler) RevokeToken(c *gin.Context) {
 	// Extract token from Authorization header
