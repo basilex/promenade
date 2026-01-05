@@ -123,7 +123,7 @@ Enterprise-level security: encrypted passwords, token-based authentication, role
 Health checks every 30 seconds. If database goes down, you know within seconds. Automatic alerts integrate with Slack/PagerDuty.
 
 **Tested**  
-Every feature has 240+ automated tests. When you add a new feature, tests run in 40 seconds and tell you if something breaks.
+Every feature has 360+ automated tests. When you add a new feature, tests run in 60 seconds and tell you if something breaks.
 
 </div>
 
@@ -267,7 +267,7 @@ For developers and technical teams: the architectural patterns and infrastructur
 <div class="feature-card">
 <div class="feature-icon">📊</div>
 <h3>Three-Tier Testing</h3>
-<p>Professional test organization with 250+ tests. Unit tests (in-place, fast), Integration tests (real DB, full validation), Benchmark tests (performance measurement). 90%+ coverage.</p>
+<p>Professional test organization with 360+ tests. Unit tests (in-place, fast), Integration tests (real DB, full validation), Benchmark tests (performance measurement). 90%+ coverage.</p>
 <a href="guide/testing-patterns">Read Testing Guide →</a>
 </div>
 

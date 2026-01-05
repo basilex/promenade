@@ -123,7 +123,7 @@ func (r *paymentRow) toEntity() (*payment.Payment, error) {
 		Notes:           r.Notes.String,
 	}
 	
-	// Set BaseAggregate fields
+	// Set BaseAggregate fields via setters (not direct access)
 	p.ID = id
 	p.CreatedAt = r.CreatedAt
 	p.UpdatedAt = r.UpdatedAt
@@ -167,11 +167,11 @@ func (r *paymentRepository) Create(ctx context.Context, p *payment.Payment) erro
 	}
 
 	_, err := r.Exec(ctx, query,
-		p.ID.String(), p.PaymentNo, toNullString(p.TransactionID), p.CustomerID.String(), invoiceID,
+		p.GetID().String(), p.PaymentNo, toNullString(p.TransactionID), p.CustomerID.String(), invoiceID,
 		p.Amount.Amount, p.Amount.Currency, string(p.Method), toNullString(p.CardLast4), toNullString(p.CardBrand),
 		toNullString(p.BankAccount), toNullString(p.PaymentProvider), string(p.Status), toNullString(p.FailureReason),
 		p.ProcessedAt, refundedAt, refundedAmount, toNullString(p.ProcessedBy),
-		toNullString(p.Notes), p.CreatedAt, p.UpdatedAt, deletedAt,
+		toNullString(p.Notes), p.GetCreatedAt(), p.GetUpdatedAt(), deletedAt,
 	)
 
 	return err
@@ -254,7 +254,7 @@ func (r *paymentRepository) Update(ctx context.Context, p *payment.Payment) erro
 		p.Amount.Amount, p.Amount.Currency, string(p.Method), toNullString(p.CardLast4), toNullString(p.CardBrand),
 		toNullString(p.BankAccount), toNullString(p.PaymentProvider), string(p.Status), toNullString(p.FailureReason),
 		p.ProcessedAt, refundedAt, refundedAmount, toNullString(p.ProcessedBy),
-		toNullString(p.Notes), r.now(), p.ID.String(),
+		toNullString(p.Notes), r.now(), p.GetID().String(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update payment: %w", err)

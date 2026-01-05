@@ -41,7 +41,7 @@ Each context is autonomous with:
   - Role & Permission: RBAC implementation ✅ Production
 - **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer ✅ | Company ✅ | Deal ✅ | Interaction ✅ | Analytics ✅ (all Production)
 - **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate ✅ Production | OrderLine entity ✅ | Contract, Fulfillment planned
-- **Billing** (planned Q2 2026) - Invoice, Payment, Subscription
+- **Billing** (✅ Production) - Invoice ✅, Payment ✅, Subscription (planned Q2 2026)
 - **Warehouse** (planned Q3 2026) - Inventory management
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
@@ -87,6 +87,46 @@ internal/contexts/identity/contact/
 ```
 
 ### 4. Key Patterns
+
+**BaseAggregate Pattern** (CRITICAL - Updated January 2026):
+
+```go
+// ALL entities MUST embed BaseAggregate and NEVER duplicate its fields
+type Contact struct {
+    aggregate.BaseAggregate  // Provides: ID, Version, CreatedAt, UpdatedAt, DeletedAt
+    UserID uuidv7.UUID
+    Type   ContactType
+    // ... other fields
+}
+
+// ❌ NEVER DO THIS - Field duplication
+type WrongContact struct {
+    aggregate.BaseAggregate
+    ID        uuidv7.UUID  // ❌ DUPLICATE - already in BaseAggregate
+    CreatedAt time.Time    // ❌ DUPLICATE - already in BaseAggregate
+    UpdatedAt time.Time    // ❌ DUPLICATE - already in BaseAggregate
+}
+
+// Factory method - BaseAggregate auto-initializes ID, CreatedAt, UpdatedAt
+func NewContact(userID uuidv7.UUID) *Contact {
+    return &Contact{
+        BaseAggregate: aggregate.NewBaseAggregate(),  // Sets ID, timestamps
+        UserID:        userID,
+    }
+}
+
+// ✅ Use Touch() for timestamp updates
+func (c *Contact) Verify() {
+    c.IsVerified = true
+    c.Touch()  // Updates UpdatedAt via BaseAggregate
+}
+
+// ✅ Use GetID() for ID access
+func (r *contactRepository) Update(ctx context.Context, contact *Contact) error {
+    query := `UPDATE contacts SET ... WHERE id = $1`
+    return r.Exec(ctx, query, contact.GetID())  // Not contact.ID
+}
+```
 
 **Repository with BaseRepository**:
 
@@ -248,7 +288,7 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 **Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
-- `make test` - All tests with race detector (~40s, 250+ tests)
+- `make test` - All tests with race detector (~60s, 360+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
 - `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.5s, 123 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
@@ -949,7 +989,7 @@ go test ./pkg/uuidv7/... -v
 go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 250+ tests across 40+ packages, 90%+ average coverage
+**Test Statistics**: 360+ tests across 45+ packages, 90%+ average coverage
 
 **DTO Testing Guidelines**:
 
@@ -1097,6 +1137,46 @@ func TestUserRepository_Create(t *testing.T) {
     assert.Equal(t, u.ID, retrieved.ID)
 }
 ```
+
+**Integration Test Common Pitfalls** (from Dec 2025 fixes):
+
+1. **Unique Constraint Violations**: Add UUID suffix to test emails in loops
+   ```go
+   // ❌ WRONG - duplicate emails in loop
+   for i := 0; i < 3; i++ {
+       email := fmt.Sprintf("test_%d@example.com", i)
+   }
+   
+   // ✅ CORRECT - unique emails with UUID suffix
+   for i := 0; i < 3; i++ {
+       email := fmt.Sprintf("test_%s_%d@example.com", uuidv7.New().String()[:8], i)
+   }
+   ```
+
+2. **Transaction Rollback Tests**: Don't use `t.FailNow()` in transaction tests
+   ```go
+   // ❌ WRONG - t.FailNow() prevents rollback verification
+   tx, _ := db.BeginTx(ctx, nil)
+   if err != nil {
+       t.FailNow()  // Code after this never runs!
+   }
+   
+   // ✅ CORRECT - manual transaction + separate verification
+   tx, _ := db.BeginTx(ctx, nil)
+   ctx = database.SetTxToContext(ctx, tx)
+   // ... test code ...
+   tx.Rollback()
+   // Verify with new transaction
+   ```
+
+3. **Pagination Parameters**: pageSize before page number
+   ```go
+   // ❌ WRONG - page=10, pageSize=0 → LIMIT 0
+   users, _ := repo.ListUsers(ctx, 10, 0)
+   
+   // ✅ CORRECT - page=1, pageSize=10
+   users, _ := repo.ListUsers(ctx, 1, 10)
+   ```
 
 **Test Helpers**: [test/integration/](../test/integration/) for DB setup and utilities
 
@@ -1280,12 +1360,17 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 **Top Mistakes**:
 
-1. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
-2. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
-3. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
-4. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
-5. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
-6. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt → order-mgmt
+1. **BaseAggregate Field Duplication** (FIXED Jan 2026): NEVER duplicate ID, CreatedAt, UpdatedAt in entities - already in BaseAggregate
+   - ❌ `type Entity struct { aggregate.BaseAggregate; ID uuid.UUID }` - WRONG
+   - ✅ `type Entity struct { aggregate.BaseAggregate }` - CORRECT
+   - Always use `entity.Touch()` instead of `entity.UpdatedAt = time.Now()`
+   - Always use `entity.GetID()` instead of `entity.ID` in repositories
+2. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
+3. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
+4. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
+5. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
+6. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
+7. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt → order-mgmt
 
 **Debugging Quick Reference**:
 

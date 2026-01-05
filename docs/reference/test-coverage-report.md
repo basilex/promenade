@@ -116,7 +116,7 @@
 ### Quick Commands
 
 ```bash
-# All tests (240+ tests, ~40s with race detector)
+# All tests (360+ tests, ~60s with race detector)
 make test
 
 # By type

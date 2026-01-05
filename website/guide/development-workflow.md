@@ -230,7 +230,7 @@ import (
 
 **All tests must pass**:
 ```bash
-make test              # Run all tests (240+ tests, ~40s)
+make test              # Run all tests (360+ tests, ~60s)
 make test-unit         # Unit tests only (~5s)
 make test-smoke        # Smoke tests (~0.4s)
 make test-integration  # Integration tests (~14s)

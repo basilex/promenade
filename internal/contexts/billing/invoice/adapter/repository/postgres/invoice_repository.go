@@ -67,7 +67,7 @@ func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) er
 		)`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":               inv.ID.String(),
+		"id":               inv.GetID().String(),
 		"invoice_no":       inv.InvoiceNo,
 		"customer_id":      inv.CustomerID.String(),
 		"order_id":         inv.OrderID,
@@ -79,14 +79,14 @@ func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) er
 		"due_date":         inv.DueDate,
 		"paid_date":        inv.PaidDate,
 		"status":           string(inv.Status),
-		"created_at":       inv.CreatedAt,
-		"updated_at":       inv.UpdatedAt,
+		"created_at":       inv.GetCreatedAt(),
+		"updated_at":       inv.GetUpdatedAt(),
 	})
-
 	if err != nil {
 		return fmt.Errorf("failed to create invoice: %w", err)
 	}
 
+	// Create invoice lines
 	for _, line := range inv.Lines {
 		if err := r.CreateLine(ctx, &line); err != nil {
 			return fmt.Errorf("failed to create invoice line: %w", err)
@@ -180,8 +180,8 @@ func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) er
 		"due_date":         inv.DueDate,
 		"paid_date":        inv.PaidDate,
 		"status":           string(inv.Status),
-		"updated_at":       inv.UpdatedAt,
-		"id":               inv.ID.String(),
+		"updated_at":       inv.GetUpdatedAt(),
+		"id":               inv.GetID().String(),
 	})
 
 	if err != nil {
@@ -295,7 +295,7 @@ func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID
 		}
 
 		// Load line items
-		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.GetID())
 		if err != nil {
 			return nil, fmt.Errorf("failed to load invoice lines: %w", err)
 		}
@@ -346,7 +346,7 @@ func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.Inv
 		}
 
 		// Load line items
-		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.GetID())
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
 		}
@@ -401,7 +401,7 @@ func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int)
 		}
 
 		// Load line items
-		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.GetID())
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
 		}
@@ -452,7 +452,7 @@ func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*in
 		}
 
 		// Load line items
-		lines, err := r.GetLinesByInvoiceID(ctx, inv.ID)
+		lines, err := r.GetLinesByInvoiceID(ctx, inv.GetID())
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to load invoice lines: %w", err)
 		}
@@ -656,7 +656,7 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 		Lines:          []invoice.InvoiceLine{},
 	}
 	
-	// Set BaseAggregate fields
+	// Set BaseAggregate fields via setters (not direct access)
 	inv.ID = id
 	inv.CreatedAt = row.CreatedAt
 	inv.UpdatedAt = row.UpdatedAt

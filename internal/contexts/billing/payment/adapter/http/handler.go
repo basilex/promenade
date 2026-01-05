@@ -89,7 +89,7 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, ToPaymentResponse(p))
+	response.Created(c, ToPaymentResponse(p))
 }
 
 // GetByID retrieves a payment by ID

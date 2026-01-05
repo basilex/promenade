@@ -337,7 +337,7 @@ Promenade provides **complete order lifecycle management** with state transition
 | **Identity**            | User, Contact, Profile, Role, Permission | User management & RBAC     | ✅ Production     | [README](internal/contexts/identity/README.md) |
 | **Customer Management** | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | CRM, sales pipeline & BI    | ✅ Production     | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | Order processing       | ✅ Production     | [Guide](docs/concepts/order-management.md)      |
-| **Billing**             | Invoice ✅, Payment ✅, Subscription 📋 | Billing and payments          | 🚧 In Progress    | [Guide](docs/concepts/billing-management.md)   |
+| **Billing**             | Invoice ✅, Payment ✅, Subscription 📋 | Billing and payments          | ✅ Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
 | **Warehouse**           | Inventory, Stock                      | Inventory management          | 📋 Planned Q3 2026 | Coming soon                                 |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
@@ -730,7 +730,7 @@ test/benchmark/contexts/
 ### Running Tests
 
 ```bash
-# All tests (240+ tests, ~40 seconds with race detector)
+# All tests (360+ tests, ~60 seconds with race detector)
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
@@ -780,7 +780,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **Order-mgmt (integration)** | 6  | -        | ~1.5s    | Integration |
 | **User ListUsers (bench)** | 4     | -        | ~5s      | Benchmark   |
 
-**Total**: 250+ tests across 40+ packages, 90%+ average coverage
+**Total**: 360+ tests across 45+ packages, 90%+ average coverage
 
 ### Test Database
 
@@ -1311,7 +1311,7 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 **Technical Reference**:
 
-- [Test Coverage Report](docs/reference/test-coverage-report.md) - 240+ tests breakdown
+- [Test Coverage Report](docs/reference/test-coverage-report.md) - 360+ tests breakdown
 - [Bus Test Coverage](docs/reference/bus-test-coverage.md) - Event Bus test report (67 tests, 100% passing)
 - [Refactoring Roadmap](docs/reference/refactoring-roadmap.md) - Technical debt and improvements
 

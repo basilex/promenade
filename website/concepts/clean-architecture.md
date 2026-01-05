@@ -91,7 +91,7 @@ promenade/
 
 ## Production-Ready Features
 
-- **240+ Tests**: Unit (in-place), Smoke (mock-based), Integration (real DB) with 90%+ coverage
+- **360+ Tests**: Unit (in-place), Smoke (mock-based), Integration (real DB) with 90%+ coverage
 - **Event Bus**: Memory (377K events/sec) and Redis (distributed) adapters
 - **JWT + RBAC**: 5 system roles, 29+ permissions, token revocation
 - **Health Checks**: 4 endpoints monitoring all dependencies

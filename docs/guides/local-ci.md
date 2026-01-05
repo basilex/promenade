@@ -347,7 +347,7 @@ pre-push: ci-check  ## Alias for ci-check (run before git push)
 
 | Metric                 | Value           |
 |------------------------|-----------------|
-| **Total Tests**        | 240+ tests      |
+| **Total Tests**        | 360+ tests      |
 | **Lint Issues Fixed**  | 26 issues       |
 | **golangci-lint**      | 0 issues ✅     |
 | **Local CI Duration**  | ~60s            |

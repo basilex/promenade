@@ -107,6 +107,9 @@ func (p *Payment) Complete(transactionID string) error {
 	if p.Status != PaymentStatusProcessing {
 		return fmt.Errorf("can only complete processing payments")
 	}
+	if transactionID == "" {
+		return fmt.Errorf("transaction ID is required")
+	}
 	p.Status = PaymentStatusCompleted
 	p.TransactionID = transactionID
 	p.Touch()
@@ -115,8 +118,11 @@ func (p *Payment) Complete(transactionID string) error {
 
 // Fail marks payment as failed
 func (p *Payment) Fail(reason string) error {
-	if p.Status == PaymentStatusCompleted || p.Status == PaymentStatusRefunded {
-		return fmt.Errorf("cannot fail completed or refunded payments")
+	if p.Status != PaymentStatusProcessing {
+		return fmt.Errorf("can only fail processing payments")
+	}
+	if reason == "" {
+		return fmt.Errorf("failure reason is required")
 	}
 	p.Status = PaymentStatusFailed
 	p.FailureReason = reason
@@ -128,6 +134,9 @@ func (p *Payment) Fail(reason string) error {
 func (p *Payment) Refund(amount valueobject.Money) error {
 	if p.Status != PaymentStatusCompleted {
 		return fmt.Errorf("can only refund completed payments")
+	}
+	if amount.Amount <= 0 {
+		return fmt.Errorf("refund amount must be greater than zero")
 	}
 	if amount.Amount > p.Amount.Amount {
 		return fmt.Errorf("refund amount cannot exceed payment amount")

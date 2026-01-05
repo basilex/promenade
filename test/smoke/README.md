@@ -2,7 +2,7 @@
 
 **Quick HTTP-level validation** for all handlers - focus on status codes and basic response structure.
 
-**Status**: ✅ **COMPLETE** - 15/15 handlers, 123 tests, 100% pass rate
+**Status**: ✅ **COMPLETE** - 17/17 handlers, 138 tests, 100% pass rate
 
 ---
 
@@ -10,11 +10,11 @@
 
 ### 📊 Statistics
 
-- **Total Tests**: 123
-- **Total Handlers**: 15 (100% complete)
+- **Total Tests**: 138
+- **Total Handlers**: 17 (100% complete)
 - **Pass Rate**: 100%
-- **Test Duration**: ~0.5 seconds (cached)
-- **Contexts Covered**: 4 (Identity, Customer Management, Order Management, Shared)
+- **Test Duration**: ~0.6 seconds (cached)
+- **Contexts Covered**: 5 (Identity, Customer Management, Order Management, Billing, Shared)
 
 ### ✅ Handler Breakdown
 
@@ -25,9 +25,9 @@
 - Role: 9 tests (includes Update)
 - Permission: 9 tests (includes Update)
 
-**Customer Management Context** (4 handlers, 34 tests):
+**Customer Management Context** (4 handlers, 33 tests):
 - Company: 8 tests
-- Customer: 12 tests (includes CreateB2B, QualifyAsProspect) ⭐ Most complex
+- Customer: 11 tests (includes CreateB2B, QualifyAsProspect) ⭐ Most complex
 - Deal: 8 tests
 - Interaction: 6 tests
 
@@ -39,6 +39,10 @@
 - Currency: 9 tests (GetByCode pattern)
 - Language: 9 tests (GetByCode pattern)
 - Timezone: 9 tests (GetByName with wildcard route)
+
+**Billing Context** (2 handlers, 16 tests):
+- Invoice: 8 tests
+- Payment: 8 tests
 
 ---
 
@@ -197,20 +201,23 @@ func (m *MockCustomerUseCase) CreateCustomer(ctx context.Context, ...) (*custome
 test/smoke/
  README.md                  # This file
  testutils.go              # Shared utilities (5 helper functions)
- contexts/                 # Mirror structure (15 handlers, 123 tests)
+ contexts/                 # Mirror structure (17 handlers, 138 tests)
     identity/               # 5 handlers, 43 tests
        user/handler_test.go
        contact/handler_test.go
        profile/handler_test.go
        role/handler_test.go
        permission/handler_test.go
-    customer-mgmt/          # 4 handlers, 34 tests
+    customer-mgmt/          # 4 handlers, 33 tests
        company/handler_test.go
        customer/handler_test.go  # Most complex: 12 tests, 23-method mock
        deal/handler_test.go
        interaction/handler_test.go
     order-mgmt/             # 1 handler, 10 tests
        order/handler_test.go
+    billing/                # 2 handlers, 16 tests
+       invoice/handler_test.go
+       payment/handler_test.go
     shared/                 # 4 handlers, 36 tests
        country/handler_test.go
        currency/handler_test.go
@@ -398,13 +405,14 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 | Context               | Handlers | Tests | Status |
 | --------------------- | -------- | ----- | ------ |
 | Identity              | 5        | 43    | ✅      |
-| Customer Management   | 4        | 34    | ✅      |
+| Customer Management   | 4        | 33    | ✅      |
 | Order Management      | 1        | 10    | ✅      |
+| Billing               | 2        | 16    | ✅      |
 | Shared                | 4        | 36    | ✅      |
-| **Total**             | **15**   | **123** | ✅    |
+| **Total**             | **17**   | **138** | ✅    |
 
 **Test Distribution**:
-- Simple handlers (6-8 tests): 11 handlers
+- Simple handlers (6-8 tests): 13 handlers
 - Extended handlers (9-10 tests): 3 handlers
 - Complex handlers (12 tests): 1 handler (Customer)
 
@@ -421,6 +429,8 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 - `test/smoke/contexts/order-mgmt/order/handler_test.go` - Standard handler pattern
 - `test/smoke/contexts/identity/user/handler_test.go` - Authentication handlers with bcrypt
 - `test/smoke/contexts/customer-mgmt/customer/handler_test.go` - Complex handler (23 methods, 12 tests)
+- `test/smoke/contexts/billing/invoice/handler_test.go` - Invoice handler with 18-method mock
+- `test/smoke/contexts/billing/payment/handler_test.go` - Payment handler pattern
 - `test/smoke/contexts/shared/timezone/handler_test.go` - Wildcard routes + unique patterns
 - `test/smoke/testutils.go` - Helper functions and utilities
 
@@ -447,4 +457,4 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 ---
 
 **Last Updated**: January 4, 2026  
-**Status**: ✅ COMPLETE - 15/15 handlers, 123 tests, 100% pass rate  
+**Status**: ✅ COMPLETE - 17/17 handlers, 138 tests, 100% pass rate  

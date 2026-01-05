@@ -249,7 +249,7 @@
 | **Identity**            | ✅ Production | User, Contact, Profile, Role, Permission | [Context Guide](../internal/contexts/identity/README.md)    |
 | **Customer Management** | ✅ Production | Customer ✅, Company ✅, Deal ✅, Interaction ✅, Analytics ✅ | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | ✅ Production | Order ✅, OrderLine ✅, Contract 📋, Fulfillment 📋 | [Order Guide](concepts/order-management.md)                   |
-| **Billing**             | 📋 Planned   | Invoice, Payment, Subscription        | Coming Q2 2026                                    |
+| **Billing**             | ✅ Production | Invoice ✅, Payment ✅, Subscription 📋 | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
 | **Warehouse**           | 📋 Planned   | Inventory, Stock                      | Coming Q3 2026                                    |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
@@ -356,9 +356,9 @@ Technical specifications and detailed documentation:
 ## 📊 Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 240+ tests, 90%+ average coverage
+- **Tests**: 360+ tests, 90%+ average coverage
 - **Documentation**: 15,000+ lines across 30+ files
-- **Contexts**: 4 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt)
+- **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
 - **Performance**: 377K events/sec (Memory Bus)
 

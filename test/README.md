@@ -293,7 +293,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (240+ tests, ~40s with race detector)
+make test                 # All tests (360+ tests, ~60s with race detector)
 ```
 
 ### By Type
@@ -543,4 +543,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | 123 smoke tests (100% pass rate) | 250+ total tests
+**Test Status**: All tests passing | 138 smoke tests (100% pass rate) | 360+ total tests

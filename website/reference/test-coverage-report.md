@@ -102,7 +102,7 @@
 ### Quick Commands
 
 ```bash
-# All tests (240+ tests, ~40s with race detector)
+# All tests (360+ tests, ~60s with race detector)
 make test
 
 # By type
@@ -227,5 +227,5 @@ go test ./pkg/jwt/... -v
 ---
 
 **Last Updated**: December 29, 2025  
-**Status**: 240+ tests, 90%+ average coverage  
+**Status**: 360+ tests, 90%+ average coverage  
 **Maintainer**: Promenade Team

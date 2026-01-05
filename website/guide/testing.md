@@ -543,7 +543,7 @@ go tool cover -html=coverage.out
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
 
-**Total**: 240+ tests across 40+ packages, 90%+ average coverage
+**Total**: 360+ tests across 45+ packages, 90%+ average coverage
 
 ---
 
