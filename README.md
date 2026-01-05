@@ -68,6 +68,42 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 
 **See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
 
+### API Documentation (Swagger/OpenAPI)
+
+Promenade provides **interactive API documentation** with Swagger UI for exploring and testing all endpoints.
+
+**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 120+ endpoints directly in the browser without writing any manual documentation.
+
+**Design**: 
+- **Annotation-Driven**: Swagger comments in handler code (`@Summary`, `@Description`, `@Param`, `@Success`, `@Failure`)
+- **Auto-Generation**: swaggo/swag tool parses annotations and generates OpenAPI spec
+- **Interactive UI**: Swagger UI middleware serves documentation at `/api/docs/index.html`
+- **Multi-Format**: JSON, YAML, and embedded Go code for different use cases
+
+**Key Features**:
+- **120+ Documented Endpoints**: All 5 contexts (Identity, Customer Management, Order Management, Billing, Shared)
+- **Try-It-Out**: Test endpoints directly from browser with request/response examples
+- **Authentication**: JWT Bearer token management in UI
+- **Schema Validation**: Request/response models with type definitions
+- **Error Documentation**: All error codes and HTTP status explanations
+- **Export Formats**: OpenAPI JSON/YAML for Postman, Insomnia integration
+
+**Quick Access**:
+```bash
+make dev
+# Open: http://localhost:8081/api/docs/index.html
+```
+
+**Documentation Coverage**:
+- Identity Context: 35 endpoints (User, Contact, Profile, Role, Permission)
+- Customer Management: 48 endpoints (Customer, Company, Deal, Interaction, Analytics)
+- Order Management: 14 endpoints (Order lifecycle)
+- Billing: 22 endpoints (Invoice, Payment, Subscription)
+- Shared: 9 endpoints (Country, Currency, Language, Timezone)
+- Infrastructure: 4 endpoints (Health checks)
+
+**See**: [docs/guides/api-documentation.md](docs/guides/api-documentation.md) for complete Swagger documentation guide
+
 ### Multi-Database Support
 
 Promenade implements **database-agnostic architecture** supporting multiple SQL databases:

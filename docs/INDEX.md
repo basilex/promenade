@@ -43,6 +43,22 @@
 
 ---
 
+### API Documentation (Swagger/OpenAPI)
+
+**Interactive API documentation** with Swagger UI for exploring and testing all endpoints.
+
+- **OpenAPI 3.0**: Auto-generated specification from code annotations
+- **Swagger UI**: Interactive browser interface at `/api/docs/index.html`
+- **120+ Endpoints**: All 5 contexts fully documented
+- **Try-It-Out**: Test APIs directly from browser
+- **JWT Integration**: Bearer token authentication in UI
+- **Export Formats**: JSON/YAML for Postman, Insomnia
+- **Implementation**: [API Documentation Guide](guides/api-documentation.md)
+
+**Quick Access**: `make dev` → http://localhost:8081/api/docs/index.html
+
+---
+
 ### Health Monitoring
 
 **Comprehensive health checks** monitor all dependencies with graceful degradation.
