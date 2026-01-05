@@ -273,6 +273,11 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("billing migrations failed: %w", err)
 	}
 
+	// Run warehouse context migrations
+	if err := mgr.MigrateNamespace(ctx, "warehouse"); err != nil {
+		return fmt.Errorf("warehouse migrations failed: %w", err)
+	}
+
 	return nil
 }
 

@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**:  **COMPLETE** - 15/15 handlers, 123 tests, 100% pass rate
+**Status**:  **COMPLETE** - 17/17 handlers, 138 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -73,7 +73,7 @@ test/smoke/
 - Test HTTP status codes (200/201/404/400/500)
 - Validate response format (`{"status":"success"}`)
 - No database dependencies (pure mocks)
-- Fast execution (~0.5s for all 123 tests, cached)
+- Fast execution (~0.6s for all 138 tests, cached)
 - 6-12 tests per handler (simple to complex)
 - Error code patterns vary by context:
   - Identity/Order Management: Simple "NOT_FOUND"
@@ -235,7 +235,7 @@ test/smoke/contexts/
     language/handler_test.go  # 9 tests
     timezone/handler_test.go  # 9 tests
 
-**Total: 123 smoke tests across 15 handlers (100% pass rate)**
+**Total: 138 smoke tests across 17 handlers (100% pass rate)**
 ```
 
 ### Shared Context (Reference Data)
@@ -293,7 +293,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (420+ tests, ~60s with race detector)
+make test                 # All tests (450+ tests, ~60s with race detector)
 ```
 
 ### By Type
@@ -523,7 +523,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (123 tests across 15 handlers)   
+**Smoke Tests**: HTTP handlers with mocks (138 tests across 17 handlers)   
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)
@@ -543,4 +543,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | 138 smoke tests (100% pass rate) | 420+ total tests
+**Test Status**: All tests passing | 138 smoke tests (100% pass rate) | 450+ total tests

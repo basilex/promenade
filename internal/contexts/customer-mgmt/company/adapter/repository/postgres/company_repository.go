@@ -363,7 +363,11 @@ func (r *companyRepository) GetByTaxID(ctx context.Context, taxID string) (*comp
 }
 
 // List retrieves paginated list of companies
-func (r *companyRepository) List(ctx context.Context, limit, offset int) ([]*company.Company, int, error) {
+func (r *companyRepository) List(ctx context.Context, page, pageSize int) ([]*company.Company, int, error) {
+	// Convert page/pageSize to limit/offset
+	limit := pageSize
+	offset := (page - 1) * pageSize
+
 	var rows []companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -396,7 +400,11 @@ func (r *companyRepository) List(ctx context.Context, limit, offset int) ([]*com
 }
 
 // ListByIndustry retrieves paginated list of companies by industry
-func (r *companyRepository) ListByIndustry(ctx context.Context, industry string, limit, offset int) ([]*company.Company, int, error) {
+func (r *companyRepository) ListByIndustry(ctx context.Context, industry string, page, pageSize int) ([]*company.Company, int, error) {
+	// Convert page/pageSize to limit/offset
+	limit := pageSize
+	offset := (page - 1) * pageSize
+
 	var rows []companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -431,7 +439,11 @@ func (r *companyRepository) ListByIndustry(ctx context.Context, industry string,
 }
 
 // ListBySize retrieves paginated list of companies by size
-func (r *companyRepository) ListBySize(ctx context.Context, size string, limit, offset int) ([]*company.Company, int, error) {
+func (r *companyRepository) ListBySize(ctx context.Context, size string, page, pageSize int) ([]*company.Company, int, error) {
+	// Convert page/pageSize to limit/offset
+	limit := pageSize
+	offset := (page - 1) * pageSize
+
 	var rows []companyRow
 	query := `
 		SELECT * FROM customer_companies

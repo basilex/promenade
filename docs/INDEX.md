@@ -39,7 +39,7 @@
 - **Rate Limiting**: IP-based protection (Login: 5/min, Register: 3/min)
 - **Implementation**: [RBAC Guide](guides/rbac.md) | [Rate Limiting](guides/rate-limiting.md)
 
-**27 tests** (JWT) + **10 tests** (Rate Limiting)
+**27 tests** (JWT) + **25 tests** (Middleware)
 
 ---
 
@@ -56,6 +56,30 @@
 - **Implementation**: [API Documentation Guide](guides/api-documentation.md)
 
 **Quick Access**: `make dev` → http://localhost:8081/api/docs/index.html
+- **Swagger UI**: Interactive browser interface at `/api/docs/index.html`
+- **120+ Endpoints**: All 5 contexts fully documented
+- **Try-It-Out**: Test APIs directly from browser
+- **JWT Integration**: Bearer token authentication in UI
+- **Export Formats**: JSON/YAML for Postman, Insomnia
+- **Implementation**: [API Documentation Guide](guides/api-documentation.md)
+
+**Quick Access**: `make dev` → http://localhost:8081/api/docs/index.html
+
+---
+
+### Postman Collection
+
+**Pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing.
+
+- **Auto-Generated**: OpenAPI spec → Postman collection (33K lines)
+- **Multi-Environment**: Dev/Staging/Prod configs with pre-configured variables
+- **Authentication Flow**: Auto-save JWT tokens after login, auto-refresh expired tokens
+- **Test Automation**: Pre-request and test scripts for validation and token management
+- **Newman Integration**: CI/CD ready with `newman run` command
+- **Common Workflows**: 5 documented use cases (auth, customer, pipeline, order, billing)
+- **Implementation**: [Postman Collection Guide](../postman/README.md)
+
+**Quick Start**: Import `postman/Promenade_API.postman_collection.json` + `Development.postman_environment.json`
 
 ---
 
@@ -297,7 +321,7 @@
 | **Customer Management** | Production | Customer, Company, Deal, Interaction, Analytics (all live)  | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
-| **Warehouse**           | Planned Q3'26 | Inventory, Stock                                         | Coming soon                                       |
+| **Warehouse**           | In Progress   | Inventory (started), StockMovement (planned)            | [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 
@@ -322,7 +346,7 @@
 | **aggregate**   | Base aggregate pattern             | 5     | [Guide](../pkg/aggregate/README.md)        |
 | **jsonb**       | PostgreSQL JSONB utilities         | 8     | [Guide](../pkg/jsonb/README.md)            |
 
-**Total**: 250+ tests across 12 packages | [Package Overview](../pkg/README.md)
+**Total**: 270+ tests across 12 packages | [Package Overview](../pkg/README.md)
 
 ---
 
@@ -376,7 +400,7 @@ Step-by-step implementation guides:
 Technical specifications and detailed documentation:
 
 - [API Reference](reference/api-reference.md) - Complete HTTP API documentation
-- [Test Coverage Report](reference/test-coverage-report.md) - 420+ tests breakdown
+- [Test Coverage Report](reference/test-coverage-report.md) - 450+ tests breakdown
 - [Bus Test Coverage](reference/bus-test-coverage.md) - Event Bus test report
 - [Index Audit Report](reference/index-audit-report.md) - Database index analysis (13 tables, 60+ indexes)
 - [Soft Delete Audit](reference/soft-delete-audit.md) - Soft delete implementation audit (78 queries, 100% compliance)
@@ -416,11 +440,12 @@ Technical specifications and detailed documentation:
 ##  Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 420+ tests, 90%+ average coverage
+- **Tests**: 450+ tests, 90%+ average coverage
 - **Documentation**: 15,000+ lines across 30+ files
-- **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing)
+- **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing), 1 in progress (Warehouse)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
 - **Performance**: 377K events/sec (Memory Bus)
+- **API Documentation**: 120+ endpoints (Swagger UI), 33K lines Postman collection
 
 ---
 
@@ -448,9 +473,14 @@ Read our [Contributing Guide](guides/contributing.md) to learn about:
 ##  Recent Updates
 
 **January 5, 2026**:
+- Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
+- Swagger UI operational (120+ endpoints at `/api/docs/index.html`)
+- Postman collection ready (33K lines, auto-generated with test automation)
+- Developer Portal complete (4 guides: Quick Start, Auth Flow, Use Cases, Troubleshooting)
+- Warehouse Context started (15% complete - Inventory aggregate basic structure)
 - Subscription aggregate completed (8 endpoints, 120 tests)
 - Billing context fully operational (Invoice, Payment, Subscription)
-- Comprehensive test coverage (58 entity + 35 usecase + 11 integration + 16 smoke)
+- Test infrastructure validated (450+ tests: 138 smoke, 18/18 PASS)
 - All lint issues resolved (0 issues)
 
 **January 1, 2026**:

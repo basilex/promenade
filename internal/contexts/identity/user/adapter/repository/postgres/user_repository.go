@@ -277,9 +277,7 @@ func (r *userRepository) ExistsByEmail(ctx context.Context, email string) (bool,
 
 // ListUsers retrieves a paginated list of users with roles loaded in a single query
 // Optimization: Uses LEFT JOIN with ARRAY_AGG to avoid N+1 query problem
-func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*user.User, int, error) {
-	offset := (page - 1) * pageSize
-
+func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*user.User, int, error) {
 	// Get total count
 	var total int
 	countQuery := `
@@ -316,7 +314,7 @@ func (r *userRepository) ListUsers(ctx context.Context, page, pageSize int) ([]*
 		LIMIT $1 OFFSET $2
 	`
 
-	err = r.Select(ctx, &rows, query, pageSize, offset)
+	err = r.Select(ctx, &rows, query, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}
