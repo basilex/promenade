@@ -88,8 +88,8 @@ ENVIRONMENT=development     # or test, production
 **Template**: `.promenade.workspace.example` (committed to git)
 
 ```bash
-# Promenade Environment Configuration
-# Copy to .promenade.env and customize
+# Promenade Workspace Configuration
+# Copy to .promenade.workspace and customize
 
 # Database Driver: postgres | sqlite | mysql
 DATABASE_DRIVER=postgres
@@ -237,7 +237,7 @@ make test                   # No ambiguity
 
 ### ✅ Safety
 
-- **Validation** - Every command checks `.promenade.env` exists
+- **Validation** - Every command checks `.promenade.workspace` exists
 - **Type Safety** - Invalid DATABASE_DRIVER = immediate error
 - **Fail Fast** - Wrong state = command refuses to run
 - **Visual Feedback** - Developer sees current config
@@ -600,7 +600,7 @@ make lint                  # Run linters
 make setup
 # Which database driver? (postgres/sqlite/mysql): postgres
 # Which environment? (development/test/production): development
-✅ Created .promenade.env
+✅ Created .promenade.workspace
 ```
 
 ### 2. Status Command
@@ -618,7 +618,7 @@ make status
 ### 3. Profile System
 
 ```bash
-# .promenade.env.profiles/
+# .promenade.workspace.profiles/
 postgres-dev
 sqlite-test
 mysql-prod
@@ -630,8 +630,8 @@ make switch-profile postgres-dev
 
 ```bash
 # .git/hooks/pre-commit
-if [ ! -f .promenade.env ]; then
-  echo "⚠️  Warning: .promenade.env not configured"
+if [ ! -f .promenade.workspace ]; then
+  echo "⚠️  Warning: .promenade.workspace not configured"
 fi
 ```
 

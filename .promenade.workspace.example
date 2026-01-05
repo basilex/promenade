@@ -1,7 +1,7 @@
-# Promenade Environment Configuration
+# Promenade Workspace Configuration
 # ==================================
-# Copy this file to .promenade.env and customize for your setup
-# cp .promenade.env.example .promenade.env
+# Copy this file to .promenade.workspace and customize for your setup
+# cp .promenade.workspace.example .promenade.workspace
 
 # Database Driver Selection
 # -------------------------
@@ -46,7 +46,7 @@ ENVIRONMENT=development
 
 # Notes:
 # ------
-# 1. .promenade.env is git-ignored (local only)
-# 2. Use 'make switch-postgres' / 'make switch-sqlite' for quick switching
+# 1. .promenade.workspace is git-ignored (local only)
+# 2. Use 'make switch-postgres-dev' / 'make switch-sqlite-dev' for quick switching
 # 3. All make commands read this file automatically
-# 4. See docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md for details
+# 4. See docs/guides/workspace-management.md for details
