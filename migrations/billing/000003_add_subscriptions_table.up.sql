@@ -2,8 +2,6 @@
 -- Context: billing
 -- Created: 2026-01-05 07:50:42
 
-BEGIN;
-
 -- Create billing_subscriptions table for recurring billing management
 CREATE TABLE IF NOT EXISTS billing_subscriptions (
     id UUID PRIMARY KEY,
@@ -50,5 +48,3 @@ COMMENT ON COLUMN billing_subscriptions.customer_id IS 'Reference to customer (n
 COMMENT ON COLUMN billing_subscriptions.status IS 'Subscription lifecycle status: trial, active, paused, cancelled, expired';
 COMMENT ON COLUMN billing_subscriptions.billing_period IS 'Renewal frequency: monthly, quarterly, yearly';
 COMMENT ON COLUMN billing_subscriptions.amount_cents IS 'Subscription price in cents for precise currency handling';
-
-COMMIT;

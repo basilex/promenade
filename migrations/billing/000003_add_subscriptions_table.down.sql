@@ -2,9 +2,6 @@
 -- Context: billing
 -- Created: 2026-01-05 07:50:42
 
-BEGIN;
-
 -- Drop billing_subscriptions table
 DROP TABLE IF EXISTS billing_subscriptions CASCADE;
 
-COMMIT;
