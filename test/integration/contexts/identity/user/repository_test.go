@@ -65,33 +65,36 @@ func TestUserRepository_Queries(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 	testDB := integration.SetupTestDBWithCleanTables(t)
-	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		repo := postgres.NewUserRepository(testDB.DB)
+	repo := postgres.NewUserRepository(testDB.DB)
+	ctx := context.Background()
 
-		// Create 2 users with unique emails
-		email1 := fmt.Sprintf("user1_%s@example.com", uuidv7.New().String())
-		email2 := fmt.Sprintf("user2_%s@example.com", uuidv7.New().String())
-		u1, err := user.NewUser(email1, "password123")
-		require.NoError(t, err)
-		u2, err := user.NewUser(email2, "password456")
-		require.NoError(t, err)
-		require.NoError(t, repo.Create(ctx, u1))
-		require.NoError(t, repo.Create(ctx, u2))
+	// Create 2 users with unique emails
+	email1 := fmt.Sprintf("user1_%s@example.com", uuidv7.New().String())
+	email2 := fmt.Sprintf("user2_%s@example.com", uuidv7.New().String())
+	u1, err := user.NewUser(email1, "password123")
+	require.NoError(t, err)
+	u2, err := user.NewUser(email2, "password456")
+	require.NoError(t, err)
+	require.NoError(t, repo.Create(ctx, u1))
+	require.NoError(t, repo.Create(ctx, u2))
 
-		// ExistsByEmail
-		exists, err := repo.ExistsByEmail(ctx, email1)
-		require.NoError(t, err)
-		assert.True(t, exists)
+	// ExistsByEmail
+	exists, err := repo.ExistsByEmail(ctx, email1)
+	require.NoError(t, err)
+	assert.True(t, exists)
 
-		exists, err = repo.ExistsByEmail(ctx, "nonexistent@example.com")
-		require.NoError(t, err)
-		assert.False(t, exists)
+	exists, err = repo.ExistsByEmail(ctx, "nonexistent@example.com")
+	require.NoError(t, err)
+	assert.False(t, exists)
 
-		// ListUsers
-		users, total, err := repo.ListUsers(ctx, 1, 10)  // page=1, pageSize=10
-		require.NoError(t, err)
-		assert.GreaterOrEqual(t, total, 2)
-		assert.GreaterOrEqual(t, len(users), 2)
+	// ListUsers
+	page := 1
+	pageSize := 10
+	offset := (page - 1) * pageSize
+	users, total, err := repo.ListUsers(ctx, pageSize, offset) // limit, offset
+	require.NoError(t, err)
+	assert.GreaterOrEqual(t, total, 2)
+	assert.GreaterOrEqual(t, len(users), 2)
 
 		// ValueObject roundtrip (Email preservation)
 		email3 := "value@object.com"
@@ -100,14 +103,7 @@ func TestUserRepository_Queries(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, u3))
 		retrieved, _ := repo.GetByID(ctx, u3.ID)
 		assert.Equal(t, email3, retrieved.Email.Value())
-	})
-}
 
-func TestUserRepository_ConcurrentUpdates(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping integration test in short mode")
-	}
-	testDB := integration.SetupTestDBWithCleanTables(t)
 
 	// Create user WITHOUT transaction so it persists for concurrent tests
 	var userID uuidv7.UUID
@@ -151,8 +147,8 @@ func TestUserRepository_ConcurrentUpdates(t *testing.T) {
 	}
 
 	// Verify final state (use context.Background(), not a transaction)
-	repo := postgres.NewUserRepository(testDB.DB)
-	u, err := repo.GetByID(context.Background(), userID)
+	finalRepo := postgres.NewUserRepository(testDB.DB)
+	u, err := finalRepo.GetByID(context.Background(), userID)
 	require.NoError(t, err)
 	assert.Equal(t, user.UserStatusActive, u.Status)
 }
