@@ -1,5 +1,6 @@
 .PHONY: help validate-env workspace
 .PHONY: install build clean fmt lint
+.PHONY: clean-emoji clean-emoji-apply check-emoji
 .PHONY: switch-postgres-dev switch-postgres-test switch-postgres-prod
 .PHONY: switch-sqlite-dev switch-sqlite-test switch-sqlite-prod
 .PHONY: switch-mysql-dev switch-mysql-test switch-mysql-prod
@@ -112,7 +113,22 @@ lint:  ## Run linters
 	@echo "Running linters..."
 	golangci-lint run ./...
 
-# ============================================================================# Configuration Switchers (driver-environment)
+# ============================================================================
+# Emoji Cleaning (Official Policy Enforcement)
+# See: docs/guides/documentation-style-guide.md
+# ============================================================================
+
+clean-emoji:  ## Show files with emoji (dry-run, safe)
+	@python3 scripts/clean-docs.py
+
+clean-emoji-apply:  ## Remove emoji from files (MODIFIES files)
+	@python3 scripts/clean-docs.py --apply
+
+check-emoji:  ## Check for emoji violations (CI mode, exit 1 if found)
+	@python3 scripts/clean-docs.py --check
+
+# ============================================================================
+# Configuration Switchers (driver-environment)
 # Naming: switch-{driver}-{env} matches config files app.{driver}-{env}.yaml
 # Usage: Set once, then use runners (dev, test-all, prod)
 # ============================================================================
@@ -204,6 +220,9 @@ help:  ## Show this help message
 	@echo ""
 	@echo "⚙️  GO WORKSPACE COMMANDS"
 	@awk 'BEGIN {FS = ":.*##"} /^(install|build|clean|fmt|lint):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
+	@echo ""
+	@echo "🧹 EMOJI CLEANING (Official Policy)"
+	@awk 'BEGIN {FS = ":.*##"} /^(clean-emoji|clean-emoji-apply|check-emoji):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
 	@echo "🛠️  DEVELOPMENT (Makefile.dev.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^(dev|dev-fresh|build|run|install|clean|fmt|lint|docker-up|docker-down|docker-logs|docker-ps|docker-clean|db-create|db-drop|db-reset|db-fresh|migrate|migrate-core|migrate-shared|migrate-identity|migrate-customer-mgmt|migrate-order-mgmt|migrate-status|migrate-new|seed|seed-shared|seed-identity|ci-check|ci-lint|ci-test|ci-build|pre-push):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
