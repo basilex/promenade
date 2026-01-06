@@ -499,7 +499,7 @@ func TestMarkAsDamaged_InsufficientStock(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(50, 1000, userID)
+	_ = inv.ReceiveStock(50, 1000, userID)
 
 	err := inv.MarkAsDamaged(100, "Water damage", userID)
 
@@ -644,7 +644,7 @@ func TestGetStockValue_WithStock(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(100, 1250, userID)
+	_ = inv.ReceiveStock(100, 1250, userID)
 
 	value := inv.GetStockValue()
 
@@ -746,7 +746,7 @@ func TestComplexWorkflow_FullOrderFulfillment(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(200, 1000, userID)
+	_ = inv.ReceiveStock(200, 1000, userID)
 	assert.Equal(t, 200, inv.QuantityAvailable)
 
 	_ = inv.ReserveStock(50, orderID, userID)
@@ -820,6 +820,6 @@ func TestComplexWorkflow_LowStockAlert(t *testing.T) {
 
 	assert.False(t, inv.IsLowStock())
 
-	inv.ReserveStock(75, orderID, userID)
+	_ = inv.ReserveStock(75, orderID, userID)
 	assert.True(t, inv.IsLowStock())
 }
