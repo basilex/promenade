@@ -30,6 +30,8 @@ Comprehensive business documentation available in multiple languages:
 | 🇫🇷 Français | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
 | 🇪🇸 Español | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
 | 🇵🇹 Português | [Visão Geral de Negócios](docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
+| 🇯🇵 日本語 | [ビジネス概要](docs/business/BUSINESS_OVERVIEW_JP.md) | 経営者、マネージャー、投資家 |
+| 🇹🇼 繁體中文 | [商業概覽](docs/business/BUSINESS_OVERVIEW_ZH.md) | 高階主管、經理、投資者 |
 
 ### What's Included
 

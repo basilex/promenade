@@ -24,7 +24,7 @@ hero:
 
 <div class="vp-box tip">
 
-**Comprehensive business documentation available in 6 languages**
+**Comprehensive business documentation available in 8 languages**
 
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
@@ -34,6 +34,8 @@ hero:
 | 🇫🇷 Français | [Aperçu Commercial](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
 | 🇪🇸 Español | [Resumen de Negocio](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
 | 🇵🇹 Português | [Visão Geral de Negócios](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
+| 🇯🇵 日本語 | [ビジネス概要](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_JP.md) | 経営者、マネージャー、投資家 |
+| 🇹🇼 繁體中文 | [商業概覽](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ZH.md) | 高階主管、經理、投資者 |
 
 **What's Included**: Executive summary • Value propositions • Core capabilities (CRM, Orders, Warehouse, Billing) • Use cases with ROI • Deployment options • Roadmap Q1-Q4 2026 • Success metrics
 
