@@ -25,7 +25,7 @@ type Check struct {
 	Name      string        `json:"name"`
 	Status    Status        `json:"status"`
 	Message   string        `json:"message,omitempty"`
-	Duration  time.Duration `json:"duration_ms"`
+	Duration  time.Duration `json:"duration_ms" swaggertype:"integer"`
 	Timestamp time.Time     `json:"timestamp"`
 }
 
