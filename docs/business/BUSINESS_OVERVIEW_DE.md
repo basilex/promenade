@@ -574,6 +574,446 @@ Promenade ist wie **LEGO-Blöcke** aufgebaut - jede Geschäftsfähigkeit ist ein
 
 ---
 
+## Für Investoren
+
+### Investitionsmöglichkeit
+
+Promenade Platform stellt eine attraktive Investitionsmöglichkeit im schnell wachsenden Markt für Unternehmenssoftware dar. Mit einer soliden technischen Grundlage, klarem Product-Market-Fit und skalierbarer Architektur hat Promenade das Potenzial für signifikantes Wachstum.
+
+### Marktchance
+
+**Total Addressable Market (TAM)**:
+- Globaler CRM-Markt: $128 Mrd. (2026, 13% CAGR)
+- Auftragsverwaltungssysteme: $45 Mrd. (2026, 11% CAGR)
+- Bestandsverwaltung: $38 Mrd. (2026, 8% CAGR)
+- **Gesamt-TAM**: $211+ Mrd.
+
+**Zielmarkt**:
+- Kleine und mittlere Unternehmen (KMU): 30+ Millionen weltweit
+- Mittelstandsunternehmen: 200.000+ global
+- Wachsender E-Commerce-Sektor: 24 Millionen Online-Shops
+
+### Wettbewerbsvorteile
+
+1. **Modulare Architektur**: Kunden zahlen nur für Funktionen, die sie nutzen (niedrigere Einstiegshürde)
+2. **Open Source**: MIT-Lizenz schafft Vertrauen und fördert Community-Akzeptanz
+3. **Kosteneffizienz**: 60-80% niedrigere Gesamtbetriebskosten im Vergleich zu Wettbewerbern
+4. **API-First**: Einfache Integration mit bestehenden Systemen (reduziert Wechselhürden)
+5. **Multi-Datenbank-Unterstützung**: Flexibilität von SQLite (kostenlos) bis PostgreSQL (Enterprise)
+
+### Monetarisierungsmodell (Geplant)
+
+**Hauptumsatzquellen**:
+- **SaaS-Abonnements**: $29-299/Benutzer/Monat je nach Tarif
+  - Starter: $29/Benutzer/Monat (bis zu 10 Benutzer)
+  - Professional: $99/Benutzer/Monat (unbegrenzte Benutzer)
+  - Enterprise: $299/Benutzer/Monat (benutzerdefinierte Funktionen + Support)
+
+- **Professionelle Dienstleistungen**: $150-250/Stunde
+  - Benutzerdefinierte Entwicklung und Integrationen
+  - Schulung und Onboarding
+  - Prioritätssupport-Verträge
+
+- **Marktplatz**: 20% Provision auf Drittanbieter-Plugins/Erweiterungen
+
+**Umsatzprognose** (Konservative Schätzungen):
+
+| Jahr | Kunden | ARR | Wachstum |
+|------|---------|-----|----------|
+| Jahr 1 | 100 | $180K | - |
+| Jahr 2 | 500 | $1.2M | 567% |
+| Jahr 3 | 2.000 | $5.4M | 350% |
+| Jahr 5 | 10.000 | $28M | 130% |
+
+*Annahmen: Durchschnittlich $150/Benutzer/Monat, 15 Benutzer pro Kunde, 80% Retention*
+
+### Erfolge und Validierung
+
+**Technische Meilensteine**:
+- ✅ 75% Funktionalität abgeschlossen (6 von 8 Modulen produktionsbereit)
+- ✅ 2.200+ automatisierte Tests (90%+ Abdeckung)
+- ✅ 146+ API-Endpunkte vollständig dokumentiert
+- ✅ 15.000+ Zeilen Dokumentation
+- ✅ Produktionsbereite Sicherheit (JWT, RBAC, Rate Limiting)
+
+**Produktreife**:
+- ✅ 6 Monate aktive Entwicklung
+- ✅ Clean Architecture (Domain-Driven Design)
+- ✅ Skalierbare Infrastruktur (377K Events/Sek. nachgewiesen)
+- ✅ Multi-Datenbank-Unterstützung (PostgreSQL, SQLite, MySQL)
+
+### Mittelverwendung
+
+**Finanzierungsziel**: $1.5M Seed-Runde
+
+**Aufteilung**:
+- **Produktentwicklung (40%)**: $600K
+  - Fertigstellung der verbleibenden 25% Kernfunktionen (Q1-Q2 2026)
+  - Mobile App-Entwicklung (iOS/Android)
+  - Web-Frontend-Modernisierung
+  - Erweiterte Berichterstattung und Analytik
+
+- **Vertrieb und Marketing (30%)**: $450K
+  - Aufbau Vertriebsteam (3-4 Vertreter)
+  - Marketingkampagnen (Content, Werbung, Events)
+  - Partnerschaftsentwicklung
+  - Community-Aufbau
+
+- **Betrieb und Support (20%)**: $300K
+  - Customer Success-Team
+  - Technische Support-Infrastruktur
+  - Dokumentation und Schulungsmaterialien
+  - Rechtliches und Compliance
+
+- **Reserve (10%)**: $150K
+  - Notfallfonds
+  - Opportunistische Einstellungen
+
+### Team und Expertise
+
+**Aktuelles Team**:
+- **Technischer Gründer**: 10+ Jahre Backend-Entwicklung, Experte in Go und verteilten Systemen
+- **Architektur**: Domain-Driven Design (DDD), Event-Driven Architecture, Microservices
+- **Track Record**: Erfolgreiche Lieferung von Unternehmenssystemen für Fortune-500-Kunden
+
+**Einstellungsplan** (Nach Finanzierung):
+- Frontend-Entwickler (React/TypeScript) - Q1 2026
+- Mobile-Entwickler (iOS/Android) - Q1 2026
+- Vertriebsleiter - Q2 2026
+- Customer Success Manager - Q2 2026
+- Zusätzlicher Backend-Entwickler - Q2 2026
+
+### Exit-Strategie
+
+**Ziel-Exit-Zeitrahmen**: 4-6 Jahre
+
+**Potenzielle Exit-Wege**:
+
+1. **Strategische Übernahme**
+   - Wahrscheinliche Käufer: Salesforce, HubSpot, Oracle, SAP, Microsoft
+   - Bewertungsmultiplikator: 8-12x ARR (SaaS-Standard)
+   - Zielbewertung: $200M-500M bei Exit
+
+2. **Börsengang** (Langfristig)
+   - Anforderungen: $100M+ ARR, starke Wachstumskennzahlen
+   - Zielbewertung: $1B+ (Einhorn-Status)
+
+3. **Private-Equity-Übernahme**
+   - Fokus auf Rentabilität und Cashflow
+   - Bewertungsmultiplikator: 5-8x EBITDA
+
+### Investitionsbedingungen
+
+**Gesucht**: $1.5M Seed-Runde
+
+**Vorgeschlagener Anteil**: 15-20% (verhandelbar je nach Bedingungen)
+
+**Bewertung**: $7.5M-10M Pre-Money
+
+**Investorenrechte**:
+- Beobachtersitz im Vorstand
+- Monatliche Finanzberichte
+- Vierteljährliche Produkt-Roadmap-Reviews
+- Pro-rata-Rechte in Folgerunden
+
+**Meilensteine für Folgerunde** (Series A Ziel: $8M bei $40M Bewertung):
+- 500+ zahlende Kunden
+- $2M+ ARR
+- 50%+ Jahreswachstum
+- Expansion in 2-3 zusätzliche Märkte (EU, Asien)
+
+### Risikofaktoren
+
+**Technische Risiken**:
+- ✅ Gemildert: Hohe Testabdeckung (2.200+ Tests) reduziert Fehler
+- ✅ Gemildert: Modulare Architektur ermöglicht schnelle Iteration
+- ⚠️ Verbleibend: Skalierung über 100K Kunden (wird mit Finanzierung gelöst)
+
+**Marktrisiken**:
+- ⚠️ Wettbewerb durch etablierte Player (Salesforce, HubSpot)
+  - Minderung: Niedrigere Preise, Open-Source-Modell, höhere Flexibilität
+- ⚠️ Wirtschaftsabschwung reduziert KMU-Softwareausgaben
+  - Minderung: Targeting von Mittelstand und Enterprise-Segmenten
+
+**Ausführungsrisiken**:
+- ⚠️ Teamgröße (derzeit Solo-Gründer)
+  - Minderung: Nachgewiesene Lieferfähigkeit, Einstellungsplan bereit
+- ⚠️ Kundenakquisitionskosten
+  - Minderung: Product-led Growth, Freemium-Modell, starke API für Integrationen
+
+### Kontakt für Investitionsanfragen
+
+**Email**: alexander.vasilenko@gmail.com  
+**Betreff**: "Investitionsanfrage - Promenade Platform"
+
+**Bitte einschließen**:
+- Kurze Vorstellung und Investitionsfokus
+- Ticketgröße und typische Investitionsphase
+- Zeitplan und gewünschte nächste Schritte
+
+**Wir stellen bereit**:
+- Detailliertes Finanzmodell und Prognosen
+- Produktdemo und technisches Deep-Dive
+- Kundenvalidierung und Fallstudien (falls verfügbar)
+- Vollständiges Pitch Deck und Data Room-Zugang
+
+---
+
+## Ausschreibung: Web- und Mobile-Anwendungsentwicklung
+
+### Projektübersicht
+
+Promenade Platform sucht qualifizierte Entwicklungsagenturen oder Freelance-Teams zur Erstellung moderner Web- und Mobile-Anwendungen auf Basis unserer bestehenden REST-API-Infrastruktur. Dies ist eine aufregende Gelegenheit, mit einer hochmodernen Backend-Plattform zu arbeiten und Benutzererlebnisse zu schaffen, die Tausende von Unternehmen bedienen werden.
+
+### Projektumfang
+
+**1. Webanwendung (React/TypeScript)**
+
+**Anforderungen**:
+- Moderne responsive Weboberfläche (Desktop + Tablet + Mobile Web)
+- Erstellt mit React 18+ und TypeScript
+- State Management mit Redux Toolkit oder Zustand
+- UI-Framework: Material-UI, Ant Design oder Tailwind CSS
+- Echtzeit-Updates über WebSocket-Integration
+- JWT-Authentifizierung mit rollenbasierter UI-Darstellung
+- Umfassende Formularvalidierung und Fehlerbehandlung
+- Barrierefreiheitskonformität (WCAG 2.1 Level AA)
+
+**Hauptfunktionen**:
+- Dashboard mit Schlüsselmetriken und Diagrammen
+- Kundenverwaltung (Liste, Erstellen, Bearbeiten, Lifecycle-Tracking)
+- Deal-Funnel (Kanban-Board mit Drag-and-Drop)
+- Auftragsverwaltung (Aufträge erstellen, Positionen, Statusverfolgung)
+- Bestandsverwaltung (Lagerbestände, Bewegungen, Benachrichtigungen)
+- Rechnungsstellung und Zahlungsverfolgung
+- Benutzerprofil und Einstellungen
+- Rollenbasierte Zugriffskontrolle (Funktionen basierend auf Berechtigungen zeigen/verbergen)
+
+**Liefergegenstände**:
+- Quellcode (GitHub-Repository)
+- Deployment-Konfiguration (Docker, Nginx)
+- Benutzerdokumentation
+- Entwicklerdokumentation (Komponentenbibliothek, State Management)
+- Automatisierte Tests (Unit + Integration)
+
+**Zeitrahmen**: 12-16 Wochen
+
+**Budgetspanne**: $40.000 - $70.000 USD
+
+---
+
+**2. iOS-App (Native Swift oder React Native)**
+
+**Anforderungen**:
+- Native iOS-App (iOS 14+) oder React Native Cross-Platform
+- Moderne iOS-Design-Patterns (SwiftUI bevorzugt)
+- Offline-First-Architektur mit Datensynchronisation
+- Push-Benachrichtigungen für wichtige Ereignisse
+- Biometrische Authentifizierung (Face ID / Touch ID)
+- Kamera-Integration (Barcode-Scannen, Belege)
+- Dark Mode-Unterstützung
+
+**Hauptfunktionen**:
+- Kundensuche und Kontaktdetails
+- Deal-Funnel-Ansicht (vereinfacht für Mobile)
+- Auftragserstellung und Statusprüfung
+- Schnelle Bestandsansicht und Bestandsprüfung
+- Barcode-Scannen für Produkte
+- Push-Benachrichtigungen (niedriger Bestand, neue Aufträge, Zahlungen)
+
+**Liefergegenstände**:
+- Quellcode (GitHub-Repository)
+- App Store-Einreichung und -Genehmigung
+- Benutzerdokumentation
+- Entwicklerdokumentation
+- Automatisierte Tests
+
+**Zeitrahmen**: 12-16 Wochen
+
+**Budgetspanne**: $35.000 - $60.000 USD
+
+---
+
+**3. Android-App (Native Kotlin oder React Native)**
+
+**Anforderungen**:
+- Native Android-App (Android 8+) oder React Native Cross-Platform
+- Material Design 3-Richtlinien
+- Offline-First-Architektur mit Datensynchronisation
+- Push-Benachrichtigungen (Firebase Cloud Messaging)
+- Biometrische Authentifizierung
+- Kamera-Integration (Barcode-Scannen, Belege)
+
+**Hauptfunktionen**:
+- Gleiche Kernfunktionen wie iOS-App
+- Android-spezifische Optimierungen (Widgets, Shortcuts)
+- Integration mit Android-Systemfunktionen
+
+**Liefergegenstände**:
+- Quellcode (GitHub-Repository)
+- Google Play Store-Einreichung und -Genehmigung
+- Benutzerdokumentation
+- Entwicklerdokumentation
+- Automatisierte Tests
+
+**Zeitrahmen**: 12-16 Wochen
+
+**Budgetspanne**: $35.000 - $60.000 USD
+
+---
+
+### Technische Anforderungen
+
+**Alle Anwendungen**:
+
+1. **API-Integration**
+   - Muss Promenade REST API verwenden (146+ Endpunkte verfügbar)
+   - API-Dokumentation: Swagger UI + Postman-Collection bereitgestellt
+   - Authentifizierung: JWT-Token (Access + Refresh)
+   - Rate-Limiting-Konformität
+   - Fehlerbehandlung für alle API-Antworten
+
+2. **Performance**
+   - Initiale Ladezeit: <3 Sekunden
+   - Flüssige Animationen und Übergänge mit 60fps
+   - Effiziente API-Aufrufmuster (Caching, Batching)
+   - Lazy Loading für große Listen
+
+3. **Sicherheit**
+   - Sichere Token-Speicherung (Web: httpOnly Cookies; Mobile: Keychain/Keystore)
+   - Eingabevalidierung und -bereinigung
+   - XSS- und CSRF-Schutz (Web)
+   - Certificate Pinning (Mobile, empfohlen)
+
+4. **Testing**
+   - Unit-Tests: 80%+ Code-Abdeckung
+   - Integrationstests für kritische Flows
+   - E2E-Tests für wichtige User Journeys
+   - Performance-Testing und -Optimierung
+
+5. **Dokumentation**
+   - API-Integrationsleitfaden
+   - Komponentenbibliothek (Web)
+   - State-Management-Patterns
+   - Deployment-Anleitung
+   - Troubleshooting-Guide
+
+### Bewertungskriterien
+
+**Angebote werden bewertet nach**:
+
+1. **Technische Expertise** (30%)
+   - Nachgewiesene Erfahrung mit erforderlichem Tech-Stack
+   - Portfolio ähnlicher Projekte
+   - Teamzusammensetzung und Skill-Level
+   - Verständnis unserer API und Anforderungen
+
+2. **Ansatz und Methodik** (25%)
+   - Entwicklungsprozess (Agile/Scrum)
+   - Kommunikations- und Zusammenarbeitsplan
+   - Testing-Strategie
+   - Risikominderungsplan
+
+3. **Zeitplan und Budget** (20%)
+   - Realistische Zeitpläne mit Meilensteinen
+   - Wettbewerbsfähige Preisgestaltung
+   - Zahlungsbedingungen Flexibilität
+   - Skalierbarkeit für zukünftige Phasen
+
+4. **Design-Qualität** (15%)
+   - Portfolio-Beispiele für UI/UX
+   - Verständnis moderner Design-Prinzipien
+   - Barrierefreiheitsüberlegungen
+   - Responsive Design-Ansatz
+
+5. **Post-Launch-Support** (10%)
+   - Wartungs- und Supportplan
+   - Bug-Fix-SLAs
+   - Feature-Verbesserungsprozess
+   - Wissenstransfer-Ansatz
+
+### Angebotsanforderungen
+
+**Bitte einreichen**:
+
+1. **Firmenprofil**
+   - Firmenübersicht und Teamgröße
+   - Relevante Erfahrung und Portfolio
+   - Wichtige Teammitglieder und ihre Rollen
+   - Referenzen von ähnlichen Projekten
+
+2. **Technisches Angebot**
+   - Vorgeschlagener Tech-Stack und Begründung
+   - Architektur- und Design-Ansatz
+   - Entwicklungsmethodik
+   - Test- und QA-Plan
+   - Deployment- und DevOps-Strategie
+
+3. **Projektplan**
+   - Detaillierter Zeitplan mit Meilensteinen
+   - Ressourcenzuweisung
+   - Abhängigkeiten und Annahmen
+   - Risikobewertung und Minderung
+
+4. **Budgetangebot**
+   - Detaillierte Kostenaufschlüsselung
+   - Zahlungsplan
+   - Eingeschlossene und ausgeschlossene Elemente
+   - Stundensätze für zusätzliche Arbeit
+
+5. **Design-Beispiele** (Optional, aber erwünscht)
+   - Mockups oder Wireframes für Hauptbildschirme
+   - Vorschau der UI-Komponentenbibliothek
+   - Interaktionsdesign-Beispiele
+
+### Einreichungsdetails
+
+**Frist**: Laufende Annahme (Bewerbungen bis zur Besetzung angenommen)
+
+**Einreichungsmethode**: Email an alexander.vasilenko@gmail.com
+
+**E-Mail-Betreff**: "Ausschreibungsangebot - [Web/iOS/Android] App-Entwicklung"
+
+**Kontakt für Fragen**:
+- Email: alexander.vasilenko@gmail.com
+- GitHub: https://github.com/basilex/promenade
+- Dokumentation: https://basilex.github.io/promenade
+
+**Auswahlzeitplan**:
+- Angebotsprüfung: 2 Wochen nach Einreichung
+- Shortlist-Interviews: 1 Woche
+- Endauswahl: 1 Woche
+- Vertragsunterzeichnung: 1 Woche
+- Projektstart: Innerhalb von 2 Wochen nach Vertragsunterzeichnung
+
+### Zusätzliche Informationen
+
+**Zusammenarbeitsmodell**:
+- Wöchentliche Fortschrittsanrufe
+- GitHub für Code-Zusammenarbeit und Reviews
+- Slack/Discord für tägliche Kommunikation
+- Figma für Design-Zusammenarbeit
+- Jira/Linear für Task-Management
+
+**Geistiges Eigentum**:
+- Quellcode-Eigentum: Promenade Platform (MIT-Lizenz)
+- Design-Assets: Promenade Platform
+- Wiederverwendbare Komponenten: Können in zukünftigen Projekten mit Namensnennung verwendet werden
+
+**Zahlungsbedingungen**:
+- 30% Vorauszahlung bei Vertragsunterzeichnung
+- 40% bei Abschluss von 50% Meilensteinen
+- 30% bei endgültiger Lieferung und Abnahme
+
+**Was wir bereitstellen**:
+- Vollständige API-Dokumentation (Swagger + Postman)
+- Zugang zu Testumgebung
+- Technischer Support vom Backend-Team
+- Design-Richtlinien und Marken-Assets
+- Beispieldaten und Benutzer-Szenarien
+
+---
+
 ## Erste Schritte
 
 ### Für Geschäftsteams

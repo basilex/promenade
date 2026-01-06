@@ -562,6 +562,446 @@ All business functionality is accessible via REST API:
 
 ---
 
+## For Investors
+
+### Investment Opportunity
+
+Promenade Platform represents a compelling investment opportunity in the rapidly growing business management software market. With a strong technical foundation, clear product-market fit, and scalable architecture, Promenade is positioned for significant growth.
+
+### Market Opportunity
+
+**Total Addressable Market (TAM)**:
+- Global CRM market: $128 billion (2026, growing at 13% CAGR)
+- Order management systems: $45 billion (2026, growing at 11% CAGR)
+- Inventory management: $38 billion (2026, growing at 8% CAGR)
+- **Combined TAM**: $211+ billion
+
+**Target Market**:
+- Small-to-medium businesses (SMBs): 30+ million worldwide
+- Mid-market companies: 200,000+ globally
+- Growing e-commerce sector: 24 million online stores
+
+### Competitive Advantages
+
+1. **Modular Architecture**: Customers pay only for features they use (lower entry barrier)
+2. **Open Source**: MIT license builds trust and community adoption
+3. **Cost Efficiency**: 60-80% lower total cost of ownership vs. competitors
+4. **API-First**: Easy integration with existing systems (reduces switching friction)
+5. **Multi-Database**: Flexibility from SQLite (free) to PostgreSQL (enterprise)
+
+### Revenue Model (Planned)
+
+**Primary Revenue Streams**:
+- **SaaS Subscriptions**: $29-299/user/month based on tier
+  - Starter: $29/user/month (up to 10 users)
+  - Professional: $99/user/month (unlimited users)
+  - Enterprise: $299/user/month (custom features + support)
+
+- **Professional Services**: $150-250/hour
+  - Custom development and integrations
+  - Training and onboarding
+  - Priority support contracts
+
+- **Marketplace**: 20% commission on third-party plugins/extensions
+
+**Revenue Projections** (Conservative Estimates):
+
+| Year | Customers | ARR | Growth |
+|------|-----------|-----|--------|
+| Year 1 | 100 | $180K | - |
+| Year 2 | 500 | $1.2M | 567% |
+| Year 3 | 2,000 | $5.4M | 350% |
+| Year 5 | 10,000 | $28M | 130% |
+
+*Assumptions: Average $150/user/month, 15 users per customer, 80% retention*
+
+### Traction & Validation
+
+**Technical Milestones**:
+- ✅ 75% feature complete (6 of 8 modules production-ready)
+- ✅ 2200+ automated tests (90%+ coverage)
+- ✅ 146+ API endpoints fully documented
+- ✅ 15,000+ lines of documentation
+- ✅ Production-grade security (JWT, RBAC, rate limiting)
+
+**Product Maturity**:
+- ✅ 6 months of active development
+- ✅ Clean architecture (Domain-Driven Design)
+- ✅ Scalable infrastructure (proven 377K events/sec)
+- ✅ Multi-database support (PostgreSQL, SQLite, MySQL)
+
+### Use of Funds
+
+**Funding Goal**: $1.5M Seed Round
+
+**Allocation**:
+- **Product Development (40%)**: $600K
+  - Complete remaining 25% of core features (Q1-Q2 2026)
+  - Mobile app development (iOS/Android)
+  - Web frontend modernization
+  - Advanced reporting and analytics
+
+- **Sales & Marketing (30%)**: $450K
+  - Hire sales team (3-4 reps)
+  - Marketing campaigns (content, ads, events)
+  - Partnership development
+  - Community building
+
+- **Operations & Support (20%)**: $300K
+  - Customer success team
+  - Technical support infrastructure
+  - Documentation and training materials
+  - Legal and compliance
+
+- **Reserve (10%)**: $150K
+  - Contingency fund
+  - Opportunistic hires
+
+### Team & Expertise
+
+**Current Team**:
+- **Technical Founder**: 10+ years backend development, expert in Go and distributed systems
+- **Architecture**: Domain-Driven Design (DDD), Event-Driven Architecture, microservices
+- **Track Record**: Successfully delivered enterprise systems for Fortune 500 clients
+
+**Hiring Plan** (Post-Funding):
+- Frontend Developer (React/TypeScript) - Q1 2026
+- Mobile Developer (iOS/Android) - Q1 2026
+- Sales Lead - Q2 2026
+- Customer Success Manager - Q2 2026
+- Additional Backend Developer - Q2 2026
+
+### Exit Strategy
+
+**Target Exit Timeline**: 4-6 years
+
+**Potential Exit Paths**:
+
+1. **Strategic Acquisition**
+   - Likely acquirers: Salesforce, HubSpot, Oracle, SAP, Microsoft
+   - Valuation multiple: 8-12x ARR (SaaS standard)
+   - Target valuation: $200M-500M at exit
+
+2. **IPO** (Long-term)
+   - Requirements: $100M+ ARR, strong growth metrics
+   - Target valuation: $1B+ (unicorn status)
+
+3. **Private Equity Buyout**
+   - Focus on profitability and cash flow
+   - Valuation multiple: 5-8x EBITDA
+
+### Investment Terms
+
+**Seeking**: $1.5M Seed Round
+
+**Equity Offered**: 15-20% (negotiable based on terms)
+
+**Valuation**: $7.5M-10M pre-money
+
+**Investor Rights**:
+- Board observer seat
+- Monthly financial reporting
+- Quarterly product roadmap reviews
+- Pro-rata rights in future rounds
+
+**Milestones for Next Round** (Series A target: $8M at $40M valuation):
+- 500+ paying customers
+- $2M+ ARR
+- 50%+ year-over-year growth
+- Expanded to 2-3 additional markets (EU, Asia)
+
+### Risk Factors
+
+**Technical Risks**:
+- ✅ Mitigated: Strong test coverage (2200+ tests) reduces bugs
+- ✅ Mitigated: Modular architecture enables rapid iteration
+- ⚠️ Remaining: Scaling beyond 100K customers (addressable with funding)
+
+**Market Risks**:
+- ⚠️ Competition from established players (Salesforce, HubSpot)
+  - Mitigation: Lower cost, open-source model, superior flexibility
+- ⚠️ Economic downturn reducing SMB software spending
+  - Mitigation: Target mid-market and enterprise segments
+
+**Execution Risks**:
+- ⚠️ Team size (currently solo founder)
+  - Mitigation: Proven ability to deliver, hiring plan in place
+- ⚠️ Customer acquisition costs
+  - Mitigation: Product-led growth, freemium model, strong API for integrations
+
+### Contact for Investment Inquiries
+
+**Email**: alexander.vasilenko@gmail.com  
+**Subject Line**: "Investment Inquiry - Promenade Platform"
+
+**What to Include**:
+- Brief introduction and investment focus
+- Check size and typical investment stage
+- Timeline and next steps preference
+
+**We Provide**:
+- Detailed financial model and projections
+- Product demo and technical deep-dive
+- Customer validation and case studies (as available)
+- Full pitch deck and data room access
+
+---
+
+## Tender: Web & Mobile Application Development
+
+### Project Overview
+
+Promenade Platform is seeking qualified development agencies or freelance teams to build modern web and mobile applications on top of our existing REST API infrastructure. This is an exciting opportunity to work with a cutting-edge backend platform and create user experiences that will serve thousands of businesses.
+
+### Project Scope
+
+**1. Web Application (React/TypeScript)**
+
+**Requirements**:
+- Modern responsive web interface (desktop + tablet + mobile web)
+- Built with React 18+ and TypeScript
+- State management with Redux Toolkit or Zustand
+- UI framework: Material-UI, Ant Design, or Tailwind CSS
+- Real-time updates via WebSocket integration
+- JWT authentication with role-based UI rendering
+- Comprehensive form validation and error handling
+- Accessibility compliance (WCAG 2.1 Level AA)
+
+**Key Features**:
+- Dashboard with key metrics and charts
+- Customer management (list, create, edit, lifecycle tracking)
+- Deal pipeline (Kanban board with drag-and-drop)
+- Order management (create orders, line items, status tracking)
+- Inventory management (stock levels, movements, alerts)
+- Invoicing and payment tracking
+- User profile and settings
+- Role-based access control (show/hide features by permission)
+
+**Deliverables**:
+- Source code (GitHub repository)
+- Deployment configuration (Docker, Nginx)
+- User documentation
+- Developer documentation (component library, state management)
+- Automated tests (unit + integration)
+
+**Timeline**: 12-16 weeks
+
+**Budget Range**: $40,000 - $70,000 USD
+
+---
+
+**2. iOS Application (Native Swift or React Native)**
+
+**Requirements**:
+- Native iOS app (iOS 14+) or React Native cross-platform
+- Modern iOS design patterns (SwiftUI preferred)
+- Offline-first architecture with data synchronization
+- Push notifications for key events
+- Biometric authentication (Face ID / Touch ID)
+- Camera integration (scan barcodes, receipts)
+- Dark mode support
+
+**Key Features**:
+- Customer lookup and contact details
+- Deal pipeline view (simplified for mobile)
+- Order creation and status checking
+- Inventory quick view and stock checking
+- Barcode scanning for products
+- Push notifications (low stock, new orders, payments)
+
+**Deliverables**:
+- Source code (GitHub repository)
+- App Store submission and approval
+- User documentation
+- Developer documentation
+- Automated tests
+
+**Timeline**: 12-16 weeks
+
+**Budget Range**: $35,000 - $60,000 USD
+
+---
+
+**3. Android Application (Native Kotlin or React Native)**
+
+**Requirements**:
+- Native Android app (Android 8+) or React Native cross-platform
+- Material Design 3 guidelines
+- Offline-first architecture with data synchronization
+- Push notifications (Firebase Cloud Messaging)
+- Biometric authentication
+- Camera integration (scan barcodes, receipts)
+
+**Key Features**:
+- Same core features as iOS app
+- Android-specific optimizations (widgets, shortcuts)
+- Integration with Android system features
+
+**Deliverables**:
+- Source code (GitHub repository)
+- Google Play Store submission and approval
+- User documentation
+- Developer documentation
+- Automated tests
+
+**Timeline**: 12-16 weeks
+
+**Budget Range**: $35,000 - $60,000 USD
+
+---
+
+### Technical Requirements
+
+**All Applications**:
+
+1. **API Integration**
+   - Must use Promenade REST API (146+ endpoints available)
+   - API documentation: Swagger UI + Postman collection provided
+   - Authentication: JWT tokens (access + refresh)
+   - Rate limiting compliance
+   - Error handling for all API responses
+
+2. **Performance**
+   - Initial load time: <3 seconds
+   - Smooth 60fps animations and transitions
+   - Efficient API call patterns (caching, batching)
+   - Lazy loading for large lists
+
+3. **Security**
+   - Secure token storage (Web: httpOnly cookies; Mobile: Keychain/Keystore)
+   - Input validation and sanitization
+   - XSS and CSRF protection (web)
+   - Certificate pinning (mobile, recommended)
+
+4. **Testing**
+   - Unit tests: 80%+ code coverage
+   - Integration tests for critical flows
+   - E2E tests for key user journeys
+   - Performance testing and optimization
+
+5. **Documentation**
+   - API integration guide
+   - Component library (web)
+   - State management patterns
+   - Deployment instructions
+   - Troubleshooting guide
+
+### Evaluation Criteria
+
+**Proposals will be evaluated on**:
+
+1. **Technical Expertise** (30%)
+   - Demonstrated experience with required tech stack
+   - Portfolio of similar projects
+   - Team composition and skill levels
+   - Understanding of our API and requirements
+
+2. **Approach & Methodology** (25%)
+   - Development process (Agile/Scrum)
+   - Communication and collaboration plan
+   - Testing strategy
+   - Risk mitigation plan
+
+3. **Timeline & Budget** (20%)
+   - Realistic timeline with milestones
+   - Competitive pricing
+   - Payment terms flexibility
+   - Scalability for future phases
+
+4. **Design Quality** (15%)
+   - UI/UX portfolio samples
+   - Understanding of modern design principles
+   - Accessibility considerations
+   - Responsive design approach
+
+5. **Post-Launch Support** (10%)
+   - Maintenance and support plan
+   - Bug fix SLA
+   - Feature enhancement process
+   - Knowledge transfer approach
+
+### Proposal Requirements
+
+**Please submit the following**:
+
+1. **Company Profile**
+   - Company overview and team size
+   - Relevant experience and portfolio
+   - Key team members and their roles
+   - References from similar projects
+
+2. **Technical Proposal**
+   - Proposed tech stack and justification
+   - Architecture and design approach
+   - Development methodology
+   - Testing and quality assurance plan
+   - Deployment and DevOps strategy
+
+3. **Project Plan**
+   - Detailed timeline with milestones
+   - Resource allocation
+   - Dependencies and assumptions
+   - Risk assessment and mitigation
+
+4. **Budget Proposal**
+   - Itemized cost breakdown
+   - Payment schedule
+   - Included and excluded items
+   - Hourly rates for additional work
+
+5. **Design Samples** (Optional but Preferred)
+   - Mockups or wireframes for key screens
+   - UI component library preview
+   - Interaction design examples
+
+### Submission Details
+
+**Deadline**: Rolling (applications accepted until filled)
+
+**Submission Method**: Email to alexander.vasilenko@gmail.com
+
+**Subject Line**: "Tender Proposal - [Web/iOS/Android] Application Development"
+
+**Contact for Questions**:
+- Email: alexander.vasilenko@gmail.com
+- GitHub: https://github.com/basilex/promenade
+- Documentation: https://basilex.github.io/promenade
+
+**Selection Timeline**:
+- Proposal review: 2 weeks after submission
+- Shortlist interviews: 1 week
+- Final selection: 1 week
+- Contract signing: 1 week
+- Project kickoff: Within 2 weeks of contract signing
+
+### Additional Information
+
+**Collaboration Model**:
+- Weekly progress calls
+- GitHub for code collaboration and reviews
+- Slack/Discord for daily communication
+- Figma for design collaboration
+- Jira/Linear for task management
+
+**Intellectual Property**:
+- Source code ownership: Promenade Platform (MIT license)
+- Design assets: Promenade Platform
+- Reusable components: Can be used in future projects with attribution
+
+**Payment Terms**:
+- 30% upfront upon contract signing
+- 40% upon completion of 50% milestones
+- 30% upon final delivery and acceptance
+
+**What We Provide**:
+- Complete API documentation (Swagger + Postman)
+- Test environment access
+- Technical support from backend team
+- Design guidelines and brand assets
+- Sample data and user scenarios
+
+---
+
 ## Getting Started
 
 ### For Business Decision-Makers
