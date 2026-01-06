@@ -115,9 +115,9 @@ func (tdb *TestDB) CleanAllTables() {
 	// Order matters - respect foreign key constraints
 	tables := []string{
 		// Customer Management Context tables (reverse FK order)
-		"customer_mgmt_interactions",
-		"customer_mgmt_deals",
-		"customer_mgmt_companies",
+		"customer_interactions",
+		"customer_deals",
+		"customer_companies",
 		"customer_customers",
 
 		// Identity Context tables
