@@ -293,7 +293,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (450+ tests, ~60s with race detector)
+make test                 # All tests (2200+ tests: 2000+ unit, 160+ smoke, 19 integration packages)
 ```
 
 ### By Type

@@ -2,7 +2,7 @@
 
 **Quick HTTP-level validation** for all handlers - focus on status codes and basic response structure.
 
-**Status**:  **COMPLETE** - 17/17 handlers, 138 tests, 100% pass rate
+**Status**:  **COMPLETE** - 17/17 handlers, 161 tests, 100% pass rate
 
 ---
 
@@ -10,7 +10,7 @@
 
 ###  Statistics
 
-- **Total Tests**: 138
+- **Total Tests**: 161
 - **Total Handlers**: 17 (100% complete)
 - **Pass Rate**: 100%
 - **Test Duration**: ~0.6 seconds (cached)
@@ -369,7 +369,7 @@ w := smoke.MakeRequest(t, router, "GET", "/timezones/Europe/Kyiv", nil)
 ## Running Tests
 
 ```bash
-# All smoke tests (123 tests)
+# All smoke tests (161 tests)
 go test ./test/smoke/... -v
 
 # All smoke tests (using Makefile)
@@ -395,7 +395,7 @@ ok  github.com/basilex/promenade/test/smoke/contexts/identity/contact   (cached)
 ...
 ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 
- All 123 tests PASSED
+ All 161 tests PASSED
 ```
 
 ---
@@ -409,7 +409,8 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 | Order Management      | 1        | 10    |       |
 | Billing               | 2        | 16    |       |
 | Shared                | 4        | 36    |       |
-| **Total**             | **17**   | **138** |     |
+| Warehouse             | 1        | 23    |       |
+| **Total**             | **17**   | **161** |     |
 
 **Test Distribution**:
 - Simple handlers (6-8 tests): 13 handlers
@@ -456,5 +457,5 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 
 ---
 
-**Last Updated**: January 4, 2026  
-**Status**:  COMPLETE - 17/17 handlers, 138 tests, 100% pass rate  
+**Last Updated**: January 6, 2026  
+**Status**:  COMPLETE - 17/17 handlers, 161 tests, 100% pass rate  

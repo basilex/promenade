@@ -49,7 +49,7 @@ Each context is autonomous with:
 **Latest Progress** (January 6, 2026):
 - Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
 - Phase 2 IN PROGRESS: Warehouse Context (15% complete - Inventory aggregate started)
-- Test Infrastructure: All systems validated (450+ tests, 138 smoke PASS, stable integration tests)
+- Test Infrastructure: All systems validated (2200+ tests: 2000+ unit, 160+ smoke, 19 integration packages)
 
 ### 3. Aggregate Structure Pattern
 
@@ -293,15 +293,15 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 **Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
-- `make test` - All tests with race detector (~60s, 450+ tests)
+- `make test` - All tests with race detector (~60s, 2200+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
-- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.6s, 138 tests)
+- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.6s, 161 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
 - `make test-benchmark` - Benchmark tests (performance measurement, validates workspace)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
 
-**Smoke Testing**: 138 tests across 17 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
+**Smoke Testing**: 161 tests across 17 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
 
 **Smoke Testing Pattern**:
 
@@ -994,7 +994,7 @@ go test ./pkg/uuidv7/... -v
 go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 450+ tests across 45+ packages, 90%+ average coverage
+**Test Statistics**: 2200+ tests across 88+ packages, 90%+ average coverage
 
 **DTO Testing Guidelines**:
 

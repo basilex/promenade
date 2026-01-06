@@ -56,30 +56,6 @@
 - **Implementation**: [API Documentation Guide](guides/api-documentation.md)
 
 **Quick Access**: `make dev` → http://localhost:8081/api/docs/index.html
-- **Swagger UI**: Interactive browser interface at `/api/docs/index.html`
-- **120+ Endpoints**: All 5 contexts fully documented
-- **Try-It-Out**: Test APIs directly from browser
-- **JWT Integration**: Bearer token authentication in UI
-- **Export Formats**: JSON/YAML for Postman, Insomnia
-- **Implementation**: [API Documentation Guide](guides/api-documentation.md)
-
-**Quick Access**: `make dev` → http://localhost:8081/api/docs/index.html
-
----
-
-### Postman Collection
-
-**Pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing.
-
-- **Auto-Generated**: OpenAPI spec → Postman collection (33K lines)
-- **Multi-Environment**: Dev/Staging/Prod configs with pre-configured variables
-- **Authentication Flow**: Auto-save JWT tokens after login, auto-refresh expired tokens
-- **Test Automation**: Pre-request and test scripts for validation and token management
-- **Newman Integration**: CI/CD ready with `newman run` command
-- **Common Workflows**: 5 documented use cases (auth, customer, pipeline, order, billing)
-- **Implementation**: [Postman Collection Guide](../postman/README.md)
-
-**Quick Start**: Import `postman/Promenade_API.postman_collection.json` + `Development.postman_environment.json`
 
 ---
 
@@ -284,13 +260,13 @@
 
 **Four-tier testing** with clear separation and professional organization.
 
-- **Unit Tests**: In-place, fast feedback (~5s)
-- **Smoke Tests**: HTTP handler validation, no DB (~2s) - **123 tests, 100% pass rate**
-- **Integration Tests**: Real database, full E2E (~14s)
+- **Unit Tests**: In-place, fast feedback (~5s) - 2000+ tests
+- **Smoke Tests**: HTTP handler validation, no DB (~2s) - 160+ tests, 100% pass rate
+- **Integration Tests**: Real database, full E2E (~14s) - 19 packages
 - **Benchmark Tests**: Performance measurement with real DB
 - **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md) | [Smoke Tests Guide](../test/smoke/README.md)
 
-**250+ tests**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
+**2200+ tests total**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
 
 ---
 
@@ -376,7 +352,6 @@ Step-by-step implementation guides:
 - [Troubleshooting Guide](guides/troubleshooting.md) - Common issues and solutions
 
 **API & Integration**:
-- [Getting Started](guides/getting-started.md) - Quick start, installation, first steps
 - [API Versioning Strategy](guides/api-versioning.md) - URL-based versioning, deprecation policy, RFC 8594 headers
 - [API Versioning Examples](guides/api-versioning-examples.md) - Practical code examples for versioning implementation
 - [Local CI Validation](guides/local-ci.md) - Run GitHub Actions checks locally before push
@@ -386,8 +361,6 @@ Step-by-step implementation guides:
 - [Health Checks](guides/health-checks.md) - Dependency monitoring and alerting
 - [Caching](guides/caching.md) - Redis caching layer implementation
 - [Testing Patterns](guides/testing-patterns.md) - Four-tier testing strategy
-- [Development Workflow](guides/development-workflow.md) - Daily development process
-- [Production Deployment](guides/production-deployment.md) - Docker, Kubernetes, monitoring
 
 **Design Patterns & Conventions**:
 - [Naming Conventions](guides/naming-conventions.md) - Files, directories, Go code naming standards
@@ -420,14 +393,12 @@ Technical specifications and detailed documentation:
 - **Real workflows?** → [Common Use Cases](guides/common-use-cases.md) (7 scenarios)
 - **Issues?** → [Troubleshooting Guide](guides/troubleshooting.md)
 - **Writing tests?** → [Testing Quick Reference](guides/testing-quick-reference.md)
-- **Adding aggregate?** → [Development Workflow](guides/development-workflow.md)
-- **Need API docs?** → [API Reference](reference/api-reference.md)
+- **Adding aggregate?** → [Architecture Patterns](guides/architecture-patterns.md)
 
 ### For DevOps
 
-- **Deploying?** → [Production Deployment](guides/production-deployment.md)
 - **Monitoring?** → [Health Checks](guides/health-checks.md)
-- **Configuring?** → [Configuration Reference](reference/configuration.md)
+- **Caching?** → [Caching Guide](guides/caching.md)
 
 ### For Architects
 
@@ -440,8 +411,8 @@ Technical specifications and detailed documentation:
 ##  Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 450+ tests, 90%+ average coverage
-- **Documentation**: 15,000+ lines across 30+ files
+- **Tests**: 2200+ tests (2000+ unit, 160+ smoke, 19 integration packages), 90%+ coverage
+- **Documentation**: 15,000+ lines across 55+ files
 - **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing), 1 in progress (Warehouse)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
 - **Performance**: 377K events/sec (Memory Bus)
@@ -451,12 +422,12 @@ Technical specifications and detailed documentation:
 
 ##  Contributing
 
-Read our [Contributing Guide](guides/contributing.md) to learn about:
+Contributions are welcome! Please read our style guidelines:
 
-- Code style and conventions
-- Pull request process
-- Testing requirements
-- Documentation standards
+- **Code Style**: Follow [Naming Conventions](guides/naming-conventions.md) and [Architecture Patterns](guides/architecture-patterns.md)
+- **Documentation**: Follow [Documentation Style Guide](guides/documentation-style-guide.md) (no-emoji policy)
+- **Testing**: Write tests per [Testing Patterns](guides/testing-patterns.md) (four-tier strategy)
+- **Pull Requests**: Run `make pre-push` before submitting (see [Local CI Guide](guides/local-ci.md))
 
 ---
 
