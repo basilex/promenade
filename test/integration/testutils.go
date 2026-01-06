@@ -67,6 +67,11 @@ func DefaultConfig() Config {
 func SetupTestDB(t *testing.T) *TestDB {
 	t.Helper()
 
+	// Skip integration tests in short mode (unit tests)
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
 	cfg := DefaultConfig()
 	db, err := connectDB(cfg)
 	if err != nil {
