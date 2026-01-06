@@ -70,6 +70,9 @@ jobs:
           go run cmd/migrate/main.go --cmd=up --namespace=shared
           go run cmd/migrate/main.go --cmd=up --namespace=identity
           go run cmd/migrate/main.go --cmd=up --namespace=customer-mgmt
+          go run cmd/migrate/main.go --cmd=up --namespace=order-mgmt
+          go run cmd/migrate/main.go --cmd=up --namespace=billing
+          go run cmd/migrate/main.go --cmd=up --namespace=warehouse
 
       - name: Run unit tests
         run: make test-unit

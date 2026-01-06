@@ -14,15 +14,15 @@ server:
 
 database:
   postgres:
-    host: "localhost"
-    port: 5433
-    user: "system"
-    password: "passw0rd"
-    database: "promenade_test"
+    host: "${DB_HOST:-localhost}"
+    port: ${DB_PORT:-5433}
+    user: "${DB_USER:-system}"
+    password: "${DB_PASSWORD:-passw0rd}"
+    database: "${DB_NAME:-promenade_test}"
     sslmode: "disable"
   redis:
-    addr: "localhost:6380"
-    password: ""
+    addr: "${REDIS_ADDR:-localhost:6380}"
+    password: "${REDIS_PASSWORD:-}"
     pool_size: 5
     max_retries: 1
     databases:
