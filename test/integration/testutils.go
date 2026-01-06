@@ -123,9 +123,9 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 
 // CleanAllTables truncates all tables for a fresh test state
 func (tdb *TestDB) CleanAllTables() {
-	// Order matters - respect foreign key constraints
+	// List all tables that need cleaning (order doesn't matter with CASCADE)
 	tables := []string{
-		// Customer Management Context tables (reverse FK order)
+		// Customer Management Context tables
 		"customer_interactions",
 		"customer_deals",
 		"customer_companies",
@@ -143,19 +143,22 @@ func (tdb *TestDB) CleanAllTables() {
 		"identity_email_verification_tokens",
 		"identity_users",
 
-		// TODO: Add Bounded Context tables here as they are created
-		// Examples: order_mgmt_*, billing_*, etc.
+		// Order Management Context tables
+		"order_orders",
+		"order_order_lines",
+
+		// Billing Context tables
+		"billing_invoices",
+		"billing_invoice_lines",
+		"billing_payments",
+		"billing_subscriptions",
+
+		// Warehouse Context tables
+		"warehouse_inventory",
 
 		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
 	}
-
-	// Disable FK checks temporarily for faster and safer cleanup
-	// This prevents CASCADE conflicts and allows truncating in any order
-	_, _ = tdb.DB.Exec("SET session_replication_role = 'replica'")
-	defer func() {
-		_, _ = tdb.DB.Exec("SET session_replication_role = 'origin'")
-	}()
 
 	for _, table := range tables {
 		// Check if table exists first
@@ -170,8 +173,9 @@ func (tdb *TestDB) CleanAllTables() {
 		}
 
 		if exists {
-			// Use simple TRUNCATE without CASCADE since FK checks are disabled
-			_, _ = tdb.DB.Exec(fmt.Sprintf("TRUNCATE TABLE %s RESTART IDENTITY", table))
+			// Use TRUNCATE CASCADE to automatically handle foreign key constraints
+			// This is simpler and more reliable than disabling FK checks
+			_, _ = tdb.DB.Exec(fmt.Sprintf("TRUNCATE TABLE %s RESTART IDENTITY CASCADE", table))
 		}
 	}
 }
