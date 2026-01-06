@@ -43,9 +43,19 @@ type Config struct {
 
 // DefaultConfig returns default test database configuration
 func DefaultConfig() Config {
+	// Detect CI environment and use appropriate defaults
+	// CI environments (GitHub Actions) set CI or GITHUB_ACTIONS env var
+	// CI: PostgreSQL service on port 5432
+	// Local: Docker test DB on port 5433
+	defaultPort := "5433"
+	
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
+		defaultPort = "5432"
+	}
+	
 	return Config{
 		Host:     getEnv("DB_HOST", getEnv("TEST_DB_HOST", "localhost")),
-		Port:     getEnv("DB_PORT", getEnv("TEST_DB_PORT", "5433")), // CI uses DB_PORT=5432, local uses 5433
+		Port:     getEnv("DB_PORT", getEnv("TEST_DB_PORT", defaultPort)),
 		User:     getEnv("DB_USER", getEnv("TEST_DB_USER", "system")),
 		Password: getEnv("DB_PASSWORD", getEnv("TEST_DB_PASSWORD", "passw0rd")),
 		DBName:   getEnv("DB_NAME", getEnv("TEST_DB_NAME", "promenade_test")),
