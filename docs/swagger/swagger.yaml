@@ -481,6 +481,18 @@ definitions:
     - action
     - resource
     type: object
+  http.CreateProductRequest:
+    properties:
+      name:
+        example: Laptop Dell XPS 15
+        type: string
+      sku:
+        example: PROD-001
+        type: string
+    required:
+    - name
+    - sku
+    type: object
   http.CreateProfileRequest:
     properties:
       display_name:
@@ -558,6 +570,21 @@ definitions:
         type: string
       value:
         type: integer
+    type: object
+  http.Dimensions:
+    properties:
+      height:
+        example: 1.8
+        type: number
+      length:
+        example: 35.7
+        type: number
+      unit:
+        example: cm
+        type: string
+      width:
+        example: 23.5
+        type: number
     type: object
   http.EndInteractionRequest:
     properties:
@@ -976,6 +1003,88 @@ definitions:
           type: integer
         type: object
     type: object
+  http.ProductListResponse:
+    properties:
+      page:
+        example: 1
+        type: integer
+      page_size:
+        example: 20
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/http.ProductResponse'
+        type: array
+      total:
+        example: 100
+        type: integer
+      total_pages:
+        example: 5
+        type: integer
+    type: object
+  http.ProductResponse:
+    properties:
+      allow_backorder:
+        example: false
+        type: boolean
+      brand:
+        example: Dell
+        type: string
+      category:
+        example: Electronics
+        type: string
+      created_at:
+        description: Timestamps
+        example: "2026-01-06T12:00:00Z"
+        type: string
+      deleted_at:
+        example: "2026-01-06T12:00:00Z"
+        type: string
+      description:
+        example: High-performance laptop
+        type: string
+      dimensions:
+        $ref: '#/definitions/http.Dimensions'
+      id:
+        example: 01JGABC123DEF456GHI789JKL0
+        type: string
+      is_active:
+        example: true
+        type: boolean
+      name:
+        example: Laptop Dell XPS 15
+        type: string
+      reorder_point:
+        example: 10
+        type: integer
+      reorder_quantity:
+        example: 50
+        type: integer
+      sku:
+        example: PROD-001
+        type: string
+      status:
+        example: active
+        type: string
+      track_inventory:
+        description: Inventory
+        example: true
+        type: boolean
+      track_lot:
+        example: false
+        type: boolean
+      track_serial:
+        description: Serial/Lot tracking
+        example: false
+        type: boolean
+      updated_at:
+        example: "2026-01-06T12:00:00Z"
+        type: string
+      weight:
+        description: Physical properties
+        example: 2.5
+        type: number
+    type: object
   http.ProfileResponse:
     properties:
       avatar_url:
@@ -1167,12 +1276,53 @@ definitions:
       parent_company_id:
         type: string
     type: object
+  http.SetPhysicalPropertiesRequest:
+    properties:
+      height:
+        example: 1.8
+        minimum: 0
+        type: number
+      length:
+        example: 35.7
+        minimum: 0
+        type: number
+      unit:
+        enum:
+        - kg
+        - lb
+        example: kg
+        type: string
+      weight:
+        example: 2.5
+        minimum: 0
+        type: number
+      width:
+        example: 23.5
+        minimum: 0
+        type: number
+    required:
+    - unit
+    type: object
   http.SetProviderRequest:
     properties:
       provider:
         type: string
     required:
     - provider
+    type: object
+  http.SetReorderPointRequest:
+    properties:
+      reorder_point:
+        example: 10
+        minimum: 0
+        type: integer
+      reorder_quantity:
+        example: 50
+        minimum: 0
+        type: integer
+    required:
+    - reorder_point
+    - reorder_quantity
     type: object
   http.TimezoneResponse:
     properties:
@@ -1342,6 +1492,15 @@ definitions:
       unit_cost_cents:
         type: integer
     type: object
+  http.UpdateInventorySettingsRequest:
+    properties:
+      allow_backorder:
+        example: false
+        type: boolean
+      track_inventory:
+        example: true
+        type: boolean
+    type: object
   http.UpdateLineItemRequest:
     properties:
       quantity:
@@ -1363,6 +1522,23 @@ definitions:
       description:
         maxLength: 500
         type: string
+    type: object
+  http.UpdateProductRequest:
+    properties:
+      brand:
+        example: Dell
+        type: string
+      category:
+        example: Electronics
+        type: string
+      description:
+        example: High-performance laptop
+        type: string
+      name:
+        example: Laptop Dell XPS 15
+        type: string
+    required:
+    - name
     type: object
   http.UpdateRoleRequest:
     properties:
@@ -6824,6 +7000,663 @@ paths:
       summary: Get inventory by warehouse
       tags:
       - Inventory
+  /warehouse/products:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of products
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with SKU and name
+      parameters:
+      - description: Product creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create product
+      tags:
+      - Products
+  /warehouse/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft-delete a product by ID
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get product details by product ID
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get product by ID
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update product details
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update product
+      tags:
+      - Products
+  /warehouse/products/{id}/activate:
+    post:
+      consumes:
+      - application/json
+      description: Transition product to Active status
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Activate product
+      tags:
+      - Products
+  /warehouse/products/{id}/deactivate:
+    post:
+      consumes:
+      - application/json
+      description: Transition product to OutOfStock status
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Deactivate product
+      tags:
+      - Products
+  /warehouse/products/{id}/discontinue:
+    post:
+      consumes:
+      - application/json
+      description: Mark product as discontinued
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Discontinue product
+      tags:
+      - Products
+  /warehouse/products/{id}/inventory-settings:
+    put:
+      consumes:
+      - application/json
+      description: Update inventory tracking and backorder settings
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Inventory settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateInventorySettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update inventory settings
+      tags:
+      - Products
+  /warehouse/products/{id}/physical-properties:
+    put:
+      consumes:
+      - application/json
+      description: Set weight and dimensions for physical product
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Physical properties
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.SetPhysicalPropertiesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Set physical properties
+      tags:
+      - Products
+  /warehouse/products/{id}/reorder-point:
+    put:
+      consumes:
+      - application/json
+      description: Set reorder point and reorder quantity for inventory management
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Reorder settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.SetReorderPointRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Set reorder point
+      tags:
+      - Products
+  /warehouse/products/brand/{brand}:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of products filtered by brand
+      parameters:
+      - description: Brand name
+        in: path
+        name: brand
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List products by brand
+      tags:
+      - Products
+  /warehouse/products/category/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of products filtered by category
+      parameters:
+      - description: Category name
+        in: path
+        name: category
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List products by category
+      tags:
+      - Products
+  /warehouse/products/search:
+    get:
+      consumes:
+      - application/json
+      description: Search products by name, SKU, or description
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Search products
+      tags:
+      - Products
+  /warehouse/products/sku/{sku}:
+    get:
+      consumes:
+      - application/json
+      description: Get product details by SKU code
+      parameters:
+      - description: Product SKU
+        in: path
+        name: sku
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get product by SKU
+      tags:
+      - Products
+  /warehouse/products/status/{status}:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of products filtered by status
+      parameters:
+      - description: Product status
+        enum:
+        - active
+        - draft
+        - out_of_stock
+        - discontinued
+        in: path
+        name: status
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ProductListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List products by status
+      tags:
+      - Products
   /warehouse/stock-movements:
     post:
       consumes:

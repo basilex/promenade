@@ -21,6 +21,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // TestDB holds test database connection and cleanup functions
@@ -341,4 +342,23 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+// ============================================================================
+// Test Data Helpers
+// ============================================================================
+
+// FakeUUID generates a test UUID v7 for integration tests
+func FakeUUID() uuidv7.UUID {
+	return uuidv7.New()
+}
+
+// FakeSKU generates a test SKU with unique suffix
+func FakeSKU(suffix int) string {
+	return fmt.Sprintf("TEST-SKU-%03d-%s", suffix, uuidv7.New().String()[:8])
+}
+
+// FakeName generates a test name with prefix and suffix
+func FakeName(prefix string, suffix int) string {
+	return fmt.Sprintf("%s %d", prefix, suffix)
 }

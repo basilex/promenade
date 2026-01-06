@@ -96,7 +96,7 @@
 
 ---
 
-### 3. Lagerverwaltung 🔄 50% Abgeschlossen (In Bearbeitung)
+### 3. Lagerverwaltung 🔄 55% Abgeschlossen (In Bearbeitung)
 
 **Was es tut**: Verfolgen Sie Lagerbestände über mehrere Standorte mit Echtzeit-Genauigkeit und automatischen Schwellenwert-Warnungen.
 
@@ -118,10 +118,17 @@
   - Kostenverfolgung: Stückkosten, Gesamtkosten, Währungscode
   - 7 API-Endpunkte + 45 Tests (11 Entity + 10 UseCase + 9 Smoke + 15 Integration)
 
-- **Produktkatalog** 🔄 Geplant Q1 2026
+- **Produktkatalog** ✅ Vollständig implementiert
+  - SKU-Verwaltung: Eindeutige Produktidentifikation
+  - Klassifizierung: Kategorie, Marke, Tags
+  - Physische Eigenschaften: Gewicht, Abmessungen
+  - Bestandseinstellungen: Nachbestellung, Backorder, Seriennummern
+  - Statusmanagement: Aktiv, Inaktiv, Eingestellt, Nicht vorrätig
+  - 16 API-Endpunkte + 139 Tests (25 Entity + 83 UseCase + 10 Smoke + 21 Integration)
+
 - **Lagerstandorte** 🔄 Geplant Q1 2026
 
-**API-Endpunkte**: 18 live (11 Bestand + 7 Bewegungen)
+**API-Endpunkte**: 37 live (14 Bestand + 7 Bewegungen + 16 Produkte)
 
 **Anwendungsfall**: Großhandelsvertrieb mit 10.000+ SKUs, 3 Lagerhäusern
 - **Vor**: 20% Stockout-Rate, 95% Genauigkeit, manuelle Zählungen
@@ -199,8 +206,8 @@
 | Kundenverwaltung    | ✅ Produktion     | 48            | 150+  |
 | Auftragsverwaltung  | ✅ Produktion     | 14            | 85+   |
 | Abrechnung          | ✅ Produktion     | 22            | 120+  |
-| Lager               | 🔄 50% (Inventar + Bewegungen live) | 18 | 186   |
-| **Gesamt**          | **75% Abgeschlossen** | **146+**  | **2200+** |
+| Lager               | 🔄 55% (Inventar + Bewegungen + Produkte live) | 37 | 325   |
+| **Gesamt**          | **78% Abgeschlossen** | **165+**  | **2380+** |
 
 **Qualitätsmetriken**:
 - **Testabdeckung**: 90%+ über alle Module

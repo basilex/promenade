@@ -6,6 +6,9 @@ import (
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryHTTP "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/http"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/warehouse/product"
+	productHTTP "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/http"
+	productRepo "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/warehouse/stockmovement"
 	stockmovementHTTP "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/http"
 	stockmovementRepo "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/repository/postgres"
@@ -14,6 +17,7 @@ import (
 // Router handles all Warehouse context routes
 type Router struct {
 	inventoryHandler     *inventoryHTTP.InventoryHandler
+	productHandler       *productHTTP.ProductHandler
 	stockMovementHandler *stockmovementHTTP.StockMovementHandler
 }
 
@@ -24,6 +28,11 @@ func NewRouter(db *sqlx.DB) *Router {
 	inventoryUseCase := inventory.NewUseCase(inventoryRepository)
 	inventoryHandler := inventoryHTTP.NewInventoryHandler(inventoryUseCase)
 
+	// Initialize Product aggregate
+	productRepository := productRepo.NewProductRepository(db)
+	productUseCase := product.NewUseCase(productRepository)
+	productHandler := productHTTP.NewProductHandler(productUseCase)
+
 	// Initialize StockMovement aggregate
 	stockMovementRepository := stockmovementRepo.NewStockMovementRepository(db)
 	stockMovementUseCase := stockmovement.NewUseCase(stockMovementRepository)
@@ -31,6 +40,7 @@ func NewRouter(db *sqlx.DB) *Router {
 
 	return &Router{
 		inventoryHandler:     inventoryHandler,
+		productHandler:       productHandler,
 		stockMovementHandler: stockMovementHandler,
 	}
 }
@@ -39,6 +49,32 @@ func NewRouter(db *sqlx.DB) *Router {
 func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 	warehouse := api.Group("/warehouse")
 	{
+		// Product routes
+		products := warehouse.Group("/products")
+		{
+			// Product CRUD
+			products.POST("", r.productHandler.Create)                              // Create product
+			products.GET("/:id", r.productHandler.GetByID)                          // Get by ID
+			products.PUT("/:id", r.productHandler.Update)                           // Update product
+			products.DELETE("/:id", r.productHandler.Delete)                        // Soft delete product
+			products.GET("", r.productHandler.List)                                 // List products (paginated)
+
+			// Product queries
+			products.GET("/sku/:sku", r.productHandler.GetBySKU)                    // Get by SKU
+			products.GET("/category/:category", r.productHandler.ListByCategory)    // List by category
+			products.GET("/brand/:brand", r.productHandler.ListByBrand)             // List by brand
+			products.GET("/status/:status", r.productHandler.ListByStatus)          // List by status
+			products.GET("/search", r.productHandler.Search)                        // Search products
+
+			// Product operations
+			products.POST("/:id/activate", r.productHandler.Activate)                         // Activate product
+			products.POST("/:id/deactivate", r.productHandler.Deactivate)                     // Deactivate product
+			products.POST("/:id/discontinue", r.productHandler.Discontinue)                   // Discontinue product
+			products.PUT("/:id/inventory-settings", r.productHandler.UpdateInventorySettings) // Update inventory settings
+			products.PUT("/:id/reorder-point", r.productHandler.SetReorderPoint)              // Set reorder point
+			products.PUT("/:id/physical", r.productHandler.SetPhysicalProperties)             // Set physical properties
+		}
+
 		// Inventory routes
 		inventory := warehouse.Group("/inventory")
 		{

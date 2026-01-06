@@ -240,12 +240,12 @@ Datos de referencia globales para operaciones consistentes:
 | **Gestión de Clientes** | ✅ Producción | Clientes, Empresas, Negocios, Interacciones | 48 | 150+ |
 | **Gestión de Pedidos** | ✅ Producción | Pedidos, Líneas | 14 | 85+ |
 | **Facturación** | ✅ Producción | Facturas, Pagos, Suscripciones | 22 | 120+ |
-| **Almacén** | 🔄 50% completado | Inventario, Movimientos | 18 | 186 |
+| **Almacén** | 🔄 55% completado | Inventario, Movimientos, Productos | 37 | 325 |
 
 ### Estadísticas de la Plataforma
 
-- **Endpoints API**: Más de 146 endpoints REST
-- **Pruebas Automatizadas**: Más de 2200 pruebas (cobertura 90%+)
+- **Endpoints API**: Más de 165 endpoints REST
+- **Pruebas Automatizadas**: Más de 2380 pruebas (cobertura 90%+)
 - **Documentación**: Más de 15,000 líneas en 55+ archivos
 - **Rendimiento**: 377,000 eventos/seg (Bus de Memoria)
 - **Tecnologías**: Go 1.24+, PostgreSQL 16, Redis 7

@@ -240,12 +240,12 @@ Données de référence mondiales pour des opérations cohérentes :
 | **Gestion Client** | ✅ Production | Clients, Entreprises, Affaires, Interactions | 48 | 150+ |
 | **Gestion Commandes** | ✅ Production | Commandes, Lignes | 14 | 85+ |
 | **Facturation** | ✅ Production | Factures, Paiements, Abonnements | 22 | 120+ |
-| **Entrepôt** | 🔄 50 % terminé | Stock, Mouvements | 18 | 186 |
+| **Entrepôt** | 🔄 55 % terminé | Stock, Mouvements, Produits | 37 | 325 |
 
 ### Statistiques de la Plateforme
 
-- **Points d'API** : Plus de 146 points REST
-- **Tests Automatisés** : Plus de 2200 tests (couverture 90 %+)
+- **Points d'API** : Plus de 165 points REST
+- **Tests Automatisés** : Plus de 2380 tests (couverture 90 %+)
 - **Documentation** : Plus de 15 000 lignes sur 55+ fichiers
 - **Performance** : 377 000 événements/sec (Bus Mémoire)
 - **Technologies** : Go 1.24+, PostgreSQL 16, Redis 7

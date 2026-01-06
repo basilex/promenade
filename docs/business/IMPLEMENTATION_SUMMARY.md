@@ -100,13 +100,13 @@ From `docs/business/README.md`:
 
 **6 Trigger Types**:
 1. Monthly scheduled review
-2. Module completion milestones (e.g., Warehouse 100%)
+2. Module completion milestones (e.g., Warehouse 55% with Product aggregate complete)
 3. Significant API endpoint additions (>10 new endpoints)
 4. Test count changes (>100 tests added)
 5. New deployment options or pricing changes
 6. Major roadmap adjustments
 
-**Next Review**: February 2026 (v1.1 with Warehouse progress update)
+**Next Review**: February 2026 (v1.1 with Warehouse progress update - Location aggregate)
 
 ---
 
@@ -325,7 +325,7 @@ Comprehensive business documentation available in multiple languages:
 
 ---
 
-**Status**: ✅ Multi-language infrastructure complete, ready for systematic translation expansion  
-**Next Action**: Create French translation (BUSINESS_OVERVIEW_FR.md) or continue Warehouse development (Phase 2)  
+**Status**: ✅ Multi-language infrastructure complete | ✅ Warehouse Phase 2: Product aggregate complete (55% total)  
+**Next Action**: Continue Warehouse development (Location aggregate - Task 2.4)  
 **Last Updated**: January 6, 2026  
 **Version**: v1.0 (all languages)

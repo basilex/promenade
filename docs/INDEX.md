@@ -315,7 +315,7 @@ Comprehensive business documentation available in multiple languages:
 | **Customer Management** | Production | Customer, Company, Deal, Interaction, Analytics (all live)  | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
-| **Warehouse**           | In Progress (45%) | Inventory, StockMovement (both live) \| Product, Location (planned) | [Context Guide](../internal/contexts/warehouse/README.md) \| [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
+| **Warehouse**           | In Progress (55%) | Inventory, StockMovement, Product (all live) \| Location (planned) | [Context Guide](../internal/contexts/warehouse/README.md) \| [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 
@@ -463,13 +463,14 @@ Contributions are welcome! Please read our style guidelines:
 
 **January 5, 2026**:
 - Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
-- Swagger UI operational (120+ endpoints at `/api/docs/index.html`)
+- Swagger UI operational (165+ endpoints at `/api/docs/index.html`)
 - Postman collection ready (33K lines, auto-generated with test automation)
 - Developer Portal complete (4 guides: Quick Start, Auth Flow, Use Cases, Troubleshooting)
-- Warehouse Context started (15% complete - Inventory aggregate basic structure)
+- Warehouse Context progress (55% complete - Inventory + StockMovement + Product aggregates production-ready)
+- Product aggregate completed (139 tests, 16 endpoints)
 - Subscription aggregate completed (8 endpoints, 120 tests)
 - Billing context fully operational (Invoice, Payment, Subscription)
-- Test infrastructure validated (450+ tests: 138 smoke, 18/18 PASS)
+- Test infrastructure validated (2380+ tests: 325 warehouse, 161 smoke, 100% PASS)
 - All lint issues resolved (0 issues)
 
 **January 1, 2026**:
