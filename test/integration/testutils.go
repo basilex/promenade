@@ -139,6 +139,13 @@ func (tdb *TestDB) CleanAllTables() {
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
 	}
 
+	// Disable FK checks temporarily for faster and safer cleanup
+	// This prevents CASCADE conflicts and allows truncating in any order
+	_, _ = tdb.DB.Exec("SET session_replication_role = 'replica'")
+	defer func() {
+		_, _ = tdb.DB.Exec("SET session_replication_role = 'origin'")
+	}()
+
 	for _, table := range tables {
 		// Check if table exists first
 		var exists bool
@@ -152,7 +159,8 @@ func (tdb *TestDB) CleanAllTables() {
 		}
 
 		if exists {
-			_, _ = tdb.DB.Exec(fmt.Sprintf("TRUNCATE TABLE %s CASCADE", table))
+			// Use simple TRUNCATE without CASCADE since FK checks are disabled
+			_, _ = tdb.DB.Exec(fmt.Sprintf("TRUNCATE TABLE %s RESTART IDENTITY", table))
 		}
 	}
 }
