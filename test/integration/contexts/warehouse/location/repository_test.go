@@ -212,11 +212,11 @@ func TestLocationRepository_ListByParent(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, wh))
 
 	zoneA, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
-	zoneA.SetParent(wh.GetID(), wh.Path, wh.Level)
+	require.NoError(t, zoneA.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneA))
 
 	zoneB, _ := location.NewLocation("B", "Zone B", location.LocationTypeZone)
-	zoneB.SetParent(wh.GetID(), wh.Path, wh.Level)
+	require.NoError(t, zoneB.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneB))
 
 	// Get direct children of warehouse
@@ -235,15 +235,15 @@ func TestLocationRepository_ListChildren(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, wh))
 
 	zoneA, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
-	zoneA.SetParent(wh.GetID(), wh.Path, wh.Level)
+	require.NoError(t, zoneA.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneA))
 
 	aisle, _ := location.NewLocation("01", "Aisle 01", location.LocationTypeAisle)
-	aisle.SetParent(zoneA.GetID(), zoneA.Path, zoneA.Level)
+	require.NoError(t, aisle.SetParent(zoneA.GetID(), zoneA.Path, zoneA.Level))
 	require.NoError(t, repo.Create(ctx, aisle))
 
 	rack, _ := location.NewLocation("02", "Rack 02", location.LocationTypeRack)
-	rack.SetParent(aisle.GetID(), aisle.Path, aisle.Level)
+	require.NoError(t, rack.SetParent(aisle.GetID(), aisle.Path, aisle.Level))
 	require.NoError(t, repo.Create(ctx, rack))
 
 	// Get ALL descendants of warehouse (should get 3: zone, aisle, rack)
@@ -272,7 +272,7 @@ func TestLocationRepository_ListByStatus(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, inactive))
 
 	// Deactivate one
-	inactive.Deactivate()
+	require.NoError(t, inactive.Deactivate())
 	require.NoError(t, repo.Update(ctx, inactive))
 
 	// List active
@@ -293,16 +293,16 @@ func TestLocationRepository_ListAvailable(t *testing.T) {
 
 	// Create locations with different availability
 	available, _ := location.NewLocation("L1", "Available", location.LocationTypeBin)
-	available.SetCapacity(100, true)
+	require.NoError(t, available.SetCapacity(100, true))
 	require.NoError(t, repo.Create(ctx, available))
 
 	full, _ := location.NewLocation("L2", "Full", location.LocationTypeBin)
-	full.SetCapacity(100, true)
-	full.AddOccupancy(100) // Fill to capacity
+	require.NoError(t, full.SetCapacity(100, true))
+	require.NoError(t, full.AddOccupancy(100)) // Fill to capacity
 	require.NoError(t, repo.Create(ctx, full))
 
 	inactive, _ := location.NewLocation("L3", "Inactive", location.LocationTypeBin)
-	inactive.Deactivate()
+	require.NoError(t, inactive.Deactivate())
 	require.NoError(t, repo.Create(ctx, inactive))
 
 	notPutawayable, _ := location.NewLocation("L4", "Not Putawayable", location.LocationTypeBin)
@@ -331,11 +331,11 @@ func TestLocationRepository_HierarchyIntegrity(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, wh))
 
 	zone, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
-	zone.SetParent(wh.GetID(), wh.Path, wh.Level)
+	require.NoError(t, zone.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zone))
 
 	aisle, _ := location.NewLocation("01", "Aisle 01", location.LocationTypeAisle)
-	aisle.SetParent(zone.GetID(), zone.Path, zone.Level)
+	require.NoError(t, aisle.SetParent(zone.GetID(), zone.Path, zone.Level))
 	require.NoError(t, repo.Create(ctx, aisle))
 
 	// Verify path integrity
@@ -354,8 +354,8 @@ func TestLocationRepository_CapacityPersistence(t *testing.T) {
 
 	// Create location with capacity
 	loc, _ := location.NewLocation("BIN01", "Bin 01", location.LocationTypeBin)
-	loc.SetCapacity(500, true)
-	loc.AddOccupancy(150)
+	require.NoError(t, loc.SetCapacity(500, true))
+	require.NoError(t, loc.AddOccupancy(150))
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Retrieve and verify
@@ -374,7 +374,7 @@ func TestLocationRepository_DimensionsPersistence(t *testing.T) {
 
 	// Create location with dimensions
 	loc, _ := location.NewLocation("RACK01", "Rack 01", location.LocationTypeRack)
-	loc.SetDimensions(2.5, 3.0, 1.2)
+	require.NoError(t, loc.SetDimensions(2.5, 3.0, 1.2))
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Retrieve and verify
