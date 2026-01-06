@@ -60,6 +60,20 @@ type BulkUpdateRequest struct {
 	InventoryIDs []string `json:"inventory_ids" binding:"required,min=1"`
 }
 
+// ReserveStockRequest represents stock reservation request
+type ReserveStockRequest struct {
+	Quantity   int    `json:"quantity" binding:"required,gt=0"`
+	OrderID    string `json:"order_id" binding:"required"`
+	ReservedBy string `json:"reserved_by" binding:"required"`
+}
+
+// ReleaseReservationRequest represents reservation release request
+type ReleaseReservationRequest struct {
+	Quantity   int    `json:"quantity" binding:"required,gt=0"`
+	OrderID    string `json:"order_id" binding:"required"`
+	ReleasedBy string `json:"released_by" binding:"required"`
+}
+
 // InventoryResponse represents inventory response
 type InventoryResponse struct {
 	ID                 string    `json:"id"`

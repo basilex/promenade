@@ -428,3 +428,164 @@ func (h *InventoryHandler) CommitStock(c *gin.Context) {
 
 	response.Success(c, ToInventoryResponse(inv))
 }
+
+// GetByLocation retrieves inventory by warehouse and location
+// @Summary Get inventory by location
+// @Description Get inventory items by warehouse ID and location code
+// @Tags Inventory
+// @Produce json
+// @Param warehouse_id path string true "Warehouse ID"
+// @Param location_code path string true "Location Code"
+// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /warehouse/inventory/location/{warehouse_id}/{location_code} [get]
+func (h *InventoryHandler) GetByLocation(c *gin.Context) {
+	warehouseID := c.Param("warehouse_id")
+	locationCode := c.Param("location_code")
+
+	if warehouseID == "" {
+		response.BadRequest(c, "Warehouse ID is required")
+		return
+	}
+	if locationCode == "" {
+		response.BadRequest(c, "Location code is required")
+		return
+	}
+
+	items, err := h.usecase.GetByLocation(c.Request.Context(), warehouseID, locationCode)
+	if err != nil {
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.Success(c, ToInventoryResponseList(items))
+}
+
+// ReserveStock reserves stock for an order
+// @Summary Reserve stock
+// @Description Reserve stock for an order (decreases available, increases reserved)
+// @Tags Inventory
+// @Accept json
+// @Produce json
+// @Param id path string true "Inventory ID"
+// @Param request body ReserveStockRequest true "Reserve stock request"
+// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /warehouse/inventory/{id}/reserve [post]
+func (h *InventoryHandler) ReserveStock(c *gin.Context) {
+	id, err := uuidv7.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "Invalid inventory ID format")
+		return
+	}
+
+	var req ReserveStockRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	orderID, err := uuidv7.Parse(req.OrderID)
+	if err != nil {
+		response.BadRequest(c, "Invalid order ID format")
+		return
+	}
+
+	reservedBy, err := uuidv7.Parse(req.ReservedBy)
+	if err != nil {
+		response.BadRequest(c, "Invalid reserved_by user ID format")
+		return
+	}
+
+	// Get inventory
+	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, inventory.ErrInventoryNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	// Reserve stock
+	if err := inv.ReserveStock(req.Quantity, orderID, reservedBy); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	// Update inventory
+	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.Success(c, ToInventoryResponse(inv))
+}
+
+// ReleaseReservation releases reserved stock (Saga compensation)
+// @Summary Release reservation
+// @Description Release reserved stock when order is cancelled (Saga compensation)
+// @Tags Inventory
+// @Accept json
+// @Produce json
+// @Param id path string true "Inventory ID"
+// @Param request body ReleaseReservationRequest true "Release reservation request"
+// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /warehouse/inventory/{id}/release [post]
+func (h *InventoryHandler) ReleaseReservation(c *gin.Context) {
+	id, err := uuidv7.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "Invalid inventory ID format")
+		return
+	}
+
+	var req ReleaseReservationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	orderID, err := uuidv7.Parse(req.OrderID)
+	if err != nil {
+		response.BadRequest(c, "Invalid order ID format")
+		return
+	}
+
+	releasedBy, err := uuidv7.Parse(req.ReleasedBy)
+	if err != nil {
+		response.BadRequest(c, "Invalid released_by user ID format")
+		return
+	}
+
+	// Get inventory
+	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, inventory.ErrInventoryNotFound) {
+			response.NotFound(c, err.Error())
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	// Release reservation
+	if err := inv.ReleaseReservation(req.Quantity, orderID, releasedBy); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	// Update inventory
+	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.Success(c, ToInventoryResponse(inv))
+}

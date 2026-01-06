@@ -24,6 +24,9 @@ type IUseCase interface {
 	// GetByWarehouse retrieves all inventory in a specific warehouse
 	GetByWarehouse(ctx context.Context, warehouseID string) ([]*Inventory, error)
 
+	// GetByLocation retrieves inventory by warehouse and location
+	GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*Inventory, error)
+
 	// GetLowStock retrieves items below reorder point
 	GetLowStock(ctx context.Context) ([]*Inventory, error)
 
@@ -130,6 +133,17 @@ func (uc *useCase) GetByWarehouse(ctx context.Context, warehouseID string) ([]*I
 		return nil, fmt.Errorf("warehouse ID is required")
 	}
 	return uc.repo.GetByWarehouse(ctx, warehouseID)
+}
+
+// GetByLocation retrieves inventory by warehouse and location
+func (uc *useCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*Inventory, error) {
+	if warehouseID == "" {
+		return nil, fmt.Errorf("warehouse ID is required")
+	}
+	if locationCode == "" {
+		return nil, fmt.Errorf("location code is required")
+	}
+	return uc.repo.GetByLocation(ctx, warehouseID, locationCode)
 }
 
 // GetLowStock retrieves items below reorder point

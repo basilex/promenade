@@ -21,6 +21,7 @@ type MockInventoryUseCase struct {
 	GetBySKUFunc         func(ctx context.Context, sku string) (*inventory.Inventory, error)
 	GetByProductIDFunc   func(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error)
 	GetByWarehouseFunc   func(ctx context.Context, warehouseID string) ([]*inventory.Inventory, error)
+	GetByLocationFunc    func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error)
 	GetLowStockFunc      func(ctx context.Context) ([]*inventory.Inventory, error)
 	ListInventoryFunc    func(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error)
 	UpdateInventoryFunc  func(ctx context.Context, inv *inventory.Inventory) error
@@ -64,6 +65,13 @@ func (m *MockInventoryUseCase) GetByWarehouse(ctx context.Context, warehouseID s
 		return m.GetByWarehouseFunc(ctx, warehouseID)
 	}
 	return nil, fmt.Errorf("GetByWarehouseFunc not implemented")
+}
+
+func (m *MockInventoryUseCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+	if m.GetByLocationFunc != nil {
+		return m.GetByLocationFunc(ctx, warehouseID, locationCode)
+	}
+	return nil, fmt.Errorf("GetByLocationFunc not implemented")
 }
 
 func (m *MockInventoryUseCase) GetLowStock(ctx context.Context) ([]*inventory.Inventory, error) {
@@ -403,3 +411,132 @@ func TestInventoryHandler_CommitStock_Success(t *testing.T) {
 	smoke.AssertSuccessResponse(t, w, http.StatusOK)
 }
 
+// ============================================================================
+// New Handler Tests (GetByLocation, ReserveStock, ReleaseReservation)
+// ============================================================================
+
+func TestInventoryHandler_GetByLocation_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{
+		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+			return []*inventory.Inventory{fakeInventory()}, nil
+		},
+	}
+
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.GET("/inventory/location/:warehouse_id/:location_code", handler.GetByLocation)
+
+	w := smoke.MakeRequest(t, router, "GET", "/inventory/location/WH-MAIN/SHELF-A1", nil)
+
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestInventoryHandler_GetByLocation_Empty(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{
+		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+			return []*inventory.Inventory{}, nil // Empty result
+		},
+	}
+
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.GET("/inventory/location/:warehouse_id/:location_code", handler.GetByLocation)
+
+	w := smoke.MakeRequest(t, router, "GET", "/inventory/location/WH-MAIN/SHELF-B2", nil)
+
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestInventoryHandler_ReserveStock_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+			return fakeInventory(), nil
+		},
+		UpdateInventoryFunc: func(ctx context.Context, inv *inventory.Inventory) error {
+			return nil
+		},
+	}
+
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.POST("/inventory/:id/reserve", handler.ReserveStock)
+
+	body := map[string]any{
+		"quantity":    10,
+		"order_id":    smoke.FakeUUID(),
+		"reserved_by": smoke.FakeUUID(),
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/inventory/"+smoke.FakeUUID()+"/reserve", body)
+
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestInventoryHandler_ReserveStock_ValidationError(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{}
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.POST("/inventory/:id/reserve", handler.ReserveStock)
+
+	body := map[string]any{
+		"quantity": -10, // Invalid negative quantity
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/inventory/"+smoke.FakeUUID()+"/reserve", body)
+
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestInventoryHandler_ReleaseReservation_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+			inv := fakeInventory()
+			// Reserve some stock first
+			orderID := uuidv7.New()
+			userID := uuidv7.New()
+			_ = inv.ReserveStock(10, orderID, userID)
+			return inv, nil
+		},
+		UpdateInventoryFunc: func(ctx context.Context, inv *inventory.Inventory) error {
+			return nil
+		},
+	}
+
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.POST("/inventory/:id/release", handler.ReleaseReservation)
+
+	body := map[string]any{
+		"quantity":    10,
+		"order_id":    smoke.FakeUUID(),
+		"released_by": smoke.FakeUUID(),
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/inventory/"+smoke.FakeUUID()+"/release", body)
+
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestInventoryHandler_ReleaseReservation_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockInventoryUseCase{
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+			return nil, inventory.ErrInventoryNotFound
+		},
+	}
+
+	handler := inventoryHTTP.NewInventoryHandler(mockUC)
+	router.POST("/inventory/:id/release", handler.ReleaseReservation)
+
+	body := map[string]any{
+		"quantity":    10,
+		"order_id":    smoke.FakeUUID(),
+		"released_by": smoke.FakeUUID(),
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/inventory/"+smoke.FakeUUID()+"/release", body)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}

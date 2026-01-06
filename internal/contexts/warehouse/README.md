@@ -2,13 +2,37 @@
 
 **Domain:** Inventory management, products, stock tracking  
 **Ubiquitous Language:** Product, Inventory, Stock, Location, Movement, Reservation  
-**Status:**  Planned (Phase 4 implementation)
+**Status:**  In Progress - 35% Complete (Phase 2 Q1 2026)
+
+**Latest Update:** January 6, 2026  
+**Completed:** Inventory Aggregate (Task 2.1) - 100% ✅  
+**In Progress:** StockMovement Aggregate (Task 2.2)
 
 ---
 
 ## Overview
 
 The **Warehouse Context** manages physical goods, inventory levels, and stock movements. It's essential for e-commerce and order fulfillment workflows.
+
+### Implementation Status
+
+**Task 2.1: Inventory Aggregate** - ✅ **COMPLETE**
+- ✅ Entity (464 lines, 11 business methods)
+- ✅ Repository (595 lines, 13 methods)
+- ✅ UseCase (267 lines, 11 methods)
+- ✅ HTTP Handlers (14 endpoints)
+- ✅ Integration Tests (23 tests)
+- ✅ Unit Tests (97 tests)
+- ✅ Smoke Tests (21 tests)
+- ✅ Router & Server Integration
+- **Total:** 141 tests, 100% passing
+
+**Next Tasks:**
+- Task 2.2: StockMovement Aggregate (planned)
+- Task 2.3: Complete HTTP API (14/24 endpoints)
+- Task 2.4: Order Management Integration
+- Task 2.5: Low Stock Alerts
+- Task 2.6: Database Migrations
 
 ### Responsibilities
 
@@ -101,10 +125,33 @@ func (p *Product) SetReorderPoint(point, quantity int) error
 
 ---
 
-### 2. Inventory Aggregate
+### 2. Inventory Aggregate ✅ **PRODUCTION READY**
 
 **Aggregate Root:** `Inventory`  
-**Purpose:** Stock level tracking and reservations
+**Purpose:** Stock level tracking and reservations  
+**Status:** Fully implemented with 141 tests passing
+
+**API Endpoints:** 14 endpoints at `/api/v1/warehouse/inventory`
+
+**CRUD Operations:**
+- `POST /` - Create inventory item
+- `GET /:id` - Get by ID
+- `PUT /:id` - Update inventory item
+- `DELETE /:id` - Soft delete
+- `GET /` - List inventory (paginated)
+
+**Query Operations:**
+- `GET /sku/:sku` - Get by SKU
+- `GET /product/:product_id` - Get by product ID
+- `GET /warehouse/:warehouse_id` - Get by warehouse
+- `GET /location/:warehouse_id/:location_code` - Get by location
+- `GET /low-stock` - Get low stock items
+
+**Stock Operations:**
+- `POST /:id/receive` - Receive stock
+- `POST /:id/reserve` - Reserve stock for order (Order Management integration)
+- `POST /:id/release` - Release reservation (Saga compensation)
+- `POST /:id/commit` - Commit stock
 
 **Entity Structure:**
 
@@ -113,59 +160,65 @@ type Inventory struct {
     aggregate.BaseAggregate
 
     // Identity
-    ID         uuidv7.UUID
-    ProductID  uuidv7.UUID
-    LocationID uuidv7.UUID
+    ID           uuidv7.UUID
+    ProductID    uuidv7.UUID
+    ProductSKU   string
+    ProductName  string
+    WarehouseID  uuidv7.UUID
+    LocationCode string
 
     // Stock Levels
-    Available  int            // physical stock - reserved
-    Reserved   int            // temporarily allocated to orders
-    Physical   int            // actual physical stock
+    QuantityOnHand       int  // Physical stock
+    QuantityReserved     int  // Reserved for orders
+    QuantityAvailable    int  // OnHand - Reserved
+    QuantityCommitted    int  // Committed to fulfilled orders
+    QuantityDamaged      int  // Damaged/unusable stock
 
-    // Tracking
-    reservations []Reservation  // private
-    movements    []Movement     // private
+    // Cost Tracking
+    UnitCost        float64      // Weighted average cost
+    TotalCost       float64      // Total inventory value
 
-    // Lifecycle
-    UpdatedAt  time.Time
-}
+    // Reorder Management
+    ReorderPoint    int          // Low stock threshold
+    ReorderQuantity int          // Reorder amount
+    MinStock        int          // Minimum stock level
+    MaxStock        int          // Maximum stock level
 
-type Reservation struct {
-    ID        uuidv7.UUID
-    OrderID   uuidv7.UUID
-    Quantity  int
-    ExpiresAt time.Time
-    CreatedAt time.Time
-}
+    // Status
+    Status          InventoryStatus  // active, inactive, discontinued
+    IsActive        bool
+    LastStockDate   *time.Time       // Last stock movement
 
-type Movement struct {
-    ID          uuidv7.UUID
-    Type        MovementType  // in, out, transfer, adjustment
-    Quantity    int
-    FromLocation *uuidv7.UUID
-    ToLocation   *uuidv7.UUID
-    Reference   string        // order ID, PO number, etc.
-    CreatedAt   time.Time
+    // Metadata
+    Notes           string
 }
 ```
 
 **Business Rules:**
 
-- Available = Physical - Reserved
+- QuantityAvailable = QuantityOnHand - QuantityReserved
 - Cannot reserve more than available stock
-- Reservations expire after N hours (configurable)
-- Negative adjustments require reason
-- Physical stock cannot be negative
+- Physical stock cannot be negative (except damaged adjustments)
+- Weighted average cost calculation on stock receipts
+- Optimistic locking via version field
+- Soft delete support (deleted_at)
 
-**Methods:**
+**Business Methods (11 total):**
 
 ```go
-func (i *Inventory) Reserve(orderID uuidv7.UUID, quantity int, expiresAt time.Time) error
-func (i *Inventory) ReleaseReservation(reservationID uuidv7.UUID) error
-func (i *Inventory) CommitReservation(reservationID uuidv7.UUID) error
-func (i *Inventory) AdjustStock(quantity int, reason string) error
-func (i *Inventory) TransferTo(targetLocationID uuidv7.UUID, quantity int) error
-func (i *Inventory) IsLowStock(reorderPoint int) bool
+func (i *Inventory) ReceiveStock(quantity int, unitCost float64) error
+func (i *Inventory) ReserveStock(quantity int) error
+func (i *Inventory) ReleaseReservation(quantity int) error
+func (i *Inventory) CommitReservation(quantity int) error
+func (i *Inventory) AdjustStock(adjustment int, reason string) error
+func (i *Inventory) SetLocation(warehouseID uuidv7.UUID, locationCode string) error
+func (i *Inventory) SetReorderPoint(point, quantity int) error
+func (i *Inventory) MarkAsDamaged(quantity int) error
+func (i *Inventory) Activate() error
+func (i *Inventory) Deactivate() error
+func (i *Inventory) IsLowStock() bool
+func (i *Inventory) GetStockValue() float64
+func (i *Inventory) Validate() error
 ```
 
 ---

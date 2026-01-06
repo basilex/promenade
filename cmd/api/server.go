@@ -13,6 +13,7 @@ import (
 	"github.com/basilex/promenade/internal/contexts/identity"
 	ordermgmt "github.com/basilex/promenade/internal/contexts/order-mgmt"
 	"github.com/basilex/promenade/internal/contexts/shared"
+	"github.com/basilex/promenade/internal/contexts/warehouse"
 	"github.com/basilex/promenade/internal/infrastructure/health"
 
 	_ "github.com/basilex/promenade/docs/swagger" // Import generated docs
@@ -60,6 +61,7 @@ func (s *Server) SetupRoutes() {
 	customerMgmtRouter := customermgmt.NewRouter(s.app.DB)
 	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB)
 	billingRouter := billing.NewRouter(s.app.DB)
+	warehouseRouter := warehouse.NewRouter(s.app.DB)
 
 	// API routes
 	api := s.router.Group("/api")
@@ -79,6 +81,7 @@ func (s *Server) SetupRoutes() {
 			customerMgmtRouter.RegisterRoutes(v1) // Customers
 			orderMgmtRouter.RegisterRoutes(v1)    // Orders
 			billingRouter.RegisterRoutes(v1)      // Invoices, Payments, Subscriptions
+			warehouseRouter.RegisterRoutes(v1)    // Inventory
 		}
 	}
 }
