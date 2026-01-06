@@ -307,7 +307,7 @@ func TestPermissionUseCase_CompleteWorkflow(t *testing.T) {
 		assert.ErrorIs(t, err, permission.ErrPermissionNotFound)
 
 		// Step 9: List permissions (deleted one should not appear)
-		perms, total, err = uc.ListPermissions(ctx, 10, 0)
+		perms, _, err = uc.ListPermissions(ctx, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(perms), 3) // At least 3 active permissions
 	})

@@ -163,7 +163,7 @@ func TestReserveStock_Success(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
 	err := inv.ReserveStock(30, orderID, userID)
 
@@ -177,13 +177,13 @@ func TestReserveStock_MultipleReservations(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
-	inv.ReserveStock(30, uuidv7.New(), userID)
+	_ = inv.ReserveStock(30, uuidv7.New(), userID)
 	assert.Equal(t, 30, inv.QuantityReserved)
 	assert.Equal(t, 70, inv.QuantityAvailable)
 
-	inv.ReserveStock(20, uuidv7.New(), userID)
+	_ = inv.ReserveStock(20, uuidv7.New(), userID)
 	assert.Equal(t, 50, inv.QuantityReserved)
 	assert.Equal(t, 50, inv.QuantityAvailable)
 }
@@ -193,7 +193,7 @@ func TestReserveStock_InsufficientStock(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(50, 1000, userID)
+	_ = inv.ReceiveStock(50, 1000, userID)
 
 	err := inv.ReserveStock(100, orderID, userID)
 
@@ -218,7 +218,7 @@ func TestReserveStock_InactiveInventory(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 	inv.IsActive = false
 
 	err := inv.ReserveStock(30, orderID, userID)
@@ -236,8 +236,8 @@ func TestReleaseReservation_Success(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
 
 	err := inv.ReleaseReservation(30, orderID, userID)
 
@@ -251,8 +251,8 @@ func TestReleaseReservation_PartialRelease(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(50, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(50, orderID, userID)
 
 	err := inv.ReleaseReservation(20, orderID, userID)
 
@@ -266,8 +266,8 @@ func TestReleaseReservation_InsufficientReserved(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
 
 	err := inv.ReleaseReservation(50, orderID, userID)
 
@@ -296,8 +296,8 @@ func TestCommitReservation_Success(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
 
 	err := inv.CommitReservation(30, orderID, userID)
 
@@ -433,7 +433,7 @@ func TestSetLocation_UpdateExisting(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.SetLocation("A-12-03", "Zone-A", userID)
+	_ = inv.SetLocation("A-12-03", "Zone-A", userID)
 	err := inv.SetLocation("B-05-10", "Zone-B", userID)
 
 	assert.NoError(t, err)
@@ -590,8 +590,8 @@ func TestIsLowStock_BelowReorderPoint(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.SetReorderPoint(20, 50, userID)
-	inv.ReceiveStock(15, 1000, userID)
+	_ = inv.SetReorderPoint(20, 50, userID)
+	_ = inv.ReceiveStock(15, 1000, userID)
 
 	assert.True(t, inv.IsLowStock())
 }
@@ -600,8 +600,8 @@ func TestIsLowStock_AtReorderPoint(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.SetReorderPoint(20, 50, userID)
-	inv.ReceiveStock(20, 1000, userID)
+	_ = inv.SetReorderPoint(20, 50, userID)
+	_ = inv.ReceiveStock(20, 1000, userID)
 
 	assert.True(t, inv.IsLowStock())
 }
@@ -610,8 +610,8 @@ func TestIsLowStock_AboveReorderPoint(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.SetReorderPoint(20, 50, userID)
-	inv.ReceiveStock(50, 1000, userID)
+	_ = inv.SetReorderPoint(20, 50, userID)
+	_ = inv.ReceiveStock(50, 1000, userID)
 
 	assert.False(t, inv.IsLowStock())
 }
@@ -621,9 +621,9 @@ func TestIsLowStock_WithReservations(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.SetReorderPoint(20, 50, userID)
-	inv.ReceiveStock(50, 1000, userID)
-	inv.ReserveStock(35, orderID, userID)
+	_ = inv.SetReorderPoint(20, 50, userID)
+	_ = inv.ReceiveStock(50, 1000, userID)
+	_ = inv.ReserveStock(35, orderID, userID)
 
 	assert.True(t, inv.IsLowStock())
 }
@@ -656,9 +656,9 @@ func TestGetStockValue_AfterCommit(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
-	inv.CommitReservation(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
+	_ = inv.CommitReservation(30, orderID, userID)
 
 	value := inv.GetStockValue()
 
@@ -753,7 +753,7 @@ func TestComplexWorkflow_FullOrderFulfillment(t *testing.T) {
 	assert.Equal(t, 150, inv.QuantityAvailable)
 	assert.Equal(t, 50, inv.QuantityReserved)
 
-	inv.CommitReservation(50, orderID, userID)
+	_ = inv.CommitReservation(50, orderID, userID)
 	assert.Equal(t, 150, inv.QuantityOnHand)
 	assert.Equal(t, 150, inv.QuantityAvailable)
 	assert.Equal(t, 0, inv.QuantityReserved)
@@ -796,15 +796,15 @@ func TestComplexWorkflow_MultipleOrders(t *testing.T) {
 	assert.Equal(t, 100, inv.QuantityReserved)
 	assert.Equal(t, 100, inv.QuantityAvailable)
 
-	inv.CommitReservation(50, order1, userID)
+	_ = inv.CommitReservation(50, order1, userID)
 	assert.Equal(t, 50, inv.QuantityReserved)
 	assert.Equal(t, 100, inv.QuantityAvailable)
 
-	inv.ReleaseReservation(30, order2, userID)
+	_ = inv.ReleaseReservation(30, order2, userID)
 	assert.Equal(t, 20, inv.QuantityReserved)
 	assert.Equal(t, 130, inv.QuantityAvailable)
 
-	inv.CommitReservation(20, order3, userID)
+	_ = inv.CommitReservation(20, order3, userID)
 	assert.Equal(t, 0, inv.QuantityReserved)
 	assert.Equal(t, 130, inv.QuantityAvailable)
 	assert.Equal(t, 70, inv.QuantityCommitted)
@@ -815,8 +815,8 @@ func TestComplexWorkflow_LowStockAlert(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.SetReorderPoint(30, 100, userID)
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.SetReorderPoint(30, 100, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
 	assert.False(t, inv.IsLowStock())
 

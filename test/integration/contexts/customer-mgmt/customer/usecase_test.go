@@ -287,7 +287,7 @@ func TestCustomerUseCase_ListByStatus(t *testing.T) {
 		repID := uuidv7.New()
 		_, _ = uc.CreateCustomer(ctx, "Henry Kim", "henry@example.com", "ad", repID)
 		cust2, _ := uc.CreateCustomer(ctx, "Iris Chen", "iris@example.com", "social", repID)
-		uc.QualifyAsProspect(ctx, cust2.GetID())
+		_ = uc.QualifyAsProspect(ctx, cust2.GetID())
 
 		// Test - List leads
 		leads, total, err := uc.ListCustomersByStatus(ctx, customer.CustomerStatusLead, 10, 0)
