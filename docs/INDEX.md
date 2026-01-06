@@ -6,12 +6,19 @@
 
 ## 📊 For Business Decision-Makers
 
-**Business Overview Documents** - Non-technical overview of platform capabilities, value proposition, and implementation status:
+**Non-technical overview of platform capabilities, value proposition, and implementation status**
 
-- 🇬🇧 [Business Overview (English)](business/BUSINESS_OVERVIEW.md) - Complete platform overview for executives
-- 🇺🇦 [Бізнес-огляд (Українська)](business/BUSINESS_OVERVIEW_UK.md) - Повний огляд платформи для керівників
+Comprehensive business documentation available in multiple languages:
 
-**Contents**: Executive summary, business value, core capabilities, deployment options, use cases, roadmap, and success metrics.
+| Language | Document | Target Audience |
+|----------|----------|-----------------|
+| 🇬🇧 English | [Business Overview](business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
+| 🇺🇦 Українська | [Бізнес-огляд](business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+| 🇩🇪 Deutsch | [Geschäftsübersicht](business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+
+**What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
+
+**Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage.
 
 ---
 

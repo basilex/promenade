@@ -14,8 +14,27 @@
 > **Not a traditional CRM** — Promenade is a **modular platform** that grows with your needs.  
 > Start with customer management, add orders when needed, integrate billing when ready.
 
-**For Business Decision-Makers**:  
-📊 [Business Overview (English)](docs/business/BUSINESS_OVERVIEW.md) | [Бізнес-огляд (Українська)](docs/business/BUSINESS_OVERVIEW_UK.md)
+---
+
+## For Business Decision-Makers
+
+**Non-technical overview of platform capabilities, value proposition, and implementation status**
+
+Comprehensive business documentation available in multiple languages:
+
+| Language | Document | Target Audience |
+|----------|----------|-----------------|
+| 🇬🇧 English | [Business Overview](docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
+| 🇺🇦 Українська | [Бізнес-огляд](docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+| 🇩🇪 Deutsch | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+
+**What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
+
+**Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage.
+
+---
+
+## For Developers & Technical Teams
 
 **Documentation**: [View Full Documentation](https://basilex.github.io/promenade/) | [Quick Start Guide](docs/guides/quick-start.md) | [API Reference](docs/guides/api-documentation.md) | [Swagger UI](http://localhost:8081/api/docs/index.html)
 
