@@ -38,8 +38,8 @@ func TestDealUseCase_CreateDeal(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Create test customer
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	// Create test customer with unique email
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 
 	// Create test sales rep (using customer as user placeholder)
@@ -76,7 +76,7 @@ func TestDealUseCase_CreateDealWithFullData(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -111,8 +111,8 @@ func TestDealUseCase_GetDeal(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	// Create customer and deals with unique email
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -160,7 +160,7 @@ func TestDealUseCase_UpdateDealBasicInfo(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -191,7 +191,7 @@ func TestDealUseCase_UpdateDealValue(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -222,7 +222,7 @@ func TestDealUseCase_MoveDealToStage(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -267,7 +267,7 @@ func TestDealUseCase_MarkDealAsWon(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -300,7 +300,7 @@ func TestDealUseCase_MarkDealAsLost(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -333,7 +333,7 @@ func TestDealUseCase_UpdateDealProbability(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -364,7 +364,7 @@ func TestDealUseCase_UpdateDealExpectedCloseDate(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -394,7 +394,7 @@ func TestDealUseCase_AssignDealToSalesRep(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales reps
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep1, err := userUC.Register(ctx, "salesrep1@example.com", "Sales Rep 1", "password123")
 	require.NoError(t, err)
@@ -429,7 +429,7 @@ func TestDealUseCase_LinkDealToCompany(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -484,7 +484,7 @@ func TestDealUseCase_SetDealSource(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -514,7 +514,7 @@ func TestDealUseCase_DeleteDeal(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and deal
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -548,7 +548,7 @@ func TestDealUseCase_ListDeals(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -582,7 +582,7 @@ func TestDealUseCase_ListDealsByStage(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -679,7 +679,7 @@ func TestDealUseCase_ListDealsByAssignedTo(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales reps
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep1, err := userUC.Register(ctx, "salesrep1@example.com", "Sales Rep 1", "password123")
 	require.NoError(t, err)
@@ -722,7 +722,7 @@ func TestDealUseCase_ListDealsBySource(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -766,7 +766,7 @@ func TestDealUseCase_GetPipelineStats(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -809,7 +809,7 @@ func TestDealUseCase_GetTotalValue(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -842,7 +842,7 @@ func TestDealUseCase_GetWonDeals(t *testing.T) {
 	ctx := context.Background()
 
 	// Create customer and sales rep
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", uuidv7.New())
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", uuidv7.New())
 	require.NoError(t, err)
 	salesRep, err := userUC.Register(ctx, "salesrep@example.com", "Sales Rep", "password123")
 	require.NoError(t, err)
