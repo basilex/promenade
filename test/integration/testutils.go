@@ -155,7 +155,10 @@ func (tdb *TestDB) CleanAllTables() {
 		"billing_subscriptions",
 
 		// Warehouse Context tables
+		"warehouse_stock_movements",
 		"warehouse_inventory",
+		"warehouse_products",
+		"warehouse_locations",
 
 		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",

@@ -8425,6 +8425,908 @@
                 }
             }
         },
+        "/warehouse/locations": {
+            "get": {
+                "description": "Get paginated list of locations with optional filters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "List locations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location type filter",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location status filter",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Available locations only",
+                        "name": "available",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationListResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new warehouse location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Create location",
+                "parameters": [
+                    {
+                        "description": "Location creation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.CreateLocationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/code/{code}": {
+            "get": {
+                "description": "Get location details by unique code",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get location by code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}": {
+            "get": {
+                "description": "Get location details by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get location by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update location details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateLocationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Soft delete a location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Delete location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/activate": {
+            "put": {
+                "description": "Set location status to active",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Activate location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/capacity": {
+            "put": {
+                "description": "Update location capacity and limited flag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update capacity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Capacity update request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateCapacityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.CapacityResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/children": {
+            "get": {
+                "description": "Get direct or recursive child locations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get location children",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Include nested children",
+                        "name": "recursive",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/http.LocationResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/deactivate": {
+            "put": {
+                "description": "Set location status to inactive",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Deactivate location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/dimensions": {
+            "put": {
+                "description": "Update physical dimensions of a location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update location dimensions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dimensions update request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateDimensionsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/flags": {
+            "put": {
+                "description": "Update operational flags for a location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Update location flags",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Flags update request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateFlagsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/hierarchy": {
+            "get": {
+                "description": "Get full hierarchy path from root to location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get location hierarchy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/http.LocationResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse/locations/{id}/maintenance": {
+            "put": {
+                "description": "Set a location to maintenance status (unavailable for operations)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Set location maintenance mode",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Location ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.LocationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/warehouse/products": {
             "get": {
                 "description": "Get paginated list of products",
@@ -10055,6 +10957,32 @@
                 }
             }
         },
+        "http.CapacityResponse": {
+            "type": "object",
+            "properties": {
+                "available_capacity": {
+                    "type": "integer"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "current_occupancy": {
+                    "type": "integer"
+                },
+                "is_full": {
+                    "type": "boolean"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "location_code": {
+                    "type": "string"
+                },
+                "location_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.ChangePasswordRequest": {
             "type": "object",
             "required": [
@@ -10517,6 +11445,65 @@
                 },
                 "order_id": {
                     "type": "string"
+                }
+            }
+        },
+        "http.CreateLocationRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "depth": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "warehouse",
+                        "zone",
+                        "aisle",
+                        "rack",
+                        "shelf",
+                        "bin"
+                    ]
+                },
+                "width": {
+                    "type": "number"
                 }
             }
         },
@@ -11022,6 +12009,100 @@
             "properties": {
                 "invoice_id": {
                     "type": "string"
+                }
+            }
+        },
+        "http.LocationListResponse": {
+            "type": "object",
+            "properties": {
+                "locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/http.LocationResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "http.LocationResponse": {
+            "type": "object",
+            "properties": {
+                "available_capacity": {
+                    "type": "integer"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "current_occupancy": {
+                    "type": "integer"
+                },
+                "depth": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                },
+                "volume": {
+                    "type": "number"
+                },
+                "width": {
+                    "type": "number"
                 }
             }
         },
@@ -11867,6 +12948,21 @@
                 }
             }
         },
+        "http.UpdateCapacityRequest": {
+            "type": "object",
+            "required": [
+                "capacity"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "is_limited": {
+                    "type": "boolean"
+                }
+            }
+        },
         "http.UpdateCompanyBasicInfoRequest": {
             "type": "object",
             "properties": {
@@ -12049,6 +13145,39 @@
                 }
             }
         },
+        "http.UpdateDimensionsRequest": {
+            "type": "object",
+            "required": [
+                "depth",
+                "height",
+                "width"
+            ],
+            "properties": {
+                "depth": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "height": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "width": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "http.UpdateFlagsRequest": {
+            "type": "object",
+            "properties": {
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
+                }
+            }
+        },
         "http.UpdateInventoryRequest": {
             "type": "object",
             "properties": {
@@ -12100,6 +13229,18 @@
                 "quantity": {
                     "type": "integer",
                     "minimum": 1
+                }
+            }
+        },
+        "http.UpdateLocationRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200
                 }
             }
         },

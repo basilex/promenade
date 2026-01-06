@@ -100,6 +100,23 @@ definitions:
       user:
         $ref: '#/definitions/http.UserResponse'
     type: object
+  http.CapacityResponse:
+    properties:
+      available_capacity:
+        type: integer
+      capacity:
+        type: integer
+      current_occupancy:
+        type: integer
+      is_full:
+        type: boolean
+      is_limited:
+        type: boolean
+      location_code:
+        type: string
+      location_id:
+        type: string
+    type: object
   http.ChangePasswordRequest:
     properties:
       new_password:
@@ -429,6 +446,48 @@ definitions:
     - currency
     - customer_id
     - due_date
+    type: object
+  http.CreateLocationRequest:
+    properties:
+      capacity:
+        type: integer
+      code:
+        maxLength: 50
+        type: string
+      depth:
+        type: number
+      description:
+        type: string
+      height:
+        type: number
+      is_limited:
+        type: boolean
+      is_pickable:
+        type: boolean
+      is_putawayable:
+        type: boolean
+      name:
+        maxLength: 200
+        type: string
+      notes:
+        type: string
+      parent_id:
+        type: string
+      type:
+        enum:
+        - warehouse
+        - zone
+        - aisle
+        - rack
+        - shelf
+        - bin
+        type: string
+      width:
+        type: number
+    required:
+    - code
+    - name
+    - type
     type: object
   http.CreateOrderRequest:
     properties:
@@ -770,6 +829,68 @@ definitions:
         type: string
     required:
     - invoice_id
+    type: object
+  http.LocationListResponse:
+    properties:
+      locations:
+        items:
+          $ref: '#/definitions/http.LocationResponse'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_count:
+        type: integer
+    type: object
+  http.LocationResponse:
+    properties:
+      available_capacity:
+        type: integer
+      capacity:
+        type: integer
+      code:
+        type: string
+      created_at:
+        type: string
+      current_occupancy:
+        type: integer
+      depth:
+        type: number
+      description:
+        type: string
+      height:
+        type: number
+      id:
+        type: string
+      is_limited:
+        type: boolean
+      is_pickable:
+        type: boolean
+      is_putawayable:
+        type: boolean
+      level:
+        type: integer
+      name:
+        type: string
+      notes:
+        type: string
+      parent_id:
+        type: string
+      path:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: integer
+      volume:
+        type: number
+      width:
+        type: number
     type: object
   http.LoginRequest:
     properties:
@@ -1344,6 +1465,16 @@ definitions:
       total:
         type: integer
     type: object
+  http.UpdateCapacityRequest:
+    properties:
+      capacity:
+        minimum: 0
+        type: integer
+      is_limited:
+        type: boolean
+    required:
+    - capacity
+    type: object
   http.UpdateCompanyBasicInfoRequest:
     properties:
       legal_name:
@@ -1473,6 +1604,29 @@ definitions:
     - currency
     - value
     type: object
+  http.UpdateDimensionsRequest:
+    properties:
+      depth:
+        minimum: 0
+        type: number
+      height:
+        minimum: 0
+        type: number
+      width:
+        minimum: 0
+        type: number
+    required:
+    - depth
+    - height
+    - width
+    type: object
+  http.UpdateFlagsRequest:
+    properties:
+      is_pickable:
+        type: boolean
+      is_putawayable:
+        type: boolean
+    type: object
   http.UpdateInventoryRequest:
     properties:
       currency_code:
@@ -1508,6 +1662,14 @@ definitions:
         type: integer
     required:
     - quantity
+    type: object
+  http.UpdateLocationRequest:
+    properties:
+      description:
+        type: string
+      name:
+        maxLength: 200
+        type: string
     type: object
   http.UpdateOrderLineRequest:
     properties:
@@ -7000,6 +7162,565 @@ paths:
       summary: Get inventory by warehouse
       tags:
       - Inventory
+  /warehouse/locations:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of locations with optional filters
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Location type filter
+        in: query
+        name: type
+        type: string
+      - description: Location status filter
+        in: query
+        name: status
+        type: string
+      - description: Available locations only
+        in: query
+        name: available
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List locations
+      tags:
+      - Location
+    post:
+      consumes:
+      - application/json
+      description: Create a new warehouse location
+      parameters:
+      - description: Location creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create location
+      tags:
+      - Location
+  /warehouse/locations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a location
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete location
+      tags:
+      - Location
+    get:
+      consumes:
+      - application/json
+      description: Get location details by ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get location by ID
+      tags:
+      - Location
+    put:
+      consumes:
+      - application/json
+      description: Update location details
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update location
+      tags:
+      - Location
+  /warehouse/locations/{id}/activate:
+    put:
+      consumes:
+      - application/json
+      description: Set location status to active
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Activate location
+      tags:
+      - Location
+  /warehouse/locations/{id}/capacity:
+    put:
+      consumes:
+      - application/json
+      description: Update location capacity and limited flag
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Capacity update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateCapacityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.CapacityResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update capacity
+      tags:
+      - Location
+  /warehouse/locations/{id}/children:
+    get:
+      consumes:
+      - application/json
+      description: Get direct or recursive child locations
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: false
+        description: Include nested children
+        in: query
+        name: recursive
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.LocationResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get location children
+      tags:
+      - Location
+  /warehouse/locations/{id}/deactivate:
+    put:
+      consumes:
+      - application/json
+      description: Set location status to inactive
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Deactivate location
+      tags:
+      - Location
+  /warehouse/locations/{id}/dimensions:
+    put:
+      consumes:
+      - application/json
+      description: Update physical dimensions of a location
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dimensions update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateDimensionsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update location dimensions
+      tags:
+      - Location
+  /warehouse/locations/{id}/flags:
+    put:
+      consumes:
+      - application/json
+      description: Update operational flags for a location
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Flags update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateFlagsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update location flags
+      tags:
+      - Location
+  /warehouse/locations/{id}/hierarchy:
+    get:
+      consumes:
+      - application/json
+      description: Get full hierarchy path from root to location
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.LocationResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get location hierarchy
+      tags:
+      - Location
+  /warehouse/locations/{id}/maintenance:
+    put:
+      consumes:
+      - application/json
+      description: Set a location to maintenance status (unavailable for operations)
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Set location maintenance mode
+      tags:
+      - Location
+  /warehouse/locations/code/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get location details by unique code
+      parameters:
+      - description: Location code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.LocationResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get location by code
+      tags:
+      - Location
   /warehouse/products:
     get:
       consumes:

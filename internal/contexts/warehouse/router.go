@@ -6,6 +6,9 @@ import (
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryHTTP "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/http"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	"github.com/basilex/promenade/internal/contexts/warehouse/location"
+	locationHTTP "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/http"
+	locationRepo "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product"
 	productHTTP "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/http"
 	productRepo "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/repository/postgres"
@@ -19,6 +22,7 @@ type Router struct {
 	inventoryHandler     *inventoryHTTP.InventoryHandler
 	productHandler       *productHTTP.ProductHandler
 	stockMovementHandler *stockmovementHTTP.StockMovementHandler
+	locationHandler      *locationHTTP.LocationHandler
 }
 
 // NewRouter creates a new Warehouse context router
@@ -38,10 +42,16 @@ func NewRouter(db *sqlx.DB) *Router {
 	stockMovementUseCase := stockmovement.NewUseCase(stockMovementRepository)
 	stockMovementHandler := stockmovementHTTP.NewStockMovementHandler(stockMovementUseCase)
 
+	// Initialize Location aggregate
+	locationRepository := locationRepo.NewLocationRepository(db)
+	locationUseCase := location.NewUseCase(locationRepository)
+	locationHandler := locationHTTP.NewLocationHandler(locationUseCase)
+
 	return &Router{
 		inventoryHandler:     inventoryHandler,
 		productHandler:       productHandler,
 		stockMovementHandler: stockMovementHandler,
+		locationHandler:      locationHandler,
 	}
 }
 
@@ -112,6 +122,34 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			stockMovements.GET("/type/:type", r.stockMovementHandler.GetByType)                         // Get by type (paginated, last 30 days)
 			stockMovements.GET("/recent", r.stockMovementHandler.GetRecent)                             // Get recent movements (last 50)
 			stockMovements.GET("/summary/:inventory_id", r.stockMovementHandler.GetInventorySummary)    // Get inventory summary (last 30 days)
+		}
+
+		// Location routes
+		locations := warehouse.Group("/locations")
+		{
+			// Location CRUD
+			locations.POST("", r.locationHandler.Create)                          // Create location
+			locations.GET("/:id", r.locationHandler.GetByID)                      // Get by ID
+			locations.PUT("/:id", r.locationHandler.Update)                       // Update location
+			locations.DELETE("/:id", r.locationHandler.Delete)                    // Soft delete location
+			locations.GET("", r.locationHandler.List)                             // List locations (paginated with filters)
+
+			// Location queries
+			locations.GET("/code/:code", r.locationHandler.GetByCode)             // Get by unique code
+
+			// Hierarchy operations
+			locations.GET("/:id/children", r.locationHandler.GetChildren)         // Get child locations
+			locations.GET("/:id/hierarchy", r.locationHandler.GetHierarchy)       // Get hierarchy path
+
+			// Status management
+			locations.PUT("/:id/activate", r.locationHandler.Activate)            // Activate location
+			locations.PUT("/:id/deactivate", r.locationHandler.Deactivate)        // Deactivate location
+
+			// Capacity management
+			locations.PUT("/:id/capacity", r.locationHandler.UpdateCapacity)      // Update capacity settings
+			locations.PUT("/:id/dimensions", r.locationHandler.UpdateDimensions)  // Update dimensions (width, height, depth)
+			locations.PUT("/:id/flags", r.locationHandler.UpdateFlags)            // Update operational flags (pickable, putawayable)
+			locations.PUT("/:id/maintenance", r.locationHandler.SetMaintenance)   // Set maintenance mode
 		}
 	}
 }
