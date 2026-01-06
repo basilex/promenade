@@ -4,6 +4,17 @@
 
 ---
 
+## 📊 For Business Decision-Makers
+
+**Business Overview Documents** - Non-technical overview of platform capabilities, value proposition, and implementation status:
+
+- 🇬🇧 [Business Overview (English)](business/BUSINESS_OVERVIEW.md) - Complete platform overview for executives
+- 🇺🇦 [Бізнес-огляд (Українська)](business/BUSINESS_OVERVIEW_UK.md) - Повний огляд платформи для керівників
+
+**Contents**: Executive summary, business value, core capabilities, deployment options, use cases, roadmap, and success metrics.
+
+---
+
 ## Core Concepts
 
 ### Domain-Driven Design (DDD)
