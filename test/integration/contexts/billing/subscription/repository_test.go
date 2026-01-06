@@ -3,6 +3,7 @@ package subscription_test
 import (
 	"context"
 	"testing"
+"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -507,10 +508,11 @@ func TestSubscriptionRepository_MetadataJSONSerialization(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set metadata with special characters
+		affiliateEmail := fmt.Sprintf("partner_%s@example.com", uuidv7.New().String())
 		metadata := map[string]string{
 			"promo_code":     "SAVE20",
 			"notes":          "Customer requested: \"premium\" plan with 'special' features",
-			"affiliate":      "partner@example.com",
+			"affiliate":      affiliateEmail,
 			"custom_field_1": "Value with spaces",
 			"emoji":          "",
 			"json_like":      `{"key": "value"}`,
@@ -526,7 +528,7 @@ func TestSubscriptionRepository_MetadataJSONSerialization(t *testing.T) {
 		retrievedMetadata := retrieved.Metadata.Get()
 		assert.Equal(t, "SAVE20", retrievedMetadata["promo_code"])
 		assert.Equal(t, "Customer requested: \"premium\" plan with 'special' features", retrievedMetadata["notes"])
-		assert.Equal(t, "partner@example.com", retrievedMetadata["affiliate"])
+		assert.Equal(t, affiliateEmail, retrievedMetadata["affiliate"])
 		assert.Equal(t, "Value with spaces", retrievedMetadata["custom_field_1"])
 		assert.Equal(t, "", retrievedMetadata["emoji"])
 		assert.Equal(t, `{"key": "value"}`, retrievedMetadata["json_like"])

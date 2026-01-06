@@ -83,7 +83,7 @@ func TestUserRepository_Queries(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, exists)
 
-	exists, err = repo.ExistsByEmail(ctx, "nonexistent@example.com")
+	exists, err = repo.ExistsByEmail(ctx, fmt.Sprintf("nonexistent_%s@example.com", uuidv7.New().String()))
 	require.NoError(t, err)
 	assert.False(t, exists)
 
@@ -97,7 +97,7 @@ func TestUserRepository_Queries(t *testing.T) {
 	assert.GreaterOrEqual(t, len(users), 2)
 
 		// ValueObject roundtrip (Email preservation)
-		email3 := "value@object.com"
+		email3 := fmt.Sprintf("value_%s@object.com", uuidv7.New().String())
 		u3, err := user.NewUser(email3, "password789")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u3))

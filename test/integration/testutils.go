@@ -106,6 +106,12 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 
 	testDB := SetupTestDB(t)
 	testDB.CleanAllTables()
+	
+	// Register cleanup BEFORE the DB close cleanup (using AddCleanup instead of t.Cleanup)
+	// This ensures tables are cleaned while DB is still open
+	testDB.AddCleanup(func() {
+		testDB.CleanAllTables()
+	})
 
 	return testDB
 }

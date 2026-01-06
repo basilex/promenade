@@ -33,18 +33,23 @@ Each context is autonomous with:
 
 **Available Contexts**:
 
-- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only)  Production
-- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile, Role, Permission aggregates  Production
-  - User: Registration, authentication, password management 
-  - Contact: Email, phone, address management 
-  - Profile: Personal info, bio, avatar, localization 
-  - Role & Permission: RBAC implementation  Production
-- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer  | Company  | Deal  | Interaction  | Analytics  (all Production)
-- **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate  Production | OrderLine entity  | Contract, Fulfillment planned
-- **Billing** ( Production) - Invoice , Payment , Subscription  (all Production)
-- **Warehouse** (planned Q3 2026) - Inventory management
+- **Shared** (`internal/contexts/shared/`) - Reference data: Country, Currency, Language, Timezone (read-only) - Production
+- **Identity** (`internal/contexts/identity/`) - User, Contact, Profile, Role, Permission aggregates - Production
+  - User: Registration, authentication, password management
+  - Contact: Email, phone, address management
+  - Profile: Personal info, bio, avatar, localization
+  - Role & Permission: RBAC implementation - Production
+- **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer | Company | Deal | Interaction | Analytics (all Production)
+- **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate (Production) | OrderLine entity | Contract, Fulfillment planned
+- **Billing** (`internal/contexts/billing/`) - Invoice, Payment, Subscription (all Production)
+- **Warehouse** (`internal/contexts/warehouse/`) - Inventory aggregate (In Progress, 15% complete) | StockMovement planned
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
+
+**Latest Progress** (January 6, 2026):
+- Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
+- Phase 2 IN PROGRESS: Warehouse Context (15% complete - Inventory aggregate started)
+- Test Infrastructure: All systems validated (450+ tests, 138 smoke PASS, stable integration tests)
 
 ### 3. Aggregate Structure Pattern
 
@@ -288,22 +293,22 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 **Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
-- `make test` - All tests with race detector (~60s, 420+ tests)
+- `make test` - All tests with race detector (~60s, 450+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
-- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.5s, 123 tests)
+- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.6s, 138 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
 - `make test-benchmark` - Benchmark tests (performance measurement, validates workspace)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
 
-**Smoke Testing**: 123 tests across 15 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
+**Smoke Testing**: 138 tests across 17 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
 
 **Smoke Testing Pattern**:
 
 **Purpose**: Validate HTTP handlers with minimal effort (80/20 rule)  
 **Location**: `test/smoke/contexts/{context}/{aggregate}/handler_test.go`  
-**Coverage**: 2 tests per handler minimum (success + error case)  
-**Run**: `make test-smoke` (~2s, no database needed)
+**Coverage**: 6-12 tests per handler (6 minimum, 9 standard, 12 for complex)  
+**Run**: `make test-smoke` (~0.6s, no database needed)
 
 **Key Characteristics**:
 - Mock UseCase with function fields (no external dependencies)
@@ -370,7 +375,7 @@ func TestOrderHandler_GetByID_NotFound(t *testing.T) {
 - `FakeUUID()` - Generate test UUID v7
 
 **When to Write Smoke Tests**:
--  For all HTTP handlers (2 tests each minimum)
+-  For all HTTP handlers (6-12 tests per handler)
 -  When adding new endpoints
 -  Before integration tests (faster feedback)
 -  Not for complex business logic (use integration tests)
@@ -989,7 +994,7 @@ go test ./pkg/uuidv7/... -v
 go test ./pkg/jwt/... -v
 ```
 
-**Test Statistics**: 420+ tests across 45+ packages, 90%+ average coverage
+**Test Statistics**: 450+ tests across 45+ packages, 90%+ average coverage
 
 **DTO Testing Guidelines**:
 
@@ -1012,7 +1017,8 @@ go test ./pkg/jwt/... -v
 
 **Purpose**: Validate HTTP handlers with minimal effort (80/20 rule)  
 **Location**: `test/smoke/contexts/{context}/{aggregate}/handler_test.go`  
-**Coverage**: 2 tests per handler minimum (success + error case)  
+**Coverage**: 6-12 tests per handler (6 minimum, 9 standard, 12 for complex)  
+**Run**: `make test-smoke` (~0.6s, no database needed)
 **Run**: `make test-smoke` (~2s, no database needed)
 
 **Key Characteristics**:
@@ -1080,7 +1086,7 @@ func TestOrderHandler_GetByID_NotFound(t *testing.T) {
 - `FakeUUID()` - Generate test UUID v7
 
 **When to Write Smoke Tests**:
--  For all HTTP handlers (2 tests each minimum)
+-  For all HTTP handlers (6-12 tests per handler)
 -  When adding new endpoints
 -  Before integration tests (faster feedback)
 -  Not for complex business logic (use integration tests)

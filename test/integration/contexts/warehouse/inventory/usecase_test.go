@@ -63,7 +63,7 @@ func TestInventoryUseCase_GetBySKU(t *testing.T) {
 
 		// Create inventory with unique SKU
 		productID := uuidv7.New()
-		uniqueSKU := fmt.Sprintf("UC-SKU-%s", uuidv7.New().String()[:8])
+		uniqueSKU := fmt.Sprintf("UC-SKU-%s", uuidv7.New().String())
 		inv, err := uc.CreateInventory(ctx, productID, uniqueSKU, "Product", "WH-MAIN", uuidv7.New())
 		require.NoError(t, err)
 
@@ -177,7 +177,7 @@ func TestInventoryUseCase_ListInventory(t *testing.T) {
 
 		// Create 5 inventory items
 		for i := 1; i <= 5; i++ {
-			sku := fmt.Sprintf("UC-LIST-%s-%d", uuidv7.New().String()[:8], i)
+			sku := fmt.Sprintf("UC-LIST-%s-%d", uuidv7.New().String(), i)
 			_, err := uc.CreateInventory(ctx, uuidv7.New(), sku, "Product", "WH-MAIN", uuidv7.New())
 			require.NoError(t, err)
 		}
@@ -214,8 +214,8 @@ func TestInventoryUseCase_GetLowStock(t *testing.T) {
 		uc := inventory.NewUseCase(repo)
 
 		userID := uuidv7.New()
-		lowStockSKU := fmt.Sprintf("UC-LOW-%s", uuidv7.New().String()[:8])
-		goodStockSKU := fmt.Sprintf("UC-GOOD-%s", uuidv7.New().String()[:8])
+		lowStockSKU := fmt.Sprintf("UC-LOW-%s", uuidv7.New().String())
+		goodStockSKU := fmt.Sprintf("UC-GOOD-%s", uuidv7.New().String())
 
 		// Create inventory with low stock
 		invLow, err := uc.CreateInventory(ctx, uuidv7.New(), lowStockSKU, "Low Product", "WH-MAIN", uuidv7.New())
@@ -449,7 +449,7 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 
 		t.Run("DuplicateSKU", func(t *testing.T) {
 			productID := uuidv7.New()
-			uniqueSKU := fmt.Sprintf("UC-EDGE-%s", uuidv7.New().String()[:8])
+			uniqueSKU := fmt.Sprintf("UC-EDGE-%s", uuidv7.New().String())
 
 			// Create first
 			_, err := uc.CreateInventory(ctx, productID, uniqueSKU, "Product", "WH-MAIN", uuidv7.New())

@@ -3,6 +3,7 @@ package contact_test
 import (
 	"context"
 	"testing"
+"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,8 @@ func TestContactRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create email contact
-		c, err := contact.NewEmailContact(userID, "test@example.com", "Work")
+		testEmail := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
+		c, err := contact.NewEmailContact(userID, testEmail, "Work")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, c))
 		assert.NotEqual(t, uuidv7.UUID{}, c.ID)
@@ -39,7 +41,7 @@ func TestContactRepository_CRUD(t *testing.T) {
 		contacts, err := repo.GetByUserID(ctx, userID)
 		require.NoError(t, err)
 		assert.Len(t, contacts, 1)
-		assert.Equal(t, "test@example.com", contacts[0].Email.Value())
+		assert.Equal(t, testEmail, contacts[0].Email.Value())
 
 		// GetByUserIDAndType
 		emailContacts, err := repo.GetByUserIDAndType(ctx, userID, contact.ContactTypeEmail)
@@ -77,8 +79,8 @@ func TestContactRepository_Primary(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create two contacts
-		c1, _ := contact.NewEmailContact(userID, "first@example.com", "Work")
-		c2, _ := contact.NewEmailContact(userID, "second@example.com", "Personal")
+		c1, _ := contact.NewEmailContact(userID, fmt.Sprintf("first_%s@example.com", uuidv7.New().String()), "Work")
+		c2, _ := contact.NewEmailContact(userID, fmt.Sprintf("second_%s@example.com", uuidv7.New().String()), "Personal")
 		require.NoError(t, repo.Create(ctx, c1))
 		require.NoError(t, repo.Create(ctx, c2))
 
@@ -111,7 +113,7 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 
 	userID := uuidv7.New()
-	uuid := uuidv7.New().String()[:8]
+	uuid := uuidv7.New().String()
 	email := "tx_" + uuid + "@example.com"
 
 	// Create user outside transaction for FK constraint

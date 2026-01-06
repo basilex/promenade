@@ -26,6 +26,10 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 		repo := postgres.NewCustomerRepository(testDB.DB)
 		assignedTo := uuidv7.New()
 
+		// Clean table before test to ensure accurate counts
+		_, err := tx.ExecContext(ctx, "DELETE FROM customer_customers")
+		require.NoError(t, err)
+
 		// Create test data with different statuses and tiers
 		testData := []struct {
 			name   string
@@ -40,7 +44,7 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 			{"Churned Basic", customer.CustomerStatusChurned, customer.CustomerTierBasic},
 		}
 
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		for i, td := range testData {
 			c, err := customer.NewCustomer(td.name, "cust"+string(rune('a'+i))+"_"+uuid+"@test.com", "web", assignedTo)
 			require.NoError(t, err)

@@ -204,7 +204,7 @@ func TestPaymentRepository_CountByStatus(t *testing.T) {
 			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			_ = pmt.Process()
-			_ = pmt.Complete("txn-" + uuidv7.New().String()[:8])
+			_ = pmt.Complete("txn-" + uuidv7.New().String())
 			require.NoError(t, repo.Create(ctx, pmt))
 		}
 
@@ -309,7 +309,7 @@ func TestPaymentRepository_GetTotalByInvoice(t *testing.T) {
 			pmt, _ := payment.NewPayment(customerID, valueobject.Money{Amount: amt, Currency: "USD"}, payment.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			_ = pmt.Process()
-			_ = pmt.Complete("txn-" + uuidv7.New().String()[:8])
+			_ = pmt.Complete("txn-" + uuidv7.New().String())
 			_ = pmt.LinkToInvoice(invoiceID)
 			require.NoError(t, repo.Create(ctx, pmt))
 		}

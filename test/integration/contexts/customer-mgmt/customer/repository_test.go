@@ -25,7 +25,8 @@ func TestCustomerRepository_CRUD(t *testing.T) {
 
 		// Create
 		assignedTo := uuidv7.New()
-		c, err := customer.NewCustomer("Test Customer", "test@example.com", "website", assignedTo)
+		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
+		c, err := customer.NewCustomer("Test Customer", email, "website", assignedTo)
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, c))
 		assert.NotEqual(t, uuidv7.UUID{}, c.ID)
@@ -34,10 +35,10 @@ func TestCustomerRepository_CRUD(t *testing.T) {
 		found, err := repo.GetByID(ctx, c.ID)
 		require.NoError(t, err)
 		assert.Equal(t, "Test Customer", found.Name)
-		assert.Equal(t, "test@example.com", found.Email.Value())
+		assert.Equal(t, email, found.Email.Value())
 
 		// GetByEmail
-		foundByEmail, err := repo.GetByEmail(ctx, "test@example.com")
+		foundByEmail, err := repo.GetByEmail(ctx, email)
 		require.NoError(t, err)
 		assert.Equal(t, c.ID, foundByEmail.ID)
 
@@ -66,7 +67,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		assignedTo := uuidv7.New()
 
 		// Create 3 customers with unique emails
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		for i := range 3 {
 			c, _ := customer.NewCustomer("Customer "+string(rune('A'+i)), fmt.Sprintf("cust%c_%s@test.com", rune('a'+i), uuid), "web", assignedTo)
 			require.NoError(t, repo.Create(ctx, c))
@@ -77,7 +78,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		require.NoError(t, err)
 		assert.True(t, exists)
 
-		exists, err = repo.ExistsByEmail(ctx, "nonexistent@test.com")
+		exists, err = repo.ExistsByEmail(ctx, fmt.Sprintf("nonexistent_%s@test.com", uuidv7.New().String()))
 		require.NoError(t, err)
 		assert.False(t, exists)
 
@@ -89,7 +90,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 
 		// GetByUserID (requires user_id assignment)
 		userID := uuidv7.New()
-		uuid = uuidv7.New().String()[:8]
+		uuid = uuidv7.New().String()
 		// Create user first
 		_, err = tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
 			userID, fmt.Sprintf("user_%s@test.com", uuid), "hash", "active")
@@ -114,7 +115,7 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 		assignedTo := uuidv7.New()
 
 		// Create customers with different statuses and tiers
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		c1, _ := customer.NewCustomer("Lead1", fmt.Sprintf("lead1_%s@test.com", uuid), "web", assignedTo)
 		c2, _ := customer.NewCustomer("Qualified1", fmt.Sprintf("qual1_%s@test.com", uuid), "web", assignedTo)
 		_ = c2.QualifyAsProspect()
@@ -163,11 +164,11 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		assignedTo2 := uuidv7.New()
 		
 		for i := range 2 {
-			uuid := uuidv7.New().String()[:8]
+			uuid := uuidv7.New().String()
 			c, _ := customer.NewCustomer(fmt.Sprintf("Assigned1_%d", i), fmt.Sprintf("assigned1_%s_%d@test.com", uuid, i), "web", assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		c3, _ := customer.NewCustomer("Assigned2", fmt.Sprintf("assigned2_%s@test.com", uuid), "web", assignedTo2)
 		require.NoError(t, repo.Create(ctx, c3))
 
@@ -180,7 +181,7 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		// ListByCompanyID (B2B customers)
 		companyID := uuidv7.New()
 		for i := range 2 {
-			uuid2 := uuidv7.New().String()[:8]
+			uuid2 := uuidv7.New().String()
 			c, _ := customer.NewB2BCustomer(fmt.Sprintf("B2B Customer %d", i), fmt.Sprintf("b2b_%s_%d@test.com", uuid2, i), "web", companyID, assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}

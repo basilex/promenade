@@ -3,6 +3,7 @@ package customer_test
 import (
 	"context"
 	"testing"
+"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -24,16 +25,17 @@ func TestCustomerUseCase_CreateCustomer(t *testing.T) {
 
 		// Create customer
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "John Doe", "john@example.com", "website", repID)
+		email := fmt.Sprintf("john_%s@example.com", uuidv7.New().String())
+		cust, err := uc.CreateCustomer(ctx, "John Doe", email, "website", repID)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.Nil, cust.GetID())
 		assert.Equal(t, "John Doe", cust.Name)
-		assert.Equal(t, "john@example.com", cust.Email.Value())
+		assert.Equal(t, email, cust.Email.Value())
 		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
 		assert.Equal(t, customer.CustomerTierFree, cust.Tier)
 
 		// Test - Duplicate email should fail
-		_, err = uc.CreateCustomer(ctx, "Jane Doe", "john@example.com", "referral", repID)
+		_, err = uc.CreateCustomer(ctx, "Jane Doe", email, "referral", repID)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "already exists")
 	})
@@ -58,7 +60,7 @@ func TestCustomerUseCase_CreateB2BCustomer(t *testing.T) {
 
 	// Create B2B customer
 	repID := uuidv7.New()
-		cust, err := uc.CreateB2BCustomer(ctx, "Alice Smith", "alice@acme.com", "partnership", companyID, repID)
+		cust, err := uc.CreateB2BCustomer(ctx, "Alice Smith", fmt.Sprintf("alice_%s@acme.com", uuidv7.New().String()), "partnership", companyID, repID)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.Nil, cust.GetID())
 		assert.Equal(t, "Alice Smith", cust.Name)
@@ -77,7 +79,7 @@ func TestCustomerUseCase_GetCustomer(t *testing.T) {
 
 		// Create customer
 		repID := uuidv7.New()
-		created, err := uc.CreateCustomer(ctx, "Bob Wilson", "bob@example.com", "cold_call", repID)
+		created, err := uc.CreateCustomer(ctx, "Bob Wilson", fmt.Sprintf("bob_%s@example.com", uuidv7.New().String()), "cold_call", repID)
 		require.NoError(t, err)
 
 		// Test - Get by ID
@@ -102,17 +104,19 @@ func TestCustomerUseCase_GetCustomerByEmail(t *testing.T) {
 
 		// Create customer
 		repID := uuidv7.New()
-		created, err := uc.CreateCustomer(ctx, "Carol Davis", "carol@example.com", "webinar", repID)
+		email := fmt.Sprintf("carol_%s@example.com", uuidv7.New().String())
+		created, err := uc.CreateCustomer(ctx, "Carol Davis", email, "webinar", repID)
 		require.NoError(t, err)
 
 		// Test - Get by email
-		retrieved, err := uc.GetCustomerByEmail(ctx, "carol@example.com")
+		retrieved, err := uc.GetCustomerByEmail(ctx, email)
 		require.NoError(t, err)
 		assert.Equal(t, created.GetID(), retrieved.GetID())
-		assert.Equal(t, "carol@example.com", retrieved.Email.Value())
+		assert.Equal(t, email, retrieved.Email.Value())
 
 		// Test - Non-existent email
-		_, err = uc.GetCustomerByEmail(ctx, "nonexistent@example.com")
+		nonExistentEmail := fmt.Sprintf("nonexistent_%s@example.com", uuidv7.New().String())
+		_, err = uc.GetCustomerByEmail(ctx, nonExistentEmail)
 		assert.Error(t, err)
 	})
 }
@@ -127,7 +131,7 @@ func TestCustomerUseCase_QualifyAsProspect(t *testing.T) {
 
 		// Create customer (starts as Lead)
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "David Lee", "david@example.com", "referral", repID)
+		cust, err := uc.CreateCustomer(ctx, "David Lee", fmt.Sprintf("david_%s@example.com", uuidv7.New().String()), "referral", repID)
 		require.NoError(t, err)
 		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
 
@@ -152,7 +156,7 @@ func TestCustomerUseCase_ConvertToCustomer(t *testing.T) {
 
 		// Create and qualify customer
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "Emma Brown", "emma@example.com", "event", repID)
+		cust, err := uc.CreateCustomer(ctx, "Emma Brown", fmt.Sprintf("emma_%s@example.com", uuidv7.New().String()), "event", repID)
 		require.NoError(t, err)
 		err = uc.QualifyAsProspect(ctx, cust.GetID())
 		require.NoError(t, err)
@@ -178,7 +182,7 @@ func TestCustomerUseCase_TierManagement(t *testing.T) {
 
 		// Create customer (starts as Free tier)
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "Frank Miller", "frank@example.com", "trial", repID)
+		cust, err := uc.CreateCustomer(ctx, "Frank Miller", fmt.Sprintf("frank_%s@example.com", uuidv7.New().String()), "trial", repID)
 		require.NoError(t, err)
 		assert.Equal(t, customer.CustomerTierFree, cust.Tier)
 
@@ -218,7 +222,7 @@ func TestCustomerUseCase_TagManagement(t *testing.T) {
 
 		// Create customer
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "Grace Wong", "grace@example.com", "marketing", repID)
+		cust, err := uc.CreateCustomer(ctx, "Grace Wong", fmt.Sprintf("grace_%s@example.com", uuidv7.New().String()), "marketing", repID)
 		require.NoError(t, err)
 
 		// Test - Add tags
@@ -285,8 +289,8 @@ func TestCustomerUseCase_ListByStatus(t *testing.T) {
 
 		// Create customers and qualify some
 		repID := uuidv7.New()
-		_, _ = uc.CreateCustomer(ctx, "Henry Kim", "henry@example.com", "ad", repID)
-		cust2, _ := uc.CreateCustomer(ctx, "Iris Chen", "iris@example.com", "social", repID)
+		_, _ = uc.CreateCustomer(ctx, "Henry Kim", fmt.Sprintf("henry_%s@example.com", uuidv7.New().String()), "ad", repID)
+		cust2, _ := uc.CreateCustomer(ctx, "Iris Chen", fmt.Sprintf("iris_%s@example.com", uuidv7.New().String()), "social", repID)
 		_ = uc.QualifyAsProspect(ctx, cust2.GetID())
 
 		// Test - List leads
@@ -313,7 +317,7 @@ func TestCustomerUseCase_CompleteWorkflow(t *testing.T) {
 
 		// Step 1: Create lead
 		repID := uuidv7.New()
-		cust, err := uc.CreateCustomer(ctx, "Jack Taylor", "jack@example.com", "demo_request", repID)
+		cust, err := uc.CreateCustomer(ctx, "Jack Taylor", fmt.Sprintf("jack_%s@example.com", uuidv7.New().String()), "demo_request", repID)
 		require.NoError(t, err)
 		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
 		assert.Equal(t, customer.CustomerTierFree, cust.Tier)

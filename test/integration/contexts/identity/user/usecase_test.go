@@ -29,7 +29,7 @@ func TestUserUseCase_RegisterAndAuthenticate(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register new user
-		email := "test@example.com"
+		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
 		name := "Test User"
 		password := "password123"
 
@@ -65,7 +65,7 @@ func TestUserUseCase_GetUserAndGetUserByEmail(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		email := "getuser@example.com"
+		email := fmt.Sprintf("getuser_%s@example.com", uuidv7.New().String())
 		name := "Get User Test"
 		password := "password123"
 
@@ -90,7 +90,7 @@ func TestUserUseCase_GetUserAndGetUserByEmail(t *testing.T) {
 		assert.Equal(t, user.ErrUserNotFound, err)
 
 		// GetUserByEmail with non-existent email
-		_, err = uc.GetUserByEmail(ctx, "nonexistent@example.com")
+		_, err = uc.GetUserByEmail(ctx, fmt.Sprintf("nonexistent_%s@example.com", uuidv7.New().String()))
 		assert.Error(t, err)
 		assert.Equal(t, user.ErrUserNotFound, err)
 	})
@@ -108,7 +108,7 @@ func TestUserUseCase_VerifyEmail(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		registeredUser, err := uc.Register(ctx, "verify@example.com", "Verify User", "password123")
+		registeredUser, err := uc.Register(ctx, fmt.Sprintf("verify_%s@example.com", uuidv7.New().String()), "Verify User", "password123")
 		require.NoError(t, err)
 		assert.False(t, registeredUser.EmailVerified)
 
@@ -140,7 +140,7 @@ func TestUserUseCase_ChangePassword(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		email := "changepass@example.com"
+		email := fmt.Sprintf("changepass_%s@example.com", uuidv7.New().String())
 		oldPassword := "oldpassword123"
 		newPassword := "newpassword456"
 
@@ -183,7 +183,7 @@ func TestUserUseCase_SuspendUser(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		email := "suspend@example.com"
+		email := fmt.Sprintf("suspend_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		registeredUser, err := uc.Register(ctx, email, "Suspend User", password)
 		require.NoError(t, err)
@@ -222,7 +222,7 @@ func TestUserUseCase_BanUser(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		email := "ban@example.com"
+		email := fmt.Sprintf("ban_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		registeredUser, err := uc.Register(ctx, email, "Ban User", password)
 		require.NoError(t, err)
@@ -260,7 +260,7 @@ func TestUserUseCase_ActivateUser(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register and suspend user
-		email := "activate@example.com"
+		email := fmt.Sprintf("activate_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		registeredUser, err := uc.Register(ctx, email, "Activate User", password)
 		require.NoError(t, err)
@@ -300,7 +300,7 @@ func TestUserUseCase_UnlockUser(t *testing.T) {
 		uc := user.NewUseCase(userRepo, roleRepo)
 
 		// Register user
-		email := "unlock@example.com"
+		email := fmt.Sprintf("unlock_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		registeredUser, err := uc.Register(ctx, email, "Unlock User", password)
 		require.NoError(t, err)
@@ -355,7 +355,7 @@ func TestUserUseCase_ListUsers(t *testing.T) {
 	uc := user.NewUseCase(userRepo, roleRepo)
 
 	// Create multiple users with unique emails
-	testID := uuidv7.New().String()[:8]
+	testID := uuidv7.New().String()
 	for i := 1; i <= 5; i++ {
 		email := fmt.Sprintf("listuser%s_%d@example.com", testID, i)
 		name := fmt.Sprintf("List User %d", i)
@@ -387,7 +387,7 @@ func TestUserUseCase_DuplicateEmailRegistration(t *testing.T) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
 		uc := user.NewUseCase(userRepo, roleRepo)
 
-		email := "duplicate@example.com"
+		email := fmt.Sprintf("duplicate_%s@example.com", uuidv7.New().String())
 
 		// Register first user
 		_, err := uc.Register(ctx, email, "User 1", "password123")
@@ -411,7 +411,7 @@ func TestUserUseCase_CompleteWorkflow(t *testing.T) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
 		uc := user.NewUseCase(userRepo, roleRepo)
 
-		email := "workflow@example.com"
+		email := fmt.Sprintf("workflow_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		newPassword := "newpassword456"
 

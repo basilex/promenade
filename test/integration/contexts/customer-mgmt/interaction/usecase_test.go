@@ -25,11 +25,11 @@ import (
 // setupTestData creates sales rep and customer for interaction tests
 func setupTestData(t *testing.T, ctx context.Context, customerUC customer.ICustomerUseCase, userUC user.IUseCase) (*customer.Customer, *user.User) {
 	// Create test sales rep user first (required for customer.assignedTo)
-	salesRep, err := userUC.Register(ctx, fmt.Sprintf("salesrep_%s@example.com", uuidv7.New().String()[:8]), "Sales Rep", "password123")
+	salesRep, err := userUC.Register(ctx, fmt.Sprintf("salesrep_%s@example.com", uuidv7.New().String()), "Sales Rep", "password123")
 	require.NoError(t, err)
 
 	// Create test customer (with valid assignedTo)
-	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()[:8]), "website", salesRep.ID)
+	testCustomer, err := customerUC.CreateCustomer(ctx, "Test Customer", fmt.Sprintf("customer_%s@example.com", uuidv7.New().String()), "website", salesRep.ID)
 	require.NoError(t, err)
 
 	return testCustomer, salesRep
@@ -56,7 +56,7 @@ func TestInteractionUseCase_CreateInteraction(t *testing.T) {
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
 
 	// Create test user (interaction creator)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -107,12 +107,12 @@ func TestInteractionUseCase_CreateInteractionWithCompany(t *testing.T) {
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
 
 	// Create test company with unique name
-	uuidSuffix := uuidv7.New().String()[:8]
+	uuidSuffix := uuidv7.New().String()
 	testCompany, err := companyUC.CreateCompany(ctx, fmt.Sprintf("Test Company %s", uuidSuffix), nil, string(company.CompanyTypeLLC), nil, nil, nil, nil, nil, nil, nil, string(company.CompanySizeSmall), 0, 0, "USD", nil, nil)
 	require.NoError(t, err)
 
 	// Create test user
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction with company
@@ -153,7 +153,7 @@ func TestInteractionUseCase_GetInteraction(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -213,7 +213,7 @@ func TestInteractionUseCase_UpdateContent(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -256,7 +256,7 @@ func TestInteractionUseCase_SetOutcome(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -301,7 +301,7 @@ func TestInteractionUseCase_EndInteraction(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -349,7 +349,7 @@ func TestInteractionUseCase_SetFollowUp(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -395,11 +395,11 @@ func TestInteractionUseCase_AddAttendee(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create another user (attendee)
-	attendeeUser, err := userUC.Register(ctx, fmt.Sprintf("attendee_%s@example.com", uuidv7.New().String()[:8]), "Attendee User", "password123")
+	attendeeUser, err := userUC.Register(ctx, fmt.Sprintf("attendee_%s@example.com", uuidv7.New().String()), "Attendee User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -442,9 +442,9 @@ func TestInteractionUseCase_RemoveAttendee(t *testing.T) {
 
 	// Create test customer and users
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
-	attendeeUser, err := userUC.Register(ctx, fmt.Sprintf("attendee_%s@example.com", uuidv7.New().String()[:8]), "Attendee User", "password123")
+	attendeeUser, err := userUC.Register(ctx, fmt.Sprintf("attendee_%s@example.com", uuidv7.New().String()), "Attendee User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction
@@ -491,7 +491,7 @@ func TestInteractionUseCase_ListByCustomer(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create multiple interactions
@@ -536,7 +536,7 @@ func TestInteractionUseCase_ListByType(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interactions of different types
@@ -576,7 +576,7 @@ func TestInteractionUseCase_ListPendingFollowUps(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction with follow-up
@@ -616,7 +616,7 @@ func TestInteractionUseCase_DeleteInteraction(t *testing.T) {
 
 	// Create test customer and user
 	testCustomer, _ := setupTestData(t, ctx, customerUC, userUC)
-	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()[:8]), "Test User", "password123")
+	testUser, err := userUC.Register(ctx, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Test User", "password123")
 	require.NoError(t, err)
 
 	// Create interaction

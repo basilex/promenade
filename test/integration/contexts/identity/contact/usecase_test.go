@@ -3,6 +3,7 @@ package contact_test
 import (
 	"context"
 	"testing"
+"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ import (
 
 // createTestUser creates a test user for contact tests
 func createTestUser(t *testing.T, ctx context.Context, userRepo user.IRepository) uuidv7.UUID {
-	u, err := user.NewUser("test@example.com", "password123")
+	u, err := user.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
 	require.NoError(t, err)
 	err = userRepo.Create(ctx, u)
 	require.NoError(t, err)
@@ -39,7 +40,7 @@ func TestContactUseCase_CreateEmailContact(t *testing.T) {
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
-		email := "test@example.com"
+		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
 		label := "Work"
 
 		// Create email contact
@@ -150,7 +151,7 @@ func TestContactUseCase_GetContact(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contact
-		created, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", true)
+		created, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 
 		// Retrieve contact
@@ -183,7 +184,7 @@ func TestContactUseCase_GetUserContacts(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create multiple contacts
-		_, err := uc.CreateEmailContact(ctx, userID, "email1@example.com", "Work", true)
+		_, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("email1_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 		_, err = uc.CreatePhoneContact(ctx, userID, "+380671234567", "Mobile", false)
 		require.NoError(t, err)
@@ -222,9 +223,9 @@ func TestContactUseCase_GetUserContactsByType(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contacts of different types
-		_, err := uc.CreateEmailContact(ctx, userID, "email1@example.com", "Work", true)
+		_, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("email1_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
-		_, err = uc.CreateEmailContact(ctx, userID, "email2@example.com", "Personal", false)
+		_, err = uc.CreateEmailContact(ctx, userID, fmt.Sprintf("email2_%s@example.com", uuidv7.New().String()), "Personal", false)
 		require.NoError(t, err)
 		_, err = uc.CreatePhoneContact(ctx, userID, "+380671234567", "Mobile", false)
 		require.NoError(t, err)
@@ -261,7 +262,7 @@ func TestContactUseCase_UpdateContact(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contact
-		c, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", false)
+		c, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "Work", false)
 		require.NoError(t, err)
 
 		// Update label
@@ -292,7 +293,7 @@ func TestContactUseCase_DeleteContact(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contact
-		c, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", true)
+		c, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 
 		// Delete contact
@@ -322,9 +323,9 @@ func TestContactUseCase_SetAsPrimary(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create two email contacts
-		c1, err := uc.CreateEmailContact(ctx, userID, "email1@example.com", "Work", true)
+		c1, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("email1_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
-		c2, err := uc.CreateEmailContact(ctx, userID, "email2@example.com", "Personal", false)
+		c2, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("email2_%s@example.com", uuidv7.New().String()), "Personal", false)
 		require.NoError(t, err)
 
 		assert.True(t, c1.IsPrimary)
@@ -362,7 +363,7 @@ func TestContactUseCase_VerifyContact(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contact
-		c, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", true)
+		c, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 		assert.False(t, c.IsVerified)
 
@@ -393,7 +394,7 @@ func TestContactUseCase_UpdateVisibility(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// Create contact (default is not public)
-		c, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", true)
+		c, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 		assert.False(t, c.IsPublic)
 
@@ -433,7 +434,7 @@ func TestContactUseCase_CompleteWorkflow(t *testing.T) {
 		userID := createTestUser(t, ctx, userRepo)
 
 		// 1. Create email contact
-		email, err := uc.CreateEmailContact(ctx, userID, "user@example.com", "Work", true)
+		email, err := uc.CreateEmailContact(ctx, userID, fmt.Sprintf("user_%s@example.com", uuidv7.New().String()), "Work", true)
 		require.NoError(t, err)
 
 		// 2. Create phone contact

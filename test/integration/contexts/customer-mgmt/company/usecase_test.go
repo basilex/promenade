@@ -55,7 +55,8 @@ func TestCompanyUseCase_CreateCompanyWithFullData(t *testing.T) {
 		taxID := "US-12345678"
 		regNumber := "REG-2024-001"
 		website := "https://techsolutions.com"
-		email, _ := valueobject.NewEmail("info@techsolutions.com")
+		emailStr := fmt.Sprintf("info_%s@techsolutions.com", uuidv7.New().String())
+		email, _ := valueobject.NewEmail(emailStr)
 		phone, _ := valueobject.NewPhone("+1234567890")
 		address, _ := valueobject.NewAddress("123 Tech St", "San Francisco", "94105", "US")
 		industry := "technology"
@@ -71,7 +72,7 @@ func TestCompanyUseCase_CreateCompanyWithFullData(t *testing.T) {
 		assert.Equal(t, "US-12345678", *comp.TaxID)
 		assert.Equal(t, "REG-2024-001", *comp.RegistrationNumber)
 		assert.Equal(t, "https://techsolutions.com", *comp.Website)
-		assert.Equal(t, "info@techsolutions.com", comp.Email.Value())
+		assert.Equal(t, emailStr, comp.Email.Value())
 		assert.Equal(t, "+1234567890", comp.Phone.Value())
 		assert.Equal(t, "123 Tech St", comp.Address.Street)
 		assert.Equal(t, "San Francisco", comp.Address.City)
@@ -190,14 +191,15 @@ func TestCompanyUseCase_UpdateCompanyContactInfo(t *testing.T) {
 
 		// Update contact info
 		website := "https://newwebsite.com"
-		email, _ := valueobject.NewEmail("contact@newwebsite.com")
+		emailStr := fmt.Sprintf("contact_%s@newwebsite.com", uuidv7.New().String())
+		email, _ := valueobject.NewEmail(emailStr)
 		phone, _ := valueobject.NewPhone("+9876543210")
 		address, _ := valueobject.NewAddress("456 New St", "New York", "10001", "US")
 
 		updated, err := uc.UpdateCompanyContactInfo(ctx, comp.ID, &website, &email, &phone, &address)
 		require.NoError(t, err)
 		assert.Equal(t, "https://newwebsite.com", *updated.Website)
-		assert.Equal(t, "contact@newwebsite.com", updated.Email.Value())
+		assert.Equal(t, emailStr, updated.Email.Value())
 		assert.Equal(t, "+9876543210", updated.Phone.Value())
 		assert.Equal(t, "456 New St", updated.Address.Street)
 		assert.Equal(t, "New York", updated.Address.City)
@@ -451,13 +453,14 @@ func TestCompanyUseCase_CompleteWorkflow(t *testing.T) {
 
 		// Step 3: Add contact information
 		website := "https://startup-inc.com"
-		email, _ := valueobject.NewEmail("info@startup-inc.com")
+		emailStr := fmt.Sprintf("info_%s@startup-inc.com", uuidv7.New().String())
+		email, _ := valueobject.NewEmail(emailStr)
 		phone, _ := valueobject.NewPhone("+1555123456")
 		address, _ := valueobject.NewAddress("100 Startup Blvd", "Palo Alto", "94301", "US")
 		comp, err = uc.UpdateCompanyContactInfo(ctx, comp.ID, &website, &email, &phone, &address)
 		require.NoError(t, err)
 		assert.Equal(t, "https://startup-inc.com", *comp.Website)
-		assert.Equal(t, "info@startup-inc.com", comp.Email.Value())
+		assert.Equal(t, emailStr, comp.Email.Value())
 
 		// Step 4: Add description
 		desc := "Innovative startup disrupting the market"
@@ -485,7 +488,7 @@ func TestCompanyUseCase_CompleteWorkflow(t *testing.T) {
 		assert.Equal(t, "Startup Inc", final.Name)
 		assert.Equal(t, company.CompanySize("medium"), final.Size)
 		assert.Equal(t, 100, final.EmployeeCount)
-		assert.Equal(t, "info@startup-inc.com", final.Email.Value())
+		assert.Equal(t, emailStr, final.Email.Value())
 		assert.Equal(t, "Innovative startup disrupting the market", *final.Description)
 	})
 }

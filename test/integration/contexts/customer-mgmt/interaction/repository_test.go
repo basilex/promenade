@@ -40,7 +40,7 @@ func TestInteractionRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", "test@example.com", "website", userID)
+		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -92,7 +92,7 @@ func TestInteractionRepository_ListByCustomer(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", "test@example.com", "website", userID)
+		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -135,7 +135,7 @@ func TestInteractionRepository_ListByType(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", "test@example.com", "website", userID)
+		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -184,7 +184,7 @@ func TestInteractionRepository_ListPendingFollowUps(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", "test@example.com", "website", userID)
+		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -229,7 +229,7 @@ func TestInteractionRepository_Attendees(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", "test@example.com", "website", userID)
+		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID

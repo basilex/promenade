@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 	"testing"
+"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -247,7 +248,7 @@ func createTestCustomersForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Cont
 	_, err := db.ExecContext(ctx, `
 		INSERT INTO identity_users (id, email, password_hash, status, email_verified)
 		VALUES ($1, $2, $3, $4, $5)
-	`, salesRepID, "salesrep@example.com", "hash", "active", true)
+	`, salesRepID, fmt.Sprintf("salesrep_%s@example.com", uuidv7.New().String()), "hash", "active", true)
 	require.NoError(t, err)
 
 	customers := []struct {
@@ -255,11 +256,11 @@ func createTestCustomersForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Cont
 		status customer.CustomerStatus
 		tier   customer.CustomerTier
 	}{
-		{"test1@example.com", customer.CustomerStatusCustomer, customer.CustomerTierPro},
-		{"test2@example.com", customer.CustomerStatusCustomer, customer.CustomerTierBasic},
-		{"test3@example.com", customer.CustomerStatusProspect, customer.CustomerTierFree},
-		{"test4@example.com", customer.CustomerStatusLead, customer.CustomerTierFree},
-		{"test5@example.com", customer.CustomerStatusChurned, customer.CustomerTierBasic},
+		{fmt.Sprintf("test1_%s@example.com", uuidv7.New().String()), customer.CustomerStatusCustomer, customer.CustomerTierPro},
+		{fmt.Sprintf("test2_%s@example.com", uuidv7.New().String()), customer.CustomerStatusCustomer, customer.CustomerTierBasic},
+		{fmt.Sprintf("test3_%s@example.com", uuidv7.New().String()), customer.CustomerStatusProspect, customer.CustomerTierFree},
+		{fmt.Sprintf("test4_%s@example.com", uuidv7.New().String()), customer.CustomerStatusLead, customer.CustomerTierFree},
+		{fmt.Sprintf("test5_%s@example.com", uuidv7.New().String()), customer.CustomerStatusChurned, customer.CustomerTierBasic},
 	}
 
 	for _, c := range customers {
@@ -281,11 +282,11 @@ func createTestDealsForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Context)
 	_, err := db.ExecContext(ctx, `
 		INSERT INTO identity_users (id, email, password_hash, status, email_verified)
 		VALUES ($1, $2, $3, $4, $5)
-	`, salesRepID, "dealsrep@example.com", "hash", "active", true)
+	`, salesRepID, fmt.Sprintf("dealsrep_%s@example.com", uuidv7.New().String()), "hash", "active", true)
 	require.NoError(t, err)
 
 	customerRepository := customerRepo.NewCustomerRepository(db)
-	cust, err := customer.NewCustomer("Deal Customer", "dealcustomer@example.com", "website", salesRepID)
+	cust, err := customer.NewCustomer("Deal Customer", fmt.Sprintf("dealcustomer_%s@example.com", uuidv7.New().String()), "website", salesRepID)
 	require.NoError(t, err)
 	err = customerRepository.Create(ctx, cust)
 	require.NoError(t, err)
@@ -331,11 +332,11 @@ func createTestInteractionsForAnalytics(t *testing.T, db *sqlx.DB, ctx context.C
 	_, err := db.ExecContext(ctx, `
 		INSERT INTO identity_users (id, email, password_hash, status, email_verified)
 		VALUES ($1, $2, $3, $4, $5)
-	`, salesRepID, "interactionrep@example.com", "hash", "active", true)
+	`, salesRepID, fmt.Sprintf("interactionrep_%s@example.com", uuidv7.New().String()), "hash", "active", true)
 	require.NoError(t, err)
 
 	customerRepository := customerRepo.NewCustomerRepository(db)
-	cust, err := customer.NewCustomer("Interaction Customer", "interaction@example.com", "website", salesRepID)
+	cust, err := customer.NewCustomer("Interaction Customer", fmt.Sprintf("interaction_%s@example.com", uuidv7.New().String()), "website", salesRepID)
 	require.NoError(t, err)
 	err = customerRepository.Create(ctx, cust)
 	require.NoError(t, err)

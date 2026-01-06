@@ -24,7 +24,7 @@ func TestPermissionRepository_CRUD(t *testing.T) {
 		repo := postgres.NewPermissionRepository(testDB.DB)
 
 		// Create with unique resource name
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		resourceName := fmt.Sprintf("test_resource_%s", uuid)
 		p, err := permission.NewPermission(resourceName, "read", "Test permission")
 		require.NoError(t, err)
@@ -64,7 +64,7 @@ func TestPermissionRepository_Queries(t *testing.T) {
 		repo := postgres.NewPermissionRepository(testDB.DB)
 
 		// Create 2 permissions with unique names
-		uuid := uuidv7.New().String()[:8]
+		uuid := uuidv7.New().String()
 		resource1Name := fmt.Sprintf("resource1_%s", uuid)
 		resource2Name := fmt.Sprintf("resource2_%s", uuid)
 		p1, _ := permission.NewPermission(resource1Name, "read", "First")

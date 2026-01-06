@@ -3,6 +3,7 @@ package profile_test
 import (
 	"context"
 	"testing"
+"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -19,7 +20,7 @@ import (
 
 // Helper function to create a test user (same as Contact tests)
 func createTestUser(t *testing.T, ctx context.Context, userRepo user.IRepository) uuidv7.UUID {
-	u, err := user.NewUser("test@example.com", "password123")
+	u, err := user.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
 	require.NoError(t, err)
 	err = userRepo.Create(ctx, u)
 	require.NoError(t, err)
