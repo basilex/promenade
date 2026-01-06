@@ -313,8 +313,8 @@ func TestCommitReservation_PartialCommit(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(50, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(50, orderID, userID)
 
 	err := inv.CommitReservation(20, orderID, userID)
 
@@ -330,8 +330,8 @@ func TestCommitReservation_InsufficientReserved(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
 
 	err := inv.CommitReservation(50, orderID, userID)
 
@@ -358,7 +358,7 @@ func TestAdjustStock_PositiveAdjustment(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
 	err := inv.AdjustStock(20, "Found extra units in audit", userID)
 
@@ -371,7 +371,7 @@ func TestAdjustStock_NegativeAdjustment(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
 	err := inv.AdjustStock(-15, "Damaged units removed", userID)
 
@@ -384,7 +384,7 @@ func TestAdjustStock_ResultsInNegative(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(50, 1000, userID)
+	_ = inv.ReceiveStock(50, 1000, userID)
 
 	err := inv.AdjustStock(-100, "Theft", userID)
 
@@ -484,7 +484,7 @@ func TestMarkAsDamaged_Success(t *testing.T) {
 	inv := createTestInventory(t)
 	userID := createTestUser()
 
-	inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
 
 	err := inv.MarkAsDamaged(15, "Water damage", userID)
 
@@ -560,8 +560,8 @@ func TestDeactivate_WithReservedStock(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1000, userID)
-	inv.ReserveStock(30, orderID, userID)
+	_ = inv.ReceiveStock(100, 1000, userID)
+	_ = inv.ReserveStock(30, orderID, userID)
 
 	err := inv.Deactivate(userID)
 
@@ -749,7 +749,7 @@ func TestComplexWorkflow_FullOrderFulfillment(t *testing.T) {
 	inv.ReceiveStock(200, 1000, userID)
 	assert.Equal(t, 200, inv.QuantityAvailable)
 
-	inv.ReserveStock(50, orderID, userID)
+	_ = inv.ReserveStock(50, orderID, userID)
 	assert.Equal(t, 150, inv.QuantityAvailable)
 	assert.Equal(t, 50, inv.QuantityReserved)
 
@@ -768,9 +768,9 @@ func TestComplexWorkflow_OrderCancellation(t *testing.T) {
 	userID := createTestUser()
 	orderID := uuidv7.New()
 
-	inv.ReceiveStock(100, 1500, userID)
+	_ = inv.ReceiveStock(100, 1500, userID)
 
-	inv.ReserveStock(40, orderID, userID)
+	_ = inv.ReserveStock(40, orderID, userID)
 	assert.Equal(t, 60, inv.QuantityAvailable)
 	assert.Equal(t, 40, inv.QuantityReserved)
 
@@ -787,11 +787,11 @@ func TestComplexWorkflow_MultipleOrders(t *testing.T) {
 	order2 := uuidv7.New()
 	order3 := uuidv7.New()
 
-	inv.ReceiveStock(200, 1000, userID)
+	_ = inv.ReceiveStock(200, 1000, userID)
 
-	inv.ReserveStock(50, order1, userID)
-	inv.ReserveStock(30, order2, userID)
-	inv.ReserveStock(20, order3, userID)
+	_ = inv.ReserveStock(50, order1, userID)
+	_ = inv.ReserveStock(30, order2, userID)
+	_ = inv.ReserveStock(20, order3, userID)
 
 	assert.Equal(t, 100, inv.QuantityReserved)
 	assert.Equal(t, 100, inv.QuantityAvailable)
