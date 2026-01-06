@@ -297,7 +297,7 @@
 | **Customer Management** | Production | Customer, Company, Deal, Interaction, Analytics (all live)  | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
-| **Warehouse**           | In Progress   | Inventory (started), StockMovement (planned)            | [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
+| **Warehouse**           | In Progress (45%) | Inventory, StockMovement (both live) \| Product, Location (planned) | [Context Guide](../internal/contexts/warehouse/README.md) \| [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 

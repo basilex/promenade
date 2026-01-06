@@ -42,14 +42,16 @@ Each context is autonomous with:
 - **Customer Management** (`internal/contexts/customer-mgmt/`) - Customer | Company | Deal | Interaction | Analytics (all Production)
 - **Order Management** (`internal/contexts/order-mgmt/`) - Order aggregate (Production) | OrderLine entity | Contract, Fulfillment planned
 - **Billing** (`internal/contexts/billing/`) - Invoice, Payment, Subscription (all Production)
-- **Warehouse** (`internal/contexts/warehouse/`) - Inventory aggregate (In Progress, 15% complete) | StockMovement planned
+- **Warehouse** (`internal/contexts/warehouse/`) - Inventory aggregate (Production) | StockMovement aggregate (Production) | Product, Location (Planned)
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 **Latest Progress** (January 6, 2026):
 - Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
-- Phase 2 IN PROGRESS: Warehouse Context (15% complete - Inventory aggregate started)
-- Test Infrastructure: All systems validated (2200+ tests: 2000+ unit, 160+ smoke, 19 integration packages)
+- Phase 2 IN PROGRESS: Warehouse Context (45% complete - Inventory + StockMovement aggregates PRODUCTION)
+- Inventory Aggregate: 141 tests passing (97 unit + 23 integration + 21 smoke), 14 API endpoints operational
+- StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
+- Test Infrastructure: All systems validated (2380+ tests: 2180+ unit, 170+ smoke, 42+ integration)
 
 ### 3. Aggregate Structure Pattern
 
@@ -293,15 +295,15 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 **Testing** (from Makefile.test.mk, four-tier strategy):
 
 - `make test-all` - All tests runner (warns if not ENVIRONMENT=test)
-- `make test` - All tests with race detector (~60s, 2200+ tests)
+- `make test` - All tests with race detector (~60s, 2341+ tests)
 - `make test-unit` - Unit tests only (fast, ~5s, no workspace needed)
-- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.6s, 161 tests)
+- `make test-smoke` - Smoke tests for handlers (HTTP validation, no DB, ~0.6s, 182 tests)
 - `make test-integration` - Integration tests with real DB (~14s, validates workspace)
 - `make test-benchmark` - Benchmark tests (performance measurement, validates workspace)
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
 
-**Smoke Testing**: 161 tests across 17 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
+**Smoke Testing**: 182 tests across 18 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
 
 **Smoke Testing Pattern**:
 
@@ -757,6 +759,83 @@ func (o *Order) Cancel(reason string) error
 - Cannot modify confirmed orders (must cancel and recreate)
 - Terminal states (fulfilled, cancelled) are immutable
 - Total automatically recalculated on line item changes
+
+## Warehouse Context
+
+**Current Status** (January 6, 2026): 45% Complete - Inventory PRODUCTION, StockMovement PRODUCTION
+
+**Inventory Aggregate** (`internal/contexts/warehouse/inventory/`) - ✅ **PRODUCTION**:
+
+- **Stock Tracking**: QuantityOnHand, QuantityReserved, QuantityAvailable, QuantityCommitted
+- **Reorder Management**: ReorderPoint, MinStock, MaxStock thresholds
+- **Cost Tracking**: UnitCost, TotalCost with weighted average
+- **14 API Endpoints**: CRUD + stock operations (receive, reserve, release, commit)
+- **141 Tests Passing**: 97 unit + 23 integration + 21 smoke
+
+**Key Operations**:
+```go
+func (i *Inventory) ReceiveStock(quantity int, unitCost float64) error
+func (i *Inventory) ReserveStock(quantity int, orderID uuidv7.UUID) error
+func (i *Inventory) ReleaseReservation(quantity int, orderID uuidv7.UUID) error
+func (i *Inventory) CommitStock(quantity int, orderID uuidv7.UUID) error
+```
+
+**Business Rules**:
+- QuantityAvailable = QuantityOnHand - QuantityReserved
+- Cannot reserve more than available stock
+- Weighted average cost calculation on receipt
+- Auto-update TotalCost on stock movements
+
+**StockMovement Aggregate** (`internal/contexts/warehouse/stockmovement/`) - ✅ **PRODUCTION**:
+
+- **Movement Types**: Receipt, Reservation, ReservationRelease, Commit, Adjustment, Transfer, Damage, Return
+- **Audit Trail**: Immutable append-only log for compliance
+- **Cost Tracking**: UnitCostCents, TotalCostCents, CurrencyCode
+- **Reference Tracking**: Links to Orders, POs, Adjustments
+- **Location Tracking**: FromWarehouse/ToWarehouse for transfers
+- **45 Tests Passing**: 11 entity + 10 usecase + 9 smoke + 15 integration
+
+**Entity Structure**:
+```go
+type StockMovement struct {
+    aggregate.BaseAggregate
+    InventoryID        uuidv7.UUID
+    Type               MovementType
+    Quantity           int  // Positive or negative
+    QuantityBeforeMove int  // Snapshot before
+    QuantityAfterMove  int  // Snapshot after
+    FromWarehouseID    *uuidv7.UUID
+    ToWarehouseID      *uuidv7.UUID
+    ReferenceType      string  // "order", "po", "adjustment"
+    ReferenceID        *uuidv7.UUID
+    Reason             string  // Required for adjustments
+    CreatedBy          uuidv7.UUID
+    MovementDate       time.Time
+}
+```
+
+**Key Business Rules**:
+- Movements are immutable (append-only)
+- Adjustments require reason
+- Transfers require both from and to warehouses
+- Quantity cannot be zero
+- GetImpact() returns +/- for stock calculations
+
+**Implementation Details**:
+- Repository: 11 methods (Create, GetByID, GetByInventoryID, GetByType, GetByReference, GetByDateRange, GetSummaryByInventory, GetRecentMovements, CountByType, List, Count)
+- UseCase: 9 methods covering all business operations
+- PostgreSQL placeholders ($1, $2, $3) used throughout
+- FK constraints properly handled with createTestInventory helpers
+- Date range queries use real dates (not time.Time{})
+- All SQL queries use proper placeholder conversion (? → $N)
+
+**Next Steps**:
+- Product aggregate (catalog management)
+- Location aggregate (warehouse locations)
+- Integration with Order Management (stock reservation on order creation)
+- Low stock alerts system
+
+**See**: [Warehouse README](internal/contexts/warehouse/README.md) for complete documentation
 
 ## Adding a New Aggregate
 

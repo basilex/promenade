@@ -238,6 +238,31 @@ test/smoke/contexts/
 **Total: 138 smoke tests across 17 handlers (100% pass rate)**
 ```
 
+### Warehouse Context (Inventory Management)
+
+```
+internal/contexts/warehouse/
+ inventory/
+    entity_test.go         # 97 tests (business logic, stock operations)
+    usecase_test.go        # Tests for 11 business methods
+ stockmovement/
+    entity_test.go         # 11 entity tests (NewStockMovement, Validate, Set*)
+    usecase_test.go        # 10 usecase tests (all business methods)
+
+test/smoke/contexts/warehouse/
+ inventory/handler_test.go      # 21 smoke tests (HTTP validation)
+ stockmovement/handler_test.go  # 9 smoke tests (HTTP validation)
+
+test/integration/contexts/warehouse/
+ inventory/repository_test.go       # 23 integration tests
+ stockmovement/repository_test.go   # 7 repository tests + 8 usecase tests = 15 total
+
+**Total Warehouse Tests: 186 tests**
+- Inventory: 141 tests (97 entity + 23 integration + 21 smoke)
+- StockMovement: 45 tests (11 entity + 10 usecase + 9 smoke + 15 integration)
+- **Pass Rate: 100%**
+```
+
 ### Shared Context (Reference Data)
 
 ```

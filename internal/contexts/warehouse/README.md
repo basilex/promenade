@@ -2,11 +2,11 @@
 
 **Domain:** Inventory management, products, stock tracking  
 **Ubiquitous Language:** Product, Inventory, Stock, Location, Movement, Reservation  
-**Status:**  In Progress - 35% Complete (Phase 2 Q1 2026)
+**Status:**  In Progress - 45% Complete (Phase 2 Q1 2026)
 
 **Latest Update:** January 6, 2026  
-**Completed:** Inventory Aggregate (Task 2.1) - 100% ✅  
-**In Progress:** StockMovement Aggregate (Task 2.2)
+**Completed:** Inventory + StockMovement Aggregates ✅  
+**In Progress:** Product & Location Aggregates (Task 2.3)
 
 ---
 
@@ -27,12 +27,21 @@ The **Warehouse Context** manages physical goods, inventory levels, and stock mo
 - ✅ Router & Server Integration
 - **Total:** 141 tests, 100% passing
 
+**Task 2.2: StockMovement Aggregate** - ✅ **COMPLETE**
+- ✅ Entity (11 entity tests)
+- ✅ Repository (550 lines, 11 methods with PostgreSQL placeholders)
+- ✅ UseCase (10 usecase tests)
+- ✅ Integration Tests (15 tests: 7 repository + 8 usecase)
+- ✅ Smoke Tests (9 tests)
+- ✅ FK Constraint Fixes (createTestInventory helpers)
+- ✅ SQL Syntax Fixes (? → $N placeholders)
+- **Total:** 45 tests, 100% passing
+
 **Next Tasks:**
-- Task 2.2: StockMovement Aggregate (planned)
-- Task 2.3: Complete HTTP API (14/24 endpoints)
-- Task 2.4: Order Management Integration
-- Task 2.5: Low Stock Alerts
-- Task 2.6: Database Migrations
+- Task 2.3: Product & Location Aggregates
+- Task 2.4: Order Management Integration (stock reservation on order creation)
+- Task 2.5: Low Stock Alerts System
+- Task 2.6: HTTP API Completion (22+ endpoints)
 
 ### Responsibilities
 
@@ -223,7 +232,133 @@ func (i *Inventory) Validate() error
 
 ---
 
-### 3. Location Aggregate
+### 3. StockMovement Aggregate ✅ **PRODUCTION READY**
+
+**Aggregate Root:** `StockMovement`  
+**Purpose:** Audit trail for all stock changes (immutable append-only log)  
+**Status:** Fully implemented with 45 tests passing
+
+**Entity Structure:**
+
+```go
+type StockMovement struct {
+    aggregate.BaseAggregate
+
+    // Identity
+    ID                 uuidv7.UUID
+    InventoryID        uuidv7.UUID
+    Type               MovementType
+    Quantity           int  // Positive or negative
+
+    // Snapshot (audit trail)
+    QuantityBeforeMove int
+    QuantityAfterMove  int
+
+    // Location Tracking (for transfers)
+    FromWarehouseID    *uuidv7.UUID
+    FromLocationCode   *string
+    ToWarehouseID      *uuidv7.UUID
+    ToLocationCode     *string
+
+    // Reference Tracking
+    ReferenceType      string       // "order", "po", "adjustment"
+    ReferenceID        *uuidv7.UUID // Order ID, PO ID, etc.
+
+    // Cost Tracking
+    UnitCostCents      int64
+    TotalCostCents     int64
+    CurrencyCode       string
+
+    // Metadata
+    Reason             string       // Required for adjustments
+    Notes              string
+    CreatedBy          uuidv7.UUID
+    MovementDate       time.Time
+}
+
+type MovementType string
+
+const (
+    MovementTypeReceipt            MovementType = "receipt"             // Incoming stock
+    MovementTypeReservation        MovementType = "reservation"         // Reserved for order
+    MovementTypeReservationRelease MovementType = "reservation_release" // Cancelled reservation
+    MovementTypeCommit             MovementType = "commit"              // Committed to fulfilled order
+    MovementTypeAdjustment         MovementType = "adjustment"          // Manual correction
+    MovementTypeTransfer           MovementType = "transfer"            // Location transfer
+    MovementTypeDamage             MovementType = "damage"              // Damaged goods
+    MovementTypeReturn             MovementType = "return"              // Customer return
+)
+```
+
+**Business Rules:**
+
+- Movements are **immutable** (append-only, no updates/deletes)
+- Adjustments require reason
+- Transfers require both from and to warehouses
+- Quantity cannot be zero
+- Cost tracking optional (can be zero)
+- Snapshot captures state before and after movement
+
+**Business Methods:**
+
+```go
+func NewStockMovement(inventoryID uuidv7.UUID, movType MovementType, quantity int, quantityBefore int, createdBy uuidv7.UUID) (*StockMovement, error)
+func (sm *StockMovement) SetReference(refType string, refID uuidv7.UUID) error
+func (sm *StockMovement) SetCost(unitCostCents, totalCostCents int64, currencyCode string) error
+func (sm *StockMovement) SetReason(reason string) error
+func (sm *StockMovement) SetNotes(notes string) error
+func (sm *StockMovement) SetWarehouseLocation(fromWarehouseID, toWarehouseID *uuidv7.UUID, fromLocation, toLocation *string) error
+func (sm *StockMovement) GetImpact() int  // Returns +/- for stock calculations
+func (sm *StockMovement) IsAdjustment() bool
+func (sm *StockMovement) Validate() error
+```
+
+**Repository Methods (11 total):**
+
+```go
+Create(ctx, movement) error
+GetByID(ctx, id) (*StockMovement, error)
+GetByInventoryID(ctx, inventoryID, page, pageSize) ([]*StockMovement, int, error)
+GetByType(ctx, movementType, startDate, endDate, page, pageSize) ([]*StockMovement, int, error)
+GetByReference(ctx, refType, refID) ([]*StockMovement, error)
+GetByDateRange(ctx, startDate, endDate, page, pageSize) ([]*StockMovement, int, error)
+GetSummaryByInventory(ctx, inventoryID, startDate, endDate) (totalIn, totalOut int, err error)
+GetRecentMovements(ctx, limit) ([]*StockMovement, error)
+CountByType(ctx, startDate, endDate) (map[MovementType]int, error)
+```
+
+**UseCase Methods:**
+
+```go
+RecordMovement(ctx, inventoryID, movType, quantity, quantityBefore, createdBy) (*StockMovement, error)
+RecordReceipt(ctx, inventoryID, quantity, unitCost, createdBy) (*StockMovement, error)
+RecordReservation(ctx, inventoryID, quantity, orderID, createdBy) (*StockMovement, error)
+RecordCommit(ctx, inventoryID, quantity, orderID, createdBy) (*StockMovement, error)
+RecordAdjustment(ctx, inventoryID, adjustment, reason, createdBy) (*StockMovement, error)
+RecordTransfer(ctx, inventoryID, quantity, fromWarehouse, toWarehouse, createdBy) (*StockMovement, error)
+GetMovementsByInventory(ctx, inventoryID, page, pageSize) ([]*StockMovement, int, error)
+GetMovementsByType(ctx, movType, startDate, endDate, page, pageSize) ([]*StockMovement, int, error)
+GetInventorySummary(ctx, inventoryID, startDate, endDate) (totalIn, totalOut int, err error)
+```
+
+**Test Coverage:**
+- Entity Tests: 11 (NewStockMovement, Validate, Set*, Is*)
+- UseCase Tests: 10 (all business methods)
+- Smoke Tests: 9 (HTTP handler validation)
+- Integration Tests: 15 (7 repository + 8 usecase with real DB)
+- **Total: 45 tests, 100% passing**
+
+**Key Implementation Details:**
+
+1. **PostgreSQL Placeholders**: All SQL queries use `$1`, `$2`, `$3` (not generic `?`)
+2. **FK Constraints**: Integration tests create inventory first via helpers
+3. **Date Range Queries**: Tests use real date ranges (not `time.Time{}`)
+4. **Immutable Audit Trail**: No update/delete methods, only Create and Get
+5. **Cost Tracking**: Stored in cents (int64) to avoid floating-point issues
+
+---
+
+### 4. Location Aggregate
 
 **Aggregate Root:** `Location`  
 **Purpose:** Warehouse locations and capacity
