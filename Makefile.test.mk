@@ -40,9 +40,13 @@ test-smoke:  ## Run smoke tests for HTTP handlers (fast, no DB, no workspace nee
 test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER from workspace)
 	@echo "Running integration tests ($(DATABASE_DRIVER))..."
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "Test DB: PostgreSQL on localhost:5433/promenade_test"; \
-		$(MAKE) test-db-start; \
-		sleep 3; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			echo "Test DB: PostgreSQL on localhost:5433/promenade_test"; \
+			$(MAKE) test-db-start; \
+			sleep 3; \
+		else \
+			echo "CI environment: Using PostgreSQL service on localhost:5432"; \
+		fi \
 	else \
 		echo "Test DB: SQLite (embedded, no Docker needed)"; \
 	fi
@@ -53,15 +57,21 @@ test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER f
 		go test -v -p 1 ./test/integration/contexts/...; \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		$(MAKE) test-db-stop; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			$(MAKE) test-db-stop; \
+		fi \
 	fi
 
 test-benchmark: validate-env  ## Run benchmark tests (uses DATABASE_DRIVER from workspace)
 	@echo "Running benchmark tests ($(DATABASE_DRIVER))..."
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "Test DB: PostgreSQL on localhost:5433/promenade_test"; \
-		$(MAKE) test-db-start; \
-		sleep 3; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			echo "Test DB: PostgreSQL on localhost:5433/promenade_test"; \
+			$(MAKE) test-db-start; \
+			sleep 3; \
+		else \
+			echo "CI environment: Using PostgreSQL service on localhost:5432"; \
+		fi \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
 		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
@@ -69,14 +79,18 @@ test-benchmark: validate-env  ## Run benchmark tests (uses DATABASE_DRIVER from 
 		go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		$(MAKE) test-db-stop; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			$(MAKE) test-db-stop; \
+		fi \
 	fi
 
 test-benchmark-all: validate-env  ## Run all benchmark tests with extended time
 	@echo "Running extended benchmark tests ($(DATABASE_DRIVER))..."
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		$(MAKE) test-db-start; \
-		sleep 3; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			$(MAKE) test-db-start; \
+			sleep 3; \
+		fi \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
 		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
@@ -84,7 +98,9 @@ test-benchmark-all: validate-env  ## Run all benchmark tests with extended time
 		go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		$(MAKE) test-db-stop; \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			$(MAKE) test-db-stop; \
+		fi \
 	fi
 
 test-coverage:  ## Generate test coverage report (no workspace needed)
