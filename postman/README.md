@@ -1,6 +1,6 @@
 # Promenade API - Postman Collection
 
-**Complete Postman collection** for Promenade Platform API with 120+ endpoints across 5 bounded contexts.
+**Complete Postman collection** for Promenade Platform API with 160+ endpoints across 6 bounded contexts.
 
 ---
 
@@ -474,6 +474,6 @@ newman run Promenade_API.postman_collection.json \
 ---
 
 **Version**: 0.1.0  
-**Last Updated**: January 5, 2026  
-**Collection**: 120+ endpoints across 5 contexts  
+**Last Updated**: January 6, 2026  
+**Collection**: 160+ endpoints across 6 contexts  
 **Maintainer**: Promenade Team

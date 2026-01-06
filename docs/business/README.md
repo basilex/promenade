@@ -123,18 +123,23 @@ When adding new language versions:
 
 ## Version Control
 
-**Current Version**: 1.0 (all languages)
+**Current Version**: 1.1 (all languages)
 
 **Version History**:
+- **1.1** (Jan 6, 2026) - Warehouse Context Completion
+  - Updated platform completion: 75% → 80%
+  - Updated endpoints: 146+ → 160+ (added 14 Location endpoints)
+  - Updated tests: 2200+ → 2400+ (added 74 Location tests)
+  - Warehouse context: 55% → 100% complete (Location aggregate completed)
 - **1.0** (Jan 6, 2026) - Initial release
   - English: Complete
   - Ukrainian: Complete
   - German: Complete
-  - Status: 75% platform complete, 146+ endpoints, 2200+ tests
 
-**Next Version**: 1.1 (Planned Feb 2026)
+**Next Version**: 1.2 (Planned Feb 2026)
 - Scheduled monthly review
-- Expected: Warehouse completion update (50% → 70%), Q1 2026 progress
+- Expected: French, Spanish, Portuguese translations
+- Q1 2026 progress updates
 
 ---
 

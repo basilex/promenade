@@ -2,9 +2,9 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-2200+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-2400+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
-[![Swagger](https://img.shields.io/badge/Swagger-120+_endpoints-success?style=flat)](http://localhost:8081/api/docs/index.html)
+[![Swagger](https://img.shields.io/badge/Swagger-160+_endpoints-success?style=flat)](http://localhost:8081/api/docs/index.html)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -35,12 +35,12 @@ Comprehensive business documentation available in multiple languages:
 
 ### What's Included
 
-**Executive Summary**: Modular architecture, event-driven design, 2200+ automated tests
+**Executive Summary**: Modular architecture, event-driven design, 2400+ automated tests
 
 **Core Capabilities**: 
 - ✅ CRM (Customer Management, Sales Pipeline, Interactions)
 - ✅ Order Management (Processing, Fulfillment)
-- 🔄 Warehouse (Inventory, Stock Movements, Products - 55% complete)
+- ✅ Warehouse (Inventory, Stock Movements, Products, Locations - 100% complete)
 - ✅ Billing (Invoices, Payments, Subscriptions)
 
 **For Investors** (~260 lines per language):
@@ -59,7 +59,7 @@ Comprehensive business documentation available in multiple languages:
 - **Android Application**: Kotlin/Compose, 12-16 weeks, $35K-60K USD
 - **Contact**: alexander.vasilenko@gmail.com
 
-**Implementation Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage
+**Implementation Status**: 80% complete, 160+ API endpoints, 2400+ automated tests, 90%+ code coverage
 
 ---
 
@@ -124,7 +124,7 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 
 Promenade provides **interactive API documentation** with Swagger UI for exploring and testing all endpoints.
 
-**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 120+ endpoints directly in the browser without writing any manual documentation.
+**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 160+ endpoints directly in the browser without writing any manual documentation.
 
 **Design**: 
 - **Annotation-Driven**: Swagger comments in handler code (`@Summary`, `@Description`, `@Param`, `@Success`, `@Failure`)
@@ -133,7 +133,7 @@ Promenade provides **interactive API documentation** with Swagger UI for explori
 - **Multi-Format**: JSON, YAML, and embedded Go code for different use cases
 
 **Key Features**:
-- **120+ Documented Endpoints**: All 5 contexts (Identity, Customer Management, Order Management, Billing, Shared)
+- **160+ Documented Endpoints**: All 6 contexts (Identity, Customer Management, Order Management, Billing, Warehouse, Shared)
 - **Try-It-Out**: Test endpoints directly from browser with request/response examples
 - **Authentication**: JWT Bearer token management in UI
 - **Schema Validation**: Request/response models with type definitions
@@ -158,9 +158,9 @@ make dev
 
 ### Postman Collection
 
-Promenade provides **pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing scripts.
+Promenade provides **pre-built Postman collection** with 160+ endpoints, authentication flows, and automated testing scripts.
 
-**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 120+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
+**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 160+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
 
 **Design**:
 - **Auto-Generated**: OpenAPI spec → Postman collection via openapi-to-postmanv2 tool
@@ -170,7 +170,7 @@ Promenade provides **pre-built Postman collection** with 120+ endpoints, authent
 - **CI/CD Ready**: Newman CLI integration for automated API testing in pipelines
 
 **Key Features**:
-- **120+ Endpoints**: Complete collection organized by 5 bounded contexts
+- **160+ Endpoints**: Complete collection organized by 6 bounded contexts
 - **Auto-Save Tokens**: Login request automatically saves access/refresh tokens to environment
 - **Auto-Refresh**: Pre-request script detects expired tokens and refreshes automatically
 - **3 Environments**: Dev/Staging/Prod with pre-configured base URLs and credentials
@@ -193,6 +193,7 @@ Promenade provides **pre-built Postman collection** with 120+ endpoints, authent
 - Customer Management: 48 endpoints (Customers, Companies, Deals, Interactions)
 - Order Management: 14 endpoints (Orders, Line Items, State Transitions)
 - Billing: 22 endpoints (Invoices, Payments, Subscriptions)
+- Warehouse: 58 endpoints (Products, Inventory, StockMovement, Locations)
 - Shared: 9 endpoints (Countries, Currencies, Languages, Timezones)
 - Infrastructure: 4 endpoints (Health Checks)
 
@@ -468,17 +469,18 @@ Promenade provides **complete order lifecycle management** with state transition
 | **Customer Management** | Customer, Company, Deal, Interaction, Analytics (all live)  | CRM, sales pipeline & BI      | Production    | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order, OrderLine (live) \| Contract, Fulfillment (planned) | Order processing              | Production    | [Guide](docs/concepts/order-management.md)      |
 | **Billing**             | Invoice, Payment, Subscription (all live)                   | Billing and payments          | Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
-| **Warehouse**           | Inventory, StockMovement, Product (all live) \| Location (planned) | Inventory management          | In Progress (55%)   | [Context Guide](internal/contexts/warehouse/README.md) |
+| **Warehouse**           | Inventory, StockMovement, Product, Location (all live) | Inventory management          | Production (100%)   | [Context Guide](internal/contexts/warehouse/README.md) |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 **Latest Progress** (January 6, 2026):
 - ✅ Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
-- 🔄 Phase 2 IN PROGRESS: Warehouse Context (55% complete - Inventory + StockMovement + Product aggregates PRODUCTION)
+- ✅ Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
 - Inventory Aggregate: 141 tests passing (97 unit + 23 integration + 21 smoke), 14 API endpoints operational
 - StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
 - Product Aggregate: 139 tests passing (25 entity + 83 usecase + 10 smoke + 21 integration), 16 API endpoints operational
-- 📊 Test Infrastructure: All systems validated (2380+ tests: 2180+ unit, 170+ smoke, 42+ integration)
+- Location Aggregate: 74 tests passing (48 entity + 17 integration + 9 smoke), 14 API endpoints operational
+- 📊 Test Infrastructure: All systems validated (2400+ tests: 2200+ unit, 170+ smoke, 42+ integration)
 - ✅ GitHub Actions CI fully green (100% pass rate)
 
 ---
@@ -1350,8 +1352,8 @@ id := uuidv7.New()  // Time-ordered UUID
 **Duration**: 5 days (planned 10 days - 2x faster!)
 
 - [x] Swagger/OpenAPI 3.0 generation (swaggo/swag)
-- [x] Swagger UI at `/api/docs/index.html` (120+ endpoints documented)
-- [x] Postman collection (33K lines, 120+ requests, auto-generated)
+- [x] Swagger UI at `/api/docs/index.html` (160+ endpoints documented)
+- [x] Postman collection (33K lines, 160+ requests, auto-generated)
 - [x] API versioning strategy (URL-based, RFC 8594 compliant)
 - [x] Developer Portal with 4 guides (4600+ lines):
   - Quick Start Guide (1100 lines) - 5-minute practical tutorial

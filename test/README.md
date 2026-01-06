@@ -318,7 +318,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (2200+ tests: 2000+ unit, 160+ smoke, 19 integration packages)
+make test                 # All tests (2400+ tests: 2200+ unit, 170+ smoke, 42+ integration)
 ```
 
 ### By Type

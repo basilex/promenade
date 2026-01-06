@@ -18,7 +18,7 @@ Comprehensive business documentation available in multiple languages:
 
 **What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
 
-**Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage.
+**Status**: 80% complete, 160+ API endpoints, 2400+ automated tests, 90%+ code coverage.
 
 ---
 
@@ -315,7 +315,7 @@ Comprehensive business documentation available in multiple languages:
 | **Customer Management** | Production | Customer, Company, Deal, Interaction, Analytics (all live)  | [Customer Guide](concepts/customer-management.md) \| [Analytics](../internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
-| **Warehouse**           | In Progress (55%) | Inventory, StockMovement, Product (all live) \| Location (planned) | [Context Guide](../internal/contexts/warehouse/README.md) \| [Roadmap](work-in-progress/ROADMAP_2026_Q1_Q2.md) |
+| **Warehouse**           | Production (100%) | Inventory, StockMovement, Product, Location (all live) | [Context Guide](../internal/contexts/warehouse/README.md) |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 
