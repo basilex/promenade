@@ -52,7 +52,11 @@ test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER f
 	fi
 	@echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 ./test/integration/contexts/...; \
+		if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
+			DB_HOST=localhost DB_PORT=5432 DB_USER=system DB_PASSWORD=passw0rd DB_NAME=promenade_test REDIS_ADDR=localhost:6379 go test -v -p 1 ./test/integration/contexts/...; \
+		else \
+			DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 ./test/integration/contexts/...; \
+		fi \
 	else \
 		go test -v -p 1 ./test/integration/contexts/...; \
 	fi
@@ -74,7 +78,11 @@ test-benchmark: validate-env  ## Run benchmark tests (uses DATABASE_DRIVER from 
 		fi \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
+		if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
+			DB_HOST=localhost DB_PORT=5432 DB_USER=system DB_PASSWORD=passw0rd DB_NAME=promenade_test REDIS_ADDR=localhost:6379 go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
+		else \
+			DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
+		fi \
 	else \
 		go test -bench=. -benchmem -benchtime=5s ./test/benchmark/contexts/...; \
 	fi
@@ -93,7 +101,11 @@ test-benchmark-all: validate-env  ## Run all benchmark tests with extended time
 		fi \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
+		if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
+			DB_HOST=localhost DB_PORT=5432 DB_USER=system DB_PASSWORD=passw0rd DB_NAME=promenade_test REDIS_ADDR=localhost:6379 go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
+		else \
+			DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
+		fi \
 	else \
 		go test -bench=. -benchmem -benchtime=10s ./test/benchmark/contexts/...; \
 	fi
