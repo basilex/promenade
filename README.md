@@ -27,10 +27,37 @@ Comprehensive business documentation available in multiple languages:
 | 🇬🇧 English | [Business Overview](docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
 | 🇺🇦 Українська | [Бізнес-огляд](docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
 | 🇩🇪 Deutsch | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+| 🇫🇷 Français | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
+| 🇪🇸 Español | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
+| 🇵🇹 Português | [Visão Geral de Negócios](docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
 
-**What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
+### What's Included
 
-**Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage.
+**Executive Summary**: Modular architecture, event-driven design, 2200+ automated tests
+
+**Core Capabilities**: 
+- ✅ CRM (Customer Management, Sales Pipeline, Interactions)
+- ✅ Order Management (Processing, Fulfillment)
+- 🔄 Warehouse (Inventory, Stock Movements - 50% complete)
+- ✅ Billing (Invoices, Payments, Subscriptions)
+
+**For Investors** (~260 lines per language):
+- **Market Opportunity**: TAM $211B+ (CRM $128B + Orders $45B + Inventory $38B)
+- **Target Market**: 30M+ SMBs, 200K mid-market companies, 24M e-commerce stores
+- **Revenue Model**: SaaS $29-299/user/month + Professional Services $150-250/hour
+- **Revenue Projections**: Y1: $180K → Y5: $28M (567% Y1-Y2 growth)
+- **Funding**: $1.5M seed round (40% product, 30% sales, 20% ops, 10% reserve)
+- **Exit Strategy**: 4-6 years, $200M-500M target valuation
+- **Investment Terms**: $7.5M-10M pre-money, 15-20% equity
+- **Contact**: alexander.vasilenko@gmail.com
+
+**Tender: Web & Mobile Development** (~180 lines per language):
+- **Web Application**: React/TypeScript, 12-16 weeks, $40K-70K USD
+- **iOS Application**: Swift/SwiftUI, 12-16 weeks, $35K-60K USD
+- **Android Application**: Kotlin/Compose, 12-16 weeks, $35K-60K USD
+- **Contact**: alexander.vasilenko@gmail.com
+
+**Implementation Status**: 75% complete, 146+ API endpoints, 2200+ automated tests, 90%+ code coverage
 
 ---
 

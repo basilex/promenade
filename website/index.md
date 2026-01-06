@@ -20,6 +20,61 @@ hero:
       link: https://github.com/basilex/promenade
 ---
 
+##  For Business Decision-Makers
+
+<div class="vp-box tip">
+
+**Comprehensive business documentation available in 6 languages**
+
+| Language | Document | Target Audience |
+|----------|----------|-----------------|
+| 🇬🇧 English | [Business Overview](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
+| 🇺🇦 Українська | [Бізнес-огляд](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+| 🇩🇪 Deutsch | [Geschäftsübersicht](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+| 🇫🇷 Français | [Aperçu Commercial](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
+| 🇪🇸 Español | [Resumen de Negocio](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
+| 🇵🇹 Português | [Visão Geral de Negócios](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
+
+**What's Included**: Executive summary • Value propositions • Core capabilities (CRM, Orders, Warehouse, Billing) • Use cases with ROI • Deployment options • Roadmap Q1-Q4 2026 • Success metrics
+
+</div>
+
+<div class="vp-box info">
+
+### 💼 For Investors
+
+Each business overview includes comprehensive **investor section** (~260 lines):
+
+- **Market Opportunity**: TAM $211B+ (CRM $128B, Orders $45B, Inventory $38B)
+- **Target Market**: 30M+ SMBs, 200K mid-market, 24M e-commerce stores
+- **Revenue Model**: SaaS $29-299/user/month + Services $150-250/hour + Marketplace 20%
+- **Revenue Projections**: Year 1: $180K → Year 5: $28M (567% growth Y1-Y2)
+- **Funding**: $1.5M seed (40% product, 30% sales, 20% ops, 10% reserve)
+- **Exit Strategy**: 4-6 years, $200M-500M target
+- **Investment Terms**: $7.5M-10M pre-money valuation, 15-20% equity
+
+**Contact**: alexander.vasilenko@gmail.com
+
+</div>
+
+<div class="vp-box warning">
+
+### 📱 Tender: Web & Mobile Development
+
+Looking for development agencies or freelance teams to build modern applications on top of our REST API infrastructure.
+
+**Projects Available**:
+
+- **Web Application** (React/TypeScript): 12-16 weeks, $40K-70K USD
+- **iOS Application** (Swift/SwiftUI): 12-16 weeks, $35K-60K USD
+- **Android Application** (Kotlin/Compose): 12-16 weeks, $35K-60K USD
+
+**Included**: Dashboard, CRM features, order management, inventory tracking, billing, JWT authentication, role-based access control, offline-first mobile architecture
+
+**Contact**: alexander.vasilenko@gmail.com • **Details**: See business overview documents above
+
+</div>
+
 ##  Why Promenade?
 
 <div class="vp-box info">
