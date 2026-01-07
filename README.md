@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-2400+-success?style=flat)](test/)
+[![Tests](https://img.shields.io/badge/Tests-2433+-success?style=flat)](test/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
 [![Swagger](https://img.shields.io/badge/Swagger-160+_endpoints-success?style=flat)](http://localhost:8081/api/docs/index.html)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -59,7 +59,7 @@ Comprehensive business documentation available in multiple languages:
 - **Android Application**: Kotlin/Compose, 12-16 weeks, $35K-60K USD
 - **Contact**: alexander.vasilenko@gmail.com
 
-**Implementation Status**: 80% complete, 160+ API endpoints, 2400+ automated tests, 90%+ code coverage
+**Implementation Status**: 80% complete, 160+ API endpoints, 2433+ automated tests, 90%+ code coverage
 
 ---
 
@@ -460,6 +460,27 @@ Promenade provides **complete order lifecycle management** with state transition
 
 **See**: [docs/concepts/order-management.md](docs/concepts/order-management.md) for complete Order Management guide
 
+### Warehouse Management
+
+Promenade implements **complete inventory management system** with stock tracking, product catalog, warehouse locations, and **automated order-inventory integration**.
+
+- **Product Catalog**: Manage products with SKUs, categories, brands, and physical properties
+- **Inventory Tracking**: Real-time stock levels (on hand, reserved, available, committed)
+- **Stock Movements**: Immutable audit trail for all inventory changes
+- **Warehouse Locations**: Hierarchical location management (warehouses, zones, bins)
+- **Warehouse Integration**: Automated synchronization with Order Management via Event Bus
+  - **ReservationService**: Business logic for stock operations (230 lines)
+  - **OrderEventHandler**: Event handlers for order lifecycle (230 lines, 3 handlers)
+  - **Event Flow**: order.confirmed → Reserve Stock | order.cancelled → Release Stock | order.fulfilled → Commit Stock
+  - **Bootstrap Integration**: Initialized in cmd/api/bootstrap.go with automatic event handler registration
+- **4 Aggregates**: Product, Inventory, StockMovement, Location (all production ready)
+- **58 Endpoints**: Complete CRUD + business logic + integration operations
+- **433 Tests**: 100% passing (139 Product + 141 Inventory + 45 StockMovement + 74 Location + 34 Integration)
+
+**Implementation Status**: Production Ready (100% complete) | Main feature: Automated order-inventory synchronization via Event Bus
+
+**See**: [docs/concepts/warehouse-management.md](docs/concepts/warehouse-management.md) | [internal/contexts/warehouse/README.md](internal/contexts/warehouse/README.md)
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                                                  | Description                   | Status        | Documentation                                  |
@@ -469,18 +490,24 @@ Promenade provides **complete order lifecycle management** with state transition
 | **Customer Management** | Customer, Company, Deal, Interaction, Analytics (all live)  | CRM, sales pipeline & BI      | Production    | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
 | **Order Management**    | Order, OrderLine (live) \| Contract, Fulfillment (planned) | Order processing              | Production    | [Guide](docs/concepts/order-management.md)      |
 | **Billing**             | Invoice, Payment, Subscription (all live)                   | Billing and payments          | Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
-| **Warehouse**           | Inventory, StockMovement, Product, Location (all live) | Inventory management          | Production (100%)   | [Context Guide](internal/contexts/warehouse/README.md) |
+| **Warehouse**           | Inventory, StockMovement, Product, Location (all live) | Inventory + Order Integration | Production (100%)   | [Concept Guide](docs/concepts/warehouse-management.md) \| [Context Guide](internal/contexts/warehouse/README.md) |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
-**Latest Progress** (January 6, 2026):
+**Latest Progress** (January 7, 2026):
 - ✅ Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
 - ✅ Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
+- ✅ **Warehouse Integration COMPLETE**: Automated order-inventory synchronization via Event Bus
+  - ReservationService: Business logic for stock operations (230 lines)
+  - OrderEventHandler: Event handlers for order lifecycle (230 lines, 3 handlers)
+  - Event Flow: order.confirmed → Reserve Stock | order.cancelled → Release Stock | order.fulfilled → Commit Stock
+  - Bootstrap Integration: Initialized in cmd/api/bootstrap.go with automatic event handler registration
+  - 34 Integration Tests: E2E testing with Order Management context
 - Inventory Aggregate: 141 tests passing (97 unit + 23 integration + 21 smoke), 14 API endpoints operational
 - StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
 - Product Aggregate: 139 tests passing (25 entity + 83 usecase + 10 smoke + 21 integration), 16 API endpoints operational
 - Location Aggregate: 74 tests passing (48 entity + 17 integration + 9 smoke), 14 API endpoints operational
-- 📊 Test Infrastructure: All systems validated (2400+ tests: 2200+ unit, 170+ smoke, 42+ integration)
+- 📊 Test Infrastructure: All systems validated (2433+ tests: 2200+ unit, 170+ smoke, 76+ integration)
 - ✅ GitHub Actions CI fully green (100% pass rate)
 
 ---
@@ -924,7 +951,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **Warehouse (smoke)**      | 31    | -        | cached   | Smoke       |
 | **Warehouse (integration)** | 42   | -        | ~3.2s    | Integration |
 
-**Total**: 2380+ tests across 88+ packages, 90%+ average coverage
+**Total**: 2433+ tests across 88+ packages, 90%+ average coverage
 
 ### Test Database
 

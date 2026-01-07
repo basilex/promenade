@@ -16,18 +16,23 @@ import (
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
+
+	"github.com/basilex/promenade/internal/contexts/warehouse/integration"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
+	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
 )
 
 // App holds all application dependencies
 type App struct {
-	Config         *config.AppConfig
-	DB            *sqlx.DB
-	RedisClient   *redis.Client
-	CacheClient   cache.ICache
-	JWTManager    *jwt.Manager
-	TokenRevoker  *jwt.TokenRevoker
-	EventBus       bus.IBus
-	HealthChecker *health.Checker
+	Config             *config.AppConfig
+	DB                *sqlx.DB
+	RedisClient       *redis.Client
+	CacheClient       cache.ICache
+	JWTManager        *jwt.Manager
+	TokenRevoker      *jwt.TokenRevoker
+	EventBus           bus.IBus
+	HealthChecker     *health.Checker
+	OrderEventHandler *integration.OrderEventHandler
 }
 
 // Bootstrap initializes all application dependencies
@@ -78,6 +83,13 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 		return nil, err
 	}
 	app.EventBus = eventBus
+
+	// Initialize Warehouse Integration
+	orderEventHandler, err := initWarehouseIntegration(db, eventBus)
+	if err != nil {
+		return nil, err
+	}
+	app.OrderEventHandler = orderEventHandler
 
 	// Initialize Health Checker
 	healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
@@ -268,6 +280,32 @@ func initEventBus(cfg *config.AppConfig) (bus.IBus, error) {
 	)
 
 	return eventBus, nil
+}
+
+// initWarehouseIntegration initializes Warehouse Integration (ReservationService + OrderEventHandler)
+func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.OrderEventHandler, error) {
+	// Initialize Inventory Use Case
+	invRepo := inventoryRepo.NewInventoryRepository(db)
+	inventoryUC := inventory.NewUseCase(invRepo)
+
+	// Initialize Reservation Service
+	reservationService := integration.NewReservationService(inventoryUC)
+
+	// Initialize Order Event Handler
+	orderEventHandler := integration.NewOrderEventHandler(reservationService)
+
+	// Register event handlers
+	if err := orderEventHandler.RegisterHandlers(eventBus); err != nil {
+		logger.Fatal("Failed to register order event handlers", slog.Any("error", err))
+		return nil, err
+	}
+
+	logger.Info("Warehouse Integration initialized",
+		slog.String("component", "ReservationService + OrderEventHandler"),
+		slog.Int("event_handlers", 3), // order.confirmed, order.cancelled, order.fulfilled
+	)
+
+	return orderEventHandler, nil
 }
 
 // Close gracefully closes all application dependencies

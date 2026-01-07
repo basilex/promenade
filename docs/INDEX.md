@@ -304,6 +304,30 @@ Comprehensive business documentation available in multiple languages:
 
 ---
 
+### Warehouse Management
+
+**Complete inventory management system** with stock tracking, product catalog, warehouse locations, and **automated order-inventory integration**.
+
+- **Product Catalog**: Manage products with SKUs, categories, brands, and physical properties
+- **Inventory Tracking**: Real-time stock levels (on hand, reserved, available, committed)
+- **Stock Movements**: Immutable audit trail for all inventory changes
+- **Warehouse Locations**: Hierarchical location management (warehouses, zones, bins)
+- **Warehouse Integration**: Automated synchronization with Order Management via Event Bus
+- **4 Aggregates**: Product, Inventory, StockMovement, Location (all production ready)
+- **58 Endpoints**: Complete CRUD + business logic + integration operations
+- **Implementation**: [Warehouse Management Guide](concepts/warehouse-management.md) | [Context README](../internal/contexts/warehouse/README.md)
+
+**Key Architecture**:
+```
+Order.Confirm() → order.confirmed event → ReservationService.ReserveForOrder()
+Order.Cancel()  → order.cancelled event → ReservationService.ReleaseForOrder()
+Order.Fulfill() → order.fulfilled event → ReservationService.CommitForOrder()
+```
+
+**Status**: Production ready (433 tests passing) | Automated order-inventory integration operational
+
+---
+
 ## Architecture
 
 ### Bounded Contexts
@@ -358,6 +382,7 @@ Fundamental architectural principles and design patterns:
 - [Deal Management](concepts/deal-management.md) - Sales pipeline, deal stages, probability tracking
 - [Interaction Management](concepts/interaction-management.md) - Customer interaction tracking, calls, emails, meetings, notes
 - [Order Management](concepts/order-management.md) - Complete order lifecycle, state machine, business rules
+- [Warehouse Management](concepts/warehouse-management.md) - Inventory tracking, stock movements, automated order-inventory integration
 
 ### Guides
 

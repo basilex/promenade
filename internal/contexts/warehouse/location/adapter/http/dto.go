@@ -167,10 +167,7 @@ func ToLocationListResponse(locations []*location.Location, total, page, pageSiz
 
 // ToCapacityResponse converts Location to capacity response
 func ToCapacityResponse(loc *location.Location) CapacityResponse {
-	available := loc.Capacity - loc.CurrentOccupancy
-	if available < 0 {
-		available = 0
-	}
+	available := max(loc.Capacity - loc.CurrentOccupancy, 0)
 
 	return CapacityResponse{
 		LocationID:        loc.ID.String(),

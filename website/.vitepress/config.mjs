@@ -27,6 +27,7 @@ export default defineConfig({
           { text: 'Customer Management', link: '/concepts/customer-management' },
           { text: 'Deal Management', link: '/concepts/deal-management' },
           { text: 'Order Management', link: '/concepts/order-management' },
+          { text: 'Warehouse Management', link: '/concepts/warehouse-management' },
         ]
       },
       { text: 'Contexts', link: '/contexts/identity' },
@@ -80,6 +81,7 @@ export default defineConfig({
             { text: 'Customer Management', link: '/concepts/customer-management' },
             { text: 'Deal Management', link: '/concepts/deal-management' },
             { text: 'Order Management', link: '/concepts/order-management' },
+            { text: 'Warehouse Management', link: '/concepts/warehouse-management' },
           ]
         }
       ],
@@ -103,13 +105,13 @@ export default defineConfig({
             { text: 'Shared Context', link: '/contexts/shared' },
             { text: 'Customer Management', link: '/contexts/customer' },
             { text: 'Order Management', link: '/contexts/order' },
+            { text: 'Warehouse', link: '/contexts/warehouse' },
           ]
         },
         {
           text: 'Planned Contexts',
           items: [
             { text: 'Billing', link: '/contexts/billing' },
-            { text: 'Warehouse', link: '/contexts/warehouse' },
           ]
         }
       ],

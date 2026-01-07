@@ -261,6 +261,13 @@ These are the ready-to-use business modules that save you months of development 
 
   <div class="feature">
     <div class="icon"></div>
+    <h3>Warehouse Management</h3>
+    <p>Complete inventory management with automated order-inventory integration. Real-time stock tracking (on hand, reserved, available, committed), product catalog, stock movements audit trail, warehouse locations. 58 API endpoints, 433 tests passing.</p>
+    <a href="concepts/warehouse-management" class="link">Explore Warehouse Management →</a>
+  </div>
+
+  <div class="feature">
+    <div class="icon"></div>
     <h3>User Authentication</h3>
     <p>Secure login and user management. JWT tokens (15min access, 7 days refresh), role-based permissions (admin/manager/user), password reset flows. Rate limiting protects against attacks.</p>
     <a href="guide/rbac" class="link">See Authentication Guide →</a>
@@ -317,7 +324,7 @@ For developers and technical teams: the architectural patterns and infrastructur
 <div class="feature-card">
 <div class="feature-icon"></div>
 <h3>Bounded Contexts</h3>
-<p>6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse, Analytics. Contexts communicate only via Event Bus.</p>
+<p>6 autonomous business domains - Identity, Customer Management, Order Management, Billing, Warehouse (100% complete with automated order-inventory integration), Analytics. Contexts communicate only via Event Bus.</p>
 <a href="concepts/bounded-contexts">View All Contexts →</a>
 </div>
 
@@ -375,6 +382,13 @@ For developers and technical teams: the architectural patterns and infrastructur
 <h3>Order Management</h3>
 <p>Complete order lifecycle with fully implemented business rules. Create orders, add line items, automatic totals. State machine enforced (pending → confirmed → processing → fulfilled). 14 production-ready endpoints.</p>
 <a href="concepts/order-management">Order Management Guide →</a>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon"></div>
+<h3>Warehouse Management</h3>
+<p>Automated order-inventory integration via Event Bus. Real-time stock tracking (on hand, reserved, available, committed), immutable stock movements audit trail, product catalog, warehouse locations. 58 API endpoints, 433 tests (100% passing).</p>
+<a href="concepts/warehouse-management">Warehouse Management Guide →</a>
 </div>
 
 <div class="feature-card">
@@ -811,6 +825,7 @@ Full API documentation: [API Reference](/reference/api-reference)
   <ul>
     <li><a href="concepts/bounded-contexts">Bounded Contexts Strategy</a> - Context isolation</li>
     <li><a href="concepts/event-driven">Event-Driven Architecture</a> - Event Bus deep dive</li>
+    <li><a href="concepts/warehouse-management">Warehouse Management</a> - Inventory with order integration</li>
     <li><a href="guide/rbac">RBAC Implementation</a> - Role-based access control</li>
     <li><a href="packages/">Package Library</a> - 10 reusable packages</li>
   </ul>
