@@ -481,6 +481,55 @@ Promenade implements **complete inventory management system** with stock trackin
 
 **See**: [docs/concepts/warehouse-management.md](docs/concepts/warehouse-management.md) | [internal/contexts/warehouse/README.md](internal/contexts/warehouse/README.md)
 
+### LUA Scripting Engine
+
+Promenade provides **embedded LUA scripting engine** for dynamic business logic without Go recompilation - enabling low-code platform capabilities.
+
+**Concept**: Business analysts and power users can create custom validation rules, workflows, pricing logic, and automations using LUA scripts stored in the database. Scripts execute in a secure sandbox with controlled access to Promenade APIs.
+
+**Design**:
+- **Sandboxed Execution**: Memory limits (50MB), CPU timeout (5s), restricted filesystem/network access
+- **Standard Library**: Safe access to Promenade APIs (Customer, Order, Deal, Notify, Query, Date modules)
+- **Context Support**: Cancellation and timeout via Go context
+- **Script Storage**: Scripts stored in database with versioning
+- **Type Conversion**: Automatic conversion between LUA and Go types
+
+**Key Features**:
+- Execute LUA scripts with parameters and return values
+- Validate scripts before saving (syntax checking)
+- Timeout protection prevents infinite loops
+- Panic recovery for handler safety
+- 21 tests (18 unit + 3 benchmarks) - 100% passing
+
+**Use Cases**:
+```lua
+-- Dynamic pricing based on customer tier
+function calculatePrice(basePrice, customerTier)
+    if customerTier == "premium" then
+        return basePrice * 0.8  -- 20% discount
+    end
+    return basePrice
+end
+
+-- Auto-approve deals under threshold
+function shouldAutoApprove(deal)
+    local tier = Customer.GetTier(deal.customer_id)
+    return tier == "premium" and deal.amount < 10000
+end
+
+-- Custom validation rules
+function validateOrder(order)
+    if order.total < 10 then
+        return false, "Minimum order amount is $10"
+    end
+    return true
+end
+```
+
+**Implementation Status**: Core engine operational | Standard Library in progress (Week 1 Day 2)
+
+**See**: [pkg/scripting/README.md](pkg/scripting/README.md) for complete documentation with examples
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                                                  | Description                   | Status        | Documentation                                  |
@@ -497,6 +546,8 @@ Promenade implements **complete inventory management system** with stock trackin
 **Latest Progress** (January 7, 2026):
 - ✅ Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
 - ✅ Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
+- 🚧 Phase 3 IN PROGRESS: LUA Scripting + UI Metadata Foundation (Week 1 started)
+- LUA Scripting Engine OPERATIONAL: Core engine complete with sandbox and timeout protection (21 tests passing)
 - ✅ **Warehouse Integration COMPLETE**: Automated order-inventory synchronization via Event Bus
   - ReservationService: Business logic for stock operations (230 lines)
   - OrderEventHandler: Event handlers for order lifecycle (230 lines, 3 handlers)

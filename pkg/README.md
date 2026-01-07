@@ -36,6 +36,7 @@ The `pkg/` directory contains **shared, reusable packages** used across all boun
 | **jsonb**     | JSONB helpers for PostgreSQL | Production | 8     | [README](jsonb/README.md)           |
 | **ref**       | Reference (pointer) utilities| Production | 6     | [README](ref/README.md)             |
 | **reference** | Reference data utilities     | Production | 6     | -                                   |
+| **scripting** | LUA scripting engine         | In Progress | 21   | [README](scripting/README.md)       |
 
 ---
 

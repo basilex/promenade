@@ -328,6 +328,49 @@ Order.Fulfill() → order.fulfilled event → ReservationService.CommitForOrder(
 
 ---
 
+### LUA Scripting Engine
+
+**Embedded LUA scripting engine** for Promenade Platform - enables dynamic business logic without Go recompilation.
+
+**Concept**: Business analysts and power users can create custom validation rules, workflows, pricing logic, and automations using LUA scripts stored in the database. Scripts execute in a secure sandbox with controlled access to Promenade APIs.
+
+**Design**:
+- **Sandboxed Execution**: Memory limits (50MB), CPU timeout (5s), restricted filesystem/network access
+- **Standard Library**: Safe access to Promenade APIs (Customer, Order, Deal, Notify, Query, Date modules)
+- **Context Support**: Cancellation and timeout via Go context
+- **Script Storage**: Scripts stored in database with versioning
+- **Type Conversion**: Automatic conversion between LUA and Go types
+
+**Key Features**:
+- Execute LUA scripts with parameters and return values
+- Validate scripts before saving (syntax checking)
+- Timeout protection prevents infinite loops
+- Panic recovery for handler safety
+- 21 tests (18 unit + 3 benchmarks) - 100% passing
+
+**Use Cases**:
+```lua
+-- Dynamic pricing based on customer tier
+function calculatePrice(basePrice, customerTier)
+    if customerTier == "premium" then
+        return basePrice * 0.8  -- 20% discount
+    end
+    return basePrice
+end
+
+-- Auto-approve deals under threshold
+function shouldAutoApprove(deal)
+    local tier = Customer.GetTier(deal.customer_id)
+    return tier == "premium" and deal.amount < 10000
+end
+```
+
+**Implementation Status**: Core engine operational | Standard Library in progress (Week 1 Day 2)
+
+**See**: [LUA Scripting Guide](../pkg/scripting/README.md) for complete documentation with examples
+
+---
+
 ## Architecture
 
 ### Bounded Contexts
@@ -363,8 +406,9 @@ Order.Fulfill() → order.fulfilled event → ReservationService.CommitForOrder(
 | **saga**        | Distributed transactions           | 28    | [Guide](../pkg/saga/README.md)             |
 | **aggregate**   | Base aggregate pattern             | 5     | [Guide](../pkg/aggregate/README.md)        |
 | **jsonb**       | PostgreSQL JSONB utilities         | 8     | [Guide](../pkg/jsonb/README.md)            |
+| **scripting**   | LUA scripting engine               | 21    | [Guide](../pkg/scripting/README.md)        |
 
-**Total**: 270+ tests across 12 packages | [Package Overview](../pkg/README.md)
+**Total**: 291+ tests across 13 packages | [Package Overview](../pkg/README.md)
 
 ---
 

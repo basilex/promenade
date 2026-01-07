@@ -1,11 +1,18 @@
 package contract
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
+)
+
+// Errors
+var (
+	ErrContractNotFound         = errors.New("contract not found")
+	ErrInvalidContractTransition = errors.New("invalid contract transition")
 )
 
 // ContractStatus represents the lifecycle state of a contract
