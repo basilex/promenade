@@ -4,6 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
+	contractHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/http"
+	contractRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	orderHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/http"
 	orderRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/repository/postgres"
@@ -11,7 +14,8 @@ import (
 
 // Router handles all Order Management context routes
 type Router struct {
-	orderHandler *orderHTTP.OrderHandler
+	orderHandler    *orderHTTP.OrderHandler
+	contractHandler *contractHTTP.ContractHandler
 }
 
 // NewRouter creates a new Order Management context router
@@ -21,8 +25,14 @@ func NewRouter(db *sqlx.DB) *Router {
 	orderUseCase := order.NewUseCase(orderRepository)
 	orderHandler := orderHTTP.NewOrderHandler(orderUseCase)
 
+	// Initialize Contract aggregate
+	contractRepository := contractRepo.NewContractRepository(db)
+	contractUseCase := contract.NewUseCase(contractRepository)
+	contractHandler := contractHTTP.NewContractHandler(contractUseCase)
+
 	return &Router{
-		orderHandler: orderHandler,
+		orderHandler:    orderHandler,
+		contractHandler: contractHandler,
 	}
 }
 
@@ -53,10 +63,33 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			orders.POST("/:id/lines", r.orderHandler.AddLine)                      // Add line
 			orders.DELETE("/:id/lines/:line_id", r.orderHandler.RemoveLine)        // Remove line
 			orders.PUT("/:id/lines/:line_id", r.orderHandler.UpdateLineQuantity)   // Update line quantity
+
+			// Contract routes (nested under orders)
+			orders.GET("/:order_id/contracts", r.contractHandler.ListByOrder) // List contracts for order
+		}
+
+		// Contract routes
+		contracts := orderMgmt.Group("/contracts")
+		{
+			// Contract CRUD
+			contracts.POST("", r.contractHandler.Create)                // Create contract
+			contracts.GET("/:id", r.contractHandler.GetByID)            // Get contract by ID
+			contracts.PUT("/:id", r.contractHandler.Update)             // Update contract
+			contracts.DELETE("/:id", r.contractHandler.Delete)          // Delete contract
+			contracts.GET("", r.contractHandler.List)                   // List contracts
+
+			// Contract lifecycle
+			contracts.POST("/:id/submit", r.contractHandler.SubmitForSignature) // Submit for signature
+			contracts.POST("/:id/sign", r.contractHandler.Sign)                 // Sign contract
+			contracts.POST("/:id/complete", r.contractHandler.Complete)         // Complete contract
+			contracts.POST("/:id/terminate", r.contractHandler.Terminate)       // Terminate contract
+			contracts.POST("/:id/renew", r.contractHandler.Renew)               // Renew contract
+
+			// Contract management
+			contracts.PUT("/:id/expiration", r.contractHandler.SetExpirationDate) // Set expiration date
 		}
 
 		// Future aggregates:
-		// - Contracts: /order-mgmt/contracts
 		// - Fulfillment: /order-mgmt/fulfillments
 	}
 }

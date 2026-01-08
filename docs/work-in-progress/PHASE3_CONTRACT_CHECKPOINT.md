@@ -1,26 +1,36 @@
 # Phase 3: Contract Aggregate - Progress Checkpoint
 
-**Date**: January 7, 2026  
-**Status**: Task 3.2 at 98% complete (paused for rest)  
-**Overall Phase Progress**: 2/5 tasks complete (40%)
+**Date**: January 8, 2026  
+**Status**: Task 3.2 ✅ COMPLETE → Starting Task 3.3 (UseCase)  
+**Overall Phase Progress**: 2/5 tasks complete (40%) → 3/5 in progress (60%)  
+**Strategic Priority**: Contract → Saga → LUA (business logic before infrastructure)
 
 ---
 
 ## Quick Summary
 
-**What's Working** :
+**What's Working**:
 - Task 3.1: Contract Entity (COMPLETE, committed `a0048b1`)
-- Task 3.2: Contract Repository (98% complete)
-  - Repository compiles with 0 errors
-  - Create test PASSES
-  - GetByID_NotFound test PASSES
-  - All SQL queries converted to PostgreSQL format
+- ✅ Task 3.2: Contract Repository (COMPLETE, committed `f78a281`)
+  - ✅ Repository compiles with 0 errors
+  - ✅ ALL 13/13 integration tests PASSING (100%)
+  - ✅ Helper functions (createTestCustomer, createTestOrder) working
+  - ✅ WithTransaction pattern applied to all tests
+  - ✅ FK dependencies handled correctly
+  - ✅ SQL INTERVAL syntax fixed in ListExpiringSoon
 
-**What Needs Finishing** :
-- 12 integration tests need FK dependency setup (mechanical work, ~10 minutes)
+**What's Next**:
+- 📋 Task 3.3: Contract UseCase (business logic layer, 2-3 hours)
 
-**Next Task** ⏳:
-- Task 3.3: Contract UseCase (business logic layer)
+**Strategic Plan (January 8, 2026)**:
+1. Complete Task 3.2 (12 tests) - TODAY
+2. Task 3.3: Contract UseCase (2-3 hours)
+3. Task 3.4: HTTP API (2-3 hours)
+4. Task 3.5: Migrations (30 min)
+5. Phase 4: Fulfillment Saga (Week 6-7)
+6. Return to LUA Week 2-3 (Script Storage + UI Metadata)
+
+**Rationale**: Business logic (Contract, Saga) takes priority over infrastructure (LUA storage). Core engine already operational with 33 tests and 10 endpoints.
 
 ---
 
