@@ -365,7 +365,13 @@ function shouldAutoApprove(deal)
 end
 ```
 
-**Implementation Status**: Core engine operational | Standard Library in progress (Week 1 Day 2)
+**Implementation Status**: ✅ Core engine operational (Week 1 Day 2 Complete) | Standard Library integrated with real UseCases
+
+**Backend Flow Examples**:
+- `Customer.GetTier(id)` → CustomerUseCase.GetCustomer() → returns cust.Tier
+- `Order.GetTotal(id)` → OrderUseCase.GetOrder() → returns ord.Total.Amount (Money value object)
+- `Deal.Approve(id)` → DealUseCase.MarkDealAsWon() → executes real business logic
+- `Query.Execute(sql)` → sqlx.DB.QueryContext() → secure SELECT-only execution
 
 **See**: [LUA Scripting Guide](../pkg/scripting/README.md) for complete documentation with examples
 
