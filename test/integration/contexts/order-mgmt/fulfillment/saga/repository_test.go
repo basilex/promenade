@@ -13,18 +13,19 @@ import (
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/fulfillment/saga"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/fulfillment/saga/adapter/repository/postgres"
 	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/test/integration"
 )
 
-// setupTestDB creates a test database and saga table
+// setupTestDB creates a test database and saga table using standard test infrastructure
 func setupTestDB(t *testing.T) *sqlx.DB {
 	t.Helper()
 
-	// Connect to test database
-	db, err := sqlx.Connect("postgres", "postgres://system:passw0rd@localhost:5433/promenade_test?sslmode=disable")
-	require.NoError(t, err, "Failed to connect to test database")
+	// Use standard test infrastructure (CI-aware: port 5432 in CI, 5433 locally)
+	testDB := integration.SetupTestDB(t)
+	db := testDB.DB
 
 	// Create saga table
-	_, err = db.Exec(`
+	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS order_fulfillment_sagas (
 			id UUID PRIMARY KEY,
 			order_id UUID NOT NULL,
@@ -59,8 +60,7 @@ func teardownTestDB(t *testing.T, db *sqlx.DB) {
 	t.Helper()
 	_, err := db.Exec("TRUNCATE order_fulfillment_sagas")
 	require.NoError(t, err)
-	err = db.Close()
-	require.NoError(t, err)
+	_ = db.Close() // Ignore error on close
 }
 
 // ============================================================================
