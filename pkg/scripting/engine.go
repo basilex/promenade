@@ -37,11 +37,11 @@ func DefaultConfig() Config {
 	}
 }
 
-// NewEngine creates a new LUA engine with configuration
-func NewEngine(config Config) *Engine {
+// NewEngine creates a new LUA engine with configuration and standard library
+func NewEngine(config Config, stdlib *StandardLibrary) *Engine {
 	return &Engine{
 		config:  config,
-		stdlib:  NewStandardLibrary(),
+		stdlib:  stdlib,
 		sandbox: NewSandbox(config),
 	}
 }
