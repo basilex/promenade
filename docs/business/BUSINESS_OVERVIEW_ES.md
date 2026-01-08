@@ -48,7 +48,7 @@
 
 ### 1. Gestión de Relaciones con Clientes (CRM)
 
-**Estado**: ✅ Listo para Producción
+**Estado**:  Listo para Producción
 
 Gestione todo el ciclo de vida de sus clientes, desde el primer contacto hasta el cliente leal:
 
@@ -90,7 +90,7 @@ Gestione todo el ciclo de vida de sus clientes, desde el primer contacto hasta e
 
 ### 2. Gestión de Pedidos
 
-**Estado**: ✅ Listo para Producción
+**Estado**:  Listo para Producción
 
 Procese pedidos eficientemente desde la creación hasta el cumplimiento:
 
@@ -113,17 +113,17 @@ Procese pedidos eficientemente desde la creación hasta el cumplimiento:
 
 ### 3. Gestión de Almacén e Inventario
 
-**Estado**: 🔄 En Progreso (50% completado)
+**Estado**:  En Progreso (50% completado)
 
 Realice seguimiento de niveles de stock y movimientos con precisión:
 
-- **Gestión de Inventario** ✅
+- **Gestión de Inventario** 
   - Seguimiento de stock en tiempo real (disponible, reservado, disponible, comprometido)
   - Gestión de punto de reorden (umbrales mín/máx)
   - Cálculo de costo promedio ponderado
   - Alertas de stock bajo (planificado)
 
-- **Seguimiento de Movimientos de Stock** ✅
+- **Seguimiento de Movimientos de Stock** 
   - Pista de auditoría completa para todos los cambios de stock
   - 8 tipos de movimientos: recepción, reserva, compromiso, ajuste, transferencia, daño, devolución
   - Enlace de referencia a pedidos y órdenes de compra
@@ -143,7 +143,7 @@ Realice seguimiento de niveles de stock y movimientos con precisión:
 
 ### 4. Facturación y Pagos
 
-**Estado**: ✅ Listo para Producción
+**Estado**:  Listo para Producción
 
 Optimice la facturación y la recaudación de pagos:
 
@@ -172,7 +172,7 @@ Optimice la facturación y la recaudación de pagos:
 
 ### 5. Gestión de Identidad y Acceso
 
-**Estado**: ✅ Listo para Producción
+**Estado**:  Listo para Producción
 
 Asegure su plataforma con autenticación de nivel empresarial:
 
@@ -213,7 +213,7 @@ Asegure su plataforma con autenticación de nivel empresarial:
 
 ### 6. Gestión de Datos de Referencia
 
-**Estado**: ✅ Listo para Producción
+**Estado**:  Listo para Producción
 
 Datos de referencia globales para operaciones consistentes:
 
@@ -235,12 +235,12 @@ Datos de referencia globales para operaciones consistentes:
 
 | Módulo | Estado | Características | Endpoints API | Pruebas |
 |--------|--------|-----------------|---------------|---------|
-| **Contexto Compartido** | ✅ Producción | Datos de referencia | 9 | 24 |
-| **Identidad** | ✅ Producción | Usuarios, Contactos, Perfiles, RBAC | 35 | 95+ |
-| **Gestión de Clientes** | ✅ Producción | Clientes, Empresas, Negocios, Interacciones | 48 | 150+ |
-| **Gestión de Pedidos** | ✅ Producción | Pedidos, Líneas | 14 | 85+ |
-| **Facturación** | ✅ Producción | Facturas, Pagos, Suscripciones | 22 | 120+ |
-| **Almacén** | 🔄 55% completado | Inventario, Movimientos, Productos | 37 | 325 |
+| **Contexto Compartido** |  Producción | Datos de referencia | 9 | 24 |
+| **Identidad** |  Producción | Usuarios, Contactos, Perfiles, RBAC | 35 | 95+ |
+| **Gestión de Clientes** |  Producción | Clientes, Empresas, Negocios, Interacciones | 48 | 150+ |
+| **Gestión de Pedidos** |  Producción | Pedidos, Líneas | 14 | 85+ |
+| **Facturación** |  Producción | Facturas, Pagos, Suscripciones | 22 | 120+ |
+| **Almacén** |  55% completado | Inventario, Movimientos, Productos | 37 | 325 |
 
 ### Estadísticas de la Plataforma
 
@@ -259,37 +259,37 @@ Datos de referencia globales para operaciones consistentes:
 Promenade está construido como bloques LEGO - cada capacidad empresarial es un módulo separado que puede funcionar independientemente o en conjunto:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                 Puerta de Enlace API                    │
-│            (API REST + Swagger UI)                      │
-└─────────────────────────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-┌───────▼───────┐   ┌──────▼──────┐   ┌───────▼────────┐
-│   Identidad   │   │   Gestión   │   │    Almacén     │
-│               │   │   Clientes  │   │                │
-│ • Usuarios    │   │ • Clientes  │   │ • Inventario   │
-│ • Contactos   │   │ • Empresas  │   │ • Movimientos  │
-│ • Perfiles    │   │ • Negocios  │   │ • Productos*   │
-│ • RBAC        │   │ • Analítica │   │ • Ubicaciones* │
-└───────────────┘   └─────────────┘   └────────────────┘
-        │                   │                   │
-┌───────▼───────┐   ┌──────▼──────┐   ┌───────▼────────┐
-│    Gestión    │   │ Facturación │   │     Datos      │
-│    Pedidos    │   │             │   │   Referencia   │
-│               │   │ • Facturas  │   │                │
-│ • Pedidos     │   │ • Pagos     │   │ • Países       │
-│ • Líneas      │   │ • Suscrip.  │   │ • Monedas      │
-│ • Cumplim.*   │   │             │   │ • Idiomas      │
-└───────────────┘   └─────────────┘   └────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-┌───────▼───────┐   ┌──────▼──────┐   ┌───────▼────────┐
-│ Base de Datos │   │  Bus Event. │   │     Caché      │
-│ (PostgreSQL)  │   │   (Redis)   │   │    (Redis)     │
-└───────────────┘   └─────────────┘   └────────────────┘
+
+                 Puerta de Enlace API                    
+            (API REST + Swagger UI)                      
+
+                            
+        
+                                              
+      
+   Identidad         Gestión          Almacén     
+                     Clientes                     
+ • Usuarios        • Clientes      • Inventario   
+ • Contactos       • Empresas      • Movimientos  
+ • Perfiles        • Negocios      • Productos*   
+ • RBAC            • Analítica     • Ubicaciones* 
+      
+                                              
+      
+    Gestión        Facturación         Datos      
+    Pedidos                          Referencia   
+                   • Facturas                     
+ • Pedidos         • Pagos         • Países       
+ • Líneas          • Suscrip.      • Monedas      
+ • Cumplim.*                       • Idiomas      
+      
+                            
+        
+                                              
+      
+ Base de Datos      Bus Event.         Caché      
+ (PostgreSQL)        (Redis)          (Redis)     
+      
 
 * = Planificado para T1 2026
 ```
@@ -464,18 +464,18 @@ Todas las características empresariales son accesibles a través de la API REST
 ### T1 2026 (Próximos 3 Meses)
 
 **Finalización del Contexto de Almacén (50% → 100%)**
-- ✅ Gestión de inventario (completado)
-- ✅ Seguimiento de movimientos de stock (completado)
-- 🔄 Gestión de catálogo de productos
-- 🔄 Gestión de ubicaciones de almacén
-- 🔄 Integración pedido-inventario
-- 🔄 Alertas de stock bajo
+-  Gestión de inventario (completado)
+-  Seguimiento de movimientos de stock (completado)
+-  Gestión de catálogo de productos
+-  Gestión de ubicaciones de almacén
+-  Integración pedido-inventario
+-  Alertas de stock bajo
 
 **Mejoras de API**
-- 🔄 Soporte de webhook para notificaciones en tiempo real
-- 🔄 API GraphQL (opcional, junto con REST)
-- 🔄 Limitación de tasa por usuario/rol
-- 🔄 Paginación y filtrado mejorados
+-  Soporte de webhook para notificaciones en tiempo real
+-  API GraphQL (opcional, junto con REST)
+-  Limitación de tasa por usuario/rol
+-  Paginación y filtrado mejorados
 
 ### T2 2026 (Abril-Junio)
 
@@ -618,17 +618,17 @@ Promenade Platform representa una oportunidad de inversión convincente en el me
 ### Tracción y Validación
 
 **Hitos Técnicos**:
-- ✅ 75% de características completadas (6 de 8 módulos listos para producción)
-- ✅ Más de 2200 pruebas automatizadas (cobertura 90%+)
-- ✅ Más de 146 endpoints API completamente documentados
-- ✅ Más de 15,000 líneas de documentación
-- ✅ Seguridad de nivel producción (JWT, RBAC, limitación de tasa)
+-  75% de características completadas (6 de 8 módulos listos para producción)
+-  Más de 2200 pruebas automatizadas (cobertura 90%+)
+-  Más de 146 endpoints API completamente documentados
+-  Más de 15,000 líneas de documentación
+-  Seguridad de nivel producción (JWT, RBAC, limitación de tasa)
 
 **Madurez del Producto**:
-- ✅ 6 meses de desarrollo activo
-- ✅ Arquitectura limpia (Diseño Dirigido por Dominio)
-- ✅ Infraestructura escalable (probada 377K eventos/seg)
-- ✅ Soporte multi-base de datos (PostgreSQL, SQLite, MySQL)
+-  6 meses de desarrollo activo
+-  Arquitectura limpia (Diseño Dirigido por Dominio)
+-  Infraestructura escalable (probada 377K eventos/seg)
+-  Soporte multi-base de datos (PostgreSQL, SQLite, MySQL)
 
 ### Uso de Fondos
 
@@ -713,20 +713,20 @@ Promenade Platform representa una oportunidad de inversión convincente en el me
 ### Factores de Riesgo
 
 **Riesgos Técnicos**:
-- ✅ Mitigado: Fuerte cobertura de pruebas (más de 2200 pruebas) reduce errores
-- ✅ Mitigado: Arquitectura modular permite iteración rápida
-- ⚠️ Restante: Escalamiento más allá de 100K clientes (abordable con financiación)
+-  Mitigado: Fuerte cobertura de pruebas (más de 2200 pruebas) reduce errores
+-  Mitigado: Arquitectura modular permite iteración rápida
+-  Restante: Escalamiento más allá de 100K clientes (abordable con financiación)
 
 **Riesgos de Mercado**:
-- ⚠️ Competencia de jugadores establecidos (Salesforce, HubSpot)
+-  Competencia de jugadores establecidos (Salesforce, HubSpot)
   - Mitigación: Menor costo, modelo código abierto, mayor flexibilidad
-- ⚠️ Desaceleración económica reduciendo gastos de software PYMES
+-  Desaceleración económica reduciendo gastos de software PYMES
   - Mitigación: Apuntar a segmentos de mercado medio y empresarial
 
 **Riesgos de Ejecución**:
-- ⚠️ Tamaño del equipo (actualmente fundador solo)
+-  Tamaño del equipo (actualmente fundador solo)
   - Mitigación: Capacidad de entrega probada, plan de contratación en lugar
-- ⚠️ Costos de adquisición de clientes
+-  Costos de adquisición de clientes
   - Mitigación: Crecimiento liderado por producto, modelo freemium, API fuerte para integraciones
 
 ### Contacto para Consultas de Inversión
@@ -1033,12 +1033,12 @@ Promenade Platform ofrece a las empresas una base moderna y confiable para gesti
 
 **Puntos Clave**:
 
-- ✅ **Listo para Producción**: 75% completado, activamente desplegado
-- ✅ **Modular**: Use solo lo que necesita, agregue características a medida que crece
-- ✅ **Seguro**: Autenticación empresarial y control de acceso basado en roles
-- ✅ **Escalable**: Maneje el crecimiento de startup a empresa
-- ✅ **Código Abierto**: Licencia MIT, sin bloqueo de proveedor
-- ✅ **Bien Probado**: Más de 2200 pruebas automatizadas garantizan confiabilidad
+-  **Listo para Producción**: 75% completado, activamente desplegado
+-  **Modular**: Use solo lo que necesita, agregue características a medida que crece
+-  **Seguro**: Autenticación empresarial y control de acceso basado en roles
+-  **Escalable**: Maneje el crecimiento de startup a empresa
+-  **Código Abierto**: Licencia MIT, sin bloqueo de proveedor
+-  **Bien Probado**: Más de 2200 pruebas automatizadas garantizan confiabilidad
 
 **Próximos Pasos**: Contáctenos para programar una demo o comenzar su despliegue piloto hoy.
 

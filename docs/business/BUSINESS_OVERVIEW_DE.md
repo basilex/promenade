@@ -48,7 +48,7 @@
 
 ## Kernfähigkeiten
 
-### 1. Customer Relationship Management (CRM) ✅ Produktion
+### 1. Customer Relationship Management (CRM)  Produktion
 
 **Was es tut**: Verwalten Sie den gesamten Kundenlebenszyklus von Lead bis Abwanderung mit umfassender Interaktionsverfolgung.
 
@@ -72,7 +72,7 @@
 
 ---
 
-### 2. Auftragsverwaltung ✅ Produktion
+### 2. Auftragsverwaltung  Produktion
 
 **Was es tut**: Verarbeiten Sie Aufträge von der Erstellung bis zur Erfüllung mit automatischer Nummerierung und Multi-Währungsunterstützung.
 
@@ -96,7 +96,7 @@
 
 ---
 
-### 3. Lagerverwaltung 🔄 55% Abgeschlossen (In Bearbeitung)
+### 3. Lagerverwaltung  55% Abgeschlossen (In Bearbeitung)
 
 **Was es tut**: Verfolgen Sie Lagerbestände über mehrere Standorte mit Echtzeit-Genauigkeit und automatischen Schwellenwert-Warnungen.
 
@@ -106,19 +106,19 @@
 - **20% niedrigere Lagerkosten** durch optimierte Bestandsniveaus
 
 **Aktueller Status**:
-- **Bestandsverwaltung** ✅ Vollständig implementiert
+- **Bestandsverwaltung**  Vollständig implementiert
   - Mengenverfolg: Verfügbar, Vorbehalten, Verpflichtet
   - Nachbestellungsverwaltung: Min/Max-Schwellenwerte
   - Kostenverfolgung: Gewichteter Durchschnitt
   - 14 API-Endpunkte + 141 Tests (97 Unit + 23 Integration + 21 Smoke)
 
-- **Lagerbewegungen** ✅ Vollständig implementiert
+- **Lagerbewegungen**  Vollständig implementiert
   - Bewegungstypen: Empfang, Reservierung, Freigabe, Verpflichtung, Anpassung, Übertragung, Schaden, Rücksendung
   - Audit-Protokoll: Unveränderliches Nur-Anhängen-Protokoll für Compliance
   - Kostenverfolgung: Stückkosten, Gesamtkosten, Währungscode
   - 7 API-Endpunkte + 45 Tests (11 Entity + 10 UseCase + 9 Smoke + 15 Integration)
 
-- **Produktkatalog** ✅ Vollständig implementiert
+- **Produktkatalog**  Vollständig implementiert
   - SKU-Verwaltung: Eindeutige Produktidentifikation
   - Klassifizierung: Kategorie, Marke, Tags
   - Physische Eigenschaften: Gewicht, Abmessungen
@@ -126,7 +126,7 @@
   - Statusmanagement: Aktiv, Inaktiv, Eingestellt, Nicht vorrätig
   - 16 API-Endpunkte + 139 Tests (25 Entity + 83 UseCase + 10 Smoke + 21 Integration)
 
-- **Lagerstandorte** 🔄 Geplant Q1 2026
+- **Lagerstandorte**  Geplant Q1 2026
 
 **API-Endpunkte**: 37 live (14 Bestand + 7 Bewegungen + 16 Produkte)
 
@@ -136,7 +136,7 @@
 
 ---
 
-### 4. Abrechnung ✅ Produktion
+### 4. Abrechnung  Produktion
 
 **Was es tut**: Automatisieren Sie Rechnungsstellung, Zahlungsverarbeitung und Abonnementverwaltung mit umfassender Compliance.
 
@@ -159,7 +159,7 @@
 
 ---
 
-### 5. Identitäts- & Zugriffsverwaltung ✅ Produktion
+### 5. Identitäts- & Zugriffsverwaltung  Produktion
 
 **Was es tut**: Sichere Benutzerauthentifizierung, rollenbasierte Autorisierung und umfassende Sicherheitsfunktionen.
 
@@ -183,7 +183,7 @@
 
 ---
 
-### 6. Referenzdaten ✅ Produktion
+### 6. Referenzdaten  Produktion
 
 **Was es tut**: Zentrale Verwaltung von Ländern, Währungen, Sprachen und Zeitzonen für globale Abläufe.
 
@@ -201,12 +201,12 @@
 
 | Modul               | Status            | API-Endpunkte | Tests |
 | ------------------- | ----------------- | ------------- | ----- |
-| Gemeinsamer Kontext | ✅ Produktion     | 9             | 24    |
-| Identität           | ✅ Produktion     | 35            | 95+   |
-| Kundenverwaltung    | ✅ Produktion     | 48            | 150+  |
-| Auftragsverwaltung  | ✅ Produktion     | 14            | 85+   |
-| Abrechnung          | ✅ Produktion     | 22            | 120+  |
-| Lager               | 🔄 55% (Inventar + Bewegungen + Produkte live) | 37 | 325   |
+| Gemeinsamer Kontext |  Produktion     | 9             | 24    |
+| Identität           |  Produktion     | 35            | 95+   |
+| Kundenverwaltung    |  Produktion     | 48            | 150+  |
+| Auftragsverwaltung  |  Produktion     | 14            | 85+   |
+| Abrechnung          |  Produktion     | 22            | 120+  |
+| Lager               |  55% (Inventar + Bewegungen + Produkte live) | 37 | 325   |
 | **Gesamt**          | **78% Abgeschlossen** | **165+**  | **2380+** |
 
 **Qualitätsmetriken**:
@@ -222,25 +222,25 @@
 Promenade ist wie **LEGO-Blöcke** aufgebaut - jede Geschäftsfähigkeit ist ein separates Modul, das unabhängig funktioniert, aber nahtlos mit anderen verbunden werden kann.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Promenade Plattform                       │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │   CRM    │  │ Aufträge │  │  Lager   │  │ Abrechng │   │
-│  │ ✅ Live  │  │ ✅ Live  │  │ 🔄 50%   │  │ ✅ Live  │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
-│       ↓              ↓              ↓              ↓         │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │          Event-Bus (Echtzeit-Kommunikation)        │    │
-│  └────────────────────────────────────────────────────┘    │
-│       ↓              ↓              ↓              ↓         │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │ Identität│  │  Referenz│  │  Analysen│  │   API    │   │
-│  │ ✅ Live  │  │ ✅ Live  │  │ ✅ Live  │  │ 146+ EPs │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
+
+                    Promenade Plattform                       
+
+                                                               
+           
+     CRM       Aufträge     Lager      Abrechng    
+    Live      Live      50%       Live     
+           
+       ↓              ↓              ↓              ↓         
+      
+            Event-Bus (Echtzeit-Kommunikation)            
+      
+       ↓              ↓              ↓              ↓         
+           
+   Identität    Referenz    Analysen     API       
+    Live      Live      Live     146+ EPs    
+           
+                                                               
+
 ```
 
 **5 Hauptvorteile**:
@@ -637,17 +637,17 @@ Promenade Platform stellt eine attraktive Investitionsmöglichkeit im schnell wa
 ### Erfolge und Validierung
 
 **Technische Meilensteine**:
-- ✅ 75% Funktionalität abgeschlossen (6 von 8 Modulen produktionsbereit)
-- ✅ 2.200+ automatisierte Tests (90%+ Abdeckung)
-- ✅ 146+ API-Endpunkte vollständig dokumentiert
-- ✅ 15.000+ Zeilen Dokumentation
-- ✅ Produktionsbereite Sicherheit (JWT, RBAC, Rate Limiting)
+-  75% Funktionalität abgeschlossen (6 von 8 Modulen produktionsbereit)
+-  2.200+ automatisierte Tests (90%+ Abdeckung)
+-  146+ API-Endpunkte vollständig dokumentiert
+-  15.000+ Zeilen Dokumentation
+-  Produktionsbereite Sicherheit (JWT, RBAC, Rate Limiting)
 
 **Produktreife**:
-- ✅ 6 Monate aktive Entwicklung
-- ✅ Clean Architecture (Domain-Driven Design)
-- ✅ Skalierbare Infrastruktur (377K Events/Sek. nachgewiesen)
-- ✅ Multi-Datenbank-Unterstützung (PostgreSQL, SQLite, MySQL)
+-  6 Monate aktive Entwicklung
+-  Clean Architecture (Domain-Driven Design)
+-  Skalierbare Infrastruktur (377K Events/Sek. nachgewiesen)
+-  Multi-Datenbank-Unterstützung (PostgreSQL, SQLite, MySQL)
 
 ### Mittelverwendung
 
@@ -732,20 +732,20 @@ Promenade Platform stellt eine attraktive Investitionsmöglichkeit im schnell wa
 ### Risikofaktoren
 
 **Technische Risiken**:
-- ✅ Gemildert: Hohe Testabdeckung (2.200+ Tests) reduziert Fehler
-- ✅ Gemildert: Modulare Architektur ermöglicht schnelle Iteration
-- ⚠️ Verbleibend: Skalierung über 100K Kunden (wird mit Finanzierung gelöst)
+-  Gemildert: Hohe Testabdeckung (2.200+ Tests) reduziert Fehler
+-  Gemildert: Modulare Architektur ermöglicht schnelle Iteration
+-  Verbleibend: Skalierung über 100K Kunden (wird mit Finanzierung gelöst)
 
 **Marktrisiken**:
-- ⚠️ Wettbewerb durch etablierte Player (Salesforce, HubSpot)
+-  Wettbewerb durch etablierte Player (Salesforce, HubSpot)
   - Minderung: Niedrigere Preise, Open-Source-Modell, höhere Flexibilität
-- ⚠️ Wirtschaftsabschwung reduziert KMU-Softwareausgaben
+-  Wirtschaftsabschwung reduziert KMU-Softwareausgaben
   - Minderung: Targeting von Mittelstand und Enterprise-Segmenten
 
 **Ausführungsrisiken**:
-- ⚠️ Teamgröße (derzeit Solo-Gründer)
+-  Teamgröße (derzeit Solo-Gründer)
   - Minderung: Nachgewiesene Lieferfähigkeit, Einstellungsplan bereit
-- ⚠️ Kundenakquisitionskosten
+-  Kundenakquisitionskosten
   - Minderung: Product-led Growth, Freemium-Modell, starke API für Integrationen
 
 ### Kontakt für Investitionsanfragen

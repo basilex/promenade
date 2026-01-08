@@ -205,20 +205,20 @@ type Location struct {
 
 ```
 Order Management          Event Bus          Warehouse Context
-┌─────────────────┐       ┌────┐       ┌─────────────────────┐
-│ Order.Confirm() │───────▶│    │───────▶│ ReservationService │
-│                 │       │    │       │ .ReserveForOrder() │
-└─────────────────┘       └────┘       └─────────────────────┘
+              
+ Order.Confirm()      ReservationService 
+                                    .ReserveForOrder() 
+              
 
-┌─────────────────┐       ┌────┐       ┌─────────────────────┐
-│ Order.Cancel()  │───────▶│    │───────▶│ ReservationService │
-│                 │       │    │       │ .ReleaseForOrder() │
-└─────────────────┘       └────┘       └─────────────────────┘
+              
+ Order.Cancel()       ReservationService 
+                                    .ReleaseForOrder() 
+              
 
-┌─────────────────┐       ┌────┐       ┌─────────────────────┐
-│ Order.Fulfill() │───────▶│    │───────▶│ ReservationService │
-│                 │       │    │       │ .CommitForOrder()  │
-└─────────────────┘       └────┘       └─────────────────────┘
+              
+ Order.Fulfill()      ReservationService 
+                                    .CommitForOrder()  
+              
 ```
 
 ### Components

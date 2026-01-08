@@ -4,37 +4,37 @@
 
 | Context | Aggregate | Entity Test | UseCase Test | Integration UseCase | Integration Repo | Status |
 |---------|-----------|-------------|--------------|---------------------|------------------|---------|
-| **Identity** | user | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| | contact | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| | profile | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| | role | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| | permission | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| **Customer-mgmt** | customer | ✅ | ✅ | ✅ | ✅ | ✅ Complete |
-| | company | ✅ | ✅ | ✅ | - | ✅ Complete |
-| | deal | ✅ | ✅ | ✅ | - | ✅ Complete |
-| | **interaction** | ✅ | ✅ | ❌ **MISSING** | ✅ | ⚠️ **Incomplete** |
-| | analytics | ✅ | - | ✅ | - | ✅ Complete |
-| **Billing** | invoice | ✅ | ✅ | - | ✅ | ✅ Complete |
-| | payment | ✅ | ✅ | - | ✅ | ✅ Complete |
-| | subscription | ✅ | ✅ | - | ✅ | ✅ Complete |
-| **Order-mgmt** | order | ✅ | ✅ | - | ✅ | ✅ Complete |
-| **Shared** | country | ✅ | ✅ | - | ✅ | ✅ Complete |
-| | currency | ✅ | ✅ | - | ✅ | ✅ Complete |
-| | language | ✅ | ✅ | - | ✅ | ✅ Complete |
-| | timezone | ✅ | ✅ | - | ✅ | ✅ Complete |
+| **Identity** | user |  |  |  |  |  Complete |
+| | contact |  |  |  |  |  Complete |
+| | profile |  |  |  |  |  Complete |
+| | role |  |  |  |  |  Complete |
+| | permission |  |  |  |  |  Complete |
+| **Customer-mgmt** | customer |  |  |  |  |  Complete |
+| | company |  |  |  | - |  Complete |
+| | deal |  |  |  | - |  Complete |
+| | **interaction** |  |  |  **MISSING** |  |  **Incomplete** |
+| | analytics |  | - |  | - |  Complete |
+| **Billing** | invoice |  |  | - |  |  Complete |
+| | payment |  |  | - |  |  Complete |
+| | subscription |  |  | - |  |  Complete |
+| **Order-mgmt** | order |  |  | - |  |  Complete |
+| **Shared** | country |  |  | - |  |  Complete |
+| | currency |  |  | - |  |  Complete |
+| | language |  |  | - |  |  Complete |
+| | timezone |  |  | - |  |  Complete |
 
 **Legend**:
-- ✅ = File exists and in correct location
-- ❌ = File missing (needs creation)
+-  = File exists and in correct location
+-  = File missing (needs creation)
 - - = Not required (simpler business logic)
 
 ## Summary
 
 - **Total Aggregates**: 17
-- **Entity Tests**: 17/17 (100%) ✅
-- **UseCase Tests**: 17/17 (100%) ✅
-- **Integration UseCase Tests**: 11/12 (92%) ⚠️
-- **Integration Repo Tests**: 17/17 (100%) ✅
+- **Entity Tests**: 17/17 (100%) 
+- **UseCase Tests**: 17/17 (100%) 
+- **Integration UseCase Tests**: 11/12 (92%) 
+- **Integration Repo Tests**: 17/17 (100%) 
 
 ## Critical Finding
 
@@ -47,16 +47,16 @@ This is the ONLY missing test file across all 17 aggregates. All other tests are
 ### Unit Tests (internal/contexts/)
 ```
 internal/contexts/{context}/{aggregate}/
-├── entity_test.go        ← Tests domain entity logic
-├── usecase_test.go       ← Tests business logic with mocks
-└── adapter/http/dto_test.go  ← Tests DTO conversion (optional)
+ entity_test.go        ← Tests domain entity logic
+ usecase_test.go       ← Tests business logic with mocks
+ adapter/http/dto_test.go  ← Tests DTO conversion (optional)
 ```
 
 ### Integration Tests (test/integration/contexts/)
 ```
 test/integration/contexts/{context}/{aggregate}/
-├── usecase_test.go       ← Full E2E with real database
-└── repository_test.go    ← CRUD operations with real database
+ usecase_test.go       ← Full E2E with real database
+ repository_test.go    ← CRUD operations with real database
 ```
 
 ### Additional Tests

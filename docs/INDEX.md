@@ -4,7 +4,7 @@
 
 ---
 
-## 📊 For Business Decision-Makers
+##  For Business Decision-Makers
 
 **Non-technical overview of platform capabilities, value proposition, and implementation status**
 
@@ -12,9 +12,9 @@ Comprehensive business documentation available in multiple languages:
 
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
-| 🇬🇧 English | [Business Overview](business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-| 🇺🇦 Українська | [Бізнес-огляд](business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
-| 🇩🇪 Deutsch | [Geschäftsübersicht](business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+|  English | [Business Overview](business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
+|  Українська | [Бізнес-огляд](business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+|  Deutsch | [Geschäftsübersicht](business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
 
 **What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
 
@@ -365,7 +365,7 @@ function shouldAutoApprove(deal)
 end
 ```
 
-**Implementation Status**: ✅ Core engine operational (Week 1 Day 2 Complete) | Standard Library integrated with real UseCases
+**Implementation Status**:  Core engine operational (Week 1 Day 2 Complete) | Standard Library integrated with real UseCases
 
 **Backend Flow Examples**:
 - `Customer.GetTier(id)` → CustomerUseCase.GetCustomer() → returns cust.Tier

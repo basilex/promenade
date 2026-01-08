@@ -8,15 +8,15 @@
 
 | Priority | Language | ISO Code | File | Status | Lines | Target Date |
 |----------|----------|----------|------|--------|-------|-------------|
-| 1 | English | EN | BUSINESS_OVERVIEW.md | ✅ Complete | 500+ | Jan 6, 2026 |
-| 1 | Ukrainian | UK | BUSINESS_OVERVIEW_UK.md | ✅ Complete | 500+ | Jan 6, 2026 |
-| 1 | German | DE | BUSINESS_OVERVIEW_DE.md | ✅ Complete | 622 | Jan 6, 2026 |
-| 2 | French | FR | BUSINESS_OVERVIEW_FR.md | 🔄 Planned | ~600 | Q1 2026 |
-| 2 | Spanish | ES | BUSINESS_OVERVIEW_ES.md | 🔄 Planned | ~600 | Q1 2026 |
-| 3 | Portuguese | PT | BUSINESS_OVERVIEW_PT.md | 🔄 Planned | ~600 | Q2 2026 |
-| 3 | Korean | KR | BUSINESS_OVERVIEW_KR.md | 🔄 Planned | ~600 | Q2 2026 |
-| 4 | Japanese | JP | BUSINESS_OVERVIEW_JP.md | 🔄 Planned | ~600 | Q2 2026 |
-| 4 | Chinese (Trad) | ZH | BUSINESS_OVERVIEW_ZH.md | 🔄 Planned | ~600 | Q2 2026 |
+| 1 | English | EN | BUSINESS_OVERVIEW.md |  Complete | 500+ | Jan 6, 2026 |
+| 1 | Ukrainian | UK | BUSINESS_OVERVIEW_UK.md |  Complete | 500+ | Jan 6, 2026 |
+| 1 | German | DE | BUSINESS_OVERVIEW_DE.md |  Complete | 622 | Jan 6, 2026 |
+| 2 | French | FR | BUSINESS_OVERVIEW_FR.md |  Planned | ~600 | Q1 2026 |
+| 2 | Spanish | ES | BUSINESS_OVERVIEW_ES.md |  Planned | ~600 | Q1 2026 |
+| 3 | Portuguese | PT | BUSINESS_OVERVIEW_PT.md |  Planned | ~600 | Q2 2026 |
+| 3 | Korean | KR | BUSINESS_OVERVIEW_KR.md |  Planned | ~600 | Q2 2026 |
+| 4 | Japanese | JP | BUSINESS_OVERVIEW_JP.md |  Planned | ~600 | Q2 2026 |
+| 4 | Chinese (Trad) | ZH | BUSINESS_OVERVIEW_ZH.md |  Planned | ~600 | Q2 2026 |
 
 **Total Progress**: 3/9 languages (33%)
 
@@ -24,7 +24,7 @@
 
 ## Priority Rationale
 
-**Priority 1** (✅ Complete):
+**Priority 1** ( Complete):
 - **English**: Universal business language, primary audience
 - **Ukrainian**: Developer's native language, local investors/partners
 - **German**: Major European economy, strong tech sector
@@ -66,19 +66,19 @@
 ### Korean (KR)
 - **Market**: South Korea (advanced tech market, high startup density)
 - **Business Culture**: Hierarchical, detail-oriented, high tech adoption
-- **Terminology**: "고객 관계 관리" (CRM), "서비스형 소프트웨어" (SaaS)
-- **Formality**: Use formal business Korean (존댓말)
+- **Terminology**: "  " (CRM), " " (SaaS)
+- **Formality**: Use formal business Korean ()
 
 ### Japanese (JP)
 - **Market**: Japan (high-value market, quality-focused)
 - **Business Culture**: Detail-oriented, long decision cycles, relationship-based
-- **Terminology**: "顧客関係管理" (CRM), "サービスとしてのソフトウェア" (SaaS)
-- **Formality**: Use polite business Japanese (敬語)
+- **Terminology**: "" (CRM), "" (SaaS)
+- **Formality**: Use polite business Japanese ()
 
 ### Chinese Traditional (ZH)
 - **Market**: Taiwan, Hong Kong, Macau (tech hubs, international business)
 - **Business Culture**: Pragmatic, network-oriented, fast-paced
-- **Terminology**: "客戶關係管理" (CRM), "軟體即服務" (SaaS)
+- **Terminology**: "" (CRM), "" (SaaS)
 - **Script**: Traditional characters (not Simplified) for target markets
 
 ---
@@ -227,12 +227,12 @@ Create language-specific glossaries as translations progress:
 
 | English | French | Spanish | Portuguese | Korean | Japanese | Chinese (Trad) |
 |---------|--------|---------|------------|--------|----------|----------------|
-| CRM | Gestion de la relation client | Gestión de relaciones con clientes | Gestão de relacionamento com o cliente | 고객 관계 관리 | 顧客関係管理 | 客戶關係管理 |
-| SaaS | Logiciel en tant que service | Software como servicio | Software como serviço | 서비스형 소프트웨어 | サービスとしてのソフトウェア | 軟體即服務 |
-| Order Management | Gestion des commandes | Gestión de pedidos | Gestão de pedidos | 주문 관리 | 注文管理 | 訂單管理 |
-| Warehouse | Entrepôt | Almacén | Armazém | 창고 | 倉庫 | 倉庫 |
-| Billing | Facturation | Facturación | Faturamento | 청구 | 請求 | 計費 |
-| Role-Based Access Control | Contrôle d'accès basé sur les rôles | Control de acceso basado en roles | Controle de acesso baseado em funções | 역할 기반 접근 제어 | ロールベースアクセス制御 | 基於角色的存取控制 |
+| CRM | Gestion de la relation client | Gestión de relaciones con clientes | Gestão de relacionamento com o cliente |    |  |  |
+| SaaS | Logiciel en tant que service | Software como servicio | Software como serviço |   |  |  |
+| Order Management | Gestion des commandes | Gestión de pedidos | Gestão de pedidos |   |  |  |
+| Warehouse | Entrepôt | Almacén | Armazém |  |  |  |
+| Billing | Facturation | Facturación | Faturamento |  |  |  |
+| Role-Based Access Control | Contrôle d'accès basé sur les rôles | Control de acceso basado en roles | Controle de acesso baseado em funções |     |  |  |
 
 *(Expand as translations progress)*
 

@@ -26,17 +26,17 @@
 ### Security Model
 
 ```
-┌─────────────────────────────────────────┐
-│         LUA Script (user code)          │
-├─────────────────────────────────────────┤
-│   Standard Library (safe Promenade API) │
-├─────────────────────────────────────────┤
-│   Sandbox (security restrictions)       │
-├─────────────────────────────────────────┤
-│   Engine (LUA VM wrapper)               │
-├─────────────────────────────────────────┤
-│   gopher-lua (LUA interpreter)          │
-└─────────────────────────────────────────┘
+
+         LUA Script (user code)          
+
+   Standard Library (safe Promenade API) 
+
+   Sandbox (security restrictions)       
+
+   Engine (LUA VM wrapper)               
+
+   gopher-lua (LUA interpreter)          
+
 ```
 
 ---
@@ -542,7 +542,7 @@ go test -bench=. ./pkg/scripting
 
 ---
 
-**Status**: ✅ Core Engine Operational (Week 1 Day 2 Complete)  
+**Status**:  Core Engine Operational (Week 1 Day 2 Complete)  
 **Test Coverage**: 21 tests passing (18 unit + 3 benchmarks), 100% pass rate  
 **Performance**: Target < 100ms  
 **Last Updated**: January 7, 2026

@@ -8,7 +8,7 @@
 
 ## Quick Summary
 
-**What's Working** ✅:
+**What's Working** :
 - Task 3.1: Contract Entity (COMPLETE, committed `a0048b1`)
 - Task 3.2: Contract Repository (98% complete)
   - Repository compiles with 0 errors
@@ -16,7 +16,7 @@
   - GetByID_NotFound test PASSES
   - All SQL queries converted to PostgreSQL format
 
-**What Needs Finishing** 🔴:
+**What Needs Finishing** :
 - 12 integration tests need FK dependency setup (mechanical work, ~10 minutes)
 
 **Next Task** ⏳:
@@ -26,21 +26,21 @@
 
 ## Detailed Progress Report
 
-### Task 3.1: Contract Entity ✅ COMPLETE
+### Task 3.1: Contract Entity  COMPLETE
 
 **Status**: 100% complete, committed in `a0048b1`
 
 **Deliverables**:
-- ✅ Contract aggregate root entity (194 lines)
-- ✅ ContractStatus enum (draft, pending, active, completed, terminated, renewed)
-- ✅ Business rules implemented:
+-  Contract aggregate root entity (194 lines)
+-  ContractStatus enum (draft, pending, active, completed, terminated, renewed)
+-  Business rules implemented:
   - Draft → Pending transition (requires signature + terms)
   - Pending → Active transition (requires all party signatures)
   - Auto-expiration checks
   - Termination with reason
   - Contract renewal
-- ✅ 40 passing entity tests (100% coverage)
-- ✅ Error definitions (ErrContractNotFound, ErrInvalidContractTransition)
+-  40 passing entity tests (100% coverage)
+-  Error definitions (ErrContractNotFound, ErrInvalidContractTransition)
 
 **Files**:
 - `internal/contexts/order-mgmt/contract/entity.go`
@@ -50,45 +50,45 @@
 
 ---
 
-### Task 3.2: Contract Repository 🟡 98% COMPLETE
+### Task 3.2: Contract Repository  98% COMPLETE
 
 **Status**: Code complete, 2/14 tests passing, 12 tests need FK fixes
 
 #### What Was Achieved This Session
 
-**1. Infrastructure Pattern Resolution** ✅
+**1. Infrastructure Pattern Resolution** 
 - **Problem**: Used non-existent `database.Executor` interface
 - **Solution**: Use `database.GetTx(ctx)` + `sqlx.ExtContext` pattern
 - **Result**: BaseRepository working correctly
 
-**2. Entity API Corrections** ✅
+**2. Entity API Corrections** 
 - **Problem**: Assumed BaseAggregate had SetID(), SetDeletedAt(), GetDeletedAt() methods
 - **Discovery**: BaseAggregate has public fields (ID, DeletedAt *time.Time)
 - **Solution**: Use direct field access (`c.ID = id`, `c.DeletedAt = &time`)
 - **Result**: All entity access patterns correct
 
-**3. Missing Entity Errors** ✅
+**3. Missing Entity Errors** 
 - **Problem**: Repository needed `ErrContractNotFound` for not found conditions
 - **Solution**: Added error definitions to entity.go
 - **Result**: Proper domain error handling
 
-**4. BaseRepository.NamedExec Fix** ✅
+**4. BaseRepository.NamedExec Fix** 
 - **Problem**: Used `executor.NamedExecContext()` method (doesn't exist)
 - **Solution**: Use `sqlx.NamedExecContext(ctx, executor, query, arg)` helper function
 - **Result**: Named queries work correctly
 
-**5. SQL Placeholder Conversion** ✅
+**5. SQL Placeholder Conversion** 
 - **Problem**: All queries used `?` placeholders (wrong for PostgreSQL)
 - **Solution**: Converted all placeholders to `$1, $2, $3` format
 - **Result**: SQL syntax correct for PostgreSQL
 
-**6. Test FK Dependencies** 🟡 PARTIAL
+**6. Test FK Dependencies**  PARTIAL
 - **Problem**: Tests created contracts with fake Order/Customer IDs (FK violation)
 - **Solution**: Created helper functions to insert dependencies
 - **Result**: 
-  - ✅ `TestContractRepository_Create` - PASSES
-  - ✅ `TestContractRepository_GetByID_NotFound` - PASSES  
-  - 🔴 12 remaining tests need same FK setup pattern
+  -  `TestContractRepository_Create` - PASSES
+  -  `TestContractRepository_GetByID_NotFound` - PASSES  
+  -  12 remaining tests need same FK setup pattern
 
 #### Implementation Details
 
@@ -110,10 +110,10 @@ func (r *BaseRepository) NamedExec(ctx context.Context, query string, arg interf
 ```
 
 **Contract Repository** (`contract_repository.go` - 516 lines):
-- ✅ All 11 methods implemented
-- ✅ PostgreSQL placeholders ($1, $2, $3)
-- ✅ Direct field access (c.ID, c.OrderID, c.Status, c.DeletedAt)
-- ✅ Compiles with 0 errors
+-  All 11 methods implemented
+-  PostgreSQL placeholders ($1, $2, $3)
+-  Direct field access (c.ID, c.OrderID, c.Status, c.DeletedAt)
+-  Compiles with 0 errors
 
 **Methods Implemented**:
 1. Create(ctx, *Contract) error
@@ -164,8 +164,8 @@ func TestContractRepository_GetByID(t *testing.T) {
     repo := contractRepo.NewContractRepository(db.DB)
     ctx := context.Background()
 
-    orderID := uuidv7.New()  // ❌ Fake ID - FK violation
-    customerID := uuidv7.New()  // ❌ Fake ID - FK violation
+    orderID := uuidv7.New()  //  Fake ID - FK violation
+    customerID := uuidv7.New()  //  Fake ID - FK violation
     c := contract.NewContract(orderID, customerID, "Test terms")
     require.NoError(t, repo.Create(ctx, c))
     // ... rest of test
@@ -180,13 +180,13 @@ func TestContractRepository_GetByID(t *testing.T) {
     testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
         repo := contractRepo.NewContractRepository(testDB.DB)
         
-        // ✅ Create real dependencies
+        //  Create real dependencies
         customerID, err := createTestCustomer(ctx, tx)
         require.NoError(t, err)
         orderID, err := createTestOrder(ctx, tx, customerID)
         require.NoError(t, err)
         
-        // ✅ Use real IDs
+        //  Use real IDs
         c := contract.NewContract(orderID, customerID, "Test terms")
         require.NoError(t, repo.Create(ctx, c))
         // ... rest of test
@@ -195,22 +195,22 @@ func TestContractRepository_GetByID(t *testing.T) {
 ```
 
 **Tests Needing Fixes**:
-1. ❌ TestContractRepository_GetByID
-2. ❌ TestContractRepository_Update
-3. ❌ TestContractRepository_Delete
-4. ❌ TestContractRepository_List
-5. ❌ TestContractRepository_List_Pagination
-6. ❌ TestContractRepository_GetByOrder
-7. ❌ TestContractRepository_GetByCustomer
-8. ❌ TestContractRepository_GetActiveContracts
-9. ❌ TestContractRepository_ListByStatus
-10. ❌ TestContractRepository_ListByCustomer
-11. ❌ TestContractRepository_ListExpiringSoon
+1.  TestContractRepository_GetByID
+2.  TestContractRepository_Update
+3.  TestContractRepository_Delete
+4.  TestContractRepository_List
+5.  TestContractRepository_List_Pagination
+6.  TestContractRepository_GetByOrder
+7.  TestContractRepository_GetByCustomer
+8.  TestContractRepository_GetActiveContracts
+9.  TestContractRepository_ListByStatus
+10.  TestContractRepository_ListByCustomer
+11.  TestContractRepository_ListExpiringSoon
 12. (1 more if exists)
 
 **Already Working**:
-- ✅ TestContractRepository_Create
-- ✅ TestContractRepository_GetByID_NotFound (no FK needed)
+-  TestContractRepository_Create
+-  TestContractRepository_GetByID_NotFound (no FK needed)
 
 ---
 
@@ -226,13 +226,13 @@ func TestContractRepository_GetByID(t *testing.T) {
 
 **Correct Usage**:
 ```go
-// ✅ CORRECT
+//  CORRECT
 c.ID = id                           // Direct field
 c.DeletedAt = &time                 // Direct pointer
 c.SetCreatedAt(time)                // Method exists
 timestamp := c.GetCreatedAt()       // Method exists
 
-// ❌ WRONG
+//  WRONG
 c.SetID(id)                         // Method doesn't exist
 c.SetDeletedAt(time)                // Method doesn't exist
 timestamp := c.GetDeletedAt()       // Method doesn't exist
@@ -264,9 +264,9 @@ testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 ```
 
 **3. Test Organization**:
-- ✅ Helper functions at top of test file
-- ✅ Each test self-contained with own dependencies
-- ✅ Use `testing.Short()` skip for long integration tests
+-  Helper functions at top of test file
+-  Each test self-contained with own dependencies
+-  Use `testing.Short()` skip for long integration tests
 
 ---
 
@@ -282,18 +282,18 @@ testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 3. `internal/contexts/order-mgmt/contract/adapter/repository/postgres/contract_repository.go` (516 lines)
    - Fixed: All SQL placeholders (`?` → `$1, $2, $3`)
    - Fixed: Entity field access (direct fields instead of Set/Get methods)
-   - Status: Compiles with 0 errors ✅
+   - Status: Compiles with 0 errors 
 
 ### Test Files
 4. `test/integration/contexts/order-mgmt/contract/repository_test.go` (333 lines)
    - Added: Helper functions (`createTestCustomer`, `createTestOrder`)
-   - Fixed: `TestContractRepository_Create` - PASSES ✅
+   - Fixed: `TestContractRepository_Create` - PASSES 
    - Fixed: Transaction pattern in Create test
    - TODO: Fix 12 remaining tests with same pattern
 
 ### Migration Files
 5. `migrations/order-mgmt/000003_add_contracts.up.sql`
-   - Applied to database ✅
+   - Applied to database 
 
 ---
 
@@ -428,8 +428,8 @@ go test ./test/integration/contexts/order-mgmt/contract -v -run="Create|NotFound
 ## Statistics
 
 **Phase 3 Progress**: 40% (2/5 tasks)
-- ✅ Task 3.1: Entity (100%)
-- 🟡 Task 3.2: Repository (98%)
+-  Task 3.1: Entity (100%)
+-  Task 3.2: Repository (98%)
 - ⏳ Task 3.3: UseCase (0%)
 - ⏳ Task 3.4: HTTP API (0%)
 - ⏳ Task 3.5: Documentation (0%)

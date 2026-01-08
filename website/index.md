@@ -28,14 +28,14 @@ hero:
 
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
-| 🇬🇧 English | [Business Overview](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-| 🇺🇦 Українська | [Бізнес-огляд](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
-| 🇩🇪 Deutsch | [Geschäftsübersicht](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
-| 🇫🇷 Français | [Aperçu Commercial](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
-| 🇪🇸 Español | [Resumen de Negocio](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
-| 🇵🇹 Português | [Visão Geral de Negócios](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
-| 🇯🇵 日本語 | [ビジネス概要](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_JP.md) | 経営者、マネージャー、投資家 |
-| 🇹🇼 繁體中文 | [商業概覽](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ZH.md) | 高階主管、經理、投資者 |
+|  English | [Business Overview](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
+|  Українська | [Бізнес-огляд](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+|  Deutsch | [Geschäftsübersicht](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
+|  Français | [Aperçu Commercial](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
+|  Español | [Resumen de Negocio](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
+|  Português | [Visão Geral de Negócios](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
+|   | [](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_JP.md) |  |
+|   | [](https://github.com/basilex/promenade/blob/dev/docs/business/BUSINESS_OVERVIEW_ZH.md) |  |
 
 **What's Included**: Executive summary • Value propositions • Core capabilities (CRM, Orders, Warehouse, Billing) • Use cases with ROI • Deployment options • Roadmap Q1-Q4 2026 • Success metrics
 
@@ -43,7 +43,7 @@ hero:
 
 <div class="vp-box info">
 
-### 💼 For Investors
+###  For Investors
 
 Each business overview includes comprehensive **investor section** (~260 lines):
 
@@ -61,7 +61,7 @@ Each business overview includes comprehensive **investor section** (~260 lines):
 
 <div class="vp-box warning">
 
-### 📱 Tender: Web & Mobile Development
+###  Tender: Web & Mobile Development
 
 Looking for development agencies or freelance teams to build modern applications on top of our REST API infrastructure.
 

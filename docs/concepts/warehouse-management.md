@@ -109,13 +109,13 @@ The **Warehouse Context** manages physical goods, inventory levels, stock moveme
 ```
 Order Management Context          Event Bus          Warehouse Context
        ↓                              ↓                     ↓
-   Order.Confirm()  ────→  order.confirmed event  ────→  ReservationService
+   Order.Confirm()  →  order.confirmed event  →  ReservationService
                                                           Reserve inventory
        
-   Order.Cancel()   ────→  order.cancelled event  ────→  ReservationService
+   Order.Cancel()   →  order.cancelled event  →  ReservationService
                                                           Release reservation
        
-   Order.Fulfill()  ────→  order.fulfilled event  ────→  ReservationService
+   Order.Fulfill()  →  order.fulfilled event  →  ReservationService
                                                           Commit stock
 ```
 
