@@ -516,6 +516,9 @@ go test -bench=. ./pkg/scripting
 - [x] Standard library implementations (Customer, Order, Deal, Query, Date)
 - [x] Integration with contexts (CustomerUseCase, OrderUseCase, DealUseCase)
 - [x] Unit tests (21 tests passing - 18 unit + 3 benchmarks)
+- [x] HTTP Layer (dto, handler, router) with 10 REST endpoints
+- [x] Router integration (registered in server.go)
+- [x] Smoke tests (12 tests passing)
 
 ### Week 3
 
@@ -542,7 +545,8 @@ go test -bench=. ./pkg/scripting
 
 ---
 
-**Status**:  Core Engine Operational (Week 1 Day 2 Complete)  
-**Test Coverage**: 21 tests passing (18 unit + 3 benchmarks), 100% pass rate  
+**Status**:  HTTP Layer Complete (Week 1 Day 4 Complete)  
+**Test Coverage**: 33 tests passing (21 unit + 12 smoke), 100% pass rate  
+**REST Endpoints**: 10 endpoints available at `/api/v1/scripts/*`  
 **Performance**: Target < 100ms  
-**Last Updated**: January 7, 2026
+**Last Updated**: January 8, 2026

@@ -346,7 +346,8 @@ Order.Fulfill() → order.fulfilled event → ReservationService.CommitForOrder(
 - Validate scripts before saving (syntax checking)
 - Timeout protection prevents infinite loops
 - Panic recovery for handler safety
-- 21 tests (18 unit + 3 benchmarks) - 100% passing
+- 33 tests (21 unit + 12 smoke) - 100% passing
+- **10 REST Endpoints**: Complete HTTP API at `/api/v1/scripts/*`
 
 **Use Cases**:
 ```lua
@@ -365,7 +366,7 @@ function shouldAutoApprove(deal)
 end
 ```
 
-**Implementation Status**:  Core engine operational (Week 1 Day 2 Complete) | Standard Library integrated with real UseCases
+**Implementation Status**:  HTTP Layer Complete (Week 1 Day 4 Complete) | Standard Library integrated with real UseCases | 10 REST endpoints operational
 
 **Backend Flow Examples**:
 - `Customer.GetTier(id)` → CustomerUseCase.GetCustomer() → returns cust.Tier

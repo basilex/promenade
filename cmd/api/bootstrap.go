@@ -159,7 +159,7 @@ func runMigrations(db *sqlx.DB) error {
 	migrationManager := migration.NewManager(db, "migrations")
 	ctx := context.Background()
 
-	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "warehouse"}
+	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "warehouse", "scripting"}
 	for _, ns := range namespaces {
 		if err := migrationManager.MigrateNamespace(ctx, ns); err != nil {
 			logger.Fatal("Failed to run migrations",
