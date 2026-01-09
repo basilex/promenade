@@ -81,7 +81,7 @@ func (h *ContactHandler) Create(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create contact")
 		return
 	}
 
@@ -108,7 +108,7 @@ func (h *ContactHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "contact not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve contact")
 		return
 	}
 
@@ -142,7 +142,7 @@ func (h *ContactHandler) Update(c *gin.Context) {
 			response.NotFound(c, "contact not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve contact")
 		return
 	}
 
@@ -185,7 +185,7 @@ func (h *ContactHandler) Update(c *gin.Context) {
 	// Update contact
 	err = h.usecase.UpdateContact(c.Request.Context(), existing)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update contact")
 		return
 	}
 
@@ -212,7 +212,7 @@ func (h *ContactHandler) Delete(c *gin.Context) {
 			response.NotFound(c, "contact not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete contact")
 		return
 	}
 
@@ -248,7 +248,7 @@ func (h *ContactHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list contacts")
 		return
 	}
 
@@ -275,14 +275,14 @@ func (h *ContactHandler) Verify(c *gin.Context) {
 			response.NotFound(c, "contact not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to verify contact")
 		return
 	}
 
 	// Get updated contact
 	contactEntity, err := h.usecase.GetContact(c.Request.Context(), contactUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve updated contact")
 		return
 	}
 
@@ -309,14 +309,14 @@ func (h *ContactHandler) SetPrimary(c *gin.Context) {
 			response.NotFound(c, "contact not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to set contact as primary")
 		return
 	}
 
 	// Get updated contact
 	contactEntity, err := h.usecase.GetContact(c.Request.Context(), contactUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve updated contact")
 		return
 	}
 
