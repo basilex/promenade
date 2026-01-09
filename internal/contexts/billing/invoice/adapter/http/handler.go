@@ -62,7 +62,7 @@ func (h *InvoiceHandler) Create(c *gin.Context) {
 
 	inv, err := h.useCase.CreateInvoice(c.Request.Context(), customerID, orderID, dueDate, req.Currency)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create invoice")
 		return
 	}
 
