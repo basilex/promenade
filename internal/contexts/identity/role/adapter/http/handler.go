@@ -54,7 +54,7 @@ func (h *RoleHandler) Create(c *gin.Context) {
 			response.Conflict(c, "role name already exists")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create role")
 		return
 	}
 
@@ -87,7 +87,7 @@ func (h *RoleHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "role not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve role")
 		return
 	}
 
@@ -119,7 +119,7 @@ func (h *RoleHandler) GetByName(c *gin.Context) {
 			response.NotFound(c, "role not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve role")
 		return
 	}
 
@@ -164,7 +164,7 @@ func (h *RoleHandler) Update(c *gin.Context) {
 			response.NotFound(c, "role not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update role")
 		return
 	}
 
@@ -202,7 +202,7 @@ func (h *RoleHandler) Delete(c *gin.Context) {
 			response.Forbidden(c, "cannot delete system role")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete role")
 		return
 	}
 
@@ -227,7 +227,7 @@ func (h *RoleHandler) List(c *gin.Context) {
 
 	roles, total, err := h.usecase.ListRoles(c.Request.Context(), limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list roles")
 		return
 	}
 
@@ -255,7 +255,7 @@ func (h *RoleHandler) GetUserRoles(c *gin.Context) {
 
 	roles, err := h.usecase.GetUserRoles(c.Request.Context(), userID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user roles")
 		return
 	}
 
