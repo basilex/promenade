@@ -45,7 +45,7 @@ func (h *OrderHandler) Create(c *gin.Context) {
 	// Create order
 	created, err := h.usecase.CreateOrder(c.Request.Context(), req.CustomerID, req.CompanyID, req.Currency)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create order")
 		return
 	}
 
@@ -72,11 +72,11 @@ func (h *OrderHandler) GetByID(c *gin.Context) {
 
 	o, err := h.usecase.GetOrder(c.Request.Context(), id)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve order")
 		return
 	}
 
@@ -98,11 +98,11 @@ func (h *OrderHandler) GetByOrderNumber(c *gin.Context) {
 
 	o, err := h.usecase.GetOrderByNumber(c.Request.Context(), orderNumber)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve order by number")
 		return
 	}
 
@@ -133,7 +133,7 @@ func (h *OrderHandler) List(c *gin.Context) {
 
 	orders, total, err := h.usecase.ListOrders(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list orders")
 		return
 	}
 
@@ -171,7 +171,7 @@ func (h *OrderHandler) ListByCustomer(c *gin.Context) {
 
 	orders, total, err := h.usecase.ListOrdersByCustomer(c.Request.Context(), customerID, page, pageSize)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list customer orders")
 		return
 	}
 
@@ -220,7 +220,7 @@ func (h *OrderHandler) ListByStatus(c *gin.Context) {
 
 	orders, total, err := h.usecase.ListOrdersByStatus(c.Request.Context(), status, page, pageSize)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list orders by status")
 		return
 	}
 
@@ -261,11 +261,11 @@ func (h *OrderHandler) AddLine(c *gin.Context) {
 
 	updated, err := h.usecase.AddOrderLine(c.Request.Context(), orderID, req.ProductID, req.Quantity, unitPrice)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to add order line")
 		return
 	}
 
@@ -299,15 +299,15 @@ func (h *OrderHandler) RemoveLine(c *gin.Context) {
 
 	updated, err := h.usecase.RemoveOrderLine(c.Request.Context(), orderID, lineID)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderLineNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order line not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to remove order line")
 		return
 	}
 
@@ -349,15 +349,15 @@ func (h *OrderHandler) UpdateLineQuantity(c *gin.Context) {
 
 	updated, err := h.usecase.UpdateOrderLineQuantity(c.Request.Context(), orderID, lineID, req.Quantity)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderLineNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order line not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update line quantity")
 		return
 	}
 
@@ -384,15 +384,15 @@ func (h *OrderHandler) Confirm(c *gin.Context) {
 
 	updated, err := h.usecase.ConfirmOrder(c.Request.Context(), orderID)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderAlreadyConfirmed) {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Order already confirmed")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to confirm order")
 		return
 	}
 
@@ -419,15 +419,15 @@ func (h *OrderHandler) StartProcessing(c *gin.Context) {
 
 	updated, err := h.usecase.StartProcessing(c.Request.Context(), orderID)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderNotConfirmed) {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Order not confirmed")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to start order processing")
 		return
 	}
 
@@ -454,15 +454,15 @@ func (h *OrderHandler) MarkFulfilled(c *gin.Context) {
 
 	updated, err := h.usecase.MarkFulfilled(c.Request.Context(), orderID)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderNotProcessing) {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Order not processing")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to mark order as fulfilled")
 		return
 	}
 
@@ -489,19 +489,19 @@ func (h *OrderHandler) Cancel(c *gin.Context) {
 
 	updated, err := h.usecase.CancelOrder(c.Request.Context(), orderID)
 	if errors.Is(err, order.ErrOrderNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Order not found")
 		return
 	}
 	if errors.Is(err, order.ErrOrderAlreadyCancelled) {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Order already cancelled")
 		return
 	}
 	if errors.Is(err, order.ErrOrderAlreadyFulfilled) {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Order already fulfilled")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to cancel order")
 		return
 	}
 
