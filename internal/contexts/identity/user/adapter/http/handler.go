@@ -58,7 +58,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 			response.BadRequest(c, "email already exists")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to register user")
 		return
 	}
 
@@ -113,7 +113,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		userEntity.Roles, // Roles loaded from database via repository
 	)
 	if err != nil {
-		response.InternalError(c, "failed to generate token")
+		response.InternalError(c, "Failed to generate authentication token")
 		return
 	}
 
@@ -173,7 +173,7 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 			response.Unauthorized(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user information")
 		return
 	}
 
@@ -217,7 +217,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -249,7 +249,7 @@ func (h *UserHandler) GetByEmail(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -287,14 +287,14 @@ func (h *UserHandler) VerifyEmail(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to verify email")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -352,14 +352,14 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 			response.BadRequest(c, "new password does not meet requirements")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to change password")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -397,14 +397,14 @@ func (h *UserHandler) Suspend(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to suspend user")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -442,14 +442,14 @@ func (h *UserHandler) Ban(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to ban user")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -487,14 +487,14 @@ func (h *UserHandler) Activate(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to activate user")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -532,14 +532,14 @@ func (h *UserHandler) Unlock(c *gin.Context) {
 			response.NotFound(c, "user not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to unlock user")
 		return
 	}
 
 	// Get updated user
 	userEntity, err := h.usecase.GetUser(c.Request.Context(), userUUID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve user")
 		return
 	}
 
@@ -577,7 +577,7 @@ func (h *UserHandler) List(c *gin.Context) {
 
 	users, total, err := h.usecase.ListUsers(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve users")
 		return
 	}
 
