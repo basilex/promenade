@@ -149,7 +149,7 @@ func (h *CustomerHandler) GetByEmail(c *gin.Context) {
 
 	cust, err := h.usecase.GetCustomerByEmail(c.Request.Context(), email)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Customer not found")
 		return
 	}
 
@@ -163,7 +163,7 @@ func (h *CustomerHandler) List(c *gin.Context) {
 
 	customers, total, err := h.usecase.ListCustomers(c.Request.Context(), limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customers")
 		return
 	}
 
@@ -207,7 +207,7 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 	}
 	if req.Phone != nil {
 		if err := h.usecase.SetCustomerPhone(c.Request.Context(), customerID, *req.Phone); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to set customer phone")
 			return
 		}
 	}
@@ -220,7 +220,7 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 
 	// Update customer
 	if err := h.usecase.UpdateCustomer(c.Request.Context(), cust); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update customer")
 		return
 	}
 
@@ -236,7 +236,7 @@ func (h *CustomerHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteCustomer(c.Request.Context(), customerID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete customer")
 		return
 	}
 
@@ -252,13 +252,13 @@ func (h *CustomerHandler) QualifyAsProspect(c *gin.Context) {
 	}
 
 	if err := h.usecase.QualifyAsProspect(c.Request.Context(), customerID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to qualify customer as prospect")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -274,13 +274,13 @@ func (h *CustomerHandler) ConvertToCustomer(c *gin.Context) {
 	}
 
 	if err := h.usecase.ConvertToCustomer(c.Request.Context(), customerID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to convert to customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -302,13 +302,13 @@ func (h *CustomerHandler) Churn(c *gin.Context) {
 	}
 
 	if err := h.usecase.ChurnCustomer(c.Request.Context(), customerID, req.Reason); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to churn customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -324,13 +324,13 @@ func (h *CustomerHandler) Reactivate(c *gin.Context) {
 	}
 
 	if err := h.usecase.ReactivateCustomer(c.Request.Context(), customerID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to reactivate customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -349,13 +349,13 @@ func (h *CustomerHandler) UpgradeTier(c *gin.Context) {
 	tier := customer.CustomerTier(tierStr)
 
 	if err := h.usecase.UpgradeCustomerTier(c.Request.Context(), customerID, tier); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to upgrade customer tier")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -374,13 +374,13 @@ func (h *CustomerHandler) DowngradeTier(c *gin.Context) {
 	tier := customer.CustomerTier(tierStr)
 
 	if err := h.usecase.DowngradeCustomerTier(c.Request.Context(), customerID, tier); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to downgrade customer tier")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -402,13 +402,13 @@ func (h *CustomerHandler) AddTag(c *gin.Context) {
 	}
 
 	if err := h.usecase.AddTagToCustomer(c.Request.Context(), customerID, req.Tag); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to add tag to customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -430,13 +430,13 @@ func (h *CustomerHandler) RemoveTag(c *gin.Context) {
 	}
 
 	if err := h.usecase.RemoveTagFromCustomer(c.Request.Context(), customerID, tag); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to remove tag from customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -453,7 +453,7 @@ func (h *CustomerHandler) ListByStatus(c *gin.Context) {
 
 	customers, total, err := h.usecase.ListCustomersByStatus(c.Request.Context(), status, limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list customers by status")
 		return
 	}
 
@@ -474,7 +474,7 @@ func (h *CustomerHandler) ListByTier(c *gin.Context) {
 
 	customers, total, err := h.usecase.ListCustomersByTier(c.Request.Context(), tier, limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list customers by tier")
 		return
 	}
 
@@ -489,7 +489,7 @@ func (h *CustomerHandler) ListByTier(c *gin.Context) {
 func (h *CustomerHandler) GetStats(c *gin.Context) {
 	stats, err := h.usecase.GetCustomerStats(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer statistics")
 		return
 	}
 
@@ -520,7 +520,7 @@ func (h *CustomerHandler) LinkToUser(c *gin.Context) {
 	}
 
 	if err := h.usecase.LinkCustomerToUser(c.Request.Context(), customerID, userID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to link customer to user")
 		return
 	}
 
@@ -549,7 +549,7 @@ func (h *CustomerHandler) AssignTo(c *gin.Context) {
 	}
 
 	if err := h.usecase.ReassignCustomer(c.Request.Context(), customerID, newRepID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to reassign customer")
 		return
 	}
 
