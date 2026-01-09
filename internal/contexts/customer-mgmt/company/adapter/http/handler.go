@@ -95,10 +95,10 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 	)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyAlreadyExists) {
-			response.ErrorResponse(c, http.StatusConflict, "COMPANY_ALREADY_EXISTS", err.Error())
+			response.ErrorResponse(c, http.StatusConflict, "COMPANY_ALREADY_EXISTS", "Company already exists")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create company")
 		return
 	}
 
@@ -127,10 +127,10 @@ func (h *CompanyHandler) GetByID(c *gin.Context) {
 	comp, err := h.companyUC.GetCompany(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve company")
 		return
 	}
 
@@ -158,10 +158,10 @@ func (h *CompanyHandler) GetByName(c *gin.Context) {
 	comp, err := h.companyUC.GetCompanyByName(c.Request.Context(), name)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve company")
 		return
 	}
 
@@ -189,10 +189,10 @@ func (h *CompanyHandler) GetByTaxID(c *gin.Context) {
 	comp, err := h.companyUC.GetCompanyByTaxID(c.Request.Context(), taxID)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve company")
 		return
 	}
 
@@ -216,7 +216,7 @@ func (h *CompanyHandler) List(c *gin.Context) {
 
 	companies, total, err := h.companyUC.ListCompanies(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list companies")
 		return
 	}
 
@@ -247,7 +247,7 @@ func (h *CompanyHandler) ListByIndustry(c *gin.Context) {
 
 	companies, total, err := h.companyUC.ListCompaniesByIndustry(c.Request.Context(), industry, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list companies by industry")
 		return
 	}
 
@@ -279,7 +279,7 @@ func (h *CompanyHandler) ListBySize(c *gin.Context) {
 
 	companies, total, err := h.companyUC.ListCompaniesBySize(c.Request.Context(), string(size), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list companies by size")
 		return
 	}
 
@@ -308,7 +308,7 @@ func (h *CompanyHandler) ListSubsidiaries(c *gin.Context) {
 
 	companies, err := h.companyUC.ListSubsidiaries(c.Request.Context(), parentID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list subsidiaries")
 		return
 	}
 
@@ -367,10 +367,10 @@ func (h *CompanyHandler) UpdateBasicInfo(c *gin.Context) {
 	)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company basic info")
 		return
 	}
 
@@ -437,10 +437,10 @@ func (h *CompanyHandler) UpdateContactInfo(c *gin.Context) {
 	)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company contact info")
 		return
 	}
 
@@ -503,10 +503,10 @@ func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
 	)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company business info")
 		return
 	}
 
@@ -549,10 +549,10 @@ func (h *CompanyHandler) SetParentCompany(c *gin.Context) {
 	comp, err := h.companyUC.SetParentCompany(c.Request.Context(), id, parentID)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to set parent company")
 		return
 	}
 
@@ -589,10 +589,10 @@ func (h *CompanyHandler) UpdateDescription(c *gin.Context) {
 	comp, err := h.companyUC.UpdateCompanyDescription(c.Request.Context(), id, req.Description)
 	if err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company description")
 		return
 	}
 
@@ -620,10 +620,10 @@ func (h *CompanyHandler) Delete(c *gin.Context) {
 
 	if err := h.companyUC.DeleteCompany(c.Request.Context(), id); err != nil {
 		if errors.Is(err, company.ErrCompanyNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", "Failed to delete company")
 		return
 	}
 
