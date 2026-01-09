@@ -58,7 +58,7 @@ func (h *ProfileHandler) Create(c *gin.Context) {
 
 	profileEntity, err := h.usecase.CreateProfile(c.Request.Context(), userID, req.DisplayName)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create profile")
 		return
 	}
 
@@ -94,7 +94,7 @@ func (h *ProfileHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "profile not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve profile")
 		return
 	}
 
@@ -130,7 +130,7 @@ func (h *ProfileHandler) GetByUserID(c *gin.Context) {
 			response.NotFound(c, "profile not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve profile")
 		return
 	}
 
@@ -153,7 +153,7 @@ func (h *ProfileHandler) UpdateDisplayName(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateDisplayName(c.Request.Context(), profileUUID, req.DisplayName); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update display name")
 		return
 	}
 
@@ -176,7 +176,7 @@ func (h *ProfileHandler) UpdateBio(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateBio(c.Request.Context(), profileUUID, req.Bio); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update bio")
 		return
 	}
 
@@ -199,7 +199,7 @@ func (h *ProfileHandler) UpdateAvatar(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateAvatar(c.Request.Context(), profileUUID, req.AvatarURL); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update avatar")
 		return
 	}
 
@@ -222,7 +222,7 @@ func (h *ProfileHandler) UpdatePersonalInfo(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdatePersonalInfo(c.Request.Context(), profileUUID, req.FirstName, req.LastName, req.MiddleName); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update personal info")
 		return
 	}
 
@@ -245,7 +245,7 @@ func (h *ProfileHandler) UpdateGender(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateGender(c.Request.Context(), profileUUID, profile.Gender(req.Gender)); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update gender")
 		return
 	}
 
@@ -268,7 +268,7 @@ func (h *ProfileHandler) UpdateDateOfBirth(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateDateOfBirth(c.Request.Context(), profileUUID, req.DateOfBirth); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update date of birth")
 		return
 	}
 
@@ -291,7 +291,7 @@ func (h *ProfileHandler) UpdateLocalization(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocalization(c.Request.Context(), profileUUID, req.Timezone, req.Language, req.Country); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update localization")
 		return
 	}
 
@@ -315,7 +315,7 @@ func (h *ProfileHandler) UpdateSocialLinks(c *gin.Context) {
 
 	if err := h.usecase.UpdateSocialLinks(c.Request.Context(), profileUUID,
 		req.Website, req.LinkedIn, req.Twitter, req.GitHub, req.Facebook, req.Instagram); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update social links")
 		return
 	}
 
@@ -332,7 +332,7 @@ func (h *ProfileHandler) SetPublic(c *gin.Context) {
 	}
 
 	if err := h.usecase.SetPublic(c.Request.Context(), profileUUID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to set profile to public")
 		return
 	}
 
@@ -349,7 +349,7 @@ func (h *ProfileHandler) SetPrivate(c *gin.Context) {
 	}
 
 	if err := h.usecase.SetPrivate(c.Request.Context(), profileUUID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to set profile to private")
 		return
 	}
 
@@ -366,7 +366,7 @@ func (h *ProfileHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteProfile(c.Request.Context(), profileUUID); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete profile")
 		return
 	}
 
@@ -400,7 +400,7 @@ func (h *ProfileHandler) ListPublic(c *gin.Context) {
 
 	profiles, err := h.usecase.ListPublicProfiles(c.Request.Context(), limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list profiles")
 		return
 	}
 
