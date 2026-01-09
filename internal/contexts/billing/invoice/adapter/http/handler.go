@@ -89,10 +89,10 @@ func (h *InvoiceHandler) GetByID(c *gin.Context) {
 	inv, err := h.useCase.GetInvoice(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve invoice")
 		return
 	}
 
@@ -114,10 +114,10 @@ func (h *InvoiceHandler) GetByNumber(c *gin.Context) {
 	inv, err := h.useCase.GetInvoiceByNumber(c.Request.Context(), invoiceNo)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve invoice")
 		return
 	}
 
@@ -142,10 +142,10 @@ func (h *InvoiceHandler) Delete(c *gin.Context) {
 
 	if err := h.useCase.DeleteInvoice(c.Request.Context(), id); err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "DELETE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "DELETE_FAILED", "Failed to delete invoice")
 		return
 	}
 
@@ -181,22 +181,22 @@ func (h *InvoiceHandler) AddLineItem(c *gin.Context) {
 	inv, err := h.useCase.GetInvoice(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve invoice")
 		return
 	}
 
 	unitPrice, err := valueobject.NewMoney(req.UnitPrice, inv.Currency)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_UNIT_PRICE", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_UNIT_PRICE", "Invalid unit price format")
 		return
 	}
 
 	updatedInv, err := h.useCase.AddLineItem(c.Request.Context(), id, req.Description, req.Quantity, unitPrice)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "ADD_LINE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "ADD_LINE_FAILED", "Failed to add line item")
 		return
 	}
 
@@ -229,10 +229,10 @@ func (h *InvoiceHandler) RemoveLineItem(c *gin.Context) {
 	updatedInv, err := h.useCase.RemoveLineItem(c.Request.Context(), id, lineID)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceLineNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "LINE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "LINE_NOT_FOUND", "Line item not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "REMOVE_LINE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "REMOVE_LINE_FAILED", "Failed to remove line item")
 		return
 	}
 
@@ -274,10 +274,10 @@ func (h *InvoiceHandler) UpdateLineItem(c *gin.Context) {
 	updatedInv, err := h.useCase.UpdateLineItem(c.Request.Context(), id, lineID, req.Quantity)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceLineNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "LINE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "LINE_NOT_FOUND", "Line item not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "UPDATE_LINE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "UPDATE_LINE_FAILED", "Failed to update line item")
 		return
 	}
 
@@ -302,10 +302,10 @@ func (h *InvoiceHandler) Send(c *gin.Context) {
 
 	if err := h.useCase.SendInvoice(c.Request.Context(), id); err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "SEND_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "SEND_FAILED", "Failed to send invoice")
 		return
 	}
 
@@ -347,10 +347,10 @@ func (h *InvoiceHandler) MarkAsPaid(c *gin.Context) {
 
 	if err := h.useCase.MarkAsPaid(c.Request.Context(), id, paidDate); err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "MARK_PAID_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "MARK_PAID_FAILED", "Failed to mark invoice as paid")
 		return
 	}
 
@@ -376,10 +376,10 @@ func (h *InvoiceHandler) Cancel(c *gin.Context) {
 
 	if err := h.useCase.CancelInvoice(c.Request.Context(), id); err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "CANCEL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "CANCEL_FAILED", "Failed to cancel invoice")
 		return
 	}
 
@@ -405,10 +405,10 @@ func (h *InvoiceHandler) Void(c *gin.Context) {
 
 	if err := h.useCase.VoidInvoice(c.Request.Context(), id); err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusBadRequest, "VOID_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "VOID_FAILED", "Failed to void invoice")
 		return
 	}
 
@@ -445,21 +445,21 @@ func (h *InvoiceHandler) UpdateTax(c *gin.Context) {
 	inv, err := h.useCase.GetInvoice(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, invoice.ErrInvoiceNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "INVOICE_NOT_FOUND", "Invoice not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve invoice")
 		return
 	}
 
 	taxAmount, err := valueobject.NewMoney(req.TaxAmount, inv.Currency)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_TAX_AMOUNT", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_TAX_AMOUNT", "Invalid tax amount format")
 		return
 	}
 
 	if err := h.useCase.UpdateTaxAmount(c.Request.Context(), id, taxAmount); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "UPDATE_TAX_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "UPDATE_TAX_FAILED", "Failed to update tax amount")
 		return
 	}
 
@@ -529,7 +529,7 @@ func (h *InvoiceHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list invoices")
 		return
 	}
 
@@ -563,7 +563,7 @@ func (h *InvoiceHandler) ListOverdue(c *gin.Context) {
 	var tmpTotal int
 	invoices, tmpTotal, err := h.useCase.ListOverdue(c.Request.Context(), req.Page, req.PageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list invoices")
 		return
 	}
 
