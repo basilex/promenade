@@ -64,14 +64,14 @@ func (h *LocationHandler) Create(c *gin.Context) {
 		parentID,
 	)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to create location")
 		return
 	}
 
 	// Update dimensions if provided
 	if req.Width > 0 && req.Height > 0 && req.Depth > 0 {
 		if err := h.usecase.UpdateLocationDimensions(c.Request.Context(), loc.ID, req.Width, req.Height, req.Depth); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to update location dimensions")
 			return
 		}
 		// Reload to get updated dimensions
@@ -81,7 +81,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
 	// Update capacity if provided
 	if req.Capacity > 0 {
 		if err := h.usecase.UpdateLocationCapacity(c.Request.Context(), loc.ID, req.Capacity, req.IsLimited); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to update location capacity")
 			return
 		}
 		// Reload to get updated capacity
@@ -90,7 +90,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
 
 	// Update flags
 	if err := h.usecase.UpdateLocationFlags(c.Request.Context(), loc.ID, req.IsPickable, req.IsPutawayable); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update location flags")
 		return
 	}
 
@@ -120,7 +120,7 @@ func (h *LocationHandler) GetByID(c *gin.Context) {
 
 	loc, err := h.usecase.GetLocation(c.Request.Context(), id)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Location not found")
 		return
 	}
 
@@ -147,7 +147,7 @@ func (h *LocationHandler) GetByCode(c *gin.Context) {
 
 	loc, err := h.usecase.GetLocationByCode(c.Request.Context(), code)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Location not found")
 		return
 	}
 
@@ -182,7 +182,7 @@ func (h *LocationHandler) Update(c *gin.Context) {
 
 	loc, err := h.usecase.UpdateLocation(c.Request.Context(), id, req.Name, req.Description)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to update location")
 		return
 	}
 
@@ -209,7 +209,7 @@ func (h *LocationHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteLocation(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to delete location")
 		return
 	}
 
@@ -256,7 +256,7 @@ func (h *LocationHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list locations")
 		return
 	}
 
@@ -287,7 +287,7 @@ func (h *LocationHandler) GetChildren(c *gin.Context) {
 
 	children, err := h.usecase.GetLocationChildren(c.Request.Context(), id, recursive)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve location children")
 		return
 	}
 
@@ -320,7 +320,7 @@ func (h *LocationHandler) GetHierarchy(c *gin.Context) {
 
 	hierarchy, err := h.usecase.GetLocationHierarchy(c.Request.Context(), id)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve location hierarchy")
 		return
 	}
 
@@ -352,7 +352,7 @@ func (h *LocationHandler) Activate(c *gin.Context) {
 	}
 
 	if err := h.usecase.ActivateLocation(c.Request.Context(), id); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to activate location")
 		return
 	}
 
@@ -380,7 +380,7 @@ func (h *LocationHandler) Deactivate(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeactivateLocation(c.Request.Context(), id); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to deactivate location")
 		return
 	}
 
@@ -415,7 +415,7 @@ func (h *LocationHandler) UpdateCapacity(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationCapacity(c.Request.Context(), id, req.Capacity, req.IsLimited); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to update location capacity")
 		return
 	}
 
@@ -450,7 +450,7 @@ func (h *LocationHandler) UpdateDimensions(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationDimensions(c.Request.Context(), id, req.Width, req.Height, req.Depth); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to update location dimensions")
 		return
 	}
 
@@ -485,7 +485,7 @@ func (h *LocationHandler) UpdateFlags(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationFlags(c.Request.Context(), id, req.IsPickable, req.IsPutawayable); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to update location flags")
 		return
 	}
 
@@ -513,7 +513,7 @@ func (h *LocationHandler) SetMaintenance(c *gin.Context) {
 	}
 
 	if err := h.usecase.SetLocationMaintenance(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, "Failed to set location to maintenance")
 		return
 	}
 
