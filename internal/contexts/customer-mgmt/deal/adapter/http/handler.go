@@ -72,14 +72,14 @@ func (h *DealHandler) Create(c *gin.Context) {
 		req.ExpectedCloseDate,
 	)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_DEAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_DEAL_FAILED", "Failed to create deal")
 		return
 	}
 
 	// Set optional fields
 	if req.Source != nil {
 		if _, err := h.dealUC.SetDealSource(c.Request.Context(), d.ID, deal.DealSource(*req.Source)); err != nil {
-			response.ErrorResponse(c, http.StatusInternalServerError, "SET_SOURCE_FAILED", err.Error())
+			response.ErrorResponse(c, http.StatusInternalServerError, "SET_SOURCE_FAILED", "Failed to set deal source")
 			return
 		}
 	}
@@ -110,10 +110,10 @@ func (h *DealHandler) GetByID(c *gin.Context) {
 	d, err := h.dealUC.GetDeal(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_DEAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_DEAL_FAILED", "Failed to retrieve deal")
 		return
 	}
 
@@ -157,10 +157,10 @@ func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
 	d, err := h.dealUC.UpdateDealBasicInfo(c.Request.Context(), id, name, description)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_FAILED", "Failed to update deal")
 		return
 	}
 
@@ -197,10 +197,10 @@ func (h *DealHandler) UpdateValue(c *gin.Context) {
 	d, err := h.dealUC.UpdateDealValue(c.Request.Context(), id, req.Value, req.Currency)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_VALUE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_VALUE_FAILED", "Failed to update deal value")
 		return
 	}
 
@@ -237,10 +237,10 @@ func (h *DealHandler) MoveToStage(c *gin.Context) {
 	d, err := h.dealUC.MoveDealToStage(c.Request.Context(), id, deal.DealStage(req.Stage))
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MOVE_DEAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "MOVE_DEAL_FAILED", "Failed to move deal to stage")
 		return
 	}
 
@@ -277,10 +277,10 @@ func (h *DealHandler) MarkAsWon(c *gin.Context) {
 	d, err := h.dealUC.MarkDealAsWon(c.Request.Context(), id, req.CloseDate)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_WON_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_WON_FAILED", "Failed to mark deal as won")
 		return
 	}
 
@@ -321,10 +321,10 @@ func (h *DealHandler) MarkAsLost(c *gin.Context) {
 	d, err := h.dealUC.MarkDealAsLost(c.Request.Context(), id, reason)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_LOST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_LOST_FAILED", "Failed to mark deal as lost")
 		return
 	}
 
@@ -354,10 +354,10 @@ func (h *DealHandler) Delete(c *gin.Context) {
 	err = h.dealUC.DeleteDeal(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, deal.ErrDealNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_DEAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_DEAL_FAILED", "Failed to delete deal")
 		return
 	}
 
@@ -390,7 +390,7 @@ func (h *DealHandler) List(c *gin.Context) {
 
 	deals, total, err := h.dealUC.ListDeals(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_DEALS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_DEALS_FAILED", "Failed to list deals")
 		return
 	}
 
@@ -425,7 +425,7 @@ func (h *DealHandler) ListByStage(c *gin.Context) {
 
 	deals, total, err := h.dealUC.ListDealsByStage(c.Request.Context(), stage, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_DEALS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_DEALS_FAILED", "Failed to list deals by stage")
 		return
 	}
 
@@ -445,7 +445,7 @@ func (h *DealHandler) ListByStage(c *gin.Context) {
 func (h *DealHandler) GetPipelineStats(c *gin.Context) {
 	stats, err := h.dealUC.GetPipelineStats(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_STATS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_STATS_FAILED", "Failed to get pipeline statistics")
 		return
 	}
 
@@ -465,7 +465,7 @@ func (h *DealHandler) GetPipelineStats(c *gin.Context) {
 func (h *DealHandler) GetWonDeals(c *gin.Context) {
 	count, totalValue, err := h.dealUC.GetWonDeals(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_WON_DEALS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_WON_DEALS_FAILED", "Failed to get won deals statistics")
 		return
 	}
 
