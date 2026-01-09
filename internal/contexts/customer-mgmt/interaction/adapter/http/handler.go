@@ -84,7 +84,7 @@ func (h *InteractionHandler) Create(c *gin.Context) {
 		startedAt,
 	)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to create interaction")
 		return
 	}
 
@@ -115,7 +115,7 @@ func (h *InteractionHandler) List(c *gin.Context) {
 
 	interactions, total, err := h.usecase.ListByCustomer(c.Request.Context(), uuidv7.Nil, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list interactions")
 		return
 	}
 
@@ -152,7 +152,7 @@ func (h *InteractionHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to retrieve interaction")
 		return
 	}
 
@@ -191,7 +191,7 @@ func (h *InteractionHandler) ListByCustomer(c *gin.Context) {
 
 	interactions, total, err := h.usecase.ListByCustomer(c.Request.Context(), customerID, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list customer interactions")
 		return
 	}
 
@@ -236,7 +236,7 @@ func (h *InteractionHandler) ListByCompany(c *gin.Context) {
 
 	interactions, total, err := h.usecase.ListByCompany(c.Request.Context(), companyID, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list company interactions")
 		return
 	}
 
@@ -277,7 +277,7 @@ func (h *InteractionHandler) ListByType(c *gin.Context) {
 
 	interactions, total, err := h.usecase.ListByType(c.Request.Context(), interactionType, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list interactions by type")
 		return
 	}
 
@@ -314,7 +314,7 @@ func (h *InteractionHandler) ListPendingFollowUps(c *gin.Context) {
 
 	interactions, total, err := h.usecase.ListPendingFollowUps(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list pending follow-ups")
 		return
 	}
 
@@ -359,7 +359,7 @@ func (h *InteractionHandler) UpdateContent(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to update interaction content")
 		return
 	}
 
@@ -398,7 +398,7 @@ func (h *InteractionHandler) SetOutcome(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to set interaction outcome")
 		return
 	}
 
@@ -447,7 +447,7 @@ func (h *InteractionHandler) EndInteraction(c *gin.Context) {
 			response.BadRequest(c, "Interaction already ended")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to end interaction")
 		return
 	}
 
@@ -496,7 +496,7 @@ func (h *InteractionHandler) SetFollowUp(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to set follow-up")
 		return
 	}
 
@@ -541,7 +541,7 @@ func (h *InteractionHandler) AddAttendee(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to add attendee")
 		return
 	}
 
@@ -580,7 +580,7 @@ func (h *InteractionHandler) RemoveAttendee(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to remove attendee")
 		return
 	}
 
@@ -610,7 +610,7 @@ func (h *InteractionHandler) Delete(c *gin.Context) {
 			response.NotFound(c, "Interaction not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to delete interaction")
 		return
 	}
 
