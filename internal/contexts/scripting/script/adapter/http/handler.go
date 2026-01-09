@@ -58,10 +58,6 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 
 	result, err := h.useCase.ExecuteScript(c.Request.Context(), scriptName, req.Parameters, executedBy)
 	if err != nil {
-		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
-			return
-		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "EXECUTION_ERROR", "Failed to execute script")
 		return
 	}
@@ -231,10 +227,6 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 	if req.Code != nil {
 		err = h.useCase.UpdateScript(c.Request.Context(), id, *req.Code)
 		if err != nil {
-			if err.Error() == "not found" {
-				response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
-				return
-			}
 			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_ERROR", "Failed to update script")
 			return
 		}
@@ -350,10 +342,6 @@ func (h *ScriptHandler) ActivateScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.ActivateScript(c.Request.Context(), id); err != nil {
-		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
-			return
-		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATION_ERROR", "Failed to activate script")
 		return
 	}
@@ -387,10 +375,6 @@ func (h *ScriptHandler) DeactivateScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.DeactivateScript(c.Request.Context(), id); err != nil {
-		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
-			return
-		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "DEACTIVATION_ERROR", "Failed to deactivate script")
 		return
 	}
@@ -424,10 +408,6 @@ func (h *ScriptHandler) ArchiveScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.ArchiveScript(c.Request.Context(), id); err != nil {
-		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
-			return
-		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "ARCHIVE_ERROR", "Failed to archive script")
 		return
 	}
