@@ -31,7 +31,7 @@ func NewAnalyticsHandler(analyticsUC analytics.IUseCase) *AnalyticsHandler {
 func (h *AnalyticsHandler) GetCustomerOverview(c *gin.Context) {
 	overview, err := h.analyticsUC.GetCustomerOverview(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer overview")
 		return
 	}
 	response.Success(c, ToCustomerOverviewResponse(overview))
@@ -62,7 +62,7 @@ func (h *AnalyticsHandler) GetCustomerLifecycle(c *gin.Context) {
 
 	lifecycles, err := h.analyticsUC.GetCustomerLifecycle(c.Request.Context(), period)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer lifecycle data")
 		return
 	}
 
@@ -81,7 +81,7 @@ func (h *AnalyticsHandler) GetCustomerLifecycle(c *gin.Context) {
 func (h *AnalyticsHandler) GetCustomerSegmentation(c *gin.Context) {
 	segments, err := h.analyticsUC.GetCustomerSegmentation(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve customer segmentation")
 		return
 	}
 	response.Success(c, segments)
@@ -99,7 +99,7 @@ func (h *AnalyticsHandler) GetCustomerSegmentation(c *gin.Context) {
 func (h *AnalyticsHandler) GetDealPipeline(c *gin.Context) {
 	pipeline, err := h.analyticsUC.GetDealPipeline(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve deal pipeline statistics")
 		return
 	}
 	response.Success(c, ToDealPipelineResponse(pipeline))
@@ -117,7 +117,7 @@ func (h *AnalyticsHandler) GetDealPipeline(c *gin.Context) {
 func (h *AnalyticsHandler) GetDealConversions(c *gin.Context) {
 	conversions, err := h.analyticsUC.GetDealConversions(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve deal conversions")
 		return
 	}
 	response.Success(c, conversions)
@@ -153,7 +153,7 @@ func (h *AnalyticsHandler) GetSalesRepPerformance(c *gin.Context) {
 
 		perf, err := h.analyticsUC.GetSalesRepPerformanceByID(c.Request.Context(), salesRepID)
 		if err != nil {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Sales rep not found")
 			return
 		}
 
@@ -169,7 +169,7 @@ func (h *AnalyticsHandler) GetSalesRepPerformance(c *gin.Context) {
 
 	performances, err := h.analyticsUC.GetSalesRepPerformance(c.Request.Context(), topN)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve sales rep performance")
 		return
 	}
 
@@ -204,7 +204,7 @@ func (h *AnalyticsHandler) GetRevenueTimeSeries(c *gin.Context) {
 
 	series, err := h.analyticsUC.GetRevenueTimeSeries(c.Request.Context(), startDate, endDate, granularity)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve revenue time series")
 		return
 	}
 
@@ -223,7 +223,7 @@ func (h *AnalyticsHandler) GetRevenueTimeSeries(c *gin.Context) {
 func (h *AnalyticsHandler) GetInteractionInsights(c *gin.Context) {
 	insights, err := h.analyticsUC.GetInteractionInsights(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve interaction insights")
 		return
 	}
 	response.Success(c, ToInteractionInsightsResponse(insights))
