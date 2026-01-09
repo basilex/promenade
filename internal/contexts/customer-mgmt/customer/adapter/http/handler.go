@@ -38,14 +38,14 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 	// Create customer
 	created, err := h.usecase.CreateCustomer(c.Request.Context(), req.Name, req.Email, req.Source, assignedTo)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create customer")
 		return
 	}
 
 	// Set phone if provided
 	if req.Phone != "" {
 		if err := h.usecase.SetCustomerPhone(c.Request.Context(), created.ID, req.Phone); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to set customer phone")
 			return
 		}
 	}
@@ -53,7 +53,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 	// Add tags if provided
 	for _, tag := range req.Tags {
 		if err := h.usecase.AddTagToCustomer(c.Request.Context(), created.ID, tag); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to add customer tag")
 			return
 		}
 	}
@@ -61,7 +61,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 	// Reload to get updated data
 	updated, err := h.usecase.GetCustomer(c.Request.Context(), created.ID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to reload customer data")
 		return
 	}
 
@@ -92,14 +92,14 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Create B2B customer
 	created, err := h.usecase.CreateB2BCustomer(c.Request.Context(), req.Name, req.Email, req.Source, companyID, assignedTo)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create B2B customer")
 		return
 	}
 
 	// Set phone if provided
 	if req.Phone != "" {
 		if err := h.usecase.SetCustomerPhone(c.Request.Context(), created.ID, req.Phone); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to set customer phone")
 			return
 		}
 	}
@@ -107,7 +107,7 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Add tags if provided
 	for _, tag := range req.Tags {
 		if err := h.usecase.AddTagToCustomer(c.Request.Context(), created.ID, tag); err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to add customer tag")
 			return
 		}
 	}
@@ -115,7 +115,7 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Reload to get updated data
 	updated, err := h.usecase.GetCustomer(c.Request.Context(), created.ID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to reload customer data")
 		return
 	}
 
