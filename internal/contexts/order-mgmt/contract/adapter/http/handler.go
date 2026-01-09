@@ -43,7 +43,7 @@ func (h *ContractHandler) Create(c *gin.Context) {
 
 	created, err := h.usecase.CreateContract(c.Request.Context(), req.OrderID, req.CustomerID, req.Terms)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create contract")
 		return
 	}
 
@@ -70,11 +70,11 @@ func (h *ContractHandler) GetByID(c *gin.Context) {
 
 	cntr, err := h.usecase.GetContract(c.Request.Context(), id)
 	if errors.Is(err, contract.ErrContractNotFound) {
-		response.NotFound(c, err.Error())
+		response.NotFound(c, "Contract not found")
 		return
 	}
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve contract")
 		return
 	}
 
@@ -109,10 +109,10 @@ func (h *ContractHandler) Update(c *gin.Context) {
 
 	if err := h.usecase.UpdateContract(c.Request.Context(), id, req.Terms); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update contract")
 		return
 	}
 
@@ -139,10 +139,10 @@ func (h *ContractHandler) Delete(c *gin.Context) {
 
 	if err := h.usecase.DeleteContract(c.Request.Context(), id); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete contract")
 		return
 	}
 
@@ -169,14 +169,14 @@ func (h *ContractHandler) SubmitForSignature(c *gin.Context) {
 
 	if err := h.usecase.SubmitForSignature(c.Request.Context(), id); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
 		if errors.Is(err, contract.ErrInvalidContractTransition) {
-			response.BadRequest(c, err.Error())
+			response.BadRequest(c, "Invalid contract status transition")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to submit contract for signature")
 		return
 	}
 
@@ -211,14 +211,14 @@ func (h *ContractHandler) Sign(c *gin.Context) {
 
 	if err := h.usecase.SignContract(c.Request.Context(), id, req.SignerName, req.SignerEmail, req.SignatureID); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
 		if errors.Is(err, contract.ErrInvalidContractTransition) {
-			response.BadRequest(c, err.Error())
+			response.BadRequest(c, "Invalid contract status transition")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to sign contract")
 		return
 	}
 
@@ -245,10 +245,10 @@ func (h *ContractHandler) Complete(c *gin.Context) {
 
 	if err := h.usecase.CompleteContract(c.Request.Context(), id); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to complete contract")
 		return
 	}
 
@@ -283,14 +283,14 @@ func (h *ContractHandler) Terminate(c *gin.Context) {
 
 	if err := h.usecase.TerminateContract(c.Request.Context(), id, req.Reason); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
 		if errors.Is(err, contract.ErrInvalidContractTransition) {
-			response.BadRequest(c, err.Error())
+			response.BadRequest(c, "Invalid contract status transition")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to terminate contract")
 		return
 	}
 
@@ -317,10 +317,10 @@ func (h *ContractHandler) Renew(c *gin.Context) {
 
 	if err := h.usecase.RenewContract(c.Request.Context(), id); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to renew contract")
 		return
 	}
 
@@ -355,10 +355,10 @@ func (h *ContractHandler) SetExpirationDate(c *gin.Context) {
 
 	if err := h.usecase.SetExpirationDate(c.Request.Context(), id, req.ExpirationDate); err != nil {
 		if errors.Is(err, contract.ErrContractNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Contract not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to set expiration date")
 		return
 	}
 
@@ -384,7 +384,7 @@ func (h *ContractHandler) ListByOrder(c *gin.Context) {
 
 	contracts, err := h.usecase.ListContractsByOrder(c.Request.Context(), orderID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list contracts by order")
 		return
 	}
 
@@ -439,7 +439,7 @@ func (h *ContractHandler) List(c *gin.Context) {
 
 		contracts, err := h.usecase.ListExpiringSoon(c.Request.Context(), days)
 		if err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to list expiring contracts")
 			return
 		}
 
@@ -458,7 +458,7 @@ func (h *ContractHandler) List(c *gin.Context) {
 
 		contracts, total, err := h.usecase.ListContractsByCustomer(c.Request.Context(), customerID, page, pageSize)
 		if err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to list contracts by customer")
 			return
 		}
 
@@ -472,7 +472,7 @@ func (h *ContractHandler) List(c *gin.Context) {
 		status := contract.ContractStatus(statusStr)
 		contracts, total, err := h.usecase.ListContractsByStatus(c.Request.Context(), status, page, pageSize)
 		if err != nil {
-			response.InternalError(c, err.Error())
+			response.InternalError(c, "Failed to list contracts by status")
 			return
 		}
 
@@ -484,7 +484,7 @@ func (h *ContractHandler) List(c *gin.Context) {
 	// Get all active contracts (default)
 	contracts, err := h.usecase.GetActiveContracts(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list active contracts")
 		return
 	}
 
