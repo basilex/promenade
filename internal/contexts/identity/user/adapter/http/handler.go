@@ -102,7 +102,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 			response.Unauthorized(c, "account is not active")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to authenticate user")
 		return
 	}
 
