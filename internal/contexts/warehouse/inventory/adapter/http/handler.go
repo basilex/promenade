@@ -57,7 +57,7 @@ func (h *InventoryHandler) Create(c *gin.Context) {
 	// Create inventory via use case
 	inv, err := h.usecase.CreateInventory(c.Request.Context(), productID, req.SKU, req.ProductName, req.WarehouseID, createdBy)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create inventory")
 		return
 	}
 
@@ -92,10 +92,10 @@ func (h *InventoryHandler) GetByID(c *gin.Context) {
 	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -122,10 +122,10 @@ func (h *InventoryHandler) GetBySKU(c *gin.Context) {
 	inv, err := h.usecase.GetBySKU(c.Request.Context(), sku)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -151,7 +151,7 @@ func (h *InventoryHandler) GetByProductID(c *gin.Context) {
 
 	items, err := h.usecase.GetByProductID(c.Request.Context(), productID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -177,7 +177,7 @@ func (h *InventoryHandler) GetByWarehouse(c *gin.Context) {
 
 	items, err := h.usecase.GetByWarehouse(c.Request.Context(), warehouseID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -208,7 +208,7 @@ func (h *InventoryHandler) List(c *gin.Context) {
 
 	items, total, err := h.usecase.ListInventory(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list inventory")
 		return
 	}
 
@@ -226,7 +226,7 @@ func (h *InventoryHandler) List(c *gin.Context) {
 func (h *InventoryHandler) GetLowStock(c *gin.Context) {
 	items, err := h.usecase.GetLowStock(c.Request.Context())
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve low stock items")
 		return
 	}
 
@@ -263,10 +263,10 @@ func (h *InventoryHandler) Update(c *gin.Context) {
 	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -298,11 +298,11 @@ func (h *InventoryHandler) Update(c *gin.Context) {
 
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
 
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update inventory")
 		return
 	}
 
@@ -329,10 +329,10 @@ func (h *InventoryHandler) Delete(c *gin.Context) {
 
 	if err := h.usecase.DeleteInventory(c.Request.Context(), id); err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete inventory")
 		return
 	}
 
@@ -374,10 +374,10 @@ func (h *InventoryHandler) ReceiveStock(c *gin.Context) {
 	inv, err := h.usecase.ReceiveStock(c.Request.Context(), id, req.Quantity, req.UnitCostCents, receivedBy)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to receive stock")
 		return
 	}
 
@@ -419,10 +419,10 @@ func (h *InventoryHandler) CommitStock(c *gin.Context) {
 	inv, err := h.usecase.CommitStock(c.Request.Context(), id, req.Quantity, committedBy)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to commit stock")
 		return
 	}
 
@@ -455,7 +455,7 @@ func (h *InventoryHandler) GetByLocation(c *gin.Context) {
 
 	items, err := h.usecase.GetByLocation(c.Request.Context(), warehouseID, locationCode)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -504,10 +504,10 @@ func (h *InventoryHandler) ReserveStock(c *gin.Context) {
 	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -519,7 +519,7 @@ func (h *InventoryHandler) ReserveStock(c *gin.Context) {
 
 	// Update inventory
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update inventory")
 		return
 	}
 
@@ -568,10 +568,10 @@ func (h *InventoryHandler) ReleaseReservation(c *gin.Context) {
 	inv, err := h.usecase.GetInventory(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, inventory.ErrInventoryNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Inventory not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory")
 		return
 	}
 
@@ -583,7 +583,7 @@ func (h *InventoryHandler) ReleaseReservation(c *gin.Context) {
 
 	// Update inventory
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update inventory")
 		return
 	}
 
