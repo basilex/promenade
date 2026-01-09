@@ -214,6 +214,48 @@ definitions:
     required:
     - transaction_id
     type: object
+  http.ContractListResponse:
+    properties:
+      contracts:
+        items:
+          $ref: '#/definitions/http.ContractResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  http.ContractResponse:
+    properties:
+      created_at:
+        type: string
+      customer_id:
+        type: string
+      expiration_date:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      signature_id:
+        type: string
+      signed_at:
+        type: string
+      signer_email:
+        type: string
+      signer_name:
+        type: string
+      status:
+        type: string
+      terminated_at:
+        type: string
+      termination_reason:
+        type: string
+      terms:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: integer
+    type: object
   http.CountryResponse:
     properties:
       code:
@@ -315,6 +357,20 @@ definitions:
     - name
     - size
     - type
+    type: object
+  http.CreateContractRequest:
+    properties:
+      customer_id:
+        type: string
+      order_id:
+        type: string
+      terms:
+        minLength: 10
+        type: string
+    required:
+    - customer_id
+    - order_id
+    - terms
     type: object
   http.CreateCountryRequest:
     properties:
@@ -578,6 +634,32 @@ definitions:
     - display_name
     - name
     type: object
+  http.CreateScriptRequest:
+    properties:
+      code:
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      entity_type:
+        enum:
+        - customer
+        - order
+        - deal
+        - product
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - code
+    - entity_type
+    - name
+    type: object
   http.CurrencyResponse:
     properties:
       code:
@@ -651,6 +733,41 @@ definitions:
         type: string
     required:
     - ended_at
+    type: object
+  http.ExecuteScriptRequest:
+    properties:
+      parameters:
+        additionalProperties: true
+        type: object
+    type: object
+  http.ExecutionHistoryResponse:
+    properties:
+      executions:
+        items:
+          $ref: '#/definitions/http.ExecutionResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  http.ExecutionResponse:
+    properties:
+      duration_ms:
+        type: integer
+      error:
+        type: string
+      executed_at:
+        type: string
+      executed_by:
+        type: string
+      execution_id:
+        type: string
+      result: {}
+      script_id:
+        type: string
+      script_name:
+        type: string
+      status:
+        type: string
     type: object
   http.FailPaymentRequest:
     properties:
@@ -1366,6 +1483,43 @@ definitions:
       updated_at:
         type: string
     type: object
+  http.ScriptListResponse:
+    properties:
+      scripts:
+        items:
+          $ref: '#/definitions/http.ScriptResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  http.ScriptResponse:
+    properties:
+      archived_at:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      entity_type:
+        type: string
+      id:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: integer
+    type: object
   http.SetCardDetailsRequest:
     properties:
       brand:
@@ -1375,6 +1529,13 @@ definitions:
     required:
     - brand
     - last4
+    type: object
+  http.SetExpirationDateRequest:
+    properties:
+      expiration_date:
+        type: string
+    required:
+    - expiration_date
     type: object
   http.SetFollowUpRequest:
     properties:
@@ -1444,6 +1605,27 @@ definitions:
     required:
     - reorder_point
     - reorder_quantity
+    type: object
+  http.SignContractRequest:
+    properties:
+      signature_id:
+        type: string
+      signer_email:
+        type: string
+      signer_name:
+        type: string
+    required:
+    - signature_id
+    - signer_email
+    - signer_name
+    type: object
+  http.TerminateContractRequest:
+    properties:
+      reason:
+        minLength: 10
+        type: string
+    required:
+    - reason
     type: object
   http.TimezoneResponse:
     properties:
@@ -1562,6 +1744,14 @@ definitions:
         type: string
     required:
     - subject
+    type: object
+  http.UpdateContractRequest:
+    properties:
+      terms:
+        minLength: 10
+        type: string
+    required:
+    - terms
     type: object
   http.UpdateCountryRequest:
     properties:
@@ -1714,6 +1904,17 @@ definitions:
     required:
     - display_name
     type: object
+  http.UpdateScriptRequest:
+    properties:
+      code:
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+    type: object
   http.UpdateTaxRequest:
     properties:
       tax_amount:
@@ -1746,6 +1947,20 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  http.ValidateScriptRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  http.ValidationResponse:
+    properties:
+      message:
+        type: string
+      valid:
+        type: boolean
     type: object
   http.WonDealsResponse:
     properties:
@@ -2499,6 +2714,407 @@ paths:
       summary: Get payment by transaction ID
       tags:
       - Payments
+  /contracts:
+    get:
+      description: List contracts with optional filters (customer_id, status, expiring_days)
+      parameters:
+      - description: Customer ID (UUID)
+        in: query
+        name: customer_id
+        type: string
+      - description: Contract status (draft, pending_signature, active, completed,
+          terminated)
+        in: query
+        name: status
+        type: string
+      - description: Days until expiration (for filtering expiring contracts)
+        in: query
+        name: expiring_days
+        type: integer
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 20)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ContractListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List contracts
+      tags:
+      - contracts
+    post:
+      consumes:
+      - application/json
+      description: Create a new contract for an order
+      parameters:
+      - description: Contract details
+        in: body
+        name: contract
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateContractRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ContractResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create contract
+      tags:
+      - contracts
+  /contracts/{id}:
+    delete:
+      description: Delete a contract (soft delete)
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete contract
+      tags:
+      - contracts
+    get:
+      description: Get contract details by ID
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ContractResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get contract by ID
+      tags:
+      - contracts
+    put:
+      consumes:
+      - application/json
+      description: Update contract terms (only for Draft status)
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated contract details
+        in: body
+        name: contract
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateContractRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update contract
+      tags:
+      - contracts
+  /contracts/{id}/complete:
+    post:
+      description: Mark an active contract as completed
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Complete contract
+      tags:
+      - contracts
+  /contracts/{id}/expiration:
+    put:
+      consumes:
+      - application/json
+      description: Set expiration date for a draft contract
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Expiration date
+        in: body
+        name: expiration
+        required: true
+        schema:
+          $ref: '#/definitions/http.SetExpirationDateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Set expiration date
+      tags:
+      - contracts
+  /contracts/{id}/renew:
+    post:
+      description: Create a new version of the contract
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ContractResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Renew contract
+      tags:
+      - contracts
+  /contracts/{id}/sign:
+    post:
+      consumes:
+      - application/json
+      description: Sign a contract that is pending signature
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Signature details
+        in: body
+        name: signature
+        required: true
+        schema:
+          $ref: '#/definitions/http.SignContractRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Sign contract
+      tags:
+      - contracts
+  /contracts/{id}/submit:
+    post:
+      description: Submit a draft contract for signature
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Submit contract for signature
+      tags:
+      - contracts
+  /contracts/{id}/terminate:
+    post:
+      consumes:
+      - application/json
+      description: Terminate an active contract with a reason
+      parameters:
+      - description: Contract ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Termination details
+        in: body
+        name: termination
+        required: true
+        schema:
+          $ref: '#/definitions/http.TerminateContractRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Terminate contract
+      tags:
+      - contracts
   /countries:
     get:
       consumes:
@@ -5509,6 +6125,40 @@ paths:
       summary: Start processing order
       tags:
       - orders
+  /orders/{order_id}/contracts:
+    get:
+      description: Get all contracts for a specific order
+      parameters:
+      - description: Order ID (UUID)
+        in: path
+        name: order_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.ContractResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List contracts by order
+      tags:
+      - contracts
   /orders/customer/{customer_id}:
     get:
       description: List all orders for a specific customer
@@ -6182,6 +6832,411 @@ paths:
       summary: Get role by name
       tags:
       - roles
+  /scripts:
+    get:
+      description: List scripts with optional status filter
+      parameters:
+      - description: Filter by status (draft, active, inactive, archived)
+        in: query
+        name: status
+        type: string
+      - description: 'Limit results (default: 50)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset for pagination (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List scripts
+      tags:
+      - scripts
+    post:
+      consumes:
+      - application/json
+      description: Create a new LUA script
+      parameters:
+      - description: Script data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateScriptRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create script
+      tags:
+      - scripts
+  /scripts/{id}:
+    delete:
+      description: Delete a script by ID
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete script
+      tags:
+      - scripts
+    get:
+      description: Get script details by UUID
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get script by ID
+      tags:
+      - scripts
+    put:
+      consumes:
+      - application/json
+      description: Update script code, description, or metadata
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateScriptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update script
+      tags:
+      - scripts
+  /scripts/{id}/activate:
+    post:
+      description: Change script status to active
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Activate script
+      tags:
+      - scripts
+  /scripts/{id}/archive:
+    post:
+      description: Archive a script (soft delete)
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Archive script
+      tags:
+      - scripts
+  /scripts/{id}/deactivate:
+    post:
+      description: Change script status to inactive
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Deactivate script
+      tags:
+      - scripts
+  /scripts/{id}/executions:
+    get:
+      description: Get execution history for a specific script
+      parameters:
+      - description: Script ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Limit results (default: 50)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset for pagination (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ExecutionHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get execution history
+      tags:
+      - scripts
+  /scripts/{name}/execute:
+    post:
+      consumes:
+      - application/json
+      description: Execute LUA script by name with parameters
+      parameters:
+      - description: Script name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Execution parameters
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/http.ExecuteScriptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ExecutionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Execute script
+      tags:
+      - scripts
+  /scripts/executions/{execution_id}:
+    get:
+      description: Get detailed information about a specific execution
+      parameters:
+      - description: Execution ID (UUID)
+        in: path
+        name: execution_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ExecutionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get execution details
+      tags:
+      - scripts
+  /scripts/executions/recent:
+    get:
+      description: Get recent executions across all scripts
+      parameters:
+      - description: 'Limit results (default: 20)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ExecutionHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get recent executions
+      tags:
+      - scripts
+  /scripts/name/{name}:
+    get:
+      description: Get script details by name
+      parameters:
+      - description: Script name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ScriptResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get script by name
+      tags:
+      - scripts
+  /scripts/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validate LUA script syntax without executing
+      parameters:
+      - description: Script code
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/http.ValidateScriptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.ValidationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Validate script syntax
+      tags:
+      - scripts
   /timezones:
     get:
       consumes:

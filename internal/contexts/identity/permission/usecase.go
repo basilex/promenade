@@ -33,20 +33,20 @@ type IUseCase interface {
 	GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*Permission, error)
 }
 
-// UseCase implements IUseCase
-type UseCase struct {
+// useCase implements IUseCase
+type useCase struct {
 	repo IRepository
 }
 
-// NewUseCase creates a new UseCase
+// NewUseCase creates a new useCase
 func NewUseCase(repo IRepository) IUseCase {
-	return &UseCase{
+	return &useCase{
 		repo: repo,
 	}
 }
 
 // CreatePermission creates a new permission
-func (uc *UseCase) CreatePermission(ctx context.Context, resource, action, description string) (*Permission, error) {
+func (uc *useCase) CreatePermission(ctx context.Context, resource, action, description string) (*Permission, error) {
 	// Validation
 	if resource == "" {
 		return nil, ErrResourceRequired
@@ -85,7 +85,7 @@ func (uc *UseCase) CreatePermission(ctx context.Context, resource, action, descr
 }
 
 // GetPermission retrieves a permission by ID
-func (uc *UseCase) GetPermission(ctx context.Context, permissionID uuidv7.UUID) (*Permission, error) {
+func (uc *useCase) GetPermission(ctx context.Context, permissionID uuidv7.UUID) (*Permission, error) {
 	perm, err := uc.repo.GetByID(ctx, permissionID)
 	if err != nil {
 		if errors.Is(err, ErrPermissionNotFound) {
@@ -97,7 +97,7 @@ func (uc *UseCase) GetPermission(ctx context.Context, permissionID uuidv7.UUID) 
 }
 
 // GetPermissionByName retrieves a permission by name (resource:action)
-func (uc *UseCase) GetPermissionByName(ctx context.Context, name string) (*Permission, error) {
+func (uc *useCase) GetPermissionByName(ctx context.Context, name string) (*Permission, error) {
 	if name == "" {
 		return nil, ErrResourceRequired
 	}
@@ -113,7 +113,7 @@ func (uc *UseCase) GetPermissionByName(ctx context.Context, name string) (*Permi
 }
 
 // UpdatePermission updates an existing permission
-func (uc *UseCase) UpdatePermission(ctx context.Context, permissionID uuidv7.UUID, description string) (*Permission, error) {
+func (uc *useCase) UpdatePermission(ctx context.Context, permissionID uuidv7.UUID, description string) (*Permission, error) {
 	// Get existing permission
 	perm, err := uc.repo.GetByID(ctx, permissionID)
 	if err != nil {
@@ -141,7 +141,7 @@ func (uc *UseCase) UpdatePermission(ctx context.Context, permissionID uuidv7.UUI
 }
 
 // DeletePermission soft deletes a permission
-func (uc *UseCase) DeletePermission(ctx context.Context, permissionID uuidv7.UUID) error {
+func (uc *useCase) DeletePermission(ctx context.Context, permissionID uuidv7.UUID) error {
 	// Check if permission exists
 	_, err := uc.repo.GetByID(ctx, permissionID)
 	if err != nil {
@@ -160,7 +160,7 @@ func (uc *UseCase) DeletePermission(ctx context.Context, permissionID uuidv7.UUI
 }
 
 // ListPermissions retrieves all active permissions with pagination
-func (uc *UseCase) ListPermissions(ctx context.Context, limit, offset int) ([]*Permission, int, error) {
+func (uc *useCase) ListPermissions(ctx context.Context, limit, offset int) ([]*Permission, int, error) {
 	// Set default limit if not provided
 	if limit <= 0 {
 		limit = 20
@@ -178,7 +178,7 @@ func (uc *UseCase) ListPermissions(ctx context.Context, limit, offset int) ([]*P
 }
 
 // GetRolePermissions retrieves all permissions assigned to a role
-func (uc *UseCase) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*Permission, error) {
+func (uc *useCase) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*Permission, error) {
 	perms, err := uc.repo.GetRolePermissions(ctx, roleID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get role permissions: %w", err)

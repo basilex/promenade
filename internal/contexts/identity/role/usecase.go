@@ -32,20 +32,20 @@ type IUseCase interface {
 	GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*Role, error)
 }
 
-// UseCase implements IUseCase
-type UseCase struct {
+// useCase implements IUseCase
+type useCase struct {
 	repo IRepository
 }
 
-// NewUseCase creates a new UseCase
+// NewUseCase creates a new useCase
 func NewUseCase(repo IRepository) IUseCase {
-	return &UseCase{
+	return &useCase{
 		repo: repo,
 	}
 }
 
 // CreateRole creates a new role
-func (uc *UseCase) CreateRole(ctx context.Context, name, displayName, description string) (*Role, error) {
+func (uc *useCase) CreateRole(ctx context.Context, name, displayName, description string) (*Role, error) {
 	// Validation
 	if name == "" {
 		return nil, ErrRoleNameRequired
@@ -83,7 +83,7 @@ func (uc *UseCase) CreateRole(ctx context.Context, name, displayName, descriptio
 }
 
 // GetRole retrieves a role by ID
-func (uc *UseCase) GetRole(ctx context.Context, roleID uuidv7.UUID) (*Role, error) {
+func (uc *useCase) GetRole(ctx context.Context, roleID uuidv7.UUID) (*Role, error) {
 	role, err := uc.repo.GetByID(ctx, roleID)
 	if err != nil {
 		if errors.Is(err, ErrRoleNotFound) {
@@ -95,7 +95,7 @@ func (uc *UseCase) GetRole(ctx context.Context, roleID uuidv7.UUID) (*Role, erro
 }
 
 // GetRoleByName retrieves a role by name
-func (uc *UseCase) GetRoleByName(ctx context.Context, name string) (*Role, error) {
+func (uc *useCase) GetRoleByName(ctx context.Context, name string) (*Role, error) {
 	if name == "" {
 		return nil, ErrRoleNameRequired
 	}
@@ -111,7 +111,7 @@ func (uc *UseCase) GetRoleByName(ctx context.Context, name string) (*Role, error
 }
 
 // UpdateRole updates an existing role
-func (uc *UseCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*Role, error) {
+func (uc *useCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*Role, error) {
 	// Validation
 	if displayName == "" {
 		return nil, ErrRoleDisplayRequired
@@ -146,7 +146,7 @@ func (uc *UseCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayNa
 }
 
 // DeleteRole soft deletes a role (protects system roles)
-func (uc *UseCase) DeleteRole(ctx context.Context, roleID uuidv7.UUID) error {
+func (uc *useCase) DeleteRole(ctx context.Context, roleID uuidv7.UUID) error {
 	// Get role to check if it's a system role
 	role, err := uc.repo.GetByID(ctx, roleID)
 	if err != nil {
@@ -170,7 +170,7 @@ func (uc *UseCase) DeleteRole(ctx context.Context, roleID uuidv7.UUID) error {
 }
 
 // ListRoles retrieves all active roles with pagination
-func (uc *UseCase) ListRoles(ctx context.Context, limit, offset int) ([]*Role, int, error) {
+func (uc *useCase) ListRoles(ctx context.Context, limit, offset int) ([]*Role, int, error) {
 	// Set default limit if not provided
 	if limit <= 0 {
 		limit = 20
@@ -188,7 +188,7 @@ func (uc *UseCase) ListRoles(ctx context.Context, limit, offset int) ([]*Role, i
 }
 
 // GetUserRoles retrieves all roles assigned to a user
-func (uc *UseCase) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*Role, error) {
+func (uc *useCase) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*Role, error) {
 	roles, err := uc.repo.GetUserRoles(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user roles: %w", err)

@@ -62,20 +62,20 @@ type IUseCase interface {
 	ListPublicProfiles(ctx context.Context, limit, offset int) ([]*Profile, error)
 }
 
-// UseCase implements IUseCase
-type UseCase struct {
+// useCase implements IUseCase
+type useCase struct {
 	repo IRepository
 }
 
-// NewUseCase creates a new UseCase
+// NewUseCase creates a new useCase
 func NewUseCase(repo IRepository) IUseCase {
-	return &UseCase{
+	return &useCase{
 		repo: repo,
 	}
 }
 
 // CreateProfile creates a new profile for a user
-func (uc *UseCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, displayName string) (*Profile, error) {
+func (uc *useCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, displayName string) (*Profile, error) {
 	// Check if profile already exists for user
 	exists, err := uc.repo.ExistsForUser(ctx, userID)
 	if err != nil {
@@ -102,7 +102,7 @@ func (uc *UseCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, displa
 }
 
 // GetProfile retrieves a profile by ID
-func (uc *UseCase) GetProfile(ctx context.Context, profileID uuidv7.UUID) (*Profile, error) {
+func (uc *useCase) GetProfile(ctx context.Context, profileID uuidv7.UUID) (*Profile, error) {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile: %w", err)
@@ -112,7 +112,7 @@ func (uc *UseCase) GetProfile(ctx context.Context, profileID uuidv7.UUID) (*Prof
 }
 
 // GetProfileByUserID retrieves a profile by user ID
-func (uc *UseCase) GetProfileByUserID(ctx context.Context, userID uuidv7.UUID) (*Profile, error) {
+func (uc *useCase) GetProfileByUserID(ctx context.Context, userID uuidv7.UUID) (*Profile, error) {
 	profile, err := uc.repo.GetByUserID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile: %w", err)
@@ -122,7 +122,7 @@ func (uc *UseCase) GetProfileByUserID(ctx context.Context, userID uuidv7.UUID) (
 }
 
 // UpdateDisplayName updates profile display name
-func (uc *UseCase) UpdateDisplayName(ctx context.Context, profileID uuidv7.UUID, displayName string) error {
+func (uc *useCase) UpdateDisplayName(ctx context.Context, profileID uuidv7.UUID, displayName string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -140,7 +140,7 @@ func (uc *UseCase) UpdateDisplayName(ctx context.Context, profileID uuidv7.UUID,
 }
 
 // UpdateBio updates profile bio
-func (uc *UseCase) UpdateBio(ctx context.Context, profileID uuidv7.UUID, bio string) error {
+func (uc *useCase) UpdateBio(ctx context.Context, profileID uuidv7.UUID, bio string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -158,7 +158,7 @@ func (uc *UseCase) UpdateBio(ctx context.Context, profileID uuidv7.UUID, bio str
 }
 
 // UpdateAvatar updates profile avatar
-func (uc *UseCase) UpdateAvatar(ctx context.Context, profileID uuidv7.UUID, avatarURL string) error {
+func (uc *useCase) UpdateAvatar(ctx context.Context, profileID uuidv7.UUID, avatarURL string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -176,7 +176,7 @@ func (uc *UseCase) UpdateAvatar(ctx context.Context, profileID uuidv7.UUID, avat
 }
 
 // UpdatePersonalInfo updates personal information
-func (uc *UseCase) UpdatePersonalInfo(ctx context.Context, profileID uuidv7.UUID, firstName, lastName, middleName string) error {
+func (uc *useCase) UpdatePersonalInfo(ctx context.Context, profileID uuidv7.UUID, firstName, lastName, middleName string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -194,7 +194,7 @@ func (uc *UseCase) UpdatePersonalInfo(ctx context.Context, profileID uuidv7.UUID
 }
 
 // UpdateGender updates gender
-func (uc *UseCase) UpdateGender(ctx context.Context, profileID uuidv7.UUID, gender Gender) error {
+func (uc *useCase) UpdateGender(ctx context.Context, profileID uuidv7.UUID, gender Gender) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -212,7 +212,7 @@ func (uc *UseCase) UpdateGender(ctx context.Context, profileID uuidv7.UUID, gend
 }
 
 // UpdateDateOfBirth updates date of birth
-func (uc *UseCase) UpdateDateOfBirth(ctx context.Context, profileID uuidv7.UUID, dateOfBirth *time.Time) error {
+func (uc *useCase) UpdateDateOfBirth(ctx context.Context, profileID uuidv7.UUID, dateOfBirth *time.Time) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -230,7 +230,7 @@ func (uc *UseCase) UpdateDateOfBirth(ctx context.Context, profileID uuidv7.UUID,
 }
 
 // UpdateLocalization updates timezone, language, and country
-func (uc *UseCase) UpdateLocalization(ctx context.Context, profileID uuidv7.UUID, timezone, language, country string) error {
+func (uc *useCase) UpdateLocalization(ctx context.Context, profileID uuidv7.UUID, timezone, language, country string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -248,7 +248,7 @@ func (uc *UseCase) UpdateLocalization(ctx context.Context, profileID uuidv7.UUID
 }
 
 // UpdateSocialLinks updates social media links
-func (uc *UseCase) UpdateSocialLinks(ctx context.Context, profileID uuidv7.UUID, website, linkedin, twitter, github, facebook, instagram string) error {
+func (uc *useCase) UpdateSocialLinks(ctx context.Context, profileID uuidv7.UUID, website, linkedin, twitter, github, facebook, instagram string) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -266,7 +266,7 @@ func (uc *UseCase) UpdateSocialLinks(ctx context.Context, profileID uuidv7.UUID,
 }
 
 // SetPublic sets profile visibility to public
-func (uc *UseCase) SetPublic(ctx context.Context, profileID uuidv7.UUID) error {
+func (uc *useCase) SetPublic(ctx context.Context, profileID uuidv7.UUID) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -282,7 +282,7 @@ func (uc *UseCase) SetPublic(ctx context.Context, profileID uuidv7.UUID) error {
 }
 
 // SetPrivate sets profile visibility to private
-func (uc *UseCase) SetPrivate(ctx context.Context, profileID uuidv7.UUID) error {
+func (uc *useCase) SetPrivate(ctx context.Context, profileID uuidv7.UUID) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -298,7 +298,7 @@ func (uc *UseCase) SetPrivate(ctx context.Context, profileID uuidv7.UUID) error 
 }
 
 // Activate activates the profile
-func (uc *UseCase) Activate(ctx context.Context, profileID uuidv7.UUID) error {
+func (uc *useCase) Activate(ctx context.Context, profileID uuidv7.UUID) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -314,7 +314,7 @@ func (uc *UseCase) Activate(ctx context.Context, profileID uuidv7.UUID) error {
 }
 
 // Deactivate deactivates the profile
-func (uc *UseCase) Deactivate(ctx context.Context, profileID uuidv7.UUID) error {
+func (uc *useCase) Deactivate(ctx context.Context, profileID uuidv7.UUID) error {
 	profile, err := uc.repo.GetByID(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("failed to get profile: %w", err)
@@ -330,7 +330,7 @@ func (uc *UseCase) Deactivate(ctx context.Context, profileID uuidv7.UUID) error 
 }
 
 // DeleteProfile deletes a profile
-func (uc *UseCase) DeleteProfile(ctx context.Context, profileID uuidv7.UUID) error {
+func (uc *useCase) DeleteProfile(ctx context.Context, profileID uuidv7.UUID) error {
 	if err := uc.repo.Delete(ctx, profileID); err != nil {
 		return fmt.Errorf("failed to delete profile: %w", err)
 	}
@@ -339,7 +339,7 @@ func (uc *UseCase) DeleteProfile(ctx context.Context, profileID uuidv7.UUID) err
 }
 
 // ListPublicProfiles retrieves public profiles
-func (uc *UseCase) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*Profile, error) {
+func (uc *useCase) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*Profile, error) {
 	if limit <= 0 || limit > 100 {
 		limit = 20 // Default limit
 	}

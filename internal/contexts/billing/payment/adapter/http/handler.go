@@ -57,7 +57,7 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 	// Create payment with basic fields
 	p, err := h.usecase.CreatePayment(c.Request.Context(), customerID, amount, payment.PaymentMethod(req.Method))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create payment")
 		return
 	}
 
@@ -69,7 +69,7 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 			return
 		}
 		if err := h.usecase.LinkToInvoice(c.Request.Context(), p.GetID(), invoiceID); err != nil {
-			response.ErrorResponse(c, http.StatusInternalServerError, "LINK_INVOICE_FAILED", err.Error())
+			response.ErrorResponse(c, http.StatusInternalServerError, "LINK_INVOICE_FAILED", "Failed to link invoice")
 			return
 		}
 	}
@@ -77,7 +77,7 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 	// Add notes if provided
 	if req.Notes != "" {
 		if err := h.usecase.AddNote(c.Request.Context(), p.GetID(), req.Notes); err != nil {
-			response.ErrorResponse(c, http.StatusInternalServerError, "ADD_NOTE_FAILED", err.Error())
+			response.ErrorResponse(c, http.StatusInternalServerError, "ADD_NOTE_FAILED", "Failed to add note")
 			return
 		}
 	}
@@ -85,7 +85,7 @@ func (h *PaymentHandler) Create(c *gin.Context) {
 	// Reload payment to get updated state
 	p, err = h.usecase.GetPayment(c.Request.Context(), p.GetID())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -110,11 +110,11 @@ func (h *PaymentHandler) GetByID(c *gin.Context) {
 
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if errors.Is(err, payment.ErrPaymentNotFound) {
-		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 		return
 	}
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -135,11 +135,11 @@ func (h *PaymentHandler) GetByNumber(c *gin.Context) {
 
 	p, err := h.usecase.GetPaymentByNumber(c.Request.Context(), paymentNo)
 	if errors.Is(err, payment.ErrPaymentNotFound) {
-		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 		return
 	}
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -160,11 +160,11 @@ func (h *PaymentHandler) GetByTransactionID(c *gin.Context) {
 
 	p, err := h.usecase.GetPaymentByTransactionID(c.Request.Context(), transactionID)
 	if errors.Is(err, payment.ErrPaymentNotFound) {
-		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 		return
 	}
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -188,10 +188,10 @@ func (h *PaymentHandler) Delete(c *gin.Context) {
 
 	if err := h.usecase.DeletePayment(c.Request.Context(), id); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", "Failed to delete payment")
 		return
 	}
 
@@ -213,7 +213,7 @@ func (h *PaymentHandler) List(c *gin.Context) {
 
 	payments, err := h.usecase.ListPayments(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list payments")
 		return
 	}
 
@@ -243,7 +243,7 @@ func (h *PaymentHandler) ListByCustomer(c *gin.Context) {
 
 	payments, err := h.usecase.ListPaymentsByCustomer(c.Request.Context(), customerID, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list payments")
 		return
 	}
 
@@ -268,7 +268,7 @@ func (h *PaymentHandler) ListByInvoice(c *gin.Context) {
 
 	payments, err := h.usecase.ListPaymentsByInvoice(c.Request.Context(), invoiceID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list payments")
 		return
 	}
 
@@ -293,7 +293,7 @@ func (h *PaymentHandler) ListByStatus(c *gin.Context) {
 
 	payments, err := h.usecase.ListPaymentsByStatus(c.Request.Context(), status, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list payments")
 		return
 	}
 
@@ -333,17 +333,17 @@ func (h *PaymentHandler) LinkToInvoice(c *gin.Context) {
 
 	if err := h.usecase.LinkToInvoice(c.Request.Context(), paymentID, invoiceID); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "LINK_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LINK_FAILED", "Failed to link invoice to payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), paymentID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -374,17 +374,17 @@ func (h *PaymentHandler) ProcessPayment(c *gin.Context) {
 
 	if err := h.usecase.ProcessPayment(c.Request.Context(), id, req.TransactionID); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "PROCESS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "PROCESS_FAILED", "Failed to process payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -418,17 +418,17 @@ func (h *PaymentHandler) CompletePayment(c *gin.Context) {
 
 	if err := h.usecase.CompletePayment(c.Request.Context(), id, req.TransactionID); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "COMPLETE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "COMPLETE_FAILED", "Failed to complete payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -462,17 +462,17 @@ func (h *PaymentHandler) FailPayment(c *gin.Context) {
 
 	if err := h.usecase.FailPayment(c.Request.Context(), id, req.Reason); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "FAIL_PAYMENT_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "FAIL_PAYMENT_FAILED", "Failed to mark payment as failed")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -512,21 +512,21 @@ func (h *PaymentHandler) RefundPayment(c *gin.Context) {
 
 	if err := h.usecase.RefundPayment(c.Request.Context(), id, refundAmount); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
 		if errors.Is(err, payment.ErrRefundAmountExceedsPayment) {
-			response.ErrorResponse(c, http.StatusBadRequest, "REFUND_EXCEEDS_PAYMENT", err.Error())
+			response.ErrorResponse(c, http.StatusBadRequest, "REFUND_EXCEEDS_PAYMENT", "Refund amount exceeds payment amount")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "REFUND_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "REFUND_FAILED", "Failed to refund payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -551,17 +551,17 @@ func (h *PaymentHandler) CancelPayment(c *gin.Context) {
 
 	if err := h.usecase.CancelPayment(c.Request.Context(), id, ""); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "CANCEL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CANCEL_FAILED", "Failed to cancel payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -595,17 +595,17 @@ func (h *PaymentHandler) SetCardDetails(c *gin.Context) {
 
 	if err := h.usecase.SetCardDetails(c.Request.Context(), id, req.Last4, req.Brand); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "SET_CARD_DETAILS_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "SET_CARD_DETAILS_FAILED", "Failed to set card details")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -639,17 +639,17 @@ func (h *PaymentHandler) SetProvider(c *gin.Context) {
 
 	if err := h.usecase.SetProvider(c.Request.Context(), id, req.Provider); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "SET_PROVIDER_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "SET_PROVIDER_FAILED", "Failed to set payment provider")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -683,17 +683,17 @@ func (h *PaymentHandler) AddNote(c *gin.Context) {
 
 	if err := h.usecase.AddNote(c.Request.Context(), id, req.Note); err != nil {
 		if errors.Is(err, payment.ErrPaymentNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Payment not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ADD_NOTE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "ADD_NOTE_FAILED", "Failed to add note to payment")
 		return
 	}
 
 	// Reload payment to get updated state
 	p, err := h.usecase.GetPayment(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve payment")
 		return
 	}
 
@@ -718,7 +718,7 @@ func (h *PaymentHandler) GetTotalByCustomer(c *gin.Context) {
 
 	total, err := h.usecase.GetTotalByCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_TOTAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_TOTAL_FAILED", "Failed to get total amount")
 		return
 	}
 
@@ -746,7 +746,7 @@ func (h *PaymentHandler) GetTotalByInvoice(c *gin.Context) {
 
 	total, err := h.usecase.GetTotalByInvoice(c.Request.Context(), invoiceID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_TOTAL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_TOTAL_FAILED", "Failed to get total amount")
 		return
 	}
 

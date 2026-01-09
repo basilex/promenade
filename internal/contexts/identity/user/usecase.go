@@ -45,22 +45,22 @@ type IUseCase interface {
 	ListUsers(ctx context.Context, limit, offset int) ([]*User, int, error)
 }
 
-// UseCase implements IUseCase interface
-type UseCase struct {
+// useCase implements IUseCase interface
+type useCase struct {
 	userRepo IRepository
 	roleRepo role.IRepository
 }
 
 // NewUseCase creates a new user use case
 func NewUseCase(userRepo IRepository, roleRepo role.IRepository) IUseCase {
-	return &UseCase{
+	return &useCase{
 		userRepo: userRepo,
 		roleRepo: roleRepo,
 	}
 }
 
 // Register creates a new user account
-func (uc *UseCase) Register(ctx context.Context, email, name, password string) (*User, error) {
+func (uc *useCase) Register(ctx context.Context, email, name, password string) (*User, error) {
 	// Check if email already exists
 	exists, err := uc.userRepo.ExistsByEmail(ctx, email)
 	if err != nil {
@@ -110,7 +110,7 @@ func (uc *UseCase) Register(ctx context.Context, email, name, password string) (
 }
 
 // Authenticate authenticates a user with email and password
-func (uc *UseCase) Authenticate(ctx context.Context, email, password string) (*User, error) {
+func (uc *useCase) Authenticate(ctx context.Context, email, password string) (*User, error) {
 	// Get user by email
 	user, err := uc.userRepo.GetByEmail(ctx, email)
 	if err != nil {
@@ -150,7 +150,7 @@ func (uc *UseCase) Authenticate(ctx context.Context, email, password string) (*U
 }
 
 // GetUser retrieves a user by ID
-func (uc *UseCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*User, error) {
+func (uc *useCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*User, error) {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
@@ -162,7 +162,7 @@ func (uc *UseCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*User, erro
 }
 
 // GetUserByEmail retrieves a user by email
-func (uc *UseCase) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+func (uc *useCase) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	user, err := uc.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
@@ -174,7 +174,7 @@ func (uc *UseCase) GetUserByEmail(ctx context.Context, email string) (*User, err
 }
 
 // VerifyEmail marks user's email as verified
-func (uc *UseCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
+func (uc *useCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -194,7 +194,7 @@ func (uc *UseCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
 }
 
 // ChangePassword changes user's password
-func (uc *UseCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPassword, newPassword string) error {
+func (uc *useCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPassword, newPassword string) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -219,7 +219,7 @@ func (uc *UseCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPa
 }
 
 // SuspendUser suspends a user account
-func (uc *UseCase) SuspendUser(ctx context.Context, userID uuidv7.UUID) error {
+func (uc *useCase) SuspendUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -235,7 +235,7 @@ func (uc *UseCase) SuspendUser(ctx context.Context, userID uuidv7.UUID) error {
 }
 
 // BanUser bans a user account
-func (uc *UseCase) BanUser(ctx context.Context, userID uuidv7.UUID) error {
+func (uc *useCase) BanUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -251,7 +251,7 @@ func (uc *UseCase) BanUser(ctx context.Context, userID uuidv7.UUID) error {
 }
 
 // ActivateUser activates a user account
-func (uc *UseCase) ActivateUser(ctx context.Context, userID uuidv7.UUID) error {
+func (uc *useCase) ActivateUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -267,7 +267,7 @@ func (uc *UseCase) ActivateUser(ctx context.Context, userID uuidv7.UUID) error {
 }
 
 // UnlockUser manually unlocks a locked user account
-func (uc *UseCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) error {
+func (uc *useCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
@@ -283,7 +283,7 @@ func (uc *UseCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) error {
 }
 
 // ListUsers lists users with pagination
-func (uc *UseCase) ListUsers(ctx context.Context, limit, offset int) ([]*User, int, error) {
+func (uc *useCase) ListUsers(ctx context.Context, limit, offset int) ([]*User, int, error) {
 	users, total, err := uc.userRepo.ListUsers(ctx, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)

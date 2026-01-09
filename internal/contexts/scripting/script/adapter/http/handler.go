@@ -36,9 +36,9 @@ func NewScriptHandler(useCase script.IScriptUseCase) *ScriptHandler {
 // @Param name path string true "Script name"
 // @Param body body ExecuteScriptRequest true "Execution parameters"
 // @Success 200 {object} ExecutionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{name}/execute [post]
 func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 	scriptName := c.Param("name")
@@ -59,10 +59,10 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 	result, err := h.useCase.ExecuteScript(c.Request.Context(), scriptName, req.Parameters, executedBy)
 	if err != nil {
 		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "EXECUTION_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "EXECUTION_ERROR", "Failed to execute script")
 		return
 	}
 
@@ -82,7 +82,7 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 // @Produce json
 // @Param body body ValidateScriptRequest true "Script code"
 // @Success 200 {object} ValidationResponse
-// @Failure 400 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
 // @Router /scripts/validate [post]
 func (h *ScriptHandler) ValidateScript(c *gin.Context) {
 	var req ValidateScriptRequest
@@ -118,8 +118,8 @@ func (h *ScriptHandler) ValidateScript(c *gin.Context) {
 // @Produce json
 // @Param body body CreateScriptRequest true "Script data"
 // @Success 201 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts [post]
 func (h *ScriptHandler) CreateScript(c *gin.Context) {
 	var req CreateScriptRequest
@@ -139,7 +139,7 @@ func (h *ScriptHandler) CreateScript(c *gin.Context) {
 		createdBy,
 	)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_ERROR", "Failed to create script")
 		return
 	}
 
@@ -153,8 +153,8 @@ func (h *ScriptHandler) CreateScript(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Script ID (UUID)"
 // @Success 200 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
 // @Router /scripts/{id} [get]
 func (h *ScriptHandler) GetScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -166,7 +166,7 @@ func (h *ScriptHandler) GetScript(c *gin.Context) {
 
 	script, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -180,7 +180,7 @@ func (h *ScriptHandler) GetScript(c *gin.Context) {
 // @Produce json
 // @Param name path string true "Script name"
 // @Success 200 {object} ScriptResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 404 {object} response.Response
 // @Router /scripts/name/{name} [get]
 func (h *ScriptHandler) GetScriptByName(c *gin.Context) {
 	name := c.Param("name")
@@ -191,7 +191,7 @@ func (h *ScriptHandler) GetScriptByName(c *gin.Context) {
 
 	script, err := h.useCase.GetScriptByName(c.Request.Context(), name)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -207,9 +207,9 @@ func (h *ScriptHandler) GetScriptByName(c *gin.Context) {
 // @Param id path string true "Script ID (UUID)"
 // @Param body body UpdateScriptRequest true "Update data"
 // @Success 200 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{id} [put]
 func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -232,10 +232,10 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 		err = h.useCase.UpdateScript(c.Request.Context(), id, *req.Code)
 		if err != nil {
 			if err.Error() == "not found" {
-				response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+				response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 				return
 			}
-			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_ERROR", err.Error())
+			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_ERROR", "Failed to update script")
 			return
 		}
 	}
@@ -243,7 +243,7 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 	// Fetch updated script
 	script, err = h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -259,8 +259,8 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 // @Tags scripts
 // @Param id path string true "Script ID (UUID)"
 // @Success 204 "No Content"
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{id} [delete]
 func (h *ScriptHandler) DeleteScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -271,7 +271,7 @@ func (h *ScriptHandler) DeleteScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.DeleteScript(c.Request.Context(), id); err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_ERROR", "Failed to delete script")
 		return
 	}
 
@@ -287,7 +287,7 @@ func (h *ScriptHandler) DeleteScript(c *gin.Context) {
 // @Param limit query int false "Limit results (default: 50)"
 // @Param offset query int false "Offset for pagination (default: 0)"
 // @Success 200 {object} ScriptListResponse
-// @Failure 400 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
 // @Router /scripts [get]
 func (h *ScriptHandler) ListScripts(c *gin.Context) {
 	statusStr := c.Query("status")
@@ -320,7 +320,7 @@ func (h *ScriptHandler) ListScripts(c *gin.Context) {
 	}
 	
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_ERROR", "Failed to list scripts")
 		return
 	}
 
@@ -337,9 +337,9 @@ func (h *ScriptHandler) ListScripts(c *gin.Context) {
 // @Tags scripts
 // @Param id path string true "Script ID (UUID)"
 // @Success 200 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{id}/activate [post]
 func (h *ScriptHandler) ActivateScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -351,17 +351,17 @@ func (h *ScriptHandler) ActivateScript(c *gin.Context) {
 
 	if err := h.useCase.ActivateScript(c.Request.Context(), id); err != nil {
 		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATION_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATION_ERROR", "Failed to activate script")
 		return
 	}
 
 	// Fetch updated script
 	script, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -374,9 +374,9 @@ func (h *ScriptHandler) ActivateScript(c *gin.Context) {
 // @Tags scripts
 // @Param id path string true "Script ID (UUID)"
 // @Success 200 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{id}/deactivate [post]
 func (h *ScriptHandler) DeactivateScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -388,17 +388,17 @@ func (h *ScriptHandler) DeactivateScript(c *gin.Context) {
 
 	if err := h.useCase.DeactivateScript(c.Request.Context(), id); err != nil {
 		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DEACTIVATION_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DEACTIVATION_ERROR", "Failed to deactivate script")
 		return
 	}
 
 	// Fetch updated script
 	script, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -411,9 +411,9 @@ func (h *ScriptHandler) DeactivateScript(c *gin.Context) {
 // @Tags scripts
 // @Param id path string true "Script ID (UUID)"
 // @Success 200 {object} ScriptResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
 // @Router /scripts/{id}/archive [post]
 func (h *ScriptHandler) ArchiveScript(c *gin.Context) {
 	idStr := c.Param("id")
@@ -425,17 +425,17 @@ func (h *ScriptHandler) ArchiveScript(c *gin.Context) {
 
 	if err := h.useCase.ArchiveScript(c.Request.Context(), id); err != nil {
 		if err.Error() == "not found" {
-			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ARCHIVE_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "ARCHIVE_ERROR", "Failed to archive script")
 		return
 	}
 
 	// Fetch updated script
 	script, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
@@ -455,8 +455,8 @@ func (h *ScriptHandler) ArchiveScript(c *gin.Context) {
 // @Param limit query int false "Limit results (default: 50)"
 // @Param offset query int false "Offset for pagination (default: 0)"
 // @Success 200 {object} ExecutionHistoryResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
 // @Router /scripts/{id}/executions [get]
 func (h *ScriptHandler) GetExecutionHistory(c *gin.Context) {
 	idStr := c.Param("id")
@@ -481,7 +481,7 @@ func (h *ScriptHandler) GetExecutionHistory(c *gin.Context) {
 
 	executions, total, err := h.useCase.GetExecutionHistory(c.Request.Context(), id, limit, offset)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "QUERY_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "QUERY_ERROR", "Failed to fetch execution history")
 		return
 	}
 
@@ -495,7 +495,7 @@ func (h *ScriptHandler) GetExecutionHistory(c *gin.Context) {
 // @Produce json
 // @Param limit query int false "Limit results (default: 20)"
 // @Success 200 {object} ExecutionHistoryResponse
-// @Failure 400 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
 // @Router /scripts/executions/recent [get]
 func (h *ScriptHandler) GetRecentExecutions(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "20")
@@ -507,7 +507,7 @@ func (h *ScriptHandler) GetRecentExecutions(c *gin.Context) {
 
 	executions, err := h.useCase.GetRecentExecutions(c.Request.Context(), limit)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "QUERY_ERROR", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "QUERY_ERROR", "Failed to fetch recent executions")
 		return
 	}
 
@@ -521,8 +521,8 @@ func (h *ScriptHandler) GetRecentExecutions(c *gin.Context) {
 // @Produce json
 // @Param execution_id path string true "Execution ID (UUID)"
 // @Success 200 {object} ExecutionResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
 // @Router /scripts/executions/{execution_id} [get]
 func (h *ScriptHandler) GetExecutionDetails(c *gin.Context) {
 	idStr := c.Param("execution_id")
@@ -534,7 +534,7 @@ func (h *ScriptHandler) GetExecutionDetails(c *gin.Context) {
 
 	execution, err := h.useCase.GetExecutionDetails(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusNotFound, "EXECUTION_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "EXECUTION_NOT_FOUND", "Execution not found")
 		return
 	}
 
