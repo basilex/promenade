@@ -31,7 +31,7 @@ func (h *SubscriptionHandler) Create(c *gin.Context) {
 
 	customerID, err := ParseCustomerID(req.CustomerID)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_CUSTOMER_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_CUSTOMER_ID", "Invalid customer ID format")
 		return
 	}
 
@@ -39,7 +39,7 @@ func (h *SubscriptionHandler) Create(c *gin.Context) {
 
 	sub, err := h.usecase.CreateSubscription(c.Request.Context(), customerID, req.PlanID, billingPeriod, req.Currency, req.Amount, req.TrialDays)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create subscription")
 		return
 	}
 
@@ -50,17 +50,17 @@ func (h *SubscriptionHandler) Create(c *gin.Context) {
 func (h *SubscriptionHandler) GetByID(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-		response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+		response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 		return
 	}
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to get subscription")
 		return
 	}
 
@@ -71,7 +71,7 @@ func (h *SubscriptionHandler) GetByID(c *gin.Context) {
 func (h *SubscriptionHandler) Update(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
@@ -93,16 +93,16 @@ func (h *SubscriptionHandler) Update(c *gin.Context) {
 
 	if err := h.usecase.UpdateSubscription(c.Request.Context(), id, planID, amount); err != nil {
 		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -113,16 +113,16 @@ func (h *SubscriptionHandler) Update(c *gin.Context) {
 func (h *SubscriptionHandler) Delete(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
 	if err := h.usecase.DeleteSubscription(c.Request.Context(), id); err != nil {
 		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", "Failed to delete subscription")
 		return
 	}
 
@@ -162,7 +162,7 @@ func (h *SubscriptionHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list subscriptions")
 		return
 	}
 
@@ -178,22 +178,22 @@ func (h *SubscriptionHandler) List(c *gin.Context) {
 func (h *SubscriptionHandler) Activate(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
 	if err := h.usecase.ActivateSubscription(c.Request.Context(), id); err != nil {
 		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATE_FAILED", "Failed to activate subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -204,22 +204,22 @@ func (h *SubscriptionHandler) Activate(c *gin.Context) {
 func (h *SubscriptionHandler) Pause(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
 	if err := h.usecase.PauseSubscription(c.Request.Context(), id); err != nil {
 		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "PAUSE_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "PAUSE_FAILED", "Failed to pause subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -230,7 +230,7 @@ func (h *SubscriptionHandler) Pause(c *gin.Context) {
 func (h *SubscriptionHandler) Cancel(c *gin.Context) {
 	id, err := ParseCustomerID(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid subscription ID format")
 		return
 	}
 
@@ -239,16 +239,16 @@ func (h *SubscriptionHandler) Cancel(c *gin.Context) {
 
 	if err := h.usecase.CancelSubscription(c.Request.Context(), id, reason, effectiveDate); err != nil {
 		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", err.Error())
+			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "CANCEL_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "CANCEL_FAILED", "Failed to cancel subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", err.Error())
+		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
