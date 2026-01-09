@@ -54,7 +54,7 @@ func (h *PermissionHandler) Create(c *gin.Context) {
 			response.Conflict(c, "permission already exists")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to create permission")
 		return
 	}
 
@@ -87,7 +87,7 @@ func (h *PermissionHandler) GetByID(c *gin.Context) {
 			response.NotFound(c, "permission not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve permission")
 		return
 	}
 
@@ -119,7 +119,7 @@ func (h *PermissionHandler) GetByName(c *gin.Context) {
 			response.NotFound(c, "permission not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve permission")
 		return
 	}
 
@@ -163,7 +163,7 @@ func (h *PermissionHandler) Update(c *gin.Context) {
 			response.NotFound(c, "permission not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to update permission")
 		return
 	}
 
@@ -196,7 +196,7 @@ func (h *PermissionHandler) Delete(c *gin.Context) {
 			response.NotFound(c, "permission not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to delete permission")
 		return
 	}
 
@@ -221,7 +221,7 @@ func (h *PermissionHandler) List(c *gin.Context) {
 
 	perms, total, err := h.usecase.ListPermissions(c.Request.Context(), limit, offset)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to list permissions")
 		return
 	}
 
@@ -249,7 +249,7 @@ func (h *PermissionHandler) GetRolePermissions(c *gin.Context) {
 
 	perms, err := h.usecase.GetRolePermissions(c.Request.Context(), roleID)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve role permissions")
 		return
 	}
 
