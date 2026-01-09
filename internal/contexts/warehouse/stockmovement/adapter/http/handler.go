@@ -66,10 +66,10 @@ func (h *StockMovementHandler) RecordMovement(c *gin.Context) {
 	)
 	if err != nil {
 		if errors.Is(err, stockmovement.ErrStockMovementNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Stock movement not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to record stock movement")
 		return
 	}
 
@@ -97,10 +97,10 @@ func (h *StockMovementHandler) GetByID(c *gin.Context) {
 	movement, err := h.usecase.GetMovement(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, stockmovement.ErrStockMovementNotFound) {
-			response.NotFound(c, err.Error())
+			response.NotFound(c, "Stock movement not found")
 			return
 		}
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve stock movement")
 		return
 	}
 
@@ -134,7 +134,7 @@ func (h *StockMovementHandler) GetByInventory(c *gin.Context) {
 		pageSize,
 	)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve stock movements")
 		return
 	}
 
@@ -184,7 +184,7 @@ func (h *StockMovementHandler) GetByReference(c *gin.Context) {
 		referenceID,
 	)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve stock movements")
 		return
 	}
 
@@ -220,7 +220,7 @@ func (h *StockMovementHandler) GetByType(c *gin.Context) {
 		pageSize,
 	)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve stock movements")
 		return
 	}
 
@@ -247,7 +247,7 @@ func (h *StockMovementHandler) GetRecent(c *gin.Context) {
 
 	movements, err := h.usecase.GetRecentMovements(c.Request.Context(), limit)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve recent movements")
 		return
 	}
 
@@ -282,7 +282,7 @@ func (h *StockMovementHandler) GetInventorySummary(c *gin.Context) {
 		endDate,
 	)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		response.InternalError(c, "Failed to retrieve inventory summary")
 		return
 	}
 
