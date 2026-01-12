@@ -6,6 +6,9 @@ import "errors"
 var (
 	// ErrLocationNotFound is returned when location doesn't exist
 	ErrLocationNotFound = errors.New("location not found")
+
+	// ErrVersionMismatch is returned when optimistic locking fails (concurrent update)
+	ErrVersionMismatch = errors.New("version mismatch during concurrent update")
 )
 
 // Business Logic Errors - Domain rule violations

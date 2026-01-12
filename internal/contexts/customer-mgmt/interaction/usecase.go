@@ -2,7 +2,6 @@ package interaction
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/logger"
@@ -103,19 +102,19 @@ func (uc *useCase) CreateInteraction(
 	)
 	if err != nil {
 		log.Error("Failed to create interaction entity", "error", err)
-		return nil, fmt.Errorf("failed to create interaction: %w", err)
+		return nil, ErrInteractionCreateFailed
 	}
 
 	// Validate
 	if err := interaction.Validate(); err != nil {
 		log.Error("Interaction validation failed", "error", err)
-		return nil, fmt.Errorf("validation failed: %w", err)
+		return nil, ErrInteractionValidationFailed
 	}
 
 	// Save to repository
 	if err := uc.repo.Create(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionCreateFailed
 	}
 
 	log.Info("Interaction created", "id", interaction.ID, "type", interaction.Type, "customer_id", customerID)
@@ -130,7 +129,7 @@ func (uc *useCase) GetInteraction(ctx context.Context, id uuidv7.UUID) (*Interac
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	return interaction, nil
@@ -143,17 +142,17 @@ func (uc *useCase) UpdateContent(ctx context.Context, id uuidv7.UUID, subject, d
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	if err := interaction.UpdateContent(subject, description); err != nil {
 		log.Error("Failed to update interaction content", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to update content: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Interaction content updated", "id", id)
@@ -168,17 +167,17 @@ func (uc *useCase) SetOutcome(ctx context.Context, id uuidv7.UUID, outcome strin
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	if err := interaction.SetOutcome(InteractionOutcome(outcome)); err != nil {
 		log.Error("Failed to set interaction outcome", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to set outcome: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Interaction outcome set", "id", id, "outcome", outcome)
@@ -193,7 +192,7 @@ func (uc *useCase) EndInteraction(ctx context.Context, id uuidv7.UUID, endedAt t
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	if interaction.EndedAt != nil {
@@ -202,12 +201,12 @@ func (uc *useCase) EndInteraction(ctx context.Context, id uuidv7.UUID, endedAt t
 
 	if err := interaction.EndInteraction(endedAt); err != nil {
 		log.Error("Failed to end interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to end interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Interaction ended", "id", id, "duration_sec", interaction.DurationSec)
@@ -222,17 +221,17 @@ func (uc *useCase) SetFollowUp(ctx context.Context, id uuidv7.UUID, required boo
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	if err := interaction.SetFollowUp(required, followUpDate, notes); err != nil {
 		log.Error("Failed to set follow-up", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to set follow-up: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Interaction follow-up set", "id", id, "required", required)
@@ -247,14 +246,14 @@ func (uc *useCase) AddAttendee(ctx context.Context, id uuidv7.UUID, attendeeID u
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	interaction.AddAttendee(attendeeID)
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Attendee added to interaction", "id", id, "attendee_id", attendeeID)
@@ -269,14 +268,14 @@ func (uc *useCase) RemoveAttendee(ctx context.Context, id uuidv7.UUID, attendeeI
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to get interaction: %w", err)
+		return nil, ErrInteractionGetFailed
 	}
 
 	interaction.RemoveAttendee(attendeeID)
 
 	if err := uc.repo.Update(ctx, interaction); err != nil {
 		log.Error("Failed to save interaction", "id", id, "error", err)
-		return nil, fmt.Errorf("failed to save interaction: %w", err)
+		return nil, ErrInteractionUpdateFailed
 	}
 
 	log.Info("Attendee removed from interaction", "id", id, "attendee_id", attendeeID)
@@ -291,7 +290,7 @@ func (uc *useCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, p
 	interactions, total, err := uc.repo.ListByCustomer(ctx, customerID, page, pageSize)
 	if err != nil {
 		log.Error("Failed to list interactions by customer", "customer_id", customerID, "error", err)
-		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
+		return nil, 0, ErrInteractionListFailed
 	}
 
 	return interactions, total, nil
@@ -304,7 +303,7 @@ func (uc *useCase) ListByCompany(ctx context.Context, companyID uuidv7.UUID, pag
 	interactions, total, err := uc.repo.ListByCompany(ctx, companyID, page, pageSize)
 	if err != nil {
 		log.Error("Failed to list interactions by company", "company_id", companyID, "error", err)
-		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
+		return nil, 0, ErrInteractionListFailed
 	}
 
 	return interactions, total, nil
@@ -322,7 +321,7 @@ func (uc *useCase) ListByType(ctx context.Context, interactionType string, page,
 interactions, total, err := uc.repo.ListByType(ctx, interactionType, page, pageSize)
 	if err != nil {
 		log.Error("Failed to list interactions by type", "type", interactionType, "error", err)
-		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
+		return nil, 0, ErrInteractionListFailed
 	}
 
 	return interactions, total, nil
@@ -335,7 +334,7 @@ func (uc *useCase) ListByCreatedBy(ctx context.Context, createdBy uuidv7.UUID, p
 	interactions, total, err := uc.repo.ListByCreatedBy(ctx, createdBy, page, pageSize)
 	if err != nil {
 		log.Error("Failed to list interactions by created_by", "created_by", createdBy, "error", err)
-		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
+		return nil, 0, ErrInteractionListFailed
 	}
 
 	return interactions, total, nil
@@ -348,7 +347,7 @@ func (uc *useCase) ListPendingFollowUps(ctx context.Context, page, pageSize int)
 	interactions, total, err := uc.repo.ListPendingFollowUps(ctx, page, pageSize)
 	if err != nil {
 		log.Error("Failed to list pending follow-ups", "error", err)
-		return nil, 0, fmt.Errorf("failed to list pending follow-ups: %w", err)
+		return nil, 0, ErrInteractionListFailed
 	}
 
 	return interactions, total, nil
@@ -360,7 +359,7 @@ func (uc *useCase) DeleteInteraction(ctx context.Context, id uuidv7.UUID) error 
 
 	if err := uc.repo.Delete(ctx, id); err != nil {
 		log.Error("Failed to delete interaction", "id", id, "error", err)
-		return fmt.Errorf("failed to delete interaction: %w", err)
+		return ErrInteractionDeleteFailed
 	}
 
 	log.Info("Interaction deleted", "id", id)

@@ -26,65 +26,65 @@ The Fulfillment Saga implements the **Saga pattern** to manage the complex, mult
 ### State Machine
 
 ```
-                    ┌─────────────┐
-                    │   pending   │
-                    └──────┬──────┘
-                           │
-                           ▼
-                 ┌──────────────────┐
-                 │ payment_processing│
-                 └─────────┬─────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │ inventory_processing     │
-              └─────────┬────────────────┘
-                        │
-                        ▼
-              ┌──────────────────────┐
-              │ shipping_processing   │
-              └─────────┬─────────────┘
-                        │
-                        ▼
-                  ┌───────────┐
-                  │ completed │
-                  └───────────┘
+                    
+                       pending   
+                    
+                           
+                           
+                 
+                  payment_processing
+                 
+                           
+                           
+              
+               inventory_processing     
+              
                         
                         
-         ┌──────────────┐
-         │ compensating │ ◄── (on failure)
-         └──────┬───────┘
-                │
-                ▼
-        ┌───────────────┐
-        │  compensated  │
-        └───────────────┘
-                │
-                ▼
-         ┌──────────────┐
-         │  cancelled   │
-         └──────────────┘
+              
+               shipping_processing   
+              
+                        
+                        
+                  
+                   completed 
+                  
+                        
+                        
+         
+          compensating   (on failure)
+         
+                
+                
+        
+          compensated  
+        
+                
+                
+         
+           cancelled   
+         
 ```
 
 ### Components
 
 ```
 internal/contexts/order-mgmt/fulfillment/
-├── README.md                    # This file
-├── saga/
-│   ├── fulfillment_saga.go      # Core entity (151 lines)
-│   ├── fulfillment_saga_test.go # Unit tests (20 tests)
-│   ├── step.go                  # Step status enum (27 lines)
-│   ├── orchestrator.go          # Saga orchestrator (104 lines)
-│   ├── orchestrator_test.go     # Orchestrator tests (22 tests)
-│   └── repository.go            # Repository interface (26 lines)
-└── adapter/
-    └── repository/postgres/
-        ├── base_repository.go    # Rebind helper (59 lines)
-        └── saga_repository.go    # PostgreSQL impl (317 lines)
+ README.md                    # This file
+ saga/
+    fulfillment_saga.go      # Core entity (151 lines)
+    fulfillment_saga_test.go # Unit tests (20 tests)
+    step.go                  # Step status enum (27 lines)
+    orchestrator.go          # Saga orchestrator (104 lines)
+    orchestrator_test.go     # Orchestrator tests (22 tests)
+    repository.go            # Repository interface (26 lines)
+ adapter/
+     repository/postgres/
+         base_repository.go    # Rebind helper (59 lines)
+         saga_repository.go    # PostgreSQL impl (317 lines)
 
 test/integration/contexts/order-mgmt/fulfillment/saga/
-└── repository_test.go           # Integration tests (15 tests)
+ repository_test.go           # Integration tests (15 tests)
 ```
 
 ---
@@ -375,7 +375,7 @@ CREATE INDEX idx_fulfillment_sagas_state ON order_fulfillment_sagas(state);
 
 ### Test Coverage
 
-**Total**: ✅ **57/57 tests passing (100%)**
+**Total**:  **57/57 tests passing (100%)**
 
 - **Unit Tests**: 42/42 (100%)
   - fulfillment_saga_test.go: 20 tests
@@ -461,19 +461,19 @@ func (s *FulfillmentSaga) CompleteInventory(reservedItems []ReservedItem) error 
 
 ### DO
 
-✅ **Always check state before transitions**:
+ **Always check state before transitions**:
 ```go
 if s.State != FulfillmentSagaStatePending {
     return ErrInvalidStateTransition
 }
 ```
 
-✅ **Use UTC timestamps**:
+ **Use UTC timestamps**:
 ```go
 s.UpdatedAt = time.Now().UTC() // Always .UTC()
 ```
 
-✅ **Handle concurrent updates**:
+ **Handle concurrent updates**:
 ```go
 if err := sagaRepo.Update(ctx, saga); err != nil {
     if errors.Is(err, ErrConcurrentUpdate) {
@@ -484,7 +484,7 @@ if err := sagaRepo.Update(ctx, saga); err != nil {
 }
 ```
 
-✅ **Compensate in reverse order**:
+ **Compensate in reverse order**:
 ```go
 // Rollback: shipping → inventory → payment
 for i := len(steps) - 1; i >= 0; i-- {
@@ -492,7 +492,7 @@ for i := len(steps) - 1; i >= 0; i-- {
 }
 ```
 
-✅ **Make compensation idempotent**:
+ **Make compensation idempotent**:
 ```go
 // Safe to call multiple times
 func ReleaseReservation(ctx context.Context, items []ReservedItem) error {
@@ -502,7 +502,7 @@ func ReleaseReservation(ctx context.Context, items []ReservedItem) error {
 
 ### DON'T
 
-❌ **Don't skip state validation**:
+ **Don't skip state validation**:
 ```go
 // BAD
 s.State = FulfillmentSagaStateCompleted // Direct assignment
@@ -511,7 +511,7 @@ s.State = FulfillmentSagaStateCompleted // Direct assignment
 s.CompleteShipping() // Uses validation
 ```
 
-❌ **Don't use local time**:
+ **Don't use local time**:
 ```go
 // BAD
 s.UpdatedAt = time.Now() // Timezone issues
@@ -520,7 +520,7 @@ s.UpdatedAt = time.Now() // Timezone issues
 s.UpdatedAt = time.Now().UTC()
 ```
 
-❌ **Don't ignore version conflicts**:
+ **Don't ignore version conflicts**:
 ```go
 // BAD
 sagaRepo.Update(ctx, saga) // Ignore error
@@ -531,7 +531,7 @@ if err := sagaRepo.Update(ctx, saga); err != nil {
 }
 ```
 
-❌ **Don't retry without backoff**:
+ **Don't retry without backoff**:
 ```go
 // BAD
 for i := 0; i < 100; i++ {
@@ -648,17 +648,17 @@ CREATE INDEX idx_fulfillment_sagas_state ON order_fulfillment_sagas(state);
 
 ## Roadmap
 
-### Current Features ✅
+### Current Features 
 
-- ✅ State machine with 7 states
-- ✅ Compensation logic
-- ✅ JSONB storage for arrays
-- ✅ Optimistic locking
-- ✅ PostgreSQL repository
-- ✅ Orchestrator pattern
-- ✅ 100% test coverage
+-  State machine with 7 states
+-  Compensation logic
+-  JSONB storage for arrays
+-  Optimistic locking
+-  PostgreSQL repository
+-  Orchestrator pattern
+-  100% test coverage
 
-### Planned Features 📋
+### Planned Features 
 
 - [ ] Saga timeouts (kill long-running sagas)
 - [ ] Dead letter queue for failed compensations
@@ -680,7 +680,7 @@ CREATE INDEX idx_fulfillment_sagas_state ON order_fulfillment_sagas(state);
 
 ---
 
-**Status**: ✅ Production-ready  
+**Status**:  Production-ready  
 **Test Coverage**: 100% (57/57 tests passing)  
 **Last Updated**: January 8, 2026  
 **Maintainer**: Promenade Team

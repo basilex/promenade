@@ -88,18 +88,18 @@ func NewUseCase(repo IRepository) IUseCase {
 func (uc *useCase) CreatePayment(ctx context.Context, customerID uuidv7.UUID, amount valueobject.Money, method PaymentMethod) (*Payment, error) {
 	payment, err := NewPayment(customerID, amount, method)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create payment: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentCreateFailed, err)
 	}
 
 	// Generate payment number (PAY-YYYY-NNNNNN format)
 	now := time.Now()
 	paymentNo := fmt.Sprintf("PAY-%d-%06d", now.Year(), now.UnixNano()%1000000)
 	if err := payment.SetPaymentNo(paymentNo); err != nil {
-		return nil, fmt.Errorf("failed to set payment number: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentNumberGenerationFailed, err)
 	}
 
 	if err := uc.repo.Create(ctx, payment); err != nil {
-		return nil, fmt.Errorf("failed to create payment: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentCreateFailed, err)
 	}
 
 	return payment, nil
@@ -109,7 +109,7 @@ func (uc *useCase) CreatePayment(ctx context.Context, customerID uuidv7.UUID, am
 func (uc *useCase) GetPayment(ctx context.Context, id uuidv7.UUID) (*Payment, error) {
 	payment, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get payment: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 	return payment, nil
 }
@@ -118,7 +118,7 @@ func (uc *useCase) GetPayment(ctx context.Context, id uuidv7.UUID) (*Payment, er
 func (uc *useCase) GetPaymentByNumber(ctx context.Context, paymentNo string) (*Payment, error) {
 	payment, err := uc.repo.GetByPaymentNo(ctx, paymentNo)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get payment by number: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 	return payment, nil
 }
@@ -127,7 +127,7 @@ func (uc *useCase) GetPaymentByNumber(ctx context.Context, paymentNo string) (*P
 func (uc *useCase) GetPaymentByTransactionID(ctx context.Context, transactionID string) (*Payment, error) {
 	payment, err := uc.repo.GetByTransactionID(ctx, transactionID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get payment by transaction ID: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 	return payment, nil
 }
@@ -136,15 +136,15 @@ func (uc *useCase) GetPaymentByTransactionID(ctx context.Context, transactionID 
 func (uc *useCase) LinkToInvoice(ctx context.Context, paymentID, invoiceID uuidv7.UUID) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.LinkToInvoice(invoiceID); err != nil {
-		return fmt.Errorf("failed to link invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentLinkFailed, err)
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -154,11 +154,11 @@ func (uc *useCase) LinkToInvoice(ctx context.Context, paymentID, invoiceID uuidv
 func (uc *useCase) ProcessPayment(ctx context.Context, paymentID uuidv7.UUID, transactionID string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.Process(); err != nil {
-		return fmt.Errorf("failed to start processing: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentProcessingFailed, err)
 	}
 
 	if transactionID != "" {
@@ -166,7 +166,7 @@ func (uc *useCase) ProcessPayment(ctx context.Context, paymentID uuidv7.UUID, tr
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -176,15 +176,15 @@ func (uc *useCase) ProcessPayment(ctx context.Context, paymentID uuidv7.UUID, tr
 func (uc *useCase) CompletePayment(ctx context.Context, paymentID uuidv7.UUID, transactionID string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.Complete(transactionID); err != nil {
-		return fmt.Errorf("failed to complete payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentCompletionFailed, err)
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	// TODO: Publish payment.completed event via Event Bus
@@ -197,15 +197,15 @@ func (uc *useCase) CompletePayment(ctx context.Context, paymentID uuidv7.UUID, t
 func (uc *useCase) FailPayment(ctx context.Context, paymentID uuidv7.UUID, reason string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.Fail(reason); err != nil {
-		return fmt.Errorf("failed to mark payment as failed: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentFailureFailed, err)
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	// TODO: Publish payment.failed event via Event Bus
@@ -217,15 +217,15 @@ func (uc *useCase) FailPayment(ctx context.Context, paymentID uuidv7.UUID, reaso
 func (uc *useCase) RefundPayment(ctx context.Context, paymentID uuidv7.UUID, refundAmount valueobject.Money) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.Refund(refundAmount); err != nil {
-		return fmt.Errorf("failed to refund payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentRefundOperationFailed, err)
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	// TODO: Publish payment.refunded event via Event Bus
@@ -237,11 +237,11 @@ func (uc *useCase) RefundPayment(ctx context.Context, paymentID uuidv7.UUID, ref
 func (uc *useCase) CancelPayment(ctx context.Context, paymentID uuidv7.UUID, reason string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	if err := payment.Cancel(); err != nil {
-		return fmt.Errorf("failed to cancel payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentCancellationFailed, err)
 	}
 
 	// Add cancellation reason as note
@@ -250,7 +250,7 @@ func (uc *useCase) CancelPayment(ctx context.Context, paymentID uuidv7.UUID, rea
 	}
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -260,13 +260,13 @@ func (uc *useCase) CancelPayment(ctx context.Context, paymentID uuidv7.UUID, rea
 func (uc *useCase) SetCardDetails(ctx context.Context, paymentID uuidv7.UUID, last4, brand string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	payment.SetCardDetails(last4, brand)
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -276,13 +276,13 @@ func (uc *useCase) SetCardDetails(ctx context.Context, paymentID uuidv7.UUID, la
 func (uc *useCase) SetProvider(ctx context.Context, paymentID uuidv7.UUID, provider string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	payment.SetProvider(provider)
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -292,13 +292,13 @@ func (uc *useCase) SetProvider(ctx context.Context, paymentID uuidv7.UUID, provi
 func (uc *useCase) AddNote(ctx context.Context, paymentID uuidv7.UUID, note string) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	payment.AddNote(note)
 
 	if err := uc.repo.Update(ctx, payment); err != nil {
-		return fmt.Errorf("failed to update payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentUpdateFailed, err)
 	}
 
 	return nil
@@ -315,7 +315,7 @@ func (uc *useCase) ListPayments(ctx context.Context, page, pageSize int) ([]*Pay
 
 	payments, err := uc.repo.List(ctx, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list payments: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentListFailed, err)
 	}
 
 	return payments, nil
@@ -332,7 +332,7 @@ func (uc *useCase) ListPaymentsByCustomer(ctx context.Context, customerID uuidv7
 
 	payments, err := uc.repo.ListByCustomerID(ctx, customerID, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list payments by customer: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentListFailed, err)
 	}
 
 	return payments, nil
@@ -342,7 +342,7 @@ func (uc *useCase) ListPaymentsByCustomer(ctx context.Context, customerID uuidv7
 func (uc *useCase) ListPaymentsByInvoice(ctx context.Context, invoiceID uuidv7.UUID) ([]*Payment, error) {
 	payments, err := uc.repo.ListByInvoiceID(ctx, invoiceID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list payments by invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentListFailed, err)
 	}
 
 	return payments, nil
@@ -359,7 +359,7 @@ func (uc *useCase) ListPaymentsByStatus(ctx context.Context, status PaymentStatu
 
 	payments, err := uc.repo.ListByStatus(ctx, status, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list payments by status: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrPaymentListFailed, err)
 	}
 
 	return payments, nil
@@ -369,13 +369,13 @@ func (uc *useCase) ListPaymentsByStatus(ctx context.Context, status PaymentStatu
 func (uc *useCase) GetTotalByCustomer(ctx context.Context, customerID uuidv7.UUID) (valueobject.Money, error) {
 	total, err := uc.repo.GetTotalByCustomer(ctx, customerID)
 	if err != nil {
-		return valueobject.Money{}, fmt.Errorf("failed to get total by customer: %w", err)
+		return valueobject.Money{}, fmt.Errorf("%w: %w", ErrPaymentTotalCalculationFailed, err)
 	}
 
 	// Assume USD currency (in real system, we'd need to specify or query)
 	money, err := valueobject.NewMoney(total, "USD")
 	if err != nil {
-		return valueobject.Money{}, fmt.Errorf("failed to create money: %w", err)
+		return valueobject.Money{}, fmt.Errorf("%w: %w", ErrMoneyCreationFailed, err)
 	}
 	return money, nil
 }
@@ -384,13 +384,13 @@ func (uc *useCase) GetTotalByCustomer(ctx context.Context, customerID uuidv7.UUI
 func (uc *useCase) GetTotalByInvoice(ctx context.Context, invoiceID uuidv7.UUID) (valueobject.Money, error) {
 	total, err := uc.repo.GetTotalByInvoice(ctx, invoiceID)
 	if err != nil {
-		return valueobject.Money{}, fmt.Errorf("failed to get total by invoice: %w", err)
+		return valueobject.Money{}, fmt.Errorf("%w: %w", ErrPaymentTotalCalculationFailed, err)
 	}
 
 	// Assume USD currency
 	money, err := valueobject.NewMoney(total, "USD")
 	if err != nil {
-		return valueobject.Money{}, fmt.Errorf("failed to create money: %w", err)
+		return valueobject.Money{}, fmt.Errorf("%w: %w", ErrMoneyCreationFailed, err)
 	}
 	return money, nil
 }
@@ -399,16 +399,16 @@ func (uc *useCase) GetTotalByInvoice(ctx context.Context, invoiceID uuidv7.UUID)
 func (uc *useCase) DeletePayment(ctx context.Context, paymentID uuidv7.UUID) error {
 	payment, err := uc.repo.GetByID(ctx, paymentID)
 	if err != nil {
-		return fmt.Errorf("failed to get payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentGetFailed, err)
 	}
 
 	// Only allow deleting payments in certain statuses
 	if payment.Status != PaymentStatusPending && payment.Status != PaymentStatusCancelled {
-		return fmt.Errorf("can only delete pending or cancelled payments")
+		return ErrPaymentInvalidStatusForDeletion
 	}
 
 	if err := uc.repo.Delete(ctx, paymentID); err != nil {
-		return fmt.Errorf("failed to delete payment: %w", err)
+		return fmt.Errorf("%w: %w", ErrPaymentDeleteFailed, err)
 	}
 
 	return nil

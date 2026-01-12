@@ -160,7 +160,7 @@ func TestUseCase_CreateInteraction(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid interaction type")
+		assert.Equal(t, ErrInteractionCreateFailed, err)
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -214,7 +214,7 @@ func TestUseCase_GetInteraction(t *testing.T) {
 
 		_, err := uc.GetInteraction(ctx, interactionID)
 
-		assert.ErrorIs(t, err, ErrInteractionNotFound)
+		assert.Equal(t, ErrInteractionGetFailed, err)
 		mockRepo.AssertExpectations(t)
 	})
 }
@@ -253,7 +253,7 @@ func TestUseCase_UpdateContent(t *testing.T) {
 
 		_, err := uc.UpdateContent(ctx, interactionID, "Test", "Test")
 
-		assert.ErrorIs(t, err, ErrInteractionNotFound)
+		assert.Equal(t, ErrInteractionGetFailed, err)
 		mockRepo.AssertExpectations(t)
 	})
 }

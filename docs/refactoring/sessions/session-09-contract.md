@@ -1,7 +1,7 @@
 # Session 9: Contract Aggregate - Domain Errors Refactoring
 
 **Date**: January 9, 2026  
-**Status**: ✅ COMPLETE  
+**Status**:  COMPLETE  
 **Duration**: ~70 minutes  
 **Context**: Order Management / Contract
 
@@ -67,12 +67,12 @@ Refactored order-mgmt/contract aggregate following Gold Standard 8-step process.
 ```go
 // CreateContract
 if err := uc.repo.Create(ctx, contract); err != nil {
-    return nil, fmt.Errorf("failed to create contract: %w", err)  // ❌ Wrapper
+    return nil, fmt.Errorf("failed to create contract: %w", err)  //  Wrapper
 }
 
 // SignContract
 if err := contract.Sign(signerName, signerEmail); err != nil {
-    return fmt.Errorf("failed to sign contract: %w", err)  // ❌ Wrapper
+    return fmt.Errorf("failed to sign contract: %w", err)  //  Wrapper
 }
 ```
 
@@ -80,12 +80,12 @@ if err := contract.Sign(signerName, signerEmail); err != nil {
 ```go
 // CreateContract
 if err := uc.repo.Create(ctx, contract); err != nil {
-    return nil, err  // ✅ Direct propagation
+    return nil, err  //  Direct propagation
 }
 
 // SignContract
 if err := contract.Sign(signerName, signerEmail); err != nil {
-    return err  // ✅ Direct propagation
+    return err  //  Direct propagation
 }
 ```
 

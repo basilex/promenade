@@ -3,6 +3,7 @@ package integration_test
 import (
     "context"
     "encoding/json"
+    "errors"
     "sync"
     "testing"
     "time"
@@ -297,7 +298,7 @@ func TestReservationIntegration_InsufficientStock(t *testing.T) {
 
     // Should fail
     assert.Error(t, err)
-    assert.Contains(t, err.Error(), "insufficient stock")
+    assert.True(t, errors.Is(err, inventory.ErrInsufficientStock))
 }
 
 func TestReservationIntegration_IdempotentRelease(t *testing.T) {
@@ -417,5 +418,5 @@ func TestReservationIntegration_ProductNotFound(t *testing.T) {
 
     // Should fail
     assert.Error(t, err)
-    assert.Contains(t, err.Error(), "not found")
+    assert.True(t, errors.Is(err, inventory.ErrInventoryNotFound))
 }

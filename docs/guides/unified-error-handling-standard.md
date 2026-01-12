@@ -24,10 +24,10 @@ This document unifies **two major refactoring efforts** into a single, comprehen
    - errors.go introduced for domain constants
 
 **Result**: A **three-layer** error handling architecture ensuring:
-- ✅ **Security**: No information leakage to clients
-- ✅ **Consistency**: Same patterns across all aggregates
-- ✅ **Maintainability**: Domain errors in one place (errors.go)
-- ✅ **User Experience**: Clear, actionable error messages
+-  **Security**: No information leakage to clients
+-  **Consistency**: Same patterns across all aggregates
+-  **Maintainability**: Domain errors in one place (errors.go)
+-  **User Experience**: Clear, actionable error messages
 
 ---
 
@@ -54,7 +54,7 @@ This document unifies **two major refactoring efforts** into a single, comprehen
 
 **Example of Security Issue**:
 ```go
-// ❌ BEFORE - Information leakage
+//  BEFORE - Information leakage
 customer, err := h.usecase.GetCustomer(ctx, id)
 if err != nil {
     response.InternalError(c, err.Error())  // Exposes: "sql: no rows in result set"
@@ -64,7 +64,7 @@ if err != nil {
 
 **Solution Applied**:
 ```go
-// ✅ AFTER - Generic message
+//  AFTER - Generic message
 customer, err := h.usecase.GetCustomer(ctx, id)
 if err != nil {
     response.InternalError(c, "Failed to retrieve customer")  // Safe
@@ -84,7 +84,7 @@ if err != nil {
 
 **Example of Maintenance Issue**:
 ```go
-// ❌ BEFORE - Inline errors everywhere
+//  BEFORE - Inline errors everywhere
 if existingCode != nil {
     return nil, fmt.Errorf("location code already exists")
 }
@@ -103,7 +103,7 @@ if err.Error() == "location code already exists" {  // String comparison anti-pa
 
 **Solution Applied**:
 ```go
-// ✅ AFTER - Domain constants in errors.go
+//  AFTER - Domain constants in errors.go
 var ErrLocationCodeExists = errors.New("location code already exists")
 
 // In usecase:
@@ -144,28 +144,28 @@ Both phases revealed complementary patterns:
 ## The Three-Layer Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Layer 3: handler.go (HTTP Mapping)                     │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │ • Validation errors: err.Error() (expose)         │  │
-│  │ • Domain errors: errors.Is() → user messages      │  │
-│  │ • System errors: Generic fallback (hide)          │  │
-│  └───────────────────────────────────────────────────┘  │
-│                         ↓                                │
-│  Layer 2: usecase.go (Business Logic)                   │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │ • ZERO fmt.Errorf (strict)                        │  │
-│  │ • ZERO inline errors.New                          │  │
-│  │ • Only domain constants from errors.go            │  │
-│  └───────────────────────────────────────────────────┘  │
-│                         ↓                                │
-│  Layer 1: errors.go (Domain Constants)                  │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │ • Repository errors (data access)                 │  │
-│  │ • Business errors (domain rules)                  │  │
-│  │ • Technical errors (operation wrappers)           │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+
+  Layer 3: handler.go (HTTP Mapping)                     
+    
+   • Validation errors: err.Error() (expose)           
+   • Domain errors: errors.Is() → user messages        
+   • System errors: Generic fallback (hide)            
+    
+                         ↓                                
+  Layer 2: usecase.go (Business Logic)                   
+    
+   • ZERO fmt.Errorf (strict)                          
+   • ZERO inline errors.New                            
+   • Only domain constants from errors.go              
+    
+                         ↓                                
+  Layer 1: errors.go (Domain Constants)                  
+    
+   • Repository errors (data access)                   
+   • Business errors (domain rules)                    
+   • Technical errors (operation wrappers)             
+    
+
 ```
 
 **Key Principles**:
@@ -286,14 +286,14 @@ var (
 
 ### Rules
 
-✅ **DO**:
+ **DO**:
 - Use 3 categories (Repository / Business / Technical)
 - Document every error with comment
 - Use consistent naming: `Err[Aggregate][Action/State]`
 - Use standard library `errors.New()`
 - Cover all domain scenarios
 
-❌ **DON'T**:
+ **DON'T**:
 - Mix categories (keep clear separation)
 - Leave errors undocumented
 - Use inconsistent naming
@@ -314,10 +314,10 @@ Business logic layer that:
 ### Strict Rules
 
 **ABSOLUTE PROHIBITIONS**:
-1. ❌ **NEVER** use `fmt.Errorf`
-2. ❌ **NEVER** use inline `errors.New`
-3. ❌ **NEVER** import "fmt" or "errors" packages
-4. ✅ **ALWAYS** return domain constants from errors.go
+1.  **NEVER** use `fmt.Errorf`
+2.  **NEVER** use inline `errors.New`
+3.  **NEVER** import "fmt" or "errors" packages
+4.  **ALWAYS** return domain constants from errors.go
 
 ### Template
 
@@ -349,24 +349,24 @@ func NewUseCase(repo IRepository) IUseCase {
 func (uc *useCase) CreateEntity(ctx context.Context, ...) (*Entity, error) {
     // 1. Business validation → Domain error
     if violated {
-        return nil, ErrBusinessRule  // ✅ Domain constant
+        return nil, ErrBusinessRule  //  Domain constant
     }
     
     // 2. Check existing → Repository error
     existing, err := uc.repo.GetByCode(ctx, code)
     if err == nil && existing != nil {
-        return nil, ErrEntityCodeExists  // ✅ Business error
+        return nil, ErrEntityCodeExists  //  Business error
     }
     
     // 3. Create entity → Technical wrapper
     entity, err := NewEntity(...)
     if err != nil {
-        return nil, ErrEntityCreateFailed  // ✅ Technical wrapper
+        return nil, ErrEntityCreateFailed  //  Technical wrapper
     }
     
     // 4. Persist → Technical wrapper
     if err := uc.repo.Create(ctx, entity); err != nil {
-        return nil, ErrEntityCreateFailed  // ✅ Technical wrapper
+        return nil, ErrEntityCreateFailed  //  Technical wrapper
     }
     
     return entity, nil
@@ -376,12 +376,12 @@ func (uc *useCase) GetEntity(ctx context.Context, id uuidv7.UUID) (*Entity, erro
     // Repository operation → Repository error (pass through)
     entity, err := uc.repo.GetByID(ctx, id)
     if err != nil {
-        return nil, ErrEntityNotFound  // ✅ Repository error
+        return nil, ErrEntityNotFound  //  Repository error
     }
     
     // Business validation → Business error
     if entity.DeletedAt != nil {
-        return nil, ErrEntityDeleted  // ✅ Business error
+        return nil, ErrEntityDeleted  //  Business error
     }
     
     return entity, nil
@@ -391,25 +391,25 @@ func (uc *useCase) DeleteEntity(ctx context.Context, id uuidv7.UUID) error {
     // 1. Get entity
     entity, err := uc.repo.GetByID(ctx, id)
     if err != nil {
-        return ErrEntityNotFound  // ✅ Repository error
+        return ErrEntityNotFound  //  Repository error
     }
     
     // 2. Check business constraints
     if entity.DeletedAt != nil {
-        return ErrEntityAlreadyDeleted  // ✅ Business error
+        return ErrEntityAlreadyDeleted  //  Business error
     }
     
     hasChildren, err := uc.repo.HasChildren(ctx, id)
     if err != nil {
-        return ErrEntityDeleteFailed  // ✅ Technical wrapper
+        return ErrEntityDeleteFailed  //  Technical wrapper
     }
     if hasChildren {
-        return ErrEntityHasChildren  // ✅ Business error
+        return ErrEntityHasChildren  //  Business error
     }
     
     // 3. Delete
     if err := uc.repo.Delete(ctx, id); err != nil {
-        return ErrEntityDeleteFailed  // ✅ Technical wrapper
+        return ErrEntityDeleteFailed  //  Technical wrapper
     }
     
     return nil
@@ -423,30 +423,30 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
     // Business validation: Check unique code
     existing, err := uc.repo.GetByCode(ctx, code)
     if err == nil && existing != nil {
-        return nil, ErrLocationCodeExists  // ✅ Domain constant
+        return nil, ErrLocationCodeExists  //  Domain constant
     }
     
     // Create entity
     location, err := NewLocation(code, name, locationType)
     if err != nil {
-        return nil, ErrLocationCreateFailed  // ✅ Technical wrapper
+        return nil, ErrLocationCreateFailed  //  Technical wrapper
     }
     
     // Validate parent if provided
     if parentID != nil {
         parent, err := uc.repo.GetByID(ctx, *parentID)
         if err != nil {
-            return nil, ErrParentLocationNotFound  // ✅ Business error
+            return nil, ErrParentLocationNotFound  //  Business error
         }
         if parent.DeletedAt != nil {
-            return nil, ErrParentLocationDeleted  // ✅ Business error
+            return nil, ErrParentLocationDeleted  //  Business error
         }
         location.ParentID = parentID
     }
     
     // Persist
     if err := uc.repo.Create(ctx, location); err != nil {
-        return nil, ErrLocationCreateFailed  // ✅ Technical wrapper
+        return nil, ErrLocationCreateFailed  //  Technical wrapper
     }
     
     return location, nil
@@ -455,13 +455,13 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
 
 ### Rules
 
-✅ **DO**:
+ **DO**:
 - Return domain constants only
 - Wrap repository errors in technical constants
 - Validate business rules with business error constants
 - Keep imports clean (context + uuidv7 only)
 
-❌ **DON'T**:
+ **DON'T**:
 - Use fmt.Errorf or errors.New inline
 - Import fmt or errors packages
 - Return raw repository errors
@@ -486,7 +486,7 @@ HTTP layer that:
 ```go
 var req CreateDTO
 if err := c.ShouldBindJSON(&req); err != nil {
-    response.BadRequest(c, err.Error())  // ✅ EXPOSE - Safe to show
+    response.BadRequest(c, err.Error())  //  EXPOSE - Safe to show
     return
 }
 ```
@@ -507,17 +507,17 @@ entity, err := h.usecase.CreateEntity(c.Request.Context(), ...)
 if err != nil {
     // Map specific business rules
     if errors.Is(err, domain.ErrEntityCodeExists) {
-        response.BadRequest(c, "Entity code already exists")  // ✅ User-friendly
+        response.BadRequest(c, "Entity code already exists")  //  User-friendly
         return
     }
     
     if errors.Is(err, domain.ErrEntityNotFound) {
-        response.NotFound(c, "Entity not found")  // ✅ User-friendly
+        response.NotFound(c, "Entity not found")  //  User-friendly
         return
     }
     
     if errors.Is(err, domain.ErrEntityHasChildren) {
-        response.BadRequest(c, "Cannot delete entity with children")  // ✅ Clear reason
+        response.BadRequest(c, "Cannot delete entity with children")  //  Clear reason
         return
     }
     
@@ -547,7 +547,7 @@ if err != nil {
     
     // No explicit check for ErrEntityCreateFailed (technical wrapper)
     // Falls through to generic message
-    response.InternalError(c, "Failed to create entity")  // ✅ Hide internals
+    response.InternalError(c, "Failed to create entity")  //  Hide internals
     return
 }
 ```
@@ -587,7 +587,7 @@ func (h *EntityHandler) Create(c *gin.Context) {
     // 1. VALIDATION ERRORS - Expose details (safe)
     var req CreateEntityDTO
     if err := c.ShouldBindJSON(&req); err != nil {
-        response.BadRequest(c, err.Error())  // ✅ Validation error
+        response.BadRequest(c, err.Error())  //  Validation error
         return
     }
     
@@ -596,7 +596,7 @@ func (h *EntityHandler) Create(c *gin.Context) {
     if req.ParentID != "" {
         id, err := uuidv7.Parse(req.ParentID)
         if err != nil {
-            response.BadRequest(c, "Invalid parent ID format")  // ✅ Generic format error
+            response.BadRequest(c, "Invalid parent ID format")  //  Generic format error
             return
         }
         parentID = &id
@@ -704,13 +704,13 @@ func (h *EntityHandler) Delete(c *gin.Context) {
 
 ### Rules
 
-✅ **DO**:
+ **DO**:
 - Expose validation errors (err.Error() in ShouldBindJSON)
 - Map business errors with errors.Is() + user-friendly messages
 - Hide technical errors with generic fallback
 - Use appropriate HTTP status codes (400/404/500)
 
-❌ **DON'T**:
+ **DON'T**:
 - Use err.Error() for system/business errors
 - Compare error strings (if err.Error() == "...")
 - Expose internal error details to users
@@ -726,9 +726,9 @@ func (h *EntityHandler) Delete(c *gin.Context) {
 
 | Error Type | Source | Handler Pattern | HTTP Status | Expose Details? |
 |-----------|--------|----------------|-------------|-----------------|
-| **Validation** | User input (ShouldBindJSON) | `err.Error()` | 400 | ✅ YES - Safe |
-| **Business** | Domain rules | `errors.Is()` + message | 400/404 | ✅ YES - Controlled |
-| **Technical** | System operations | Generic fallback | 500 | ❌ NO - Hide |
+| **Validation** | User input (ShouldBindJSON) | `err.Error()` | 400 |  YES - Safe |
+| **Business** | Domain rules | `errors.Is()` + message | 400/404 |  YES - Controlled |
+| **Technical** | System operations | Generic fallback | 500 |  NO - Hide |
 
 ### Security Checklist (Per Handler)
 
@@ -745,12 +745,12 @@ Before marking handler as secure, verify:
 
 ### Common Security Anti-Patterns
 
-#### ❌ Anti-Pattern 1: System Error Leakage
+####  Anti-Pattern 1: System Error Leakage
 ```go
 // WRONG - Exposes database details
 customer, err := h.usecase.GetCustomer(ctx, id)
 if err != nil {
-    response.InternalError(c, err.Error())  // ⚠️ "sql: no rows in result set"
+    response.InternalError(c, err.Error())  //  "sql: no rows in result set"
     return
 }
 ```
@@ -761,15 +761,15 @@ if err != nil {
 customer, err := h.usecase.GetCustomer(ctx, id)
 if err != nil {
     if errors.Is(err, customer.ErrCustomerNotFound) {
-        response.NotFound(c, "Customer not found")  // ✅ User-friendly
+        response.NotFound(c, "Customer not found")  //  User-friendly
         return
     }
-    response.InternalError(c, "Failed to retrieve customer")  // ✅ Generic
+    response.InternalError(c, "Failed to retrieve customer")  //  Generic
     return
 }
 ```
 
-#### ❌ Anti-Pattern 2: String Comparison
+####  Anti-Pattern 2: String Comparison
 ```go
 // WRONG - Brittle, unsafe
 if err.Error() == "customer not found" {
@@ -787,12 +787,12 @@ if errors.Is(err, customer.ErrCustomerNotFound) {
 }
 ```
 
-#### ❌ Anti-Pattern 3: Missing Validation Error Handling
+####  Anti-Pattern 3: Missing Validation Error Handling
 ```go
 // WRONG - Generic message for validation error
 var req CreateDTO
 if err := c.ShouldBindJSON(&req); err != nil {
-    response.BadRequest(c, "Invalid request")  // ⚠️ User can't fix it
+    response.BadRequest(c, "Invalid request")  //  User can't fix it
     return
 }
 ```
@@ -802,7 +802,7 @@ if err := c.ShouldBindJSON(&req); err != nil {
 // CORRECT - Expose validation details
 var req CreateDTO
 if err := c.ShouldBindJSON(&req); err != nil {
-    response.BadRequest(c, err.Error())  // ✅ Shows what's wrong
+    response.BadRequest(c, err.Error())  //  Shows what's wrong
     return
 }
 ```
@@ -933,29 +933,29 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, ...) (
     // Check unique code
     existing, err := uc.repo.GetByCode(ctx, code)
     if err == nil && existing != nil {
-        return nil, ErrLocationCodeExists  // ✅ Domain constant
+        return nil, ErrLocationCodeExists  //  Domain constant
     }
     
     // Create entity
     location, err := NewLocation(code, name, locationType)
     if err != nil {
-        return nil, ErrLocationCreateFailed  // ✅ Technical wrapper
+        return nil, ErrLocationCreateFailed  //  Technical wrapper
     }
     
     // Validate parent
     if parentID != nil {
         parent, err := uc.repo.GetByID(ctx, *parentID)
         if err != nil {
-            return nil, ErrParentLocationNotFound  // ✅ Business error
+            return nil, ErrParentLocationNotFound  //  Business error
         }
         if parent.DeletedAt != nil {
-            return nil, ErrParentLocationDeleted  // ✅ Business error
+            return nil, ErrParentLocationDeleted  //  Business error
         }
     }
     
     // Persist
     if err := uc.repo.Create(ctx, location); err != nil {
-        return nil, ErrLocationCreateFailed  // ✅ Technical wrapper
+        return nil, ErrLocationCreateFailed  //  Technical wrapper
     }
     
     return location, nil
@@ -968,7 +968,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
     // Validation error - expose details
     var req CreateLocationRequest
     if err := c.ShouldBindJSON(&req); err != nil {
-        response.BadRequest(c, err.Error())  // ✅ Safe to expose
+        response.BadRequest(c, err.Error())  //  Safe to expose
         return
     }
     
@@ -999,10 +999,10 @@ func (h *LocationHandler) Create(c *gin.Context) {
 ```
 
 **Verification**:
-- ✅ errors.go: 14 errors, 3 categories, all documented
-- ✅ usecase.go: 0 fmt.Errorf, 0 errors.New
-- ✅ handler.go: err.Error() only in ShouldBindJSON, 20+ errors.Is() checks
-- ✅ Security: No information leakage, proper error exposure
+-  errors.go: 14 errors, 3 categories, all documented
+-  usecase.go: 0 fmt.Errorf, 0 errors.New
+-  handler.go: err.Error() only in ShouldBindJSON, 20+ errors.Is() checks
+-  Security: No information leakage, proper error exposure
 
 ---
 
@@ -1011,7 +1011,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
 ### Mistake 1: Using fmt.Errorf in UseCase
 
 ```go
-// ❌ WRONG
+//  WRONG
 func (uc *useCase) CreateEntity(ctx context.Context, code string) (*Entity, error) {
     if existingCode {
         return nil, fmt.Errorf("entity code %s already exists", code)
@@ -1026,7 +1026,7 @@ func (uc *useCase) CreateEntity(ctx context.Context, code string) (*Entity, erro
 
 **Fix**:
 ```go
-// ✅ CORRECT
+//  CORRECT
 // In errors.go:
 var ErrEntityCodeExists = errors.New("entity code already exists")
 
@@ -1041,7 +1041,7 @@ func (uc *useCase) CreateEntity(ctx context.Context, code string) (*Entity, erro
 ### Mistake 2: Missing Error Categories in errors.go
 
 ```go
-// ❌ WRONG - All errors in one block
+//  WRONG - All errors in one block
 var (
     ErrEntityNotFound = errors.New("entity not found")
     ErrEntityCodeExists = errors.New("code exists")
@@ -1056,7 +1056,7 @@ var (
 
 **Fix**:
 ```go
-// ✅ CORRECT - Clear categories
+//  CORRECT - Clear categories
 // Repository Errors
 var (
     ErrEntityNotFound = errors.New("entity not found")
@@ -1076,11 +1076,11 @@ var (
 ### Mistake 3: Exposing System Errors in Handler
 
 ```go
-// ❌ WRONG
+//  WRONG
 func (h *Handler) GetEntity(c *gin.Context) {
     entity, err := h.usecase.GetEntity(ctx, id)
     if err != nil {
-        response.InternalError(c, err.Error())  // ⚠️ Information leakage
+        response.InternalError(c, err.Error())  //  Information leakage
         return
     }
 }
@@ -1093,7 +1093,7 @@ func (h *Handler) GetEntity(c *gin.Context) {
 
 **Fix**:
 ```go
-// ✅ CORRECT
+//  CORRECT
 func (h *Handler) GetEntity(c *gin.Context) {
     entity, err := h.usecase.GetEntity(ctx, id)
     if err != nil {
@@ -1110,7 +1110,7 @@ func (h *Handler) GetEntity(c *gin.Context) {
 ### Mistake 4: String Comparison Instead of errors.Is
 
 ```go
-// ❌ WRONG
+//  WRONG
 func (h *Handler) Create(c *gin.Context) {
     entity, err := h.usecase.CreateEntity(ctx, ...)
     if err != nil {
@@ -1129,7 +1129,7 @@ func (h *Handler) Create(c *gin.Context) {
 
 **Fix**:
 ```go
-// ✅ CORRECT
+//  CORRECT
 func (h *Handler) Create(c *gin.Context) {
     entity, err := h.usecase.CreateEntity(ctx, ...)
     if err != nil {
@@ -1144,7 +1144,7 @@ func (h *Handler) Create(c *gin.Context) {
 ### Mistake 5: Missing Validation Error Details
 
 ```go
-// ❌ WRONG
+//  WRONG
 func (h *Handler) Create(c *gin.Context) {
     var req CreateDTO
     if err := c.ShouldBindJSON(&req); err != nil {
@@ -1161,7 +1161,7 @@ func (h *Handler) Create(c *gin.Context) {
 
 **Fix**:
 ```go
-// ✅ CORRECT
+//  CORRECT
 func (h *Handler) Create(c *gin.Context) {
     var req CreateDTO
     if err := c.ShouldBindJSON(&req); err != nil {
@@ -1218,7 +1218,7 @@ func (h *Handler) Create(c *gin.Context) {
 ### Overall Progress Tracking
 
 **Completed**:
-- ✅ Session 1: warehouse/location (~70 fixes, gold standard established)
+-  Session 1: warehouse/location (~70 fixes, gold standard established)
 
 **Remaining** (17 sessions):
 1. warehouse/inventory (~30 fixes)
@@ -1264,11 +1264,11 @@ This document combines two major refactoring efforts into a cohesive, production
 ### Success Metrics
 
 **When standard is fully implemented** (after Session 18):
-- ✅ 0 fmt.Errorf in all usecases (24 aggregates)
-- ✅ 100% security pattern compliance (36 handlers)
-- ✅ Consistent error handling across all contexts
-- ✅ No information leakage to clients
-- ✅ Type-safe error checking (errors.Is everywhere)
+-  0 fmt.Errorf in all usecases (24 aggregates)
+-  100% security pattern compliance (36 handlers)
+-  Consistent error handling across all contexts
+-  No information leakage to clients
+-  Type-safe error checking (errors.Is everywhere)
 
 ### Reference Documents
 

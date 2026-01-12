@@ -61,13 +61,13 @@ func (uc *useCase) CreateInvoice(ctx context.Context, customerID uuidv7.UUID, or
 	// Generate invoice number
 	invoiceNo, err := uc.repo.GenerateInvoiceNumber(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate invoice number: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGenerateNumberFailed, err)
 	}
 
 	// Create invoice entity
 	inv, err := NewInvoice(customerID, dueDate, currency)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create invoice entity: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	inv.InvoiceNo = invoiceNo
@@ -75,7 +75,7 @@ func (uc *useCase) CreateInvoice(ctx context.Context, customerID uuidv7.UUID, or
 
 	// Persist to database
 	if err := uc.repo.Create(ctx, inv); err != nil {
-		return nil, fmt.Errorf("failed to save invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceCreateFailed, err)
 	}
 
 	return inv, nil
@@ -85,7 +85,7 @@ func (uc *useCase) CreateInvoice(ctx context.Context, customerID uuidv7.UUID, or
 func (uc *useCase) GetInvoice(ctx context.Context, id uuidv7.UUID) (*Invoice, error) {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	return inv, nil
@@ -95,7 +95,7 @@ func (uc *useCase) GetInvoice(ctx context.Context, id uuidv7.UUID) (*Invoice, er
 func (uc *useCase) GetInvoiceByNumber(ctx context.Context, invoiceNo string) (*Invoice, error) {
 	inv, err := uc.repo.GetByInvoiceNo(ctx, invoiceNo)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get invoice by number: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	return inv, nil
@@ -105,14 +105,14 @@ func (uc *useCase) GetInvoiceByNumber(ctx context.Context, invoiceNo string) (*I
 func (uc *useCase) UpdateInvoice(ctx context.Context, inv *Invoice) error {
 	// Validate invoice before update
 	if err := inv.Validate(); err != nil {
-		return fmt.Errorf("invoice validation failed: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	// Update timestamp
 	inv.Touch()
 
 	if err := uc.repo.Update(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -123,16 +123,16 @@ func (uc *useCase) DeleteInvoice(ctx context.Context, id uuidv7.UUID) error {
 	// Verify invoice exists
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	// Only allow deleting draft invoices
 	if inv.Status != InvoiceStatusDraft {
-		return fmt.Errorf("can only delete draft invoices, current status: %s", inv.Status)
+		return ErrInvoiceCannotModifyNonDraft
 	}
 
 	if err := uc.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("failed to delete invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceDeleteFailed, err)
 	}
 
 	return nil
@@ -143,23 +143,23 @@ func (uc *useCase) AddLineItem(ctx context.Context, invoiceID uuidv7.UUID, descr
 	// Get invoice
 	inv, err := uc.repo.GetByID(ctx, invoiceID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	// Add line item (entity validates status is draft)
 	if err := inv.AddLine(description, quantity, unitPrice); err != nil {
-		return nil, fmt.Errorf("failed to add line item: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	// Update invoice with recalculated totals
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return nil, fmt.Errorf("failed to update invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	// Create line item in database
 	lastLine := inv.Lines[len(inv.Lines)-1]
 	if err := uc.repo.CreateLine(ctx, &lastLine); err != nil {
-		return nil, fmt.Errorf("failed to save line item: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceLineCreateFailed, err)
 	}
 
 	return inv, nil
@@ -170,22 +170,22 @@ func (uc *useCase) RemoveLineItem(ctx context.Context, invoiceID uuidv7.UUID, li
 	// Get invoice
 	inv, err := uc.repo.GetByID(ctx, invoiceID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	// Remove line item (entity validates status is draft)
 	if err := inv.RemoveLine(lineID); err != nil {
-		return nil, fmt.Errorf("failed to remove line item: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	// Delete from database
 	if err := uc.repo.DeleteLine(ctx, lineID); err != nil {
-		return nil, fmt.Errorf("failed to delete line item: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceLineDeleteFailed, err)
 	}
 
 	// Update invoice with recalculated totals
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return nil, fmt.Errorf("failed to update invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return inv, nil
@@ -196,7 +196,7 @@ func (uc *useCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, li
 	// Get invoice
 	inv, err := uc.repo.GetByID(ctx, invoiceID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	// Check status
@@ -220,17 +220,17 @@ func (uc *useCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, li
 				inv.Lines[i].UnitPrice.Currency,
 			)
 			if err != nil {
-				return nil, fmt.Errorf("failed to calculate line amount: %w", err)
+				return nil, fmt.Errorf("%w: %w", ErrInvoiceCalculationFailed, err)
 			}
 			inv.Lines[i].Amount = amount
 			inv.Lines[i].UpdatedAt = time.Now()
 
 			// Update line in database
 			if err := uc.repo.DeleteLine(ctx, lineID); err != nil {
-				return nil, fmt.Errorf("failed to delete old line: %w", err)
+				return nil, fmt.Errorf("%w: %w", ErrInvoiceLineDeleteFailed, err)
 			}
 			if err := uc.repo.CreateLine(ctx, &inv.Lines[i]); err != nil {
-				return nil, fmt.Errorf("failed to create updated line: %w", err)
+				return nil, fmt.Errorf("%w: %w", ErrInvoiceLineCreateFailed, err)
 			}
 
 			found = true
@@ -247,7 +247,7 @@ func (uc *useCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, li
 
 	// Update invoice
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return nil, fmt.Errorf("failed to update invoice: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return inv, nil
@@ -257,15 +257,15 @@ func (uc *useCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, li
 func (uc *useCase) SendInvoice(ctx context.Context, id uuidv7.UUID) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.MarkAsSent(); err != nil {
-		return fmt.Errorf("failed to mark invoice as sent: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -275,15 +275,15 @@ func (uc *useCase) SendInvoice(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) MarkAsPaid(ctx context.Context, id uuidv7.UUID, paidDate time.Time) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.MarkAsPaid(paidDate); err != nil {
-		return fmt.Errorf("failed to mark invoice as paid: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -293,15 +293,15 @@ func (uc *useCase) MarkAsPaid(ctx context.Context, id uuidv7.UUID, paidDate time
 func (uc *useCase) MarkAsOverdue(ctx context.Context, id uuidv7.UUID) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.MarkAsOverdue(); err != nil {
-		return fmt.Errorf("failed to mark invoice as overdue: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -311,15 +311,15 @@ func (uc *useCase) MarkAsOverdue(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) CancelInvoice(ctx context.Context, id uuidv7.UUID) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.Cancel(); err != nil {
-		return fmt.Errorf("failed to cancel invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -329,15 +329,15 @@ func (uc *useCase) CancelInvoice(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) VoidInvoice(ctx context.Context, id uuidv7.UUID) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.Void(); err != nil {
-		return fmt.Errorf("failed to void invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -347,15 +347,15 @@ func (uc *useCase) VoidInvoice(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) UpdateTaxAmount(ctx context.Context, id uuidv7.UUID, taxAmount valueobject.Money) error {
 	inv, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceGetFailed, err)
 	}
 
 	if err := inv.UpdateTaxAmount(taxAmount); err != nil {
-		return fmt.Errorf("failed to update tax amount: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceValidationFailed, err)
 	}
 
 	if err := uc.UpdateInvoice(ctx, inv); err != nil {
-		return fmt.Errorf("failed to update invoice: %w", err)
+		return fmt.Errorf("%w: %w", ErrInvoiceUpdateFailed, err)
 	}
 
 	return nil
@@ -365,7 +365,7 @@ func (uc *useCase) UpdateTaxAmount(ctx context.Context, id uuidv7.UUID, taxAmoun
 func (uc *useCase) ListInvoices(ctx context.Context, page, pageSize int) ([]*Invoice, int, error) {
 	invoices, total, err := uc.repo.List(ctx, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list invoices: %w", err)
+		return nil, 0, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return invoices, total, nil
@@ -375,7 +375,7 @@ func (uc *useCase) ListInvoices(ctx context.Context, page, pageSize int) ([]*Inv
 func (uc *useCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*Invoice, int, error) {
 	invoices, total, err := uc.repo.ListByCustomer(ctx, customerID, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list invoices by customer: %w", err)
+		return nil, 0, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return invoices, total, nil
@@ -385,7 +385,7 @@ func (uc *useCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, p
 func (uc *useCase) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*Invoice, error) {
 	invoices, err := uc.repo.ListByOrder(ctx, orderID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list invoices by order: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return invoices, nil
@@ -395,7 +395,7 @@ func (uc *useCase) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*Inv
 func (uc *useCase) ListByStatus(ctx context.Context, status InvoiceStatus, page, pageSize int) ([]*Invoice, int, error) {
 	invoices, total, err := uc.repo.ListByStatus(ctx, status, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list invoices by status: %w", err)
+		return nil, 0, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return invoices, total, nil
@@ -405,7 +405,7 @@ func (uc *useCase) ListByStatus(ctx context.Context, status InvoiceStatus, page,
 func (uc *useCase) ListOverdue(ctx context.Context, page, pageSize int) ([]*Invoice, int, error) {
 	invoices, total, err := uc.repo.ListOverdue(ctx, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list overdue invoices: %w", err)
+		return nil, 0, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return invoices, total, nil
@@ -415,7 +415,7 @@ func (uc *useCase) ListOverdue(ctx context.Context, page, pageSize int) ([]*Invo
 func (uc *useCase) CountByStatus(ctx context.Context, status InvoiceStatus) (int, error) {
 	count, err := uc.repo.CountByStatus(ctx, status)
 	if err != nil {
-		return 0, fmt.Errorf("failed to count invoices by status: %w", err)
+		return 0, fmt.Errorf("%w: %w", ErrInvoiceListFailed, err)
 	}
 
 	return count, nil
@@ -425,7 +425,7 @@ func (uc *useCase) CountByStatus(ctx context.Context, status InvoiceStatus) (int
 func (uc *useCase) GetTotalRevenue(ctx context.Context, from, to time.Time) (int64, error) {
 	total, err := uc.repo.GetTotalRevenue(ctx, from, to)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get total revenue: %w", err)
+		return 0, fmt.Errorf("%w: %w", ErrInvoiceRevenueCalculationFailed, err)
 	}
 
 	return total, nil

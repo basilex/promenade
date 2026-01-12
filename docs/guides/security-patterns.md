@@ -39,7 +39,7 @@ This separation prevents information leakage while maintaining good user experie
 func (h *Handler) Create(c *gin.Context) {
     var req CreateDTO
     
-    // ✅ CORRECT - Expose validation details
+    //  CORRECT - Expose validation details
     if err := c.ShouldBindJSON(&req); err != nil {
         response.BadRequest(c, err.Error())  // User needs to fix their input
         return
@@ -79,7 +79,7 @@ func (h *Handler) Create(c *gin.Context) {
         return
     }
     
-    // ✅ CORRECT - Generic message for system errors
+    //  CORRECT - Generic message for system errors
     order, err := h.usecase.CreateOrder(c.Request.Context(), req.CustomerID, req.Currency)
     if err != nil {
         response.InternalError(c, "Failed to create order")  // Hide implementation details
@@ -111,19 +111,19 @@ func (h *Handler) Create(c *gin.Context) {
 
 ## Anti-Patterns (What NOT to Do)
 
-### ❌ Anti-Pattern 1: String Comparison on System Errors
+###  Anti-Pattern 1: String Comparison on System Errors
 
 **Problem**: Checking error text to determine response type
 
 ```go
-// ❌ WRONG - Security risk!
+//  WRONG - Security risk!
 order, err := h.usecase.CreateOrder(c.Request.Context(), req.CustomerID, req.Currency)
 if err != nil {
-    if err.Error() == "not found" {  // ⚠️ INFORMATION LEAKAGE
+    if err.Error() == "not found" {  //  INFORMATION LEAKAGE
         response.NotFound(c, "Order not found")
         return
     }
-    if err.Error() == "already exists" {  // ⚠️ ENTITY ENUMERATION
+    if err.Error() == "already exists" {  //  ENTITY ENUMERATION
         response.BadRequest(c, "Order already exists")
         return
     }
@@ -141,7 +141,7 @@ if err != nil {
 **Solution**: Remove string comparisons, use generic messages
 
 ```go
-// ✅ CORRECT - Security hardened
+//  CORRECT - Security hardened
 order, err := h.usecase.CreateOrder(c.Request.Context(), req.CustomerID, req.Currency)
 if err != nil {
     response.InternalError(c, "Failed to create order")  // Generic message always
@@ -149,15 +149,15 @@ if err != nil {
 }
 ```
 
-### ❌ Anti-Pattern 2: Exposing Specific Error Messages
+###  Anti-Pattern 2: Exposing Specific Error Messages
 
 **Problem**: Returning specific system error messages to client
 
 ```go
-// ❌ WRONG - Exposes internal details
+//  WRONG - Exposes internal details
 customer, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 if err != nil {
-    response.InternalError(c, err.Error())  // ⚠️ Exposes implementation
+    response.InternalError(c, err.Error())  //  Exposes implementation
     return
 }
 ```
@@ -166,7 +166,7 @@ if err != nil {
 ```json
 {
   "error": {
-    "message": "pq: relation 'customers' does not exist"  // ⚠️ Database structure
+    "message": "pq: relation 'customers' does not exist"  //  Database structure
   }
 }
 ```
@@ -176,7 +176,7 @@ or
 ```json
 {
   "error": {
-    "message": "customer not found in cache, fallback failed: redis: connection refused"  // ⚠️ Architecture details
+    "message": "customer not found in cache, fallback failed: redis: connection refused"  //  Architecture details
   }
 }
 ```
@@ -184,7 +184,7 @@ or
 **Solution**: Always use generic messages
 
 ```go
-// ✅ CORRECT
+//  CORRECT
 customer, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 if err != nil {
     response.InternalError(c, "Failed to retrieve customer")  // Safe
@@ -192,20 +192,20 @@ if err != nil {
 }
 ```
 
-### ❌ Anti-Pattern 3: Different Messages for Different Error Types
+###  Anti-Pattern 3: Different Messages for Different Error Types
 
 **Problem**: Different error messages reveal information about system state
 
 ```go
-// ❌ WRONG - Entity enumeration attack vector
+//  WRONG - Entity enumeration attack vector
 order, err := h.usecase.UpdateOrder(c.Request.Context(), orderID, req)
 if err != nil {
     if strings.Contains(err.Error(), "not found") {
-        response.NotFound(c, "Order not found")  // ⚠️ Confirms non-existence
+        response.NotFound(c, "Order not found")  //  Confirms non-existence
         return
     }
     if strings.Contains(err.Error(), "permission denied") {
-        response.Forbidden(c, "Permission denied")  // ⚠️ Confirms existence
+        response.Forbidden(c, "Permission denied")  //  Confirms existence
         return
     }
     response.InternalError(c, "Failed to update order")
@@ -222,7 +222,7 @@ if err != nil {
 **Solution**: Consistent generic message for all cases
 
 ```go
-// ✅ CORRECT - No information leakage
+//  CORRECT - No information leakage
 order, err := h.usecase.UpdateOrder(c.Request.Context(), orderID, req)
 if err != nil {
     response.InternalError(c, "Failed to update order")  // Same message always
@@ -352,7 +352,7 @@ func TestHandler_Create_SystemError(t *testing.T) {
     // Assert generic message returned
     assert.Equal(t, 500, resp.Code)
     assert.Contains(t, resp.Body.String(), "Failed to create entity")
-    assert.NotContains(t, resp.Body.String(), "database")  // ✅ Implementation hidden
+    assert.NotContains(t, resp.Body.String(), "database")  //  Implementation hidden
 }
 ```
 
@@ -377,7 +377,7 @@ func TestHandler_GetByID_NotFound(t *testing.T) {
     // Assert generic error
     assert.Equal(t, 500, resp.Code)
     assert.Contains(t, resp.Body.String(), "Failed to retrieve entity")
-    assert.NotContains(t, resp.Body.String(), "database")  // ✅ Safe
+    assert.NotContains(t, resp.Body.String(), "database")  //  Safe
 }
 ```
 

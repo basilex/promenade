@@ -52,6 +52,9 @@ var (
 	// ErrInventoryInsufficientStock is returned when trying to reserve more than available
 	ErrInventoryInsufficientStock = errors.New("insufficient stock available")
 
+	// ErrInsufficientStock is an alias for ErrInventoryInsufficientStock (shorter name for tests)
+	ErrInsufficientStock = ErrInventoryInsufficientStock
+
 	// ErrInventoryAlreadyDeleted is returned when operating on soft-deleted inventory
 	ErrInventoryAlreadyDeleted = errors.New("inventory already deleted")
 

@@ -16,26 +16,26 @@ Fulfillment Saga coordinates the complete order fulfillment process, ensuring **
 
 ```
 internal/contexts/order-mgmt/fulfillment/
-├── saga/                                    # Saga core components
-│   ├── fulfillment_saga.go                # Saga aggregate entity
-│   ├── fulfillment_saga_test.go
-│   ├── orchestrator.go                     # Saga coordinator
-│   ├── orchestrator_test.go
-│   ├── step.go                             # Step interface
-│   ├── state.go                            # State management
-│   ├── repository.go                       # ISagaRepository interface
-│   ├── postgres_repository.go             # PostgreSQL implementation
-│   └── repository_test.go
-├── payment_step.go                         # Payment step handler
-├── payment_step_test.go
-├── inventory_step.go                       # Inventory step handler
-├── inventory_step_test.go
-├── shipping_step.go                        # Shipping step handler
-└── shipping_step_test.go
+ saga/                                    # Saga core components
+    fulfillment_saga.go                # Saga aggregate entity
+    fulfillment_saga_test.go
+    orchestrator.go                     # Saga coordinator
+    orchestrator_test.go
+    step.go                             # Step interface
+    state.go                            # State management
+    repository.go                       # ISagaRepository interface
+    postgres_repository.go             # PostgreSQL implementation
+    repository_test.go
+ payment_step.go                         # Payment step handler
+ payment_step_test.go
+ inventory_step.go                       # Inventory step handler
+ inventory_step_test.go
+ shipping_step.go                        # Shipping step handler
+ shipping_step_test.go
 
 migrations/order-mgmt/
-└── 000004_add_fulfillment_sagas.up.sql    # Database schema
-└── 000004_add_fulfillment_sagas.down.sql
+ 000004_add_fulfillment_sagas.up.sql    # Database schema
+ 000004_add_fulfillment_sagas.down.sql
 ```
 
 ---
@@ -48,19 +48,19 @@ migrations/order-mgmt/
 Order Created → Order Confirmed → Fulfillment Started
     ↓
 1. Payment Processing
-    ├─ Validate payment method
-    ├─ Reserve funds (authorization)
-    └─ Capture payment
+     Validate payment method
+     Reserve funds (authorization)
+     Capture payment
     ↓
 2. Inventory Reservation
-    ├─ Check stock availability
-    ├─ Reserve items
-    └─ Commit reservation
+     Check stock availability
+     Reserve items
+     Commit reservation
     ↓
 3. Shipping Coordination
-    ├─ Create shipment
-    ├─ Notify carrier
-    └─ Generate tracking number
+     Create shipment
+     Notify carrier
+     Generate tracking number
     ↓
 Order Fulfilled → Customer Notified
 ```
@@ -69,7 +69,7 @@ Order Fulfilled → Customer Notified
 
 **Scenario 1: Payment Fails**
 ```
-Order → Payment ✗ (declined)
+Order → Payment  (declined)
     ↓
 Compensate: Cancel order
     ↓
@@ -78,7 +78,7 @@ Order Status: cancelled (payment_failed)
 
 **Scenario 2: Inventory Unavailable**
 ```
-Order → Payment ✓ → Inventory ✗ (out of stock)
+Order → Payment  → Inventory  (out of stock)
     ↓
 Compensate:
     1. Refund payment
@@ -89,7 +89,7 @@ Order Status: cancelled (inventory_unavailable)
 
 **Scenario 3: Shipping Fails**
 ```
-Order → Payment ✓ → Inventory ✓ → Shipping ✗ (carrier error)
+Order → Payment  → Inventory  → Shipping  (carrier error)
     ↓
 Compensate:
     1. Release inventory reservation

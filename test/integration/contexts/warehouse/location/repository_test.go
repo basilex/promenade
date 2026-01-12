@@ -2,6 +2,7 @@ package location_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -76,7 +77,7 @@ func TestLocationRepository_Update_OptimisticLocking(t *testing.T) {
 	loc2.Name = "Update 2"
 	err := repo.Update(ctx, loc2)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "version mismatch")
+	assert.True(t, errors.Is(err, location.ErrVersionMismatch))
 }
 
 func TestLocationRepository_Delete(t *testing.T) {

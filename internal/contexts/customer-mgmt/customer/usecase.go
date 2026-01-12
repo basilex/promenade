@@ -2,7 +2,6 @@ package customer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -102,10 +101,10 @@ func (uc *useCase) CreateCustomer(ctx context.Context, name, email, source strin
 	// Check if email already exists
 	exists, err := uc.repo.ExistsByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerEmailCheckFailed, err)
+		return nil, ErrCustomerEmailCheckFailed
 	}
 	if exists {
-		return nil, fmt.Errorf("%w: customer with email %s", ErrCustomerAlreadyExists, email)
+		return nil, ErrCustomerAlreadyExists
 	}
 
 	// Create customer entity
@@ -116,7 +115,7 @@ func (uc *useCase) CreateCustomer(ctx context.Context, name, email, source strin
 
 	// Persist to repository
 	if err := uc.repo.Create(ctx, customer); err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerCreateFailed, err)
+		return nil, ErrCustomerCreateFailed
 	}
 
 	return customer, nil
@@ -127,10 +126,10 @@ func (uc *useCase) CreateB2BCustomer(ctx context.Context, name, email, source st
 	// Check if email already exists
 	exists, err := uc.repo.ExistsByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerEmailCheckFailed, err)
+		return nil, ErrCustomerEmailCheckFailed
 	}
 	if exists {
-		return nil, fmt.Errorf("%w: customer with email %s", ErrCustomerAlreadyExists, email)
+		return nil, ErrCustomerAlreadyExists
 	}
 
 	// Create B2B customer entity
@@ -141,7 +140,7 @@ func (uc *useCase) CreateB2BCustomer(ctx context.Context, name, email, source st
 
 	// Persist to repository
 	if err := uc.repo.Create(ctx, customer); err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerCreateFailed, err)
+		return nil, ErrCustomerCreateFailed
 	}
 
 	return customer, nil
@@ -151,7 +150,7 @@ func (uc *useCase) CreateB2BCustomer(ctx context.Context, name, email, source st
 func (uc *useCase) GetCustomer(ctx context.Context, id uuidv7.UUID) (*Customer, error) {
 	customer, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return nil, ErrCustomerGetFailed
 	}
 
 	return customer, nil
@@ -161,7 +160,7 @@ func (uc *useCase) GetCustomer(ctx context.Context, id uuidv7.UUID) (*Customer, 
 func (uc *useCase) GetCustomerByEmail(ctx context.Context, email string) (*Customer, error) {
 	customer, err := uc.repo.GetByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return nil, ErrCustomerGetFailed
 	}
 
 	return customer, nil
@@ -176,7 +175,7 @@ func (uc *useCase) UpdateCustomer(ctx context.Context, customer *Customer) error
 
 	// Update in repository
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -186,7 +185,7 @@ func (uc *useCase) UpdateCustomer(ctx context.Context, customer *Customer) error
 func (uc *useCase) SetCustomerPhone(ctx context.Context, customerID uuidv7.UUID, phone string) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.SetPhone(phone); err != nil {
@@ -194,7 +193,7 @@ func (uc *useCase) SetCustomerPhone(ctx context.Context, customerID uuidv7.UUID,
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -204,7 +203,7 @@ func (uc *useCase) SetCustomerPhone(ctx context.Context, customerID uuidv7.UUID,
 func (uc *useCase) QualifyAsProspect(ctx context.Context, customerID uuidv7.UUID) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.QualifyAsProspect(); err != nil {
@@ -212,7 +211,7 @@ func (uc *useCase) QualifyAsProspect(ctx context.Context, customerID uuidv7.UUID
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -222,7 +221,7 @@ func (uc *useCase) QualifyAsProspect(ctx context.Context, customerID uuidv7.UUID
 func (uc *useCase) ConvertToCustomer(ctx context.Context, customerID uuidv7.UUID) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.ConvertToCustomer(); err != nil {
@@ -230,7 +229,7 @@ func (uc *useCase) ConvertToCustomer(ctx context.Context, customerID uuidv7.UUID
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -240,7 +239,7 @@ func (uc *useCase) ConvertToCustomer(ctx context.Context, customerID uuidv7.UUID
 func (uc *useCase) ChurnCustomer(ctx context.Context, customerID uuidv7.UUID, reason string) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.Churn(reason); err != nil {
@@ -248,7 +247,7 @@ func (uc *useCase) ChurnCustomer(ctx context.Context, customerID uuidv7.UUID, re
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -258,7 +257,7 @@ func (uc *useCase) ChurnCustomer(ctx context.Context, customerID uuidv7.UUID, re
 func (uc *useCase) ReactivateCustomer(ctx context.Context, customerID uuidv7.UUID) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.Reactivate(); err != nil {
@@ -266,7 +265,7 @@ func (uc *useCase) ReactivateCustomer(ctx context.Context, customerID uuidv7.UUI
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -276,7 +275,7 @@ func (uc *useCase) ReactivateCustomer(ctx context.Context, customerID uuidv7.UUI
 func (uc *useCase) UpgradeCustomerTier(ctx context.Context, customerID uuidv7.UUID, newTier CustomerTier) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.UpgradeTier(newTier); err != nil {
@@ -284,7 +283,7 @@ func (uc *useCase) UpgradeCustomerTier(ctx context.Context, customerID uuidv7.UU
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -294,7 +293,7 @@ func (uc *useCase) UpgradeCustomerTier(ctx context.Context, customerID uuidv7.UU
 func (uc *useCase) DowngradeCustomerTier(ctx context.Context, customerID uuidv7.UUID, newTier CustomerTier) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.DowngradeTier(newTier); err != nil {
@@ -302,7 +301,7 @@ func (uc *useCase) DowngradeCustomerTier(ctx context.Context, customerID uuidv7.
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -312,7 +311,7 @@ func (uc *useCase) DowngradeCustomerTier(ctx context.Context, customerID uuidv7.
 func (uc *useCase) ReassignCustomer(ctx context.Context, customerID, newRepID uuidv7.UUID) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.Reassign(newRepID); err != nil {
@@ -320,7 +319,7 @@ func (uc *useCase) ReassignCustomer(ctx context.Context, customerID, newRepID uu
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -330,7 +329,7 @@ func (uc *useCase) ReassignCustomer(ctx context.Context, customerID, newRepID uu
 func (uc *useCase) LinkCustomerToUser(ctx context.Context, customerID, userID uuidv7.UUID) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.LinkToUser(userID); err != nil {
@@ -338,7 +337,7 @@ func (uc *useCase) LinkCustomerToUser(ctx context.Context, customerID, userID uu
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -348,7 +347,7 @@ func (uc *useCase) LinkCustomerToUser(ctx context.Context, customerID, userID uu
 func (uc *useCase) AddTagToCustomer(ctx context.Context, customerID uuidv7.UUID, tag string) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.AddTag(tag); err != nil {
@@ -356,7 +355,7 @@ func (uc *useCase) AddTagToCustomer(ctx context.Context, customerID uuidv7.UUID,
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -366,7 +365,7 @@ func (uc *useCase) AddTagToCustomer(ctx context.Context, customerID uuidv7.UUID,
 func (uc *useCase) RemoveTagFromCustomer(ctx context.Context, customerID uuidv7.UUID, tag string) error {
 	customer, err := uc.repo.GetByID(ctx, customerID)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerGetFailed, err)
+		return ErrCustomerGetFailed
 	}
 
 	if err := customer.RemoveTag(tag); err != nil {
@@ -374,7 +373,7 @@ func (uc *useCase) RemoveTagFromCustomer(ctx context.Context, customerID uuidv7.
 	}
 
 	if err := uc.repo.Update(ctx, customer); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerUpdateFailed, err)
+		return ErrCustomerUpdateFailed
 	}
 
 	return nil
@@ -384,7 +383,7 @@ func (uc *useCase) RemoveTagFromCustomer(ctx context.Context, customerID uuidv7.
 func (uc *useCase) ListCustomersByAssignedTo(ctx context.Context, repID uuidv7.UUID, limit, offset int) ([]*Customer, int, error) {
 	customers, total, err := uc.repo.ListByAssignedTo(ctx, repID, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("%w: %w", ErrCustomerListFailed, err)
+		return nil, 0, ErrCustomerListFailed
 	}
 
 	return customers, total, nil
@@ -394,7 +393,7 @@ func (uc *useCase) ListCustomersByAssignedTo(ctx context.Context, repID uuidv7.U
 func (uc *useCase) ListCustomersByStatus(ctx context.Context, status CustomerStatus, limit, offset int) ([]*Customer, int, error) {
 	customers, total, err := uc.repo.ListByStatus(ctx, status, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("%w: %w", ErrCustomerListFailed, err)
+		return nil, 0, ErrCustomerListFailed
 	}
 
 	return customers, total, nil
@@ -404,7 +403,7 @@ func (uc *useCase) ListCustomersByStatus(ctx context.Context, status CustomerSta
 func (uc *useCase) ListCustomersByTier(ctx context.Context, tier CustomerTier, limit, offset int) ([]*Customer, int, error) {
 	customers, total, err := uc.repo.ListByTier(ctx, tier, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("%w: %w", ErrCustomerListFailed, err)
+		return nil, 0, ErrCustomerListFailed
 	}
 
 	return customers, total, nil
@@ -414,7 +413,7 @@ func (uc *useCase) ListCustomersByTier(ctx context.Context, tier CustomerTier, l
 func (uc *useCase) ListCustomers(ctx context.Context, limit, offset int) ([]*Customer, int, error) {
 	customers, total, err := uc.repo.List(ctx, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("%w: %w", ErrCustomerListFailed, err)
+		return nil, 0, ErrCustomerListFailed
 	}
 
 	return customers, total, nil
@@ -430,7 +429,7 @@ func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error)
 	// Get all status counts in ONE query (GROUP BY optimization)
 	statusCounts, err := uc.repo.CountByAllStatuses(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerStatsFailed, err)
+		return nil, ErrCustomerStatsFailed
 	}
 
 	// Populate stats from bulk query results
@@ -449,7 +448,7 @@ func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error)
 	// Get all tier counts in ONE query (GROUP BY optimization)
 	tierCounts, err := uc.repo.CountByAllTiers(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrCustomerStatsFailed, err)
+		return nil, ErrCustomerStatsFailed
 	}
 
 	// Populate tier stats
@@ -461,7 +460,7 @@ func (uc *useCase) GetCustomerStats(ctx context.Context) (*CustomerStats, error)
 // DeleteCustomer soft-deletes a customer
 func (uc *useCase) DeleteCustomer(ctx context.Context, id uuidv7.UUID) error {
 	if err := uc.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("%w: %w", ErrCustomerDeleteFailed, err)
+		return ErrCustomerDeleteFailed
 	}
 
 	return nil

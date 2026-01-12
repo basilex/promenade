@@ -28,6 +28,19 @@ var (
 
 	// Repository errors
 	ErrInvoiceNotFound        = errors.New("invoice not found")
-	ErrInvoiceNoExists        = errors.New("invoice number already exists")
+	ErrInvoiceNumberExists    = errors.New("invoice number already exists")
 	ErrInvoiceUnauthorized    = errors.New("unauthorized to access this invoice")
+
+	// Technical Operation Errors (for wrapping repository/system errors)
+	ErrInvoiceCreateFailed         = errors.New("failed to create invoice")
+	ErrInvoiceGetFailed            = errors.New("failed to get invoice")
+	ErrInvoiceUpdateFailed         = errors.New("failed to update invoice")
+	ErrInvoiceDeleteFailed         = errors.New("failed to delete invoice")
+	ErrInvoiceListFailed           = errors.New("failed to list invoices")
+	ErrInvoiceValidationFailed     = errors.New("invoice validation failed")
+	ErrInvoiceGenerateNumberFailed = errors.New("failed to generate invoice number")
+	ErrInvoiceLineCreateFailed     = errors.New("failed to create invoice line")
+	ErrInvoiceLineDeleteFailed     = errors.New("failed to delete invoice line")
+	ErrInvoiceCalculationFailed    = errors.New("failed to calculate invoice amount")
+	ErrInvoiceRevenueCalculationFailed = errors.New("failed to calculate total revenue")
 )

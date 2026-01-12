@@ -25,12 +25,12 @@ var ErrCustomerCreateFailed = errors.New("failed to create customer")
 
 **Layer 2: usecase.go** - Zero inline errors
 ```go
-// ❌ NEVER DO THIS
+//  NEVER DO THIS
 func (uc *useCase) Create(...) error {
     return fmt.Errorf("failed to create: %w", err)  // WRONG
 }
 
-// ✅ ALWAYS DO THIS
+//  ALWAYS DO THIS
 func (uc *useCase) Create(...) error {
     return ErrCustomerCreateFailed  // Domain constant
 }
@@ -59,12 +59,12 @@ response.InternalError(c, "Failed to create customer")  // Generic
 **Replace string comparison** with type-safe checks:
 
 ```go
-// ❌ OLD - String comparison (fragile)
+//  OLD - String comparison (fragile)
 if err != nil && err.Error() == "not found" {
     return ErrCustomerNotFound
 }
 
-// ✅ NEW - Type-safe with errors.Is()
+//  NEW - Type-safe with errors.Is()
 if err != nil {
     if errors.Is(err, sql.ErrNoRows) {
         return ErrCustomerNotFound
@@ -269,7 +269,7 @@ func TestUseCase_CreateCustomer_AlreadyExists(t *testing.T) {
     assert.Error(t, err)
     assert.True(t, errors.Is(err, customer.ErrCustomerAlreadyExists))
     
-    // ❌ DON'T DO THIS - String comparison
+    //  DON'T DO THIS - String comparison
     // assert.Equal(t, "customer already exists", err.Error())
 }
 ```
@@ -368,7 +368,7 @@ func (r *repository) CreateOrder(ctx context.Context, order *Order) error {
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: String Comparison ❌
+### Anti-Pattern 1: String Comparison 
 
 **Bad**:
 ```go
@@ -386,7 +386,7 @@ if err != nil && errors.Is(err, sql.ErrNoRows) {
 }
 ```
 
-### Anti-Pattern 2: Inline fmt.Errorf() ❌
+### Anti-Pattern 2: Inline fmt.Errorf() 
 
 **Bad**:
 ```go
@@ -412,7 +412,7 @@ func (uc *useCase) Create(...) error {
 }
 ```
 
-### Anti-Pattern 3: Information Leakage ❌
+### Anti-Pattern 3: Information Leakage 
 
 **Bad**:
 ```go
@@ -436,7 +436,7 @@ if err != nil {
 }
 ```
 
-### Anti-Pattern 4: Error Wrapping Business Logic ❌
+### Anti-Pattern 4: Error Wrapping Business Logic 
 
 **Bad**:
 ```go
@@ -456,7 +456,7 @@ if err := order.Confirm(); err != nil {
 }
 ```
 
-### Anti-Pattern 5: Missing Domain Constants ❌
+### Anti-Pattern 5: Missing Domain Constants 
 
 **Bad**:
 ```go
