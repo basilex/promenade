@@ -212,7 +212,7 @@ func (r *profileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*profi
 	var row profileRow
 	if err := r.Get(ctx, &row, query, id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, profile.ErrNotFound
+			return nil, profile.ErrProfileNotFound
 		}
 		return nil, fmt.Errorf("failed to get profile: %w", err)
 	}
@@ -234,7 +234,7 @@ func (r *profileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID)
 	var row profileRow
 	if err := r.Get(ctx, &row, query, userID); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, profile.ErrNotFound
+			return nil, profile.ErrProfileNotFound
 		}
 		return nil, fmt.Errorf("failed to get profile by user ID: %w", err)
 	}
