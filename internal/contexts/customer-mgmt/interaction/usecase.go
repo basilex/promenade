@@ -129,7 +129,7 @@ func (uc *useCase) GetInteraction(ctx context.Context, id uuidv7.UUID) (*Interac
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err // Return repository error (ErrInteractionNotFound)
 	}
 
 	return interaction, nil
@@ -359,7 +359,7 @@ func (uc *useCase) DeleteInteraction(ctx context.Context, id uuidv7.UUID) error 
 
 	if err := uc.repo.Delete(ctx, id); err != nil {
 		log.Error("Failed to delete interaction", "id", id, "error", err)
-		return ErrInteractionDeleteFailed
+		return err // Return repository error (ErrInteractionNotFound)
 	}
 
 	log.Info("Interaction deleted", "id", id)
