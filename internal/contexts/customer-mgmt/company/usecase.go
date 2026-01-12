@@ -2,7 +2,6 @@ package company
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -10,9 +9,8 @@ import (
 )
 
 var (
-	ErrCompanyNotFound      = errors.New("company not found")
-	ErrCompanyAlreadyExists = errors.New("company already exists")
-	ErrInvalidCompanyData   = errors.New("invalid company data")
+	// ErrCompanyNotFound moved to errors.go
+	// ErrCompanyAlreadyExists moved to errors.go
 )
 
 // IUseCase defines the interface for company business logic
@@ -46,7 +44,7 @@ func (uc *useCase) CreateCompany(ctx context.Context, name string, legalName *st
 	// Check if company with same name already exists
 	exists, err := uc.repo.ExistsByName(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to check company existence: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyExistenceCheckFailed, err)
 	}
 	if exists {
 		return nil, ErrCompanyAlreadyExists
@@ -55,7 +53,7 @@ func (uc *useCase) CreateCompany(ctx context.Context, name string, legalName *st
 	// Create company
 	company, err := NewCompany(name, companyType)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidCompanyData, err)
+		return nil, err
 	}
 
 	// Set optional fields
@@ -72,23 +70,23 @@ func (uc *useCase) CreateCompany(ctx context.Context, name string, legalName *st
 
 	// Set business info
 	if err := company.UpdateBusinessInfo(industry, size, employeeCount, revenue, currency); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidCompanyData, err)
+		return nil, err
 	}
 
 	// Validate parent company exists if provided
 	if parentCompanyID != nil {
 		parentExists, err := uc.repo.Exists(ctx, *parentCompanyID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check parent company: %w", err)
+			return nil, fmt.Errorf("%w: %w", ErrCompanyParentCheckFailed, err)
 		}
 		if !parentExists {
-			return nil, fmt.Errorf("%w: parent company not found", ErrInvalidCompanyData)
+			return nil, ErrParentCompanyNotFound
 		}
 	}
 
 	// Save company
 	if err := uc.repo.Create(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to create company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyCreateFailed, err)
 	}
 
 	return company, nil
@@ -162,11 +160,11 @@ func (uc *useCase) UpdateCompanyBasicInfo(ctx context.Context, id uuidv7.UUID, n
 	}
 
 	if err := company.UpdateBasicInfo(name, legalName, companyType, taxID, registrationNumber); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidCompanyData, err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to update company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyUpdateFailed, err)
 	}
 
 	return company, nil
@@ -181,7 +179,7 @@ func (uc *useCase) UpdateCompanyContactInfo(ctx context.Context, id uuidv7.UUID,
 	company.UpdateContactInfo(website, email, phone, address)
 
 	if err := uc.repo.Update(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to update company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyUpdateFailed, err)
 	}
 
 	return company, nil
@@ -194,11 +192,11 @@ func (uc *useCase) UpdateCompanyBusinessInfo(ctx context.Context, id uuidv7.UUID
 	}
 
 	if err := company.UpdateBusinessInfo(industry, size, employeeCount, revenue, currency); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidCompanyData, err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to update company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyUpdateFailed, err)
 	}
 
 	return company, nil
@@ -212,21 +210,21 @@ func (uc *useCase) SetParentCompany(ctx context.Context, id uuidv7.UUID, parentC
 
 	// Validate parent company exists if provided
 	if parentCompanyID != nil {
-		parentExists, err := uc.repo.Exists(ctx, *parentCompanyID)
+		parentCompany, err := uc.repo.GetByID(ctx, *parentCompanyID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check parent company: %w", err)
+			return nil, ErrParentCompanyNotFound
 		}
-		if !parentExists {
-			return nil, fmt.Errorf("%w: parent company not found", ErrInvalidCompanyData)
+		if parentCompany.IsDeleted() {
+			return nil, ErrParentCompanyDeleted
 		}
 	}
 
 	if err := company.SetParentCompany(parentCompanyID); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidCompanyData, err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to update company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyUpdateFailed, err)
 	}
 
 	return company, nil
@@ -241,7 +239,7 @@ func (uc *useCase) UpdateCompanyDescription(ctx context.Context, id uuidv7.UUID,
 	company.UpdateDescription(description)
 
 	if err := uc.repo.Update(ctx, company); err != nil {
-		return nil, fmt.Errorf("failed to update company: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrCompanyUpdateFailed, err)
 	}
 
 	return company, nil

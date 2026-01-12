@@ -2,22 +2,9 @@ package stockmovement
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Domain errors for repository operations
-var (
-	// ErrStockMovementNotFound is returned when stock movement record is not found
-	ErrStockMovementNotFound = errors.New("stock movement not found")
-
-	// ErrInvalidPagination is returned when pagination parameters are invalid
-	ErrInvalidPagination = errors.New("invalid pagination parameters")
-
-	// ErrInvalidDateRange is returned when date range parameters are invalid
-	ErrInvalidDateRange = errors.New("invalid date range - start date must be before end date")
 )
 
 // IRepository defines persistence operations for StockMovement aggregate.

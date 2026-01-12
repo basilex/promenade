@@ -14,64 +14,58 @@ func TestNewLocation(t *testing.T) {
 		code      string
 		locName   string
 		locType   LocationType
-		wantErr   bool
-		errMsg    string
+		wantErr   error
 	}{
 		{
 			name:    "valid warehouse location",
 			code:    "WH01",
 			locName: "Main Warehouse",
 			locType: LocationTypeWarehouse,
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "valid zone location",
 			code:    "A",
 			locName: "Zone A",
 			locType: LocationTypeZone,
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "code is normalized to uppercase",
 			code:    "wh01",
 			locName: "Warehouse",
 			locType: LocationTypeWarehouse,
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "empty code",
 			code:    "",
 			locName: "Test",
 			locType: LocationTypeWarehouse,
-			wantErr: true,
-			errMsg:  "location code is required",
+			wantErr: ErrLocationCodeRequired,
 		},
 		{
 			name:    "empty name",
 			code:    "WH01",
 			locName: "",
 			locType: LocationTypeWarehouse,
-			wantErr: true,
-			errMsg:  "location name is required",
+			wantErr: ErrLocationNameRequired,
 		},
 		{
 			name:    "invalid location type",
 			code:    "WH01",
 			locName: "Test",
 			locType: "invalid",
-			wantErr: true,
-			errMsg:  "invalid location type",
+			wantErr: ErrInvalidLocationType,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			location, err := NewLocation(tt.code, tt.locName, tt.locType)
-			if tt.wantErr {
+			if tt.wantErr != nil {
 				assert.Error(t, err)
-				if tt.errMsg != "" {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+				assert.ErrorIs(t, err, tt.wantErr)
 				return
 			}
 
@@ -102,7 +96,7 @@ func TestLocation_SetParent(t *testing.T) {
 	// Test cannot be own parent
 	err = child.SetParent(child.GetID(), child.Path, child.Level)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot be its own parent")
+	assert.ErrorIs(t, err, ErrCannotBeOwnParent)
 }
 
 func TestLocation_RemoveParent(t *testing.T) {
@@ -123,8 +117,7 @@ func TestLocation_SetCapacity(t *testing.T) {
 		capacity   int
 		enforce    bool
 		occupancy  int
-		wantErr    bool
-		errMsg     string
+		wantErr    error
 		wantStatus LocationStatus
 	}{
 		{
@@ -132,7 +125,7 @@ func TestLocation_SetCapacity(t *testing.T) {
 			capacity:   100,
 			enforce:    false,
 			occupancy:  0,
-			wantErr:    false,
+			wantErr:    nil,
 			wantStatus: LocationStatusActive,
 		},
 		{
@@ -140,7 +133,7 @@ func TestLocation_SetCapacity(t *testing.T) {
 			capacity:   100,
 			enforce:    true,
 			occupancy:  0,
-			wantErr:    false,
+			wantErr:    nil,
 			wantStatus: LocationStatusActive,
 		},
 		{
@@ -148,23 +141,21 @@ func TestLocation_SetCapacity(t *testing.T) {
 			capacity:  -10,
 			enforce:   true,
 			occupancy: 0,
-			wantErr:   true,
-			errMsg:    "capacity cannot be negative",
+			wantErr:   ErrNegativeCapacity,
 		},
 		{
 			name:      "capacity less than occupancy",
 			capacity:  50,
 			enforce:   true,
 			occupancy: 75,
-			wantErr:   true,
-			errMsg:    "cannot be less than current occupancy",
+			wantErr:   ErrCapacityLessThanOccupancy,
 		},
 		{
 			name:       "set capacity equal to occupancy marks as full",
 			capacity:   100,
 			enforce:    true,
 			occupancy:  100,
-			wantErr:    false,
+			wantErr:    nil,
 			wantStatus: LocationStatusFull,
 		},
 	}
@@ -177,11 +168,9 @@ func TestLocation_SetCapacity(t *testing.T) {
 			}
 
 			err := loc.SetCapacity(tt.capacity, tt.enforce)
-			if tt.wantErr {
+			if tt.wantErr != nil {
 				assert.Error(t, err)
-				if tt.errMsg != "" {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+				assert.ErrorIs(t, err, tt.wantErr)
 				return
 			}
 
@@ -208,7 +197,7 @@ func TestLocation_SetDimensions(t *testing.T) {
 	// Negative dimensions
 	err = location.SetDimensions(-1, 5, 3)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot be negative")
+	assert.ErrorIs(t, err, ErrNegativeDimensions)
 }
 
 func TestLocation_AddOccupancy(t *testing.T) {
@@ -218,8 +207,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 		isLimited     bool
 		current       int
 		addAmount     int
-		wantErr       bool
-		errMsg        string
+		wantErr       error
 		wantOccupancy int
 		wantStatus    LocationStatus
 	}{
@@ -229,7 +217,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:     false,
 			current:       10,
 			addAmount:     5,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 15,
 			wantStatus:    LocationStatusActive,
 		},
@@ -239,7 +227,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:     true,
 			current:       50,
 			addAmount:     30,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 80,
 			wantStatus:    LocationStatusActive,
 		},
@@ -249,8 +237,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:  true,
 			current:    80,
 			addAmount:  30,
-			wantErr:    true,
-			errMsg:     "insufficient capacity",
+			wantErr:   ErrInsufficientCapacity,
 		},
 		{
 			name:          "add fills to capacity",
@@ -258,7 +245,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:     true,
 			current:       90,
 			addAmount:     10,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 100,
 			wantStatus:    LocationStatusFull,
 		},
@@ -268,8 +255,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:  true,
 			current:    50,
 			addAmount:  -10,
-			wantErr:    true,
-			errMsg:     "must be positive",
+			wantErr:   ErrAmountMustBePositive,
 		},
 		{
 			name:       "add zero amount",
@@ -277,8 +263,7 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			isLimited:  true,
 			current:    50,
 			addAmount:  0,
-			wantErr:    true,
-			errMsg:     "must be positive",
+			wantErr:   ErrAmountMustBePositive,
 		},
 	}
 
@@ -290,11 +275,9 @@ func TestLocation_AddOccupancy(t *testing.T) {
 			loc.CurrentOccupancy = tt.current
 
 			err := loc.AddOccupancy(tt.addAmount)
-			if tt.wantErr {
+			if tt.wantErr != nil {
 				assert.Error(t, err)
-				if tt.errMsg != "" {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+				assert.ErrorIs(t, err, tt.wantErr)
 				return
 			}
 
@@ -314,8 +297,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 		isLimited     bool
 		current       int
 		removeAmount  int
-		wantErr       bool
-		errMsg        string
+		wantErr       error
 		wantOccupancy int
 		wantStatus    LocationStatus
 	}{
@@ -325,7 +307,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			isLimited:     true,
 			current:       50,
 			removeAmount:  20,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 30,
 			wantStatus:    LocationStatusActive,
 		},
@@ -335,7 +317,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			isLimited:     true,
 			current:       50,
 			removeAmount:  50,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 0,
 			wantStatus:    LocationStatusActive,
 		},
@@ -345,8 +327,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			isLimited:    true,
 			current:      30,
 			removeAmount: 50,
-			wantErr:      true,
-			errMsg:       "cannot remove",
+			wantErr:      ErrCannotRemoveExcessOccupancy,
 		},
 		{
 			name:         "remove negative amount",
@@ -354,8 +335,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			isLimited:    true,
 			current:      50,
 			removeAmount: -10,
-			wantErr:      true,
-			errMsg:       "must be positive",
+			wantErr:      ErrAmountMustBePositive,
 		},
 		{
 			name:          "remove from full location unfills it",
@@ -363,7 +343,7 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			isLimited:     true,
 			current:       100,
 			removeAmount:  10,
-			wantErr:       false,
+			wantErr:       nil,
 			wantOccupancy: 90,
 			wantStatus:    LocationStatusActive,
 		},
@@ -380,11 +360,9 @@ func TestLocation_RemoveOccupancy(t *testing.T) {
 			}
 
 			err := loc.RemoveOccupancy(tt.removeAmount)
-			if tt.wantErr {
+			if tt.wantErr != nil {
 				assert.Error(t, err)
-				if tt.errMsg != "" {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+				assert.ErrorIs(t, err, tt.wantErr)
 				return
 			}
 
@@ -408,7 +386,7 @@ func TestLocation_Activate(t *testing.T) {
 	// Already active
 	err = location.Activate()
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "already active")
+	assert.ErrorIs(t, err, ErrLocationAlreadyActive)
 }
 
 func TestLocation_Deactivate(t *testing.T) {
@@ -418,7 +396,7 @@ func TestLocation_Deactivate(t *testing.T) {
 	location.CurrentOccupancy = 10
 	err := location.Deactivate()
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot deactivate location with")
+	assert.ErrorIs(t, err, ErrCannotDeactivateWithItems)
 
 	// Can deactivate when empty
 	location.CurrentOccupancy = 0
@@ -429,7 +407,7 @@ func TestLocation_Deactivate(t *testing.T) {
 	// Already inactive
 	err = location.Deactivate()
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "already inactive")
+	assert.ErrorIs(t, err, ErrLocationAlreadyInactive)
 }
 
 func TestLocation_SetMaintenance(t *testing.T) {
@@ -442,7 +420,7 @@ func TestLocation_SetMaintenance(t *testing.T) {
 	// Already in maintenance
 	err = location.SetMaintenance()
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "already in maintenance")
+	assert.ErrorIs(t, err, ErrLocationAlreadyInMaintenance)
 }
 
 func TestLocation_PickingAndPutaway(t *testing.T) {
@@ -597,53 +575,47 @@ func TestLocation_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		setup   func(*Location)
-		wantErr bool
-		errMsg  string
+		wantErr error
 	}{
 		{
 			name:    "valid location",
 			setup:   func(l *Location) {},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name: "empty code",
 			setup: func(l *Location) {
 				l.Code = ""
 			},
-			wantErr: true,
-			errMsg:  "code is required",
+			wantErr: ErrLocationCodeRequired,
 		},
 		{
 			name: "empty name",
 			setup: func(l *Location) {
 				l.Name = ""
 			},
-			wantErr: true,
-			errMsg:  "name is required",
+			wantErr: ErrLocationNameRequired,
 		},
 		{
 			name: "invalid type",
 			setup: func(l *Location) {
 				l.Type = "invalid"
 			},
-			wantErr: true,
-			errMsg:  "invalid location type",
+			wantErr: ErrInvalidLocationType,
 		},
 		{
 			name: "invalid status",
 			setup: func(l *Location) {
 				l.Status = "invalid"
 			},
-			wantErr: true,
-			errMsg:  "invalid location status",
+			wantErr: ErrInvalidLocationStatus,
 		},
 		{
 			name: "negative occupancy",
 			setup: func(l *Location) {
 				l.CurrentOccupancy = -1
 			},
-			wantErr: true,
-			errMsg:  "cannot be negative",
+			wantErr: ErrNegativeOccupancy,
 		},
 		{
 			name: "negative capacity when limited",
@@ -651,8 +623,7 @@ func TestLocation_Validate(t *testing.T) {
 				l.IsLimited = true
 				l.Capacity = -1
 			},
-			wantErr: true,
-			errMsg:  "capacity cannot be negative",
+			wantErr: ErrNegativeCapacity,
 		},
 		{
 			name: "occupancy exceeds capacity",
@@ -661,16 +632,14 @@ func TestLocation_Validate(t *testing.T) {
 				l.Capacity = 100
 				l.CurrentOccupancy = 150
 			},
-			wantErr: true,
-			errMsg:  "exceeds capacity",
+			wantErr: ErrOccupancyExceedsCapacity,
 		},
 		{
 			name: "negative dimensions",
 			setup: func(l *Location) {
 				l.Width = -1
 			},
-			wantErr: true,
-			errMsg:  "dimensions cannot be negative",
+			wantErr: ErrNegativeDimensions,
 		},
 	}
 
@@ -679,11 +648,9 @@ func TestLocation_Validate(t *testing.T) {
 			loc, _ := NewLocation("TEST", "Test", LocationTypeWarehouse)
 			tt.setup(loc)
 			err := loc.Validate()
-			if tt.wantErr {
+			if tt.wantErr != nil {
 				assert.Error(t, err)
-				if tt.errMsg != "" {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+				assert.ErrorIs(t, err, tt.wantErr)
 			} else {
 				assert.NoError(t, err)
 			}

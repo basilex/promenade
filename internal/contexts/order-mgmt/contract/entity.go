@@ -1,18 +1,10 @@
 package contract
 
 import (
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Errors
-var (
-	ErrContractNotFound         = errors.New("contract not found")
-	ErrInvalidContractTransition = errors.New("invalid contract transition")
 )
 
 // ContractStatus represents the lifecycle state of a contract
@@ -72,16 +64,16 @@ func NewContract(orderID, customerID uuidv7.UUID, terms string) *Contract {
 // Validate validates the contract
 func (c *Contract) Validate() error {
 	if c.OrderID == uuidv7.Nil {
-		return fmt.Errorf("order_id is required")
+		return ErrOrderIDRequired
 	}
 	if c.CustomerID == uuidv7.Nil {
-		return fmt.Errorf("customer_id is required")
+		return ErrCustomerIDRequired
 	}
 	if c.Terms == "" {
-		return fmt.Errorf("terms are required")
+		return ErrTermsRequired
 	}
 	if c.Status == "" {
-		return fmt.Errorf("status is required")
+		return ErrStatusRequired
 	}
 	return nil
 }
@@ -89,7 +81,7 @@ func (c *Contract) Validate() error {
 // SubmitForSignature submits the contract for customer signature
 func (c *Contract) SubmitForSignature() error {
 	if c.Status != ContractStatusDraft {
-		return fmt.Errorf("can only submit draft contracts for signature")
+		return ErrCannotSubmitNonDraft
 	}
 	c.Status = ContractStatusPendingSignature
 	c.Touch()
@@ -99,13 +91,13 @@ func (c *Contract) SubmitForSignature() error {
 // Sign signs the contract and activates it
 func (c *Contract) Sign(signedByName, signedByEmail, signatureID string) error {
 	if c.Status != ContractStatusPendingSignature {
-		return fmt.Errorf("can only sign contracts in pending_signature status")
+		return ErrCannotSignNonPending
 	}
 	if signedByName == "" {
-		return fmt.Errorf("signer name is required")
+		return ErrSignerNameRequired
 	}
 	if signedByEmail == "" {
-		return fmt.Errorf("signer email is required")
+		return ErrSignerEmailRequired
 	}
 
 	now := time.Now()
@@ -122,7 +114,7 @@ func (c *Contract) Sign(signedByName, signedByEmail, signatureID string) error {
 // Complete marks the contract as completed
 func (c *Contract) Complete() error {
 	if c.Status != ContractStatusActive {
-		return fmt.Errorf("can only complete active contracts")
+		return ErrCannotCompleteNonActive
 	}
 	now := time.Now()
 	c.Status = ContractStatusCompleted
@@ -134,10 +126,10 @@ func (c *Contract) Complete() error {
 // Terminate terminates the contract
 func (c *Contract) Terminate(reason string) error {
 	if c.Status != ContractStatusActive {
-		return fmt.Errorf("can only terminate active contracts")
+		return ErrCannotTerminateNonActive
 	}
 	if reason == "" {
-		return fmt.Errorf("termination reason is required")
+		return ErrTerminationReasonRequired
 	}
 	now := time.Now()
 	c.Status = ContractStatusTerminated
@@ -150,7 +142,7 @@ func (c *Contract) Terminate(reason string) error {
 // Renew renews the contract (for recurring contracts)
 func (c *Contract) Renew() error {
 	if c.Status != ContractStatusActive && c.Status != ContractStatusCompleted {
-		return fmt.Errorf("can only renew active or completed contracts")
+		return ErrCannotRenewInactiveContract
 	}
 	now := time.Now()
 	c.Version++
@@ -162,10 +154,10 @@ func (c *Contract) Renew() error {
 // SetExpirationDate sets the contract expiration date
 func (c *Contract) SetExpirationDate(expiresAt time.Time) error {
 	if c.Status != ContractStatusDraft && c.Status != ContractStatusPendingSignature {
-		return fmt.Errorf("can only set expiration date for draft or pending contracts")
+		return ErrCannotSetExpirationForActive
 	}
 	if expiresAt.Before(time.Now()) {
-		return fmt.Errorf("expiration date must be in the future")
+		return ErrExpirationInPast
 	}
 	c.ExpiresAt = &expiresAt
 	c.Touch()

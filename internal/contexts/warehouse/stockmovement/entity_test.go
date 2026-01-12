@@ -43,7 +43,7 @@ func TestNewStockMovement_ZeroQuantity(t *testing.T) {
 	sm, err := NewStockMovement(inventoryID, MovementTypeReceipt, 0, 50, createdBy)
 	assert.Error(t, err)
 	assert.Nil(t, sm)
-	assert.Contains(t, err.Error(), "quantity cannot be zero")
+	assert.ErrorIs(t, err, ErrQuantityCannotBeZero)
 }
 
 func TestNewStockMovement_InvalidMovementType(t *testing.T) {
@@ -52,7 +52,7 @@ func TestNewStockMovement_InvalidMovementType(t *testing.T) {
 	sm, err := NewStockMovement(inventoryID, MovementType("invalid"), 100, 50, createdBy)
 	assert.Error(t, err)
 	assert.Nil(t, sm)
-	assert.Contains(t, err.Error(), "invalid movement type")
+	assert.ErrorIs(t, err, ErrInvalidMovementType)
 }
 
 func TestSetReference_Success(t *testing.T) {
@@ -92,5 +92,5 @@ func TestValidate_AdjustmentWithoutReason(t *testing.T) {
 	sm, _ := NewStockMovement(inventoryID, MovementTypeAdjustment, 10, 50, createdBy)
 	err := sm.Validate()
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "adjustment movements require a reason")
+	assert.ErrorIs(t, err, ErrAdjustmentRequiresReason)
 }

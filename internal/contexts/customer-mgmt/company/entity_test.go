@@ -1,6 +1,7 @@
 package company
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -43,7 +44,7 @@ func TestNewCompany_EmptyName(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, company)
-	assert.Contains(t, err.Error(), "company name is required")
+	assert.True(t, errors.Is(err, ErrCompanyNameRequired))
 }
 
 func TestNewCompany_InvalidType(t *testing.T) {
@@ -104,7 +105,7 @@ func TestCompany_UpdateBasicInfo_EmptyName(t *testing.T) {
 	err := company.UpdateBasicInfo("", nil, "llc", nil, nil)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "company name is required")
+	assert.True(t, errors.Is(err, ErrCompanyNameRequired))
 	assert.Equal(t, "Original Name", company.Name)
 }
 
@@ -151,7 +152,7 @@ func TestCompany_UpdateBusinessInfo_InvalidSize(t *testing.T) {
 	err := company.UpdateBusinessInfo(nil, "invalid", 10, 100000, "USD")
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid company size")
+	assert.True(t, errors.Is(err, ErrCompanySizeInvalid))
 	assert.Equal(t, CompanySizeMicro, company.Size)
 }
 

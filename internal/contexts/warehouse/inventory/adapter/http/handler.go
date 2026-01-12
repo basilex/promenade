@@ -57,7 +57,22 @@ func (h *InventoryHandler) Create(c *gin.Context) {
 	// Create inventory via use case
 	inv, err := h.usecase.CreateInventory(c.Request.Context(), productID, req.SKU, req.ProductName, req.WarehouseID, createdBy)
 	if err != nil {
-		response.InternalError(c, "Failed to create inventory")
+		// Map domain errors to user-friendly messages
+		switch {
+		case errors.Is(err, inventory.ErrInventorySKURequired):
+			response.BadRequest(c, "SKU is required")
+		case errors.Is(err, inventory.ErrInventoryProductNameRequired):
+			response.BadRequest(c, "Product name is required")
+		case errors.Is(err, inventory.ErrInventoryWarehouseRequired):
+			response.BadRequest(c, "Warehouse ID is required")
+		case errors.Is(err, inventory.ErrInventoryCreatedByRequired):
+			response.BadRequest(c, "Created by user ID is required")
+		case errors.Is(err, inventory.ErrInventorySKUExists):
+			response.BadRequest(c, "SKU already exists")
+		default:
+			// System errors - generic message (no detail leakage)
+			response.InternalError(c, "Failed to create inventory")
+		}
 		return
 	}
 
@@ -297,12 +312,16 @@ func (h *InventoryHandler) Update(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
-		if errors.Is(err, inventory.ErrInventoryNotFound) {
+		// Map domain errors to user-friendly messages
+		switch {
+		case errors.Is(err, inventory.ErrInventoryNotFound):
 			response.NotFound(c, "Inventory not found")
-			return
+		case errors.Is(err, inventory.ErrInventoryNil):
+			response.BadRequest(c, "Invalid inventory data")
+		default:
+			// System errors - generic message (no detail leakage)
+			response.InternalError(c, "Failed to update inventory")
 		}
-
-		response.InternalError(c, "Failed to update inventory")
 		return
 	}
 
@@ -373,11 +392,18 @@ func (h *InventoryHandler) ReceiveStock(c *gin.Context) {
 
 	inv, err := h.usecase.ReceiveStock(c.Request.Context(), id, req.Quantity, req.UnitCostCents, receivedBy)
 	if err != nil {
-		if errors.Is(err, inventory.ErrInventoryNotFound) {
+		// Map domain errors to user-friendly messages
+		switch {
+		case errors.Is(err, inventory.ErrInventoryNotFound):
 			response.NotFound(c, "Inventory not found")
-			return
+		case errors.Is(err, inventory.ErrInventoryQuantityInvalid):
+			response.BadRequest(c, "Quantity must be greater than 0")
+		case errors.Is(err, inventory.ErrInventoryUnitCostNegative):
+			response.BadRequest(c, "Unit cost cannot be negative")
+		default:
+			// System errors - generic message (no detail leakage)
+			response.InternalError(c, "Failed to receive stock")
 		}
-		response.InternalError(c, "Failed to receive stock")
 		return
 	}
 
@@ -418,11 +444,18 @@ func (h *InventoryHandler) CommitStock(c *gin.Context) {
 
 	inv, err := h.usecase.CommitStock(c.Request.Context(), id, req.Quantity, committedBy)
 	if err != nil {
-		if errors.Is(err, inventory.ErrInventoryNotFound) {
+		// Map domain errors to user-friendly messages
+		switch {
+		case errors.Is(err, inventory.ErrInventoryNotFound):
 			response.NotFound(c, "Inventory not found")
-			return
+		case errors.Is(err, inventory.ErrInventoryQuantityInvalid):
+			response.BadRequest(c, "Quantity must be greater than 0")
+		case errors.Is(err, inventory.ErrInventoryInsufficientStock):
+			response.BadRequest(c, "Insufficient stock available")
+		default:
+			// System errors - generic message (no detail leakage)
+			response.InternalError(c, "Failed to commit stock")
 		}
-		response.InternalError(c, "Failed to commit stock")
 		return
 	}
 
@@ -519,7 +552,12 @@ func (h *InventoryHandler) ReserveStock(c *gin.Context) {
 
 	// Update inventory
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
-		response.InternalError(c, "Failed to update inventory")
+		switch {
+		case errors.Is(err, inventory.ErrVersionConflict):
+			response.Conflict(c, "Inventory was modified by another process, please retry")
+		default:
+			response.InternalError(c, "Failed to update inventory")
+		}
 		return
 	}
 
@@ -583,7 +621,12 @@ func (h *InventoryHandler) ReleaseReservation(c *gin.Context) {
 
 	// Update inventory
 	if err := h.usecase.UpdateInventory(c.Request.Context(), inv); err != nil {
-		response.InternalError(c, "Failed to update inventory")
+		switch {
+		case errors.Is(err, inventory.ErrVersionConflict):
+			response.Conflict(c, "Inventory was modified by another process, please retry")
+		default:
+			response.InternalError(c, "Failed to update inventory")
+		}
 		return
 	}
 

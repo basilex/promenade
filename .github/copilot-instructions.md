@@ -47,10 +47,27 @@ Each context is autonomous with:
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
-**Latest Progress** (January 9, 2026):
--  Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
--  Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
+**Latest Progress** (January 12, 2026):
+-  Phase 1 COMPLETE: Handler Security Audit (36 handlers, 417 fixes, 100% production-ready)
+-  Phase 2 🎉 MAJOR MILESTONE: Domain Errors Refactoring (11/18 sessions complete - 61.1%)
+  - Session 1 COMPLETE: warehouse/location (14 domain constants, 70 fixes, GOLD STANDARD)
+  - Session 2 COMPLETE: warehouse/inventory (22 domain constants, 17 fmt.Errorf eliminated)
+  - Session 3 COMPLETE: warehouse/stockmovement (13 domain constants, 28 fmt.Errorf eliminated)
+  - Session 4 COMPLETE: warehouse/product (27 domain constants, 60 total replacements)
+  - Session 5 COMPLETE: identity/role (5 domain constants, 8 fmt.Errorf eliminated, 49 tests)
+  - Session 6 COMPLETE: identity/permission (6 domain constants, 7 fmt.Errorf eliminated, 52 tests)
+  - Session 7 COMPLETE: identity/profile (16 domain constants, 19 fmt.Errorf eliminated, 36 tests)
+  - Session 8 COMPLETE: identity/contact (11 domain constants, 17 fmt.Errorf handled, 32 tests)
+  - Session 9 COMPLETE: order-mgmt/contract (8 domain constants, production-ready)
+  - Session 10 COMPLETE: Entity Tests Refactoring (14 patterns across 3 files, 4 new error constants)
+  - Session 11 COMPLETE: UseCase Tests Refactoring (22+ patterns across 7 files, errors.Is() migration)
+  - Warehouse Context: 100% complete (all 4 aggregates production-ready)
+  - Identity Context: 100% complete (all 4 aggregates production-ready)
+  - Entity Tests: 100% type-safe (contact, customer, interaction - all using errors.Is())
+  - UseCase Tests: ~88% type-safe (inventory 10, product 9, deal 2, adaptive strategy for wrapped errors)
+  - Remaining: 7 sessions (Customer-Mgmt aggregates, Billing aggregates, Integration Tests, Documentation)
 -  Phase 3 IN PROGRESS: LUA Scripting + UI Metadata Foundation (Week 1 Day 4 Complete - HTTP Layer Operational)
+-  Order Management: Entity tests in progress (entity_test.go active development)
 -  Fulfillment Saga COMPLETE: Distributed transaction orchestration (orchestrator.go, 104 lines, 57 tests)
 - Business Documentation COMPLETE: Multi-language business overviews for executives
   - docs/business/BUSINESS_OVERVIEW.md (English, 500+ lines, 15 sections)
@@ -81,7 +98,13 @@ Each context is autonomous with:
   - Standard Library: Real UseCase integration (CustomerUseCase, OrderUseCase, DealUseCase, *sqlx.DB)
   - Dependencies: gopher-lua (LUA interpreter), gopher-luar (Go-LUA bridge) - installed
   - Status: HTTP layer operational, Standard Library integrated, ready for Week 2 (Script storage)
+- Error Handling Documentation COMPLETE:
+  - docs/guides/unified-error-handling-standard.md (1287 lines, master reference)
+  - docs/reference/DOMAIN_ERRORS_REFACTORING_PLAN.md (23,193 lines, 18-session plan)
+  - docs/reference/domain-errors-audit.md (12,504 lines, initial audit)
+  - Session summaries: [docs/refactoring/sessions/](docs/refactoring/sessions/) (11 compact summaries)
 - Test Infrastructure: All systems validated (2465+ tests: 2232+ unit, 182+ smoke, 76+ integration)
+- Order Entity Tests: Active development in progress (entity_test.go)
 
 ### 3. Aggregate Structure Pattern
 
@@ -129,15 +152,18 @@ internal/contexts/identity/contact/
 
 ```go
 // ALL entities MUST embed BaseAggregate and NEVER duplicate its fields
-type Contact struct {
+type Order struct {
     aggregate.BaseAggregate  // Provides: ID, Version, CreatedAt, UpdatedAt, DeletedAt
-    UserID uuidv7.UUID
-    Type   ContactType
+    OrderNumber string       // ORD-2026-001
+    CustomerID  uuidv7.UUID
+    Lines       []OrderLine
+    Total       valueobject.Money
+    Status      OrderStatus
     // ... other fields
 }
 
 //  NEVER DO THIS - Field duplication
-type WrongContact struct {
+type WrongOrder struct {
     aggregate.BaseAggregate
     ID        uuidv7.UUID  //  DUPLICATE - already in BaseAggregate
     CreatedAt time.Time    //  DUPLICATE - already in BaseAggregate
@@ -145,23 +171,38 @@ type WrongContact struct {
 }
 
 // Factory method - BaseAggregate auto-initializes ID, CreatedAt, UpdatedAt
-func NewContact(userID uuidv7.UUID) *Contact {
-    return &Contact{
-        BaseAggregate: aggregate.NewBaseAggregate(),  // Sets ID, timestamps
-        UserID:        userID,
+func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
+    if customerID == uuidv7.Nil {
+        return nil, ErrCustomerIDRequired
     }
+    return &Order{
+        BaseAggregate: aggregate.NewBaseAggregate(),  // Sets ID, timestamps
+        OrderNumber:   generateOrderNumber(time.Now()),
+        CustomerID:    customerID,
+        Lines:         []OrderLine{},
+        Total:         valueobject.Money{Amount: 0, Currency: currency},
+        Currency:      currency,
+        Status:        OrderStatusPending,
+        OrderDate:     time.Now(),
+    }, nil
 }
 
 //  Use Touch() for timestamp updates
-func (c *Contact) Verify() {
-    c.IsVerified = true
-    c.Touch()  // Updates UpdatedAt via BaseAggregate
+func (o *Order) Confirm() error {
+    if o.Status != OrderStatusPending {
+        return ErrOrderAlreadyConfirmed
+    }
+    o.Status = OrderStatusConfirmed
+    now := time.Now()
+    o.ConfirmedAt = &now
+    o.Touch()  // Updates UpdatedAt via BaseAggregate
+    return nil
 }
 
 //  Use GetID() for ID access
-func (r *contactRepository) Update(ctx context.Context, contact *Contact) error {
-    query := `UPDATE contacts SET ... WHERE id = $1`
-    return r.Exec(ctx, query, contact.GetID())  // Not contact.ID
+func (r *orderRepository) Update(ctx context.Context, order *Order) error {
+    query := `UPDATE orders SET ... WHERE id = $1`
+    return r.Exec(ctx, query, order.GetID())  // Not order.ID
 }
 ```
 
@@ -170,7 +211,7 @@ func (r *contactRepository) Update(ctx context.Context, contact *Contact) error 
 ```go
 // Repository interface in aggregate package (usually IRepository)
 type IRepository interface {
-    Create(ctx context.Context, contact *Contact) error
+    Create(ctx context.Context, contact *Contact) errorand `ICustomerUseCase` (entity-specific names for backward compatibility
     GetByID(ctx context.Context, id uuidv7.UUID) (*Contact, error)
     Update(ctx context.Context, contact *Contact) error
     Delete(ctx context.Context, id uuidv7.UUID) error
@@ -195,12 +236,15 @@ func NewContactRepository(db *sqlx.DB) IRepository {
 ```go
 // Interface defines business operations (usually IUseCase)
 type IUseCase interface {
-    CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*Contact, error)
-    GetContact(ctx context.Context, contactID uuidv7.UUID) (*Contact, error)
-    VerifyContact(ctx context.Context, contactID uuidv7.UUID) error
-}
+    CreateEmailContact(ctx context.Context, u11, 2026):
+All contexts now consistently use lowercase `type useCase struct` pattern:
+- Identity context: ✅ Refactored (User, Profile, Role, Permission, Contact)
+- Customer Management: ✅ Uses `ICustomerUseCase` + lowercase `useCase` (legacy compatibility)
+- Order Management: ✅ Consistent lowercase pattern
+- Billing, Warehouse: ✅ Already consistent
 
-// Implementation (lowercase struct, always "useCase")
+**Rule**: Always use lowercase `type useCase struct` for new code and when refactoring existing code.
+**Exception**: Customer Management retains `ICustomerUseCase` interface name for backward compatibility
 type useCase struct {
     repo IRepository
 }
@@ -1745,30 +1789,170 @@ if exists {
 }
 ```
 
-### Error Handling Flow
+### Error Handling (Three-Layer Architecture)
 
-**Handler checks domain errors and returns HTTP codes**:
+**GOLD STANDARD** (Warehouse context - Production ready, see `docs/guides/unified-error-handling-standard.md`)
 
-```go
-contact, err := h.usecase.GetContact(ctx, contactID)
-if errors.Is(err, ErrContactNotFound) {
-    response.Error(c, http.StatusNotFound, "CONTACT_NOT_FOUND", err.Error())
-    return
-}
-if err != nil {
-    response.Error(c, http.StatusInternalServerError, "INTERNAL_ERROR", err.Error())
-    return
-}
-response.Success(c, contact)
-```
+Promenade uses a **three-layer error architecture** ensuring security, consistency, and maintainability:
 
-**UseCase wraps errors with context**:
+#### Layer 1: errors.go (Domain Constants)
+
+**Location**: `internal/contexts/{context}/{aggregate}/errors.go`
+
+All domain errors defined as constants in three categories:
 
 ```go
-if err := uc.repo.Create(ctx, contact); err != nil {
-    return nil, fmt.Errorf("failed to create contact: %w", err)
+package location
+
+import "errors"
+
+// Repository Errors - Data access failures
+var (
+    // ErrLocationNotFound is returned when location doesn't exist
+    ErrLocationNotFound = errors.New("location not found")
+)
+
+// Business Logic Errors - Domain rule violations
+var (
+    // ErrLocationCodeExists is returned when code already exists
+    ErrLocationCodeExists = errors.New("location code already exists")
+    
+    // ErrLocationAlreadyDeleted is returned when operating on deleted location
+    ErrLocationAlreadyDeleted = errors.New("location already deleted")
+    
+    // ErrLocationHasChildren is returned when deleting location with children
+    ErrLocationHasChildren = errors.New("cannot delete location with children")
+)
+
+// Technical Operation Errors - Operation wrappers
+var (
+    // ErrLocationCreateFailed is returned when creation fails
+    ErrLocationCreateFailed = errors.New("failed to create location")
+    
+    // ErrLocationUpdateFailed is returned when update fails
+    ErrLocationUpdateFailed = errors.New("failed to update location")
+)
+```
+
+#### Layer 2: usecase.go (Zero Inline Errors)
+
+**CRITICAL RULES**:
+- ❌ **NEVER** use `fmt.Errorf()` - eliminated completely
+- ❌ **NEVER** use inline `errors.New()` - all errors must be constants
+- ✅ **ALWAYS** return domain constants from errors.go
+
+```go
+// ✅ CORRECT - Domain constants only
+func (uc *useCase) CreateLocation(ctx context.Context, code, name string, ...) (*Location, error) {
+    // Check for duplicate code
+    existing, _ := uc.repo.GetLocationByCode(ctx, code)
+    if existing != nil {
+        return nil, ErrLocationCodeExists  // Domain constant
+    }
+    
+    // Validate parent if provided
+    if parentID != nil {
+        parent, err := uc.repo.GetLocation(ctx, *parentID)
+        if err != nil {
+            return nil, ErrParentLocationNotFound  // Domain constant
+        }
+        if parent.DeletedAt != nil {
+            return nil, ErrParentLocationDeleted  // Domain constant
+        }
+    }
+    
+    // Create location
+    loc := location.NewLocation(code, name, locationType)
+    if err := uc.repo.Create(ctx, loc); err != nil {
+        return nil, ErrLocationCreateFailed  // Technical wrapper
+    }
+    
+    return loc, nil
+}
+
+// ❌ WRONG - Inline errors (Phase 2 eliminates these)
+func (uc *useCase) CreateLocationWrong(ctx context.Context, code string) (*Location, error) {
+    if code == "" {
+        return nil, fmt.Errorf("code is required")  // ❌ NEVER DO THIS
+    }
+    return nil, errors.New("failed to create")  // ❌ NEVER DO THIS
 }
 ```
+
+#### Layer 3: handler.go (Security-Aware Mapping)
+
+**Handler pattern** (Phase 1: Security + Phase 2: Domain errors):
+
+```go
+func (h *LocationHandler) Create(c *gin.Context) {
+    var req CreateLocationRequest
+    
+    // 1. Validation errors - EXPOSE details (user input issues)
+    if err := c.ShouldBindJSON(&req); err != nil {
+        response.BadRequest(c, err.Error())  // Safe: validation feedback
+        return
+    }
+    
+    // 2. Call use case
+    loc, err := h.usecase.CreateLocation(c.Request.Context(), req.Code, req.Name, ...)
+    
+    // 3. Domain errors - MAP to user-friendly messages with errors.Is()
+    if err != nil {
+        if errors.Is(err, location.ErrLocationCodeExists) {
+            response.BadRequest(c, "Location code already exists")  // User-friendly
+            return
+        }
+        if errors.Is(err, location.ErrParentLocationNotFound) {
+            response.NotFound(c, "Parent location not found")  // Clear message
+            return
+        }
+        if errors.Is(err, location.ErrParentLocationDeleted) {
+            response.BadRequest(c, "Parent location is deleted")  // Actionable
+            return
+        }
+        
+        // 4. System errors - HIDE details (security)
+        response.InternalError(c, "Failed to create location")  // Generic fallback
+        return
+    }
+    
+    response.Created(c, toLocationResponse(loc))
+}
+
+// ❌ WRONG - Pre-refactoring patterns (DO NOT USE)
+func (h *LocationHandler) CreateWrong(c *gin.Context) {
+    loc, err := h.usecase.CreateLocation(...)
+    if err != nil {
+        // ❌ Information leakage (Phase 1 security issue)
+        response.InternalError(c, err.Error())  // Exposes: "sql: no rows in result set"
+        
+        // ❌ String comparison anti-pattern (Phase 2 maintainability issue)
+        if err.Error() == "code already exists" {  // Fragile
+            response.BadRequest(c, "Code exists")
+        }
+    }
+}
+```
+
+#### Testing Pattern (errors.Is assertions)
+
+```go
+func TestUseCase_CreateLocation_CodeExists(t *testing.T) {
+    // ... setup ...
+    
+    loc, err := uc.CreateLocation(ctx, "EXISTING-CODE", "Test", ...)
+    
+    // ✅ CORRECT - Type-safe error checking
+    assert.Error(t, err)
+    assert.True(t, errors.Is(err, location.ErrLocationCodeExists))
+    assert.Nil(t, loc)
+    
+    // ❌ WRONG - String comparison (fragile)
+    assert.Equal(t, "location code already exists", err.Error())  // Don't do this
+}
+```
+
+**See**: `docs/guides/unified-error-handling-standard.md` (1287 lines, master reference)
 
 ### Entity State Methods
 

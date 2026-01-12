@@ -57,7 +57,7 @@ func TestNewInventory_MissingProductID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "product ID is required")
+	assert.ErrorIs(t, err, ErrInventoryProductIDRequired)
 }
 
 func TestNewInventory_MissingSKU(t *testing.T) {
@@ -66,7 +66,7 @@ func TestNewInventory_MissingSKU(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "SKU is required")
+	assert.ErrorIs(t, err, ErrInventorySKURequired)
 }
 
 func TestNewInventory_MissingProductName(t *testing.T) {
@@ -75,7 +75,7 @@ func TestNewInventory_MissingProductName(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "product name is required")
+	assert.ErrorIs(t, err, ErrInventoryProductNameRequired)
 }
 
 func TestNewInventory_MissingWarehouseID(t *testing.T) {
@@ -84,7 +84,7 @@ func TestNewInventory_MissingWarehouseID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "warehouse ID is required")
+	assert.ErrorIs(t, err, ErrInventoryWarehouseRequired)
 }
 
 // ==============================================================================
@@ -130,7 +130,7 @@ func TestReceiveStock_ZeroQuantity(t *testing.T) {
 	err := inv.ReceiveStock(0, 1000, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 func TestReceiveStock_NegativeQuantity(t *testing.T) {
@@ -140,7 +140,7 @@ func TestReceiveStock_NegativeQuantity(t *testing.T) {
 	err := inv.ReceiveStock(-10, 1000, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 func TestReceiveStock_InactiveInventory(t *testing.T) {
@@ -151,7 +151,7 @@ func TestReceiveStock_InactiveInventory(t *testing.T) {
 	err := inv.ReceiveStock(100, 1000, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot receive stock for inactive inventory")
+	assert.ErrorIs(t, err, ErrInventoryInactive)
 }
 
 // ==============================================================================
@@ -198,7 +198,7 @@ func TestReserveStock_InsufficientStock(t *testing.T) {
 	err := inv.ReserveStock(100, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient stock")
+	assert.ErrorIs(t, err, ErrInventoryInsufficientStock)
 	assert.Equal(t, 0, inv.QuantityReserved)
 }
 
@@ -210,7 +210,7 @@ func TestReserveStock_ZeroQuantity(t *testing.T) {
 	err := inv.ReserveStock(0, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 func TestReserveStock_InactiveInventory(t *testing.T) {
@@ -224,7 +224,7 @@ func TestReserveStock_InactiveInventory(t *testing.T) {
 	err := inv.ReserveStock(30, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot reserve stock for inactive inventory")
+	assert.ErrorIs(t, err, ErrInventoryInactive)
 }
 
 // ==============================================================================
@@ -272,7 +272,7 @@ func TestReleaseReservation_InsufficientReserved(t *testing.T) {
 	err := inv.ReleaseReservation(50, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient reserved stock")
+	assert.ErrorIs(t, err, ErrInventoryInsufficientReserved)
 	assert.Equal(t, 30, inv.QuantityReserved)
 }
 
@@ -284,7 +284,7 @@ func TestReleaseReservation_ZeroQuantity(t *testing.T) {
 	err := inv.ReleaseReservation(0, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 // ==============================================================================
@@ -336,7 +336,7 @@ func TestCommitReservation_InsufficientReserved(t *testing.T) {
 	err := inv.CommitReservation(50, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient reserved stock")
+	assert.ErrorIs(t, err, ErrInventoryInsufficientReserved)
 }
 
 func TestCommitReservation_ZeroQuantity(t *testing.T) {
@@ -347,7 +347,7 @@ func TestCommitReservation_ZeroQuantity(t *testing.T) {
 	err := inv.CommitReservation(0, orderID, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 // ==============================================================================
@@ -389,7 +389,7 @@ func TestAdjustStock_ResultsInNegative(t *testing.T) {
 	err := inv.AdjustStock(-100, "Theft", userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "adjustment would result in negative stock")
+	assert.ErrorIs(t, err, ErrInventoryNegativeStock)
 	assert.Equal(t, 50, inv.QuantityOnHand)
 }
 
@@ -400,7 +400,7 @@ func TestAdjustStock_MissingReason(t *testing.T) {
 	err := inv.AdjustStock(10, "", userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "adjustment reason is required")
+	assert.ErrorIs(t, err, ErrInventoryAdjustmentReasonRequired)
 }
 
 // ==============================================================================
@@ -426,7 +426,7 @@ func TestSetLocation_MissingLocationCode(t *testing.T) {
 	err := inv.SetLocation("", "Zone-A", userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "location code is required")
+	assert.ErrorIs(t, err, ErrInventoryLocationRequired)
 }
 
 func TestSetLocation_UpdateExisting(t *testing.T) {
@@ -463,7 +463,7 @@ func TestSetReorderPoint_NegativePoint(t *testing.T) {
 	err := inv.SetReorderPoint(-5, 100, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "reorder point cannot be negative")
+	assert.ErrorIs(t, err, ErrInventoryReorderPointNegative)
 }
 
 func TestSetReorderPoint_ZeroQuantity(t *testing.T) {
@@ -473,7 +473,7 @@ func TestSetReorderPoint_ZeroQuantity(t *testing.T) {
 	err := inv.SetReorderPoint(10, 0, userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "reorder quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryReorderQuantityInvalid)
 }
 
 // ==============================================================================
@@ -504,7 +504,7 @@ func TestMarkAsDamaged_InsufficientStock(t *testing.T) {
 	err := inv.MarkAsDamaged(100, "Water damage", userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "insufficient available stock")
+	assert.ErrorIs(t, err, ErrInventoryInsufficientAvailable)
 }
 
 func TestMarkAsDamaged_ZeroQuantity(t *testing.T) {
@@ -514,7 +514,7 @@ func TestMarkAsDamaged_ZeroQuantity(t *testing.T) {
 	err := inv.MarkAsDamaged(0, "Damage", userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryQuantityInvalid)
 }
 
 // ==============================================================================
@@ -542,7 +542,7 @@ func TestActivate_AlreadyActive(t *testing.T) {
 	err := inv.Activate(userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "inventory is already active")
+	assert.ErrorIs(t, err, ErrInventoryAlreadyActive)
 }
 
 func TestDeactivate_Success(t *testing.T) {
@@ -566,7 +566,7 @@ func TestDeactivate_WithReservedStock(t *testing.T) {
 	err := inv.Deactivate(userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "cannot deactivate inventory with reserved stock")
+	assert.ErrorIs(t, err, ErrInventoryCannotDeactivateWithReservedStock)
 	assert.True(t, inv.IsActive)
 }
 
@@ -579,7 +579,7 @@ func TestDeactivate_AlreadyInactive(t *testing.T) {
 	err := inv.Deactivate(userID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "inventory is already inactive")
+	assert.ErrorIs(t, err, ErrInventoryInactive)
 }
 
 // ==============================================================================
@@ -684,7 +684,7 @@ func TestValidate_MissingProductID(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "product ID is required")
+	assert.ErrorIs(t, err, ErrInventoryProductIDRequired)
 }
 
 func TestValidate_MissingSKU(t *testing.T) {
@@ -694,7 +694,7 @@ func TestValidate_MissingSKU(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "SKU is required")
+	assert.ErrorIs(t, err, ErrInventorySKURequired)
 }
 
 func TestValidate_NegativeQuantityOnHand(t *testing.T) {
@@ -704,7 +704,7 @@ func TestValidate_NegativeQuantityOnHand(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity on hand cannot be negative")
+	assert.ErrorIs(t, err, ErrInventoryQuantityOnHandNegative)
 }
 
 func TestValidate_NegativeReserved(t *testing.T) {
@@ -714,7 +714,7 @@ func TestValidate_NegativeReserved(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "quantity reserved cannot be negative")
+	assert.ErrorIs(t, err, ErrInventoryQuantityReservedNegative)
 }
 
 func TestValidate_NotesTooLong(t *testing.T) {
@@ -724,7 +724,7 @@ func TestValidate_NotesTooLong(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "notes exceed 500 characters")
+	assert.ErrorIs(t, err, ErrInventoryNotesTooLong)
 }
 
 func TestValidate_InvalidReorderQuantity(t *testing.T) {
@@ -734,7 +734,7 @@ func TestValidate_InvalidReorderQuantity(t *testing.T) {
 	err := inv.Validate()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "reorder quantity must be positive")
+	assert.ErrorIs(t, err, ErrInventoryReorderQuantityInvalid)
 }
 
 // ==============================================================================

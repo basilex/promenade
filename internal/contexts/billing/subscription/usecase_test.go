@@ -129,7 +129,7 @@ func TestUseCase_CreateSubscription(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, subscription)
-		assert.Contains(t, err.Error(), "failed to save subscription")
+		assert.ErrorIs(t, err, ErrCreateFailed)
 	})
 }
 
@@ -242,7 +242,7 @@ func TestUseCase_UpdateSubscription(t *testing.T) {
 		err := uc.UpdateSubscription(ctx, subscriptionID, newPlanID, newAmount)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to update subscription")
+		assert.ErrorIs(t, err, ErrUpdateFailed)
 	})
 }
 
@@ -276,7 +276,7 @@ func TestUseCase_DeleteSubscription(t *testing.T) {
 		err := uc.DeleteSubscription(ctx, subscriptionID)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to delete subscription")
+		assert.ErrorIs(t, err, ErrDeleteFailed)
 	})
 }
 
@@ -452,7 +452,7 @@ func TestUseCase_ActivateSubscription(t *testing.T) {
 		err := uc.ActivateSubscription(ctx, subscriptionID)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "cannot activate")
+		assert.ErrorIs(t, err, ErrCannotActivate)
 	})
 }
 

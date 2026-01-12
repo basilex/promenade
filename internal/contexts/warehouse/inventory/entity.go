@@ -76,19 +76,19 @@ type Inventory struct {
 func NewInventory(productID uuidv7.UUID, sku, productName string, warehouseID string, createdBy uuidv7.UUID) (*Inventory, error) {
 	// Validation
 	if productID == uuidv7.Nil {
-		return nil, fmt.Errorf("product ID is required")
+		return nil, ErrInventoryProductIDRequired
 	}
 	if sku == "" {
-		return nil, fmt.Errorf("SKU is required")
+		return nil, ErrInventorySKURequired
 	}
 	if productName == "" {
-		return nil, fmt.Errorf("product name is required")
+		return nil, ErrInventoryProductNameRequired
 	}
 	if warehouseID == "" {
-		return nil, fmt.Errorf("warehouse ID is required")
+		return nil, ErrInventoryWarehouseRequired
 	}
 	if createdBy == uuidv7.Nil {
-		return nil, fmt.Errorf("created by user ID is required")
+		return nil, ErrInventoryCreatedByRequired
 	}
 
 	return &Inventory{
@@ -116,10 +116,10 @@ func NewInventory(productID uuidv7.UUID, sku, productName string, warehouseID st
 // Modern pattern: Domain events for event-driven architecture
 func (i *Inventory) ReceiveStock(quantity int, unitCostCents int64, receivedBy uuidv7.UUID) error {
 	if quantity <= 0 {
-		return fmt.Errorf("quantity must be positive")
+		return ErrInventoryQuantityInvalid
 	}
 	if !i.IsActive {
-		return fmt.Errorf("cannot receive stock for inactive inventory")
+		return ErrInventoryInactive
 	}
 
 	// Update quantities
@@ -150,13 +150,13 @@ func (i *Inventory) ReceiveStock(quantity int, unitCostCents int64, receivedBy u
 // Modern approach: Optimistic locking via Version field (prevents overselling)
 func (i *Inventory) ReserveStock(quantity int, orderID uuidv7.UUID, reservedBy uuidv7.UUID) error {
 	if quantity <= 0 {
-		return fmt.Errorf("quantity must be positive")
+		return ErrInventoryQuantityInvalid
 	}
 	if i.QuantityAvailable < quantity {
-		return fmt.Errorf("insufficient stock: available=%d, requested=%d", i.QuantityAvailable, quantity)
+		return ErrInventoryInsufficientStock
 	}
 	if !i.IsActive {
-		return fmt.Errorf("cannot reserve stock for inactive inventory")
+		return ErrInventoryInactive
 	}
 
 	// Reserve stock
@@ -176,10 +176,10 @@ func (i *Inventory) ReserveStock(quantity int, orderID uuidv7.UUID, reservedBy u
 // Compensation logic for Saga pattern
 func (i *Inventory) ReleaseReservation(quantity int, orderID uuidv7.UUID, releasedBy uuidv7.UUID) error {
 	if quantity <= 0 {
-		return fmt.Errorf("quantity must be positive")
+		return ErrInventoryQuantityInvalid
 	}
 	if i.QuantityReserved < quantity {
-		return fmt.Errorf("insufficient reserved stock: reserved=%d, requested=%d", i.QuantityReserved, quantity)
+		return ErrInventoryInsufficientReserved
 	}
 
 	// Release reservation
@@ -199,10 +199,10 @@ func (i *Inventory) ReleaseReservation(quantity int, orderID uuidv7.UUID, releas
 // Final step in order fulfillment saga
 func (i *Inventory) CommitReservation(quantity int, orderID uuidv7.UUID, committedBy uuidv7.UUID) error {
 	if quantity <= 0 {
-		return fmt.Errorf("quantity must be positive")
+		return ErrInventoryQuantityInvalid
 	}
 	if i.QuantityReserved < quantity {
-		return fmt.Errorf("insufficient reserved stock: reserved=%d, requested=%d", i.QuantityReserved, quantity)
+		return ErrInventoryInsufficientReserved
 	}
 
 	// Commit stock (move from reserved to committed)
@@ -224,12 +224,12 @@ func (i *Inventory) CommitReservation(quantity int, orderID uuidv7.UUID, committ
 // Positive = add stock, Negative = remove stock
 func (i *Inventory) AdjustStock(quantityDelta int, reason string, adjustedBy uuidv7.UUID) error {
 	if reason == "" {
-		return fmt.Errorf("adjustment reason is required")
+		return ErrInventoryAdjustmentReasonRequired
 	}
 
 	newQuantity := i.QuantityOnHand + quantityDelta
 	if newQuantity < 0 {
-		return fmt.Errorf("adjustment would result in negative stock: current=%d, delta=%d", i.QuantityOnHand, quantityDelta)
+		return ErrInventoryNegativeStock
 	}
 
 	// Apply adjustment
@@ -249,7 +249,7 @@ func (i *Inventory) AdjustStock(quantityDelta int, reason string, adjustedBy uui
 // Used for warehouse organization and picking optimization
 func (i *Inventory) SetLocation(locationCode, locationZone string, updatedBy uuidv7.UUID) error {
 	if locationCode == "" {
-		return fmt.Errorf("location code is required")
+		return ErrInventoryLocationRequired
 	}
 
 	i.LocationCode = locationCode
@@ -264,10 +264,10 @@ func (i *Inventory) SetLocation(locationCode, locationZone string, updatedBy uui
 // Used for automated low stock alerts
 func (i *Inventory) SetReorderPoint(reorderPoint, reorderQuantity int, updatedBy uuidv7.UUID) error {
 	if reorderPoint < 0 {
-		return fmt.Errorf("reorder point cannot be negative")
+		return ErrInventoryReorderPointNegative
 	}
 	if reorderQuantity <= 0 {
-		return fmt.Errorf("reorder quantity must be positive")
+		return ErrInventoryReorderQuantityInvalid
 	}
 
 	i.ReorderPoint = reorderPoint
@@ -281,10 +281,10 @@ func (i *Inventory) SetReorderPoint(reorderPoint, reorderQuantity int, updatedBy
 // MarkAsDamaged marks inventory as damaged (not available for orders)
 func (i *Inventory) MarkAsDamaged(quantity int, reason string, updatedBy uuidv7.UUID) error {
 	if quantity <= 0 {
-		return fmt.Errorf("quantity must be positive")
+		return ErrInventoryQuantityInvalid
 	}
 	if i.QuantityAvailable < quantity {
-		return fmt.Errorf("insufficient available stock: available=%d, requested=%d", i.QuantityAvailable, quantity)
+		return ErrInventoryInsufficientAvailable
 	}
 
 	// Remove from available stock
@@ -305,7 +305,7 @@ func (i *Inventory) MarkAsDamaged(quantity int, reason string, updatedBy uuidv7.
 // Activate activates inventory for orders
 func (i *Inventory) Activate(activatedBy uuidv7.UUID) error {
 	if i.IsActive {
-		return fmt.Errorf("inventory is already active")
+		return ErrInventoryAlreadyActive
 	}
 
 	i.IsActive = true
@@ -319,10 +319,10 @@ func (i *Inventory) Activate(activatedBy uuidv7.UUID) error {
 // Deactivate deactivates inventory (discontinue product)
 func (i *Inventory) Deactivate(deactivatedBy uuidv7.UUID) error {
 	if !i.IsActive {
-		return fmt.Errorf("inventory is already inactive")
+		return ErrInventoryInactive
 	}
 	if i.QuantityReserved > 0 {
-		return fmt.Errorf("cannot deactivate inventory with reserved stock")
+		return ErrInventoryCannotDeactivateWithReservedStock
 	}
 
 	i.IsActive = false
@@ -360,34 +360,34 @@ func (i *Inventory) recalculateAvailable() {
 // Called before persistence operations
 func (i *Inventory) Validate() error {
 	if i.ProductID == uuidv7.Nil {
-		return fmt.Errorf("product ID is required")
+		return ErrInventoryProductIDRequired
 	}
 	if i.SKU == "" {
-		return fmt.Errorf("SKU is required")
+		return ErrInventorySKURequired
 	}
 	if i.ProductName == "" {
-		return fmt.Errorf("product name is required")
+		return ErrInventoryProductNameRequired
 	}
 	if i.WarehouseID == "" {
-		return fmt.Errorf("warehouse ID is required")
+		return ErrInventoryWarehouseRequired
 	}
 	if i.QuantityOnHand < 0 {
-		return fmt.Errorf("quantity on hand cannot be negative")
+		return ErrInventoryQuantityOnHandNegative
 	}
 	if i.QuantityReserved < 0 {
-		return fmt.Errorf("quantity reserved cannot be negative")
+		return ErrInventoryQuantityReservedNegative
 	}
 	if i.QuantityCommitted < 0 {
-		return fmt.Errorf("quantity committed cannot be negative")
+		return ErrInventoryQuantityCommittedNegative
 	}
 	if i.ReorderPoint < 0 {
-		return fmt.Errorf("reorder point cannot be negative")
+		return ErrInventoryReorderPointNegative
 	}
 	if i.ReorderQuantity <= 0 {
-		return fmt.Errorf("reorder quantity must be positive")
+		return ErrInventoryReorderQuantityInvalid
 	}
 	if len(i.Notes) > 500 {
-		return fmt.Errorf("notes exceed 500 characters")
+		return ErrInventoryNotesTooLong
 	}
 
 	return nil

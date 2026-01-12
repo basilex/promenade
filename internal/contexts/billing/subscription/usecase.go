@@ -2,7 +2,6 @@ package subscription
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -78,11 +77,11 @@ func (uc *useCase) CreateSubscription(ctx context.Context, customerID uuidv7.UUI
 		trialDays,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create subscription: %w", err)
+		return nil, err // Domain error from entity constructor
 	}
 
 	if err := uc.repo.Create(ctx, subscription); err != nil {
-		return nil, fmt.Errorf("failed to save subscription: %w", err)
+		return nil, ErrCreateFailed
 	}
 
 	return subscription, nil
@@ -91,7 +90,7 @@ func (uc *useCase) CreateSubscription(ctx context.Context, customerID uuidv7.UUI
 func (uc *useCase) GetSubscription(ctx context.Context, id uuidv7.UUID) (*Subscription, error) {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get subscription: %w", err)
+		return nil, err // Propagate repository error (ErrSubscriptionNotFound or technical)
 	}
 	return subscription, nil
 }
@@ -99,7 +98,7 @@ func (uc *useCase) GetSubscription(ctx context.Context, id uuidv7.UUID) (*Subscr
 func (uc *useCase) UpdateSubscription(ctx context.Context, id uuidv7.UUID, planID string, amount int64) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	subscription.PlanID = planID
@@ -107,7 +106,7 @@ func (uc *useCase) UpdateSubscription(ctx context.Context, id uuidv7.UUID, planI
 	subscription.Touch()
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to update subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -115,7 +114,7 @@ func (uc *useCase) UpdateSubscription(ctx context.Context, id uuidv7.UUID, planI
 
 func (uc *useCase) DeleteSubscription(ctx context.Context, id uuidv7.UUID) error {
 	if err := uc.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("failed to delete subscription: %w", err)
+		return ErrDeleteFailed
 	}
 	return nil
 }
@@ -123,7 +122,7 @@ func (uc *useCase) DeleteSubscription(ctx context.Context, id uuidv7.UUID) error
 func (uc *useCase) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*Subscription, error) {
 	subscriptions, err := uc.repo.ListSubscriptions(ctx, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list subscriptions: %w", err)
+		return nil, ErrQueryFailed
 	}
 	return subscriptions, nil
 }
@@ -131,7 +130,7 @@ func (uc *useCase) ListSubscriptions(ctx context.Context, page, pageSize int) ([
 func (uc *useCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*Subscription, error) {
 	subscriptions, err := uc.repo.ListByCustomer(ctx, customerID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list subscriptions by customer: %w", err)
+		return nil, ErrQueryFailed
 	}
 	return subscriptions, nil
 }
@@ -139,7 +138,7 @@ func (uc *useCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) (
 func (uc *useCase) ListByStatus(ctx context.Context, status SubscriptionStatus) ([]*Subscription, error) {
 	subscriptions, err := uc.repo.ListByStatus(ctx, status)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list subscriptions by status: %w", err)
+		return nil, ErrQueryFailed
 	}
 	return subscriptions, nil
 }
@@ -147,15 +146,15 @@ func (uc *useCase) ListByStatus(ctx context.Context, status SubscriptionStatus) 
 func (uc *useCase) ActivateSubscription(ctx context.Context, id uuidv7.UUID) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Activate(); err != nil {
-		return fmt.Errorf("failed to activate subscription: %w", err)
+		return err // Propagate domain error (ErrCannotActivate)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -164,15 +163,15 @@ func (uc *useCase) ActivateSubscription(ctx context.Context, id uuidv7.UUID) err
 func (uc *useCase) PauseSubscription(ctx context.Context, id uuidv7.UUID) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Pause(); err != nil {
-		return fmt.Errorf("failed to pause subscription: %w", err)
+		return err // Propagate domain error (ErrCanOnlyPauseActive)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -181,15 +180,15 @@ func (uc *useCase) PauseSubscription(ctx context.Context, id uuidv7.UUID) error 
 func (uc *useCase) ResumeSubscription(ctx context.Context, id uuidv7.UUID) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Resume(); err != nil {
-		return fmt.Errorf("failed to resume subscription: %w", err)
+		return err // Propagate domain error (ErrCanOnlyResumePaused)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -198,15 +197,15 @@ func (uc *useCase) ResumeSubscription(ctx context.Context, id uuidv7.UUID) error
 func (uc *useCase) CancelSubscription(ctx context.Context, id uuidv7.UUID, reason string, effectiveDate time.Time) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Cancel(reason, effectiveDate); err != nil {
-		return fmt.Errorf("failed to cancel subscription: %w", err)
+		return err // Propagate domain error (ErrAlreadyInTerminalStatus)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -215,15 +214,15 @@ func (uc *useCase) CancelSubscription(ctx context.Context, id uuidv7.UUID, reaso
 func (uc *useCase) RenewSubscription(ctx context.Context, id uuidv7.UUID) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Renew(); err != nil {
-		return fmt.Errorf("failed to renew subscription: %w", err)
+		return err // Propagate domain error (ErrCanOnlyRenewActive)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -232,15 +231,15 @@ func (uc *useCase) RenewSubscription(ctx context.Context, id uuidv7.UUID) error 
 func (uc *useCase) ExpireSubscription(ctx context.Context, id uuidv7.UUID) error {
 	subscription, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get subscription: %w", err)
+		return err // Propagate repository error
 	}
 
 	if err := subscription.Expire(); err != nil {
-		return fmt.Errorf("failed to expire subscription: %w", err)
+		return err // Propagate domain error (ErrAlreadyExpired)
 	}
 
 	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return fmt.Errorf("failed to save subscription: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -249,7 +248,7 @@ func (uc *useCase) ExpireSubscription(ctx context.Context, id uuidv7.UUID) error
 func (uc *useCase) CountByStatus(ctx context.Context, status SubscriptionStatus) (int64, error) {
 	count, err := uc.repo.CountByStatus(ctx, status)
 	if err != nil {
-		return 0, fmt.Errorf("failed to count subscriptions: %w", err)
+		return 0, ErrQueryFailed
 	}
 	return count, nil
 }
@@ -257,7 +256,7 @@ func (uc *useCase) CountByStatus(ctx context.Context, status SubscriptionStatus)
 func (uc *useCase) GetTotalRevenue(ctx context.Context) (int64, error) {
 	revenue, err := uc.repo.GetTotalRevenue(ctx)
 	if err != nil {
-		return 0, fmt.Errorf("failed to calculate total revenue: %w", err)
+		return 0, ErrQueryFailed
 	}
 	return revenue, nil
 }

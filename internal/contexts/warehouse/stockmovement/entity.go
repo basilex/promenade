@@ -1,7 +1,6 @@
 package stockmovement
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -87,15 +86,15 @@ func NewStockMovement(
 ) (*StockMovement, error) {
 	// Validation
 	if inventoryID == uuidv7.Nil {
-		return nil, fmt.Errorf("inventory ID is required")
+		return nil, ErrInventoryIDRequired
 	}
 
 	if quantity == 0 {
-		return nil, fmt.Errorf("quantity cannot be zero")
+		return nil, ErrQuantityCannotBeZero
 	}
 
 	if createdBy == uuidv7.Nil {
-		return nil, fmt.Errorf("created_by is required")
+		return nil, ErrCreatedByRequired
 	}
 
 	if err := validateMovementType(movementType); err != nil {
@@ -129,7 +128,7 @@ func (sm *StockMovement) SetLocation(fromWarehouse, toWarehouse *uuidv7.UUID, fr
 	// For transfers, both from and to must be set
 	if sm.Type == MovementTypeTransfer {
 		if fromWarehouse == nil || toWarehouse == nil {
-			return fmt.Errorf("transfer requires both source and destination warehouses")
+			return ErrTransferRequiresBothWarehouses
 		}
 	}
 
@@ -144,11 +143,11 @@ func (sm *StockMovement) SetLocation(fromWarehouse, toWarehouse *uuidv7.UUID, fr
 // SetCost sets the cost information for this movement
 func (sm *StockMovement) SetCost(unitCostCents int64, currencyCode string) error {
 	if unitCostCents < 0 {
-		return fmt.Errorf("unit cost cannot be negative")
+		return ErrNegativeUnitCost
 	}
 
 	if currencyCode == "" {
-		return fmt.Errorf("currency code is required when setting cost")
+		return ErrCurrencyCodeRequired
 	}
 
 	totalCost := unitCostCents * int64(abs(sm.Quantity))
@@ -163,11 +162,11 @@ func (sm *StockMovement) SetCost(unitCostCents int64, currencyCode string) error
 // SetReason sets the reason for this movement (required for adjustments)
 func (sm *StockMovement) SetReason(reason string) error {
 	if reason == "" {
-		return fmt.Errorf("reason cannot be empty")
+		return ErrReasonCannotBeEmpty
 	}
 
 	if len(reason) > 500 {
-		return fmt.Errorf("reason exceeds maximum length of 500 characters")
+		return ErrReasonTooLong
 	}
 
 	sm.Reason = reason
@@ -178,7 +177,7 @@ func (sm *StockMovement) SetReason(reason string) error {
 // SetNotes sets additional notes for this movement
 func (sm *StockMovement) SetNotes(notes string) error {
 	if len(notes) > 500 {
-		return fmt.Errorf("notes exceed maximum length of 500 characters")
+		return ErrNotesTooLong
 	}
 
 	sm.Notes = notes
@@ -209,15 +208,15 @@ func (sm *StockMovement) GetImpact() int {
 // Validate performs business rule validation
 func (sm *StockMovement) Validate() error {
 	if sm.InventoryID == uuidv7.Nil {
-		return fmt.Errorf("inventory ID is required")
+		return ErrInventoryIDRequired
 	}
 
 	if sm.Quantity == 0 {
-		return fmt.Errorf("quantity cannot be zero")
+		return ErrQuantityCannotBeZero
 	}
 
 	if sm.CreatedBy == uuidv7.Nil {
-		return fmt.Errorf("created_by is required")
+		return ErrCreatedByRequired
 	}
 
 	// Validate movement type
@@ -227,23 +226,23 @@ func (sm *StockMovement) Validate() error {
 
 	// Adjustments require reason
 	if sm.Type == MovementTypeAdjustment && sm.Reason == "" {
-		return fmt.Errorf("adjustment movements require a reason")
+		return ErrAdjustmentRequiresReason
 	}
 
 	// Transfers require both from and to locations
 	if sm.Type == MovementTypeTransfer {
 		if sm.FromWarehouseID == nil || sm.ToWarehouseID == nil {
-			return fmt.Errorf("transfer requires both source and destination warehouses")
+			return ErrTransferRequiresBothWarehouses
 		}
 	}
 
 	// Notes length validation
 	if len(sm.Notes) > 500 {
-		return fmt.Errorf("notes exceed maximum length of 500 characters")
+		return ErrNotesTooLong
 	}
 
 	if len(sm.Reason) > 500 {
-		return fmt.Errorf("reason exceeds maximum length of 500 characters")
+		return ErrReasonTooLong
 	}
 
 	return nil
@@ -264,7 +263,7 @@ func validateMovementType(movementType MovementType) error {
 	}
 
 	if !validTypes[movementType] {
-		return fmt.Errorf("invalid movement type: %s", movementType)
+		return ErrInvalidMovementType
 	}
 
 	return nil

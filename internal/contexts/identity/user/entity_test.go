@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -33,25 +34,25 @@ func TestNewUser(t *testing.T) {
 	t.Run("empty email", func(t *testing.T) {
 		_, err := NewUser("", "Password123")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid email")
+		assert.True(t, errors.Is(err, ErrInvalidEmailFormat))
 	})
 
 	t.Run("invalid password", func(t *testing.T) {
 		_, err := NewUser("test@example.com", "weak")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password must be at least 8 characters")
+		assert.True(t, errors.Is(err, ErrPasswordTooShort))
 	})
 
 	t.Run("password without digit", func(t *testing.T) {
 		_, err := NewUser("test@example.com", "Password")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password must contain at least one digit")
+		assert.True(t, errors.Is(err, ErrPasswordRequiresDigit))
 	})
 
 	t.Run("password without letter", func(t *testing.T) {
 		_, err := NewUser("test@example.com", "12345678")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password must contain at least one letter")
+		assert.True(t, errors.Is(err, ErrPasswordRequiresLetter))
 	})
 
 	t.Run("password too long", func(t *testing.T) {
@@ -65,7 +66,7 @@ func TestNewUser(t *testing.T) {
 		}
 		_, err := NewUser("test@example.com", string(longPassword))
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password must not exceed 72 characters")
+		assert.True(t, errors.Is(err, ErrPasswordTooLong))
 	})
 }
 
@@ -103,7 +104,7 @@ func TestUser_ChangePassword(t *testing.T) {
 	t.Run("invalid new password", func(t *testing.T) {
 		err := user.ChangePassword("weak")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password must be at least 8 characters")
+		assert.True(t, errors.Is(err, ErrPasswordTooShort))
 	})
 }
 
@@ -297,7 +298,7 @@ func TestUser_Validate(t *testing.T) {
 		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "email is required")
+		assert.True(t, errors.Is(err, ErrEmailRequired))
 	})
 
 	t.Run("missing password hash", func(t *testing.T) {
@@ -310,7 +311,7 @@ func TestUser_Validate(t *testing.T) {
 		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "password hash is required")
+		assert.True(t, errors.Is(err, ErrPasswordHashRequired))
 	})
 
 	t.Run("invalid status", func(t *testing.T) {
@@ -323,6 +324,6 @@ func TestUser_Validate(t *testing.T) {
 		user.ID = uuidv7.New()
 		err := user.Validate()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid user status")
+		assert.True(t, errors.Is(err, ErrInvalidUserStatus))
 	})
 }

@@ -15,7 +15,7 @@ func TestNewOrder(t *testing.T) {
 		customerID  uuidv7.UUID
 		currency    string
 		wantErr     bool
-		errContains string
+		expectedErr error
 	}{
 		{
 			name:       "valid order",
@@ -34,14 +34,14 @@ func TestNewOrder(t *testing.T) {
 			customerID:  uuidv7.Nil,
 			currency:    "USD",
 			wantErr:     true,
-			errContains: "customer ID is required",
+			expectedErr: ErrCustomerIDRequired,
 		},
 		{
 			name:        "empty currency",
 			customerID:  uuidv7.New(),
 			currency:    "",
 			wantErr:     true,
-			errContains: "currency is required",
+			expectedErr: ErrCurrencyRequired,
 		},
 	}
 
@@ -51,7 +51,7 @@ func TestNewOrder(t *testing.T) {
 
 			if tt.wantErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errContains)
+				assert.ErrorIs(t, err, tt.expectedErr)
 				return
 			}
 
@@ -76,7 +76,7 @@ func TestOrder_AddLine(t *testing.T) {
 		unitPrice   int64
 		currency    string
 		wantErr     bool
-		errContains string
+		expectedErr error
 	}{
 		{
 			name:      "valid line",
@@ -91,7 +91,7 @@ func TestOrder_AddLine(t *testing.T) {
 			unitPrice:   5000,
 			currency:    "USD",
 			wantErr:     true,
-			errContains: "quantity must be greater than zero",
+			expectedErr: ErrInvalidQuantity,
 		},
 		{
 			name:        "negative quantity",
@@ -99,14 +99,14 @@ func TestOrder_AddLine(t *testing.T) {
 			unitPrice:   5000,
 			currency:    "USD",
 			wantErr:     true,
-			errContains: "quantity must be greater than zero",
+			expectedErr: ErrInvalidQuantity,
 		},
 		{
-			name:        "zero unit price",
-			quantity:    2,
-			unitPrice:   0,
-			currency:    "USD",
-			wantErr:     false, // Zero price is allowed
+			name:      "zero unit price",
+			quantity:  2,
+			unitPrice: 0,
+			currency:  "USD",
+			wantErr:   false, // Zero price is allowed
 		},
 		{
 			name:        "negative unit price",
@@ -114,7 +114,7 @@ func TestOrder_AddLine(t *testing.T) {
 			unitPrice:   -1000,
 			currency:    "USD",
 			wantErr:     true,
-			errContains: "price cannot be negative",
+			expectedErr: ErrInvalidPrice,
 		},
 		{
 			name:        "currency mismatch",
@@ -122,7 +122,7 @@ func TestOrder_AddLine(t *testing.T) {
 			unitPrice:   5000,
 			currency:    "EUR",
 			wantErr:     true,
-			errContains: "currency",
+			expectedErr: ErrCurrencyMismatch,
 		},
 	}
 
@@ -138,7 +138,7 @@ func TestOrder_AddLine(t *testing.T) {
 
 			if tt.wantErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errContains)
+				assert.ErrorIs(t, err, tt.expectedErr)
 				return
 			}
 
@@ -198,7 +198,7 @@ func TestOrder_RemoveLine(t *testing.T) {
 
 	err = order.RemoveLine(uuidv7.New())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "order line not found")
+	assert.ErrorIs(t, err, ErrOrderLineNotFound)
 }
 
 func TestOrder_UpdateLineQuantity(t *testing.T) {
@@ -207,7 +207,7 @@ func TestOrder_UpdateLineQuantity(t *testing.T) {
 		initialQuantity int
 		newQuantity     int
 		wantErr         bool
-		errContains     string
+		expectedErr     error
 	}{
 		{
 			name:            "increase quantity",
@@ -226,14 +226,14 @@ func TestOrder_UpdateLineQuantity(t *testing.T) {
 			initialQuantity: 3,
 			newQuantity:     0,
 			wantErr:         true,
-			errContains:     "quantity must be greater than zero",
+			expectedErr:     ErrInvalidQuantity,
 		},
 		{
 			name:            "negative quantity",
 			initialQuantity: 3,
 			newQuantity:     -1,
 			wantErr:         true,
-			errContains:     "quantity must be greater than zero",
+			expectedErr:     ErrInvalidQuantity,
 		},
 	}
 
@@ -253,7 +253,7 @@ func TestOrder_UpdateLineQuantity(t *testing.T) {
 
 			if tt.wantErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errContains)
+				assert.ErrorIs(t, err, tt.expectedErr)
 				assert.Equal(t, initialTotal, order.Total.Amount)
 				return
 			}
@@ -273,7 +273,7 @@ func TestOrder_Confirm(t *testing.T) {
 		name        string
 		addLines    bool
 		wantErr     bool
-		errContains string
+		expectedErr error
 	}{
 		{
 			name:     "confirm with lines",
@@ -284,7 +284,7 @@ func TestOrder_Confirm(t *testing.T) {
 			name:        "confirm without lines",
 			addLines:    false,
 			wantErr:     true,
-			errContains: "order must have at least one line",
+			expectedErr: ErrOrderEmpty,
 		},
 	}
 
@@ -302,7 +302,7 @@ func TestOrder_Confirm(t *testing.T) {
 
 			if tt.wantErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errContains)
+				assert.ErrorIs(t, err, tt.expectedErr)
 				assert.Equal(t, OrderStatusPending, order.Status)
 				return
 			}
@@ -312,7 +312,7 @@ func TestOrder_Confirm(t *testing.T) {
 
 			err = order.Confirm()
 			require.Error(t, err)
-			assert.Contains(t, err.Error(), "invalid order status")
+			assert.ErrorIs(t, err, ErrInvalidOrderStatus)
 		})
 	}
 }
@@ -326,7 +326,7 @@ func TestOrder_StartProcessing(t *testing.T) {
 
 	err = order.StartProcessing()
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid order status")
+	assert.ErrorIs(t, err, ErrInvalidOrderStatus)
 
 	err = order.Confirm()
 	require.NoError(t, err)
@@ -337,7 +337,7 @@ func TestOrder_StartProcessing(t *testing.T) {
 
 	err = order.StartProcessing()
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid order status")
+	assert.ErrorIs(t, err, ErrInvalidOrderStatus)
 }
 
 func TestOrder_MarkFulfilled(t *testing.T) {
@@ -349,7 +349,7 @@ func TestOrder_MarkFulfilled(t *testing.T) {
 
 	err = order.MarkFulfilled()
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid order status")
+	assert.ErrorIs(t, err, ErrInvalidOrderStatus)
 
 	err = order.Confirm()
 	require.NoError(t, err)
@@ -363,7 +363,7 @@ func TestOrder_MarkFulfilled(t *testing.T) {
 
 	err = order.MarkFulfilled()
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid order status")
+	assert.ErrorIs(t, err, ErrInvalidOrderStatus)
 }
 
 func TestOrder_Cancel(t *testing.T) {
@@ -371,7 +371,7 @@ func TestOrder_Cancel(t *testing.T) {
 		name          string
 		initialStatus OrderStatus
 		wantErr       bool
-		errContains   string
+		expectedErr   error
 	}{
 		{
 			name:          "cancel pending",
@@ -392,7 +392,7 @@ func TestOrder_Cancel(t *testing.T) {
 			name:          "cannot cancel fulfilled",
 			initialStatus: OrderStatusFulfilled,
 			wantErr:       true,
-			errContains:   "cannot cancel fulfilled order",
+			expectedErr:   ErrCannotCancelFulfilled,
 		},
 	}
 
@@ -426,7 +426,7 @@ func TestOrder_Cancel(t *testing.T) {
 
 			if tt.wantErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errContains)
+				assert.ErrorIs(t, err, tt.expectedErr)
 				assert.Equal(t, tt.initialStatus, order.Status)
 				return
 			}

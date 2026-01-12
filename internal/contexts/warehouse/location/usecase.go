@@ -2,7 +2,6 @@ package location
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -59,13 +58,13 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
 	// Check if code already exists
 	existing, err := uc.repo.GetByCode(ctx, code)
 	if err == nil && existing != nil {
-		return nil, fmt.Errorf("location with code %s already exists", code)
+		return nil, ErrLocationCodeExists
 	}
 
 	// Create new location
 	location, err := NewLocation(code, name, locationType)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create location: %w", err)
+		return nil, ErrLocationCreateFailed
 	}
 
 	// Set optional fields
@@ -77,20 +76,20 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
 	if parentID != nil {
 		parent, err := uc.repo.GetByID(ctx, *parentID)
 		if err != nil {
-			return nil, fmt.Errorf("parent location not found: %w", err)
+			return nil, ErrParentLocationNotFound
 		}
 		if parent.DeletedAt != nil {
-			return nil, fmt.Errorf("parent location is deleted")
+			return nil, ErrParentLocationDeleted
 		}
 
 		if err := location.SetParent(parent.ID, parent.Path, parent.Level); err != nil {
-			return nil, fmt.Errorf("failed to set parent: %w", err)
+			return nil, ErrLocationUpdateFailed
 		}
 	}
 
 	// Save to repository
 	if err := uc.repo.Create(ctx, location); err != nil {
-		return nil, fmt.Errorf("failed to save location: %w", err)
+		return nil, ErrLocationUpdateFailed
 	}
 
 	return location, nil
@@ -100,7 +99,7 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
 func (uc *useCase) GetLocation(ctx context.Context, id uuidv7.UUID) (*Location, error) {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("location not found: %w", err)
+		return nil, ErrLocationNotFound
 	}
 	return location, nil
 }
@@ -109,7 +108,7 @@ func (uc *useCase) GetLocation(ctx context.Context, id uuidv7.UUID) (*Location, 
 func (uc *useCase) GetLocationByCode(ctx context.Context, code string) (*Location, error) {
 	location, err := uc.repo.GetByCode(ctx, code)
 	if err != nil {
-		return nil, fmt.Errorf("location not found: %w", err)
+		return nil, ErrLocationNotFound
 	}
 	return location, nil
 }
@@ -118,11 +117,11 @@ func (uc *useCase) GetLocationByCode(ctx context.Context, code string) (*Locatio
 func (uc *useCase) UpdateLocation(ctx context.Context, id uuidv7.UUID, name, description *string) (*Location, error) {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("location not found: %w", err)
+		return nil, ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return nil, fmt.Errorf("cannot update deleted location")
+		return nil, ErrLocationAlreadyDeleted
 	}
 
 	// Update fields
@@ -136,7 +135,7 @@ func (uc *useCase) UpdateLocation(ctx context.Context, id uuidv7.UUID, name, des
 	location.Touch()
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return nil, fmt.Errorf("failed to update location: %w", err)
+		return nil, ErrLocationUpdateFailed
 	}
 
 	return location, nil
@@ -146,29 +145,29 @@ func (uc *useCase) UpdateLocation(ctx context.Context, id uuidv7.UUID, name, des
 func (uc *useCase) DeleteLocation(ctx context.Context, id uuidv7.UUID) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("location already deleted")
+		return ErrLocationAlreadyDeleted
 	}
 
 	// Check for children
 	children, err := uc.repo.ListByParent(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to check children: %w", err)
+		return err
 	}
 	if len(children) > 0 {
-		return fmt.Errorf("cannot delete location with %d children", len(children))
+		return ErrLocationHasChildren
 	}
 
 	// Check occupancy
 	if location.CurrentOccupancy > 0 {
-		return fmt.Errorf("cannot delete location with %d items", location.CurrentOccupancy)
+		return ErrLocationHasItems
 	}
 
 	if err := uc.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("failed to delete location: %w", err)
+		return ErrLocationDeleteFailed
 	}
 
 	return nil
@@ -185,12 +184,12 @@ func (uc *useCase) ListLocations(ctx context.Context, page, pageSize int) ([]*Lo
 
 	locations, err := uc.repo.List(ctx, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list locations: %w", err)
+		return nil, 0, ErrLocationListFailed
 	}
 
 	total, err := uc.repo.Count(ctx)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to count locations: %w", err)
+		return nil, 0, ErrLocationListFailed
 	}
 
 	return locations, total, nil
@@ -207,7 +206,7 @@ func (uc *useCase) ListLocationsByType(ctx context.Context, locationType Locatio
 
 	locations, err := uc.repo.ListByType(ctx, locationType, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list locations by type: %w", err)
+		return nil, 0, ErrLocationListFailed
 	}
 
 	// Count by type (need to implement in repository)
@@ -224,15 +223,15 @@ func (uc *useCase) ListLocationsByParent(ctx context.Context, parentID uuidv7.UU
 	// Validate parent exists
 	parent, err := uc.repo.GetByID(ctx, parentID)
 	if err != nil {
-		return nil, fmt.Errorf("parent location not found: %w", err)
+		return nil, ErrParentLocationNotFound
 	}
 	if parent.DeletedAt != nil {
-		return nil, fmt.Errorf("parent location is deleted")
+		return nil, ErrParentLocationDeleted
 	}
 
 	locations, err := uc.repo.ListByParent(ctx, parentID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list children: %w", err)
+		return nil, ErrLocationListFailed
 	}
 
 	return locations, nil
@@ -249,7 +248,7 @@ func (uc *useCase) ListLocationsByStatus(ctx context.Context, status LocationSta
 
 	locations, err := uc.repo.ListByStatus(ctx, status, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list locations by status: %w", err)
+		return nil, 0, ErrLocationListFailed
 	}
 
 	// Count by status
@@ -272,7 +271,7 @@ func (uc *useCase) ListAvailableLocations(ctx context.Context, page, pageSize in
 
 	locations, err := uc.repo.ListAvailable(ctx, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list available locations: %w", err)
+		return nil, 0, ErrLocationListFailed
 	}
 
 	total := len(locations)
@@ -288,10 +287,10 @@ func (uc *useCase) GetLocationChildren(ctx context.Context, id uuidv7.UUID, recu
 	// Validate parent exists
 	parent, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("location not found: %w", err)
+		return nil, ErrLocationNotFound
 	}
 	if parent.DeletedAt != nil {
-		return nil, fmt.Errorf("location is deleted")
+		return nil, ErrLocationDeleted
 	}
 
 	if recursive {
@@ -305,7 +304,7 @@ func (uc *useCase) GetLocationChildren(ctx context.Context, id uuidv7.UUID, recu
 func (uc *useCase) GetLocationHierarchy(ctx context.Context, id uuidv7.UUID) ([]*Location, error) {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("location not found: %w", err)
+		return nil, ErrLocationNotFound
 	}
 
 	// Parse path and get all ancestors
@@ -329,19 +328,19 @@ func (uc *useCase) GetLocationHierarchy(ctx context.Context, id uuidv7.UUID) ([]
 func (uc *useCase) ActivateLocation(ctx context.Context, id uuidv7.UUID) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot activate deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	if err := location.Activate(); err != nil {
-		return fmt.Errorf("failed to activate: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -351,19 +350,19 @@ func (uc *useCase) ActivateLocation(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) DeactivateLocation(ctx context.Context, id uuidv7.UUID) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot deactivate deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	if err := location.Deactivate(); err != nil {
-		return fmt.Errorf("failed to deactivate: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -373,18 +372,18 @@ func (uc *useCase) DeactivateLocation(ctx context.Context, id uuidv7.UUID) error
 func (uc *useCase) SetLocationMaintenance(ctx context.Context, id uuidv7.UUID) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot set maintenance for deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	location.Status = LocationStatusMaintenance
 	location.Touch()
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -394,19 +393,19 @@ func (uc *useCase) SetLocationMaintenance(ctx context.Context, id uuidv7.UUID) e
 func (uc *useCase) UpdateLocationCapacity(ctx context.Context, id uuidv7.UUID, capacity int, isLimited bool) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot update deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	if err := location.SetCapacity(capacity, isLimited); err != nil {
-		return fmt.Errorf("failed to set capacity: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -416,19 +415,19 @@ func (uc *useCase) UpdateLocationCapacity(ctx context.Context, id uuidv7.UUID, c
 func (uc *useCase) UpdateLocationDimensions(ctx context.Context, id uuidv7.UUID, width, height, depth float64) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot update deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	if err := location.SetDimensions(width, height, depth); err != nil {
-		return fmt.Errorf("failed to set dimensions: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -438,11 +437,11 @@ func (uc *useCase) UpdateLocationDimensions(ctx context.Context, id uuidv7.UUID,
 func (uc *useCase) UpdateLocationFlags(ctx context.Context, id uuidv7.UUID, isPickable, isPutawayable bool) error {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("location not found: %w", err)
+		return ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return fmt.Errorf("cannot update deleted location")
+		return ErrLocationAlreadyDeleted
 	}
 
 	location.IsPickable = isPickable
@@ -450,7 +449,7 @@ func (uc *useCase) UpdateLocationFlags(ctx context.Context, id uuidv7.UUID, isPi
 	location.Touch()
 
 	if err := uc.repo.Update(ctx, location); err != nil {
-		return fmt.Errorf("failed to update location: %w", err)
+		return ErrLocationUpdateFailed
 	}
 
 	return nil
@@ -460,11 +459,11 @@ func (uc *useCase) UpdateLocationFlags(ctx context.Context, id uuidv7.UUID, isPi
 func (uc *useCase) CanReceiveItems(ctx context.Context, id uuidv7.UUID, quantity int) (bool, error) {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return false, fmt.Errorf("location not found: %w", err)
+		return false, ErrLocationNotFound
 	}
 
 	if location.DeletedAt != nil {
-		return false, fmt.Errorf("location is deleted")
+		return false, ErrLocationDeleted
 	}
 
 	if !location.IsPutawayable {
@@ -487,7 +486,7 @@ func (uc *useCase) CanReceiveItems(ctx context.Context, id uuidv7.UUID, quantity
 func (uc *useCase) GetAvailableCapacity(ctx context.Context, id uuidv7.UUID) (int, error) {
 	location, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return 0, fmt.Errorf("location not found: %w", err)
+		return 0, ErrLocationNotFound
 	}
 
 	if !location.IsLimited {

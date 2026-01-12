@@ -2,7 +2,6 @@ package stockmovement
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -64,17 +63,17 @@ func (uc *useCase) RecordMovement(ctx context.Context, inventoryID uuidv7.UUID, 
 	// Create movement
 	movement, err := NewStockMovement(inventoryID, movementType, quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create stock movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("stock movement validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save stock movement: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -85,12 +84,12 @@ func (uc *useCase) RecordReceipt(ctx context.Context, inventoryID uuidv7.UUID, q
 	// Create receipt movement
 	movement, err := NewStockMovement(inventoryID, MovementTypeReceipt, quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create receipt movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set cost information
 	if err := movement.SetCost(unitCostCents, currencyCode); err != nil {
-		return nil, fmt.Errorf("failed to set cost: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set reference
@@ -98,12 +97,12 @@ func (uc *useCase) RecordReceipt(ctx context.Context, inventoryID uuidv7.UUID, q
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("receipt validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save receipt: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -114,7 +113,7 @@ func (uc *useCase) RecordReservation(ctx context.Context, inventoryID uuidv7.UUI
 	// Create reservation movement (negative quantity)
 	movement, err := NewStockMovement(inventoryID, MovementTypeReservation, -quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create reservation movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set order reference
@@ -122,12 +121,12 @@ func (uc *useCase) RecordReservation(ctx context.Context, inventoryID uuidv7.UUI
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("reservation validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save reservation: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -138,7 +137,7 @@ func (uc *useCase) RecordCommit(ctx context.Context, inventoryID uuidv7.UUID, qu
 	// Create commit movement (negative quantity)
 	movement, err := NewStockMovement(inventoryID, MovementTypeCommit, -quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create commit movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set order reference
@@ -146,12 +145,12 @@ func (uc *useCase) RecordCommit(ctx context.Context, inventoryID uuidv7.UUID, qu
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("commit validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save commit: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -162,22 +161,22 @@ func (uc *useCase) RecordAdjustment(ctx context.Context, inventoryID uuidv7.UUID
 	// Create adjustment movement
 	movement, err := NewStockMovement(inventoryID, MovementTypeAdjustment, quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create adjustment movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set reason (required for adjustments)
 	if err := movement.SetReason(reason); err != nil {
-		return nil, fmt.Errorf("failed to set reason: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("adjustment validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save adjustment: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -188,22 +187,22 @@ func (uc *useCase) RecordTransfer(ctx context.Context, inventoryID uuidv7.UUID, 
 	// Create transfer movement
 	movement, err := NewStockMovement(inventoryID, MovementTypeTransfer, quantity, quantityBefore, createdBy)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create transfer movement: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Set location information
 	if err := movement.SetLocation(&fromWarehouse, &toWarehouse, fromLocation, toLocation); err != nil {
-		return nil, fmt.Errorf("failed to set location: %w", err)
+		return nil, ErrStockMovementCreateFailed
 	}
 
 	// Validate
 	if err := movement.Validate(); err != nil {
-		return nil, fmt.Errorf("transfer validation failed: %w", err)
+		return nil, ErrStockMovementValidationFailed
 	}
 
 	// Persist
 	if err := uc.repo.Create(ctx, movement); err != nil {
-		return nil, fmt.Errorf("failed to save transfer: %w", err)
+		return nil, ErrStockMovementSaveFailed
 	}
 
 	return movement, nil
@@ -229,7 +228,7 @@ func (uc *useCase) GetMovementsByInventory(ctx context.Context, inventoryID uuid
 
 	movements, total, err := uc.repo.GetByInventoryID(ctx, inventoryID, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get movements by inventory: %w", err)
+		return nil, 0, ErrStockMovementListFailed
 	}
 
 	return movements, total, nil
@@ -238,15 +237,15 @@ func (uc *useCase) GetMovementsByInventory(ctx context.Context, inventoryID uuid
 // GetMovementsByReference retrieves movements by reference (order, PO, etc)
 func (uc *useCase) GetMovementsByReference(ctx context.Context, referenceType string, referenceID uuidv7.UUID) ([]*StockMovement, error) {
 	if referenceType == "" {
-		return nil, fmt.Errorf("reference type is required")
+		return nil, ErrReferenceTypeRequired
 	}
 	if referenceID == uuidv7.Nil {
-		return nil, fmt.Errorf("reference ID is required")
+		return nil, ErrReferenceIDRequired
 	}
 
 	movements, err := uc.repo.GetByReference(ctx, referenceType, referenceID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get movements by reference: %w", err)
+		return nil, ErrStockMovementListFailed
 	}
 
 	return movements, nil
@@ -267,7 +266,7 @@ func (uc *useCase) GetMovementsByType(ctx context.Context, movementType Movement
 
 	movements, total, err := uc.repo.GetByType(ctx, movementType, startDate, endDate, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get movements by type: %w", err)
+		return nil, 0, ErrStockMovementListFailed
 	}
 
 	return movements, total, nil
@@ -281,7 +280,7 @@ func (uc *useCase) GetRecentMovements(ctx context.Context, limit int) ([]*StockM
 
 	movements, err := uc.repo.GetRecentMovements(ctx, limit)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get recent movements: %w", err)
+		return nil, ErrStockMovementListFailed
 	}
 
 	return movements, nil
@@ -295,7 +294,7 @@ func (uc *useCase) GetInventorySummary(ctx context.Context, inventoryID uuidv7.U
 
 	totalIn, totalOut, err := uc.repo.GetSummaryByInventory(ctx, inventoryID, startDate, endDate)
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to get inventory summary: %w", err)
+		return 0, 0, ErrStockMovementSummaryFailed
 	}
 
 	return totalIn, totalOut, nil

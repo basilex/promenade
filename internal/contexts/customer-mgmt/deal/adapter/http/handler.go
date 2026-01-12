@@ -72,7 +72,15 @@ func (h *DealHandler) Create(c *gin.Context) {
 		req.ExpectedCloseDate,
 	)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_DEAL_FAILED", "Failed to create deal")
+		// Validation errors → 400
+		if errors.Is(err, deal.ErrDealNameEmpty) ||
+			errors.Is(err, deal.ErrDealCustomerRequired) ||
+			errors.Is(err, deal.ErrDealValueNegative) ||
+			errors.Is(err, deal.ErrDealDateInPast) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_DEAL_FAILED", "Internal server error")
 		return
 	}
 
@@ -156,11 +164,21 @@ func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
 	
 	d, err := h.dealUC.UpdateDealBasicInfo(c.Request.Context(), id, name, description)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, deal.ErrDealNameEmpty) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+			return
+		}
 		if errors.Is(err, deal.ErrDealNotFound) {
 			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_FAILED", "Failed to update deal")
+		// Business logic violations → 409
+		if errors.Is(err, deal.ErrDealClosedMutation) {
+			response.ErrorResponse(c, http.StatusConflict, "BUSINESS_RULE_VIOLATION", "Cannot update closed deal")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_FAILED", "Internal server error")
 		return
 	}
 
@@ -196,11 +214,21 @@ func (h *DealHandler) UpdateValue(c *gin.Context) {
 
 	d, err := h.dealUC.UpdateDealValue(c.Request.Context(), id, req.Value, req.Currency)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, deal.ErrDealValueNegative) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+			return
+		}
 		if errors.Is(err, deal.ErrDealNotFound) {
 			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_VALUE_FAILED", "Failed to update deal value")
+		// Business logic violations → 409
+		if errors.Is(err, deal.ErrDealClosedMutation) {
+			response.ErrorResponse(c, http.StatusConflict, "BUSINESS_RULE_VIOLATION", "Cannot update closed deal")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_DEAL_VALUE_FAILED", "Internal server error")
 		return
 	}
 
@@ -240,7 +268,14 @@ func (h *DealHandler) MoveToStage(c *gin.Context) {
 			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MOVE_DEAL_FAILED", "Failed to move deal to stage")
+		// Business logic violations → 409
+		if errors.Is(err, deal.ErrDealInvalidStageTransition) ||
+			errors.Is(err, deal.ErrDealTerminalStage) ||
+			errors.Is(err, deal.ErrDealClosedMutation) {
+			response.ErrorResponse(c, http.StatusConflict, "BUSINESS_RULE_VIOLATION", "Cannot perform this stage transition")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "MOVE_DEAL_FAILED", "Internal server error")
 		return
 	}
 
@@ -276,11 +311,24 @@ func (h *DealHandler) MarkAsWon(c *gin.Context) {
 
 	d, err := h.dealUC.MarkDealAsWon(c.Request.Context(), id, req.CloseDate)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, deal.ErrDealDateInPast) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+			return
+		}
 		if errors.Is(err, deal.ErrDealNotFound) {
 			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_WON_FAILED", "Failed to mark deal as won")
+		// Business logic violations → 409
+		if errors.Is(err, deal.ErrDealAlreadyWon) ||
+			errors.Is(err, deal.ErrDealAlreadyLost) ||
+			errors.Is(err, deal.ErrDealCannotMarkLostAsWon) ||
+			errors.Is(err, deal.ErrDealClosedMutation) {
+			response.ErrorResponse(c, http.StatusConflict, "BUSINESS_RULE_VIOLATION", "Cannot change deal state")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_WON_FAILED", "Internal server error")
 		return
 	}
 
@@ -320,11 +368,24 @@ func (h *DealHandler) MarkAsLost(c *gin.Context) {
 	}
 	d, err := h.dealUC.MarkDealAsLost(c.Request.Context(), id, reason)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, deal.ErrDealLossReasonRequired) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+			return
+		}
 		if errors.Is(err, deal.ErrDealNotFound) {
 			response.ErrorResponse(c, http.StatusNotFound, "DEAL_NOT_FOUND", "Deal not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_LOST_FAILED", "Failed to mark deal as lost")
+		// Business logic violations → 409
+		if errors.Is(err, deal.ErrDealAlreadyLost) ||
+			errors.Is(err, deal.ErrDealAlreadyWon) ||
+			errors.Is(err, deal.ErrDealCannotMarkWonAsLost) ||
+			errors.Is(err, deal.ErrDealClosedMutation) {
+			response.ErrorResponse(c, http.StatusConflict, "BUSINESS_RULE_VIOLATION", "Cannot change deal state")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "MARK_LOST_FAILED", "Internal server error")
 		return
 	}
 

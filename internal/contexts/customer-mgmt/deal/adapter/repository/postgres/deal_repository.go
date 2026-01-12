@@ -204,7 +204,7 @@ func (r *dealRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*deal.Dea
 	var row dealRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("deal not found")
+			return nil, deal.ErrDealNotFound
 		}
 		return nil, fmt.Errorf("failed to get deal: %w", err)
 	}
@@ -246,7 +246,7 @@ func (r *dealRepository) Update(ctx context.Context, d *deal.Deal) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("deal not found")
+		return deal.ErrDealNotFound
 	}
 
 	return nil
@@ -271,7 +271,7 @@ func (r *dealRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("deal not found")
+		return deal.ErrDealNotFound
 	}
 
 	return nil

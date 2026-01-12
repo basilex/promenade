@@ -502,11 +502,18 @@ func (h *CompanyHandler) UpdateBusinessInfo(c *gin.Context) {
 		currency,
 	)
 	if err != nil {
-		if errors.Is(err, company.ErrCompanyNotFound) {
+		switch {
+		case errors.Is(err, company.ErrCompanySizeInvalid):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_SIZE", "Invalid company size")
+		case errors.Is(err, company.ErrEmployeeCountNegative):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_EMPLOYEE_COUNT", "Employee count cannot be negative")
+		case errors.Is(err, company.ErrRevenueNegative):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_REVENUE", "Revenue cannot be negative")
+		case errors.Is(err, company.ErrCompanyNotFound):
 			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
-			return
+		default:
+			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company business info")
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company business info")
 		return
 	}
 
@@ -548,11 +555,18 @@ func (h *CompanyHandler) SetParentCompany(c *gin.Context) {
 
 	comp, err := h.companyUC.SetParentCompany(c.Request.Context(), id, parentID)
 	if err != nil {
-		if errors.Is(err, company.ErrCompanyNotFound) {
+		switch {
+		case errors.Is(err, company.ErrCompanyCannotBeOwnParent):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_PARENT", "Company cannot be its own parent")
+		case errors.Is(err, company.ErrParentCompanyNotFound):
+			response.ErrorResponse(c, http.StatusBadRequest, "PARENT_NOT_FOUND", "Parent company not found")
+		case errors.Is(err, company.ErrParentCompanyDeleted):
+			response.ErrorResponse(c, http.StatusBadRequest, "PARENT_DELETED", "Parent company is deleted")
+		case errors.Is(err, company.ErrCompanyNotFound):
 			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
-			return
+		default:
+			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to set parent company")
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to set parent company")
 		return
 	}
 
@@ -588,11 +602,16 @@ func (h *CompanyHandler) UpdateDescription(c *gin.Context) {
 
 	comp, err := h.companyUC.UpdateCompanyDescription(c.Request.Context(), id, req.Description)
 	if err != nil {
-		if errors.Is(err, company.ErrCompanyNotFound) {
+		switch {
+		case errors.Is(err, company.ErrCompanyNameRequired):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_NAME", "Company name is required")
+		case errors.Is(err, company.ErrCompanyTypeInvalid):
+			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_TYPE", "Invalid company type")
+		case errors.Is(err, company.ErrCompanyNotFound):
 			response.ErrorResponse(c, http.StatusNotFound, "COMPANY_NOT_FOUND", "Company not found")
-			return
+		default:
+			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company basic info")
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update company description")
 		return
 	}
 

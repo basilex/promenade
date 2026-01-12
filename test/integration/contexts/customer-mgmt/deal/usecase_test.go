@@ -2,6 +2,7 @@ package deal_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -141,7 +142,7 @@ func TestDealUseCase_GetDeal_NotFound(t *testing.T) {
 	// Try to get non-existent deal
 	_, err := dealUC.GetDeal(ctx, uuidv7.New())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "deal not found")
+	assert.True(t, errors.Is(err, deal.ErrDealNotFound))
 }
 
 // TestDealUseCase_UpdateDealBasicInfo tests updating deal name and description
@@ -529,7 +530,7 @@ func TestDealUseCase_DeleteDeal(t *testing.T) {
 	// Verify deleted
 	_, err = dealUC.GetDeal(ctx, d.ID)
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "deal not found")
+	assert.True(t, errors.Is(err, deal.ErrDealNotFound))
 }
 
 // TestDealUseCase_ListDeals tests listing deals with pagination

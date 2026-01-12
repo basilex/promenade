@@ -64,7 +64,7 @@ func (uc *useCase) Register(ctx context.Context, email, name, password string) (
 	// Check if email already exists
 	exists, err := uc.userRepo.ExistsByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to check email existence: %w", err)
+		return nil, ErrEmailCheckFailed
 	}
 	if exists {
 		return nil, ErrEmailAlreadyExists
@@ -73,12 +73,12 @@ func (uc *useCase) Register(ctx context.Context, email, name, password string) (
 	// Create new user
 	user, err := NewUser(email, password)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, err
 	}
 
 	// Save to repository
 	if err := uc.userRepo.Create(ctx, user); err != nil {
-		return nil, fmt.Errorf("failed to save user: %w", err)
+		return nil, ErrUserSaveFailed
 	}
 
 	// Assign default "user" role
@@ -117,7 +117,7 @@ func (uc *useCase) Authenticate(ctx context.Context, email, password string) (*U
 		if errors.Is(err, ErrUserNotFound) {
 			return nil, ErrInvalidCredentials
 		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, ErrUserGetFailed
 	}
 
 	// Check if account is locked
@@ -135,7 +135,7 @@ func (uc *useCase) Authenticate(ctx context.Context, email, password string) (*U
 		// Record failed login
 		user.RecordFailedLogin()
 		if updateErr := uc.userRepo.Update(ctx, user); updateErr != nil {
-			return nil, fmt.Errorf("failed to update failed login count: %w", updateErr)
+			return nil, ErrUserUpdateFailed
 		}
 		return nil, ErrInvalidCredentials
 	}
@@ -143,7 +143,7 @@ func (uc *useCase) Authenticate(ctx context.Context, email, password string) (*U
 	// Record successful login
 	user.RecordLogin()
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return nil, fmt.Errorf("failed to update login time: %w", err)
+		return nil, ErrUserUpdateFailed
 	}
 
 	return user, nil
@@ -156,7 +156,7 @@ func (uc *useCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*User, erro
 		if errors.Is(err, ErrUserNotFound) {
 			return nil, ErrUserNotFound
 		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, ErrUserGetFailed
 	}
 	return user, nil
 }
@@ -168,7 +168,7 @@ func (uc *useCase) GetUserByEmail(ctx context.Context, email string) (*User, err
 		if errors.Is(err, ErrUserNotFound) {
 			return nil, ErrUserNotFound
 		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, ErrUserGetFailed
 	}
 	return user, nil
 }
@@ -177,7 +177,7 @@ func (uc *useCase) GetUserByEmail(ctx context.Context, email string) (*User, err
 func (uc *useCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("verify email: %w", err)
 	}
 
 	if user.EmailVerified {
@@ -187,7 +187,7 @@ func (uc *useCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
 	user.VerifyEmail()
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -197,7 +197,7 @@ func (uc *useCase) VerifyEmail(ctx context.Context, userID uuidv7.UUID) error {
 func (uc *useCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPassword, newPassword string) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("change password: %w", err)
 	}
 
 	// Verify old password
@@ -207,12 +207,12 @@ func (uc *useCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPa
 
 	// Change password
 	if err := user.ChangePassword(newPassword); err != nil {
-		return fmt.Errorf("failed to change password: %w", err)
+		return err
 	}
 
 	// Save
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -222,13 +222,13 @@ func (uc *useCase) ChangePassword(ctx context.Context, userID uuidv7.UUID, oldPa
 func (uc *useCase) SuspendUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("suspend user: %w", err)
 	}
 
 	user.Suspend()
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -238,13 +238,13 @@ func (uc *useCase) SuspendUser(ctx context.Context, userID uuidv7.UUID) error {
 func (uc *useCase) BanUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("ban user: %w", err)
 	}
 
 	user.Ban()
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -254,13 +254,13 @@ func (uc *useCase) BanUser(ctx context.Context, userID uuidv7.UUID) error {
 func (uc *useCase) ActivateUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("activate user: %w", err)
 	}
 
 	user.Activate()
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -270,13 +270,13 @@ func (uc *useCase) ActivateUser(ctx context.Context, userID uuidv7.UUID) error {
 func (uc *useCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) error {
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
+		return fmt.Errorf("unlock user: %w", err)
 	}
 
 	user.UnlockAccount()
 
 	if err := uc.userRepo.Update(ctx, user); err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return ErrUserUpdateFailed
 	}
 
 	return nil
@@ -286,7 +286,7 @@ func (uc *useCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) error {
 func (uc *useCase) ListUsers(ctx context.Context, limit, offset int) ([]*User, int, error) {
 	users, total, err := uc.userRepo.ListUsers(ctx, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list users: %w", err)
+		return nil, 0, ErrListUsersFailed
 	}
 	return users, total, nil
 }

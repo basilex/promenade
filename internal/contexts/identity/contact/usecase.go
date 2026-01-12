@@ -69,7 +69,7 @@ func (uc *useCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, e
 			return nil, fmt.Errorf("failed to check primary contact: %w", err)
 		}
 		if exists {
-			return nil, fmt.Errorf("primary email contact already exists for user")
+			return nil, fmt.Errorf("%w: primary email contact already exists for user", ErrPrimaryContactExists)
 		}
 		contact.SetAsPrimary()
 	}

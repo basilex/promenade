@@ -211,7 +211,7 @@ func TestUseCase_CreateProduct_RepositoryExistsError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, product)
-	assert.Contains(t, err.Error(), "database connection error")
+	assert.True(t, errors.Is(err, ErrCheckSKUFailed))
 }
 
 func TestUseCase_CreateProduct_RepositoryCreateError(t *testing.T) {
@@ -229,7 +229,7 @@ func TestUseCase_CreateProduct_RepositoryCreateError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, product)
-	assert.Contains(t, err.Error(), "database write error")
+	assert.True(t, errors.Is(err, ErrCreateFailed))
 }
 
 // ============================================================================
@@ -382,7 +382,7 @@ func TestUseCase_UpdateProduct_RepositoryError(t *testing.T) {
 	err := uc.UpdateProduct(context.Background(), product)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "database write error")
+	assert.True(t, errors.Is(err, ErrUpdateFailed))
 }
 
 // ============================================================================
@@ -437,7 +437,7 @@ func TestUseCase_DeleteProduct_RepositoryError(t *testing.T) {
 	err := uc.DeleteProduct(context.Background(), product.ID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "database delete error")
+	assert.True(t, errors.Is(err, ErrDeleteFailed))
 }
 
 // ============================================================================
@@ -489,7 +489,7 @@ func TestUseCase_ListProducts_RepositoryError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, products)
-	assert.Contains(t, err.Error(), "database query error")
+	assert.True(t, errors.Is(err, ErrListFailed))
 }
 
 // ============================================================================
@@ -626,7 +626,7 @@ func TestUseCase_CountProducts_RepositoryError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, 0, count)
-	assert.Contains(t, err.Error(), "database count error")
+	assert.True(t, errors.Is(err, ErrCountFailed))
 }
 
 // ============================================================================

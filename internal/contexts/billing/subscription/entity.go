@@ -1,7 +1,6 @@
 package subscription
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -10,11 +9,6 @@ import (
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
-)
-
-// Subscription errors
-var (
-	ErrSubscriptionNotFound = errors.New("subscription not found")
 )
 
 // Subscription is the aggregate root for recurring billing subscriptions.
@@ -78,21 +72,21 @@ func NewSubscription(
 	trialDays int,
 ) (*Subscription, error) {
 	if customerID == uuidv7.Nil {
-		return nil, fmt.Errorf("customer ID is required")
+		return nil, ErrCustomerIDRequired
 	}
 	if planID == "" {
-		return nil, fmt.Errorf("plan ID is required")
+		return nil, ErrPlanIDRequired
 	}
 	if currency == "" {
-		return nil, fmt.Errorf("currency is required")
+		return nil, ErrCurrencyRequired
 	}
 	if amount <= 0 {
-		return nil, fmt.Errorf("amount must be positive")
+		return nil, ErrAmountMustBePositive
 	}
 
 	money, err := valueobject.NewMoney(amount, currency)
 	if err != nil {
-		return nil, fmt.Errorf("invalid money: %w", err)
+		return nil, ErrInvalidMoney
 	}
 
 	subscription := &Subscription{
@@ -146,7 +140,7 @@ func calculateRenewalDate(startDate time.Time, period BillingPeriod) time.Time {
 // Activate transitions subscription from trial to active status
 func (s *Subscription) Activate() error {
 	if s.Status != SubscriptionStatusTrial && s.Status != SubscriptionStatusPaused {
-		return fmt.Errorf("cannot activate subscription in %s status", s.Status)
+		return ErrCannotActivate
 	}
 
 	s.Status = SubscriptionStatusActive
@@ -157,7 +151,7 @@ func (s *Subscription) Activate() error {
 // Pause temporarily suspends the subscription
 func (s *Subscription) Pause() error {
 	if s.Status != SubscriptionStatusActive {
-		return fmt.Errorf("can only pause active subscriptions, current status: %s", s.Status)
+		return ErrCanOnlyPauseActive
 	}
 
 	s.Status = SubscriptionStatusPaused
@@ -168,7 +162,7 @@ func (s *Subscription) Pause() error {
 // Resume reactivates a paused subscription
 func (s *Subscription) Resume() error {
 	if s.Status != SubscriptionStatusPaused {
-		return fmt.Errorf("can only resume paused subscriptions, current status: %s", s.Status)
+		return ErrCanOnlyResumePaused
 	}
 
 	s.Status = SubscriptionStatusActive
@@ -179,7 +173,7 @@ func (s *Subscription) Resume() error {
 // Cancel cancels the subscription
 func (s *Subscription) Cancel(reason string, effectiveDate time.Time) error {
 	if s.Status == SubscriptionStatusCancelled || s.Status == SubscriptionStatusExpired {
-		return fmt.Errorf("subscription already in terminal status: %s", s.Status)
+		return ErrAlreadyInTerminalStatus
 	}
 
 	now := time.Now()
@@ -194,7 +188,7 @@ func (s *Subscription) Cancel(reason string, effectiveDate time.Time) error {
 // Renew extends the subscription for another billing period
 func (s *Subscription) Renew() error {
 	if s.Status != SubscriptionStatusActive {
-		return fmt.Errorf("can only renew active subscriptions, current status: %s", s.Status)
+		return ErrCanOnlyRenewActive
 	}
 
 	s.RenewalDate = calculateRenewalDate(s.RenewalDate, s.BillingPeriod)
@@ -205,7 +199,7 @@ func (s *Subscription) Renew() error {
 // Expire marks the subscription as expired
 func (s *Subscription) Expire() error {
 	if s.Status == SubscriptionStatusExpired {
-		return fmt.Errorf("subscription already expired")
+		return ErrAlreadyExpired
 	}
 
 	s.Status = SubscriptionStatusExpired
@@ -242,19 +236,19 @@ func (s *Subscription) IsPastDue() bool {
 // Validate performs business rule validation
 func (s *Subscription) Validate() error {
 	if s.CustomerID == uuidv7.Nil {
-		return fmt.Errorf("customer ID is required")
+		return ErrCustomerIDRequired
 	}
 	if s.PlanID == "" {
-		return fmt.Errorf("plan ID is required")
+		return ErrPlanIDRequired
 	}
 	if s.Amount.Amount <= 0 {
-		return fmt.Errorf("amount must be positive")
+		return ErrAmountMustBePositive
 	}
 	if s.StartDate.IsZero() {
-		return fmt.Errorf("start date is required")
+		return ErrStartDateRequired
 	}
 	if s.RenewalDate.Before(s.StartDate) {
-		return fmt.Errorf("renewal date must be after start date")
+		return ErrRenewalDateInvalid
 	}
 	return nil
 }

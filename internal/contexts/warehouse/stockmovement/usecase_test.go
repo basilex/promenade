@@ -152,7 +152,7 @@ func TestUseCase_RecordReceipt(t *testing.T) {
 
 		_, err := uc.RecordReceipt(ctx, inventoryID, 0, 100, 1000, "USD", createdBy)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "quantity cannot be zero")
+		assert.ErrorIs(t, err, ErrStockMovementCreateFailed)
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -169,7 +169,7 @@ func TestUseCase_RecordReceipt(t *testing.T) {
 
 		_, err := uc.RecordReceipt(ctx, inventoryID, 50, 100, 1000, "USD", createdBy)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "database error")
+		assert.ErrorIs(t, err, ErrStockMovementSaveFailed)
 	})
 }
 
@@ -264,7 +264,7 @@ func TestUseCase_RecordAdjustment(t *testing.T) {
 
 		_, err := uc.RecordAdjustment(ctx, inventoryID, 5, 100, "", createdBy)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "reason cannot be empty")
+		assert.ErrorIs(t, err, ErrStockMovementCreateFailed)
 	})
 }
 
@@ -381,7 +381,7 @@ func TestUseCase_GetMovementsByType(t *testing.T) {
 
 		_, _, err := uc.GetMovementsByType(ctx, MovementTypeReceipt, startDate, endDate, 1, 10)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "start date must be before end date")
+		assert.ErrorIs(t, err, ErrInvalidDateRange)
 	})
 }
 

@@ -1,7 +1,6 @@
 package customer
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -61,20 +60,20 @@ type Customer struct {
 // NewCustomer creates a new customer (Lead status)
 func NewCustomer(name, email, source string, assignedTo uuidv7.UUID) (*Customer, error) {
 	if name == "" {
-		return nil, fmt.Errorf("name is required")
+		return nil, ErrCustomerNameEmpty
 	}
 
 	emailVO, err := valueobject.NewEmail(email)
 	if err != nil {
-		return nil, fmt.Errorf("invalid email: %w", err)
+		return nil, ErrCustomerEmailInvalid
 	}
 
 	if source == "" {
-		return nil, fmt.Errorf("source is required")
+		return nil, ErrCustomerSourceEmpty
 	}
 
 	if assignedTo == uuidv7.Nil {
-		return nil, fmt.Errorf("assigned sales rep is required")
+		return nil, ErrCustomerSalesRepEmpty
 	}
 
 	return &Customer{
@@ -92,7 +91,7 @@ func NewCustomer(name, email, source string, assignedTo uuidv7.UUID) (*Customer,
 // NewB2BCustomer creates a B2B customer (linked to company)
 func NewB2BCustomer(name, email, source string, companyID, assignedTo uuidv7.UUID) (*Customer, error) {
 	if companyID == uuidv7.Nil {
-		return nil, fmt.Errorf("company ID is required for B2B customer")
+		return nil, ErrCustomerCompanyIDEmpty
 	}
 
 	customer, err := NewCustomer(name, email, source, assignedTo)
@@ -114,7 +113,7 @@ func (c *Customer) SetPhone(phone string) error {
 
 	phoneVO, err := valueobject.NewPhone(phone)
 	if err != nil {
-		return fmt.Errorf("invalid phone: %w", err)
+		return ErrCustomerPhoneInvalid
 	}
 
 	c.Phone = &phoneVO
@@ -125,11 +124,11 @@ func (c *Customer) SetPhone(phone string) error {
 // LinkToUser links customer to Identity.User (when they register account)
 func (c *Customer) LinkToUser(userID uuidv7.UUID) error {
 	if userID == uuidv7.Nil {
-		return fmt.Errorf("user ID cannot be empty")
+		return ErrCustomerUserIDEmpty
 	}
 
 	if c.UserID != nil {
-		return fmt.Errorf("customer already linked to user %s", c.UserID.String())
+		return ErrCustomerUserAlreadyLinked
 	}
 
 	c.UserID = &userID
@@ -140,7 +139,7 @@ func (c *Customer) LinkToUser(userID uuidv7.UUID) error {
 // QualifyAsProspect moves lead to prospect status
 func (c *Customer) QualifyAsProspect() error {
 	if c.Status != CustomerStatusLead {
-		return fmt.Errorf("can only qualify leads, current status: %s", c.Status)
+		return ErrInvalidStatusTransition
 	}
 
 	c.Status = CustomerStatusProspect
@@ -151,7 +150,7 @@ func (c *Customer) QualifyAsProspect() error {
 // ConvertToCustomer moves prospect to customer status (paying customer)
 func (c *Customer) ConvertToCustomer() error {
 	if c.Status != CustomerStatusProspect {
-		return fmt.Errorf("can only convert prospects, current status: %s", c.Status)
+		return ErrInvalidStatusTransition
 	}
 
 	now := time.Now()
@@ -164,11 +163,11 @@ func (c *Customer) ConvertToCustomer() error {
 // Churn marks customer as churned (lost customer)
 func (c *Customer) Churn(reason string) error {
 	if c.Status != CustomerStatusCustomer {
-		return fmt.Errorf("can only churn active customers, current status: %s", c.Status)
+		return ErrInvalidStatusTransition
 	}
 
 	if reason == "" {
-		return fmt.Errorf("churn reason is required")
+		return ErrCustomerChurnReasonEmpty
 	}
 
 	now := time.Now()
@@ -182,7 +181,7 @@ func (c *Customer) Churn(reason string) error {
 // Reactivate brings churned customer back to customer status
 func (c *Customer) Reactivate() error {
 	if c.Status != CustomerStatusChurned {
-		return fmt.Errorf("can only reactivate churned customers, current status: %s", c.Status)
+		return ErrInvalidStatusTransition
 	}
 
 	c.Status = CustomerStatusCustomer
@@ -195,11 +194,11 @@ func (c *Customer) Reactivate() error {
 // Reassign changes assigned sales rep
 func (c *Customer) Reassign(newRepID uuidv7.UUID) error {
 	if newRepID == uuidv7.Nil {
-		return fmt.Errorf("sales rep ID cannot be empty")
+		return ErrCustomerSalesRepEmpty
 	}
 
 	if c.AssignedTo == newRepID {
-		return fmt.Errorf("customer already assigned to this rep")
+		return ErrCustomerAssignedToSameRep
 	}
 
 	c.AssignedTo = newRepID
@@ -210,11 +209,11 @@ func (c *Customer) Reassign(newRepID uuidv7.UUID) error {
 // UpgradeTier changes customer subscription tier (only upgrades)
 func (c *Customer) UpgradeTier(newTier CustomerTier) error {
 	if !isValidTier(newTier) {
-		return fmt.Errorf("invalid tier: %s", newTier)
+		return ErrInvalidTierTransition
 	}
 
 	if !isValidTierUpgrade(c.Tier, newTier) {
-		return fmt.Errorf("invalid tier upgrade from %s to %s", c.Tier, newTier)
+		return ErrInvalidTierTransition
 	}
 
 	c.Tier = newTier
@@ -225,7 +224,7 @@ func (c *Customer) UpgradeTier(newTier CustomerTier) error {
 // DowngradeTier changes customer to lower tier
 func (c *Customer) DowngradeTier(newTier CustomerTier) error {
 	if !isValidTier(newTier) {
-		return fmt.Errorf("invalid tier: %s", newTier)
+		return ErrInvalidTierTransition
 	}
 
 	// Validate downgrade path (opposite of upgrade)
@@ -235,18 +234,18 @@ func (c *Customer) DowngradeTier(newTier CustomerTier) error {
 		return nil
 	}
 
-	return fmt.Errorf("invalid tier downgrade from %s to %s", c.Tier, newTier)
+	return ErrInvalidTierTransition
 }
 
 // AddTag adds a tag to customer
 func (c *Customer) AddTag(tag string) error {
 	if tag == "" {
-		return fmt.Errorf("tag cannot be empty")
+		return ErrCustomerTagEmpty
 	}
 
 	for _, t := range c.Tags {
 		if t == tag {
-			return fmt.Errorf("customer already has tag: %s", tag)
+			return ErrCustomerTagAlreadyExists
 		}
 	}
 
@@ -269,7 +268,7 @@ func (c *Customer) RemoveTag(tag string) error {
 	}
 
 	if !found {
-		return fmt.Errorf("customer does not have tag: %s", tag)
+		return ErrCustomerTagNotFound
 	}
 
 	c.Tags = newTags
@@ -310,27 +309,27 @@ func (c *Customer) HasAccount() bool {
 // Validate validates customer data
 func (c *Customer) Validate() error {
 	if c.Name == "" {
-		return fmt.Errorf("name is required")
+		return ErrCustomerNameEmpty
 	}
 
 	if c.Email.Value() == "" {
-		return fmt.Errorf("email is required")
+		return ErrCustomerEmailInvalid
 	}
 
 	if !isValidStatus(c.Status) {
-		return fmt.Errorf("invalid status: %s", c.Status)
+		return ErrInvalidStatusTransition
 	}
 
 	if !isValidTier(c.Tier) {
-		return fmt.Errorf("invalid tier: %s", c.Tier)
+		return ErrInvalidTierTransition
 	}
 
 	if c.Source == "" {
-		return fmt.Errorf("source is required")
+		return ErrCustomerSourceEmpty
 	}
 
 	if c.AssignedTo == uuidv7.Nil {
-		return fmt.Errorf("assigned sales rep is required")
+		return ErrCustomerSalesRepEmpty
 	}
 
 	return nil

@@ -2,7 +2,6 @@ package profile
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -67,13 +66,13 @@ type Profile struct {
 // NewProfile creates a new profile
 func NewProfile(userID uuidv7.UUID, displayName string) (*Profile, error) {
 	if displayName == "" {
-		return nil, fmt.Errorf("display name is required")
+		return nil, ErrDisplayNameRequired
 	}
 	if len(displayName) < 2 {
-		return nil, fmt.Errorf("display name must be at least 2 characters")
+		return nil, ErrDisplayNameTooShort
 	}
 	if len(displayName) > 100 {
-		return nil, fmt.Errorf("display name must not exceed 100 characters")
+		return nil, ErrDisplayNameTooLong
 	}
 
 	displayName = strings.TrimSpace(displayName)
@@ -95,13 +94,13 @@ func (p *Profile) UpdateDisplayName(displayName string) error {
 	displayName = strings.TrimSpace(displayName)
 
 	if displayName == "" {
-		return fmt.Errorf("display name is required")
+		return ErrDisplayNameRequired
 	}
 	if len(displayName) < 2 {
-		return fmt.Errorf("display name must be at least 2 characters")
+		return ErrDisplayNameTooShort
 	}
 	if len(displayName) > 100 {
-		return fmt.Errorf("display name must not exceed 100 characters")
+		return ErrDisplayNameTooLong
 	}
 
 	p.DisplayName = displayName
@@ -114,7 +113,7 @@ func (p *Profile) UpdateBio(bio string) error {
 	bio = strings.TrimSpace(bio)
 
 	if len(bio) > 500 {
-		return fmt.Errorf("bio must not exceed 500 characters")
+		return ErrBioTooLong
 	}
 
 	p.Bio = bio
@@ -127,7 +126,7 @@ func (p *Profile) UpdateAvatar(avatarURL string) error {
 	avatarURL = strings.TrimSpace(avatarURL)
 
 	if avatarURL != "" && !strings.HasPrefix(avatarURL, "http://") && !strings.HasPrefix(avatarURL, "https://") {
-		return fmt.Errorf("avatar URL must be a valid HTTP(S) URL")
+		return ErrAvatarInvalidURL
 	}
 
 	p.AvatarURL = avatarURL
@@ -142,13 +141,13 @@ func (p *Profile) UpdatePersonalInfo(firstName, lastName, middleName string) err
 	middleName = strings.TrimSpace(middleName)
 
 	if firstName != "" && len(firstName) > 50 {
-		return fmt.Errorf("first name must not exceed 50 characters")
+		return ErrFirstNameTooLong
 	}
 	if lastName != "" && len(lastName) > 50 {
-		return fmt.Errorf("last name must not exceed 50 characters")
+		return ErrLastNameTooLong
 	}
 	if middleName != "" && len(middleName) > 50 {
-		return fmt.Errorf("middle name must not exceed 50 characters")
+		return ErrMiddleNameTooLong
 	}
 
 	p.FirstName = firstName
@@ -175,13 +174,13 @@ func (p *Profile) UpdateDateOfBirth(dateOfBirth *time.Time) error {
 		// Validate age (must be at least 13 years old)
 		minAge := time.Now().AddDate(-13, 0, 0)
 		if dateOfBirth.After(minAge) {
-			return fmt.Errorf("user must be at least 13 years old")
+			return ErrAgeTooYoung
 		}
 
 		// Check not too old (reasonable limit: 120 years)
 		maxAge := time.Now().AddDate(-120, 0, 0)
 		if dateOfBirth.Before(maxAge) {
-			return fmt.Errorf("invalid date of birth")
+			return ErrDateOfBirthInvalid
 		}
 	}
 
@@ -198,12 +197,12 @@ func (p *Profile) UpdateLocalization(timezone, language, country string) error {
 
 	// Validate language (ISO 639-1: 2 letters)
 	if language != "" && len(language) != 2 {
-		return fmt.Errorf("language must be ISO 639-1 code (2 letters)")
+		return ErrLanguageInvalid
 	}
 
 	// Validate country (ISO 3166-1: 2 letters)
 	if country != "" && len(country) != 2 {
-		return fmt.Errorf("country must be ISO 3166-1 alpha-2 code (2 letters)")
+		return ErrCountryInvalid
 	}
 
 	p.Timezone = timezone
@@ -225,10 +224,10 @@ func (p *Profile) UpdateSocialLinks(website, linkedin, twitter, github, facebook
 		"instagram": instagram,
 	}
 
-	for name, url := range socialLinks {
+	for _, url := range socialLinks {
 		url = strings.TrimSpace(url)
 		if url != "" && !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
-			return fmt.Errorf("%s URL must be a valid HTTP(S) URL", name)
+			return ErrSocialLinkInvalidURL
 		}
 	}
 
@@ -286,13 +285,13 @@ func (p *Profile) GetFullName() string {
 // Validate performs validation on the profile
 func (p *Profile) Validate() error {
 	if p.ID == uuidv7.Nil {
-		return fmt.Errorf("profile ID is required")
+		return ErrProfileIDRequired
 	}
 	if p.UserID == uuidv7.Nil {
-		return fmt.Errorf("user ID is required")
+		return ErrUserIDRequired
 	}
 	if p.DisplayName == "" {
-		return fmt.Errorf("display name is required")
+		return ErrDisplayNameRequired
 	}
 	if !isValidGender(p.Gender) {
 		return ErrInvalidGender

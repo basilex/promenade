@@ -31,10 +31,10 @@ func TestNewContract(t *testing.T) {
 // TestContract_Validate tests validation logic
 func TestContract_Validate(t *testing.T) {
 	tests := []struct {
-		name    string
-		setup   func() *Contract
-		wantErr bool
-		errMsg  string
+		name        string
+		setup       func() *Contract
+		wantErr     bool
+		expectedErr error
 	}{
 		{
 			name: "valid contract",
@@ -49,8 +49,8 @@ func TestContract_Validate(t *testing.T) {
 				c := NewContract(uuidv7.Nil, uuidv7.New(), "Terms")
 				return c
 			},
-			wantErr: true,
-			errMsg:  "order_id is required",
+			wantErr:     true,
+			expectedErr: ErrOrderIDRequired,
 		},
 		{
 			name: "missing customer_id",
@@ -58,8 +58,8 @@ func TestContract_Validate(t *testing.T) {
 				c := NewContract(uuidv7.New(), uuidv7.Nil, "Terms")
 				return c
 			},
-			wantErr: true,
-			errMsg:  "customer_id is required",
+			wantErr:     true,
+			expectedErr: ErrCustomerIDRequired,
 		},
 		{
 			name: "missing terms",
@@ -67,8 +67,8 @@ func TestContract_Validate(t *testing.T) {
 				c := NewContract(uuidv7.New(), uuidv7.New(), "")
 				return c
 			},
-			wantErr: true,
-			errMsg:  "terms are required",
+			wantErr:     true,
+			expectedErr: ErrTermsRequired,
 		},
 	}
 
@@ -79,7 +79,7 @@ func TestContract_Validate(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errMsg)
+				assert.ErrorIs(t, err, tt.expectedErr)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -106,7 +106,7 @@ func TestContract_SubmitForSignature(t *testing.T) {
 		err := contract.SubmitForSignature()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only submit draft contracts")
+		assert.ErrorIs(t, err, ErrCannotSubmitNonDraft)
 	})
 }
 
@@ -134,7 +134,7 @@ func TestContract_Sign(t *testing.T) {
 		err := contract.Sign("John Doe", "john@example.com", "sig-123")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only sign contracts in pending_signature status")
+		assert.ErrorIs(t, err, ErrCannotSignNonPending)
 	})
 
 	t.Run("missing signer name", func(t *testing.T) {
@@ -144,7 +144,7 @@ func TestContract_Sign(t *testing.T) {
 		err := contract.Sign("", "john@example.com", "sig-123")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "signer name is required")
+		assert.ErrorIs(t, err, ErrSignerNameRequired)
 	})
 
 	t.Run("missing signer email", func(t *testing.T) {
@@ -154,7 +154,7 @@ func TestContract_Sign(t *testing.T) {
 		err := contract.Sign("John Doe", "", "sig-123")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "signer email is required")
+		assert.ErrorIs(t, err, ErrSignerEmailRequired)
 	})
 }
 
@@ -178,7 +178,7 @@ func TestContract_Complete(t *testing.T) {
 		err := contract.Complete()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only complete active contracts")
+		assert.ErrorIs(t, err, ErrCannotCompleteNonActive)
 	})
 }
 
@@ -203,7 +203,7 @@ func TestContract_Terminate(t *testing.T) {
 		err := contract.Terminate("Some reason")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only terminate active contracts")
+		assert.ErrorIs(t, err, ErrCannotTerminateNonActive)
 	})
 
 	t.Run("missing termination reason", func(t *testing.T) {
@@ -213,7 +213,7 @@ func TestContract_Terminate(t *testing.T) {
 		err := contract.Terminate("")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "termination reason is required")
+		assert.ErrorIs(t, err, ErrTerminationReasonRequired)
 	})
 }
 
@@ -249,7 +249,7 @@ func TestContract_Renew(t *testing.T) {
 		err := contract.Renew()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only renew active or completed contracts")
+		assert.ErrorIs(t, err, ErrCannotRenewInactiveContract)
 	})
 }
 
@@ -273,7 +273,7 @@ func TestContract_SetExpirationDate(t *testing.T) {
 		err := contract.SetExpirationDate(futureDate)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "can only set expiration date for draft or pending contracts")
+		assert.ErrorIs(t, err, ErrCannotSetExpirationForActive)
 	})
 
 	t.Run("cannot set past expiration date", func(t *testing.T) {
@@ -283,7 +283,7 @@ func TestContract_SetExpirationDate(t *testing.T) {
 		err := contract.SetExpirationDate(pastDate)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "expiration date must be in the future")
+		assert.ErrorIs(t, err, ErrExpirationInPast)
 	})
 }
 

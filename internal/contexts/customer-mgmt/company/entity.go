@@ -1,7 +1,6 @@
 package company
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -66,12 +65,12 @@ type Company struct {
 // NewCompany creates a new company with required fields
 func NewCompany(name string, companyType string) (*Company, error) {
 	if name == "" {
-		return nil, fmt.Errorf("company name is required")
+		return nil, ErrCompanyNameRequired
 	}
 
 	cType := CompanyType(companyType)
 	if !isValidCompanyType(cType) {
-		return nil, fmt.Errorf("invalid company type: %s", companyType)
+		return nil, ErrCompanyTypeInvalid
 	}
 
 	return &Company{
@@ -88,12 +87,12 @@ func NewCompany(name string, companyType string) (*Company, error) {
 // UpdateBasicInfo updates company basic information
 func (c *Company) UpdateBasicInfo(name string, legalName *string, companyType string, taxID *string, registrationNumber *string) error {
 	if name == "" {
-		return fmt.Errorf("company name is required")
+		return ErrCompanyNameRequired
 	}
 
 	cType := CompanyType(companyType)
 	if !isValidCompanyType(cType) {
-		return fmt.Errorf("invalid company type: %s", companyType)
+		return ErrCompanyTypeInvalid
 	}
 
 	c.Name = name
@@ -119,15 +118,15 @@ func (c *Company) UpdateContactInfo(website *string, email *valueobject.Email, p
 func (c *Company) UpdateBusinessInfo(industry *string, size string, employeeCount int, revenue int64, currency string) error {
 	cSize := CompanySize(size)
 	if !isValidCompanySize(cSize) {
-		return fmt.Errorf("invalid company size: %s", size)
+		return ErrCompanySizeInvalid
 	}
 
 	if employeeCount < 0 {
-		return fmt.Errorf("employee count cannot be negative")
+		return ErrEmployeeCountNegative
 	}
 
 	if revenue < 0 {
-		return fmt.Errorf("revenue cannot be negative")
+		return ErrRevenueNegative
 	}
 
 	c.Industry = industry
@@ -143,7 +142,7 @@ func (c *Company) UpdateBusinessInfo(industry *string, size string, employeeCoun
 // SetParentCompany sets the parent company (for subsidiaries)
 func (c *Company) SetParentCompany(parentCompanyID *uuidv7.UUID) error {
 	if parentCompanyID != nil && *parentCompanyID == c.ID {
-		return fmt.Errorf("company cannot be its own parent")
+		return ErrCompanyCannotBeOwnParent
 	}
 
 	c.ParentCompanyID = parentCompanyID
@@ -173,27 +172,27 @@ func (c *Company) IsDeleted() bool {
 // Validate validates company data
 func (c *Company) Validate() error {
 	if c.Name == "" {
-		return fmt.Errorf("company name is required")
+		return ErrCompanyNameRequired
 	}
 
 	if !isValidCompanyType(c.Type) {
-		return fmt.Errorf("invalid company type: %s", c.Type)
+		return ErrCompanyTypeInvalid
 	}
 
 	if !isValidCompanySize(c.Size) {
-		return fmt.Errorf("invalid company size: %s", c.Size)
+		return ErrCompanySizeInvalid
 	}
 
 	if c.EmployeeCount < 0 {
-		return fmt.Errorf("employee count cannot be negative")
+		return ErrEmployeeCountNegative
 	}
 
 	if c.Revenue < 0 {
-		return fmt.Errorf("revenue cannot be negative")
+		return ErrRevenueNegative
 	}
 
 	if c.ParentCompanyID != nil && *c.ParentCompanyID == c.ID {
-		return fmt.Errorf("company cannot be its own parent")
+		return ErrCompanyCannotBeOwnParent
 	}
 
 	return nil

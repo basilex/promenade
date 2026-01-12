@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,18 @@ func (h *LocationHandler) Create(c *gin.Context) {
 		parentID,
 	)
 	if err != nil {
+		if errors.Is(err, location.ErrLocationCodeExists) {
+			response.BadRequest(c, "Location code already exists")
+			return
+		}
+		if errors.Is(err, location.ErrParentLocationNotFound) {
+			response.NotFound(c, "Parent location not found")
+			return
+		}
+		if errors.Is(err, location.ErrParentLocationDeleted) {
+			response.BadRequest(c, "Parent location is deleted")
+			return
+		}
 		response.InternalError(c, "Failed to create location")
 		return
 	}
@@ -182,6 +195,14 @@ func (h *LocationHandler) Update(c *gin.Context) {
 
 	loc, err := h.usecase.UpdateLocation(c.Request.Context(), id, req.Name, req.Description)
 	if err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot update deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to update location")
 		return
 	}
@@ -209,6 +230,22 @@ func (h *LocationHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteLocation(c.Request.Context(), id); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Location already deleted")
+			return
+		}
+		if errors.Is(err, location.ErrLocationHasChildren) {
+			response.BadRequest(c, "Cannot delete location with children")
+			return
+		}
+		if errors.Is(err, location.ErrLocationHasItems) {
+			response.BadRequest(c, "Cannot delete location with items")
+			return
+		}
 		response.InternalError(c, "Failed to delete location")
 		return
 	}
@@ -256,6 +293,10 @@ func (h *LocationHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
+		if errors.Is(err, location.ErrInvalidPagination) {
+			response.BadRequest(c, "Invalid pagination parameters")
+			return
+		}
 		response.InternalError(c, "Failed to list locations")
 		return
 	}
@@ -287,6 +328,14 @@ func (h *LocationHandler) GetChildren(c *gin.Context) {
 
 	children, err := h.usecase.GetLocationChildren(c.Request.Context(), id, recursive)
 	if err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationDeleted) {
+			response.BadRequest(c, "Location is deleted")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve location children")
 		return
 	}
@@ -320,6 +369,10 @@ func (h *LocationHandler) GetHierarchy(c *gin.Context) {
 
 	hierarchy, err := h.usecase.GetLocationHierarchy(c.Request.Context(), id)
 	if err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve location hierarchy")
 		return
 	}
@@ -352,6 +405,14 @@ func (h *LocationHandler) Activate(c *gin.Context) {
 	}
 
 	if err := h.usecase.ActivateLocation(c.Request.Context(), id); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot activate deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to activate location")
 		return
 	}
@@ -380,6 +441,14 @@ func (h *LocationHandler) Deactivate(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeactivateLocation(c.Request.Context(), id); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot deactivate deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to deactivate location")
 		return
 	}
@@ -415,6 +484,14 @@ func (h *LocationHandler) UpdateCapacity(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationCapacity(c.Request.Context(), id, req.Capacity, req.IsLimited); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot update deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to update location capacity")
 		return
 	}
@@ -450,6 +527,14 @@ func (h *LocationHandler) UpdateDimensions(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationDimensions(c.Request.Context(), id, req.Width, req.Height, req.Depth); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot update deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to update location dimensions")
 		return
 	}
@@ -485,6 +570,14 @@ func (h *LocationHandler) UpdateFlags(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateLocationFlags(c.Request.Context(), id, req.IsPickable, req.IsPutawayable); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot update deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to update location flags")
 		return
 	}
@@ -513,6 +606,14 @@ func (h *LocationHandler) SetMaintenance(c *gin.Context) {
 	}
 
 	if err := h.usecase.SetLocationMaintenance(c.Request.Context(), id); err != nil {
+		if errors.Is(err, location.ErrLocationNotFound) {
+			response.NotFound(c, "Location not found")
+			return
+		}
+		if errors.Is(err, location.ErrLocationAlreadyDeleted) {
+			response.BadRequest(c, "Cannot set maintenance for deleted location")
+			return
+		}
 		response.InternalError(c, "Failed to set location to maintenance")
 		return
 	}

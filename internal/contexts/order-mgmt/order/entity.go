@@ -61,11 +61,11 @@ type OrderLine struct {
 // NewOrder creates a new order in pending status
 func NewOrder(customerID uuidv7.UUID, currency string) (*Order, error) {
 	if customerID == uuidv7.Nil {
-		return nil, fmt.Errorf("customer ID is required")
+		return nil, ErrCustomerIDRequired
 	}
 
 	if currency == "" {
-		return nil, fmt.Errorf("currency is required")
+		return nil, ErrCurrencyRequired
 	}
 
 	now := time.Now()
@@ -103,7 +103,7 @@ func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice valueobje
 	}
 
 	if productID == uuidv7.Nil {
-		return fmt.Errorf("product ID is required")
+		return ErrProductIDRequired
 	}
 
 	if quantity <= 0 {
@@ -115,7 +115,7 @@ func (o *Order) AddLine(productID uuidv7.UUID, quantity int, unitPrice valueobje
 	}
 
 	if unitPrice.Currency != o.Currency {
-		return fmt.Errorf("line currency %s does not match order currency %s", unitPrice.Currency, o.Currency)
+		return ErrCurrencyMismatch
 	}
 
 	line := OrderLine{
@@ -237,7 +237,7 @@ func (o *Order) Cancel() error {
 	}
 
 	if o.Status == OrderStatusFulfilled {
-		return fmt.Errorf("cannot cancel fulfilled order")
+		return ErrCannotCancelFulfilled
 	}
 
 	now := time.Now()
@@ -264,15 +264,15 @@ func (o *Order) recalculateTotal() {
 // Validate performs business rule validation
 func (o *Order) Validate() error {
 	if o.CustomerID == uuidv7.Nil {
-		return fmt.Errorf("customer ID is required")
+		return ErrCustomerIDRequired
 	}
 
 	if o.Currency == "" {
-		return fmt.Errorf("currency is required")
+		return ErrCurrencyRequired
 	}
 
 	if o.Status == "" {
-		return fmt.Errorf("status is required")
+		return ErrStatusRequired
 	}
 
 	return nil

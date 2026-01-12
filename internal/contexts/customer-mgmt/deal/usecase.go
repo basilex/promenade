@@ -1,19 +1,14 @@
 package deal
 
 import (
+	"fmt"
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
-)
-
-// Errors
-var (
-	ErrDealNotFound = errors.New("deal not found")
 )
 
 // IUseCase defines business operations for deals
@@ -104,25 +99,25 @@ func (uc *useCase) CreateDeal(ctx context.Context, name string, customerID, assi
 	// Parse expected close date
 	closeDate, err := parseDate(expectedCloseDate)
 	if err != nil {
-		return nil, fmt.Errorf("invalid expected close date: %w", err)
+		return nil, err // parseDate returns descriptive error already
 	}
 
 	// Create Money value object
 	money, err := valueobject.NewMoney(value, currency)
 	if err != nil {
-		return nil, fmt.Errorf("invalid money value: %w", err)
+		return nil, err // NewMoney returns descriptive error already
 	}
 
 	// Create deal entity
 	deal, err := NewDeal(customerID, name, money, assignedTo, closeDate)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create deal: %w", err)
+		return nil, err // NewDeal returns domain errors (ErrDealNameEmpty, etc.)
 	}
 
 	// Persist deal
 	if err := uc.repo.Create(ctx, deal); err != nil {
 		log.Error("Failed to create deal", "error", err)
-		return nil, fmt.Errorf("failed to create deal: %w", err)
+		return nil, ErrDealCreateFailed
 	}
 
 	log.Info("Deal created", "deal_id", deal.ID, "name", deal.Name)
@@ -133,7 +128,10 @@ func (uc *useCase) CreateDeal(ctx context.Context, name string, customerID, assi
 func (uc *useCase) GetDeal(ctx context.Context, id uuidv7.UUID) (*Deal, error) {
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	return deal, nil
@@ -145,16 +143,19 @@ func (uc *useCase) UpdateDealBasicInfo(ctx context.Context, id uuidv7.UUID, name
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	if err := deal.UpdateBasicInfo(name, description); err != nil {
-		return nil, fmt.Errorf("failed to update basic info: %w", err)
+		return nil, err // Entity returns ErrDealNameEmpty
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal basic info updated", "deal_id", deal.ID)
@@ -167,22 +168,25 @@ func (uc *useCase) UpdateDealValue(ctx context.Context, id uuidv7.UUID, value in
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	// Create Money value object
 	money, err := valueobject.NewMoney(value, currency)
 	if err != nil {
-		return nil, fmt.Errorf("invalid money value: %w", err)
+		return nil, err // NewMoney returns descriptive error
 	}
 
 	if err := deal.UpdateValue(money); err != nil {
-		return nil, fmt.Errorf("failed to update value: %w", err)
+		return nil, err // Entity returns ErrDealValueNegative
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal value updated", "deal_id", deal.ID, "value", value, "currency", currency)
@@ -195,16 +199,19 @@ func (uc *useCase) MoveDealToStage(ctx context.Context, id uuidv7.UUID, stage De
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	if err := deal.MoveTo(stage); err != nil {
-		return nil, fmt.Errorf("failed to move stage: %w", err)
+		return nil, err // Entity returns ErrDealTerminalStage or ErrDealInvalidStageTransition
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal stage moved", "deal_id", deal.ID, "stage", stage)
@@ -217,16 +224,19 @@ func (uc *useCase) MarkDealAsWon(ctx context.Context, id uuidv7.UUID, reason str
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	if err := deal.MarkAsWon(reason); err != nil {
-		return nil, fmt.Errorf("failed to mark as won: %w", err)
+		return nil, err // Entity returns ErrDealAlreadyWon or ErrDealCannotMarkLostAsWon
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal marked as won", "deal_id", deal.ID, "value", deal.Value.Amount)
@@ -239,16 +249,19 @@ func (uc *useCase) MarkDealAsLost(ctx context.Context, id uuidv7.UUID, reason st
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	if err := deal.MarkAsLost(reason); err != nil {
-		return nil, fmt.Errorf("failed to mark as lost: %w", err)
+		return nil, err // Entity returns ErrDealAlreadyLost, ErrDealCannotMarkWonAsLost, or ErrDealLossReasonRequired
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal marked as lost", "deal_id", deal.ID, "reason", reason)
@@ -261,16 +274,20 @@ func (uc *useCase) UpdateDealProbability(ctx context.Context, id uuidv7.UUID, pr
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
+	// Entity returns ErrDealProbabilityRange or ErrDealClosedMutation
 	if err := deal.UpdateProbability(probability); err != nil {
-		return nil, fmt.Errorf("failed to update probability: %w", err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal probability updated", "deal_id", deal.ID, "probability", probability)
@@ -283,21 +300,26 @@ func (uc *useCase) UpdateDealExpectedCloseDate(ctx context.Context, id uuidv7.UU
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
+	// parseDate returns descriptive error
 	closeDate, err := parseDate(date)
 	if err != nil {
-		return nil, fmt.Errorf("invalid expected close date: %w", err)
+		return nil, err
 	}
 
+	// Entity returns ErrDealDateInPast or ErrDealClosedMutation
 	if err := deal.UpdateExpectedCloseDate(closeDate); err != nil {
-		return nil, fmt.Errorf("failed to update expected close date: %w", err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal expected close date updated", "deal_id", deal.ID, "date", closeDate)
@@ -310,16 +332,20 @@ func (uc *useCase) AssignDealToSalesRep(ctx context.Context, id, userID uuidv7.U
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
+	// Entity returns ErrDealSalesRepRequired
 	if err := deal.AssignToSalesRep(userID); err != nil {
-		return nil, fmt.Errorf("failed to assign sales rep: %w", err)
+		return nil, err
 	}
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal assigned to sales rep", "deal_id", deal.ID, "user_id", userID)
@@ -332,14 +358,17 @@ func (uc *useCase) LinkDealToCompany(ctx context.Context, id, companyID uuidv7.U
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	deal.SetCompany(&companyID)
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal linked to company", "deal_id", deal.ID, "company_id", companyID)
@@ -352,14 +381,17 @@ func (uc *useCase) SetDealSource(ctx context.Context, id uuidv7.UUID, source Dea
 
 	deal, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get deal: %w", err)
+		if errors.Is(err, ErrDealNotFound) {
+			return nil, ErrDealNotFound
+		}
+		return nil, err
 	}
 
 	deal.SetSource(source)
 
 	if err := uc.repo.Update(ctx, deal); err != nil {
 		log.Error("Failed to update deal", "error", err)
-		return nil, fmt.Errorf("failed to update deal: %w", err)
+		return nil, ErrDealUpdateFailed
 	}
 
 	log.Info("Deal source set", "deal_id", deal.ID, "source", source)
@@ -373,16 +405,16 @@ func (uc *useCase) DeleteDeal(ctx context.Context, id uuidv7.UUID) error {
 	// Check if deal exists
 	exists, err := uc.repo.Exists(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to check deal existence: %w", err)
+		return err
 	}
 
 	if !exists {
-		return fmt.Errorf("deal not found")
+		return ErrDealNotFound
 	}
 
 	if err := uc.repo.Delete(ctx, id); err != nil {
 		log.Error("Failed to delete deal", "error", err)
-		return fmt.Errorf("failed to delete deal: %w", err)
+		return ErrDealDeleteFailed
 	}
 
 	log.Info("Deal deleted", "deal_id", id)
@@ -393,7 +425,7 @@ func (uc *useCase) DeleteDeal(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) ListDeals(ctx context.Context, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.List(ctx, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -403,7 +435,7 @@ func (uc *useCase) ListDeals(ctx context.Context, page, pageSize int) ([]*Deal, 
 func (uc *useCase) ListDealsByStage(ctx context.Context, stage DealStage, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.ListByStage(ctx, stage, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals by stage: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -413,7 +445,7 @@ func (uc *useCase) ListDealsByStage(ctx context.Context, stage DealStage, page, 
 func (uc *useCase) ListDealsByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.ListByCustomer(ctx, customerID, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals by customer: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -423,7 +455,7 @@ func (uc *useCase) ListDealsByCustomer(ctx context.Context, customerID uuidv7.UU
 func (uc *useCase) ListDealsByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.ListByCompany(ctx, companyID, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals by company: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -433,7 +465,7 @@ func (uc *useCase) ListDealsByCompany(ctx context.Context, companyID uuidv7.UUID
 func (uc *useCase) ListDealsByAssignedTo(ctx context.Context, userID uuidv7.UUID, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.ListByAssignedTo(ctx, userID, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals by assigned to: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -443,7 +475,7 @@ func (uc *useCase) ListDealsByAssignedTo(ctx context.Context, userID uuidv7.UUID
 func (uc *useCase) ListDealsBySource(ctx context.Context, source DealSource, page, pageSize int) ([]*Deal, int64, error) {
 	deals, total, err := uc.repo.ListBySource(ctx, source, page, pageSize)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list deals by source: %w", err)
+		return nil, 0, ErrDealListFailed
 	}
 
 	return deals, total, nil
@@ -453,7 +485,7 @@ func (uc *useCase) ListDealsBySource(ctx context.Context, source DealSource, pag
 func (uc *useCase) GetPipelineStats(ctx context.Context) (map[DealStage]int64, error) {
 	stats, err := uc.repo.GetPipelineStats(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get pipeline stats: %w", err)
+		return nil, ErrDealStatsFailed
 	}
 
 	return stats, nil
@@ -463,7 +495,7 @@ func (uc *useCase) GetPipelineStats(ctx context.Context) (map[DealStage]int64, e
 func (uc *useCase) GetTotalValue(ctx context.Context) (int64, error) {
 	total, err := uc.repo.GetTotalValue(ctx)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get total value: %w", err)
+		return 0, ErrDealStatsFailed
 	}
 
 	return total, nil
@@ -473,7 +505,7 @@ func (uc *useCase) GetTotalValue(ctx context.Context) (int64, error) {
 func (uc *useCase) GetWonDeals(ctx context.Context) (int64, int64, error) {
 	count, value, err := uc.repo.GetWonDeals(ctx)
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to get won deals: %w", err)
+		return 0, 0, ErrDealStatsFailed
 	}
 
 	return count, value, nil

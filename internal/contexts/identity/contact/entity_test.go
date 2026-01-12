@@ -1,6 +1,7 @@
 package contact
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -106,7 +107,7 @@ func TestContact_SetEmail(t *testing.T) {
 		err := contact.SetEmail("test@example.com")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "cannot set email on non-email contact")
+		assert.True(t, errors.Is(err, ErrCannotSetEmailOnNonEmailContact))
 	})
 
 	t.Run("invalid email", func(t *testing.T) {
@@ -133,7 +134,7 @@ func TestContact_SetPhone(t *testing.T) {
 		err := contact.SetPhone("+380501234567")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "cannot set phone on non-phone contact")
+		assert.True(t, errors.Is(err, ErrCannotSetPhoneOnNonPhoneContact))
 	})
 }
 
@@ -154,7 +155,7 @@ func TestContact_SetAddress(t *testing.T) {
 		err := contact.SetAddress("Street", "City", "UA", "12345")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "cannot set address on non-address contact")
+		assert.True(t, errors.Is(err, ErrCannotSetAddressOnNonAddressContact))
 	})
 }
 
@@ -241,7 +242,7 @@ func TestContact_Validate(t *testing.T) {
 		contact, _ := NewContact(userID, ContactTypeEmail, "Work")
 		err := contact.Validate()
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "email is required")
+		assert.True(t, errors.Is(err, ErrEmailRequiredForEmailContact))
 	})
 }
 

@@ -77,16 +77,16 @@ func NewInteraction(
 	startedAt time.Time,
 ) (*Interaction, error) {
 	if !isValidInteractionType(interactionType) {
-		return nil, fmt.Errorf("invalid interaction type: %s", interactionType)
+		return nil, ErrInvalidInteractionType
 	}
 	if !isValidDirection(direction) {
-		return nil, fmt.Errorf("invalid direction: %s", direction)
+		return nil, ErrInvalidDirection
 	}
 	if subject == "" {
-		return nil, fmt.Errorf("subject cannot be empty")
+		return nil, ErrSubjectEmpty
 	}
 	if description == "" {
-		return nil, fmt.Errorf("description cannot be empty")
+		return nil, ErrDescriptionEmpty
 	}
 	if customerID == uuidv7.Nil {
 		return nil, fmt.Errorf("customer_id is required")
@@ -113,10 +113,10 @@ func NewInteraction(
 // UpdateContent updates the subject and description
 func (i *Interaction) UpdateContent(subject, description string) error {
 	if subject == "" {
-		return fmt.Errorf("subject cannot be empty")
+		return ErrSubjectEmpty
 	}
 	if description == "" {
-		return fmt.Errorf("description cannot be empty")
+		return ErrDescriptionEmpty
 	}
 
 	i.Subject = subject
@@ -148,7 +148,7 @@ func (i *Interaction) EndInteraction(endedAt time.Time) error {
 		return ErrInteractionAlreadyEnded
 	}
 	if endedAt.Before(i.StartedAt) {
-		return fmt.Errorf("ended_at cannot be before started_at")
+		return ErrEndedAtBeforeStartedAt
 	}
 
 	duration := int(endedAt.Sub(i.StartedAt).Seconds())
@@ -161,7 +161,7 @@ func (i *Interaction) EndInteraction(endedAt time.Time) error {
 // SetFollowUp configures follow-up requirements
 func (i *Interaction) SetFollowUp(required bool, followUpDate *time.Time, notes string) error {
 	if required && followUpDate == nil {
-		return fmt.Errorf("follow_up_date required when follow-up is enabled")
+		return ErrFollowUpDateRequired
 	}
 
 	i.FollowUpRequired = required
@@ -204,28 +204,28 @@ func (i *Interaction) Delete() {
 // Validate performs comprehensive validation
 func (i *Interaction) Validate() error {
 	if !isValidInteractionType(i.Type) {
-		return fmt.Errorf("invalid interaction type: %s", i.Type)
+		return ErrInvalidInteractionType
 	}
 	if !isValidDirection(i.Direction) {
-		return fmt.Errorf("invalid direction: %s", i.Direction)
+		return ErrInvalidDirection
 	}
 	if i.Outcome != nil && !isValidOutcome(*i.Outcome) {
 		return fmt.Errorf("invalid outcome: %s", *i.Outcome)
 	}
 	if i.Subject == "" {
-		return fmt.Errorf("subject cannot be empty")
+		return ErrSubjectEmpty
 	}
 	if i.Description == "" {
-		return fmt.Errorf("description cannot be empty")
+		return ErrDescriptionEmpty
 	}
 	if i.DurationSec != nil && *i.DurationSec < 0 {
 		return fmt.Errorf("duration_sec cannot be negative")
 	}
 	if i.EndedAt != nil && i.EndedAt.Before(i.StartedAt) {
-		return fmt.Errorf("ended_at cannot be before started_at")
+		return ErrEndedAtBeforeStartedAt
 	}
 	if i.FollowUpRequired && i.FollowUpDate == nil {
-		return fmt.Errorf("follow_up_date required when follow-up is enabled")
+		return ErrFollowUpDateRequired
 	}
 
 	return nil

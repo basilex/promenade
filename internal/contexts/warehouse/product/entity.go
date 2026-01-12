@@ -1,9 +1,6 @@
 package product
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/jsonstore"
 )
@@ -65,21 +62,6 @@ const (
 	ProductStatusOutOfStock   ProductStatus = "out_of_stock" // Temporarily unavailable
 	ProductStatusDraft        ProductStatus = "draft"        // Not yet published
 )
-
-// Common errors
-var (
-	ErrProductNotFound         = errors.New("product not found")
-	ErrProductSKURequired      = errors.New("product SKU is required")
-	ErrProductNameRequired     = errors.New("product name is required")
-	ErrProductSKUDuplicate     = errors.New("product SKU already exists")
-	ErrProductInvalidReorder   = errors.New("reorder point must be less than reorder quantity")
-	ErrProductInvalidWeight    = errors.New("weight must be positive for physical products")
-	ErrProductInvalidDimension = errors.New("dimensions must be positive for physical products")
-	ErrProductDiscontinued     = errors.New("product is discontinued")
-	ErrProductAlreadyActive    = errors.New("product is already active")
-	ErrProductAlreadyInactive  = errors.New("product is already inactive")
-)
-
 // NewProduct creates a new Product aggregate with required fields.
 //
 // Business rules enforced:
@@ -221,7 +203,7 @@ func (p *Product) Discontinue() error {
 // Business rule: Only Active products can be marked out of stock.
 func (p *Product) MarkAsOutOfStock() error {
 	if p.Status != ProductStatusActive {
-		return fmt.Errorf("only active products can be marked out of stock")
+		return ErrProductNotActive
 	}
 
 	p.Status = ProductStatusOutOfStock
@@ -234,7 +216,7 @@ func (p *Product) MarkAsOutOfStock() error {
 // Business rule: Only OutOfStock products can be restocked.
 func (p *Product) RestockFromOutOfStock() error {
 	if p.Status != ProductStatusOutOfStock {
-		return fmt.Errorf("only out-of-stock products can be restocked")
+		return ErrProductNotOutOfStock
 	}
 
 	p.Status = ProductStatusActive

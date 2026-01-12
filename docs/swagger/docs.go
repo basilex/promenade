@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RefreshTokenRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -52,25 +52,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.AuthResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.AuthResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -98,19 +98,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -147,14 +147,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.PaymentResponse"
+                                "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -177,7 +177,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreatePaymentRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.CreatePaymentRequest"
                         }
                     }
                 ],
@@ -185,19 +185,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -241,20 +241,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.PaymentResponse"
+                                "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -284,20 +284,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.PaymentResponse"
+                                "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -325,19 +325,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -381,14 +381,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.PaymentResponse"
+                                "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -416,19 +416,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.TotalResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.TotalResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -456,19 +456,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.TotalResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.TotalResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -496,19 +496,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -536,19 +536,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -571,19 +571,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -611,19 +611,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -655,7 +655,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetCardDetailsRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.SetCardDetailsRequest"
                         }
                     }
                 ],
@@ -663,25 +663,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -713,7 +713,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CompletePaymentRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.CompletePaymentRequest"
                         }
                     }
                 ],
@@ -721,25 +721,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -771,7 +771,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.FailPaymentRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.FailPaymentRequest"
                         }
                     }
                 ],
@@ -779,25 +779,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -829,7 +829,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.LinkInvoiceRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.LinkInvoiceRequest"
                         }
                     }
                 ],
@@ -837,25 +837,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -887,7 +887,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.AddNoteRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.AddNoteRequest"
                         }
                     }
                 ],
@@ -895,25 +895,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -941,19 +941,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -985,7 +985,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetProviderRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.SetProviderRequest"
                         }
                     }
                 ],
@@ -993,25 +993,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1043,7 +1043,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RefundPaymentRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.RefundPaymentRequest"
                         }
                     }
                 ],
@@ -1051,25 +1051,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PaymentResponse"
+                            "$ref": "#/definitions/internal_contexts_billing_payment_adapter_http.PaymentResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1123,13 +1123,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ContractListResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractListResponse"
                                         }
                                     }
                                 }
@@ -1139,13 +1139,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1169,7 +1169,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateContractRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.CreateContractRequest"
                         }
                     }
                 ],
@@ -1179,13 +1179,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ContractResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractResponse"
                                         }
                                     }
                                 }
@@ -1195,13 +1195,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1232,13 +1232,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ContractResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractResponse"
                                         }
                                     }
                                 }
@@ -1248,19 +1248,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1291,7 +1291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateContractRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.UpdateContractRequest"
                         }
                     }
                 ],
@@ -1299,25 +1299,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1344,25 +1344,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1391,25 +1391,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1442,7 +1442,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetExpirationDateRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.SetExpirationDateRequest"
                         }
                     }
                 ],
@@ -1450,25 +1450,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1499,13 +1499,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ContractResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractResponse"
                                         }
                                     }
                                 }
@@ -1515,19 +1515,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1560,7 +1560,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SignContractRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.SignContractRequest"
                         }
                     }
                 ],
@@ -1568,25 +1568,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1615,25 +1615,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1666,7 +1666,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.TerminateContractRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.TerminateContractRequest"
                         }
                     }
                 ],
@@ -1674,25 +1674,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1717,7 +1717,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1725,7 +1725,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.CountryResponse"
+                                                "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse"
                                             }
                                         }
                                     }
@@ -1736,7 +1736,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1760,7 +1760,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateCountryRequest"
+                            "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.CreateCountryRequest"
                         }
                     }
                 ],
@@ -1770,13 +1770,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CountryResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse"
                                         }
                                     }
                                 }
@@ -1786,13 +1786,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1826,13 +1826,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CountryResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse"
                                         }
                                     }
                                 }
@@ -1842,19 +1842,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1887,7 +1887,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCountryRequest"
+                            "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.UpdateCountryRequest"
                         }
                     }
                 ],
@@ -1897,13 +1897,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CountryResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_country_adapter_http.CountryResponse"
                                         }
                                     }
                                 }
@@ -1913,19 +1913,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1955,25 +1955,25 @@ const docTemplate = `{
                     "204": {
                         "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -1998,7 +1998,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2006,7 +2006,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.CurrencyResponse"
+                                                "$ref": "#/definitions/internal_contexts_shared_currency_adapter_http.CurrencyResponse"
                                             }
                                         }
                                     }
@@ -2017,7 +2017,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2051,13 +2051,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CurrencyResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_currency_adapter_http.CurrencyResponse"
                                         }
                                     }
                                 }
@@ -2067,19 +2067,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2126,13 +2126,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2162,7 +2162,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2195,7 +2195,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2228,7 +2228,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2258,7 +2258,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2288,7 +2288,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2353,13 +2353,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2410,19 +2410,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Sales rep not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2463,19 +2463,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyListResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid pagination",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2504,7 +2504,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateCompanyRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CreateCompanyRequest"
                         }
                     }
                 ],
@@ -2512,25 +2512,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Company already exists",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2578,19 +2578,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyListResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid pagination",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2624,19 +2624,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2691,19 +2691,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyListResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid size or pagination",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2737,19 +2737,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2783,25 +2783,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2842,19 +2842,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2892,7 +2892,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCompanyBasicInfoRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBasicInfoRequest"
                         }
                     }
                 ],
@@ -2900,25 +2900,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid data",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -2956,7 +2956,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCompanyBusinessInfoRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBusinessInfoRequest"
                         }
                     }
                 ],
@@ -2964,25 +2964,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid data",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3020,7 +3020,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCompanyContactInfoRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyContactInfoRequest"
                         }
                     }
                 ],
@@ -3028,25 +3028,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid data",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3084,7 +3084,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCompanyDescriptionRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyDescriptionRequest"
                         }
                     }
                 ],
@@ -3092,25 +3092,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid data",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3148,7 +3148,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetParentCompanyRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.SetParentCompanyRequest"
                         }
                     }
                 ],
@@ -3156,25 +3156,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid data",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Company not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3222,19 +3222,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.CompanyListResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid ID or pagination",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3280,7 +3280,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3288,7 +3288,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.DealResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                                             }
                                         }
                                     }
@@ -3299,13 +3299,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3334,7 +3334,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateDealRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.CreateDealRequest"
                         }
                     }
                 ],
@@ -3342,19 +3342,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3415,7 +3415,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3423,7 +3423,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.DealResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                                             }
                                         }
                                     }
@@ -3434,13 +3434,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3468,13 +3468,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PipelineStatsResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.PipelineStatsResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3502,13 +3502,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.WonDealsResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.WonDealsResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3545,25 +3545,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3601,19 +3601,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3651,7 +3651,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateDealBasicInfoRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealBasicInfoRequest"
                         }
                     }
                 ],
@@ -3659,25 +3659,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3715,7 +3715,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.MarkDealAsLostRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsLostRequest"
                         }
                     }
                 ],
@@ -3723,25 +3723,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3779,7 +3779,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.MoveDealToStageRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MoveDealToStageRequest"
                         }
                     }
                 ],
@@ -3787,25 +3787,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3843,7 +3843,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateDealValueRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealValueRequest"
                         }
                     }
                 ],
@@ -3851,25 +3851,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3907,7 +3907,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.MarkDealAsWonRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsWonRequest"
                         }
                     }
                 ],
@@ -3915,25 +3915,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.DealResponse"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_deal_adapter_http.DealResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -3971,7 +3971,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3979,7 +3979,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InteractionResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                             }
                                         }
                                     }
@@ -3990,7 +3990,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4014,7 +4014,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateInteractionRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.CreateInteractionRequest"
                         }
                     }
                 ],
@@ -4024,13 +4024,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4040,13 +4040,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4091,7 +4091,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4099,7 +4099,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InteractionResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                             }
                                         }
                                     }
@@ -4110,13 +4110,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4161,7 +4161,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4169,7 +4169,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InteractionResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                             }
                                         }
                                     }
@@ -4180,13 +4180,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4224,7 +4224,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4232,7 +4232,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InteractionResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                             }
                                         }
                                     }
@@ -4243,7 +4243,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4288,7 +4288,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4296,7 +4296,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InteractionResponse"
+                                                "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                             }
                                         }
                                     }
@@ -4307,13 +4307,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4344,13 +4344,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4360,19 +4360,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4399,25 +4399,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4450,7 +4450,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.AddAttendeeRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.AddAttendeeRequest"
                         }
                     }
                 ],
@@ -4460,13 +4460,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4476,19 +4476,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4529,13 +4529,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4545,19 +4545,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4590,7 +4590,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateContentRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.UpdateContentRequest"
                         }
                     }
                 ],
@@ -4600,13 +4600,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4616,19 +4616,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4661,7 +4661,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.EndInteractionRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.EndInteractionRequest"
                         }
                     }
                 ],
@@ -4671,13 +4671,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4687,19 +4687,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4732,7 +4732,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetFollowUpRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.SetFollowUpRequest"
                         }
                     }
                 ],
@@ -4742,13 +4742,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4758,19 +4758,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4803,7 +4803,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetOutcomeRequest"
+                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.SetOutcomeRequest"
                         }
                     }
                 ],
@@ -4813,13 +4813,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InteractionResponse"
+                                            "$ref": "#/definitions/internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse"
                                         }
                                     }
                                 }
@@ -4829,19 +4829,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -4861,13 +4861,13 @@ const docTemplate = `{
                     "200": {
                         "description": "All systems healthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Report"
+                            "$ref": "#/definitions/internal_infrastructure_health.Report"
                         }
                     },
                     "503": {
                         "description": "One or more systems unhealthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Report"
+                            "$ref": "#/definitions/internal_infrastructure_health.Report"
                         }
                     }
                 }
@@ -4887,13 +4887,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Event Bus healthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     },
                     "503": {
                         "description": "Event Bus unhealthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     }
                 }
@@ -4913,13 +4913,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Database healthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     },
                     "503": {
                         "description": "Database unhealthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     }
                 }
@@ -4939,13 +4939,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Redis healthy or not configured",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     },
                     "503": {
                         "description": "Redis unhealthy",
                         "schema": {
-                            "$ref": "#/definitions/health.Check"
+                            "$ref": "#/definitions/internal_infrastructure_health.Check"
                         }
                     }
                 }
@@ -4999,7 +4999,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5007,7 +5007,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InvoiceResponse"
+                                                "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                             }
                                         }
                                     }
@@ -5018,7 +5018,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5042,7 +5042,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateInvoiceRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.CreateInvoiceRequest"
                         }
                     }
                 ],
@@ -5052,13 +5052,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5068,13 +5068,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5105,13 +5105,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5121,7 +5121,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5157,7 +5157,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5165,7 +5165,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InvoiceResponse"
+                                                "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                             }
                                         }
                                     }
@@ -5176,7 +5176,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5207,13 +5207,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5223,13 +5223,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5256,13 +5256,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5290,13 +5290,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5306,13 +5306,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5345,7 +5345,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.AddLineItemRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.AddLineItemRequest"
                         }
                     }
                 ],
@@ -5355,13 +5355,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5371,13 +5371,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5417,7 +5417,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateLineItemRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.UpdateLineItemRequest"
                         }
                     }
                 ],
@@ -5427,13 +5427,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5443,13 +5443,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5482,13 +5482,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5498,13 +5498,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5537,7 +5537,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.MarkAsPaidRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.MarkAsPaidRequest"
                         }
                     }
                 ],
@@ -5547,13 +5547,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5563,13 +5563,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5597,13 +5597,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5613,13 +5613,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5652,7 +5652,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateTaxRequest"
+                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.UpdateTaxRequest"
                         }
                     }
                 ],
@@ -5662,13 +5662,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5678,13 +5678,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5712,13 +5712,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InvoiceResponse"
+                                            "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceResponse"
                                         }
                                     }
                                 }
@@ -5728,13 +5728,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5759,7 +5759,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5767,7 +5767,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.LanguageResponse"
+                                                "$ref": "#/definitions/internal_contexts_shared_language_adapter_http.LanguageResponse"
                                             }
                                         }
                                     }
@@ -5778,7 +5778,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5812,13 +5812,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LanguageResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_language_adapter_http.LanguageResponse"
                                         }
                                     }
                                 }
@@ -5828,19 +5828,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5878,7 +5878,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -5886,7 +5886,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.OrderResponse"
+                                                "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                             }
                                         }
                                     }
@@ -5897,13 +5897,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -5927,7 +5927,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateOrderRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.CreateOrderRequest"
                         }
                     }
                 ],
@@ -5937,13 +5937,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -5953,13 +5953,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6004,7 +6004,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6012,7 +6012,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.OrderResponse"
+                                                "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                             }
                                         }
                                     }
@@ -6023,13 +6023,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6060,13 +6060,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6076,13 +6076,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6134,7 +6134,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6142,7 +6142,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.OrderResponse"
+                                                "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                             }
                                         }
                                     }
@@ -6153,13 +6153,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6190,13 +6190,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6206,19 +6206,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6249,13 +6249,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6265,19 +6265,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6308,13 +6308,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6324,19 +6324,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6367,13 +6367,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6383,19 +6383,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6428,7 +6428,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.AddOrderLineRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.AddOrderLineRequest"
                         }
                     }
                 ],
@@ -6438,13 +6438,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6454,19 +6454,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6506,7 +6506,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateOrderLineRequest"
+                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.UpdateOrderLineRequest"
                         }
                     }
                 ],
@@ -6516,13 +6516,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6532,19 +6532,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6580,13 +6580,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6596,19 +6596,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6639,13 +6639,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -6655,19 +6655,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6698,7 +6698,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -6706,7 +6706,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.ContractResponse"
+                                                "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractResponse"
                                             }
                                         }
                                     }
@@ -6717,13 +6717,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6762,19 +6762,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PermissionListResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionListResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6798,7 +6798,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreatePermissionRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.CreatePermissionRequest"
                         }
                     }
                 ],
@@ -6806,25 +6806,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.PermissionResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6856,25 +6856,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PermissionResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6906,25 +6906,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PermissionResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -6955,7 +6955,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdatePermissionRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.UpdatePermissionRequest"
                         }
                     }
                 ],
@@ -6963,25 +6963,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.PermissionResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7014,19 +7014,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7052,7 +7052,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateProfileRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_profile_adapter_http.CreateProfileRequest"
                         }
                     }
                 ],
@@ -7060,19 +7060,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.ProfileResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7110,7 +7110,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.ProfileResponse"
+                                "$ref": "#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse"
                             }
                         }
                     }
@@ -7140,19 +7140,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ProfileResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7181,19 +7181,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ProfileResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_profile_adapter_http.ProfileResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7232,19 +7232,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.RoleListResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleListResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7268,7 +7268,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateRoleRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.CreateRoleRequest"
                         }
                     }
                 ],
@@ -7276,25 +7276,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.RoleResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7326,25 +7326,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.RoleResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7376,25 +7376,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.RoleResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7425,7 +7425,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateRoleRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.UpdateRoleRequest"
                         }
                     }
                 ],
@@ -7433,25 +7433,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.RoleResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7484,25 +7484,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7536,20 +7536,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.PermissionResponse"
+                                "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7589,13 +7589,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptListResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptListResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7619,7 +7619,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateScriptRequest"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.CreateScriptRequest"
                         }
                     }
                 ],
@@ -7627,19 +7627,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7667,13 +7667,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ExecutionHistoryResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecutionHistoryResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7702,19 +7702,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ExecutionResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecutionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7743,13 +7743,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7775,7 +7775,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.ValidateScriptRequest"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ValidateScriptRequest"
                         }
                     }
                 ],
@@ -7783,13 +7783,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ValidationResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ValidationResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7818,19 +7818,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7861,7 +7861,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateScriptRequest"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.UpdateScriptRequest"
                         }
                     }
                 ],
@@ -7869,25 +7869,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7914,13 +7914,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7946,25 +7946,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -7990,25 +7990,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8034,25 +8034,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ScriptResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8093,19 +8093,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ExecutionHistoryResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecutionHistoryResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8138,7 +8138,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.ExecuteScriptRequest"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecuteScriptRequest"
                         }
                     }
                 ],
@@ -8146,25 +8146,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.ExecutionResponse"
+                            "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecutionResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8189,7 +8189,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8197,7 +8197,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.TimezoneResponse"
+                                                "$ref": "#/definitions/internal_contexts_shared_timezone_adapter_http.TimezoneResponse"
                                             }
                                         }
                                     }
@@ -8208,7 +8208,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8242,13 +8242,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.TimezoneResponse"
+                                            "$ref": "#/definitions/internal_contexts_shared_timezone_adapter_http.TimezoneResponse"
                                         }
                                     }
                                 }
@@ -8258,19 +8258,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8309,20 +8309,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.UserResponse"
+                                "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8354,25 +8354,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8398,7 +8398,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.LoginRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.LoginRequest"
                         }
                     }
                 ],
@@ -8406,25 +8406,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.AuthResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.AuthResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8450,7 +8450,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RegisterRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.RegisterRequest"
                         }
                     }
                 ],
@@ -8458,19 +8458,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8502,25 +8502,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8552,25 +8552,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8602,25 +8602,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8653,7 +8653,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.ChangePasswordRequest"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.ChangePasswordRequest"
                         }
                     }
                 ],
@@ -8661,25 +8661,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8711,25 +8711,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8761,25 +8761,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8811,25 +8811,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.UserResponse"
+                            "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8863,20 +8863,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/http.RoleResponse"
+                                "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8914,7 +8914,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -8922,7 +8922,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InventoryResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                             }
                                         }
                                     }
@@ -8933,13 +8933,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -8963,7 +8963,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateInventoryRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.CreateInventoryRequest"
                         }
                     }
                 ],
@@ -8973,13 +8973,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -8989,13 +8989,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9033,7 +9033,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9041,7 +9041,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InventoryResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                             }
                                         }
                                     }
@@ -9052,13 +9052,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9080,7 +9080,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9088,7 +9088,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InventoryResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                             }
                                         }
                                     }
@@ -9099,7 +9099,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9130,7 +9130,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9138,7 +9138,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InventoryResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                             }
                                         }
                                     }
@@ -9149,13 +9149,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9186,13 +9186,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9202,13 +9202,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9239,7 +9239,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -9247,7 +9247,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.InventoryResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                             }
                                         }
                                     }
@@ -9258,13 +9258,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9295,13 +9295,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9311,13 +9311,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9348,7 +9348,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateInventoryRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.UpdateInventoryRequest"
                         }
                     }
                 ],
@@ -9358,13 +9358,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9374,19 +9374,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9413,25 +9413,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9464,7 +9464,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CommitStockRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.CommitStockRequest"
                         }
                     }
                 ],
@@ -9474,13 +9474,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9490,19 +9490,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9535,7 +9535,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.ReceiveStockRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.ReceiveStockRequest"
                         }
                     }
                 ],
@@ -9545,13 +9545,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9561,19 +9561,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9616,13 +9616,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9632,19 +9632,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9677,7 +9677,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.ReserveStockRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.ReserveStockRequest"
                         }
                     }
                 ],
@@ -9687,13 +9687,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.InventoryResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_inventory_adapter_http.InventoryResponse"
                                         }
                                     }
                                 }
@@ -9703,19 +9703,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9774,13 +9774,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationListResponse"
                                         }
                                     }
                                 }
@@ -9790,13 +9790,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9820,7 +9820,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateLocationRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.CreateLocationRequest"
                         }
                     }
                 ],
@@ -9830,13 +9830,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -9846,13 +9846,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9886,13 +9886,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -9902,13 +9902,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9942,13 +9942,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -9958,13 +9958,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -9995,7 +9995,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateLocationRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.UpdateLocationRequest"
                         }
                     }
                 ],
@@ -10005,13 +10005,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10021,19 +10021,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10063,25 +10063,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10115,13 +10115,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10131,19 +10131,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10176,7 +10176,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateCapacityRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.UpdateCapacityRequest"
                         }
                     }
                 ],
@@ -10186,13 +10186,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CapacityResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.CapacityResponse"
                                         }
                                     }
                                 }
@@ -10202,19 +10202,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10255,7 +10255,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10263,7 +10263,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.LocationResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                             }
                                         }
                                     }
@@ -10274,19 +10274,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10320,13 +10320,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10336,19 +10336,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10381,7 +10381,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateDimensionsRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.UpdateDimensionsRequest"
                         }
                     }
                 ],
@@ -10391,13 +10391,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10407,19 +10407,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10452,7 +10452,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateFlagsRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.UpdateFlagsRequest"
                         }
                     }
                 ],
@@ -10462,13 +10462,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10478,19 +10478,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10524,7 +10524,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -10532,7 +10532,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.LocationResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                             }
                                         }
                                     }
@@ -10543,19 +10543,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10589,13 +10589,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.LocationResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
                                         }
                                     }
                                 }
@@ -10605,19 +10605,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10658,13 +10658,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductListResponse"
                                         }
                                     }
                                 }
@@ -10674,13 +10674,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10704,7 +10704,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateProductRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.CreateProductRequest"
                         }
                     }
                 ],
@@ -10714,13 +10714,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -10730,19 +10730,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10790,13 +10790,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductListResponse"
                                         }
                                     }
                                 }
@@ -10806,13 +10806,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10860,13 +10860,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductListResponse"
                                         }
                                     }
                                 }
@@ -10876,13 +10876,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10930,13 +10930,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductListResponse"
                                         }
                                     }
                                 }
@@ -10946,13 +10946,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -10986,13 +10986,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11002,13 +11002,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11062,13 +11062,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductListResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductListResponse"
                                         }
                                     }
                                 }
@@ -11078,13 +11078,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11118,13 +11118,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11134,19 +11134,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11177,7 +11177,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateProductRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.UpdateProductRequest"
                         }
                     }
                 ],
@@ -11187,13 +11187,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11203,19 +11203,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11248,19 +11248,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11294,13 +11294,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11310,25 +11310,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11362,13 +11362,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11378,25 +11378,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11430,13 +11430,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11446,19 +11446,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11491,7 +11491,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateInventorySettingsRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.UpdateInventorySettingsRequest"
                         }
                     }
                 ],
@@ -11501,13 +11501,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11517,19 +11517,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11562,7 +11562,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetPhysicalPropertiesRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.SetPhysicalPropertiesRequest"
                         }
                     }
                 ],
@@ -11572,13 +11572,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11588,19 +11588,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11633,7 +11633,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SetReorderPointRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.SetReorderPointRequest"
                         }
                     }
                 ],
@@ -11643,13 +11643,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ProductResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
                                         }
                                     }
                                 }
@@ -11659,19 +11659,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11697,7 +11697,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RecordMovementRequest"
+                            "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.RecordMovementRequest"
                         }
                     }
                 ],
@@ -11707,13 +11707,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.MovementResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                         }
                                     }
                                 }
@@ -11723,13 +11723,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11761,7 +11761,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11772,7 +11772,7 @@ const docTemplate = `{
                                                 "movements": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/definitions/http.MovementResponse"
+                                                        "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                                     }
                                                 },
                                                 "page": {
@@ -11794,13 +11794,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid inventory ID",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11822,7 +11822,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11830,7 +11830,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.MovementResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                             }
                                         }
                                     }
@@ -11841,7 +11841,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11880,7 +11880,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11888,7 +11888,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.MovementResponse"
+                                                "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                             }
                                         }
                                     }
@@ -11899,13 +11899,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid parameters",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -11937,7 +11937,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -11970,13 +11970,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid inventory ID",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -12007,7 +12007,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -12018,7 +12018,7 @@ const docTemplate = `{
                                                 "movements": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/definitions/http.MovementResponse"
+                                                        "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                                     }
                                                 },
                                                 "page": {
@@ -12040,7 +12040,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -12072,13 +12072,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.MovementResponse"
+                                            "$ref": "#/definitions/internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse"
                                         }
                                     }
                                 }
@@ -12088,19 +12088,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid movement ID",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "404": {
                         "description": "Movement not found",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
                         }
                     }
                 }
@@ -12108,71 +12108,53 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "health.Check": {
+        "github_com_basilex_promenade_pkg_response.Error": {
             "type": "object",
             "properties": {
-                "duration_ms": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_pkg_response.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
                     "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "pages": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_basilex_promenade_pkg_response.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Error"
                 },
                 "message": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
+                "pagination": {
+                    "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Pagination"
                 },
                 "status": {
-                    "$ref": "#/definitions/health.Status"
-                },
-                "timestamp": {
                     "type": "string"
                 }
             }
         },
-        "health.Report": {
-            "type": "object",
-            "properties": {
-                "checks": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/health.Check"
-                    }
-                },
-                "status": {
-                    "$ref": "#/definitions/health.Status"
-                },
-                "timestamp": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "health.Status": {
-            "type": "string",
-            "enum": [
-                "healthy",
-                "degraded",
-                "unhealthy"
-            ],
-            "x-enum-varnames": [
-                "StatusHealthy",
-                "StatusDegraded",
-                "StatusUnhealthy"
-            ]
-        },
-        "http.AddAttendeeRequest": {
-            "type": "object",
-            "required": [
-                "attendee_id"
-            ],
-            "properties": {
-                "attendee_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.AddLineItemRequest": {
+        "internal_contexts_billing_invoice_adapter_http.AddLineItemRequest": {
             "type": "object",
             "required": [
                 "description",
@@ -12196,7 +12178,154 @@ const docTemplate = `{
                 }
             }
         },
-        "http.AddNoteRequest": {
+        "internal_contexts_billing_invoice_adapter_http.CreateInvoiceRequest": {
+            "type": "object",
+            "required": [
+                "currency",
+                "customer_id",
+                "due_date"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "description": "RFC3339 format",
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_invoice_adapter_http.InvoiceLineResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Total in cents",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_price": {
+                    "description": "Amount in cents",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_invoice_adapter_http.InvoiceResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invoice_no": {
+                    "type": "string"
+                },
+                "issue_date": {
+                    "type": "string"
+                },
+                "lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_billing_invoice_adapter_http.InvoiceLineResponse"
+                    }
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "paid_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "subtotal_amount": {
+                    "description": "Amount in cents",
+                    "type": "integer"
+                },
+                "tax_amount": {
+                    "description": "Amount in cents",
+                    "type": "integer"
+                },
+                "total_amount": {
+                    "description": "Amount in cents",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_invoice_adapter_http.MarkAsPaidRequest": {
+            "type": "object",
+            "required": [
+                "paid_date"
+            ],
+            "properties": {
+                "paid_date": {
+                    "description": "RFC3339 format",
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_invoice_adapter_http.UpdateLineItemRequest": {
+            "type": "object",
+            "required": [
+                "quantity"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "internal_contexts_billing_invoice_adapter_http.UpdateTaxRequest": {
+            "type": "object",
+            "required": [
+                "tax_amount"
+            ],
+            "properties": {
+                "tax_amount": {
+                    "description": "Amount in cents",
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.AddNoteRequest": {
             "type": "object",
             "required": [
                 "note"
@@ -12207,117 +12336,198 @@ const docTemplate = `{
                 }
             }
         },
-        "http.AddOrderLineRequest": {
+        "internal_contexts_billing_payment_adapter_http.CompletePaymentRequest": {
             "type": "object",
             "required": [
-                "currency",
-                "product_id",
-                "quantity",
-                "unit_price"
+                "transaction_id"
             ],
+            "properties": {
+                "transaction_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.CreatePaymentRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "customer_id",
+                "method"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "invoice_id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "processed_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.FailPaymentRequest": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.LinkInvoiceRequest": {
+            "type": "object",
+            "required": [
+                "invoice_id"
+            ],
+            "properties": {
+                "invoice_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.PaymentResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "bank_account": {
+                    "type": "string"
+                },
+                "card_brand": {
+                    "type": "string"
+                },
+                "card_last4": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "failure_reason": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invoice_id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "payment_no": {
+                    "type": "string"
+                },
+                "payment_provider": {
+                    "type": "string"
+                },
+                "processed_at": {
+                    "type": "string"
+                },
+                "processed_by": {
+                    "type": "string"
+                },
+                "refunded_amount": {
+                    "type": "integer"
+                },
+                "refunded_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.RefundPaymentRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.SetCardDetailsRequest": {
+            "type": "object",
+            "required": [
+                "brand",
+                "last4"
+            ],
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "last4": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.SetProviderRequest": {
+            "type": "object",
+            "required": [
+                "provider"
+            ],
+            "properties": {
+                "provider": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_billing_payment_adapter_http.TotalResponse": {
+            "type": "object",
             "properties": {
                 "currency": {
                     "type": "string"
                 },
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "unit_price": {
-                    "description": "Amount in cents",
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "http.AuthResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expires_at": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "token_type": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/http.UserResponse"
-                }
-            }
-        },
-        "http.CapacityResponse": {
-            "type": "object",
-            "properties": {
-                "available_capacity": {
-                    "type": "integer"
-                },
-                "capacity": {
-                    "type": "integer"
-                },
-                "current_occupancy": {
-                    "type": "integer"
-                },
-                "is_full": {
-                    "type": "boolean"
-                },
-                "is_limited": {
-                    "type": "boolean"
-                },
-                "location_code": {
-                    "type": "string"
-                },
-                "location_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.ChangePasswordRequest": {
-            "type": "object",
-            "required": [
-                "new_password",
-                "old_password"
-            ],
-            "properties": {
-                "new_password": {
-                    "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
-                },
-                "old_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CommitStockRequest": {
-            "type": "object",
-            "required": [
-                "committed_by",
-                "quantity"
-            ],
-            "properties": {
-                "committed_by": {
-                    "type": "string"
-                },
-                "quantity": {
+                "total": {
                     "type": "integer"
                 }
             }
         },
-        "http.CompanyListResponse": {
+        "internal_contexts_customer-mgmt_company_adapter_http.CompanyListResponse": {
             "type": "object",
             "properties": {
                 "companies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/http.CompanyResponse"
+                        "$ref": "#/definitions/internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse"
                     }
                 },
                 "page": {
@@ -12331,7 +12541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.CompanyResponse": {
+        "internal_contexts_customer-mgmt_company_adapter_http.CompanyResponse": {
             "type": "object",
             "properties": {
                 "address_line1": {
@@ -12414,111 +12624,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.CompletePaymentRequest": {
-            "type": "object",
-            "required": [
-                "transaction_id"
-            ],
-            "properties": {
-                "transaction_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.ContractListResponse": {
-            "type": "object",
-            "properties": {
-                "contracts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.ContractResponse"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.ContractResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "expiration_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "signature_id": {
-                    "type": "string"
-                },
-                "signed_at": {
-                    "type": "string"
-                },
-                "signer_email": {
-                    "type": "string"
-                },
-                "signer_name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "terminated_at": {
-                    "type": "string"
-                },
-                "termination_reason": {
-                    "type": "string"
-                },
-                "terms": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.CountryResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "code3": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "name_local": {
-                    "type": "string"
-                },
-                "numeric_code": {
-                    "type": "string"
-                },
-                "phone_code": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateCompanyRequest": {
+        "internal_contexts_customer-mgmt_company_adapter_http.CreateCompanyRequest": {
             "type": "object",
             "required": [
                 "currency",
@@ -12628,58 +12734,124 @@ const docTemplate = `{
                 }
             }
         },
-        "http.CreateContractRequest": {
+        "internal_contexts_customer-mgmt_company_adapter_http.SetParentCompanyRequest": {
             "type": "object",
-            "required": [
-                "customer_id",
-                "order_id",
-                "terms"
-            ],
             "properties": {
-                "customer_id": {
+                "parent_company_id": {
                     "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "terms": {
-                    "type": "string",
-                    "minLength": 10
                 }
             }
         },
-        "http.CreateCountryRequest": {
+        "internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBasicInfoRequest": {
             "type": "object",
-            "required": [
-                "code",
-                "name",
-                "phone_code"
-            ],
             "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "code3": {
-                    "type": "string"
+                "legal_name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
                 },
                 "name": {
                     "type": "string",
-                    "maxLength": 100,
+                    "maxLength": 255,
                     "minLength": 2
                 },
-                "name_local": {
+                "tax_id": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "llc",
+                        "corporation",
+                        "sole_proprietor",
+                        "partnership",
+                        "non_profit",
+                        "other"
+                    ]
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyBusinessInfoRequest": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "employee_count": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "industry": {
                     "type": "string",
                     "maxLength": 100
                 },
-                "numeric_code": {
+                "revenue": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "size": {
+                    "type": "string",
+                    "enum": [
+                        "micro",
+                        "small",
+                        "medium",
+                        "large",
+                        "enterprise"
+                    ]
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyContactInfoRequest": {
+            "type": "object",
+            "properties": {
+                "address_line1": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "address_line2": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "country": {
                     "type": "string"
                 },
-                "phone_code": {
+                "email": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "phone_country_code": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string",
+                    "maxLength": 20
+                },
+                "state_province": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "website": {
                     "type": "string"
                 }
             }
         },
-        "http.CreateDealRequest": {
+        "internal_contexts_customer-mgmt_company_adapter_http.UpdateCompanyDescriptionRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.CreateDealRequest": {
             "type": "object",
             "required": [
                 "currency",
@@ -12727,354 +12899,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.CreateInteractionRequest": {
-            "type": "object",
-            "required": [
-                "created_by",
-                "customer_id",
-                "direction",
-                "started_at",
-                "subject",
-                "type"
-            ],
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "direction": {
-                    "type": "string"
-                },
-                "started_at": {
-                    "type": "string"
-                },
-                "subject": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateInventoryRequest": {
-            "type": "object",
-            "required": [
-                "created_by",
-                "product_id",
-                "product_name",
-                "sku",
-                "warehouse_id"
-            ],
-            "properties": {
-                "created_by": {
-                    "type": "string"
-                },
-                "location_code": {
-                    "type": "string",
-                    "maxLength": 50
-                },
-                "location_zone": {
-                    "type": "string",
-                    "maxLength": 50
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "product_name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
-                },
-                "sku": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "warehouse_id": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 1
-                }
-            }
-        },
-        "http.CreateInvoiceRequest": {
-            "type": "object",
-            "required": [
-                "currency",
-                "customer_id",
-                "due_date"
-            ],
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "due_date": {
-                    "description": "RFC3339 format",
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateLocationRequest": {
-            "type": "object",
-            "required": [
-                "code",
-                "name",
-                "type"
-            ],
-            "properties": {
-                "capacity": {
-                    "type": "integer"
-                },
-                "code": {
-                    "type": "string",
-                    "maxLength": 50
-                },
-                "depth": {
-                    "type": "number"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "height": {
-                    "type": "number"
-                },
-                "is_limited": {
-                    "type": "boolean"
-                },
-                "is_pickable": {
-                    "type": "boolean"
-                },
-                "is_putawayable": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "parent_id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "warehouse",
-                        "zone",
-                        "aisle",
-                        "rack",
-                        "shelf",
-                        "bin"
-                    ]
-                },
-                "width": {
-                    "type": "number"
-                }
-            }
-        },
-        "http.CreateOrderRequest": {
-            "type": "object",
-            "required": [
-                "currency",
-                "customer_id"
-            ],
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreatePaymentRequest": {
-            "type": "object",
-            "required": [
-                "amount",
-                "currency",
-                "customer_id",
-                "method"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "invoice_id": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "processed_by": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreatePermissionRequest": {
-            "type": "object",
-            "required": [
-                "action",
-                "resource"
-            ],
-            "properties": {
-                "action": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                },
-                "resource": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
-                }
-            }
-        },
-        "http.CreateProductRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "sku"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Laptop Dell XPS 15"
-                },
-                "sku": {
-                    "type": "string",
-                    "example": "PROD-001"
-                }
-            }
-        },
-        "http.CreateProfileRequest": {
-            "type": "object",
-            "required": [
-                "display_name"
-            ],
-            "properties": {
-                "display_name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                }
-            }
-        },
-        "http.CreateRoleRequest": {
-            "type": "object",
-            "required": [
-                "display_name",
-                "name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                },
-                "display_name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
-                }
-            }
-        },
-        "http.CreateScriptRequest": {
-            "type": "object",
-            "required": [
-                "code",
-                "entity_type",
-                "name"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                },
-                "entity_type": {
-                    "type": "string",
-                    "enum": [
-                        "customer",
-                        "order",
-                        "deal",
-                        "product"
-                    ]
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 3
-                }
-            }
-        },
-        "http.CurrencyResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "decimal_places": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "numeric_code": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.DealResponse": {
+        "internal_contexts_customer-mgmt_deal_adapter_http.DealResponse": {
             "type": "object",
             "properties": {
                 "actual_close_date": {
@@ -13127,28 +12952,152 @@ const docTemplate = `{
                 }
             }
         },
-        "http.Dimensions": {
+        "internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsLostRequest": {
             "type": "object",
+            "required": [
+                "close_date"
+            ],
             "properties": {
-                "height": {
-                    "type": "number",
-                    "example": 1.8
+                "close_date": {
+                    "type": "string"
                 },
-                "length": {
-                    "type": "number",
-                    "example": 35.7
-                },
-                "unit": {
+                "lost_reason": {
                     "type": "string",
-                    "example": "cm"
-                },
-                "width": {
-                    "type": "number",
-                    "example": 23.5
+                    "maxLength": 500
                 }
             }
         },
-        "http.EndInteractionRequest": {
+        "internal_contexts_customer-mgmt_deal_adapter_http.MarkDealAsWonRequest": {
+            "type": "object",
+            "required": [
+                "close_date"
+            ],
+            "properties": {
+                "close_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.MoveDealToStageRequest": {
+            "type": "object",
+            "required": [
+                "stage"
+            ],
+            "properties": {
+                "stage": {
+                    "type": "string",
+                    "enum": [
+                        "lead",
+                        "qualified",
+                        "proposal",
+                        "negotiation",
+                        "closed_won",
+                        "closed_lost"
+                    ]
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.PipelineStatsResponse": {
+            "type": "object",
+            "properties": {
+                "stats": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealBasicInfoRequest": {
+            "type": "object",
+            "properties": {
+                "expected_close_date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.UpdateDealValueRequest": {
+            "type": "object",
+            "required": [
+                "currency",
+                "value"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_deal_adapter_http.WonDealsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "total_value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_interaction_adapter_http.AddAttendeeRequest": {
+            "type": "object",
+            "required": [
+                "attendee_id"
+            ],
+            "properties": {
+                "attendee_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_interaction_adapter_http.CreateInteractionRequest": {
+            "type": "object",
+            "required": [
+                "created_by",
+                "customer_id",
+                "direction",
+                "started_at",
+                "subject",
+                "type"
+            ],
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_interaction_adapter_http.EndInteractionRequest": {
             "type": "object",
             "required": [
                 "ended_at"
@@ -13159,71 +13108,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.ExecuteScriptRequest": {
-            "type": "object",
-            "properties": {
-                "parameters": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "http.ExecutionHistoryResponse": {
-            "type": "object",
-            "properties": {
-                "executions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.ExecutionResponse"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.ExecutionResponse": {
-            "type": "object",
-            "properties": {
-                "duration_ms": {
-                    "type": "integer"
-                },
-                "error": {
-                    "type": "string"
-                },
-                "executed_at": {
-                    "type": "string"
-                },
-                "executed_by": {
-                    "type": "string"
-                },
-                "execution_id": {
-                    "type": "string"
-                },
-                "result": {},
-                "script_id": {
-                    "type": "string"
-                },
-                "script_name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.FailPaymentRequest": {
-            "type": "object",
-            "required": [
-                "reason"
-            ],
-            "properties": {
-                "reason": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.InteractionResponse": {
+        "internal_contexts_customer-mgmt_interaction_adapter_http.InteractionResponse": {
             "type": "object",
             "properties": {
                 "attendees": {
@@ -13285,587 +13170,69 @@ const docTemplate = `{
                 }
             }
         },
-        "http.InventoryResponse": {
+        "internal_contexts_customer-mgmt_interaction_adapter_http.SetFollowUpRequest": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "currency_code": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "last_restocked": {
-                    "type": "string"
-                },
-                "last_updated_by": {
-                    "type": "string"
-                },
-                "location_code": {
-                    "type": "string"
-                },
-                "location_zone": {
+                "follow_up_date": {
                     "type": "string"
                 },
                 "notes": {
                     "type": "string"
                 },
-                "product_id": {
-                    "type": "string"
-                },
-                "product_name": {
-                    "type": "string"
-                },
-                "quantity_available": {
-                    "type": "integer"
-                },
-                "quantity_committed": {
-                    "type": "integer"
-                },
-                "quantity_on_hand": {
-                    "type": "integer"
-                },
-                "quantity_reserved": {
-                    "type": "integer"
-                },
-                "reorder_point": {
-                    "type": "integer"
-                },
-                "reorder_quantity": {
-                    "type": "integer"
-                },
-                "sku": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "unit_cost_cents": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "integer"
-                },
-                "warehouse_id": {
+                "required": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_contexts_customer-mgmt_interaction_adapter_http.SetOutcomeRequest": {
+            "type": "object",
+            "required": [
+                "outcome"
+            ],
+            "properties": {
+                "outcome": {
                     "type": "string"
                 }
             }
         },
-        "http.InvoiceLineResponse": {
+        "internal_contexts_customer-mgmt_interaction_adapter_http.UpdateContentRequest": {
             "type": "object",
+            "required": [
+                "subject"
+            ],
             "properties": {
-                "amount": {
-                    "description": "Total in cents",
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "unit_price": {
-                    "description": "Amount in cents",
-                    "type": "integer"
-                },
-                "updated_at": {
+                "subject": {
                     "type": "string"
                 }
             }
         },
-        "http.InvoiceResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "due_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invoice_no": {
-                    "type": "string"
-                },
-                "issue_date": {
-                    "type": "string"
-                },
-                "lines": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.InvoiceLineResponse"
-                    }
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "paid_date": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "subtotal_amount": {
-                    "description": "Amount in cents",
-                    "type": "integer"
-                },
-                "tax_amount": {
-                    "description": "Amount in cents",
-                    "type": "integer"
-                },
-                "total_amount": {
-                    "description": "Amount in cents",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.LanguageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "code3": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "native_name": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.LinkInvoiceRequest": {
+        "internal_contexts_identity_permission_adapter_http.CreatePermissionRequest": {
             "type": "object",
             "required": [
-                "invoice_id"
+                "action",
+                "resource"
             ],
             "properties": {
-                "invoice_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.LocationListResponse": {
-            "type": "object",
-            "properties": {
-                "locations": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.LocationResponse"
-                    }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.LocationResponse": {
-            "type": "object",
-            "properties": {
-                "available_capacity": {
-                    "type": "integer"
-                },
-                "capacity": {
-                    "type": "integer"
-                },
-                "code": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "current_occupancy": {
-                    "type": "integer"
-                },
-                "depth": {
-                    "type": "number"
+                "action": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
                 },
                 "description": {
-                    "type": "string"
-                },
-                "height": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_limited": {
-                    "type": "boolean"
-                },
-                "is_pickable": {
-                    "type": "boolean"
-                },
-                "is_putawayable": {
-                    "type": "boolean"
-                },
-                "level": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "parent_id": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "integer"
-                },
-                "volume": {
-                    "type": "number"
-                },
-                "width": {
-                    "type": "number"
-                }
-            }
-        },
-        "http.LoginRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.MarkAsPaidRequest": {
-            "type": "object",
-            "required": [
-                "paid_date"
-            ],
-            "properties": {
-                "paid_date": {
-                    "description": "RFC3339 format",
-                    "type": "string"
-                }
-            }
-        },
-        "http.MarkDealAsLostRequest": {
-            "type": "object",
-            "required": [
-                "close_date"
-            ],
-            "properties": {
-                "close_date": {
-                    "type": "string"
-                },
-                "lost_reason": {
                     "type": "string",
                     "maxLength": 500
-                }
-            }
-        },
-        "http.MarkDealAsWonRequest": {
-            "type": "object",
-            "required": [
-                "close_date"
-            ],
-            "properties": {
-                "close_date": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.MoneyResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "description": "Amount in cents",
-                    "type": "integer"
                 },
-                "currency": {
-                    "description": "ISO 4217 currency code",
-                    "type": "string"
-                }
-            }
-        },
-        "http.MoveDealToStageRequest": {
-            "type": "object",
-            "required": [
-                "stage"
-            ],
-            "properties": {
-                "stage": {
+                "resource": {
                     "type": "string",
-                    "enum": [
-                        "lead",
-                        "qualified",
-                        "proposal",
-                        "negotiation",
-                        "closed_won",
-                        "closed_lost"
-                    ]
+                    "maxLength": 50,
+                    "minLength": 2
                 }
             }
         },
-        "http.MovementResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "currency_code": {
-                    "type": "string"
-                },
-                "from_location_code": {
-                    "type": "string"
-                },
-                "from_warehouse_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "inventory_id": {
-                    "type": "string"
-                },
-                "movement_date": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "quantity_after_move": {
-                    "type": "integer"
-                },
-                "quantity_before_move": {
-                    "type": "integer"
-                },
-                "reason": {
-                    "type": "string"
-                },
-                "reference_id": {
-                    "type": "string"
-                },
-                "reference_type": {
-                    "type": "string"
-                },
-                "to_location_code": {
-                    "type": "string"
-                },
-                "to_warehouse_id": {
-                    "type": "string"
-                },
-                "total_cost_cents": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unit_cost_cents": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.OrderLineResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "total": {
-                    "$ref": "#/definitions/http.MoneyResponse"
-                },
-                "unit_price": {
-                    "$ref": "#/definitions/http.MoneyResponse"
-                }
-            }
-        },
-        "http.OrderResponse": {
-            "type": "object",
-            "properties": {
-                "cancelled_at": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "type": "string"
-                },
-                "confirmed_at": {
-                    "type": "string"
-                },
-                "contract_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "fulfilled_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invoice_id": {
-                    "type": "string"
-                },
-                "lines": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.OrderLineResponse"
-                    }
-                },
-                "order_date": {
-                    "type": "string"
-                },
-                "order_number": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "total": {
-                    "$ref": "#/definitions/http.MoneyResponse"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.PaymentResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "bank_account": {
-                    "type": "string"
-                },
-                "card_brand": {
-                    "type": "string"
-                },
-                "card_last4": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "customer_id": {
-                    "type": "string"
-                },
-                "failure_reason": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invoice_id": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "payment_no": {
-                    "type": "string"
-                },
-                "payment_provider": {
-                    "type": "string"
-                },
-                "processed_at": {
-                    "type": "string"
-                },
-                "processed_by": {
-                    "type": "string"
-                },
-                "refunded_amount": {
-                    "type": "integer"
-                },
-                "refunded_at": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "transaction_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.PermissionListResponse": {
+        "internal_contexts_identity_permission_adapter_http.PermissionListResponse": {
             "type": "object",
             "properties": {
                 "limit": {
@@ -13877,7 +13244,7 @@ const docTemplate = `{
                 "permissions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/http.PermissionResponse"
+                        "$ref": "#/definitions/internal_contexts_identity_permission_adapter_http.PermissionResponse"
                     }
                 },
                 "total": {
@@ -13885,7 +13252,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.PermissionResponse": {
+        "internal_contexts_identity_permission_adapter_http.PermissionResponse": {
             "type": "object",
             "properties": {
                 "action": {
@@ -13911,130 +13278,29 @@ const docTemplate = `{
                 }
             }
         },
-        "http.PipelineStatsResponse": {
+        "internal_contexts_identity_permission_adapter_http.UpdatePermissionRequest": {
             "type": "object",
             "properties": {
-                "stats": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                }
-            }
-        },
-        "http.ProductListResponse": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "page_size": {
-                    "type": "integer",
-                    "example": 20
-                },
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.ProductResponse"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "total_pages": {
-                    "type": "integer",
-                    "example": 5
-                }
-            }
-        },
-        "http.ProductResponse": {
-            "type": "object",
-            "properties": {
-                "allow_backorder": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "brand": {
-                    "type": "string",
-                    "example": "Dell"
-                },
-                "category": {
-                    "type": "string",
-                    "example": "Electronics"
-                },
-                "created_at": {
-                    "description": "Timestamps",
-                    "type": "string",
-                    "example": "2026-01-06T12:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string",
-                    "example": "2026-01-06T12:00:00Z"
-                },
                 "description": {
                     "type": "string",
-                    "example": "High-performance laptop"
-                },
-                "dimensions": {
-                    "$ref": "#/definitions/http.Dimensions"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "01JGABC123DEF456GHI789JKL0"
-                },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Laptop Dell XPS 15"
-                },
-                "reorder_point": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "reorder_quantity": {
-                    "type": "integer",
-                    "example": 50
-                },
-                "sku": {
-                    "type": "string",
-                    "example": "PROD-001"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "active"
-                },
-                "track_inventory": {
-                    "description": "Inventory",
-                    "type": "boolean",
-                    "example": true
-                },
-                "track_lot": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "track_serial": {
-                    "description": "Serial/Lot tracking",
-                    "type": "boolean",
-                    "example": false
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2026-01-06T12:00:00Z"
-                },
-                "weight": {
-                    "description": "Physical properties",
-                    "type": "number",
-                    "example": 2.5
+                    "maxLength": 500
                 }
             }
         },
-        "http.ProfileResponse": {
+        "internal_contexts_identity_profile_adapter_http.CreateProfileRequest": {
+            "type": "object",
+            "required": [
+                "display_name"
+            ],
+            "properties": {
+                "display_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                }
+            }
+        },
+        "internal_contexts_identity_profile_adapter_http.ProfileResponse": {
             "type": "object",
             "properties": {
                 "avatar_url": {
@@ -14111,121 +13377,30 @@ const docTemplate = `{
                 }
             }
         },
-        "http.ReceiveStockRequest": {
+        "internal_contexts_identity_role_adapter_http.CreateRoleRequest": {
             "type": "object",
             "required": [
-                "quantity",
-                "received_by",
-                "unit_cost_cents"
+                "display_name",
+                "name"
             ],
             "properties": {
-                "quantity": {
-                    "type": "integer"
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
                 },
-                "received_by": {
-                    "type": "string"
-                },
-                "unit_cost_cents": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "http.RecordMovementRequest": {
-            "type": "object",
-            "required": [
-                "created_by",
-                "inventory_id",
-                "quantity",
-                "quantity_before",
-                "type"
-            ],
-            "properties": {
-                "created_by": {
-                    "type": "string"
-                },
-                "inventory_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "quantity_before": {
-                    "description": "Current quantity before movement",
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.RefreshTokenRequest": {
-            "type": "object",
-            "required": [
-                "refresh_token"
-            ],
-            "properties": {
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.RefundPaymentRequest": {
-            "type": "object",
-            "required": [
-                "amount",
-                "currency"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "currency": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
+                "display_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 },
                 "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string",
-                    "maxLength": 72,
-                    "minLength": 8
+                    "maxLength": 50,
+                    "minLength": 2
                 }
             }
         },
-        "http.ReserveStockRequest": {
-            "type": "object",
-            "required": [
-                "order_id",
-                "quantity",
-                "reserved_by"
-            ],
-            "properties": {
-                "order_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "reserved_by": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.RoleListResponse": {
+        "internal_contexts_identity_role_adapter_http.RoleListResponse": {
             "type": "object",
             "properties": {
                 "limit": {
@@ -14237,7 +13412,7 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/http.RoleResponse"
+                        "$ref": "#/definitions/internal_contexts_identity_role_adapter_http.RoleResponse"
                     }
                 },
                 "total": {
@@ -14245,7 +13420,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.RoleResponse": {
+        "internal_contexts_identity_role_adapter_http.RoleResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -14271,13 +13446,150 @@ const docTemplate = `{
                 }
             }
         },
-        "http.ScriptListResponse": {
+        "internal_contexts_identity_role_adapter_http.UpdateRoleRequest": {
+            "type": "object",
+            "required": [
+                "display_name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "display_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.AuthResponse": {
             "type": "object",
             "properties": {
-                "scripts": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "token_type": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/internal_contexts_identity_user_adapter_http.UserResponse"
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.ChangePasswordRequest": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "maxLength": 72,
+                    "minLength": 8
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 72,
+                    "minLength": 8
+                }
+            }
+        },
+        "internal_contexts_identity_user_adapter_http.UserResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "email_verified": {
+                    "type": "boolean"
+                },
+                "email_verified_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_login_at": {
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "User roles for authorization",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/http.ScriptResponse"
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.ContractListResponse": {
+            "type": "object",
+            "properties": {
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_order-mgmt_contract_adapter_http.ContractResponse"
                     }
                 },
                 "total": {
@@ -14285,7 +13597,375 @@ const docTemplate = `{
                 }
             }
         },
-        "http.ScriptResponse": {
+        "internal_contexts_order-mgmt_contract_adapter_http.ContractResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "expiration_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "signature_id": {
+                    "type": "string"
+                },
+                "signed_at": {
+                    "type": "string"
+                },
+                "signer_email": {
+                    "type": "string"
+                },
+                "signer_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "terminated_at": {
+                    "type": "string"
+                },
+                "termination_reason": {
+                    "type": "string"
+                },
+                "terms": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.CreateContractRequest": {
+            "type": "object",
+            "required": [
+                "customer_id",
+                "order_id",
+                "terms"
+            ],
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "terms": {
+                    "type": "string",
+                    "minLength": 10
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.SetExpirationDateRequest": {
+            "type": "object",
+            "required": [
+                "expiration_date"
+            ],
+            "properties": {
+                "expiration_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.SignContractRequest": {
+            "type": "object",
+            "required": [
+                "signature_id",
+                "signer_email",
+                "signer_name"
+            ],
+            "properties": {
+                "signature_id": {
+                    "type": "string"
+                },
+                "signer_email": {
+                    "type": "string"
+                },
+                "signer_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.TerminateContractRequest": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "minLength": 10
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_contract_adapter_http.UpdateContractRequest": {
+            "type": "object",
+            "required": [
+                "terms"
+            ],
+            "properties": {
+                "terms": {
+                    "type": "string",
+                    "minLength": 10
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.AddOrderLineRequest": {
+            "type": "object",
+            "required": [
+                "currency",
+                "product_id",
+                "quantity",
+                "unit_price"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "unit_price": {
+                    "description": "Amount in cents",
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.CreateOrderRequest": {
+            "type": "object",
+            "required": [
+                "currency",
+                "customer_id"
+            ],
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.MoneyResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Amount in cents",
+                    "type": "integer"
+                },
+                "currency": {
+                    "description": "ISO 4217 currency code",
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.OrderLineResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "total": {
+                    "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse"
+                },
+                "unit_price": {
+                    "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string"
+                },
+                "contract_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "fulfilled_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invoice_id": {
+                    "type": "string"
+                },
+                "lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.OrderLineResponse"
+                    }
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total": {
+                    "$ref": "#/definitions/internal_contexts_order-mgmt_order_adapter_http.MoneyResponse"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_order-mgmt_order_adapter_http.UpdateOrderLineRequest": {
+            "type": "object",
+            "required": [
+                "quantity"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.CreateScriptRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "entity_type",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "entity_type": {
+                    "type": "string",
+                    "enum": [
+                        "customer",
+                        "order",
+                        "deal",
+                        "product"
+                    ]
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.ExecuteScriptRequest": {
+            "type": "object",
+            "properties": {
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.ExecutionHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "executions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ExecutionResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.ExecutionResponse": {
+            "type": "object",
+            "properties": {
+                "duration_ms": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "executed_at": {
+                    "type": "string"
+                },
+                "executed_by": {
+                    "type": "string"
+                },
+                "execution_id": {
+                    "type": "string"
+                },
+                "result": {},
+                "script_id": {
+                    "type": "string"
+                },
+                "script_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.ScriptListResponse": {
+            "type": "object",
+            "properties": {
+                "scripts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_scripting_script_adapter_http.ScriptResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_scripting_script_adapter_http.ScriptResponse": {
             "type": "object",
             "properties": {
                 "archived_at": {
@@ -14327,66 +14007,809 @@ const docTemplate = `{
                 }
             }
         },
-        "http.SetCardDetailsRequest": {
+        "internal_contexts_scripting_script_adapter_http.UpdateScriptRequest": {
             "type": "object",
-            "required": [
-                "brand",
-                "last4"
-            ],
             "properties": {
-                "brand": {
+                "code": {
                     "type": "string"
                 },
-                "last4": {
-                    "type": "string"
+                "description": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
-        "http.SetExpirationDateRequest": {
+        "internal_contexts_scripting_script_adapter_http.ValidateScriptRequest": {
             "type": "object",
             "required": [
-                "expiration_date"
+                "code"
             ],
             "properties": {
-                "expiration_date": {
+                "code": {
                     "type": "string"
                 }
             }
         },
-        "http.SetFollowUpRequest": {
+        "internal_contexts_scripting_script_adapter_http.ValidationResponse": {
             "type": "object",
             "properties": {
-                "follow_up_date": {
+                "message": {
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_contexts_shared_country_adapter_http.CountryResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "code3": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_local": {
+                    "type": "string"
+                },
+                "numeric_code": {
+                    "type": "string"
+                },
+                "phone_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_shared_country_adapter_http.CreateCountryRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "phone_code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "code3": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_local": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "numeric_code": {
+                    "type": "string"
+                },
+                "phone_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_shared_country_adapter_http.UpdateCountryRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "phone_code"
+            ],
+            "properties": {
+                "code3": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name_local": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "numeric_code": {
+                    "type": "string"
+                },
+                "phone_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_shared_currency_adapter_http.CurrencyResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "decimal_places": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numeric_code": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_shared_language_adapter_http.LanguageResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "code3": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "native_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_shared_timezone_adapter_http.TimezoneResponse": {
+            "type": "object",
+            "properties": {
+                "abbreviation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "utc_offset": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.CommitStockRequest": {
+            "type": "object",
+            "required": [
+                "committed_by",
+                "quantity"
+            ],
+            "properties": {
+                "committed_by": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.CreateInventoryRequest": {
+            "type": "object",
+            "required": [
+                "created_by",
+                "product_id",
+                "product_name",
+                "sku",
+                "warehouse_id"
+            ],
+            "properties": {
+                "created_by": {
+                    "type": "string"
+                },
+                "location_code": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "location_zone": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "product_name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "sku": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "warehouse_id": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.InventoryResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "last_restocked": {
+                    "type": "string"
+                },
+                "last_updated_by": {
+                    "type": "string"
+                },
+                "location_code": {
+                    "type": "string"
+                },
+                "location_zone": {
                     "type": "string"
                 },
                 "notes": {
                     "type": "string"
                 },
-                "required": {
+                "product_id": {
+                    "type": "string"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "quantity_available": {
+                    "type": "integer"
+                },
+                "quantity_committed": {
+                    "type": "integer"
+                },
+                "quantity_on_hand": {
+                    "type": "integer"
+                },
+                "quantity_reserved": {
+                    "type": "integer"
+                },
+                "reorder_point": {
+                    "type": "integer"
+                },
+                "reorder_quantity": {
+                    "type": "integer"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "unit_cost_cents": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                },
+                "warehouse_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.ReceiveStockRequest": {
+            "type": "object",
+            "required": [
+                "quantity",
+                "received_by",
+                "unit_cost_cents"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "integer"
+                },
+                "received_by": {
+                    "type": "string"
+                },
+                "unit_cost_cents": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.ReleaseReservationRequest": {
+            "type": "object",
+            "required": [
+                "order_id",
+                "quantity",
+                "released_by"
+            ],
+            "properties": {
+                "order_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "released_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.ReserveStockRequest": {
+            "type": "object",
+            "required": [
+                "order_id",
+                "quantity",
+                "reserved_by"
+            ],
+            "properties": {
+                "order_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "reserved_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_warehouse_inventory_adapter_http.UpdateInventoryRequest": {
+            "type": "object",
+            "properties": {
+                "currency_code": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "location_code": {
+                    "type": "string"
+                },
+                "location_zone": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "reorder_point": {
+                    "type": "integer"
+                },
+                "reorder_quantity": {
+                    "type": "integer"
+                },
+                "unit_cost_cents": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_warehouse_location_adapter_http.CapacityResponse": {
+            "type": "object",
+            "properties": {
+                "available_capacity": {
+                    "type": "integer"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "current_occupancy": {
+                    "type": "integer"
+                },
+                "is_full": {
+                    "type": "boolean"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "location_code": {
+                    "type": "string"
+                },
+                "location_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_contexts_warehouse_location_adapter_http.CreateLocationRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "type"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "depth": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "warehouse",
+                        "zone",
+                        "aisle",
+                        "rack",
+                        "shelf",
+                        "bin"
+                    ]
+                },
+                "width": {
+                    "type": "number"
+                }
+            }
+        },
+        "internal_contexts_warehouse_location_adapter_http.LocationListResponse": {
+            "type": "object",
+            "properties": {
+                "locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_warehouse_location_adapter_http.LocationResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_warehouse_location_adapter_http.LocationResponse": {
+            "type": "object",
+            "properties": {
+                "available_capacity": {
+                    "type": "integer"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "current_occupancy": {
+                    "type": "integer"
+                },
+                "depth": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_limited": {
+                    "type": "boolean"
+                },
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                },
+                "volume": {
+                    "type": "number"
+                },
+                "width": {
+                    "type": "number"
+                }
+            }
+        },
+        "internal_contexts_warehouse_location_adapter_http.UpdateCapacityRequest": {
+            "type": "object",
+            "required": [
+                "capacity"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "is_limited": {
                     "type": "boolean"
                 }
             }
         },
-        "http.SetOutcomeRequest": {
+        "internal_contexts_warehouse_location_adapter_http.UpdateDimensionsRequest": {
             "type": "object",
             "required": [
-                "outcome"
+                "depth",
+                "height",
+                "width"
             ],
             "properties": {
-                "outcome": {
-                    "type": "string"
+                "depth": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "height": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "width": {
+                    "type": "number",
+                    "minimum": 0
                 }
             }
         },
-        "http.SetParentCompanyRequest": {
+        "internal_contexts_warehouse_location_adapter_http.UpdateFlagsRequest": {
             "type": "object",
             "properties": {
-                "parent_company_id": {
-                    "type": "string"
+                "is_pickable": {
+                    "type": "boolean"
+                },
+                "is_putawayable": {
+                    "type": "boolean"
                 }
             }
         },
-        "http.SetPhysicalPropertiesRequest": {
+        "internal_contexts_warehouse_location_adapter_http.UpdateLocationRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200
+                }
+            }
+        },
+        "internal_contexts_warehouse_product_adapter_http.CreateProductRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "sku"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Laptop Dell XPS 15"
+                },
+                "sku": {
+                    "type": "string",
+                    "example": "PROD-001"
+                }
+            }
+        },
+        "internal_contexts_warehouse_product_adapter_http.Dimensions": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "number",
+                    "example": 1.8
+                },
+                "length": {
+                    "type": "number",
+                    "example": 35.7
+                },
+                "unit": {
+                    "type": "string",
+                    "example": "cm"
+                },
+                "width": {
+                    "type": "number",
+                    "example": 23.5
+                }
+            }
+        },
+        "internal_contexts_warehouse_product_adapter_http.ProductListResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "page_size": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.ProductResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "internal_contexts_warehouse_product_adapter_http.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "allow_backorder": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "brand": {
+                    "type": "string",
+                    "example": "Dell"
+                },
+                "category": {
+                    "type": "string",
+                    "example": "Electronics"
+                },
+                "created_at": {
+                    "description": "Timestamps",
+                    "type": "string",
+                    "example": "2026-01-06T12:00:00Z"
+                },
+                "deleted_at": {
+                    "type": "string",
+                    "example": "2026-01-06T12:00:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "High-performance laptop"
+                },
+                "dimensions": {
+                    "$ref": "#/definitions/internal_contexts_warehouse_product_adapter_http.Dimensions"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "01JGABC123DEF456GHI789JKL0"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Laptop Dell XPS 15"
+                },
+                "reorder_point": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "reorder_quantity": {
+                    "type": "integer",
+                    "example": 50
+                },
+                "sku": {
+                    "type": "string",
+                    "example": "PROD-001"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "active"
+                },
+                "track_inventory": {
+                    "description": "Inventory",
+                    "type": "boolean",
+                    "example": true
+                },
+                "track_lot": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "track_serial": {
+                    "description": "Serial/Lot tracking",
+                    "type": "boolean",
+                    "example": false
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2026-01-06T12:00:00Z"
+                },
+                "weight": {
+                    "description": "Physical properties",
+                    "type": "number",
+                    "example": 2.5
+                }
+            }
+        },
+        "internal_contexts_warehouse_product_adapter_http.SetPhysicalPropertiesRequest": {
             "type": "object",
             "required": [
                 "unit"
@@ -14422,18 +14845,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.SetProviderRequest": {
-            "type": "object",
-            "required": [
-                "provider"
-            ],
-            "properties": {
-                "provider": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.SetReorderPointRequest": {
+        "internal_contexts_warehouse_product_adapter_http.SetReorderPointRequest": {
             "type": "object",
             "required": [
                 "reorder_point",
@@ -14452,340 +14864,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.SignContractRequest": {
-            "type": "object",
-            "required": [
-                "signature_id",
-                "signer_email",
-                "signer_name"
-            ],
-            "properties": {
-                "signature_id": {
-                    "type": "string"
-                },
-                "signer_email": {
-                    "type": "string"
-                },
-                "signer_name": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.TerminateContractRequest": {
-            "type": "object",
-            "required": [
-                "reason"
-            ],
-            "properties": {
-                "reason": {
-                    "type": "string",
-                    "minLength": 10
-                }
-            }
-        },
-        "http.TimezoneResponse": {
-            "type": "object",
-            "properties": {
-                "abbreviation": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "utc_offset": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.TotalResponse": {
-            "type": "object",
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.UpdateCapacityRequest": {
-            "type": "object",
-            "required": [
-                "capacity"
-            ],
-            "properties": {
-                "capacity": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "is_limited": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "http.UpdateCompanyBasicInfoRequest": {
-            "type": "object",
-            "properties": {
-                "legal_name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
-                "tax_id": {
-                    "type": "string",
-                    "maxLength": 50
-                },
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "llc",
-                        "corporation",
-                        "sole_proprietor",
-                        "partnership",
-                        "non_profit",
-                        "other"
-                    ]
-                }
-            }
-        },
-        "http.UpdateCompanyBusinessInfoRequest": {
-            "type": "object",
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "employee_count": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "industry": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "revenue": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "size": {
-                    "type": "string",
-                    "enum": [
-                        "micro",
-                        "small",
-                        "medium",
-                        "large",
-                        "enterprise"
-                    ]
-                }
-            }
-        },
-        "http.UpdateCompanyContactInfoRequest": {
-            "type": "object",
-            "properties": {
-                "address_line1": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "address_line2": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "city": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "country": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "phone_country_code": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string",
-                    "maxLength": 20
-                },
-                "state_province": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "website": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.UpdateCompanyDescriptionRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 2000
-                }
-            }
-        },
-        "http.UpdateContentRequest": {
-            "type": "object",
-            "required": [
-                "subject"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "subject": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.UpdateContractRequest": {
-            "type": "object",
-            "required": [
-                "terms"
-            ],
-            "properties": {
-                "terms": {
-                    "type": "string",
-                    "minLength": 10
-                }
-            }
-        },
-        "http.UpdateCountryRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "phone_code"
-            ],
-            "properties": {
-                "code3": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
-                "name_local": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "numeric_code": {
-                    "type": "string"
-                },
-                "phone_code": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.UpdateDealBasicInfoRequest": {
-            "type": "object",
-            "properties": {
-                "expected_close_date": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                }
-            }
-        },
-        "http.UpdateDealValueRequest": {
-            "type": "object",
-            "required": [
-                "currency",
-                "value"
-            ],
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "http.UpdateDimensionsRequest": {
-            "type": "object",
-            "required": [
-                "depth",
-                "height",
-                "width"
-            ],
-            "properties": {
-                "depth": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "height": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "width": {
-                    "type": "number",
-                    "minimum": 0
-                }
-            }
-        },
-        "http.UpdateFlagsRequest": {
-            "type": "object",
-            "properties": {
-                "is_pickable": {
-                    "type": "boolean"
-                },
-                "is_putawayable": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "http.UpdateInventoryRequest": {
-            "type": "object",
-            "properties": {
-                "currency_code": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "location_code": {
-                    "type": "string"
-                },
-                "location_zone": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "reorder_point": {
-                    "type": "integer"
-                },
-                "reorder_quantity": {
-                    "type": "integer"
-                },
-                "unit_cost_cents": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.UpdateInventorySettingsRequest": {
+        "internal_contexts_warehouse_product_adapter_http.UpdateInventorySettingsRequest": {
             "type": "object",
             "properties": {
                 "allow_backorder": {
@@ -14798,52 +14877,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.UpdateLineItemRequest": {
-            "type": "object",
-            "required": [
-                "quantity"
-            ],
-            "properties": {
-                "quantity": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "http.UpdateLocationRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200
-                }
-            }
-        },
-        "http.UpdateOrderLineRequest": {
-            "type": "object",
-            "required": [
-                "quantity"
-            ],
-            "properties": {
-                "quantity": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "http.UpdatePermissionRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                }
-            }
-        },
-        "http.UpdateProductRequest": {
+        "internal_contexts_warehouse_product_adapter_http.UpdateProductRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -14867,185 +14901,151 @@ const docTemplate = `{
                 }
             }
         },
-        "http.UpdateRoleRequest": {
-            "type": "object",
-            "required": [
-                "display_name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                },
-                "display_name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                }
-            }
-        },
-        "http.UpdateScriptRequest": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 500
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "http.UpdateTaxRequest": {
-            "type": "object",
-            "required": [
-                "tax_amount"
-            ],
-            "properties": {
-                "tax_amount": {
-                    "description": "Amount in cents",
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "http.UserResponse": {
+        "internal_contexts_warehouse_stockmovement_adapter_http.MovementResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
-                "email": {
+                "created_by": {
                     "type": "string"
                 },
-                "email_verified": {
-                    "type": "boolean"
+                "currency_code": {
+                    "type": "string"
                 },
-                "email_verified_at": {
+                "from_location_code": {
+                    "type": "string"
+                },
+                "from_warehouse_id": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "last_login_at": {
+                "inventory_id": {
                     "type": "string"
                 },
-                "roles": {
-                    "description": "User roles for authorization",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "status": {
+                "movement_date": {
                     "type": "string"
                 },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.ValidateScriptRequest": {
-            "type": "object",
-            "required": [
-                "code"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.ValidationResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "valid": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "http.WonDealsResponse": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "total_value": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_contexts_warehouse_inventory_adapter_http.ReleaseReservationRequest": {
-            "type": "object",
-            "required": [
-                "order_id",
-                "quantity",
-                "released_by"
-            ],
-            "properties": {
-                "order_id": {
+                "notes": {
                     "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
                 },
-                "released_by": {
+                "quantity_after_move": {
+                    "type": "integer"
+                },
+                "quantity_before_move": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "reference_id": {
+                    "type": "string"
+                },
+                "reference_type": {
+                    "type": "string"
+                },
+                "to_location_code": {
+                    "type": "string"
+                },
+                "to_warehouse_id": {
+                    "type": "string"
+                },
+                "total_cost_cents": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unit_cost_cents": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_contexts_warehouse_stockmovement_adapter_http.RecordMovementRequest": {
+            "type": "object",
+            "required": [
+                "created_by",
+                "inventory_id",
+                "quantity",
+                "quantity_before",
+                "type"
+            ],
+            "properties": {
+                "created_by": {
+                    "type": "string"
+                },
+                "inventory_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "quantity_before": {
+                    "description": "Current quantity before movement",
+                    "type": "integer"
+                },
+                "type": {
                     "type": "string"
                 }
             }
         },
-        "response.Error": {
+        "internal_infrastructure_health.Check": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
+                "duration_ms": {
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "response.Pagination": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
                 },
-                "page_size": {
-                    "type": "integer"
-                },
-                "pages": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {
-                    "$ref": "#/definitions/response.Error"
-                },
-                "message": {
+                "name": {
                     "type": "string"
-                },
-                "pagination": {
-                    "$ref": "#/definitions/response.Pagination"
                 },
                 "status": {
+                    "$ref": "#/definitions/internal_infrastructure_health.Status"
+                },
+                "timestamp": {
                     "type": "string"
                 }
             }
+        },
+        "internal_infrastructure_health.Report": {
+            "type": "object",
+            "properties": {
+                "checks": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/internal_infrastructure_health.Check"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/internal_infrastructure_health.Status"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_infrastructure_health.Status": {
+            "type": "string",
+            "enum": [
+                "healthy",
+                "degraded",
+                "unhealthy"
+            ],
+            "x-enum-varnames": [
+                "StatusHealthy",
+                "StatusDegraded",
+                "StatusUnhealthy"
+            ]
         }
     }
 }`

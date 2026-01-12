@@ -2,6 +2,7 @@ package inventory_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -459,7 +460,7 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 			_, err = uc.CreateInventory(ctx, productID, uniqueSKU, "Product", "WH-MAIN", uuidv7.New())
 			assert.Error(t, err)
 			// UseCase returns "SKU already exists: {sku}" error
-			assert.Contains(t, err.Error(), "SKU already exists")
+			assert.True(t, errors.Is(err, inventory.ErrInventorySKUExists))
 		})
 
 		t.Run("InvalidPagination", func(t *testing.T) {
@@ -482,10 +483,10 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 			// Invalid quantity (usecase validates with "quantity must be greater than 0")
 			_, err := uc.ReceiveStock(ctx, inv.ID, -10, 1000, userID)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "quantity must be greater than 0")
+		assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
 
-			// Invalid cost (no validation in entity, test will pass)
-			// Note: Entity doesn't validate cost < 0, so this will succeed
+		// Invalid cost (no validation in entity, test will pass)
+		// Note: Entity doesn't validate cost < 0, so this will succeed
 		})
 
 		t.Run("CommitStockValidation", func(t *testing.T) {
@@ -494,15 +495,15 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 			// Invalid quantity (usecase validates with "quantity must be greater than 0")
 			_, err := uc.CommitStock(ctx, inv.ID, -10, userID)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "quantity must be greater than 0")
+		assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
 
-			// Commit more than available
-			_, err = uc.ReceiveStock(ctx, inv.ID, 10, 1000, userID)
+		// Commit more than available
+		_, err = uc.ReceiveStock(ctx, inv.ID, 10, 1000, userID)
 			require.NoError(t, err)
 
 			_, err = uc.CommitStock(ctx, inv.ID, 20, userID)
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "adjustment would result in negative stock")
+			assert.True(t, errors.Is(err, inventory.ErrInventoryNegativeStock))
 		})
 	})
 }

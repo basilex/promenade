@@ -1,8 +1,8 @@
 package user
 
 import (
-	"fmt"
 	"time"
+	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -23,7 +23,7 @@ const (
 
 const (
 	maxLoginAttempts = 5
-	lockoutDuration  = 30 * time.Minute
+	// lockoutDuration  = 30 * time.Minute
 )
 
 // User is an aggregate root representing a user account in the system
@@ -53,7 +53,7 @@ func NewUser(email, password string) (*User, error) {
 	// Validate email
 	emailVO, err := valueobject.NewEmail(email)
 	if err != nil {
-		return nil, fmt.Errorf("invalid email: %w", err)
+		return nil, errors.Join(ErrInvalidEmailFormat, err)
 	}
 
 	// Validate password
@@ -64,7 +64,7 @@ func NewUser(email, password string) (*User, error) {
 	// Hash password
 	passwordHash, err := HashPassword(password)
 	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
+		return nil, errors.Join(ErrPasswordHashFailed, err)
 	}
 
 	return &User{
@@ -91,7 +91,7 @@ func (u *User) ChangePassword(newPassword string) error {
 
 	passwordHash, err := HashPassword(newPassword)
 	if err != nil {
-		return fmt.Errorf("failed to hash password: %w", err)
+		return errors.Join(ErrPasswordHashFailed, err)
 	}
 
 	u.PasswordHash = passwordHash
@@ -205,19 +205,19 @@ func (u *User) HasAllRoles(roles []string) bool {
 // Validate validates the user entity
 func (u *User) Validate() error {
 	if u.ID == uuidv7.Nil {
-		return fmt.Errorf("user ID is required")
+		return ErrUserIDRequired
 	}
 
 	if u.Email.Value() == "" {
-		return fmt.Errorf("email is required")
+		return ErrEmailRequired
 	}
 
 	if u.PasswordHash == "" {
-		return fmt.Errorf("password hash is required")
+		return ErrPasswordHashRequired
 	}
 
 	if !isValidStatus(u.Status) {
-		return fmt.Errorf("invalid user status: %s", u.Status)
+		return ErrInvalidUserStatus
 	}
 
 	return nil
@@ -237,11 +237,11 @@ func HashPassword(password string) (string, error) {
 // ValidatePassword validates password strength
 func ValidatePassword(password string) error {
 	if len(password) < 8 {
-		return fmt.Errorf("password must be at least 8 characters")
+		return ErrPasswordTooShort
 	}
 
 	if len(password) > 72 {
-		return fmt.Errorf("password must not exceed 72 characters")
+		return ErrPasswordTooLong
 	}
 
 	// Check for at least one digit
@@ -253,7 +253,7 @@ func ValidatePassword(password string) error {
 		}
 	}
 	if !hasDigit {
-		return fmt.Errorf("password must contain at least one digit")
+		return ErrPasswordRequiresDigit
 	}
 
 	// Check for at least one letter
@@ -265,7 +265,7 @@ func ValidatePassword(password string) error {
 		}
 	}
 	if !hasLetter {
-		return fmt.Errorf("password must contain at least one letter")
+		return ErrPasswordRequiresLetter
 	}
 
 	return nil

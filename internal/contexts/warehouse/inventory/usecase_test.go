@@ -162,7 +162,7 @@ func TestCreateInventory_DuplicateSKU(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "SKU already exists")
+	assert.True(t, errors.Is(err, ErrInventorySKUExists))
 }
 
 // TestCreateInventory_EmptySKU tests SKU validation
@@ -175,7 +175,7 @@ func TestCreateInventory_EmptySKU(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "SKU is required")
+	assert.True(t, errors.Is(err, ErrInventorySKURequired))
 }
 
 // TestCreateInventory_EmptyProductName tests product name validation
@@ -188,7 +188,7 @@ func TestCreateInventory_EmptyProductName(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "product name is required")
+	assert.True(t, errors.Is(err, ErrInventoryProductNameRequired))
 }
 
 // TestCreateInventory_EmptyWarehouseID tests warehouse ID validation
@@ -201,7 +201,7 @@ func TestCreateInventory_EmptyWarehouseID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "warehouse ID is required")
+	assert.True(t, errors.Is(err, ErrInventoryWarehouseRequired))
 }
 
 // TestGetInventory_Success tests successful retrieval
@@ -268,7 +268,7 @@ func TestGetBySKU_EmptySKU(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, inv)
-	assert.Contains(t, err.Error(), "SKU is required")
+	assert.True(t, errors.Is(err, ErrInventorySKURequired))
 }
 
 // TestGetBySKU_NotFound tests not found error
@@ -335,7 +335,7 @@ func TestGetByWarehouse_EmptyWarehouseID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, items)
-	assert.Contains(t, err.Error(), "warehouse ID is required")
+	assert.True(t, errors.Is(err, ErrInventoryWarehouseRequired))
 }
 
 // TestGetLowStock tests retrieval of low stock items
@@ -441,7 +441,7 @@ func TestUpdateInventory_NilInventory(t *testing.T) {
 	err := uc.UpdateInventory(context.Background(), nil)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "inventory cannot be nil")
+	assert.True(t, errors.Is(err, ErrInventoryNil))
 }
 
 // TestUpdateInventory_NotFound tests not found error
@@ -535,7 +535,7 @@ func TestUseCase_ReceiveStock_InvalidQuantity(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "quantity must be greater than 0")
+	assert.True(t, errors.Is(err, ErrInventoryQuantityInvalid))
 }
 
 // TestUseCase_ReceiveStock_NegativeUnitCost tests unit cost validation
@@ -549,7 +549,7 @@ func TestUseCase_ReceiveStock_NegativeUnitCost(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "unit cost cannot be negative")
+	assert.True(t, errors.Is(err, ErrInventoryUnitCostNegative))
 }
 
 // TestUseCase_ReceiveStock_NotFound tests not found error
@@ -609,7 +609,7 @@ func TestUseCase_CommitStock_InvalidQuantity(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "quantity must be greater than 0")
+	assert.True(t, errors.Is(err, ErrInventoryQuantityInvalid))
 }
 
 // TestUseCase_CommitStock_NotFound tests not found error

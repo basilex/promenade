@@ -2,24 +2,8 @@ package inventory
 
 import (
 	"context"
-	"errors"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Domain errors for repository operations
-var (
-	// ErrInventoryNotFound is returned when inventory item is not found
-	ErrInventoryNotFound = errors.New("inventory not found")
-
-	// ErrInventoryAlreadyExists is returned when SKU already exists
-	ErrInventoryAlreadyExists = errors.New("inventory with this SKU already exists")
-
-	// ErrVersionConflict is returned when optimistic locking fails (concurrent update)
-	ErrVersionConflict = errors.New("inventory version conflict - item was modified by another process")
-
-	// ErrInvalidPagination is returned when pagination parameters are invalid
-	ErrInvalidPagination = errors.New("invalid pagination parameters")
 )
 
 // IRepository defines persistence operations for Inventory aggregate.

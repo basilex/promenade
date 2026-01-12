@@ -373,7 +373,7 @@ func TestUseCase_DeleteDeal_NotFound(t *testing.T) {
 	err := uc.DeleteDeal(ctx, dealID)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "deal not found")
+	assert.True(t, errors.Is(err, ErrDealNotFound))
 	mockRepo.AssertExpectations(t)
 }
 

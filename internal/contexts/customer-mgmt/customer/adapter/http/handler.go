@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
@@ -38,6 +39,20 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 	// Create customer
 	created, err := h.usecase.CreateCustomer(c.Request.Context(), req.Name, req.Email, req.Source, assignedTo)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, customer.ErrCustomerNameEmpty) ||
+			errors.Is(err, customer.ErrCustomerEmailInvalid) ||
+			errors.Is(err, customer.ErrCustomerSourceEmpty) ||
+			errors.Is(err, customer.ErrCustomerSalesRepEmpty) {
+			response.BadRequest(c, err.Error())
+			return
+		}
+		// Already exists → 409
+		if errors.Is(err, customer.ErrCustomerAlreadyExists) {
+			response.Conflict(c, "Customer with this email already exists")
+			return
+		}
+		// Technical → 500
 		response.InternalError(c, "Failed to create customer")
 		return
 	}
@@ -92,6 +107,21 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Create B2B customer
 	created, err := h.usecase.CreateB2BCustomer(c.Request.Context(), req.Name, req.Email, req.Source, companyID, assignedTo)
 	if err != nil {
+		// Validation errors → 400
+		if errors.Is(err, customer.ErrCustomerNameEmpty) ||
+			errors.Is(err, customer.ErrCustomerEmailInvalid) ||
+			errors.Is(err, customer.ErrCustomerSourceEmpty) ||
+			errors.Is(err, customer.ErrCustomerSalesRepEmpty) ||
+			errors.Is(err, customer.ErrCustomerCompanyIDEmpty) {
+			response.BadRequest(c, err.Error())
+			return
+		}
+		// Already exists → 409
+		if errors.Is(err, customer.ErrCustomerAlreadyExists) {
+			response.Conflict(c, "Customer with this email already exists")
+			return
+		}
+		// Technical → 500
 		response.InternalError(c, "Failed to create B2B customer")
 		return
 	}
@@ -99,6 +129,10 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Set phone if provided
 	if req.Phone != "" {
 		if err := h.usecase.SetCustomerPhone(c.Request.Context(), created.ID, req.Phone); err != nil {
+			if errors.Is(err, customer.ErrCustomerPhoneInvalid) {
+				response.BadRequest(c, err.Error())
+				return
+			}
 			response.InternalError(c, "Failed to set customer phone")
 			return
 		}
@@ -107,6 +141,10 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Add tags if provided
 	for _, tag := range req.Tags {
 		if err := h.usecase.AddTagToCustomer(c.Request.Context(), created.ID, tag); err != nil {
+			if errors.Is(err, customer.ErrCustomerNotFound) {
+				response.NotFound(c, "Customer not found")
+				return
+			}
 			response.InternalError(c, "Failed to add customer tag")
 			return
 		}
@@ -115,6 +153,10 @@ func (h *CustomerHandler) CreateB2B(c *gin.Context) {
 	// Reload to get updated data
 	updated, err := h.usecase.GetCustomer(c.Request.Context(), created.ID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to reload customer data")
 		return
 	}
@@ -132,7 +174,11 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -149,7 +195,11 @@ func (h *CustomerHandler) GetByEmail(c *gin.Context) {
 
 	cust, err := h.usecase.GetCustomerByEmail(c.Request.Context(), email)
 	if err != nil {
-		response.NotFound(c, "Customer not found")
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -192,7 +242,11 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 	// Get existing customer
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
 
@@ -207,6 +261,10 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 	}
 	if req.Phone != nil {
 		if err := h.usecase.SetCustomerPhone(c.Request.Context(), customerID, *req.Phone); err != nil {
+			if errors.Is(err, customer.ErrCustomerPhoneInvalid) {
+				response.BadRequest(c, err.Error())
+				return
+			}
 			response.InternalError(c, "Failed to set customer phone")
 			return
 		}
@@ -220,6 +278,12 @@ func (h *CustomerHandler) Update(c *gin.Context) {
 
 	// Update customer
 	if err := h.usecase.UpdateCustomer(c.Request.Context(), cust); err != nil {
+		// Validation errors
+		if errors.Is(err, customer.ErrCustomerNameEmpty) ||
+			errors.Is(err, customer.ErrCustomerSourceEmpty) {
+			response.BadRequest(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to update customer")
 		return
 	}
@@ -236,6 +300,10 @@ func (h *CustomerHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteCustomer(c.Request.Context(), customerID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to delete customer")
 		return
 	}
@@ -252,12 +320,24 @@ func (h *CustomerHandler) QualifyAsProspect(c *gin.Context) {
 	}
 
 	if err := h.usecase.QualifyAsProspect(c.Request.Context(), customerID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidStatusTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to qualify customer as prospect")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -274,12 +354,24 @@ func (h *CustomerHandler) ConvertToCustomer(c *gin.Context) {
 	}
 
 	if err := h.usecase.ConvertToCustomer(c.Request.Context(), customerID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidStatusTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to convert to customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -302,12 +394,24 @@ func (h *CustomerHandler) Churn(c *gin.Context) {
 	}
 
 	if err := h.usecase.ChurnCustomer(c.Request.Context(), customerID, req.Reason); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidStatusTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to churn customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -324,12 +428,24 @@ func (h *CustomerHandler) Reactivate(c *gin.Context) {
 	}
 
 	if err := h.usecase.ReactivateCustomer(c.Request.Context(), customerID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidStatusTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to reactivate customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -349,12 +465,24 @@ func (h *CustomerHandler) UpgradeTier(c *gin.Context) {
 	tier := customer.CustomerTier(tierStr)
 
 	if err := h.usecase.UpgradeCustomerTier(c.Request.Context(), customerID, tier); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidTierTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to upgrade customer tier")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -374,12 +502,24 @@ func (h *CustomerHandler) DowngradeTier(c *gin.Context) {
 	tier := customer.CustomerTier(tierStr)
 
 	if err := h.usecase.DowngradeCustomerTier(c.Request.Context(), customerID, tier); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
+		if errors.Is(err, customer.ErrInvalidTierTransition) {
+			response.Conflict(c, err.Error())
+			return
+		}
 		response.InternalError(c, "Failed to downgrade customer tier")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -402,12 +542,20 @@ func (h *CustomerHandler) AddTag(c *gin.Context) {
 	}
 
 	if err := h.usecase.AddTagToCustomer(c.Request.Context(), customerID, req.Tag); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to add tag to customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -430,12 +578,20 @@ func (h *CustomerHandler) RemoveTag(c *gin.Context) {
 	}
 
 	if err := h.usecase.RemoveTagFromCustomer(c.Request.Context(), customerID, tag); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to remove tag from customer")
 		return
 	}
 
 	cust, err := h.usecase.GetCustomer(c.Request.Context(), customerID)
 	if err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to retrieve customer")
 		return
 	}
@@ -520,6 +676,10 @@ func (h *CustomerHandler) LinkToUser(c *gin.Context) {
 	}
 
 	if err := h.usecase.LinkCustomerToUser(c.Request.Context(), customerID, userID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to link customer to user")
 		return
 	}
@@ -549,6 +709,10 @@ func (h *CustomerHandler) AssignTo(c *gin.Context) {
 	}
 
 	if err := h.usecase.ReassignCustomer(c.Request.Context(), customerID, newRepID); err != nil {
+		if errors.Is(err, customer.ErrCustomerNotFound) {
+			response.NotFound(c, "Customer not found")
+			return
+		}
 		response.InternalError(c, "Failed to reassign customer")
 		return
 	}

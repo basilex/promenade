@@ -59,7 +59,7 @@ func (p *Permission) Validate() error {
 	}
 
 	if p.Description == "" {
-		return fmt.Errorf("description is required")
+		return ErrPermissionDescriptionRequired
 	}
 
 	return nil
@@ -75,15 +75,15 @@ func (p *Permission) UpdateDescription(description string) {
 func validateResource(resource string) error {
 	trimmed := strings.TrimSpace(resource)
 	if trimmed == "" {
-		return fmt.Errorf("resource cannot be empty")
+		return ErrResourceEmpty
 	}
 
 	if len(trimmed) < 2 {
-		return fmt.Errorf("resource must be at least 2 characters")
+		return ErrResourceTooShort
 	}
 
 	if len(trimmed) > 50 {
-		return fmt.Errorf("resource must not exceed 50 characters")
+		return ErrResourceTooLong
 	}
 
 	return nil
@@ -95,11 +95,11 @@ func validateResource(resource string) error {
 func validateAction(action string) error {
 	trimmed := strings.TrimSpace(action)
 	if trimmed == "" {
-		return fmt.Errorf("action cannot be empty")
+		return ErrActionEmpty
 	}
 
 	if len(trimmed) > 50 {
-		return fmt.Errorf("action must not exceed 50 characters")
+		return ErrActionTooLong
 	}
 
 	// Allow wildcard
@@ -111,7 +111,7 @@ func validateAction(action string) error {
 	// This makes it extensible for future actions
 	for _, ch := range trimmed {
 		if (ch < 'a' || ch > 'z') && (ch < '0' || ch > '9') && ch != '_' && ch != '-' {
-			return fmt.Errorf("action must contain only lowercase letters, numbers, underscores and hyphens")
+			return ErrActionInvalidChars
 		}
 	}
 

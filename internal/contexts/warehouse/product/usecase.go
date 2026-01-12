@@ -2,7 +2,6 @@ package product
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -90,7 +89,7 @@ func (uc *useCase) CreateProduct(ctx context.Context, sku, name string) (*Produc
 	// Check SKU uniqueness
 	exists, err := uc.repo.ExistsBySKU(ctx, sku)
 	if err != nil {
-		return nil, fmt.Errorf("failed to check SKU uniqueness: %w", err)
+		return nil, ErrCheckSKUFailed
 	}
 	if exists {
 		return nil, ErrProductSKUDuplicate
@@ -109,7 +108,7 @@ func (uc *useCase) CreateProduct(ctx context.Context, sku, name string) (*Produc
 
 	// Persist
 	if err := uc.repo.Create(ctx, product); err != nil {
-		return nil, fmt.Errorf("failed to create product: %w", err)
+		return nil, ErrCreateFailed
 	}
 
 	return product, nil
@@ -142,7 +141,7 @@ func (uc *useCase) UpdateProduct(ctx context.Context, product *Product) error {
 
 	// Persist
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to update product: %w", err)
+		return ErrUpdateFailed
 	}
 
 	return nil
@@ -161,7 +160,7 @@ func (uc *useCase) DeleteProduct(ctx context.Context, id uuidv7.UUID) error {
 
 	// Persist
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to delete product: %w", err)
+		return ErrDeleteFailed
 	}
 
 	return nil
@@ -171,7 +170,7 @@ func (uc *useCase) DeleteProduct(ctx context.Context, id uuidv7.UUID) error {
 func (uc *useCase) ListProducts(ctx context.Context, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.List(ctx, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products: %w", err)
+		return nil, ErrListFailed
 	}
 	return products, nil
 }
@@ -180,7 +179,7 @@ func (uc *useCase) ListProducts(ctx context.Context, page, pageSize int) ([]*Pro
 func (uc *useCase) ListProductsByCategory(ctx context.Context, category string, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.ListByCategory(ctx, category, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products by category: %w", err)
+		return nil, ErrListByCategoryFailed
 	}
 	return products, nil
 }
@@ -189,7 +188,7 @@ func (uc *useCase) ListProductsByCategory(ctx context.Context, category string, 
 func (uc *useCase) ListProductsByBrand(ctx context.Context, brand string, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.ListByBrand(ctx, brand, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products by brand: %w", err)
+		return nil, ErrListByBrandFailed
 	}
 	return products, nil
 }
@@ -198,7 +197,7 @@ func (uc *useCase) ListProductsByBrand(ctx context.Context, brand string, page, 
 func (uc *useCase) ListProductsByStatus(ctx context.Context, status ProductStatus, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.ListByStatus(ctx, status, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products by status: %w", err)
+		return nil, ErrListByStatusFailed
 	}
 	return products, nil
 }
@@ -207,7 +206,7 @@ func (uc *useCase) ListProductsByStatus(ctx context.Context, status ProductStatu
 func (uc *useCase) SearchProducts(ctx context.Context, query string, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.Search(ctx, query, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to search products: %w", err)
+		return nil, ErrSearchFailed
 	}
 	return products, nil
 }
@@ -216,7 +215,7 @@ func (uc *useCase) SearchProducts(ctx context.Context, query string, page, pageS
 func (uc *useCase) CountProducts(ctx context.Context) (int, error) {
 	count, err := uc.repo.Count(ctx)
 	if err != nil {
-		return 0, fmt.Errorf("failed to count products: %w", err)
+		return 0, ErrCountFailed
 	}
 	return count, nil
 }
@@ -233,7 +232,7 @@ func (uc *useCase) ActivateProduct(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to activate product: %w", err)
+		return ErrActivateFailed
 	}
 
 	return nil
@@ -251,7 +250,7 @@ func (uc *useCase) DeactivateProduct(ctx context.Context, id uuidv7.UUID) error 
 	}
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to deactivate product: %w", err)
+		return ErrDeactivateFailed
 	}
 
 	return nil
@@ -269,7 +268,7 @@ func (uc *useCase) DiscontinueProduct(ctx context.Context, id uuidv7.UUID) error
 	}
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to discontinue product: %w", err)
+		return ErrDiscontinueFailed
 	}
 
 	return nil
@@ -285,7 +284,7 @@ func (uc *useCase) UpdateInventorySettings(ctx context.Context, id uuidv7.UUID, 
 	product.SetInventorySettings(trackInventory, allowBackorder)
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to update inventory settings: %w", err)
+		return ErrUpdateInventorySettingsFailed
 	}
 
 	return nil
@@ -303,7 +302,7 @@ func (uc *useCase) SetReorderPoint(ctx context.Context, id uuidv7.UUID, point, q
 	}
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to set reorder point: %w", err)
+		return ErrSetReorderPointFailed
 	}
 
 	return nil
@@ -321,7 +320,7 @@ func (uc *useCase) SetPhysicalProperties(ctx context.Context, id uuidv7.UUID, we
 	}
 
 	if err := uc.repo.Update(ctx, product); err != nil {
-		return fmt.Errorf("failed to set physical properties: %w", err)
+		return ErrSetPhysicalPropertiesFailed
 	}
 
 	return nil
@@ -331,7 +330,7 @@ func (uc *useCase) SetPhysicalProperties(ctx context.Context, id uuidv7.UUID, we
 func (uc *useCase) ListLowStockProducts(ctx context.Context, page, pageSize int) ([]*Product, error) {
 	products, err := uc.repo.ListLowStock(ctx, page, pageSize)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list low stock products: %w", err)
+		return nil, ErrListLowStockFailed
 	}
 	return products, nil
 }

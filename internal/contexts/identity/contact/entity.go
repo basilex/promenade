@@ -54,7 +54,7 @@ func NewContact(userID uuidv7.UUID, contactType ContactType, label string) (*Con
 	}
 
 	if label == "" {
-		return nil, fmt.Errorf("label is required")
+		return nil, ErrLabelRequired
 	}
 
 	contact := &Contact{
@@ -79,7 +79,7 @@ func NewEmailContact(userID uuidv7.UUID, email string, label string) (*Contact, 
 
 	emailVO, err := valueobject.NewEmail(email)
 	if err != nil {
-		return nil, fmt.Errorf("invalid email: %w", err)
+		return nil, fmt.Errorf("%w", err)
 	}
 
 	contact.Email = &emailVO
@@ -95,7 +95,7 @@ func NewPhoneContact(userID uuidv7.UUID, phone string, label string) (*Contact, 
 
 	phoneVO, err := valueobject.NewPhone(phone)
 	if err != nil {
-		return nil, fmt.Errorf("invalid phone: %w", err)
+		return nil, fmt.Errorf("%w", err)
 	}
 
 	contact.Phone = &phoneVO
@@ -111,7 +111,7 @@ func NewAddressContact(userID uuidv7.UUID, street, city, country, postalCode str
 
 	addressVO, err := valueobject.NewAddress(street, city, postalCode, country)
 	if err != nil {
-		return nil, fmt.Errorf("invalid address: %w", err)
+		return nil, fmt.Errorf("%w", err)
 	}
 	contact.Address = &addressVO
 	return contact, nil
@@ -120,12 +120,12 @@ func NewAddressContact(userID uuidv7.UUID, street, city, country, postalCode str
 // SetEmail sets the email for this contact
 func (c *Contact) SetEmail(email string) error {
 	if c.Type != ContactTypeEmail {
-		return fmt.Errorf("cannot set email on non-email contact")
+		return ErrCannotSetEmailOnNonEmailContact
 	}
 
 	emailVO, err := valueobject.NewEmail(email)
 	if err != nil {
-		return fmt.Errorf("invalid email: %w", err)
+		return fmt.Errorf("%w", err)
 	}
 
 	c.Email = &emailVO
@@ -136,12 +136,12 @@ func (c *Contact) SetEmail(email string) error {
 // SetPhone sets the phone for this contact
 func (c *Contact) SetPhone(phone string) error {
 	if c.Type != ContactTypePhone {
-		return fmt.Errorf("cannot set phone on non-phone contact")
+		return ErrCannotSetPhoneOnNonPhoneContact
 	}
 
 	phoneVO, err := valueobject.NewPhone(phone)
 	if err != nil {
-		return fmt.Errorf("invalid phone: %w", err)
+		return fmt.Errorf("%w", err)
 	}
 
 	c.Phone = &phoneVO
@@ -152,12 +152,12 @@ func (c *Contact) SetPhone(phone string) error {
 // SetAddress sets the address for this contact
 func (c *Contact) SetAddress(street, city, country, postalCode string) error {
 	if c.Type != ContactTypeAddress {
-		return fmt.Errorf("cannot set address on non-address contact")
+		return ErrCannotSetAddressOnNonAddressContact
 	}
 
 	addressVO, err := valueobject.NewAddress(street, city, postalCode, country)
 	if err != nil {
-		return fmt.Errorf("invalid address: %w", err)
+		return fmt.Errorf("%w", err)
 	}
 	c.Address = &addressVO
 	c.Touch()
@@ -203,7 +203,7 @@ func (c *Contact) MakePrivate() {
 // UpdateLabel updates the contact label
 func (c *Contact) UpdateLabel(label string) error {
 	if label == "" {
-		return fmt.Errorf("label cannot be empty")
+		return ErrLabelEmpty
 	}
 	c.Label = label
 	c.Touch()
@@ -219,28 +219,28 @@ func (c *Contact) Validate() error {
 
 	// Check label
 	if c.Label == "" {
-		return fmt.Errorf("label is required")
+		return ErrLabelRequired
 	}
 
 	// Check that at least one contact field is present
 	switch c.Type {
 	case ContactTypeEmail:
 		if c.Email == nil {
-			return fmt.Errorf("email is required for email contact")
+			return ErrEmailRequiredForEmailContact
 		}
 		// Email is already validated in NewEmail
 	case ContactTypePhone:
 		if c.Phone == nil {
-			return fmt.Errorf("phone is required for phone contact")
+			return ErrPhoneRequiredForPhoneContact
 		}
 		// Phone is already validated in NewPhone
 	case ContactTypeAddress:
 		if c.Address == nil {
-			return fmt.Errorf("address is required for address contact")
+			return ErrAddressRequiredForAddressContact
 		}
 		// Address is already validated in NewAddress
 	default:
-		return fmt.Errorf("unknown contact type: %s", c.Type)
+		return ErrUnknownContactType
 	}
 
 	return nil
@@ -273,6 +273,6 @@ func validateContactType(t ContactType) error {
 	case ContactTypeEmail, ContactTypePhone, ContactTypeAddress:
 		return nil
 	default:
-		return fmt.Errorf("invalid contact type: %s (must be email, phone, or address)", t)
+		return ErrInvalidContactType
 	}
 }

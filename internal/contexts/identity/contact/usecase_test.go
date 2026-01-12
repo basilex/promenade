@@ -116,7 +116,7 @@ func TestUseCase_CreateEmailContact(t *testing.T) {
 		_, err := uc.CreateEmailContact(ctx, userID, "test@example.com", "Work", true)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "primary email contact already exists")
+		assert.True(t, errors.Is(err, ErrPrimaryContactExists))
 		repo.AssertExpectations(t)
 	})
 

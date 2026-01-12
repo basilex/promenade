@@ -161,7 +161,7 @@ func TestUseCase_CreateCustomer(t *testing.T) {
 
 		require.Error(t, err)
 		assert.Nil(t, customer)
-		assert.Contains(t, err.Error(), "already exists")
+		assert.True(t, errors.Is(err, ErrCustomerAlreadyExists))
 		repo.AssertExpectations(t)
 	})
 
@@ -175,7 +175,7 @@ func TestUseCase_CreateCustomer(t *testing.T) {
 
 		require.Error(t, err)
 		assert.Nil(t, customer)
-		assert.Contains(t, err.Error(), "invalid email")
+		assert.True(t, errors.Is(err, ErrCustomerEmailInvalid))
 		repo.AssertNotCalled(t, "Create")
 	})
 }
@@ -336,7 +336,7 @@ func TestUseCase_QualifyAsProspect(t *testing.T) {
 		err := uc.QualifyAsProspect(ctx, customerID)
 
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "can only qualify leads")
+		assert.True(t, errors.Is(err, ErrInvalidStatusTransition))
 		repo.AssertNotCalled(t, "Update")
 	})
 }
@@ -379,7 +379,7 @@ func TestUseCase_ConvertToCustomer(t *testing.T) {
 		err := uc.ConvertToCustomer(ctx, customerID)
 
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "can only convert prospects")
+		assert.True(t, errors.Is(err, ErrInvalidStatusTransition))
 		repo.AssertNotCalled(t, "Update")
 	})
 }
@@ -423,7 +423,7 @@ func TestUseCase_ChurnCustomer(t *testing.T) {
 		err := uc.ChurnCustomer(ctx, customerID, "poor service")
 
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "can only churn active customers")
+		assert.True(t, errors.Is(err, ErrInvalidStatusTransition))
 		repo.AssertNotCalled(t, "Update")
 	})
 }

@@ -21,6 +21,83 @@ func NewSubscriptionHandler(usecase subscription.IUseCase) *SubscriptionHandler 
 	return &SubscriptionHandler{usecase: usecase}
 }
 
+// handleError discriminates domain errors and returns appropriate HTTP response
+func (h *SubscriptionHandler) handleError(c *gin.Context, err error, defaultCode string, defaultMessage string) {
+	// 404 Not Found
+	if errors.Is(err, subscription.ErrSubscriptionNotFound) {
+		response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
+		return
+	}
+
+	// 400 Bad Request - Validation Errors
+	if errors.Is(err, subscription.ErrCustomerIDRequired) {
+		response.ErrorResponse(c, http.StatusBadRequest, "CUSTOMER_ID_REQUIRED", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrPlanIDRequired) {
+		response.ErrorResponse(c, http.StatusBadRequest, "PLAN_ID_REQUIRED", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrCurrencyRequired) {
+		response.ErrorResponse(c, http.StatusBadRequest, "CURRENCY_REQUIRED", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrAmountMustBePositive) {
+		response.ErrorResponse(c, http.StatusBadRequest, "AMOUNT_MUST_BE_POSITIVE", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrInvalidMoney) {
+		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_MONEY", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrStartDateRequired) {
+		response.ErrorResponse(c, http.StatusBadRequest, "START_DATE_REQUIRED", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrRenewalDateInvalid) {
+		response.ErrorResponse(c, http.StatusBadRequest, "RENEWAL_DATE_INVALID", err.Error())
+		return
+	}
+
+	// 409 Conflict - State Machine Errors
+	if errors.Is(err, subscription.ErrCannotActivate) {
+		response.ErrorResponse(c, http.StatusConflict, "CANNOT_ACTIVATE", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrCanOnlyPauseActive) {
+		response.ErrorResponse(c, http.StatusConflict, "CAN_ONLY_PAUSE_ACTIVE", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrCanOnlyResumePaused) {
+		response.ErrorResponse(c, http.StatusConflict, "CAN_ONLY_RESUME_PAUSED", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrAlreadyInTerminalStatus) {
+		response.ErrorResponse(c, http.StatusConflict, "ALREADY_IN_TERMINAL_STATUS", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrCanOnlyRenewActive) {
+		response.ErrorResponse(c, http.StatusConflict, "CAN_ONLY_RENEW_ACTIVE", err.Error())
+		return
+	}
+	if errors.Is(err, subscription.ErrAlreadyExpired) {
+		response.ErrorResponse(c, http.StatusConflict, "ALREADY_EXPIRED", err.Error())
+		return
+	}
+
+	// 500 Internal Server Error - Technical Errors (hide details)
+	if errors.Is(err, subscription.ErrQueryFailed) ||
+		errors.Is(err, subscription.ErrCreateFailed) ||
+		errors.Is(err, subscription.ErrUpdateFailed) ||
+		errors.Is(err, subscription.ErrDeleteFailed) {
+		response.ErrorResponse(c, http.StatusInternalServerError, defaultCode, defaultMessage)
+		return
+	}
+
+	// Default: 500 Internal Server Error
+	response.ErrorResponse(c, http.StatusInternalServerError, defaultCode, defaultMessage)
+}
+
 // Create creates subscription
 func (h *SubscriptionHandler) Create(c *gin.Context) {
 	var req CreateSubscriptionRequest
@@ -39,7 +116,7 @@ func (h *SubscriptionHandler) Create(c *gin.Context) {
 
 	sub, err := h.usecase.CreateSubscription(c.Request.Context(), customerID, req.PlanID, billingPeriod, req.Currency, req.Amount, req.TrialDays)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create subscription")
+		h.handleError(c, err, "CREATE_FAILED", "Failed to create subscription")
 		return
 	}
 
@@ -55,12 +132,8 @@ func (h *SubscriptionHandler) GetByID(c *gin.Context) {
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
-	if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-		response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-		return
-	}
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "GET_FAILED", "Failed to get subscription")
+		h.handleError(c, err, "GET_FAILED", "Failed to get subscription")
 		return
 	}
 
@@ -92,17 +165,13 @@ func (h *SubscriptionHandler) Update(c *gin.Context) {
 	}
 
 	if err := h.usecase.UpdateSubscription(c.Request.Context(), id, planID, amount); err != nil {
-		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-			return
-		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update subscription")
+		h.handleError(c, err, "UPDATE_FAILED", "Failed to update subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
+		h.handleError(c, err, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -118,11 +187,7 @@ func (h *SubscriptionHandler) Delete(c *gin.Context) {
 	}
 
 	if err := h.usecase.DeleteSubscription(c.Request.Context(), id); err != nil {
-		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-			return
-		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", "Failed to delete subscription")
+		h.handleError(c, err, "DELETE_FAILED", "Failed to delete subscription")
 		return
 	}
 
@@ -162,7 +227,7 @@ func (h *SubscriptionHandler) List(c *gin.Context) {
 	}
 
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list subscriptions")
+		h.handleError(c, err, "LIST_FAILED", "Failed to list subscriptions")
 		return
 	}
 
@@ -183,17 +248,13 @@ func (h *SubscriptionHandler) Activate(c *gin.Context) {
 	}
 
 	if err := h.usecase.ActivateSubscription(c.Request.Context(), id); err != nil {
-		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-			return
-		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATE_FAILED", "Failed to activate subscription")
+		h.handleError(c, err, "ACTIVATE_FAILED", "Failed to activate subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
+		h.handleError(c, err, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -209,17 +270,13 @@ func (h *SubscriptionHandler) Pause(c *gin.Context) {
 	}
 
 	if err := h.usecase.PauseSubscription(c.Request.Context(), id); err != nil {
-		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-			return
-		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "PAUSE_FAILED", "Failed to pause subscription")
+		h.handleError(c, err, "PAUSE_FAILED", "Failed to pause subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
+		h.handleError(c, err, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 
@@ -238,17 +295,13 @@ func (h *SubscriptionHandler) Cancel(c *gin.Context) {
 	effectiveDate := time.Now().Add(30 * 24 * time.Hour) // 30 days from now
 
 	if err := h.usecase.CancelSubscription(c.Request.Context(), id, reason, effectiveDate); err != nil {
-		if errors.Is(err, subscription.ErrSubscriptionNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "SUBSCRIPTION_NOT_FOUND", "Subscription not found")
-			return
-		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "CANCEL_FAILED", "Failed to cancel subscription")
+		h.handleError(c, err, "CANCEL_FAILED", "Failed to cancel subscription")
 		return
 	}
 
 	sub, err := h.usecase.GetSubscription(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RELOAD_FAILED", "Failed to retrieve subscription")
+		h.handleError(c, err, "RELOAD_FAILED", "Failed to retrieve subscription")
 		return
 	}
 

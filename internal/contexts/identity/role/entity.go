@@ -1,7 +1,6 @@
 package role
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -28,7 +27,7 @@ func NewRole(name, displayName, description string) (*Role, error) {
 	}
 
 	if strings.TrimSpace(displayName) == "" {
-		return nil, fmt.Errorf("display name is required")
+		return nil, ErrRoleDisplayRequired
 	}
 
 	return &Role{
@@ -61,7 +60,7 @@ func (r *Role) UpdateDescription(description string) {
 func (r *Role) UpdateDisplayName(displayName string) error {
 	trimmed := strings.TrimSpace(displayName)
 	if trimmed == "" {
-		return fmt.Errorf("display name cannot be empty")
+		return ErrRoleDisplayRequired
 	}
 	r.DisplayName = trimmed
 	r.Touch()
@@ -83,11 +82,11 @@ func (r *Role) Validate() error {
 	}
 
 	if strings.TrimSpace(r.DisplayName) == "" {
-		return fmt.Errorf("display name is required")
+		return ErrRoleDisplayRequired
 	}
 
 	if strings.TrimSpace(r.Description) == "" {
-		return fmt.Errorf("description is required")
+		return ErrRoleDescriptionRequired
 	}
 
 	return nil
@@ -97,22 +96,22 @@ func (r *Role) Validate() error {
 func validateRoleName(name string) error {
 	trimmed := strings.TrimSpace(name)
 	if trimmed == "" {
-		return fmt.Errorf("role name cannot be empty")
+		return ErrRoleNameEmpty
 	}
 
 	if len(trimmed) < 2 {
-		return fmt.Errorf("role name must be at least 2 characters")
+		return ErrRoleNameTooShort
 	}
 
 	if len(trimmed) > 50 {
-		return fmt.Errorf("role name must not exceed 50 characters")
+		return ErrRoleNameTooLong
 	}
 
 	// Check for valid characters (alphanumeric, underscore, hyphen)
 	for _, ch := range trimmed {
 		if (ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') &&
 			(ch < '0' || ch > '9') && ch != '_' && ch != '-' {
-			return fmt.Errorf("role name contains invalid characters")
+			return ErrRoleNameInvalidChars
 		}
 	}
 

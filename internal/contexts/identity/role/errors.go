@@ -21,4 +21,19 @@ var (
 
 	// ErrCannotDeleteSystem is returned when trying to delete a system role
 	ErrCannotDeleteSystem = errors.New("cannot delete system role")
+
+	// ErrRoleDescriptionRequired is returned when role description is empty
+	ErrRoleDescriptionRequired = errors.New("role description is required")
+
+	// ErrRoleNameEmpty is returned when role name is empty
+	ErrRoleNameEmpty = errors.New("role name cannot be empty")
+
+	// ErrRoleNameTooShort is returned when role name is less than 2 characters
+	ErrRoleNameTooShort = errors.New("role name must be at least 2 characters")
+
+	// ErrRoleNameTooLong is returned when role name exceeds 50 characters
+	ErrRoleNameTooLong = errors.New("role name must not exceed 50 characters")
+
+	// ErrRoleNameInvalidChars is returned when role name contains invalid characters
+	ErrRoleNameInvalidChars = errors.New("role name contains invalid characters")
 )

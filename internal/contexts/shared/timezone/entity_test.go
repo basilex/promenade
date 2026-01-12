@@ -1,6 +1,7 @@
 package timezone
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,13 +20,13 @@ func TestNewTimezone(t *testing.T) {
 	t.Run("empty name", func(t *testing.T) {
 		_, err := NewTimezone("", "EST", -18000)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "name")
+		assert.True(t, errors.Is(err, ErrTimezoneNameRequired))
 	})
 
 	t.Run("empty abbreviation", func(t *testing.T) {
 		_, err := NewTimezone("America/New_York", "", -18000)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "abbreviation")
+		assert.True(t, errors.Is(err, ErrTimezoneAbbreviationRequired))
 	})
 
 	t.Run("extreme positive offset", func(t *testing.T) {

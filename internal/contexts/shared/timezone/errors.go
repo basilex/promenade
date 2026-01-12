@@ -12,4 +12,13 @@ var (
 
 	// ErrInvalidUTCOffset is returned when UTC offset validation fails
 	ErrInvalidUTCOffset = errors.New("invalid UTC offset")
+
+	// ErrTimezoneNameRequired is returned when timezone name is missing
+	ErrTimezoneNameRequired = errors.New("timezone name is required")
+
+	// ErrTimezoneAbbreviationRequired is returned when timezone abbreviation is missing
+	ErrTimezoneAbbreviationRequired = errors.New("timezone abbreviation is required")
+
+	// ErrUTCOffsetOutOfRange is returned when UTC offset is outside valid range (-12h to +14h)
+	ErrUTCOffsetOutOfRange = errors.New("UTC offset must be between -12h and +14h (in seconds)")
 )

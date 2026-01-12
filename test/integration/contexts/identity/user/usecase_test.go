@@ -2,6 +2,7 @@ package user_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -49,7 +50,7 @@ func TestUserUseCase_RegisterAndAuthenticate(t *testing.T) {
 		// Authenticate with wrong password
 		_, err = uc.Authenticate(ctx, email, "wrongpassword")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid credentials")
+		assert.True(t, errors.Is(err, user.ErrInvalidCredentials))
 	})
 }
 
@@ -124,7 +125,7 @@ func TestUserUseCase_VerifyEmail(t *testing.T) {
 		// Verify non-existent user
 		err = uc.VerifyEmail(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -162,12 +163,12 @@ func TestUserUseCase_ChangePassword(t *testing.T) {
 		// Change password with wrong old password
 		err = uc.ChangePassword(ctx, registeredUser.ID, "wrongoldpassword", "anotherpassword")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid credentials")
+		assert.True(t, errors.Is(err, user.ErrInvalidCredentials))
 
 		// Change password for non-existent user
 		err = uc.ChangePassword(ctx, uuidv7.New(), oldPassword, newPassword)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -201,12 +202,12 @@ func TestUserUseCase_SuspendUser(t *testing.T) {
 		// Authenticate suspended user should fail
 		_, err = uc.Authenticate(ctx, email, password)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "account is not active")
+		assert.True(t, errors.Is(err, user.ErrAccountNotActive))
 
 		// Suspend non-existent user
 		err = uc.SuspendUser(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -239,12 +240,12 @@ func TestUserUseCase_BanUser(t *testing.T) {
 		// Authenticate banned user should fail
 		_, err = uc.Authenticate(ctx, email, password)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "account is not active")
+		assert.True(t, errors.Is(err, user.ErrAccountNotActive))
 
 		// Ban non-existent user
 		err = uc.BanUser(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -284,7 +285,7 @@ func TestUserUseCase_ActivateUser(t *testing.T) {
 		// Activate non-existent user
 		err = uc.ActivateUser(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -318,7 +319,7 @@ func TestUserUseCase_UnlockUser(t *testing.T) {
 		// Try to authenticate locked user
 		_, err = uc.Authenticate(ctx, email, password)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "account is locked")
+		assert.True(t, errors.Is(err, user.ErrAccountLocked))
 
 		// Unlock user
 		err = uc.UnlockUser(ctx, registeredUser.ID)
@@ -337,7 +338,7 @@ func TestUserUseCase_UnlockUser(t *testing.T) {
 		// Unlock non-existent user
 		err = uc.UnlockUser(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "user not found")
+		assert.True(t, errors.Is(err, user.ErrUserNotFound))
 	})
 }
 
@@ -396,7 +397,7 @@ func TestUserUseCase_DuplicateEmailRegistration(t *testing.T) {
 		// Try to register with same email
 		_, err = uc.Register(ctx, email, "User 2", "password456")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "already exists")
+		assert.True(t, errors.Is(err, user.ErrEmailAlreadyExists))
 	})
 }
 

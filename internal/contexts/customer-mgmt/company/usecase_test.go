@@ -217,7 +217,7 @@ func TestUseCase_CreateCompany_InvalidSize(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, company)
-	assert.Contains(t, err.Error(), "invalid company size")
+	assert.True(t, errors.Is(err, ErrCompanySizeInvalid))
 	mockRepo.AssertExpectations(t)
 }
 

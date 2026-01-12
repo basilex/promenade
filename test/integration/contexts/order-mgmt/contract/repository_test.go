@@ -2,6 +2,7 @@ package contract_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -99,7 +100,7 @@ func TestContractRepository_GetByID_NotFound(t *testing.T) {
 
 	_, err := repo.GetByID(ctx, uuidv7.New())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "contract not found")
+	assert.True(t, errors.Is(err, contract.ErrContractNotFound))
 }
 
 func TestContractRepository_Update(t *testing.T) {

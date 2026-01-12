@@ -65,11 +65,18 @@ func (h *StockMovementHandler) RecordMovement(c *gin.Context) {
 		createdBy,
 	)
 	if err != nil {
-		if errors.Is(err, stockmovement.ErrStockMovementNotFound) {
-			response.NotFound(c, "Stock movement not found")
-			return
+		switch {
+		case errors.Is(err, stockmovement.ErrStockMovementNil):
+			response.BadRequest(c, "Stock movement cannot be nil")
+		case errors.Is(err, stockmovement.ErrStockMovementValidationFailed):
+			response.BadRequest(c, "Stock movement validation failed")
+		case errors.Is(err, stockmovement.ErrStockMovementCreateFailed):
+			response.InternalError(c, "Failed to create stock movement")
+		case errors.Is(err, stockmovement.ErrStockMovementSaveFailed):
+			response.InternalError(c, "Failed to save stock movement")
+		default:
+			response.InternalError(c, "Failed to record stock movement")
 		}
-		response.InternalError(c, "Failed to record stock movement")
 		return
 	}
 
@@ -96,11 +103,14 @@ func (h *StockMovementHandler) GetByID(c *gin.Context) {
 
 	movement, err := h.usecase.GetMovement(c.Request.Context(), id)
 	if err != nil {
-		if errors.Is(err, stockmovement.ErrStockMovementNotFound) {
+		switch {
+		case errors.Is(err, stockmovement.ErrStockMovementNotFound):
 			response.NotFound(c, "Stock movement not found")
-			return
+		case errors.Is(err, stockmovement.ErrStockMovementGetFailed):
+			response.InternalError(c, "Failed to retrieve stock movement")
+		default:
+			response.InternalError(c, "Failed to get stock movement")
 		}
-		response.InternalError(c, "Failed to retrieve stock movement")
 		return
 	}
 
@@ -134,7 +144,14 @@ func (h *StockMovementHandler) GetByInventory(c *gin.Context) {
 		pageSize,
 	)
 	if err != nil {
-		response.InternalError(c, "Failed to retrieve stock movements")
+		switch {
+		case errors.Is(err, stockmovement.ErrInvalidPagination):
+			response.BadRequest(c, "Invalid pagination parameters")
+		case errors.Is(err, stockmovement.ErrStockMovementListFailed):
+			response.InternalError(c, "Failed to list stock movements")
+		default:
+			response.InternalError(c, "Failed to retrieve stock movements")
+		}
 		return
 	}
 
@@ -184,7 +201,16 @@ func (h *StockMovementHandler) GetByReference(c *gin.Context) {
 		referenceID,
 	)
 	if err != nil {
-		response.InternalError(c, "Failed to retrieve stock movements")
+		switch {
+		case errors.Is(err, stockmovement.ErrReferenceTypeRequired):
+			response.BadRequest(c, "Reference type is required")
+		case errors.Is(err, stockmovement.ErrReferenceIDRequired):
+			response.BadRequest(c, "Reference ID is required")
+		case errors.Is(err, stockmovement.ErrStockMovementListFailed):
+			response.InternalError(c, "Failed to list stock movements by reference")
+		default:
+			response.InternalError(c, "Failed to retrieve stock movements")
+		}
 		return
 	}
 
@@ -220,7 +246,14 @@ func (h *StockMovementHandler) GetByType(c *gin.Context) {
 		pageSize,
 	)
 	if err != nil {
-		response.InternalError(c, "Failed to retrieve stock movements")
+		switch {
+		case errors.Is(err, stockmovement.ErrInvalidPagination):
+			response.BadRequest(c, "Invalid pagination parameters")
+		case errors.Is(err, stockmovement.ErrStockMovementListFailed):
+			response.InternalError(c, "Failed to list stock movements by type")
+		default:
+			response.InternalError(c, "Failed to retrieve stock movements")
+		}
 		return
 	}
 
@@ -247,7 +280,12 @@ func (h *StockMovementHandler) GetRecent(c *gin.Context) {
 
 	movements, err := h.usecase.GetRecentMovements(c.Request.Context(), limit)
 	if err != nil {
-		response.InternalError(c, "Failed to retrieve recent movements")
+		switch {
+		case errors.Is(err, stockmovement.ErrStockMovementListFailed):
+			response.InternalError(c, "Failed to list recent movements")
+		default:
+			response.InternalError(c, "Failed to retrieve recent movements")
+		}
 		return
 	}
 
@@ -282,7 +320,12 @@ func (h *StockMovementHandler) GetInventorySummary(c *gin.Context) {
 		endDate,
 	)
 	if err != nil {
-		response.InternalError(c, "Failed to retrieve inventory summary")
+		switch {
+		case errors.Is(err, stockmovement.ErrStockMovementSummaryFailed):
+			response.InternalError(c, "Failed to calculate inventory summary")
+		default:
+			response.InternalError(c, "Failed to retrieve inventory summary")
+		}
 		return
 	}
 

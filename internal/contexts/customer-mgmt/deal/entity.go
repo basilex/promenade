@@ -1,7 +1,6 @@
 package deal
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -60,19 +59,19 @@ type Deal struct {
 // NewDeal creates a new deal
 func NewDeal(customerID uuidv7.UUID, name string, value valueobject.Money, assignedTo uuidv7.UUID, expectedCloseDate time.Time) (*Deal, error) {
 	if name == "" {
-		return nil, fmt.Errorf("name cannot be empty")
+		return nil, ErrDealNameEmpty
 	}
 	if customerID == uuidv7.Nil {
-		return nil, fmt.Errorf("customer_id is required")
+		return nil, ErrDealCustomerRequired
 	}
 	if assignedTo == uuidv7.Nil {
-		return nil, fmt.Errorf("assigned_to is required")
+		return nil, ErrDealAssignedToRequired
 	}
 	if value.Amount < 0 {
-		return nil, fmt.Errorf("value must be non-negative")
+		return nil, ErrDealValueNegative
 	}
 	if expectedCloseDate.Before(time.Now()) {
-		return nil, fmt.Errorf("expected_close_date cannot be in the past")
+		return nil, ErrDealDateInPast
 	}
 
 	return &Deal{
@@ -92,7 +91,7 @@ func NewDeal(customerID uuidv7.UUID, name string, value valueobject.Money, assig
 // UpdateBasicInfo updates deal name and description
 func (d *Deal) UpdateBasicInfo(name, description string) error {
 	if name == "" {
-		return fmt.Errorf("name cannot be empty")
+		return ErrDealNameEmpty
 	}
 	d.Name = name
 	d.Description = description
@@ -103,7 +102,7 @@ func (d *Deal) UpdateBasicInfo(name, description string) error {
 // UpdateValue updates deal value
 func (d *Deal) UpdateValue(value valueobject.Money) error {
 	if value.Amount < 0 {
-		return fmt.Errorf("value must be non-negative")
+		return ErrDealValueNegative
 	}
 	d.Value = value
 	d.Currency = value.Currency
@@ -114,11 +113,11 @@ func (d *Deal) UpdateValue(value valueobject.Money) error {
 // MoveTo advances deal to a new stage
 func (d *Deal) MoveTo(stage DealStage) error {
 	if d.Stage == DealStageClosedWon || d.Stage == DealStageClosedLost {
-		return fmt.Errorf("cannot move deal from terminal stage %s", d.Stage)
+		return ErrDealTerminalStage
 	}
 
 	if !isValidStageTransition(d.Stage, stage) {
-		return fmt.Errorf("invalid stage transition from %s to %s", d.Stage, stage)
+		return ErrDealInvalidStageTransition
 	}
 
 	d.Stage = stage
@@ -130,10 +129,10 @@ func (d *Deal) MoveTo(stage DealStage) error {
 // MarkAsWon marks deal as closed won
 func (d *Deal) MarkAsWon(reason string) error {
 	if d.Stage == DealStageClosedWon {
-		return fmt.Errorf("deal is already marked as won")
+		return ErrDealAlreadyWon
 	}
 	if d.Stage == DealStageClosedLost {
-		return fmt.Errorf("cannot mark lost deal as won")
+		return ErrDealCannotMarkLostAsWon
 	}
 
 	now := time.Now()
@@ -148,13 +147,13 @@ func (d *Deal) MarkAsWon(reason string) error {
 // MarkAsLost marks deal as closed lost
 func (d *Deal) MarkAsLost(reason string) error {
 	if d.Stage == DealStageClosedLost {
-		return fmt.Errorf("deal is already marked as lost")
+		return ErrDealAlreadyLost
 	}
 	if d.Stage == DealStageClosedWon {
-		return fmt.Errorf("cannot mark won deal as lost")
+		return ErrDealCannotMarkWonAsLost
 	}
 	if reason == "" {
-		return fmt.Errorf("loss reason is required")
+		return ErrDealLossReasonRequired
 	}
 
 	now := time.Now()
@@ -169,10 +168,10 @@ func (d *Deal) MarkAsLost(reason string) error {
 // UpdateProbability updates win probability
 func (d *Deal) UpdateProbability(probability int) error {
 	if probability < 0 || probability > 100 {
-		return fmt.Errorf("probability must be between 0 and 100")
+		return ErrDealProbabilityRange
 	}
 	if d.Stage == DealStageClosedWon || d.Stage == DealStageClosedLost {
-		return fmt.Errorf("cannot change probability for closed deal")
+		return ErrDealClosedMutation
 	}
 	d.Probability = probability
 	d.Touch()
@@ -182,10 +181,10 @@ func (d *Deal) UpdateProbability(probability int) error {
 // UpdateExpectedCloseDate updates expected close date
 func (d *Deal) UpdateExpectedCloseDate(date time.Time) error {
 	if date.Before(time.Now()) {
-		return fmt.Errorf("expected_close_date cannot be in the past")
+		return ErrDealDateInPast
 	}
 	if d.Stage == DealStageClosedWon || d.Stage == DealStageClosedLost {
-		return fmt.Errorf("cannot change expected close date for closed deal")
+		return ErrDealClosedMutation
 	}
 	d.ExpectedCloseDate = date
 	d.Touch()
@@ -195,7 +194,7 @@ func (d *Deal) UpdateExpectedCloseDate(date time.Time) error {
 // AssignToSalesRep assigns deal to a sales rep
 func (d *Deal) AssignToSalesRep(userID uuidv7.UUID) error {
 	if userID == uuidv7.Nil {
-		return fmt.Errorf("sales rep ID is required")
+		return ErrDealSalesRepRequired
 	}
 	d.AssignedTo = userID
 	d.Touch()

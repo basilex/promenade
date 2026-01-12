@@ -1,6 +1,7 @@
 package interaction
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -74,7 +75,7 @@ func TestNewInteraction(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid interaction type")
+		assert.True(t, errors.Is(err, ErrInvalidInteractionType))
 	})
 
 	t.Run("invalid direction", func(t *testing.T) {
@@ -90,7 +91,7 @@ func TestNewInteraction(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid direction")
+		assert.True(t, errors.Is(err, ErrInvalidDirection))
 	})
 
 	t.Run("empty subject", func(t *testing.T) {
@@ -106,7 +107,7 @@ func TestNewInteraction(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "subject cannot be empty")
+		assert.True(t, errors.Is(err, ErrSubjectEmpty))
 	})
 
 	t.Run("empty description", func(t *testing.T) {
@@ -122,7 +123,7 @@ func TestNewInteraction(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "description cannot be empty")
+		assert.True(t, errors.Is(err, ErrDescriptionEmpty))
 	})
 }
 
@@ -196,7 +197,7 @@ func TestInteraction_EndInteraction(t *testing.T) {
 		err := inter2.EndInteraction(endedAt)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "ended_at cannot be before started_at")
+		assert.True(t, errors.Is(err, ErrEndedAtBeforeStartedAt))
 	})
 
 	t.Run("already ended", func(t *testing.T) {
@@ -229,7 +230,7 @@ func TestInteraction_SetFollowUp(t *testing.T) {
 		err := inter2.SetFollowUp(true, nil, "Follow up soon")
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "follow_up_date required")
+		assert.True(t, errors.Is(err, ErrFollowUpDateRequired))
 	})
 
 	t.Run("disable follow-up", func(t *testing.T) {

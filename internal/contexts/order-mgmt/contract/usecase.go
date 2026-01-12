@@ -2,7 +2,6 @@ package contract
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -78,7 +77,7 @@ func (uc *contractUseCase) CreateContract(
 
 	// Persist to database
 	if err := uc.repo.Create(ctx, c); err != nil {
-		return nil, fmt.Errorf("failed to create contract: %w", err)
+		return nil, err
 	}
 
 	return c, nil
@@ -88,7 +87,7 @@ func (uc *contractUseCase) CreateContract(
 func (uc *contractUseCase) GetContract(ctx context.Context, contractID uuidv7.UUID) (*Contract, error) {
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get contract: %w", err)
+		return nil, err
 	}
 	return c, nil
 }
@@ -98,17 +97,17 @@ func (uc *contractUseCase) SubmitForSignature(ctx context.Context, contractID uu
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.SubmitForSignature(); err != nil {
-		return fmt.Errorf("failed to submit contract for signature: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update submitted contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -125,17 +124,17 @@ func (uc *contractUseCase) SignContract(
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.Sign(signedByName, signedByEmail, signatureID); err != nil {
-		return fmt.Errorf("failed to sign contract: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update signed contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -146,17 +145,17 @@ func (uc *contractUseCase) CompleteContract(ctx context.Context, contractID uuid
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.Complete(); err != nil {
-		return fmt.Errorf("failed to complete contract: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update completed contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -171,17 +170,17 @@ func (uc *contractUseCase) TerminateContract(
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.Terminate(reason); err != nil {
-		return fmt.Errorf("failed to terminate contract: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update terminated contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -195,17 +194,17 @@ func (uc *contractUseCase) RenewContract(
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.Renew(); err != nil {
-		return fmt.Errorf("failed to renew contract: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update renewed contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -220,17 +219,17 @@ func (uc *contractUseCase) SetExpirationDate(
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Apply business logic
 	if err := c.SetExpirationDate(expirationDate); err != nil {
-		return fmt.Errorf("failed to set expiration date: %w", err)
+		return err
 	}
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update contract expiration: %w", err)
+		return err
 	}
 
 	return nil
@@ -243,7 +242,7 @@ func (uc *contractUseCase) ListContractsByOrder(
 ) ([]*Contract, error) {
 	contracts, err := uc.repo.GetByOrder(ctx, orderID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list contracts by order: %w", err)
+		return nil, err
 	}
 	return contracts, nil
 }
@@ -261,7 +260,7 @@ func (uc *contractUseCase) ListContractsByCustomer(
 	// Retrieve contracts
 	contracts, total, err := uc.repo.ListByCustomer(ctx, customerID, pageSize, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list contracts by customer: %w", err)
+		return nil, 0, err
 	}
 
 	return contracts, total, nil
@@ -280,7 +279,7 @@ func (uc *contractUseCase) ListContractsByStatus(
 	// Retrieve contracts
 	contracts, total, err := uc.repo.ListByStatus(ctx, status, pageSize, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list contracts by status: %w", err)
+		return nil, 0, err
 	}
 
 	return contracts, total, nil
@@ -290,7 +289,7 @@ func (uc *contractUseCase) ListContractsByStatus(
 func (uc *contractUseCase) GetActiveContracts(ctx context.Context) ([]*Contract, error) {
 	contracts, err := uc.repo.GetActiveContracts(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get active contracts: %w", err)
+		return nil, err
 	}
 	return contracts, nil
 }
@@ -299,12 +298,12 @@ func (uc *contractUseCase) GetActiveContracts(ctx context.Context) ([]*Contract,
 func (uc *contractUseCase) ListExpiringSoon(ctx context.Context, days int) ([]*Contract, error) {
 	// Validate input
 	if days <= 0 {
-		return nil, fmt.Errorf("days must be greater than 0")
+		return nil, ErrInvalidDaysValue
 	}
 
 	contracts, err := uc.repo.ListExpiringSoon(ctx, days)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list expiring contracts: %w", err)
+		return nil, err
 	}
 
 	return contracts, nil
@@ -319,7 +318,7 @@ func (uc *contractUseCase) UpdateContract(
 	// Retrieve contract
 	c, err := uc.repo.GetByID(ctx, contractID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve contract: %w", err)
+		return err
 	}
 
 	// Update fields
@@ -328,7 +327,7 @@ func (uc *contractUseCase) UpdateContract(
 
 	// Persist changes
 	if err := uc.repo.Update(ctx, c); err != nil {
-		return fmt.Errorf("failed to update contract: %w", err)
+		return err
 	}
 
 	return nil
@@ -337,7 +336,7 @@ func (uc *contractUseCase) UpdateContract(
 // DeleteContract deletes a contract
 func (uc *contractUseCase) DeleteContract(ctx context.Context, contractID uuidv7.UUID) error {
 	if err := uc.repo.Delete(ctx, contractID); err != nil {
-		return fmt.Errorf("failed to delete contract: %w", err)
+		return err
 	}
 	return nil
 }

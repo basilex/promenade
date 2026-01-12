@@ -2,8 +2,9 @@ package customer_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
-"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -37,7 +38,7 @@ func TestCustomerUseCase_CreateCustomer(t *testing.T) {
 		// Test - Duplicate email should fail
 		_, err = uc.CreateCustomer(ctx, "Jane Doe", email, "referral", repID)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "already exists")
+		assert.True(t, errors.Is(err, customer.ErrCustomerAlreadyExists))
 	})
 }
 

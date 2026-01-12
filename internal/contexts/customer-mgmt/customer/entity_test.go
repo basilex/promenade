@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -103,7 +104,7 @@ func TestNewB2BCustomer_NilCompanyID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, customer)
-	assert.Contains(t, err.Error(), "company ID is required")
+	assert.True(t, errors.Is(err, ErrCustomerCompanyIDEmpty))
 }
 
 // ============================================================================
@@ -222,7 +223,7 @@ func TestCustomer_Churn_EmptyReason(t *testing.T) {
 	err := customer.Churn("")
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "churn reason is required")
+	assert.True(t, errors.Is(err, ErrCustomerChurnReasonEmpty))
 	assert.Equal(t, CustomerStatusCustomer, customer.Status)
 }
 
@@ -406,7 +407,7 @@ func TestCustomer_AddTag_Duplicate(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Len(t, customer.Tags, 1)
-	assert.Contains(t, err.Error(), "already has tag")
+	assert.Equal(t, ErrCustomerTagAlreadyExists, err)
 }
 
 func TestCustomer_AddTag_Empty(t *testing.T) {
@@ -438,7 +439,7 @@ func TestCustomer_RemoveTag_NonExistent(t *testing.T) {
 	err := customer.RemoveTag("enterprise")
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "does not have tag")
+	assert.Equal(t, ErrCustomerTagNotFound, err)
 	assert.Len(t, customer.Tags, 1)
 }
 
@@ -507,7 +508,7 @@ func TestCustomer_LinkToUser_AlreadyLinked(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, userID1, *customer.UserID)
-	assert.Contains(t, err.Error(), "already linked")
+	assert.True(t, errors.Is(err, ErrCustomerUserAlreadyLinked))
 }
 
 func TestCustomer_Reassign_Success(t *testing.T) {
@@ -613,7 +614,7 @@ func TestCustomer_Validate_InvalidFields(t *testing.T) {
 			setup: func(c *Customer) {
 				c.Name = ""
 			},
-			errorMsg: "name is required",
+			errorMsg: "customer name cannot be empty",
 		},
 		{
 			name: "invalid status",

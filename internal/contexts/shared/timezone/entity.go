@@ -1,7 +1,6 @@
 package timezone
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -27,16 +26,16 @@ func NewTimezone(name, abbreviation string, utcOffsetSeconds int) (*Timezone, er
 	abbreviation = strings.ToUpper(strings.TrimSpace(abbreviation))
 
 	if name == "" {
-		return nil, fmt.Errorf("timezone name is required")
+		return nil, ErrTimezoneNameRequired
 	}
 
 	if abbreviation == "" {
-		return nil, fmt.Errorf("timezone abbreviation is required")
+		return nil, ErrTimezoneAbbreviationRequired
 	}
 
 	// UTCOffset validation (-12 hours to +14 hours in seconds)
 	if utcOffsetSeconds < -43200 || utcOffsetSeconds > 50400 {
-		return nil, fmt.Errorf("UTC offset must be between -12h and +14h (in seconds)")
+		return nil, ErrUTCOffsetOutOfRange
 	}
 
 	return &Timezone{
@@ -52,15 +51,15 @@ func NewTimezone(name, abbreviation string, utcOffsetSeconds int) (*Timezone, er
 func (t *Timezone) Validate() error {
 	name := strings.TrimSpace(t.Name)
 	if name == "" {
-		return fmt.Errorf("timezone name is required")
+		return ErrTimezoneNameRequired
 	}
 	abbreviation := strings.TrimSpace(t.Abbreviation)
 	if abbreviation == "" {
-		return fmt.Errorf("timezone abbreviation is required")
+		return ErrTimezoneAbbreviationRequired
 	}
 	// UTCOffset validation (-12 hours to +14 hours in seconds)
 	if t.UTCOffset < -43200 || t.UTCOffset > 50400 {
-		return fmt.Errorf("UTC offset must be between -12h and +14h (in seconds)")
+		return ErrUTCOffsetOutOfRange
 	}
 	return nil
 }

@@ -20,4 +20,16 @@ var (
 
 	// ErrInteractionAlreadyEnded is returned when trying to end an already ended interaction
 	ErrInteractionAlreadyEnded = errors.New("interaction already ended")
+
+	// ErrSubjectEmpty is returned when subject is empty
+	ErrSubjectEmpty = errors.New("subject cannot be empty")
+
+	// ErrDescriptionEmpty is returned when description is empty
+	ErrDescriptionEmpty = errors.New("description cannot be empty")
+
+	// ErrEndedAtBeforeStartedAt is returned when ended_at is before started_at
+	ErrEndedAtBeforeStartedAt = errors.New("ended_at cannot be before started_at")
+
+	// ErrFollowUpDateRequired is returned when follow-up date is required but not provided
+	ErrFollowUpDateRequired = errors.New("follow_up_date required when follow_up_required is true")
 )

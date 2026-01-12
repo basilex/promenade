@@ -1,7 +1,6 @@
 package location
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/basilex/promenade/pkg/aggregate"
@@ -67,13 +66,13 @@ type Location struct {
 // NewLocation creates a new location
 func NewLocation(code, name string, locType LocationType) (*Location, error) {
 	if code == "" {
-		return nil, fmt.Errorf("location code is required")
+		return nil, ErrLocationCodeRequired
 	}
 	if name == "" {
-		return nil, fmt.Errorf("location name is required")
+		return nil, ErrLocationNameRequired
 	}
 	if !isValidLocationType(locType) {
-		return nil, fmt.Errorf("invalid location type: %s", locType)
+		return nil, ErrInvalidLocationType
 	}
 
 	code = strings.TrimSpace(strings.ToUpper(code))
@@ -98,7 +97,7 @@ func NewLocation(code, name string, locType LocationType) (*Location, error) {
 // SetParent sets the parent location and updates hierarchy
 func (l *Location) SetParent(parentID uuidv7.UUID, parentPath string, parentLevel int) error {
 	if parentID == l.GetID() {
-		return fmt.Errorf("location cannot be its own parent")
+		return ErrCannotBeOwnParent
 	}
 
 	l.ParentID = &parentID
@@ -120,10 +119,10 @@ func (l *Location) RemoveParent() {
 // SetCapacity sets the location capacity
 func (l *Location) SetCapacity(capacity int, enforce bool) error {
 	if capacity < 0 {
-		return fmt.Errorf("capacity cannot be negative")
+		return ErrNegativeCapacity
 	}
 	if capacity < l.CurrentOccupancy {
-		return fmt.Errorf("capacity (%d) cannot be less than current occupancy (%d)", capacity, l.CurrentOccupancy)
+		return ErrCapacityLessThanOccupancy
 	}
 
 	l.Capacity = capacity
@@ -141,7 +140,7 @@ func (l *Location) SetCapacity(capacity int, enforce bool) error {
 // SetDimensions sets the physical dimensions
 func (l *Location) SetDimensions(width, height, depth float64) error {
 	if width < 0 || height < 0 || depth < 0 {
-		return fmt.Errorf("dimensions cannot be negative")
+		return ErrNegativeDimensions
 	}
 
 	l.Width = width
@@ -155,14 +154,13 @@ func (l *Location) SetDimensions(width, height, depth float64) error {
 // AddOccupancy increases current occupancy
 func (l *Location) AddOccupancy(amount int) error {
 	if amount <= 0 {
-		return fmt.Errorf("amount must be positive")
+		return ErrAmountMustBePositive
 	}
 
 	newOccupancy := l.CurrentOccupancy + amount
 
 	if l.IsLimited && newOccupancy > l.Capacity {
-		return fmt.Errorf("insufficient capacity: available %d, requested %d",
-			l.Capacity-l.CurrentOccupancy, amount)
+		return ErrInsufficientCapacity
 	}
 
 	l.CurrentOccupancy = newOccupancy
@@ -179,10 +177,10 @@ func (l *Location) AddOccupancy(amount int) error {
 // RemoveOccupancy decreases current occupancy
 func (l *Location) RemoveOccupancy(amount int) error {
 	if amount <= 0 {
-		return fmt.Errorf("amount must be positive")
+		return ErrAmountMustBePositive
 	}
 	if amount > l.CurrentOccupancy {
-		return fmt.Errorf("cannot remove %d units, only %d occupied", amount, l.CurrentOccupancy)
+		return ErrCannotRemoveExcessOccupancy
 	}
 
 	l.CurrentOccupancy -= amount
@@ -199,7 +197,7 @@ func (l *Location) RemoveOccupancy(amount int) error {
 // Activate activates the location
 func (l *Location) Activate() error {
 	if l.Status == LocationStatusActive {
-		return fmt.Errorf("location already active")
+		return ErrLocationAlreadyActive
 	}
 
 	l.Status = LocationStatusActive
@@ -211,10 +209,10 @@ func (l *Location) Activate() error {
 // Deactivate deactivates the location
 func (l *Location) Deactivate() error {
 	if l.Status == LocationStatusInactive {
-		return fmt.Errorf("location already inactive")
+		return ErrLocationAlreadyInactive
 	}
 	if l.CurrentOccupancy > 0 {
-		return fmt.Errorf("cannot deactivate location with %d items", l.CurrentOccupancy)
+		return ErrCannotDeactivateWithItems
 	}
 
 	l.Status = LocationStatusInactive
@@ -226,7 +224,7 @@ func (l *Location) Deactivate() error {
 // SetMaintenance marks location as under maintenance
 func (l *Location) SetMaintenance() error {
 	if l.Status == LocationStatusMaintenance {
-		return fmt.Errorf("location already in maintenance")
+		return ErrLocationAlreadyInMaintenance
 	}
 
 	l.Status = LocationStatusMaintenance
@@ -312,28 +310,28 @@ func (l *Location) IsFull() bool {
 // Validate validates the location entity
 func (l *Location) Validate() error {
 	if l.Code == "" {
-		return fmt.Errorf("location code is required")
+		return ErrLocationCodeRequired
 	}
 	if l.Name == "" {
-		return fmt.Errorf("location name is required")
+		return ErrLocationNameRequired
 	}
 	if !isValidLocationType(l.Type) {
-		return fmt.Errorf("invalid location type: %s", l.Type)
+		return ErrInvalidLocationType
 	}
 	if !isValidLocationStatus(l.Status) {
-		return fmt.Errorf("invalid location status: %s", l.Status)
+		return ErrInvalidLocationStatus
 	}
 	if l.CurrentOccupancy < 0 {
-		return fmt.Errorf("current occupancy cannot be negative")
+		return ErrNegativeOccupancy
 	}
 	if l.IsLimited && l.Capacity < 0 {
-		return fmt.Errorf("capacity cannot be negative when limited")
+		return ErrNegativeCapacity
 	}
 	if l.IsLimited && l.CurrentOccupancy > l.Capacity {
-		return fmt.Errorf("current occupancy (%d) exceeds capacity (%d)", l.CurrentOccupancy, l.Capacity)
+		return ErrOccupancyExceedsCapacity
 	}
 	if l.Width < 0 || l.Height < 0 || l.Depth < 0 {
-		return fmt.Errorf("dimensions cannot be negative")
+		return ErrNegativeDimensions
 	}
 
 	return nil

@@ -215,7 +215,7 @@ func TestProductHandler_Create_DuplicateSKU(t *testing.T) {
 	}
 	w := smoke.MakeRequest(t, router, "POST", "/products", body)
 
-	smoke.AssertErrorResponse(t, w, http.StatusConflict, "SKU_DUPLICATE")
+	smoke.AssertErrorResponse(t, w, http.StatusConflict, "CONFLICT")
 }
 
 func TestProductHandler_GetByID_Success(t *testing.T) {

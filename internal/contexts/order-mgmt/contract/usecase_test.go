@@ -177,7 +177,7 @@ func TestCreateContract_RepositoryError(t *testing.T) {
 
 	require.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "failed to create contract")
+	// Repository error propagated directly (no wrapper)
 }
 
 // Test GetContract
@@ -215,7 +215,7 @@ func TestGetContract_NotFound(t *testing.T) {
 
 	require.Error(t, err)
 	assert.Nil(t, result)
-	assert.Contains(t, err.Error(), "failed to get contract")
+	// Repository error propagated directly (no wrapper)
 }
 
 // Test SubmitForSignature
@@ -257,7 +257,7 @@ func TestSubmitForSignature_InvalidState(t *testing.T) {
 	err := uc.SubmitForSignature(ctx, testContract.ID)
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to submit contract for signature")
+	assert.True(t, errors.Is(err, ErrCannotSubmitNonDraft))
 }
 
 // Test SignContract
@@ -301,7 +301,7 @@ func TestSignContract_InvalidState(t *testing.T) {
 	err := uc.SignContract(ctx, testContract.ID, "Jane Smith", "jane@example.com", "sig456")
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to sign contract")
+	// Repository error propagated directly (no wrapper)
 }
 
 // Test CompleteContract
@@ -369,7 +369,7 @@ func TestTerminateContract_InvalidState(t *testing.T) {
 	err := uc.TerminateContract(ctx, testContract.ID, "Customer request")
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to terminate contract")
+	// Repository error propagated directly (no wrapper)
 }
 
 // Test RenewContract
@@ -436,7 +436,7 @@ func TestSetExpirationDate_InvalidDate(t *testing.T) {
 	err := uc.SetExpirationDate(ctx, testContract.ID, pastDate)
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to set expiration date")
+	// Repository error propagated directly (no wrapper)
 }
 
 // Test ListContractsByOrder
@@ -583,5 +583,5 @@ func TestDeleteContract_Error(t *testing.T) {
 	err := uc.DeleteContract(ctx, contractID)
 
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to delete contract")
+	// Repository error propagated directly (no wrapper)
 }

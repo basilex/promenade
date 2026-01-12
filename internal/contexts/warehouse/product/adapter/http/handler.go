@@ -39,17 +39,17 @@ func NewProductHandler(usecase product.IUseCase) *ProductHandler {
 func (h *ProductHandler) Create(c *gin.Context) {
 	var req CreateProductRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	p, err := h.usecase.CreateProduct(c.Request.Context(), req.SKU, req.Name)
 	if err != nil {
 		if errors.Is(err, product.ErrProductSKUDuplicate) {
-			response.ErrorResponse(c, http.StatusConflict, "SKU_DUPLICATE", "Product with this SKU already exists")
+			response.Conflict(c, "Product SKU already exists")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_FAILED", "Failed to create product")
+		response.InternalError(c, "Failed to create product")
 		return
 	}
 
@@ -71,17 +71,17 @@ func (h *ProductHandler) Create(c *gin.Context) {
 func (h *ProductHandler) GetByID(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to get product")
 		return
 	}
 
@@ -105,10 +105,10 @@ func (h *ProductHandler) GetBySKU(c *gin.Context) {
 	p, err := h.usecase.GetProductBySKU(c.Request.Context(), sku)
 	if err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -131,13 +131,13 @@ func (h *ProductHandler) GetBySKU(c *gin.Context) {
 func (h *ProductHandler) Update(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	var req UpdateProductRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
@@ -145,10 +145,10 @@ func (h *ProductHandler) Update(c *gin.Context) {
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -172,7 +172,7 @@ func (h *ProductHandler) Update(c *gin.Context) {
 
 	// Persist changes
 	if err := h.usecase.UpdateProduct(c.Request.Context(), p); err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update product")
+		response.InternalError(c, "Failed to update product")
 		return
 	}
 
@@ -194,16 +194,16 @@ func (h *ProductHandler) Update(c *gin.Context) {
 func (h *ProductHandler) Delete(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	if err := h.usecase.DeleteProduct(c.Request.Context(), id); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DELETE_FAILED", "Failed to delete product")
+		response.InternalError(c, "Failed to delete product")
 		return
 	}
 
@@ -235,13 +235,13 @@ func (h *ProductHandler) List(c *gin.Context) {
 
 	products, err := h.usecase.ListProducts(c.Request.Context(), page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list products")
+		response.InternalError(c, "Failed to list products")
 		return
 	}
 
 	total, err := h.usecase.CountProducts(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "COUNT_FAILED", "Failed to count products")
+		response.InternalError(c, "Failed to count products")
 		return
 	}
 
@@ -275,13 +275,13 @@ func (h *ProductHandler) ListByCategory(c *gin.Context) {
 
 	products, err := h.usecase.ListProductsByCategory(c.Request.Context(), category, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list products")
+		response.InternalError(c, "Failed to list products by category")
 		return
 	}
 
 	total, err := h.usecase.CountProducts(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "COUNT_FAILED", "Failed to count products")
+		response.InternalError(c, "Failed to count products")
 		return
 	}
 
@@ -315,13 +315,13 @@ func (h *ProductHandler) ListByBrand(c *gin.Context) {
 
 	products, err := h.usecase.ListProductsByBrand(c.Request.Context(), brand, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list products")
+		response.InternalError(c, "Failed to list products by brand")
 		return
 	}
 
 	total, err := h.usecase.CountProducts(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "COUNT_FAILED", "Failed to count products")
+		response.InternalError(c, "Failed to count products")
 		return
 	}
 
@@ -355,13 +355,13 @@ func (h *ProductHandler) ListByStatus(c *gin.Context) {
 
 	products, err := h.usecase.ListProductsByStatus(c.Request.Context(), status, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_FAILED", "Failed to list products")
+		response.InternalError(c, "Failed to list products by status")
 		return
 	}
 
 	total, err := h.usecase.CountProducts(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "COUNT_FAILED", "Failed to count products")
+		response.InternalError(c, "Failed to count products")
 		return
 	}
 
@@ -387,7 +387,7 @@ func (h *ProductHandler) Search(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
 
 	if query == "" {
-		response.ErrorResponse(c, http.StatusBadRequest, "EMPTY_QUERY", "Search query is required")
+		response.BadRequest(c, "Search query is required")
 		return
 	}
 
@@ -400,13 +400,13 @@ func (h *ProductHandler) Search(c *gin.Context) {
 
 	products, err := h.usecase.SearchProducts(c.Request.Context(), query, page, pageSize)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "SEARCH_FAILED", "Failed to search products")
+		response.InternalError(c, "Failed to search products")
 		return
 	}
 
 	total, err := h.usecase.CountProducts(c.Request.Context())
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "COUNT_FAILED", "Failed to count products")
+		response.InternalError(c, "Failed to count products")
 		return
 	}
 
@@ -429,27 +429,27 @@ func (h *ProductHandler) Search(c *gin.Context) {
 func (h *ProductHandler) Activate(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	if err := h.usecase.ActivateProduct(c.Request.Context(), id); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
 		if errors.Is(err, product.ErrProductAlreadyActive) {
-			response.ErrorResponse(c, http.StatusConflict, "ALREADY_ACTIVE", "Product is already active")
+			response.BadRequest(c, "Product is already active")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATION_FAILED", "Failed to activate product")
+		response.InternalError(c, "Failed to activate product")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -472,27 +472,27 @@ func (h *ProductHandler) Activate(c *gin.Context) {
 func (h *ProductHandler) Deactivate(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	if err := h.usecase.DeactivateProduct(c.Request.Context(), id); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
 		if errors.Is(err, product.ErrProductAlreadyInactive) {
-			response.ErrorResponse(c, http.StatusConflict, "ALREADY_INACTIVE", "Product is already inactive")
+			response.BadRequest(c, "Product is already inactive")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DEACTIVATION_FAILED", "Failed to deactivate product")
+		response.InternalError(c, "Failed to deactivate product")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -514,23 +514,23 @@ func (h *ProductHandler) Deactivate(c *gin.Context) {
 func (h *ProductHandler) Discontinue(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	if err := h.usecase.DiscontinueProduct(c.Request.Context(), id); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "DISCONTINUE_FAILED", "Failed to discontinue product")
+		response.InternalError(c, "Failed to discontinue product")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -553,29 +553,29 @@ func (h *ProductHandler) Discontinue(c *gin.Context) {
 func (h *ProductHandler) UpdateInventorySettings(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	var req UpdateInventorySettingsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	if err := h.usecase.UpdateInventorySettings(c.Request.Context(), id, req.TrackInventory, req.AllowBackorder); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update product")
+		response.InternalError(c, "Failed to update inventory settings")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -598,33 +598,33 @@ func (h *ProductHandler) UpdateInventorySettings(c *gin.Context) {
 func (h *ProductHandler) SetReorderPoint(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	var req SetReorderPointRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	if err := h.usecase.SetReorderPoint(c.Request.Context(), id, req.ReorderPoint, req.ReorderQuantity); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
 		if errors.Is(err, product.ErrProductInvalidReorder) {
-			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_REORDER", "Invalid reorder settings")
+			response.BadRequest(c, "Reorder point must be less than reorder quantity")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update product")
+		response.InternalError(c, "Failed to set reorder point")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
@@ -647,13 +647,13 @@ func (h *ProductHandler) SetReorderPoint(c *gin.Context) {
 func (h *ProductHandler) SetPhysicalProperties(c *gin.Context) {
 	id, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "INVALID_ID", "Invalid product ID format")
+		response.BadRequest(c, "Invalid product ID format")
 		return
 	}
 
 	var req SetPhysicalPropertiesRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
@@ -666,21 +666,21 @@ func (h *ProductHandler) SetPhysicalProperties(c *gin.Context) {
 
 	if err := h.usecase.SetPhysicalProperties(c.Request.Context(), id, req.Weight, dimensions); err != nil {
 		if errors.Is(err, product.ErrProductNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "NOT_FOUND", "Product not found")
+			response.NotFound(c, "Product not found")
 			return
 		}
 		if errors.Is(err, product.ErrProductInvalidWeight) || errors.Is(err, product.ErrProductInvalidDimension) {
-			response.ErrorResponse(c, http.StatusBadRequest, "INVALID_PROPERTIES", "Invalid physical properties")
+			response.BadRequest(c, "Invalid physical properties")
 			return
 		}
-		response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_FAILED", "Failed to update product")
+		response.InternalError(c, "Failed to set physical properties")
 		return
 	}
 
 	// Retrieve updated product
 	p, err := h.usecase.GetProduct(c.Request.Context(), id)
 	if err != nil {
-		response.ErrorResponse(c, http.StatusInternalServerError, "RETRIEVAL_FAILED", "Failed to retrieve product")
+		response.InternalError(c, "Failed to retrieve product")
 		return
 	}
 
