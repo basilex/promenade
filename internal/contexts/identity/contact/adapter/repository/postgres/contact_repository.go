@@ -181,7 +181,7 @@ func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*conta
 
 	if err := r.Get(ctx, &row, query, id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("contact not found")
+			return nil, contact.ErrContactNotFound
 		}
 		return nil, fmt.Errorf("failed to get contact: %w", err)
 	}

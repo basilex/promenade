@@ -59,17 +59,17 @@ func NewUseCase(repo IRepository) IUseCase {
 func (uc *useCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*Contact, error) {
 	contact, err := NewEmailContact(userID, email, label)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create email contact: %w", err)
+		return nil, err
 	}
 
 	if isPrimary {
 		// Check if primary already exists
 		exists, err := uc.repo.ExistsPrimaryForUserAndType(ctx, userID, ContactTypeEmail)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check primary contact: %w", err)
+			return nil, err
 		}
 		if exists {
-			return nil, fmt.Errorf("%w: primary email contact already exists for user", ErrPrimaryContactExists)
+			return nil, ErrPrimaryContactExists
 		}
 		contact.SetAsPrimary()
 	}
@@ -89,16 +89,16 @@ func (uc *useCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, e
 func (uc *useCase) CreatePhoneContact(ctx context.Context, userID uuidv7.UUID, phone, label string, isPrimary bool) (*Contact, error) {
 	contact, err := NewPhoneContact(userID, phone, label)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create phone contact: %w", err)
+		return nil, err
 	}
 
 	if isPrimary {
 		exists, err := uc.repo.ExistsPrimaryForUserAndType(ctx, userID, ContactTypePhone)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check primary contact: %w", err)
+			return nil, err
 		}
 		if exists {
-			return nil, fmt.Errorf("primary phone contact already exists for user")
+			return nil, ErrPrimaryContactExists
 		}
 		contact.SetAsPrimary()
 	}
@@ -118,26 +118,26 @@ func (uc *useCase) CreatePhoneContact(ctx context.Context, userID uuidv7.UUID, p
 func (uc *useCase) CreateAddressContact(ctx context.Context, userID uuidv7.UUID, street, city, country, postalCode, label string, isPrimary bool) (*Contact, error) {
 	contact, err := NewAddressContact(userID, street, city, country, postalCode, label)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create address contact: %w", err)
+		return nil, err
 	}
 
 	if isPrimary {
 		exists, err := uc.repo.ExistsPrimaryForUserAndType(ctx, userID, ContactTypeAddress)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check primary contact: %w", err)
+			return nil, err
 		}
 		if exists {
-			return nil, fmt.Errorf("primary address contact already exists for user")
+			return nil, ErrPrimaryContactExists
 		}
 		contact.SetAsPrimary()
 	}
 
 	if err := contact.Validate(); err != nil {
-		return nil, fmt.Errorf("validation failed: %w", err)
+		return nil, err
 	}
 
 	if err := uc.repo.Create(ctx, contact); err != nil {
-		return nil, fmt.Errorf("failed to save contact: %w", err)
+		return nil, err
 	}
 
 	return contact, nil
@@ -147,7 +147,7 @@ func (uc *useCase) CreateAddressContact(ctx context.Context, userID uuidv7.UUID,
 func (uc *useCase) GetContact(ctx context.Context, contactID uuidv7.UUID) (*Contact, error) {
 	contact, err := uc.repo.GetByID(ctx, contactID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get contact: %w", err)
+		return nil, err
 	}
 	return contact, nil
 }
@@ -156,7 +156,7 @@ func (uc *useCase) GetContact(ctx context.Context, contactID uuidv7.UUID) (*Cont
 func (uc *useCase) GetUserContacts(ctx context.Context, userID uuidv7.UUID) ([]*Contact, error) {
 	contacts, err := uc.repo.GetByUserID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user contacts: %w", err)
+		return nil, err
 	}
 	return contacts, nil
 }
@@ -165,7 +165,7 @@ func (uc *useCase) GetUserContacts(ctx context.Context, userID uuidv7.UUID) ([]*
 func (uc *useCase) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID, contactType ContactType) ([]*Contact, error) {
 	contacts, err := uc.repo.GetByUserIDAndType(ctx, userID, contactType)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user contacts by type: %w", err)
+		return nil, err
 	}
 	return contacts, nil
 }
@@ -173,11 +173,11 @@ func (uc *useCase) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID
 // UpdateContact updates a contact
 func (uc *useCase) UpdateContact(ctx context.Context, contact *Contact) error {
 	if err := contact.Validate(); err != nil {
-		return fmt.Errorf("validation failed: %w", err)
+		return err
 	}
 
 	if err := uc.repo.Update(ctx, contact); err != nil {
-		return fmt.Errorf("failed to update contact: %w", err)
+		return err
 	}
 
 	return nil
@@ -186,7 +186,7 @@ func (uc *useCase) UpdateContact(ctx context.Context, contact *Contact) error {
 // DeleteContact deletes a contact
 func (uc *useCase) DeleteContact(ctx context.Context, contactID uuidv7.UUID) error {
 	if err := uc.repo.Delete(ctx, contactID); err != nil {
-		return fmt.Errorf("failed to delete contact: %w", err)
+		return err
 	}
 	return nil
 }
@@ -196,12 +196,12 @@ func (uc *useCase) SetAsPrimary(ctx context.Context, contactID uuidv7.UUID) erro
 	// Get the contact first
 	contact, err := uc.repo.GetByID(ctx, contactID)
 	if err != nil {
-		return fmt.Errorf("failed to get contact: %w", err)
+		return err
 	}
 
 	// Use repository method that handles unsetting other primary contacts
 	if err := uc.repo.SetPrimary(ctx, contactID); err != nil {
-		return fmt.Errorf("failed to set primary: %w", err)
+		return err
 	}
 
 	// Update the contact entity
@@ -214,13 +214,13 @@ func (uc *useCase) SetAsPrimary(ctx context.Context, contactID uuidv7.UUID) erro
 func (uc *useCase) VerifyContact(ctx context.Context, contactID uuidv7.UUID) error {
 	contact, err := uc.repo.GetByID(ctx, contactID)
 	if err != nil {
-		return fmt.Errorf("failed to get contact: %w", err)
+		return err
 	}
 
 	contact.Verify()
 
 	if err := uc.repo.Update(ctx, contact); err != nil {
-		return fmt.Errorf("failed to verify contact: %w", err)
+		return err
 	}
 
 	return nil
@@ -230,7 +230,7 @@ func (uc *useCase) VerifyContact(ctx context.Context, contactID uuidv7.UUID) err
 func (uc *useCase) UpdateVisibility(ctx context.Context, contactID uuidv7.UUID, isPublic bool) error {
 	contact, err := uc.repo.GetByID(ctx, contactID)
 	if err != nil {
-		return fmt.Errorf("failed to get contact: %w", err)
+		return err
 	}
 
 	if isPublic {
@@ -240,7 +240,7 @@ func (uc *useCase) UpdateVisibility(ctx context.Context, contactID uuidv7.UUID, 
 	}
 
 	if err := uc.repo.Update(ctx, contact); err != nil {
-		return fmt.Errorf("failed to update visibility: %w", err)
+		return err
 	}
 
 	return nil
