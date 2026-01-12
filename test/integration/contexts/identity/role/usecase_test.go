@@ -2,6 +2,7 @@ package role_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -68,7 +69,7 @@ func TestRoleUseCase_GetRole(t *testing.T) {
 		// Test - Non-existent role
 		_, err = uc.GetRole(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, role.ErrRoleNotFound))
 	})
 }
 
@@ -97,7 +98,7 @@ func TestRoleUseCase_GetRoleByName(t *testing.T) {
 		// Test - Non-existent role name
 		_, err = uc.GetRoleByName(ctx, "nonexistent")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, role.ErrRoleNotFound))
 	})
 }
 
@@ -155,7 +156,7 @@ func TestRoleUseCase_DeleteRole(t *testing.T) {
 		// Verify - Should not be found (soft delete)
 		_, err = uc.GetRole(ctx, r.GetID())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, role.ErrRoleNotFound))
 	})
 }
 
@@ -334,7 +335,7 @@ func TestRoleUseCase_CompleteWorkflow(t *testing.T) {
 		// Verify deletion
 		_, err = uc.GetRole(ctx, managerRole.GetID())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, role.ErrRoleNotFound))
 
 		// Admin role should still exist
 		stillExists, err := uc.GetRole(ctx, adminRole.GetID())

@@ -2,8 +2,9 @@ package profile_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
-"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -88,7 +89,7 @@ func TestProfileUseCase_GetProfile(t *testing.T) {
 		// Test - Non-existent profile
 		_, err = uc.GetProfile(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
 	})
 }
 
@@ -121,7 +122,7 @@ func TestProfileUseCase_GetProfileByUserID(t *testing.T) {
 		// Test - Non-existent user
 		_, err = uc.GetProfileByUserID(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
 	})
 }
 
@@ -477,7 +478,7 @@ func TestProfileUseCase_DeleteProfile(t *testing.T) {
 		// Verify - Should not be found
 		_, err = uc.GetProfile(ctx, p.GetID())
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not found")
+		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
 	})
 }
 

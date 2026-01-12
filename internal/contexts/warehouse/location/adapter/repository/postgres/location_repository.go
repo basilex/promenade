@@ -187,7 +187,29 @@ func (r *locationRepository) Update(ctx context.Context, loc *location.Location)
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("location not found or version mismatch")
+		// Check if location exists to distinguish between not found vs version mismatch
+		var exists bool
+		checkQuery := `SELECT EXISTS(SELECT 1 FROM warehouse_locations WHERE id = $1 AND deleted_at IS NULL)`
+		
+		// Use the executor with type assertion for Get method
+		exec := r.getExecutor(ctx)
+		if db, ok := exec.(*sqlx.DB); ok {
+			err := db.Get(&exists, checkQuery, row.ID)
+			if err != nil {
+				return fmt.Errorf("failed to check location existence: %w", err)
+			}
+		} else if tx, ok := exec.(*sqlx.Tx); ok {
+			err := tx.Get(&exists, checkQuery, row.ID)
+			if err != nil {
+				return fmt.Errorf("failed to check location existence: %w", err)
+			}
+		}
+
+		if !exists {
+			return location.ErrLocationNotFound
+		}
+		// Location exists but version doesn't match
+		return location.ErrVersionMismatch
 	}
 
 	return nil

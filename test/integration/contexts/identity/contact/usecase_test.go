@@ -2,8 +2,9 @@ package contact_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
-"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
@@ -164,7 +165,7 @@ func TestContactUseCase_GetContact(t *testing.T) {
 		nonExistentID := uuidv7.New()
 		_, err = uc.GetContact(ctx, nonExistentID)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "contact not found")
+		assert.True(t, errors.Is(err, contact.ErrContactNotFound))
 	})
 }
 
@@ -303,7 +304,7 @@ func TestContactUseCase_DeleteContact(t *testing.T) {
 		// Verify deletion
 		_, err = uc.GetContact(ctx, c.ID)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "contact not found")
+		assert.True(t, errors.Is(err, contact.ErrContactNotFound))
 	})
 }
 

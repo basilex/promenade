@@ -2,6 +2,7 @@ package interaction_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -192,7 +193,7 @@ func TestInteractionUseCase_GetInteraction_NotFound(t *testing.T) {
 	nonExistentID := uuidv7.New()
 	_, err := interactionUC.GetInteraction(ctx, nonExistentID)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	assert.True(t, errors.Is(err, interaction.ErrInteractionNotFound))
 }
 
 // TestInteractionUseCase_UpdateContent tests updating interaction content
@@ -631,5 +632,5 @@ func TestInteractionUseCase_DeleteInteraction(t *testing.T) {
 	// Verify deletion (should not be found)
 	_, err = interactionUC.GetInteraction(ctx, i.ID)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	assert.True(t, errors.Is(err, interaction.ErrInteractionNotFound))
 }
