@@ -214,7 +214,7 @@ func TestUseCase_GetInteraction(t *testing.T) {
 
 		_, err := uc.GetInteraction(ctx, interactionID)
 
-		assert.Equal(t, ErrInteractionGetFailed, err)
+		assert.Equal(t, ErrInteractionNotFound, err)
 		mockRepo.AssertExpectations(t)
 	})
 }
@@ -253,7 +253,7 @@ func TestUseCase_UpdateContent(t *testing.T) {
 
 		_, err := uc.UpdateContent(ctx, interactionID, "Test", "Test")
 
-		assert.Equal(t, ErrInteractionGetFailed, err)
+		assert.Equal(t, ErrInteractionNotFound, err)
 		mockRepo.AssertExpectations(t)
 	})
 }

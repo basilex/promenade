@@ -142,7 +142,7 @@ func (uc *useCase) UpdateContent(ctx context.Context, id uuidv7.UUID, subject, d
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	if err := interaction.UpdateContent(subject, description); err != nil {
@@ -167,7 +167,7 @@ func (uc *useCase) SetOutcome(ctx context.Context, id uuidv7.UUID, outcome strin
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	if err := interaction.SetOutcome(InteractionOutcome(outcome)); err != nil {
@@ -192,7 +192,7 @@ func (uc *useCase) EndInteraction(ctx context.Context, id uuidv7.UUID, endedAt t
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	if interaction.EndedAt != nil {
@@ -221,7 +221,7 @@ func (uc *useCase) SetFollowUp(ctx context.Context, id uuidv7.UUID, required boo
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	if err := interaction.SetFollowUp(required, followUpDate, notes); err != nil {
@@ -246,7 +246,7 @@ func (uc *useCase) AddAttendee(ctx context.Context, id uuidv7.UUID, attendeeID u
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	interaction.AddAttendee(attendeeID)
@@ -268,7 +268,7 @@ func (uc *useCase) RemoveAttendee(ctx context.Context, id uuidv7.UUID, attendeeI
 	interaction, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		log.Error("Failed to get interaction", "id", id, "error", err)
-		return nil, ErrInteractionGetFailed
+		return nil, err
 	}
 
 	interaction.RemoveAttendee(attendeeID)
