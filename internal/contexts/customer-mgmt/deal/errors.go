@@ -54,6 +54,9 @@ var (
 
 	// ErrDealSalesRepRequired is returned when sales rep ID is not provided
 	ErrDealSalesRepRequired = errors.New("sales rep ID is required")
+
+	// ErrInvalidDateFormat is returned when date string cannot be parsed
+	ErrInvalidDateFormat = errors.New("invalid date format")
 )
 
 // Technical Operation Errors - Operation wrappers
@@ -72,4 +75,7 @@ var (
 
 	// ErrDealStatsFailed is returned when pipeline statistics retrieval fails
 	ErrDealStatsFailed = errors.New("failed to retrieve pipeline statistics")
+
+	// ErrDateParseFailed is returned when date parsing fails
+	ErrDateParseFailed = errors.New("failed to parse date")
 )

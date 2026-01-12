@@ -1,7 +1,6 @@
 package deal
 
 import (
-	"fmt"
 	"context"
 	"errors"
 	"time"
@@ -523,14 +522,12 @@ func parseDate(dateStr string) (time.Time, error) {
 		time.RFC3339,
 	}
 
-	var lastErr error
 	for _, format := range formats {
 		t, err := time.Parse(format, dateStr)
 		if err == nil {
 			return t, nil
 		}
-		lastErr = err
 	}
 
-	return time.Time{}, fmt.Errorf("invalid date format: %w", lastErr)
+	return time.Time{}, ErrDateParseFailed
 }

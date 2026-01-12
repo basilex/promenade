@@ -162,7 +162,7 @@ func TestUseCase_CreateDeal_InvalidDate(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, deal)
-	assert.Contains(t, err.Error(), "invalid date format")
+	assert.True(t, errors.Is(err, ErrDateParseFailed))
 }
 
 // TestUseCase_GetDeal tests getting deal by ID

@@ -376,7 +376,7 @@ func TestCustomerHandler_Delete_NotFound(t *testing.T) {
 	router.DELETE("/customers/:id", handler.Delete)
 
 	w := smoke.MakeRequest(t, router, "DELETE", "/customers/"+smoke.FakeUUID(), nil)
-	smoke.AssertErrorResponse(t, w, 500, "INTERNAL_ERROR")
+	smoke.AssertErrorResponse(t, w, 404, "NOT_FOUND")
 }
 
 // Test QualifyAsProspect (lifecycle transition)
@@ -412,5 +412,5 @@ func TestCustomerHandler_QualifyAsProspect_NotFound(t *testing.T) {
 	router.POST("/customers/:id/qualify", handler.QualifyAsProspect)
 
 	w := smoke.MakeRequest(t, router, "POST", "/customers/"+smoke.FakeUUID()+"/qualify", nil)
-	smoke.AssertErrorResponse(t, w, 500, "INTERNAL_ERROR")
+	smoke.AssertErrorResponse(t, w, 404, "NOT_FOUND")
 }

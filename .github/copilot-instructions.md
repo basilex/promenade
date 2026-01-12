@@ -4,6 +4,49 @@ Essential guide for AI agents working in Promenade. For detailed documentation, 
 
 ---
 
+## Quick Start for AI Agents
+
+**First Time Here?** Start with these commands to orient yourself:
+
+```bash
+# 1. Check current workspace configuration
+make workspace                  # Shows DATABASE_DRIVER + ENVIRONMENT
+
+# 2. Switch to your preferred setup (pick one)
+make switch-postgres-dev        # PostgreSQL + development (most common)
+make switch-sqlite-dev          # SQLite + development (no Docker needed)
+make switch-sqlite-test         # SQLite + testing (fast tests)
+
+# 3. Start development
+make dev                        # Starts server + migrations
+# OR for a clean start:
+make dev-fresh                  # Clean DB + migrations + server
+
+# 4. Run tests (four-tier strategy)
+make test-unit                  # Fast unit tests (~5s, no DB)
+make test-smoke                 # HTTP handler tests (~0.6s, no DB)
+make test-integration           # Full E2E with DB (~14s)
+make test                       # All tests with race detector (~60s)
+
+# 5. Before any commit
+make pre-push                   # Lint + test + build (catches CI failures early)
+```
+
+**Key Architecture Concepts**:
+- **Bounded Contexts** = Autonomous business domains (Identity, Customer, Order, Billing, Warehouse)
+- **Event Bus** = Contexts communicate ONLY via events (no direct imports)
+- **errors.go** = All domain errors centralized (NEVER use fmt.Errorf in usecase.go)
+- **BaseAggregate** = All entities embed it (provides ID, Version, timestamps)
+- **UUID v7** = Always use `uuidv7.New()` (time-ordered, 2x faster inserts)
+
+**Critical Files to Read**:
+- `.promenade.workspace` - Current database driver + environment
+- `cmd/api/bootstrap.go` - Dependency injection order (Logger → DB → Redis → Event Bus → Routers)
+- `docs/guides/unified-error-handling-standard.md` - Error handling patterns (1287 lines, master reference)
+- `test/smoke/README.md` - HTTP handler testing guide (182 tests, 100% pass rate)
+
+---
+
 ## Core Architecture Principles
 
 ### 1. Domain-Driven Design (DDD) with Bounded Contexts
@@ -2010,17 +2053,33 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 
 **Top Mistakes**:
 
-1. **BaseAggregate Field Duplication** (FIXED Jan 2026): NEVER duplicate ID, CreatedAt, UpdatedAt in entities - already in BaseAggregate
+1. **Three-Layer Error Architecture** (CRITICAL - Phase 1 & 2 Standard):
+   - ❌ **NEVER** use `fmt.Errorf()` in usecase.go - all errors must be domain constants in errors.go
+   - ❌ **NEVER** use string comparison in handlers - use `errors.Is(err, ErrDomainConstant)`
+   - ❌ **NEVER** expose system errors to users - map to user-friendly messages in handlers
+   - ✅ **Layer 1**: Define all errors as constants in errors.go (3 categories: Repository, Business Logic, Technical)
+   - ✅ **Layer 2**: Return domain constants from usecase.go (zero inline errors)
+   - ✅ **Layer 3**: Map with errors.Is() in handlers, expose validation/domain, hide system errors
+   - 📖 **Master Reference**: `docs/guides/unified-error-handling-standard.md` (1287 lines)
+   - 🏆 **Gold Standard**: `internal/contexts/warehouse/location/` (14 constants, zero fmt.Errorf)
+
+2. **BaseAggregate Field Duplication** (FIXED Jan 2026): NEVER duplicate ID, CreatedAt, UpdatedAt in entities - already in BaseAggregate
    -  `type Entity struct { aggregate.BaseAggregate; ID uuid.UUID }` - WRONG
    -  `type Entity struct { aggregate.BaseAggregate }` - CORRECT
    - Always use `entity.Touch()` instead of `entity.UpdatedAt = time.Now()`
    - Always use `entity.GetID()` instead of `entity.ID` in repositories
-2. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
-3. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
-4. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
-5. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
-6. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
-7. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt → order-mgmt
+
+3. **UUID v4 vs v7**: NEVER `uuid.New()` (v4). Always `pkg/uuidv7.New()` (time-ordered)
+
+4. **Soft Delete**: Always `WHERE deleted_at IS NULL` in SELECT queries
+
+5. **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct imports between contexts)
+
+6. **Context Chain**: Always pass `ctx`. `getExecutor(ctx)` needs it for tx/db selection
+
+7. **Logger**: `logger.FromContext(ctx)` not global logger (preserves request context)
+
+8. **Migration Namespaces**: Migrations run in order: core → shared → identity → customer-mgmt → order-mgmt
 
 **Debugging Quick Reference**:
 
@@ -2062,7 +2121,16 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - [ ] Repository has ONLY data access, no business logic
 - [ ] Entity has validation methods, not validation in usecase
 - [ ] DTOs convert in adapter layer, never in usecase
-- [ ] Errors defined in usecase, checked in handler with `errors.Is()`
+- [ ] Errors defined in errors.go, returned from usecase, checked in handler with `errors.Is()`
+
+### Error Handling
+
+- [ ] All domain errors defined as constants in `errors.go` (3 categories)
+- [ ] ZERO `fmt.Errorf()` in `usecase.go` - use domain constants only
+- [ ] ZERO `errors.New()` inline - all errors must be constants
+- [ ] Handler uses `errors.Is()` for error checking (NOT string comparison)
+- [ ] Validation errors EXPOSE details (safe user feedback)
+- [ ] System errors HIDE details (generic messages only)
 
 ### SQL & Data
 
@@ -2098,6 +2166,9 @@ response.Error(c, code, "ERROR_CODE", msg)   // Error with code and message
 - Handler calls repository directly (must go through usecase)
 - Business logic in handler or repository (must be in usecase)
 - Missing `ctx context.Context` as first parameter
+- `fmt.Errorf()` or inline `errors.New()` in usecase.go (use domain constants from errors.go)
+- String comparison for errors in handlers (use `errors.Is()`)
+- Exposing system errors to users (leak internal implementation details)
 ## Key Files
 
 | File                                                           | Purpose                           |
