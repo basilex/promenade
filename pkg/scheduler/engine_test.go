@@ -96,7 +96,7 @@ func TestEngine_RegisterExecutor(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		err := engine.RegisterExecutor("test", executor)
 		
 		if err != nil {
@@ -108,7 +108,7 @@ func TestEngine_RegisterExecutor(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		err := engine.RegisterExecutor("test", executor)
@@ -126,7 +126,7 @@ func TestEngine_AddJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -149,7 +149,7 @@ func TestEngine_AddJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -172,7 +172,7 @@ func TestEngine_AddJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -197,7 +197,7 @@ func TestEngine_AddJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -241,7 +241,7 @@ func TestEngine_RemoveJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -297,7 +297,7 @@ func TestEngine_GetJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -341,7 +341,7 @@ func TestEngine_UpdateJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -397,7 +397,7 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -423,7 +423,7 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		job := &Job{
@@ -476,7 +476,7 @@ func TestEngine_ListJobs(t *testing.T) {
 		engine.Start()
 		defer engine.Stop()
 		
-		executor := &MockExecutor{id: "test-exec"}
+		executor := NewMockExecutor()
 		engine.RegisterExecutor("test", executor)
 		
 		// Add 3 jobs

@@ -9,15 +9,15 @@ import (
 // Test Helper Functions
 // ============================================================================
 
-// durationPtr returns a pointer to the given duration.
+// DurationPtr returns a pointer to the given duration.
 // Used in tests to set optional Job fields.
-func durationPtr(d time.Duration) *time.Duration {
+func DurationPtr(d time.Duration) *time.Duration {
 	return &d
 }
 
-// intPtr returns a pointer to the given integer.
+// IntPtr returns a pointer to the given integer.
 // Used in tests to set optional Job fields.
-func intPtr(i int) *int {
+func IntPtr(i int) *int {
 	return &i
 }
 
@@ -28,8 +28,12 @@ func intPtr(i int) *int {
 // MockExecutor is a test double for IExecutor interface.
 // It implements IExecutor and allows tests to control execution behavior.
 type MockExecutor struct {
-	id          string
-	executeFunc func(ctx context.Context, job *Job) error
+	ExecuteFunc func(ctx context.Context, job *Job) error
+}
+
+// NewMockExecutor creates a new mock executor instance
+func NewMockExecutor() *MockExecutor {
+	return &MockExecutor{}
 }
 
 // Type returns the job type this executor handles
@@ -37,10 +41,10 @@ func (m *MockExecutor) Type() JobType {
 	return JobTypeLUA
 }
 
-// Execute executes a job (calls executeFunc if set)
+// Execute executes a job (calls ExecuteFunc if set)
 func (m *MockExecutor) Execute(ctx context.Context, job *Job) error {
-	if m.executeFunc != nil {
-		return m.executeFunc(ctx, job)
+	if m.ExecuteFunc != nil {
+		return m.ExecuteFunc(ctx, job)
 	}
 	return nil
 }

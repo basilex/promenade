@@ -21,8 +21,7 @@ func TestEngine_Integration_RealJobExecution(t *testing.T) {
 	// Register test executor
 	executed := atomic.Int32{}
 	executor := &MockExecutor{
-		id: "test-executor",
-		executeFunc: func(ctx context.Context, job *Job) error {
+		ExecuteFunc: func(ctx context.Context, job *Job) error {
 			executed.Add(1)
 			return nil
 		},
@@ -84,8 +83,7 @@ func TestEngine_Integration_JobFailureRetry(t *testing.T) {
 	// Track execution attempts
 	attempts := atomic.Int32{}
 	executor := &MockExecutor{
-		id: "retry-executor",
-		executeFunc: func(ctx context.Context, job *Job) error {
+		ExecuteFunc: func(ctx context.Context, job *Job) error {
 			count := attempts.Add(1)
 			if count < 3 {
 				return ErrJobExecutionFailed // Fail first 2 attempts
@@ -143,8 +141,7 @@ func TestEngine_Integration_MultipleJobs(t *testing.T) {
 	job3Executed := atomic.Bool{}
 
 	executor := &MockExecutor{
-		id: "multi-executor",
-		executeFunc: func(ctx context.Context, job *Job) error {
+		ExecuteFunc: func(ctx context.Context, job *Job) error {
 			jobName := job.Payload["name"].(string)
 			switch jobName {
 			case "job1":
@@ -236,8 +233,7 @@ func TestEngine_Integration_DisableJobDuringExecution(t *testing.T) {
 
 	executed := atomic.Int32{}
 	executor := &MockExecutor{
-		id: "disable-executor",
-		executeFunc: func(ctx context.Context, job *Job) error {
+		ExecuteFunc: func(ctx context.Context, job *Job) error {
 			executed.Add(1)
 			return nil
 		},

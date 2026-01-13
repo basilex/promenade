@@ -24,7 +24,7 @@ func TestJob_GetTimeout(t *testing.T) {
 		},
 		{
 			name: "with custom timeout",
-			job:  &Job{Timeout: durationPtr(120 * time.Second)},
+			job:  &Job{Timeout: DurationPtr(120 * time.Second)},
 			want: 120 * time.Second,
 		},
 	}
@@ -54,7 +54,7 @@ func TestJob_GetRetryAttempts(t *testing.T) {
 		},
 		{
 			name: "with custom retry attempts",
-			job:  &Job{RetryAttempts: intPtr(5)},
+			job:  &Job{RetryAttempts: IntPtr(5)},
 			want: 5,
 		},
 	}
@@ -84,7 +84,7 @@ func TestJob_GetRetryDelay(t *testing.T) {
 		},
 		{
 			name: "with custom retry delay",
-			job:  &Job{RetryDelay: durationPtr(30 * time.Second)},
+			job:  &Job{RetryDelay: DurationPtr(30 * time.Second)},
 			want: 30 * time.Second,
 		},
 	}
