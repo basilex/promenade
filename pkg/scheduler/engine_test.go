@@ -49,15 +49,15 @@ func TestEngine_StartStop(t *testing.T) {
 			t.Error("Engine should be running after Start()")
 		}
 		
-		engine.Stop()
+		_ = engine.Stop()
 	})
 
 	t.Run("start already running", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		engine.Start()
-		defer engine.Stop()
+		_ = engine.Start()
+		defer func() { _ = engine.Stop() }()
 		
 		err := engine.Start()
 		if err != ErrEngineAlreadyRunning {
@@ -69,8 +69,8 @@ func TestEngine_StartStop(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		engine.Start()
-		engine.Stop()
+		_ = engine.Start()
+		_ = engine.Stop()
 		
 		if engine.IsRunning() {
 			t.Error("Engine should not be running after Stop()")
@@ -109,7 +109,7 @@ func TestEngine_RegisterExecutor(t *testing.T) {
 		engine, _ := NewEngine(cfg)
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		_ = engine.RegisterExecutor("test", executor)
 		
 		err := engine.RegisterExecutor("test", executor)
 		if err != ErrExecutorAlreadyRegistered {
@@ -183,7 +183,7 @@ func TestEngine_AddJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		engine.AddJob(job)
+		_ = engine.AddJob(job)
 		err := engine.AddJob(job)
 		
 		if err != ErrJobAlreadyExists {
@@ -252,7 +252,7 @@ func TestEngine_RemoveJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		engine.AddJob(job)
+		_ = engine.AddJob(job)
 		err := engine.RemoveJob(job.ID)
 		
 		if err != nil {
@@ -308,7 +308,7 @@ func TestEngine_GetJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		engine.AddJob(job)
+		_ = engine.AddJob(job)
 		
 		retrieved, err := engine.GetJob(job.ID)
 		if err != nil {
