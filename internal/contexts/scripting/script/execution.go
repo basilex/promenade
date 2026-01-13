@@ -1,7 +1,6 @@
 package script
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -71,16 +70,16 @@ func (e *ScriptExecution) GetErrorMessage() string {
 // Validate checks if the execution is valid
 func (e *ScriptExecution) Validate() error {
 	if e.ScriptID == uuidv7.Nil {
-		return fmt.Errorf("script ID cannot be nil")
+		return ErrScriptExecutionScriptIDNil
 	}
 	if e.ScriptName == "" {
-		return fmt.Errorf("script name cannot be empty")
+		return ErrScriptExecutionNameEmpty
 	}
 	if e.ExecutedBy == uuidv7.Nil {
-		return fmt.Errorf("executed_by cannot be nil")
+		return ErrScriptExecutionExecutedByNil
 	}
 	if e.DurationMs < 0 {
-		return fmt.Errorf("duration cannot be negative")
+		return ErrScriptExecutionDurationNegative
 	}
 	return nil
 }

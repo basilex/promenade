@@ -291,7 +291,7 @@ func TestUseCase_CreateScript(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, script)
-		assert.Contains(t, err.Error(), "invalid script code")
+		assert.ErrorIs(t, err, ErrScriptSyntaxInvalid)
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -307,7 +307,7 @@ func TestUseCase_CreateScript(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, script)
-		assert.Contains(t, err.Error(), "failed to save script")
+		assert.ErrorIs(t, err, ErrScriptCreateFailed)
 	})
 }
 
@@ -354,7 +354,7 @@ func TestUseCase_UpdateScript(t *testing.T) {
 		err := uc.UpdateScript(ctx, scriptID, newCode)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid script code")
+		assert.ErrorIs(t, err, ErrScriptSyntaxInvalid)
 	})
 
 	t.Run("script not found", func(t *testing.T) {

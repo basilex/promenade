@@ -11,6 +11,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/scripting/script"
+	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -28,17 +29,19 @@ func NewScriptRepository(db *sqlx.DB) script.IRepository {
 
 // scriptRow is the database row representation
 type scriptRow struct {
-	ID          string         `db:"id"`
-	Name        string         `db:"name"`
-	Description sql.NullString `db:"description"`
-	Code        string         `db:"code"`
-	Version     int            `db:"version"`
-	Status      string         `db:"status"`
-	Metadata    sql.NullString `db:"metadata"`
-	CreatedBy   sql.NullString `db:"created_by"`
-	CreatedAt   time.Time      `db:"created_at"`
-	UpdatedAt   time.Time      `db:"updated_at"`
-	DeletedAt   sql.NullTime   `db:"deleted_at"`
+	ID          string                            `db:"id"`
+	Name        string                            `db:"name"`
+	Description sql.NullString                    `db:"description"`
+	Code        string                            `db:"code"`
+	Version     int                               `db:"version"`
+	Status      string                            `db:"status"`
+	ScriptType  sql.NullString                    `db:"script_type"`
+	EntityType  sql.NullString                    `db:"entity_type"`
+	Metadata    jsonstore.Field[map[string]string] `db:"metadata"`
+	CreatedBy   sql.NullString                    `db:"created_by"`
+	CreatedAt   time.Time                         `db:"created_at"`
+	UpdatedAt   time.Time                         `db:"updated_at"`
+	DeletedAt   sql.NullTime                      `db:"deleted_at"`
 }
 
 // executionRow is the database row for script execution
@@ -62,10 +65,11 @@ func (r *scriptRow) toEntity() (*script.Script, error) {
 	}
 
 	s := &script.Script{
-		Name:    r.Name,
-		Code:    r.Code,
-		Version: r.Version,
-		Status:  script.ScriptStatus(r.Status),
+		Name:     r.Name,
+		Code:     r.Code,
+		Version:  r.Version,
+		Status:   script.ScriptStatus(r.Status),
+		Metadata: r.Metadata, // No manual JSON parsing needed!
 	}
 
 	// Set BaseAggregate fields directly
@@ -78,13 +82,12 @@ func (r *scriptRow) toEntity() (*script.Script, error) {
 		s.Description = r.Description.String
 	}
 
-	// Parse metadata JSON
-	if r.Metadata.Valid {
-		var metadata map[string]interface{}
-		if err := json.Unmarshal([]byte(r.Metadata.String), &metadata); err != nil {
-			return nil, fmt.Errorf("failed to parse metadata: %w", err)
-		}
-		s.Metadata = metadata
+	if r.ScriptType.Valid {
+		s.ScriptType = script.ScriptType(r.ScriptType.String)
+	}
+
+	if r.EntityType.Valid {
+		s.EntityType = r.EntityType.String
 	}
 
 	if r.DeletedAt.Valid {
@@ -102,6 +105,7 @@ func toRow(s *script.Script) (*scriptRow, error) {
 		Code:      s.Code,
 		Version:   s.Version,
 		Status:    string(s.Status),
+		Metadata:  s.Metadata, // No manual JSON marshaling needed!
 		CreatedAt: s.GetCreatedAt(),
 		UpdatedAt: s.GetUpdatedAt(),
 	}
@@ -111,13 +115,14 @@ func toRow(s *script.Script) (*scriptRow, error) {
 		row.Description = sql.NullString{String: s.Description, Valid: true}
 	}
 
-	// Marshal metadata to JSON
-	if len(s.Metadata) > 0 {
-		metadataJSON, err := json.Marshal(s.Metadata)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal metadata: %w", err)
-		}
-		row.Metadata = sql.NullString{String: string(metadataJSON), Valid: true}
+	// Optional script type
+	if s.ScriptType != "" {
+		row.ScriptType = sql.NullString{String: string(s.ScriptType), Valid: true}
+	}
+
+	// Optional entity type
+	if s.EntityType != "" {
+		row.EntityType = sql.NullString{String: s.EntityType, Valid: true}
 	}
 
 	if s.DeletedAt != nil {
@@ -225,10 +230,12 @@ func (r *scriptRepository) Create(ctx context.Context, s *script.Script) error {
 
 	query := `
 		INSERT INTO scripting_scripts (
-			id, name, description, code, version, status, metadata,
+			id, name, description, code, version, status, 
+			script_type, entity_type, metadata,
 			created_by, created_at, updated_at, deleted_at
 		) VALUES (
-			:id, :name, :description, :code, :version, :status, :metadata,
+			:id, :name, :description, :code, :version, :status,
+			:script_type, :entity_type, :metadata,
 			:created_by, :created_at, :updated_at, :deleted_at
 		)`
 
@@ -287,6 +294,8 @@ func (r *scriptRepository) Update(ctx context.Context, s *script.Script) error {
 			code = :code,
 			version = :version,
 			status = :status,
+			script_type = :script_type,
+			entity_type = :entity_type,
 			metadata = :metadata,
 			updated_at = :updated_at
 		WHERE id = :id AND deleted_at IS NULL`

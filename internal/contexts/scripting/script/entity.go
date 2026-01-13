@@ -1,9 +1,8 @@
 package script
 
 import (
-	"fmt"
-
 	"github.com/basilex/promenade/pkg/aggregate"
+	"github.com/basilex/promenade/pkg/jsonstore"
 )
 
 // ScriptStatus represents the status of a script
@@ -16,25 +15,40 @@ const (
 	ScriptStatusArchived ScriptStatus = "archived"
 )
 
+// ScriptType represents the category of a script
+type ScriptType string
+
+const (
+	ScriptTypeValidation   ScriptType = "validation"
+	ScriptTypeWorkflow     ScriptType = "workflow"
+	ScriptTypeReport       ScriptType = "report"
+	ScriptTypePricing      ScriptType = "pricing"
+	ScriptTypeNotification ScriptType = "notification"
+	ScriptTypeAutomation   ScriptType = "automation"
+	ScriptTypeCustom       ScriptType = "custom"
+)
+
 // Script is an aggregate root representing a LUA script
 type Script struct {
 	aggregate.BaseAggregate
 
-	Name        string                 // Unique script name
-	Description string                 // Script description
-	Code        string                 // LUA code
-	Version     int                    // Script version (increments on code changes)
-	Status      ScriptStatus           // Script status
-	Metadata    map[string]interface{} // Additional metadata (stored as JSONB)
+	Name        string                            // Unique script name
+	Description string                            // Script description
+	Code        string                            // LUA code
+	Version     int                               // Script version (increments on code changes)
+	Status      ScriptStatus                      // Script status
+	ScriptType  ScriptType                        // Script category (validation, workflow, etc.)
+	EntityType  string                            // Target entity (customer, order, deal, etc.)
+	Metadata    jsonstore.Field[map[string]string] // Additional metadata (database-agnostic)
 }
 
 // NewScript creates a new script with draft status
-func NewScript(name, code string) (*Script, error) {
+func NewScript(name, code string, scriptType ScriptType) (*Script, error) {
 	if name == "" {
-		return nil, fmt.Errorf("script name cannot be empty")
+		return nil, ErrScriptNameEmpty
 	}
 	if code == "" {
-		return nil, fmt.Errorf("script code cannot be empty")
+		return nil, ErrScriptCodeEmpty
 	}
 
 	return &Script{
@@ -43,14 +57,15 @@ func NewScript(name, code string) (*Script, error) {
 		Code:          code,
 		Version:       1,
 		Status:        ScriptStatusDraft,
-		Metadata:      make(map[string]interface{}),
+		ScriptType:    scriptType,
+		Metadata:      jsonstore.NewField(make(map[string]string)),
 	}, nil
 }
 
 // UpdateCode updates the script code and increments version
 func (s *Script) UpdateCode(newCode string) error {
 	if newCode == "" {
-		return fmt.Errorf("script code cannot be empty")
+		return ErrScriptCodeEmpty
 	}
 
 	s.Code = newCode
@@ -60,26 +75,36 @@ func (s *Script) UpdateCode(newCode string) error {
 }
 
 // UpdateMetadata sets or updates a metadata field
-func (s *Script) UpdateMetadata(key string, value interface{}) {
-	if s.Metadata == nil {
-		s.Metadata = make(map[string]interface{})
+func (s *Script) UpdateMetadata(key string, value string) {
+	metadata := s.Metadata.Get()
+	if metadata == nil {
+		metadata = make(map[string]string)
 	}
-	s.Metadata[key] = value
+	metadata[key] = value
+	s.Metadata.Set(metadata)
 	s.Touch()
 }
 
 // DeleteMetadata removes a metadata field
 func (s *Script) DeleteMetadata(key string) {
-	if s.Metadata != nil {
-		delete(s.Metadata, key)
+	metadata := s.Metadata.Get()
+	if metadata != nil {
+		delete(metadata, key)
+		s.Metadata.Set(metadata)
 		s.Touch()
 	}
+}
+
+// SetEntityType sets the target entity type
+func (s *Script) SetEntityType(entityType string) {
+	s.EntityType = entityType
+	s.Touch()
 }
 
 // Activate changes script status to active
 func (s *Script) Activate() error {
 	if s.Status == ScriptStatusArchived {
-		return fmt.Errorf("cannot activate archived script")
+		return ErrScriptCannotActivateArchived
 	}
 
 	s.Status = ScriptStatusActive
@@ -90,7 +115,7 @@ func (s *Script) Activate() error {
 // Deactivate changes script status to inactive
 func (s *Script) Deactivate() error {
 	if s.Status == ScriptStatusArchived {
-		return fmt.Errorf("cannot deactivate archived script")
+		return ErrScriptCannotDeactivateArchived
 	}
 
 	s.Status = ScriptStatusInactive
@@ -120,24 +145,25 @@ func (s *Script) IsArchived() bool {
 }
 
 // GetMetadata returns a metadata value by key
-func (s *Script) GetMetadata(key string) (interface{}, bool) {
-	if s.Metadata == nil {
-		return nil, false
+func (s *Script) GetMetadata(key string) (string, bool) {
+	metadata := s.Metadata.Get()
+	if metadata == nil {
+		return "", false
 	}
-	val, ok := s.Metadata[key]
+	val, ok := metadata[key]
 	return val, ok
 }
 
 // Validate checks if the script is valid
 func (s *Script) Validate() error {
 	if s.Name == "" {
-		return fmt.Errorf("script name cannot be empty")
+		return ErrScriptNameEmpty
 	}
 	if s.Code == "" {
-		return fmt.Errorf("script code cannot be empty")
+		return ErrScriptCodeEmpty
 	}
 	if s.Version < 1 {
-		return fmt.Errorf("script version must be at least 1")
+		return ErrScriptVersionInvalid
 	}
 
 	// Validate status
@@ -145,7 +171,7 @@ func (s *Script) Validate() error {
 	case ScriptStatusDraft, ScriptStatusActive, ScriptStatusInactive, ScriptStatusArchived:
 		// Valid statuses
 	default:
-		return fmt.Errorf("invalid script status: %s", s.Status)
+		return ErrScriptStatusInvalid
 	}
 
 	return nil

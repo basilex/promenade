@@ -25,7 +25,7 @@ type MockScriptUseCase struct {
 	ExecuteScriptFunc      func(ctx context.Context, name string, params map[string]interface{}, executedBy uuidv7.UUID) (interface{}, error)
 	ValidateScriptFunc     func(ctx context.Context, code string) error
 	ArchiveScriptFunc      func(ctx context.Context, scriptID uuidv7.UUID) error
-	UpdateMetadataFunc     func(ctx context.Context, scriptID uuidv7.UUID, key string, value interface{}) error
+	UpdateMetadataFunc     func(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error
 	GetExecutionHistoryFunc func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error)
 	GetRecentExecutionsFunc func(ctx context.Context, limit int) ([]*script.ScriptExecution, error)
 	GetExecutionDetailsFunc func(ctx context.Context, executionID uuidv7.UUID) (*script.ScriptExecution, error)
@@ -81,7 +81,7 @@ func (m *MockScriptUseCase) ListAllScripts(ctx context.Context, limit, offset in
 	return []*script.Script{fakeScript()}, 1, nil
 }
 
-func (m *MockScriptUseCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value interface{}) error {
+func (m *MockScriptUseCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error {
 	if m.UpdateMetadataFunc != nil {
 		return m.UpdateMetadataFunc(ctx, scriptID, key, value)
 	}
@@ -146,7 +146,7 @@ func (m *MockScriptUseCase) ValidateScript(ctx context.Context, code string) err
 
 // Helper functions to create fake data
 func fakeScript() *script.Script {
-	s, _ := script.NewScript("test-script", "return 2 + 2")
+	s, _ := script.NewScript("test-script", "return 2 + 2", script.ScriptTypeCustom)
 	return s
 }
 
@@ -168,6 +168,7 @@ func TestScriptHandler_CreateScript_Success(t *testing.T) {
 		"name":        "test-script",
 		"description": "Test description",
 		"code":        "return 2 + 2",
+		"script_type": "validation",
 		"entity_type": "customer",
 	}
 

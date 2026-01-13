@@ -13,18 +13,19 @@ import (
 
 // CreateScriptRequest represents request to create a script
 type CreateScriptRequest struct {
-	Name        string                 `json:"name" binding:"required,min=3,max=100"`
-	Description string                 `json:"description" binding:"max=500"`
-	Code        string                 `json:"code" binding:"required"`
-	EntityType  string                 `json:"entity_type" binding:"required,oneof=customer order deal product"`
-	Metadata    map[string]interface{} `json:"metadata"`
+	Name        string            `json:"name" binding:"required,min=3,max=100"`
+	Description string            `json:"description" binding:"max=500"`
+	Code        string            `json:"code" binding:"required"`
+	ScriptType  string            `json:"script_type" binding:"required,oneof=validation workflow report pricing notification automation custom"`
+	EntityType  string            `json:"entity_type" binding:"omitempty,oneof=customer order deal product invoice contract payment inventory user"`
+	Metadata    map[string]string `json:"metadata"`
 }
 
 // UpdateScriptRequest represents request to update a script
 type UpdateScriptRequest struct {
-	Code        *string                 `json:"code"`
-	Description *string                 `json:"description" binding:"omitempty,max=500"`
-	Metadata    *map[string]interface{} `json:"metadata"`
+	Code        *string            `json:"code"`
+	Description *string            `json:"description" binding:"omitempty,max=500"`
+	Metadata    *map[string]string `json:"metadata"`
 }
 
 // ExecuteScriptRequest represents request to execute a script
@@ -43,18 +44,19 @@ type ValidateScriptRequest struct {
 
 // ScriptResponse represents a script in API response
 type ScriptResponse struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Code        string                 `json:"code"`
-	EntityType  string                 `json:"entity_type"`
-	Status      string                 `json:"status"`
-	Version     int                    `json:"version"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
-	CreatedBy   string                 `json:"created_by"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
-	ArchivedAt  *time.Time             `json:"archived_at,omitempty"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Code        string            `json:"code"`
+	ScriptType  string            `json:"script_type"`
+	EntityType  string            `json:"entity_type,omitempty"`
+	Status      string            `json:"status"`
+	Version     int               `json:"version"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
+	CreatedBy   string            `json:"created_by"`
+	CreatedAt   time.Time         `json:"created_at"`
+	UpdatedAt   time.Time         `json:"updated_at"`
+	ArchivedAt  *time.Time        `json:"archived_at,omitempty"`
 }
 
 // ScriptListResponse represents list of scripts
@@ -106,7 +108,7 @@ func ToScriptResponse(s *script.Script) ScriptResponse {
 		EntityType:  "", // TODO: Will be added to Script entity later
 		Status:      string(s.Status),
 		Version:     s.Version,
-		Metadata:    s.Metadata,
+		Metadata:    s.Metadata.Get(),
 		CreatedBy:   s.GetID().String(), // TODO: Will be added to Script entity later
 		CreatedAt:   s.GetCreatedAt(),
 		UpdatedAt:   s.GetUpdatedAt(),

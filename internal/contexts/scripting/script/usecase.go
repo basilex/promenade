@@ -2,7 +2,6 @@ package script
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"time"
 
@@ -34,7 +33,7 @@ type IScriptUseCase interface {
 	UpdateScript(ctx context.Context, scriptID uuidv7.UUID, code string) error
 
 	// UpdateScriptMetadata updates script metadata
-	UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value interface{}) error
+	UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error
 
 	// DeleteScript soft-deletes a script
 	DeleteScript(ctx context.Context, scriptID uuidv7.UUID) error
@@ -97,12 +96,12 @@ func (uc *useCase) ExecuteScript(ctx context.Context, scriptName string, params 
 			slog.String("script_name", scriptName),
 			slog.Any("error", err),
 		)
-		return nil, fmt.Errorf("script not found: %w", err)
+		return nil, ErrScriptNotFound
 	}
 
 	// Check if script is active
 	if script.Status != ScriptStatusActive {
-		return nil, fmt.Errorf("script is not active (status: %s)", script.Status)
+		return nil, ErrScriptNotActive
 	}
 
 	// Create execution record
@@ -144,7 +143,7 @@ func (uc *useCase) ExecuteScript(ctx context.Context, scriptName string, params 
 
 	// Return execution result or error
 	if err != nil {
-		return nil, fmt.Errorf("script execution failed: %w", err)
+		return nil, ErrScriptExecutionFailed
 	}
 
 	return result, nil
@@ -153,12 +152,12 @@ func (uc *useCase) ExecuteScript(ctx context.Context, scriptName string, params 
 // ValidateScript validates LUA script syntax
 func (uc *useCase) ValidateScript(ctx context.Context, code string) error {
 	if code == "" {
-		return fmt.Errorf("script code cannot be empty")
+		return ErrScriptCodeEmpty
 	}
 
 	// Use engine to validate syntax
 	if err := uc.engine.Validate(code); err != nil {
-		return fmt.Errorf("syntax validation failed: %w", err)
+		return ErrScriptSyntaxInvalid
 	}
 
 	return nil
@@ -170,13 +169,13 @@ func (uc *useCase) CreateScript(ctx context.Context, name, description, code str
 
 	// Validate script code
 	if err := uc.ValidateScript(ctx, code); err != nil {
-		return nil, fmt.Errorf("invalid script code: %w", err)
+		return nil, ErrScriptSyntaxInvalid
 	}
 
-	// Create script entity
-	script, err := NewScript(name, code)
+	// Create script entity (default to custom type)
+	script, err := NewScript(name, code, ScriptTypeCustom)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create script entity: %w", err)
+		return nil, err // Domain error from entity
 	}
 
 	script.Description = description
@@ -188,7 +187,7 @@ func (uc *useCase) CreateScript(ctx context.Context, name, description, code str
 			slog.String("script_name", name),
 			slog.Any("error", err),
 		)
-		return nil, fmt.Errorf("failed to save script: %w", err)
+		return nil, ErrScriptCreateFailed
 	}
 
 	log.Info("Script created successfully",
@@ -206,18 +205,18 @@ func (uc *useCase) UpdateScript(ctx context.Context, scriptID uuidv7.UUID, code 
 
 	// Validate new code
 	if err := uc.ValidateScript(ctx, code); err != nil {
-		return fmt.Errorf("invalid script code: %w", err)
+		return ErrScriptSyntaxInvalid
 	}
 
 	// Load existing script
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return fmt.Errorf("script not found: %w", err)
+		return ErrScriptNotFound
 	}
 
 	// Update code (increments version)
 	if err := script.UpdateCode(code); err != nil {
-		return fmt.Errorf("failed to update code: %w", err)
+		return err // Domain error from entity
 	}
 
 	// Save changes
@@ -226,7 +225,7 @@ func (uc *useCase) UpdateScript(ctx context.Context, scriptID uuidv7.UUID, code 
 			slog.String("script_id", scriptID.String()),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to save changes: %w", err)
+		return ErrScriptUpdateFailed
 	}
 
 	log.Info("Script updated successfully",
@@ -238,13 +237,13 @@ func (uc *useCase) UpdateScript(ctx context.Context, scriptID uuidv7.UUID, code 
 }
 
 // UpdateScriptMetadata updates script metadata
-func (uc *useCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value interface{}) error {
+func (uc *useCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error {
 	log := logger.FromContext(ctx)
 
 	// Load script
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return fmt.Errorf("script not found: %w", err)
+		return ErrScriptNotFound
 	}
 
 	// Update metadata
@@ -257,7 +256,7 @@ func (uc *useCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUI
 			slog.String("key", key),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to save metadata: %w", err)
+		return ErrScriptUpdateFailed
 	}
 
 	log.Info("Script metadata updated",
@@ -277,7 +276,7 @@ func (uc *useCase) DeleteScript(ctx context.Context, scriptID uuidv7.UUID) error
 			slog.String("script_id", scriptID.String()),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to delete script: %w", err)
+		return ErrScriptDeleteFailed
 	}
 
 	log.Info("Script deleted successfully",
@@ -291,7 +290,7 @@ func (uc *useCase) DeleteScript(ctx context.Context, scriptID uuidv7.UUID) error
 func (uc *useCase) GetScript(ctx context.Context, scriptID uuidv7.UUID) (*Script, error) {
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return nil, fmt.Errorf("script not found: %w", err)
+		return nil, ErrScriptNotFound
 	}
 	return script, nil
 }
@@ -300,7 +299,7 @@ func (uc *useCase) GetScript(ctx context.Context, scriptID uuidv7.UUID) (*Script
 func (uc *useCase) GetScriptByName(ctx context.Context, name string) (*Script, error) {
 	script, err := uc.repo.GetByName(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("script not found: %w", err)
+		return nil, ErrScriptNotFound
 	}
 	return script, nil
 }
@@ -309,7 +308,7 @@ func (uc *useCase) GetScriptByName(ctx context.Context, name string) (*Script, e
 func (uc *useCase) ListScripts(ctx context.Context, status ScriptStatus, limit, offset int) ([]*Script, int, error) {
 	scripts, total, err := uc.repo.List(ctx, status, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list scripts: %w", err)
+		return nil, 0, ErrScriptListFailed
 	}
 	return scripts, total, nil
 }
@@ -318,7 +317,7 @@ func (uc *useCase) ListScripts(ctx context.Context, status ScriptStatus, limit, 
 func (uc *useCase) ListAllScripts(ctx context.Context, limit, offset int) ([]*Script, int, error) {
 	scripts, total, err := uc.repo.ListAll(ctx, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to list scripts: %w", err)
+		return nil, 0, ErrScriptListFailed
 	}
 	return scripts, total, nil
 }
@@ -330,12 +329,12 @@ func (uc *useCase) ActivateScript(ctx context.Context, scriptID uuidv7.UUID) err
 	// Load script
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return fmt.Errorf("script not found: %w", err)
+		return ErrScriptNotFound
 	}
 
 	// Activate
 	if err := script.Activate(); err != nil {
-		return fmt.Errorf("failed to activate: %w", err)
+		return err // Domain error from entity
 	}
 
 	// Save changes
@@ -344,7 +343,7 @@ func (uc *useCase) ActivateScript(ctx context.Context, scriptID uuidv7.UUID) err
 			slog.String("script_id", scriptID.String()),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to save changes: %w", err)
+		return ErrScriptUpdateFailed
 	}
 
 	log.Info("Script activated",
@@ -361,12 +360,12 @@ func (uc *useCase) DeactivateScript(ctx context.Context, scriptID uuidv7.UUID) e
 	// Load script
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return fmt.Errorf("script not found: %w", err)
+		return ErrScriptNotFound
 	}
 
 	// Deactivate
 	if err := script.Deactivate(); err != nil {
-		return fmt.Errorf("failed to deactivate: %w", err)
+		return err // Domain error from entity
 	}
 
 	// Save changes
@@ -375,7 +374,7 @@ func (uc *useCase) DeactivateScript(ctx context.Context, scriptID uuidv7.UUID) e
 			slog.String("script_id", scriptID.String()),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to save changes: %w", err)
+		return ErrScriptUpdateFailed
 	}
 
 	log.Info("Script deactivated",
@@ -392,7 +391,7 @@ func (uc *useCase) ArchiveScript(ctx context.Context, scriptID uuidv7.UUID) erro
 	// Load script
 	script, err := uc.repo.GetByID(ctx, scriptID)
 	if err != nil {
-		return fmt.Errorf("script not found: %w", err)
+		return ErrScriptNotFound
 	}
 
 	// Archive
@@ -404,7 +403,7 @@ func (uc *useCase) ArchiveScript(ctx context.Context, scriptID uuidv7.UUID) erro
 			slog.String("script_id", scriptID.String()),
 			slog.Any("error", err),
 		)
-		return fmt.Errorf("failed to save changes: %w", err)
+		return ErrScriptUpdateFailed
 	}
 
 	log.Info("Script archived",
@@ -418,7 +417,7 @@ func (uc *useCase) ArchiveScript(ctx context.Context, scriptID uuidv7.UUID) erro
 func (uc *useCase) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*ScriptExecution, int, error) {
 	executions, total, err := uc.repo.GetExecutionHistory(ctx, scriptID, limit, offset)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get execution history: %w", err)
+		return nil, 0, ErrScriptExecutionNotFound
 	}
 	return executions, total, nil
 }
@@ -427,7 +426,7 @@ func (uc *useCase) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID
 func (uc *useCase) GetRecentExecutions(ctx context.Context, limit int) ([]*ScriptExecution, error) {
 	executions, err := uc.repo.GetRecentExecutions(ctx, limit)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get recent executions: %w", err)
+		return nil, ErrScriptExecutionNotFound
 	}
 	return executions, nil
 }
@@ -436,7 +435,7 @@ func (uc *useCase) GetRecentExecutions(ctx context.Context, limit int) ([]*Scrip
 func (uc *useCase) GetExecutionDetails(ctx context.Context, executionID uuidv7.UUID) (*ScriptExecution, error) {
 	execution, err := uc.repo.GetExecutionByID(ctx, executionID)
 	if err != nil {
-		return nil, fmt.Errorf("execution not found: %w", err)
+		return nil, ErrScriptExecutionNotFound
 	}
 	return execution, nil
 }

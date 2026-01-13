@@ -25,7 +25,7 @@ func TestScriptRepository_CRUD(t *testing.T) {
 
 		// Create
 		scriptName := fmt.Sprintf("test_script_%s", uuidv7.New().String())
-		s, err := script.NewScript(scriptName, "return 2 + 2")
+		s, err := script.NewScript(scriptName, "return 2 + 2", script.ScriptTypeCustom)
 		require.NoError(t, err)
 		s.Description = "Test description"
 		require.NoError(t, repo.Create(ctx, s))
@@ -71,7 +71,7 @@ func TestScriptRepository_List(t *testing.T) {
 		uuid := uuidv7.New().String()
 		for i := range 5 {
 			scriptName := fmt.Sprintf("script_%d_%s", i, uuid)
-			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)))
+			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)), script.ScriptTypeCustom)
 			s.Description = "Test"
 			if i < 3 {
 			_ = s.Activate()
@@ -109,7 +109,7 @@ func TestScriptRepository_Metadata(t *testing.T) {
 
 		// Create script with metadata
 		scriptName := fmt.Sprintf("meta_script_%s", uuidv7.New().String())
-		s, _ := script.NewScript(scriptName, "return 1")
+		s, _ := script.NewScript(scriptName, "return 1", script.ScriptTypeCustom)
 		s.Description = "Test"
 		s.UpdateMetadata("author", "John Doe")
 		s.UpdateMetadata("version", "1.0.0")
@@ -118,8 +118,9 @@ func TestScriptRepository_Metadata(t *testing.T) {
 		// Retrieve and verify metadata
 		found, err := repo.GetByID(ctx, s.ID)
 		require.NoError(t, err)
-		assert.Equal(t, "John Doe", found.Metadata["author"])
-		assert.Equal(t, "1.0.0", found.Metadata["version"])
+		metadata := found.Metadata.Get()
+		assert.Equal(t, "John Doe", metadata["author"])
+		assert.Equal(t, "1.0.0", metadata["version"])
 
 		// Update metadata
 		found.UpdateMetadata("version", "2.0.0")
@@ -128,8 +129,10 @@ func TestScriptRepository_Metadata(t *testing.T) {
 
 		// Verify changes
 		updated, _ := repo.GetByID(ctx, s.ID)
-		assert.Nil(t, updated.Metadata["author"])
-		assert.Equal(t, "2.0.0", updated.Metadata["version"])
+		updatedMetadata := updated.Metadata.Get()
+		_, authorExists := updatedMetadata["author"]
+		assert.False(t, authorExists, "author key should be deleted")
+		assert.Equal(t, "2.0.0", updatedMetadata["version"])
 	})
 }
 
@@ -143,7 +146,7 @@ func TestScriptRepository_Execution(t *testing.T) {
 
 		// Create script
 		scriptName := fmt.Sprintf("exec_script_%s", uuidv7.New().String())
-		s, _ := script.NewScript(scriptName, "return 2 + 2")
+		s, _ := script.NewScript(scriptName, "return 2 + 2", script.ScriptTypeCustom)
 		s.Description = "Test"
 		require.NoError(t, repo.Create(ctx, s))
 
@@ -197,7 +200,7 @@ func TestScriptRepository_Errors(t *testing.T) {
 		assert.Error(t, err)
 
 		// Update - not found
-		s, _ := script.NewScript("test", "return 1")
+		s, _ := script.NewScript("test", "return 1", script.ScriptTypeCustom)
 		s.Description = "Test"
 		err = repo.Update(ctx, s)
 		assert.Error(t, err)
@@ -224,7 +227,7 @@ func TestScriptRepository_Pagination(t *testing.T) {
 		uuid := uuidv7.New().String()
 		for i := range 10 {
 			scriptName := fmt.Sprintf("page_script_%d_%s", i, uuid)
-			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)))
+			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)), script.ScriptTypeCustom)
 			s.Description = "Test"
 		_ = s.Activate()
 			require.NoError(t, repo.Create(ctx, s))

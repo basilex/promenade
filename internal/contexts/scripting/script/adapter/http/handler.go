@@ -1,23 +1,25 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/basilex/promenade/internal/contexts/scripting/script"
+	//nolint:staticcheck // dot import improves handler readability by removing script. prefix from 100+ locations
+	. "github.com/basilex/promenade/internal/contexts/scripting/script"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // ScriptHandler handles HTTP requests for script operations
 type ScriptHandler struct {
-	useCase script.IScriptUseCase
+	useCase IScriptUseCase
 }
 
 // NewScriptHandler creates a new script handler
-func NewScriptHandler(useCase script.IScriptUseCase) *ScriptHandler {
+func NewScriptHandler(useCase IScriptUseCase) *ScriptHandler {
 	return &ScriptHandler{
 		useCase: useCase,
 	}
@@ -58,12 +60,20 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 
 	result, err := h.useCase.ExecuteScript(c.Request.Context(), scriptName, req.Parameters, executedBy)
 	if err != nil {
+		if errors.Is(err, ErrScriptNotFound) {
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+			return
+		}
+		if errors.Is(err, ErrScriptNotActive) {
+			response.ErrorResponse(c, http.StatusBadRequest, "SCRIPT_NOT_ACTIVE", "Script is not active")
+			return
+		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "EXECUTION_ERROR", "Failed to execute script")
 		return
 	}
 
 	// Get execution details from result
-	if execution, ok := result.(*script.ScriptExecution); ok {
+	if execution, ok := result.(*ScriptExecution); ok {
 		response.Success(c, ToExecutionResponse(execution))
 	} else {
 		response.Success(c, gin.H{"result": result})
@@ -127,7 +137,7 @@ func (h *ScriptHandler) CreateScript(c *gin.Context) {
 	// Get user ID from JWT context
 	createdBy := uuidv7.New() // TODO: Extract from JWT context
 
-	script, err := h.useCase.CreateScript(
+	scr, err := h.useCase.CreateScript(
 		c.Request.Context(),
 		req.Name,
 		req.Description,
@@ -135,11 +145,25 @@ func (h *ScriptHandler) CreateScript(c *gin.Context) {
 		createdBy,
 	)
 	if err != nil {
+		// Validation errors
+		if errors.Is(err, ErrScriptNameEmpty) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", "Script name is required")
+			return
+		}
+		if errors.Is(err, ErrScriptCodeEmpty) {
+			response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", "Script code is required")
+			return
+		}
+		if errors.Is(err, ErrScriptSyntaxInvalid) {
+			response.ErrorResponse(c, http.StatusBadRequest, "SYNTAX_ERROR", "Script syntax is invalid")
+			return
+		}
+		// System errors
 		response.ErrorResponse(c, http.StatusInternalServerError, "CREATE_ERROR", "Failed to create script")
 		return
 	}
 
-	response.Created(c, ToScriptResponse(script))
+	response.Created(c, ToScriptResponse(scr))
 }
 
 // GetScript retrieves a script by ID
@@ -160,13 +184,13 @@ func (h *ScriptHandler) GetScript(c *gin.Context) {
 		return
 	}
 
-	script, err := h.useCase.GetScript(c.Request.Context(), id)
+	scr, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // GetScriptByName retrieves a script by name
@@ -185,13 +209,13 @@ func (h *ScriptHandler) GetScriptByName(c *gin.Context) {
 		return
 	}
 
-	script, err := h.useCase.GetScriptByName(c.Request.Context(), name)
+	scr, err := h.useCase.GetScriptByName(c.Request.Context(), name)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // UpdateScript updates an existing script
@@ -221,19 +245,31 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 		return
 	}
 
-	var script *script.Script
+	var scr *Script
 
 	// Update code if provided
 	if req.Code != nil {
 		err = h.useCase.UpdateScript(c.Request.Context(), id, *req.Code)
 		if err != nil {
+			if errors.Is(err, ErrScriptNotFound) {
+				response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+				return
+			}
+			if errors.Is(err, ErrScriptCodeEmpty) {
+				response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", "Script code cannot be empty")
+				return
+			}
+			if errors.Is(err, ErrScriptSyntaxInvalid) {
+				response.ErrorResponse(c, http.StatusBadRequest, "SYNTAX_ERROR", "Script syntax is invalid")
+				return
+			}
 			response.ErrorResponse(c, http.StatusInternalServerError, "UPDATE_ERROR", "Failed to update script")
 			return
 		}
 	}
 	
 	// Fetch updated script
-	script, err = h.useCase.GetScript(c.Request.Context(), id)
+	scr, err = h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
@@ -242,7 +278,7 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 	// TODO: Update metadata and description if provided
 	// Currently only code update is supported via UpdateScript method
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // DeleteScript deletes a script
@@ -296,13 +332,13 @@ func (h *ScriptHandler) ListScripts(c *gin.Context) {
 		offset = 0
 	}
 
-	var status *script.ScriptStatus
+	var status *ScriptStatus
 	if statusStr != "" {
-		s := script.ScriptStatus(statusStr)
+		s := ScriptStatus(statusStr)
 		status = &s
 	}
 
-	var scripts []*script.Script
+	var scripts []*Script
 	var total int
 	
 	if status != nil {
@@ -342,18 +378,26 @@ func (h *ScriptHandler) ActivateScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.ActivateScript(c.Request.Context(), id); err != nil {
+		if errors.Is(err, ErrScriptNotFound) {
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+			return
+		}
+		if errors.Is(err, ErrScriptCannotActivateArchived) {
+			response.ErrorResponse(c, http.StatusBadRequest, "CANNOT_ACTIVATE_ARCHIVED", "Cannot activate archived script")
+			return
+		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "ACTIVATION_ERROR", "Failed to activate script")
 		return
 	}
 
 	// Fetch updated script
-	script, err := h.useCase.GetScript(c.Request.Context(), id)
+	scr, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // DeactivateScript deactivates a script
@@ -375,18 +419,26 @@ func (h *ScriptHandler) DeactivateScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.DeactivateScript(c.Request.Context(), id); err != nil {
+		if errors.Is(err, ErrScriptNotFound) {
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+			return
+		}
+		if errors.Is(err, ErrScriptCannotDeactivateArchived) {
+			response.ErrorResponse(c, http.StatusBadRequest, "CANNOT_DEACTIVATE_ARCHIVED", "Cannot deactivate archived script")
+			return
+		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "DEACTIVATION_ERROR", "Failed to deactivate script")
 		return
 	}
 
 	// Fetch updated script
-	script, err := h.useCase.GetScript(c.Request.Context(), id)
+	scr, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // ArchiveScript archives a script
@@ -408,18 +460,22 @@ func (h *ScriptHandler) ArchiveScript(c *gin.Context) {
 	}
 
 	if err := h.useCase.ArchiveScript(c.Request.Context(), id); err != nil {
+		if errors.Is(err, ErrScriptNotFound) {
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+			return
+		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "ARCHIVE_ERROR", "Failed to archive script")
 		return
 	}
 
 	// Fetch updated script
-	script, err := h.useCase.GetScript(c.Request.Context(), id)
+	scr, err := h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
 		return
 	}
 
-	response.Success(c, ToScriptResponse(script))
+	response.Success(c, ToScriptResponse(scr))
 }
 
 // ============================================================================
