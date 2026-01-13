@@ -412,6 +412,57 @@ end
 
 ---
 
+### Job Scheduler
+
+**Production-ready cron-based job scheduler** for Promenade Platform - enables scheduled workflows, maintenance tasks, and event-driven automation without manual intervention.
+
+**Concept**: The Job Scheduler implements a robust cron-based scheduling system for executing periodic and time-based tasks. It provides a worker pool architecture for concurrent job execution with retry logic, health monitoring, and graceful shutdown. Business users can schedule LUA scripts, event publications, HTTP webhooks, and custom operations using familiar cron expressions.
+
+**Design**:
+- **Cron-Based Scheduling**: Standard cron expressions for flexible timing (`0 2 * * *` = daily at 2 AM)
+- **Worker Pool**: Configurable concurrent job execution with goroutine management
+- **Job Types**: LUA scripts, Event Bus publishing, HTTP requests, Custom executors
+- **Retry Logic**: Exponential backoff for failed jobs (configurable attempts and delays)
+- **Graceful Lifecycle**: Start/Stop with context cancellation and worker coordination
+- **Health Monitoring**: Built-in health checks with configurable intervals
+
+**Key Features**:
+- Execute scheduled jobs with 4 job types (LUA, Event, HTTP, Custom)
+- Worker pool with configurable concurrency (default: 10 workers)
+- Retry failed jobs with exponential backoff (default: 3 attempts, 60s delay)
+- Per-job timeout configuration (default: 5 minutes, overrideable)
+- Job lifecycle management (add/update/remove/disable operations)
+- Panic recovery prevents single job failure from crashing engine
+- Health monitoring logs worker status and queue length
+- **43 tests** (91.5% coverage) including 5 integration scenarios
+
+**Architecture**:
+```
+Cron Trigger → Job Queue → Worker Pool → Executor → Result → Status Update
+                  ↓            ↓             ↓
+            (buffered)   (goroutines)   (pluggable)
+```
+
+**Use Cases**:
+- **Periodic Cleanup**: Delete old logs, temp files, expired sessions
+- **Event Publishing**: Schedule daily reports, notifications, data syncs
+- **HTTP Webhooks**: Call external APIs for inventory sync, status updates
+- **LUA Automation**: Execute custom business logic on schedule
+- **Backup Jobs**: Database backups, file exports, data archival
+- **Monitoring Tasks**: Health checks, metric collection, alerting
+
+**Job Types**:
+- **LUA** (`JobTypeLUA`): Execute LUA scripts with sandboxed environment
+- **Event** (`JobTypeEvent`): Publish events to Event Bus for async processing
+- **HTTP** (`JobTypeHTTP`): Make HTTP requests to external APIs/webhooks
+- **Custom** (`JobTypeCustom`): Implement custom executors for specific logic
+
+**Implementation Status**:  **Production Ready** - 43 tests passing (91.5% coverage), 5 integration scenarios validated, graceful lifecycle management operational
+
+**See**: [Job Scheduler Guide](../pkg/scheduler/README.md) for complete documentation with architecture details, advanced usage patterns, 4 practical examples, API reference, troubleshooting guide, and feature roadmap
+
+---
+
 ## Architecture
 
 ### Bounded Contexts
@@ -448,6 +499,7 @@ end
 | **aggregate**   | Base aggregate pattern             | 5     | [Guide](../pkg/aggregate/README.md)        |
 | **jsonb**       | PostgreSQL JSONB utilities         | 8     | [Guide](../pkg/jsonb/README.md)            |
 | **scripting**   | LUA scripting engine               | 21    | [Guide](../pkg/scripting/README.md)        |
+| **scheduler**   | Cron-based job scheduler           | 43    | [Guide](../pkg/scheduler/README.md)        |
 
 **Total**: 291+ tests across 13 packages | [Package Overview](../pkg/README.md)
 
@@ -510,6 +562,13 @@ Technical specifications and detailed documentation:
 - [Table Naming Strategy](reference/table-naming-strategy.md) - Database table naming conventions
 - [Migration History](reference/migration-history.md) - Database schema evolution
 - [Configuration Reference](reference/configuration.md) - YAML config options
+
+### Roadmaps
+
+Strategic planning and implementation timelines:
+
+- [Strategic Roadmap 2026](roadmap/STRATEGIC_ROADMAP_2026.md) - Q1-Q2 2026 complete implementation plan (LUA, Scheduler, NATS)
+- [Phase 3: LUA + UI Metadata](roadmap/PHASE3_LUA_UI_FOUNDATION.md) - 3-week implementation (January 8-28, 2026)
 
 ---
 

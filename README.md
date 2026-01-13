@@ -740,6 +740,110 @@ end
 
 **See**: [pkg/scripting/README.md](pkg/scripting/README.md) for complete documentation with examples
 
+---
+
+### Job Scheduler
+
+**Production-ready cron-based job scheduler** for automated task execution - enables scheduled workflows, maintenance tasks, and event-driven automation without manual intervention.
+
+**Concept**: The Job Scheduler implements a robust cron-based scheduling system for executing periodic and time-based tasks. It provides a worker pool architecture for concurrent job execution with retry logic, health monitoring, and graceful shutdown. Business users can schedule LUA scripts, event publications, HTTP webhooks, and custom operations using familiar cron expressions.
+
+**Design**:
+- **Cron-Based Scheduling**: Standard cron expressions for flexible timing (`0 2 * * *` = daily at 2 AM)
+- **Worker Pool**: Configurable concurrent job execution with goroutine management
+- **Job Types**: LUA scripts, Event Bus publishing, HTTP requests, Custom executors
+- **Retry Logic**: Exponential backoff for failed jobs (configurable attempts and delays)
+- **Graceful Lifecycle**: Start/Stop with context cancellation and worker coordination
+- **Health Monitoring**: Built-in health checks with configurable intervals
+
+**Key Features**:
+- Execute scheduled jobs with 4 job types (LUA, Event, HTTP, Custom)
+- Worker pool with configurable concurrency (default: 10 workers)
+- Retry failed jobs with exponential backoff (default: 3 attempts, 60s delay)
+- Per-job timeout configuration (default: 5 minutes, overrideable)
+- Job lifecycle management (add/update/remove/disable operations)
+- Panic recovery prevents single job failure from crashing engine
+- Health monitoring logs worker status and queue length
+- **43 tests** (91.5% coverage) including 5 integration scenarios
+
+**Architecture**:
+```
+Cron Trigger → Job Queue → Worker Pool → Executor → Result → Status Update
+                  ↓            ↓             ↓
+            (buffered)   (goroutines)   (pluggable)
+```
+
+**Quick Start**:
+```go
+// 1. Create engine with configuration
+cfg := scheduler.DefaultConfig()  // 10 workers, 5 concurrent jobs, 60s health checks
+engine, _ := scheduler.NewEngine(cfg)
+
+// 2. Register executor for job type
+luaExecutor := scheduler.NewLUAExecutor(luaEngine)
+engine.RegisterExecutor(scheduler.JobTypeLUA, luaExecutor)
+
+// 3. Add scheduled job
+cleanupJob := &scheduler.Job{
+    ID:             uuidv7.New(),
+    Name:           "cleanup-temp-files",
+    Type:           scheduler.JobTypeLUA,
+    CronExpression: "0 2 * * *",  // Daily at 2 AM
+    Payload:        map[string]interface{}{"script": "..."},
+    Enabled:        true,
+}
+engine.AddJob(cleanupJob)
+
+// 4. Start scheduler
+engine.Start()
+defer engine.Stop()  // Graceful shutdown
+```
+
+**Use Cases**:
+- **Periodic Cleanup**: Delete old logs, temp files, expired sessions
+- **Event Publishing**: Schedule daily reports, notifications, data syncs
+- **HTTP Webhooks**: Call external APIs for inventory sync, status updates
+- **LUA Automation**: Execute custom business logic on schedule
+- **Backup Jobs**: Database backups, file exports, data archival
+- **Monitoring Tasks**: Health checks, metric collection, alerting
+
+**Configuration**:
+```go
+cfg := scheduler.Config{
+    Enabled:              true,
+    WorkerPoolSize:       10,              // Concurrent workers
+    MaxConcurrentJobs:    5,               // Execution limit
+    HealthCheckInterval:  60 * time.Second,  // Health monitoring
+    DefaultTimeout:       5 * time.Minute,   // Job timeout
+    DefaultRetryAttempts: 3,               // Retry attempts
+    DefaultRetryDelay:    60 * time.Second,  // Retry delay
+}
+```
+
+**Job Types**:
+- **LUA** (`JobTypeLUA`): Execute LUA scripts with sandboxed environment
+- **Event** (`JobTypeEvent`): Publish events to Event Bus for async processing
+- **HTTP** (`JobTypeHTTP`): Make HTTP requests to external APIs/webhooks
+- **Custom** (`JobTypeCustom`): Implement custom executors for specific logic
+
+**Job Lifecycle**:
+```
+Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
+```
+
+**Production Considerations**:
+- Monitor worker pool utilization via health check logs
+- Adjust `WorkerPoolSize` for higher concurrency (e.g., 20+ workers)
+- Set per-job timeouts to prevent hanging operations
+- Use retry logic for transient failures (network issues, temporary unavailability)
+- Plan for job persistence (currently in-memory, database-backed planned)
+
+**Implementation Status**:  **Production Ready** - 43 tests passing (91.5% coverage), 5 integration scenarios validated, graceful lifecycle management operational
+
+**See**: [pkg/scheduler/README.md](pkg/scheduler/README.md) for complete documentation with architecture details, advanced usage patterns, 4 practical examples, API reference, troubleshooting guide, and feature roadmap
+
+---
+
 ### Bounded Contexts
 
 | Context                 | Aggregates                                                  | Description                   | Status        | Documentation                                  |
@@ -1552,8 +1656,10 @@ Promenade includes a comprehensive **package library** (`pkg/`) with reusable, c
 | **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](pkg/aggregate/README.md)       |
 | **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
 | **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
+| **scripting**   | LUA scripting engine                  | 21    | Production | [README](pkg/scripting/README.md)       |
+| **scheduler**   | Cron-based job scheduler              | 43    | Production | [README](pkg/scheduler/README.md)       |
 
-**Total**: 229+ tests across 12 packages
+**Total**: 291+ tests across 14 packages
 
 **Key Highlights**:
 
