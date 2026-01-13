@@ -29,6 +29,159 @@ The **Customer Management Context** handles all CRM (Customer Relationship Manag
 
 ---
 
+## Domain Errors
+
+This context follows the **Gold Standard** domain error pattern with 79 domain error constants across 4 aggregates.
+
+### Customer Errors
+
+**File**: [`customer/errors.go`](customer/errors.go) - 25 error constants
+
+**Repository Errors**:
+- `ErrCustomerNotFound` - Customer not found by ID
+- `ErrCustomerUnauthorized` - Access denied
+
+**Business Logic Errors**:
+- `ErrCustomerEmailExists` - Duplicate email address
+- `ErrCustomerPhoneExists` - Duplicate phone number
+- `ErrCustomerInvalidTier` - Invalid tier value
+- `ErrCustomerInvalidStatus` - Invalid status transition
+- `ErrCustomerLeadToChurned` - Cannot go Lead → Churned directly
+- `ErrCustomerChurnedToLead` - Cannot revert Churned → Lead
+
+**Technical Errors**:
+- `ErrCustomerCreateFailed` - Creation failed
+- `ErrCustomerUpdateFailed` - Update failed
+
+### Company Errors
+
+**File**: [`company/errors.go`](company/errors.go) - 15 error constants
+
+**Repository Errors**:
+- `ErrCompanyNotFound` - Company not found by ID
+
+**Business Logic Errors**:
+- `ErrCompanyNameExists` - Duplicate company name
+- `ErrCompanyTaxIDExists` - Duplicate tax identification
+- `ErrCompanyInvalidSize` - Invalid size value
+- `ErrCompanyParentNotFound` - Invalid parent company reference
+- `ErrCompanyCircularRef` - Circular parent relationship
+
+**Technical Errors**:
+- `ErrCompanyCreateFailed` - Creation failed
+
+### Deal Errors
+
+**File**: [`deal/errors.go`](deal/errors.go) - 23 error constants
+
+**Repository Errors**:
+- `ErrDealNotFound` - Deal not found by ID
+
+**Business Logic Errors**:
+- `ErrDealInvalidStage` - Invalid stage transition
+- `ErrDealInvalidAmount` - Negative or zero amount
+- `ErrDealInvalidProbability` - Invalid probability value
+- `ErrDealAlreadyWon` - Cannot modify won deal
+- `ErrDealAlreadyLost` - Cannot modify lost deal
+- `ErrDealClosedNoReason` - Lost deal requires reason
+
+**Technical Errors**:
+- `ErrDealCreateFailed` - Creation failed
+- `ErrDealUpdateFailed` - Update failed
+
+### Interaction Errors
+
+**File**: [`interaction/errors.go`](interaction/errors.go) - 16 error constants
+
+**Repository Errors**:
+- `ErrInteractionNotFound` - Interaction not found by ID
+
+**Business Logic Errors**:
+- `ErrInteractionInvalidType` - Invalid interaction type
+- `ErrInteractionInvalidDirection` - Invalid direction
+- `ErrInteractionInvalidOutcome` - Invalid outcome
+- `ErrInteractionAlreadyEnded` - Cannot end twice
+- `ErrInteractionNotEnded` - Cannot get duration if not ended
+
+**Technical Errors**:
+- `ErrInteractionCreateFailed` - Creation failed
+
+### Usage Example
+
+```go
+// In UseCase Layer
+customer, err := uc.repo.GetCustomer(ctx, customerID)
+if err != nil {
+    return nil, customer.ErrCustomerNotFound  // Domain constant
+}
+
+if err := customer.QualifyAsProspect(); err != nil {
+    return nil, err  // ErrCustomerInvalidStatus (business rule)
+}
+
+// In Test Layer
+err := usecase.QualifyAsProspect(ctx, leadID)
+assert.True(t, errors.Is(err, customer.ErrCustomerLeadToChurned))  // Type-safe
+
+// In Handler Layer
+cust, err := h.usecase.CreateCustomer(ctx, req.Email, req.Name)
+if errors.Is(err, customer.ErrCustomerEmailExists) {
+    response.BadRequest(c, "Email already registered")  // 400
+    return
+}
+if errors.Is(err, customer.ErrCustomerNotFound) {
+    response.NotFound(c, "Customer not found")  // 404
+    return
+}
+```
+
+### HTTP Status Code Mapping
+
+| Domain Error | HTTP Code | User Message |
+|--------------|-----------|--------------|
+| `ErrCustomerNotFound` | 404 | "Customer not found" |
+| `ErrCustomerEmailExists` | 400 | "Email already registered" |
+| `ErrCompanyNameExists` | 400 | "Company name already exists" |
+| `ErrDealInvalidStage` | 400 | "Invalid deal stage transition" |
+| `ErrDealAlreadyWon` | 400 | "Cannot modify won deal" |
+| `ErrInteractionInvalidType` | 400 | "Invalid interaction type" |
+| System errors (wrapped) | 500 | "Failed to {operation}" |
+
+### Testing Patterns
+
+Customer Management tests demonstrate **PRE-Phase 2** pattern (string comparison) → **Phase 2** pattern (errors.Is()):
+
+**Before (PRE-Phase 2)**:
+```go
+err := usecase.CreateCustomer(ctx, "existing@email.com", "Test")
+assert.Equal(t, "email already exists", err.Error())  // ❌ String comparison
+```
+
+**After (Phase 2)**:
+```go
+err := usecase.CreateCustomer(ctx, "existing@email.com", "Test")
+assert.True(t, errors.Is(err, customer.ErrCustomerEmailExists))  // ✅ Type-safe
+```
+
+**Smoke Tests** (26 tests across 4 handlers):
+```go
+resp := smoke.MakeRequest(t, router, "GET", "/customers/"+invalidID, nil)
+smoke.AssertErrorResponse(t, resp, 404, "CUSTOMER_NOT_FOUND")
+```
+
+### Statistics
+
+- **Total Domain Errors**: 79 across 4 aggregates
+- **errors.go Files**: 4/4 (100% coverage)
+- **Tests Using errors.Is()**: 9 integration tests, 100+ unit tests
+- **Handler Discrimination**: All 48 endpoints use errors.Is()
+- **Phase 2 Session**: 12, 13 (customer-mgmt completed)
+- **Milestone**:  **FIRST context at 100% Phase 2** (all aggregates refactored)
+
+**See**: [Domain Errors Guide](../../docs/guides/domain-errors.md) for comprehensive patterns, examples, and migration instructions.
+
+---
+
 ## Aggregates
 
 ### 1. Customer Aggregate

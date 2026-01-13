@@ -66,6 +66,155 @@ The **Warehouse Context** manages physical goods, inventory levels, and stock mo
 
 **Total Tests:** 391 tests across 4 aggregates, 100% passing
 
+---
+
+## Domain Errors
+
+This context follows the **Gold Standard** domain error pattern established in Phase 2 refactoring (January 9-13, 2026).
+
+### Overview
+
+All Warehouse aggregates use type-safe domain error constants for business logic validation. Each aggregate has its own `errors.go` file with three categories: **Repository**, **Business Logic**, and **Technical Operation** errors.
+
+### Inventory Errors
+
+**File**: [`inventory/errors.go`](inventory/errors.go)
+
+**Repository Errors**:
+- `ErrInventoryNotFound` - Inventory record not found by ID
+- `ErrInventoryNotFoundForProduct` - No inventory for product/location
+- `ErrInventoryUnauthorized` - Access denied
+
+**Business Logic Errors**:
+- `ErrInsufficientStock` - Cannot reserve (available < requested)
+- `ErrNegativeQuantity` - Negative quantity not allowed
+- `ErrInvalidReorder` - Invalid reorder thresholds
+
+**Technical Errors**:
+- `ErrInventoryCreateFailed` - Creation failed (wrapped DB error)
+
+### StockMovement Errors
+
+**File**: [`stockmovement/errors.go`](stockmovement/errors.go)
+
+**Repository Errors**:
+- `ErrStockMovementNotFound` - Movement record not found
+
+**Business Logic Errors**:
+- `ErrMovementReasonRequired` - Reason required for adjustments
+- `ErrMovementInvalidQuantity` - Zero quantity not allowed
+- `ErrMovementDuplicateWarehouse` - Same from/to warehouse
+
+**Technical Errors**:
+- `ErrStockMovementCreateFailed` - Creation failed
+
+### Product Errors
+
+**File**: [`product/errors.go`](product/errors.go)
+
+**Repository Errors**:
+- `ErrProductNotFound` - Product not found by ID
+- `ErrProductUnauthorized` - Access denied
+
+**Business Logic Errors**:
+- `ErrProductSKUExists` - Duplicate SKU
+- `ErrProductInvalidDimensions` - Negative/zero dimensions
+- `ErrProductInactive` - Operation on inactive product
+
+### Location Errors
+
+**File**: [`location/errors.go`](location/errors.go) - **Gold Standard Reference**
+
+**Repository Errors**:
+- `ErrLocationNotFound` - Location not found by ID
+
+**Business Logic Errors**:
+- `ErrLocationCodeExists` - Duplicate location code
+- `ErrLocationHasChildren` - Cannot delete with children
+- `ErrParentLocationNotFound` - Invalid parent reference
+- `ErrParentLocationDeleted` - Parent is soft-deleted
+- `ErrLocationInvalidName` - Name validation failed
+
+**Technical Errors**:
+- `ErrLocationCreateFailed` - Creation failed
+- `ErrLocationUpdateFailed` - Update failed
+
+### Usage Example
+
+```go
+// In UseCase Layer
+product, err := uc.productRepo.GetProduct(ctx, productID)
+if err != nil {
+    return nil, product.ErrProductNotFound  // Domain constant
+}
+
+if product.Status != product.StatusActive {
+    return nil, product.ErrProductInactive  // Business rule violation
+}
+
+// In Test Layer
+err := usecase.ReserveStock(ctx, invalidProductID, 10)
+assert.True(t, errors.Is(err, inventory.ErrInventoryNotFoundForProduct))  // Type-safe
+
+// In Handler Layer
+loc, err := h.usecase.CreateLocation(ctx, req.Code, req.Name, req.Type)
+if errors.Is(err, location.ErrLocationCodeExists) {
+    response.BadRequest(c, "Location code already exists")  // 400
+    return
+}
+if errors.Is(err, location.ErrParentLocationNotFound) {
+    response.NotFound(c, "Parent location not found")  // 404
+    return
+}
+```
+
+### HTTP Status Code Mapping
+
+| Domain Error | HTTP Code | User Message |
+|--------------|-----------|--------------|
+| `ErrInventoryNotFound` | 404 | "Inventory not found" |
+| `ErrInsufficientStock` | 400 | "Insufficient stock available" |
+| `ErrProductSKUExists` | 400 | "Product SKU already exists" |
+| `ErrLocationCodeExists` | 400 | "Location code already exists" |
+| `ErrLocationHasChildren` | 400 | "Cannot delete location with children" |
+| `ErrStockMovementNotFound` | 404 | "Stock movement not found" |
+| System errors (wrapped) | 500 | "Failed to {operation}" |
+
+### Testing Patterns
+
+All Warehouse tests use `errors.Is()` for type-safe error assertions:
+
+**Entity Tests** (48 location tests):
+```go
+err := loc.SetName("")
+assert.True(t, errors.Is(err, location.ErrLocationInvalidName))
+```
+
+**UseCase Tests** (17 integration tests):
+```go
+_, err := usecase.CreateLocation(ctx, "CODE", "", location.TypeWarehouse)
+assert.True(t, errors.Is(err, location.ErrLocationInvalidName))
+```
+
+**Smoke Tests** (9 tests per aggregate):
+```go
+resp := smoke.MakeRequest(t, router, "GET", "/locations/"+invalidID, nil)
+smoke.AssertErrorResponse(t, resp, 404, "LOCATION_NOT_FOUND")
+```
+
+### Statistics
+
+- **Total Domain Errors**: 54 across 4 aggregates
+- **errors.go Files**: 4/4 (100% coverage)
+- **Tests Using errors.Is()**: 15 integration tests, 48 entity tests
+- **Handler Discrimination**: All 58 endpoints use errors.Is()
+- **Zero String Comparisons**: 100% type-safe
+- **Phase 2 Session**: 1, 2, 3, 4 (warehouse completed first)
+
+**See**: [Domain Errors Guide](../../docs/guides/domain-errors.md) for comprehensive patterns, examples, and migration instructions.
+
+---
+
 ### Responsibilities
 
  **What Warehouse Context DOES:**

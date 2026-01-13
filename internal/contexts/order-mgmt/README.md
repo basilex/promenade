@@ -29,6 +29,125 @@ The **Order Management Context** handles the complete order lifecycle from creat
 
 ---
 
+## Domain Errors
+
+This context follows the **Gold Standard** domain error pattern with 18 error constants across 2 aggregates.
+
+### Order Errors
+
+**File**: [`order/errors.go`](order/errors.go) - 10 error constants
+
+**Repository Errors**:
+- `ErrOrderNotFound` - Order not found by ID
+- `ErrOrderUnauthorized` - Access denied
+
+**Business Logic Errors**:
+- `ErrOrderInvalidStatus` - Invalid status transition
+- `ErrOrderAlreadyConfirmed` - Cannot modify confirmed order
+- `ErrOrderAlreadyCancelled` - Cannot modify cancelled order
+- `ErrOrderNoLineItems` - Cannot confirm empty order
+- `ErrOrderLineNotFound` - Line item not found
+
+**Technical Errors**:
+- `ErrOrderCreateFailed` - Creation failed
+- `ErrOrderUpdateFailed` - Update failed
+
+### Contract Errors
+
+**File**: [`contract/errors.go`](contract/errors.go) - 8 error constants
+
+**Repository Errors**:
+- `ErrContractNotFound` - Contract not found by ID
+- `ErrContractUnauthorized` - Access denied
+
+**Business Logic Errors**:
+- `ErrContractInvalidStatus` - Invalid status transition
+- `ErrContractExpired` - Contract expired
+- `ErrContractAlreadySigned` - Cannot modify signed contract
+- `ErrContractInvalidTerms` - Invalid contract terms
+
+**Technical Errors**:
+- `ErrContractCreateFailed` - Creation failed
+
+### Usage Example
+
+```go
+// In UseCase Layer
+order, err := uc.repo.GetOrder(ctx, orderID)
+if err != nil {
+    return nil, order.ErrOrderNotFound  // Domain constant
+}
+
+if err := order.Confirm(); err != nil {
+    return nil, err  // ErrOrderAlreadyConfirmed (business rule)
+}
+
+// In Test Layer
+err := usecase.ConfirmOrder(ctx, orderID)
+assert.True(t, errors.Is(err, order.ErrOrderNoLineItems))  // Type-safe
+
+// In Handler Layer
+order, err := h.usecase.CreateOrder(ctx, req.CustomerID, req.Lines)
+if errors.Is(err, order.ErrOrderNotFound) {
+    response.NotFound(c, "Order not found")  // 404
+    return
+}
+if errors.Is(err, order.ErrOrderAlreadyConfirmed) {
+    response.BadRequest(c, "Order already confirmed")  // 400
+    return
+}
+```
+
+### HTTP Status Code Mapping
+
+| Domain Error | HTTP Code | User Message |
+|--------------|-----------|--------------|
+| `ErrOrderNotFound` | 404 | "Order not found" |
+| `ErrOrderAlreadyConfirmed` | 400 | "Order already confirmed" |
+| `ErrOrderNoLineItems` | 400 | "Cannot confirm empty order" |
+| `ErrContractExpired` | 400 | "Contract expired" |
+| `ErrContractAlreadySigned` | 400 | "Cannot modify signed contract" |
+| System errors (wrapped) | 500 | "Failed to {operation}" |
+
+### Testing Patterns
+
+**Entity Tests** (active development):
+```go
+// Phase 2 pattern
+order := NewOrder(customerID, "USD")
+err := order.Confirm()
+assert.True(t, errors.Is(err, order.ErrOrderNoLineItems))  // ✅ Type-safe
+```
+
+**Integration Tests** (6 tests):
+```go
+// Real database with domain errors
+err := repo.Create(ctx, order)
+if err != nil {
+    assert.False(t, errors.Is(err, order.ErrOrderNotFound))  // Wrong error
+}
+```
+
+**Smoke Tests** (10 tests):
+```go
+// HTTP validation
+resp := smoke.MakeRequest(t, router, "POST", "/orders/"+invalidID+"/confirm", nil)
+smoke.AssertErrorResponse(t, resp, 404, "ORDER_NOT_FOUND")
+```
+
+### Statistics
+
+- **Total Domain Errors**: 18 across 2 aggregates (Order, Contract)
+- **errors.go Files**: 2/2 (100% coverage)
+- **Tests Using errors.Is()**: Entity tests in active development
+- **Handler Discrimination**: All 14 Order endpoints + 12 Contract endpoints use errors.Is()
+- **Fulfillment Saga**: 57 tests (100% passing) with separate error handling
+- **Phase 2 Session**: 9 (order-mgmt completed)
+
+**See**: [Domain Errors Guide](../../docs/guides/domain-errors.md) for comprehensive patterns and migration instructions.
+
+---
+
 ## Aggregates
 
 ### 1. Order Aggregate
