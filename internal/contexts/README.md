@@ -211,7 +211,7 @@ Each context follows this structure:
 
 ### 6. Fiscal Context
 
-**Domain:** Ukrainian fiscal compliance (ПРРО)  \
+**Domain:** Ukrainian fiscal compliance (PRRO)  \
 **Directory:** `internal/contexts/fiscal/`  \
 **Aggregates:**
 
@@ -439,7 +439,7 @@ Phase 4: Remove module code
 - [Identity Context](identity/README.md) - User, Contact, Profile, RBAC
 - [Shared Context](shared/README.md) - Reference data (Country, Currency, Language, Timezone)
 - [Customer Management](customer-mgmt/README.md) - Customer aggregate
-- [Fiscal Context](fiscal/README.md) - CashRegister and Receipt (ПРРО compliance)
+- [Fiscal Context](fiscal/README.md) - CashRegister and Receipt (PRRO compliance)
 
 **Packages**:
 - [Package Overview](../../pkg/README.md) - All shared packages

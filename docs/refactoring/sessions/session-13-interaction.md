@@ -417,7 +417,7 @@ if errors.Is(err, interaction.ErrInteractionGetFailed) {
 1. ** Two-Step Approach**: Clear separation (add constants → replace) minimized errors
 2. ** Multi-Replace Tool**: Atomic operation for 26 replacements prevented inconsistencies
 3. ** Test-First Discovery**: Running tests immediately revealed 3 issues
-4. ** User Collaboration**: User approved plan ("ok - давай!") before large changes
+4. ** User Collaboration**: User approved plan ("ok - let's do it!") before large changes
 
 ### What Could Improve
 

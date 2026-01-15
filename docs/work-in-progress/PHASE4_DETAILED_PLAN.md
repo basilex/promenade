@@ -1,3 +1,6 @@
+# Phase 4 Detailed Plan
+
+This work-in-progress note is maintained in English. The Phase 4 plan is summarized in the strategic roadmap.
 # Phase 4: Customer Management - Детальний План
 
 **Дата**: 3 січня 2026  

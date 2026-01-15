@@ -159,7 +159,7 @@ DELETE /api/v1/countries/:id       # Delete country (admin)
       "code3": "UKR",
       "numeric_code": 804,
       "name": "Ukraine",
-      "name_local": "Україна",
+      "name_local": "Ukraine",
       "phone_code": "+380",
       "is_active": true,
       "created_at": "2025-12-27T10:00:00Z",
@@ -251,7 +251,7 @@ DELETE /api/v1/currencies/:id      # Delete currency (admin)
 - `ID` (UUID v7) - Primary key (from BaseAggregate)
 - `Code` (CHAR(2)) - ISO 639-1 code (e.g., "en", "uk", "de")
 - `Name` (VARCHAR) - Language name in English (e.g., "English", "Ukrainian")
-- `NativeName` (VARCHAR) - Language name in native script (e.g., "Українська")
+- `NativeName` (VARCHAR) - Language name in native script (e.g., "Ukrainian")
 - `IsActive` (BOOL) - Active status
 - `CreatedAt` (TIMESTAMP) - Record creation time (from BaseAggregate)
 - `UpdatedAt` (TIMESTAMP) - Last update time (from BaseAggregate)
@@ -298,7 +298,7 @@ DELETE /api/v1/languages/:id       # Delete language (admin)
       "id": "01JGXYZ...",
       "code": "uk",
       "name": "Ukrainian",
-      "native_name": "Українська",
+      "native_name": "Ukrainian",
       "is_active": true,
       "created_at": "2025-12-27T10:00:00Z",
       "updated_at": "2025-12-27T10:00:00Z"

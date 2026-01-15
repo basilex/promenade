@@ -2,7 +2,7 @@
 
 **Created**: December 29, 2025  
 **Status**: Planning Phase  
-**Goal**: Привести проект до production-ready стану без технічного боргу
+**Goal**: Bring the project to a production-ready state without technical debt
 
 ---
 

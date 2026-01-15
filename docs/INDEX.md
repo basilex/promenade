@@ -13,7 +13,7 @@ Comprehensive business documentation available in multiple languages:
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
 |  English | [Business Overview](business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-|  Українська | [Бізнес-огляд](business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+|  Ukrainian | [Business Overview](business/BUSINESS_OVERVIEW_UK.md) | Executives, managers, investors |
 |  Deutsch | [Geschäftsübersicht](business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
 
 **What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
@@ -569,8 +569,8 @@ Technical specifications and detailed documentation:
 Strategic planning and implementation timelines:
 
 - [Strategic Roadmap 2026](roadmap/STRATEGIC_ROADMAP_2026.md) - Q1-Q2 2026 complete implementation plan (LUA, Scheduler, NATS)
-- [Ukraine Market Strategy 2026](roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - 🇺🇦 **NEW**: Стратегія завоювання українського CRM/ERP ринку (ПРРО, бухгалтерія, банки, 12-місячний план)
-- [Ukraine Compliance Roadmap](roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - 🇺🇦 **NEW**: Технічна імплементація українського комплаєнсу (Q1-Q2 2026, ПРРО, податкові накладні, банківські виписки, HRM)
+- [Ukraine Market Strategy 2026](roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - NEW: Strategy to capture the Ukrainian CRM/ERP market (fiscal compliance, accounting, banking, 12-month plan)
+- [Ukraine Compliance Roadmap](roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - NEW: Technical implementation of Ukrainian compliance (Q1-Q2 2026, fiscal receipts, tax invoices, bank statements, HRM)
 - [Phase 3: LUA + UI Metadata](roadmap/PHASE3_LUA_UI_FOUNDATION.md) - 3-week implementation (January 8-28, 2026)
 
 ---

@@ -1,3 +1,6 @@
+# Phase 3 File Recovery
+
+This work-in-progress note is maintained in English. Recovery actions and outcomes are summarized in the Phase 3 roadmap.
 # LUA Scripting Engine - File Recovery Summary
 
 **Date**: January 7, 2026  
@@ -9,7 +12,7 @@
 ## Incident Timeline
 
 ### Discovery (12:00)
-- User reported: "ні - усі файли у scripting поки червоні" (all scripting files are red/broken)
+- User reported: "No — all files in scripting are still red/broken"
 - Investigation with `get_errors` revealed 260+ syntax errors across all 4 files
 - Root cause: Formatter/automated tool emptied files between sessions
 

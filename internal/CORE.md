@@ -149,7 +149,7 @@ for _, moduleName := range enabledModules {
 
 ---
 
-### 5. **Reference Data** (Справочники)
+### 5. **Reference Data** (Reference directories)
 
 Core provides **shared reference tables** used by multiple modules:
 

@@ -1,3 +1,6 @@
+# Scripting Analysis (2026-01-13)
+
+This work-in-progress note is maintained in English. Current analysis highlights are documented in the scripting package README and Phase 3 roadmap.
 # Scripting Context Analysis Report
 
 **Date**: January 13, 2026  
@@ -270,11 +273,11 @@ metadata TEXT  -- Works on Postgres, SQLite, MySQL
 ## Recommendation: **Option B (Refactor)**
 
 **Reasoning**:
-1. **Principle над швидкістю** - db-agnostic is core principle
-2. **Зараз простіше** - Scripting context not in production yet
-3. **Уникнути technical debt** - Option A = technical debt
-4. **Consistency** - All other contexts use `jsonstore.Field[T]`
-5. **Testing готовий** - Можна швидко перевірити
+1. **Principle over speed** – db-agnostic is a core principle
+2. **Easier right now** – scripting context is not in production yet
+3. **Avoid technical debt** – Option A introduces debt
+4. **Consistency** – all other contexts use `jsonstore.Field[T]`
+5. **Testing is ready** – can be verified quickly
 
 ---
 

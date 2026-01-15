@@ -1,3 +1,42 @@
+# Aggregate Field Duplication Fix
+
+This work-in-progress note is maintained in English. The issue is fully resolved; this summary captures the scope and outcome.
+
+## Summary
+
+- **Priority**: Critical
+- **Status**: Resolved
+- **Scope**: Remove duplicated `BaseAggregate` fields from entities and standardize update patterns.
+
+## Problem
+
+Several entities duplicated fields already provided by `aggregate.BaseAggregate` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`). This caused ambiguity in serialization and repository mapping, and encouraged inconsistent timestamp updates.
+
+## Fix Applied
+
+- Removed duplicated fields from all affected entities
+- Updated constructors to use `aggregate.NewBaseAggregate()` for IDs and timestamps
+- Replaced manual `UpdatedAt` assignments with `Touch()`
+- Ensured repositories use `GetID()`
+- Updated tests and DTOs where necessary
+
+## Outcome
+
+- Consistent aggregate structure across contexts
+- Correct timestamp behavior via `Touch()`
+- Repository mappings aligned with `BaseAggregate`
+- All tests passing
+
+## Notes
+
+This change aligns with the platform’s DDD aggregate conventions and the unified error-handling standard.# BaseAggregate Field Duplication Fix
+
+**Created:** January 4, 2026  \
+**Completed:** January 4, 2026  \
+**Status:** RESOLVED  \
+**Priority:** CRITICAL - blocked Billing development, now resolved
+
+This document is maintained in English. The issue summary and resolution were consolidated into the primary architecture guidance.
 # BaseAggregate Field Duplication Fix
 
 **Created:** January 4, 2026  

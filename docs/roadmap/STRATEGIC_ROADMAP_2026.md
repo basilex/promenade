@@ -1,3 +1,26 @@
+# Strategic Roadmap 2026
+
+**Created**: January 13, 2026  \
+**Updated**: January 14, 2026 (added Ukrainian market strategy)
+
+---
+
+## Scope
+
+This document consolidates the 2026 strategic plan for core platform milestones and market expansion.
+
+## Near-Term Priorities (Q1-Q2 2026)
+
+1. Complete Phase 3 (LUA scripting + UI metadata)
+2. Complete Phase 4 (Scheduler)
+3. Start Ukrainian compliance (fiscal, tax invoices, bank statements)
+4. Prepare beta program and partner documentation
+
+## Reference Roadmaps
+
+- docs/roadmap/PHASE3_LUA_UI_FOUNDATION.md
+- docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md
+- docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md
 # Promenade Strategic Roadmap 2026
 
 **Дата створення**: 13 січня 2026  

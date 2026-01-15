@@ -1,4 +1,11 @@
-# Promenade Platform - Бізнес-Огляд
+# Business Overview (English)
+
+This document is maintained in English.
+
+For the full business overview, see:
+- docs/business/BUSINESS_OVERVIEW.md
+
+If a localized Ukrainian version is needed, create a translated copy of the English overview in this file.# Promenade Platform - Бізнес-Огляд
 
 **Версія**: 0.1.0  
 **Останнє оновлення**: 6 січня 2026  

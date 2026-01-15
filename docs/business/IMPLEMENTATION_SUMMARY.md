@@ -11,7 +11,7 @@
 **Goal**: Make Promenade accessible to business decision-makers worldwide while maintaining technical docs in English for developers.
 
 **Audience Segmentation**:
-- **Business Docs** (Multi-language): Executives, managers, investors - "звичайних людей та людей з біснесу, людей шо бажають інвестувати у проект"
+- **Business Docs** (Multi-language): Executives, managers, investors - "general audiences, business stakeholders, and potential investors"
 - **Technical Docs** (English-only): Developers, architects, implementers
 
 **Target Languages**: 9 total (EN, UK, DE, FR, ES, PT, KR, JP, ZH)
@@ -161,7 +161,7 @@ Comprehensive business documentation available in multiple languages:
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
 |  English | [Business Overview](docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-|  Українська | [Бізнес-огляд](docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+|  Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md) | Executives, managers, investors |
 |  Deutsch | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
 
 **What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.

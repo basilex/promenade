@@ -1,5 +1,151 @@
 # Ukrainian Compliance Integration Roadmap
 
+**Date**: January 14, 2026  \
+**Status**: Planning  \
+**Priority**: Critical for the Ukrainian market  \
+**Timeline**: Q1-Q2 2026 (February - June)
+
+---
+
+## Rationale
+
+The ban on Russian software (1C, Bitrix24, AmoCRM) created a major market opportunity:
+- **150,000+** SMBs seeking replacements
+- **$500M+** CRM/ERP market in Ukraine
+- **70%** of 1C users without alternatives
+
+**Without Ukrainian compliance, Promenade cannot compete in this market.**
+
+---
+
+## Phase 5: Ukrainian Compliance Foundation (Q1 2026)
+
+### Priority 1: Fiscal Integration (February 2026, 3-4 weeks)
+
+**Criticality**: Blocker - 70% target market  \
+**Timeline**: Week 7-10 (Feb 10 - Mar 3)
+
+#### Week 7-8: Fiscal Core
+
+**Architecture**:
+- New context: `internal/contexts/fiscal/`
+- Aggregates: CashRegister, Receipt, Shift, Report
+- Integrations: Checkbox API client, Vchasno.Kasa API client
+
+**Event Flow**:
+Order.Confirm() → order.confirmed event → fiscal receipt creation → fiscal.receipt.printed
+
+**Testing**:
+- Unit tests: 30+
+- Integration tests: 15+
+- Smoke tests: 10+
+
+#### Week 9-10: Providers and Polish
+
+- Vchasno.Kasa integration
+- Error handling and retry logic
+- Admin configuration UI
+- Documentation and examples
+- 10 beta testers (retail)
+
+---
+
+### Priority 2: Tax Invoices (March 2026, 2-3 weeks)
+
+**Criticality**: Blocker - 50% target market (accounting firms)  \
+**Timeline**: Week 11-13 (Mar 10 - Mar 30)
+
+**Architecture**:
+- New context: `internal/contexts/accounting/`
+- Aggregates: TaxInvoice, TaxDeclaration
+- Value objects: EDRPOU, TaxNumber, TaxRate
+- Integrations: M.E.Doc API client, Cabinet API client
+
+**API**:
+- Create, list, get, register, cancel, download XML
+
+---
+
+### Priority 3: Bank Statements (March 2026, 1-2 weeks)
+
+**Criticality**: High (automation)  \
+**Timeline**: Week 13-14 (Mar 24 - Apr 6)
+
+**Supported Banks**:
+- Monobank
+- Privat24 for Business
+- PUMB
+
+**Architecture**:
+- New context: `internal/contexts/banking/`
+- Aggregates: BankAccount, BankStatement, BankTransaction
+
+---
+
+## Phase 6: Ukrainian HRM (Q2 2026)
+
+**Timeline**: Week 14-17 (April 2026, 3-4 weeks)  \
+**Priority**: Medium (competitive advantage)
+
+**Features**:
+- Employees, contracts, positions
+- Time tracking
+- Payroll and tax calculations
+- Reporting (1DF, Unified Social Contribution)
+
+---
+
+## Phase 7: Delivery Integration (Q2 2026)
+
+**Timeline**: Week 17 (April 2026, 1 week)
+
+**Integrations**:
+- Nova Poshta API
+- Ukrposhta API
+
+---
+
+## Summary Timeline
+
+Q1 2026:
+- Fiscal integration (Checkbox + Vchasno.Kasa)
+- Tax invoices (XML generation)
+- Bank integrations
+
+Q2 2026:
+- HRM (payroll + Ukrainian taxes)
+- Delivery integrations
+- NATS gateway
+- Mobile app (Flutter)
+
+---
+
+## Success Metrics
+
+**Q1 2026**:
+- Fiscal integration (2 providers)
+- Tax invoices (XML generation)
+- Bank integrations (2 banks)
+- 20 beta testers
+
+**Q2 2026**:
+- HRM with Ukrainian taxes
+- Nova Poshta integration
+- 100 beta testers
+- 10 paying customers
+- $1K MRR
+
+---
+
+## Next Steps
+
+1. Complete Phase 3 (LUA + UI Metadata)
+2. Complete Phase 4 (Scheduler)
+3. Start fiscal integration (Week 7)
+4. Register a Ukrainian legal entity
+5. Recruit 10 beta testers for fiscal integration
+# Ukrainian Compliance Integration Roadmap
+
 **Дата**: 14 січня 2026  
 **Статус**: Planning  
 **Priority**: CRITICAL для українського ринку  

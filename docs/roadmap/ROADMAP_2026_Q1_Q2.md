@@ -1,3 +1,14 @@
+# Roadmap 2026 (Q1-Q2)
+
+This roadmap is maintained in English. For current milestones and execution details, see:
+
+- docs/roadmap/STRATEGIC_ROADMAP_2026.md
+# Roadmap 2026 (Q1-Q2)
+
+This roadmap is maintained in English.
+
+See the strategic roadmap for the current plan:
+- docs/roadmap/STRATEGIC_ROADMAP_2026.md
 # Promenade Platform Roadmap Q1-Q2 2026
 
 **Статус**:  Phase 1 COMPLETE,  Phase 2 IN PROGRESS (45%)  
@@ -5,308 +16,161 @@
 **Остання оновлення**: January 6, 2026  
 **Progress**: 1.45/7 phases (21%) - AHEAD OF SCHEDULE!
 
----
 
-##  Поточний статус (Baseline)
+# Roadmap 2026 (Q1–Q2)
 
-###  Завершені контексти (Production-ready)
-- **Shared Context** - Reference data (Country, Currency, Language, Timezone)
-- **Identity Context** - User, Contact, Profile, Role, Permission (RBAC)
-- **Customer Management** - Customer, Company, Deal, Interaction, Analytics
-- **Order Management** - Order, OrderLine (базовий lifecycle)
-- **Billing Context** - Invoice, Payment, Subscription
-- **Warehouse Context** - Inventory + StockMovement aggregates (45% COMPLETE)
-
-**Total**: 5 повних контекстів + 1 в процесі (45%), 2380+ тестів, 0 lint issues
-
-###  Завершена інфраструктура
-- **Test Infrastructure**: Smoke tests (17/17 handlers, 161 tests PASS), Integration tests (42 packages)
-- **API Documentation**: Swagger UI, Postman collection (120+ endpoints)
-- **Developer Portal**: 4 comprehensive guides (Quick Start, Auth, Use Cases, Troubleshooting)
-- **API Versioning**: URL-based strategy, RFC 8594 headers, migration guides
-- **Warehouse Aggregates**: Inventory (141 tests) + StockMovement (45 tests) = 186 tests PRODUCTION
+**Status**: Phase 1 complete; Phase 2 in progress (45%)  
+**Period**: January–June 2026  
+**Last updated**: January 6, 2026  
 
 ---
 
-##  Стратегічні цілі Q1-Q2 2026
+## Current Status (Baseline)
 
-### 1⃣ **Developer Experience** (Q1)
-- API Documentation & Tooling
-- Developer Portal з прикладами
+### Completed Contexts (Production-ready)
 
-### 2⃣ **E-commerce Foundation** (Q1-Q2)
-- Warehouse Context (Inventory Management)
-- Contract aggregate (Order Management)
-- Fulfillment Saga (повна автоматизація)
+- **Shared** – Country, Currency, Language, Timezone
+- **Identity** – User, Contact, Profile, Role, Permission
+- **Customer Management** – Customer, Company, Deal, Interaction, Analytics
+- **Order Management** – Order, OrderLine (core lifecycle)
+- **Billing** – Invoice, Payment, Subscription
 
-### 3⃣ **Payment Integration** (Q1)
-- Stripe/PayPal Gateway
-- Recurring Billing Automation
+**Total**: 5 complete contexts + 1 in progress (45%), 2380+ tests, 0 lint issues
 
-### 4⃣ **Enterprise Features** (Q2)
-- Audit Logging
-- GDPR Compliance
-- Advanced Security
+### Completed Infrastructure
 
----
+- Event Bus (Memory + Redis) – 67 tests
+- JWT + RBAC – 18 tests
+- Health checks – 21 tests
+- Rate limiting – 10 tests
+- Caching layer (Redis + NoOp)
+- Swagger/OpenAPI documentation
+- Postman collection (120+ endpoints)
+- Testing infrastructure (unit, smoke, integration, benchmark)
+- Workspace management system
+- Logger + migrations
 
-##  Execution Plan (з залежностями)
+### In Progress
 
-```mermaid
-graph TD
-    A[Phase 1: API Docs] --> B[Phase 2: Warehouse Context]
-    B --> C[Phase 3: Contract Aggregate]
-    B --> D[Phase 4: Fulfillment Saga]
-    C --> D
-    A --> E[Phase 5: Payment Gateway]
-    E --> F[Phase 6: Recurring Billing]
-    D --> G[Phase 7: Audit & GDPR]
-```
+- **Warehouse Context** – Inventory + StockMovement complete; Product/Location in progress
+  - Progress: 45%
+  - Tests: 238 total (128 unit + 47 smoke + 63 integration)
 
 ---
 
-##  Phase 1: API Documentation & Developer Experience
-**Timeline**: Week 1-2 (Jan 6 - Jan 17, 2026)  
-**Status**: COMPLETE (5/5 tasks - 100%)  
-**Completed**: January 5, 2026 (Day 5 - ahead of schedule!)  
-**Dependencies**: None (Quick win!)
+## Strategic Goals (Q1–Q2 2026)
 
-### Objectives
-- Автоматична генерація Swagger/OpenAPI 3.0 spec
-- Postman collection для всіх endpoints (120+)
-- API versioning strategy (v1 → v2)
-- Interactive API documentation (Swagger UI)
-
-### Progress
-**Completed**: 5/5 tasks (100%)  
-**Duration**: 5 days (Jan 1-5, 2026)  
-**Status**: PHASE COMPLETE - ahead of schedule!
-
-### Tasks
-- [x] **Task 1.1**: Setup Swagger generation (swaggo/swag) COMPLETE
-  - Duration: 1 day (completed January 5, 2026)
-  - Installed swaggo/swag
-  - Configured swagger comments in all handlers (120+ endpoints)
-  - Generated swagger.json/swagger.yaml
-  - Integrated: `make swagger-all` working
-  - Swagger UI available at `/api/docs/index.html`
-  - Status: Production-ready
-
-- [x] **Task 1.2**: Swagger UI integration COMPLETE
-  - Duration: 0.5 day (completed January 5, 2026)
-  - Swagger UI served at `/api/docs/index.html`
-  - JWT authentication integrated in UI
-  - Deployed to dev environment
-  - Status: Production-ready
-
-- [x] **Task 1.3**: Postman collection generation COMPLETE
-  - Duration: 1 day (completed January 5, 2026)
-  - Generated OpenAPI → Postman collection (33K lines, 120+ endpoints)
-  - Added 3 environments (Development, Staging, Production)
-  - Authentication flow: Auto-save tokens, auto-refresh expired tokens
-  - Pre-request scripts + test automation
-  - Newman CLI integration for CI/CD
-  - Status: Production-ready, documented in postman/README.md
-
-- [x] **Task 1.4**: API versioning strategy COMPLETE
-  - Duration: 1 day (completed January 5, 2026)
-  - URL-based versioning strategy (/api/v1/, /api/v2/)
-  - RFC 8594 compliant deprecation headers
-  - 12-month deprecation lifecycle policy
-  - Deprecation middleware implemented (pkg/middleware/versioning.go)
-  - Sunset middleware (410 Gone response)
-  - Version logging for analytics
-  - Breaking vs non-breaking changes definitions (7 + 6 categories)
-  - Migration guide template (v1→v2 example)
-  - Comprehensive documentation (2 guides: strategy + practical examples)
-  - 37 middleware tests (12 versioning + 25 existing), 95% coverage
-  - Status: Production-ready, integrated with Swagger
-
-- [x] **Task 1.5**: Developer Portal guides COMPLETE
-  - Duration: 1 day (completed January 5, 2026)
-  - Created Quick Start Guide (1100 lines) - practical 5-minute tutorial
-  - Created Authentication Flow Guide (1200 lines) - JWT, RBAC, security
-  - Created Common Use Cases Guide (1400 lines) - 7 business scenarios
-  - Created Troubleshooting Guide (900 lines) - common issues and solutions
-  - All guides include: curl examples, JSON responses, flow diagrams, cross-references
-  - Status: Production-ready, integrated with INDEX.md
-
-**Acceptance Criteria**: ALL MET
-- Swagger UI accessible at `/api/docs/index.html`
-- 120+ endpoints documented in OpenAPI spec
-- Postman collection with 120+ requests
-- All 5 contexts documented (Identity, Customer, Order, Billing, Shared)
-- Developer Portal with 4 comprehensive guides (4600+ lines)
-
-**Deliverables**: ALL DELIVERED
-- `docs/swagger.yaml` (OpenAPI 3.0 spec)
-- Postman collection JSON (33K lines)
-- Swagger UI at `/api/docs/index.html`
-- `make swagger-all` command working
-- Quick Start Guide (1100 lines)
-- Authentication Flow Guide (1200 lines)
-- Common Use Cases Guide (1400 lines)
-- Troubleshooting Guide (900 lines)
-
-**Phase Status**: COMPLETE (100%)
+- Finish Warehouse Context (100% production-ready)
+- Developer Portal (Swagger + Postman + guides)
+- Fulfillment Saga (distributed transaction orchestration)
+- LUA Scripting Engine (sandbox + stdlib + storage)
+- UI Metadata System (FormDefinition + API + LUA events)
+- Job Scheduler (cron engine + retries)
+- Billing automation (gateway + dunning)
+- Audit & compliance (GDPR-ready export/delete)
 
 ---
 
-##  Phase 2: Warehouse Context (Inventory Management)
-**Timeline**: Week 2-3 (Jan 6 - Jan 17, 2026)  
-**Status**:  IN PROGRESS (45% complete)  
-**Started**: January 5, 2026  
-**Dependencies**: None 
+## Execution Plan (Dependencies Included)
 
-### Objectives
-- Inventory tracking (stock levels, locations)
-- Stock movements (receipts, transfers, adjustments)
-- Low stock alerts
-- Integration with Order Management
+### Phase 1 (Jan 1–7, 2026) – Complete
 
-### Architecture
-```
-internal/contexts/warehouse/
-  inventory/                 # Inventory Aggregate  PRODUCTION
-    entity.go               # SKU, quantity, location, reorder_point
-    repository.go           # IInventoryRepository (11 methods)
-    usecase.go             # Stock queries, low stock alerts
-  stockmovement/             # StockMovement Aggregate  PRODUCTION
-    entity.go               # Type (receipt, transfer, adjustment), quantity
-    repository.go           # IStockMovementRepository (11 methods)
-    usecase.go             # Record movements, audit trail (9 methods)
-  integration/               # Integration with Order Management (planned)
-    reservation_service.go  # Reserve stock for orders
-```
+- Swagger/OpenAPI integration
+- Developer Portal
+- Postman collection
+- Local CI validation
+- Documentation cleanup
 
-### Tasks
-- [x] **Task 2.1**: Inventory Aggregate (COMPLETE )
-  - Duration: 3 days
-  - Entity: SKU, ProductID, Quantity, Location, ReorderPoint, Status 
-  - Repository: 11 methods (Create, GetByID, GetBySKU, GetByProduct, List, etc.) 
-  - UseCase: 11 business methods (CRUD + stock operations) 
-  - HTTP Handlers: 14 endpoints working 
-  - Smoke Tests: 21/21 tests PASS 
-  - Integration Tests: 23/23 tests PASS 
-  - Unit Tests: 97/97 tests PASS 
-  - **Status**:  PRODUCTION READY
-  - **Completed**: January 6, 2026
-  - **Total Tests**: 141 (97 unit + 23 integration + 21 smoke)
+### Phase 2 (Jan 8–15, 2026) – In Progress
 
-- [x] **Task 2.2**: StockMovement Aggregate (COMPLETE )
-  - Duration: 2 days
-  - Entity: 8 movement types, audit trail, cost tracking 
-  - Repository: 11 methods (Create, GetByID, GetByInventoryID, GetByType, GetByReference, GetByDateRange, etc.) 
-  - UseCase: 9 business methods (RecordReceipt, RecordReservation, RecordCommit, etc.) 
-  - Audit trail: Immutable append-only log 
-  - HTTP Handlers: All endpoints working 
-  - Tests: 45/45 tests PASS 
-  - **Status**:  PRODUCTION READY
-  - **Completed**: January 6, 2026
-  - **Total Tests**: 45 (11 entity + 10 usecase + 9 smoke + 15 integration)
-  - **Key Features**:
-    - PostgreSQL placeholders ($1, $2, $3) implemented
-    - FK constraints resolved with proper test helpers
-    - Date range queries working with real dates
-    - Cost tracking in cents (int64)
+- Finish Warehouse Context
+- Warehouse event integration
 
-- [ ] **Task 2.3**: Product & Location Aggregates
-  - Duration: 2 days
-  - Product: Catalog management, pricing, categories
-  - Location: Warehouse locations, hierarchical structure
-  - Integration with Inventory
+### Phase 3 (Jan 16–31, 2026) – LUA + UI Metadata
 
-- [ ] **Task 2.4**: Integration with Order Management
-  - Duration: 1 day
-  - ReservationService: Reserve stock when order confirmed
-  - Release stock when order cancelled
-  - Commit stock when order fulfilled
-  - Domain events: stock.reserved, stock.released, stock.committed
+- LUA engine (sandbox + stdlib)
+- Script storage (DB + versioning)
+- UI metadata system (forms)
+- REST APIs
+- Tests (unit + smoke + integration)
 
-- [ ] **Task 2.5**: Low Stock Alerts
-  - Duration: 1 day
-  - Daily job to check reorder points
-  - Event: inventory.low_stock
-  - Integration with Notification system (future)
+### Phase 4 (Feb 1–14, 2026) – Scheduler + Integrations
 
-**Acceptance Criteria (Partial )**:
--  14 Inventory endpoints working 
--  186 tests passing (141 Inventory + 45 StockMovement) 
-- [ ] Product & Location aggregates
-- [ ] Integration with Order Management (reservation flow)
-- [ ] Low stock alert system working
+- Job Scheduler (cron engine)
+- LUA Scheduler integration
+- Event-based tasks
+- Performance optimization
 
-**Deliverables (Partial )**:
--  Warehouse Context code (2 aggregates COMPLETE)
--  Database migrations applied
--  API documentation generated
--  186 tests (100% passing)
+### Phase 5 (Feb 15–28, 2026) – Fulfillment Saga
+
+- Saga orchestrator
+- Payment integration
+- Inventory integration
+- Shipping placeholder
+- Retry + compensation logic
+
+### Phase 6 (Mar 1–31, 2026) – Billing Automation
+
+- Payment gateway integration
+- Auto-invoice generation
+- Dunning system
+- Subscription automation
+
+### Phase 7 (Apr 1–30, 2026) – Audit & Compliance
+
+- Audit trail
+- GDPR data export/delete
+- Consent management
+- Security logging
 
 ---
 
-##  Phase 3: Contract Aggregate (Order Management)
-**Timeline**: Week 5 (Feb 3 - Feb 7, 2026)  
-**Status**:  Planned  
-**Dependencies**: None 
+## Success Criteria
 
-### Objectives
-- Legal agreements for orders
-- Terms & conditions management
-- Customer signatures
-- Contract lifecycle (draft → active → completed → terminated)
+- Warehouse context fully complete (4 aggregates, 58 endpoints, 400+ tests)
+- LUA engine operational (stdlib + storage + API)
+- UI metadata system operational (forms + LUA events)
+- Fulfillment saga production-ready (compensation + retries)
+- Billing automation integrated (gateway + dunning)
+- Audit/compliance completed (export/delete + consent)
 
-### Architecture
-```
-internal/contexts/order-mgmt/contract/
-  entity.go                 # Contract Aggregate
-  repository.go             # IContractRepository
-  usecase.go               # Create, Sign, Terminate
-  adapter/
-    http/handler/
-      contract_handler.go   # 12 endpoints
-```
+---
 
-### Tasks
-- [ ] **Task 3.1**: Contract Entity
-  - Duration: 1 day
-  - Fields: OrderID, CustomerID, Terms, SignedAt, Status
-  - Lifecycle: draft → pending_signature → active → completed/terminated
-  - Methods: Sign(), Terminate(), Renew()
-  - Tests: 30+ entity tests
+## Milestones
 
-- [ ] **Task 3.2**: Contract Repository
-  - Duration: 1 day
-  - CRUD + GetByOrder, GetByCustomer, GetActive
-  - PostgreSQL implementation
-  - Tests: 10+ integration tests
+- **Week 1–2**: Warehouse completion
+- **Week 3–4**: LUA + UI Metadata
+- **Week 5–6**: Scheduler + Fulfillment Saga
+- **Week 7–8**: Billing automation
+- **Week 9–10**: Audit + compliance
 
-- [ ] **Task 3.3**: Contract UseCase
-  - Duration: 1 day
-  - CreateContract, SignContract, TerminateContract
-  - RenewContract (for recurring orders)
-  - Business rules: Can't terminate active contract with pending payments
-  - Tests: 30+ usecase tests
+---
 
-- [ ] **Task 3.4**: HTTP API
-  - Duration: 1 day
-  - 12 endpoints (CRUD + Sign, Terminate, Renew, GetByOrder)
-  - DTOs with validation
-  - Swagger annotations
-  - Tests: 12+ handler tests
+## Dependencies
 
-- [ ] **Task 3.5**: Database migration
-  - Duration: 0.5 day
-  - order_contracts table
-  - Indexes on (order_id, customer_id, status)
+- Stripe/PayPal API keys
+- Redis (event bus + caching)
+- PostgreSQL (production)
+- Swagger/OpenAPI tooling
 
-**Acceptance Criteria**:
--  12 endpoints working
--  70+ tests passing
--  Contract lifecycle enforced
--  Integration with Order aggregate
+---
 
-**Deliverables**:
-- Contract aggregate code
+## Risks
+
+- Payment gateway integration delays
+- LUA sandbox security
+- UI metadata complexity
+- Performance at scale
+- Documentation debt
+
+---
+
+## Appendix
+
+- Detailed use case specs
+- Architecture diagrams
+- API contract definitions
+- Test coverage reports
 - Database migration
 - API documentation
 - Tests

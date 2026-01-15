@@ -1,3 +1,134 @@
+# Promenade: Ukraine CRM/ERP Market Strategy 2026
+
+**Created**: January 14, 2026  \
+**Owner**: Strategic Analysis Team  \
+**Status**: Strategic Planning Document  \
+**Horizon**: 12 months (Q1 2026 - Q1 2027)
+
+---
+
+## Executive Summary
+
+**Problem**: The ban on Russian software (1C, Bitrix24, AmoCRM) created a large vacancy in the Ukrainian CRM/ERP market for 150K+ SMBs.
+
+**Solution**: Promenade provides a modern, cloud-ready platform with Ukrainian localization and compliance.
+
+**Competitive Advantages**:
+- Enterprise-grade architecture (DDD + Event-Driven)
+- Go performance vs legacy 1C
+- Full Ukrainian localization and compliance
+- Modern security (JWT + RBAC)
+- Low-code customization via LUA
+
+**Target**: Capture 5-10% of the SMB market (7,500-15,000 companies) within 18 months.
+
+**Projected Revenue** (7,500 clients):
+- SaaS: $29-99/month × 7,500 = $2.6M-8.9M/year
+- Implementation: $500-2,000 × 1,500 = $0.75M-3.0M/year
+- Support: $100-300/month × 5,000 = $6.0M-18.0M/year
+- **Total ARR**: $9.4M-29.9M/year
+
+---
+
+## Market Analysis
+
+**Current Situation** (January 2026):
+- 150,000+ SMBs seeking replacements
+- $500M+ CRM/ERP market in Ukraine
+- 70% of 1C users without replacement
+
+**Target Segments**:
+1. Small Business (1-50 employees): e-commerce, services, retail
+2. Mid-Market (50-250 employees): manufacturing, distribution, B2B services
+3. Microbusiness (1-10 employees): freelancers, agencies, small shops
+
+---
+
+## Competitive Landscape
+
+**Key Competitors**:
+- KeyCRM (local): limited ERP depth, legacy architecture
+- Terrasoft BPM'online: powerful but expensive and complex
+- Pipedrive/HubSpot: no local compliance, higher cost
+
+**Positioning**:
+- 40-60% cheaper than Terrasoft
+- Stronger architecture than local competitors
+- Local compliance (fiscal, tax, banking)
+- Open-source core for trust and transparency
+
+---
+
+## Must-Have Features (Q1-Q2 2026)
+
+1. **Fiscal Integration (ПРРО)**
+   - Checkbox + Vchasno.Kasa providers
+   - Fiscal receipts, shifts, Z-reports
+
+2. **Tax Invoices (XML)**
+   - State Tax Service-compliant XML generation
+   - Registration status tracking
+
+3. **Bank Statements**
+   - Monobank, Privat24, PUMB
+   - Auto-matching with invoices and orders
+
+4. **Ukrainian HRM**
+   - Payroll and tax calculations
+   - Reports and compliance
+
+5. **Delivery Integrations**
+   - Nova Poshta and Ukrposhta APIs
+
+---
+
+## Timeline Overview
+
+**Q1 2026**:
+- Fiscal integration (Checkbox + Vchasno.Kasa)
+- Tax invoices (XML)
+- Bank integrations
+
+**Q2 2026**:
+- HRM module
+- Delivery integrations
+- Manufacturing module (optional)
+
+**Q3 2026**:
+- Mobile app (Flutter)
+- E-commerce integrations
+- UI/UX polish
+
+**Q4 2026**:
+- Public beta launch
+- Marketing and partner program
+
+---
+
+## Pricing Strategy
+
+**Starter** ($29/month): 3 users, basic CRM, 1 cash register
+**Business** ($79/month): full CRM + Warehouse + fiscal + 3 cash registers
+**Professional** ($149/month): HRM + manufacturing + unlimited integrations
+**Enterprise** (custom): unlimited users, SLA, on-premise options
+
+---
+
+## Success Metrics
+
+**Q1 2026**: 20 beta users, no paid customers
+**Q2 2026**: 100 beta users, 10 paid customers, $1K MRR
+**Q3 2026**: 200 active users, 50 paid customers, $5K MRR
+**Q4 2026**: 500 active users, 150 paid customers, $15K MRR
+
+---
+
+## Next Steps
+
+1. Complete Phase 3 (LUA + UI Metadata)
+2. Start fiscal integration (February 2026)
+3. Identify 10-20 beta testers
+4. Prepare partner and reseller documentation
 # Promenade: Стратегія Завоювання Українського CRM/ERP Ринку
 
 **Дата створення**: 14 січня 2026  

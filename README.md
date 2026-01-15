@@ -26,7 +26,7 @@ Comprehensive business documentation available in multiple languages:
 | Language | Document | Target Audience |
 |----------|----------|-----------------|
 |  English | [Business Overview](docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-|  Українська | [Бізнес-огляд](docs/business/BUSINESS_OVERVIEW_UK.md) | Керівники, менеджери, інвестори |
+|  Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md) | Executives, managers, investors |
 |  Deutsch | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
 |  Français | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
 |  Español | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
@@ -34,33 +34,33 @@ Comprehensive business documentation available in multiple languages:
 |   | [](docs/business/BUSINESS_OVERVIEW_JP.md) |  |
 |   | [](docs/business/BUSINESS_OVERVIEW_ZH.md) |  |
 
-### 🇺🇦 NEW: Ukrainian Market Strategy
+### NEW: Ukrainian Market Strategy
 
-**CRITICAL OPPORTUNITY**: Заборона російського ПЗ (1С, Bitrix24, AmoCRM) створила величезний вакуум на українському ринку:
+**CRITICAL OPPORTUNITY**: The ban on Russian software (1C, Bitrix24, AmoCRM) created a major vacuum in the Ukrainian CRM/ERP market:
 
-- **150,000+ компаній МСБ** шукають альтернативу
-- **$500M+ ринок CRM/ERP** в Україні
-- **70% користувачів 1С** без заміни
+- **150,000+ SMB companies** are seeking alternatives
+- **$500M+ CRM/ERP market** in Ukraine
+- **70% of 1C users** have no replacement
 
 **Promenade Competitive Advantages**:
-- Сучасна архітектура (DDD + Event-Driven) vs застаріла 1С
-- Швидкість Go (10-50x швидше)
-- Ціна на 40-60% нижче Terrasoft BPM'online
-- Open-source Core (прозорість і довіра)
+- Modern architecture (DDD + Event-Driven) vs legacy 1C
+- Go performance (10-50x faster)
+- Pricing 40-60% lower than Terrasoft BPM'online
+- Open-source core (transparency and trust)
 
-**Target**: 5-10% ринку МСБ (7,500-15,000 компаній) за 18 місяців  
-**Projected ARR**: $9.4M-29.9M при 7,500 клієнтів
+**Target**: 5-10% SMB market (7,500-15,000 companies) in 18 months  
+**Projected ARR**: $9.4M-29.9M with 7,500 customers
 
 **Must-Have Features** (Q1-Q2 2026):
-1. ПРРО Integration (Checkbox, Вчасно.Каса) - роздрібна торгівля
-2. Податкові Накладні (XML для ДПС) - бухгалтерські фірми
-3. Банківські Виписки (Monobank, Privat24, PUMB)
-4. HRM (зарплата + українські податки)
-5. Нова Пошта / Укрпошта APIs
+1. Fiscal integration (Checkbox, Vchasno.Kasa) - retail
+2. Tax invoices (XML for the State Tax Service) - accounting firms
+3. Bank statements (Monobank, Privat24, PUMB)
+4. HRM (payroll + Ukrainian taxes)
+5. Nova Poshta / Ukrposhta APIs
 
 **Detailed Strategy**:
-- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Повна бізнес-стратегія (12 місяців)
-- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Технічна імплементація (Q1-Q2 2026)
+- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Full business strategy (12 months)
+- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Technical implementation (Q1-Q2 2026)
 
 ---
 

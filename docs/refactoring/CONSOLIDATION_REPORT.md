@@ -8,7 +8,7 @@
 
 ## Mission Accomplished
 
-**User Request** (Ukrainian): "накопичилося багато неструктурованих робочіх файлів *.md усі вони розкидані по усьому проекту. Треба усе завести у /docs/refactoring більш структуровану та компактнішу інформацію. Усе сміття що розкидано скрізь видалити"
+**User Request**: "Many unstructured working *.md files accumulated across the project. Move everything into /docs/refactoring with a more structured, compact format. Delete all scattered junk."
 
 **Translation**: Consolidate scattered unstructured working files, create structured compact information in /docs/refactoring, delete all scattered garbage.
 

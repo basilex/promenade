@@ -38,12 +38,12 @@ Pattern: `shared_<aggregate>`
 
 **Customer Management Context** (4 tables):
 ```
-customer_mgmt_customers    ← має mgmt (migration 000001)
-customer_deals             ← НЕМАЄ mgmt (migration 000003)
-customer_companies         ← НЕМАЄ mgmt (migration 000002)
-customer_interactions      ← НЕМАЄ mgmt (migration 000004)
+customer_mgmt_customers    ← includes mgmt (migration 000001)
+customer_deals             ← missing mgmt (migration 000003)
+customer_companies         ← missing mgmt (migration 000002)
+customer_interactions      ← missing mgmt (migration 000004)
 ```
-Pattern: **НЕПОСЛІДОВНИЙ!**
+Pattern: **INCONSISTENT**
 
 **Order Management Context** (2 tables):
 ```

@@ -46,7 +46,7 @@ Successfully refactored **Order Management aggregate** following **GOLD STANDARD
 
 **Initial Issue**: After entity/usecase refactoring, errors.go had all 31 constants but poorly organized (no section headers, mixed categories).
 
-**User Feedback**: "а чому ти тут ввалив усе разом? раніше ти розкладував усе по 3х секціях" (Why dump everything together?)
+**User Feedback**: "Why did you dump everything together? You used to split it into three sections."
 
 **Fix Applied**: Restructured to match GOLD STANDARD warehouse pattern with clear section headers.
 

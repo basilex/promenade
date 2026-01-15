@@ -55,7 +55,7 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 		return
 	}
 
-	// Get user ID from JWT context (будемо додавати middleware пізніше)
+	// Get user ID from JWT context (middleware will be added later)
 	executedBy := uuidv7.New() // TODO: Extract from JWT context
 
 	result, err := h.useCase.ExecuteScript(c.Request.Context(), scriptName, req.Parameters, executedBy)

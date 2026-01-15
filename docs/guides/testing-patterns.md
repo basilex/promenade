@@ -25,7 +25,7 @@ Promenade follows **strict DDD principles** with **three-tier testing strategy**
 2. **Integration Tests** - Full E2E with real database
 3. **Benchmark Tests** - Performance measurement and optimization validation
 
-**Key Principle**: Each test type has **ONE standardized pattern** - максимальна ідентичність патерну для легкого розуміння та підтримки.
+**Key Principle**: Each test type has **ONE standardized pattern** - maximum pattern consistency for easy understanding and maintenance.
 
 ---
 
@@ -84,17 +84,17 @@ import (
 	"github.com/basilex/promenade/test/integration"
 )
 
-//  ЕТАЛОННИЙ ПАТЕРН для інтеграційних тестів:
+//  REFERENCE PATTERN for integration tests:
 
 func TestUserRepository_Create(t *testing.T) {
-	// 1. SetupTestDBWithCleanTables - TRUNCATE всіх таблиць (чиста DB для кожного test function)
+	// 1. SetupTestDBWithCleanTables - TRUNCATE all tables (clean DB for each test function)
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
 
-	// 2. Subtests - використовувати UUID тільки якщо потрібна uniqueness в межах test function
+	// 2. Subtests - use UUID only when uniqueness is needed within a test function
 	t.Run("create user successfully", func(t *testing.T) {
-		// Static email OK - SetupTestDBWithCleanTables дає чисту DB
+		// Static email OK - SetupTestDBWithCleanTables provides a clean DB
 		u, err := user.NewUser("test@example.com", "password123")
 		require.NoError(t, err)
 
@@ -114,13 +114,13 @@ func TestUserRepository_Create(t *testing.T) {
 	})
 }
 
-// Якщо потрібна uniqueness між subtests:
+// If uniqueness is required between subtests:
 func TestUserRepository_ListUsers(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	repo := postgres.NewUserRepository(db.DB)
 	ctx := context.Background()
 
-	// Створюємо кілька users - UUID в email для uniqueness
+	// Create multiple users - include UUID in email for uniqueness
 	for i := 0; i < 5; i++ {
 		email := fmt.Sprintf("user_%d@example.com", i)
 		u, _ := user.NewUser(email, "password123")

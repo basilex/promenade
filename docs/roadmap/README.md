@@ -2,22 +2,37 @@
 
 Strategic planning documents for platform development and market strategy.
 
+## Available Roadmaps
+
+### Technical Roadmaps
+
+- [Strategic Roadmap 2026](STRATEGIC_ROADMAP_2026.md)
+- [Phase 3: LUA + UI Metadata Foundation](PHASE3_LUA_UI_FOUNDATION.md)
+
+### Ukrainian Market Strategy
+
+- [Ukraine Market Strategy 2026](UKRAINE_MARKET_STRATEGY_2026.md)
+- [Ukraine Compliance Roadmap](UKRAINE_COMPLIANCE_ROADMAP.md)
+# Promenade Roadmaps
+
+Strategic planning documents for platform development and market strategy.
+
 ---
 
-## 📋 Available Roadmaps
+## Available Roadmaps
 
 ### Technical Roadmaps
 
 #### [Strategic Roadmap 2026](STRATEGIC_ROADMAP_2026.md)
-**Timeline**: Q1-Q2 2026 (6 місяців)  
+**Timeline**: Q1-Q2 2026 (6 months)  
 **Focus**: Core platform development  
 **Status**: Phase 3-4 in progress
 
 **Key Phases**:
-- ✅ Phase 1-2: Foundation + Domain Errors (Complete)
-- 🔄 Phase 3: LUA Scripting Engine (70% done)
-- ⏱️ Phase 4: Job Scheduler (Planned)
-- ⏱️ Phase 5: NATS Gateway (Planned)
+- Phase 1-2: Foundation + Domain Errors (Complete)
+- Phase 3: LUA Scripting Engine (70% done)
+- Phase 4: Job Scheduler (Planned)
+- Phase 5: NATS Gateway (Planned)
 
 ---
 
@@ -33,72 +48,72 @@ Strategic planning documents for platform development and market strategy.
 
 ---
 
-### Ukrainian Market Strategy 🇺🇦
+### Ukrainian Market Strategy
 
-#### [Ukraine Market Strategy 2026](UKRAINE_MARKET_STRATEGY_2026.md) ⭐
-**Timeline**: 12 місяців (Q1 2026 - Q1 2027)  
+#### [Ukraine Market Strategy 2026](UKRAINE_MARKET_STRATEGY_2026.md)
+**Timeline**: 12 months (Q1 2026 - Q1 2027)  
 **Focus**: Business strategy for Ukrainian CRM/ERP market  
 **Status**: Planning
 
 **Key Insights**:
-- **Market Opportunity**: 150,000+ компаній МСБ шукають заміну 1С/Bitrix24
-- **Market Size**: $500M+ ринок CRM/ERP в Україні
-- **Target**: 5-10% ринку (7,500-15,000 компаній) за 18 місяців
-- **Projected ARR**: $9.4M-29.9M при 7,500 клієнтів
+- **Market Opportunity**: 150,000+ SMB companies seeking alternatives to 1C/Bitrix24
+- **Market Size**: $500M+ CRM/ERP market in Ukraine
+- **Target**: 5-10% market share (7,500-15,000 companies) in 18 months
+- **Projected ARR**: $9.4M-29.9M with 7,500 customers
 
 **Must-Have Features**:
-1. 🔥 ПРРО Integration (Checkbox, Вчасно.Каса)
-2. 🔥 Податкові Накладні (XML для ДПС)
-3. 🔥 Банківські Виписки (Monobank, Privat24, PUMB)
-4. 💼 HRM (зарплата + українські податки)
-5. 🚚 Нова Пошта / Укрпошта APIs
+1. Fiscal integration (Checkbox, Vchasno.Kasa)
+2. Tax invoices (XML for the State Tax Service)
+3. Bank statements (Monobank, Privat24, PUMB)
+4. HRM (payroll + Ukrainian taxes)
+5. Nova Poshta / Ukrposhta APIs
 
 **Competitive Advantages**:
-- Сучасна архітектура (DDD + Event-Driven) vs застаріла 1С
-- Швидкість Go (10-50x швидше)
-- API-first підхід
-- Ціна на 40-60% нижче Terrasoft
-- Open-source Core
+- Modern architecture (DDD + Event-Driven) vs legacy 1C
+- Go performance (10-50x faster)
+- API-first approach
+- Pricing 40-60% lower than Terrasoft
+- Open-source core
 
 **Content**:
 - Executive Summary (revenue projections, funding)
 - Market Analysis (competitors, target segments)
-- Technical Requirements (ПРРО, accounting, banking)
+- Technical Requirements (fiscal, accounting, banking)
 - Go-to-Market Strategy (beta → launch → growth)
 - Pricing Strategy ($29-149/month tiers)
-- Partnership Strategy (бухгалтерські фірми, IT-інтегратори)
+- Partnership Strategy (accounting firms, IT integrators)
 - 12-Month Timeline (Q1 2026 - Q1 2027)
 
 ---
 
-#### [Ukraine Compliance Roadmap](UKRAINE_COMPLIANCE_ROADMAP.md) ⭐
-**Timeline**: Q1-Q2 2026 (Лютий - Червень)  
+#### [Ukraine Compliance Roadmap](UKRAINE_COMPLIANCE_ROADMAP.md)
+**Timeline**: Q1-Q2 2026 (February - June)  
 **Focus**: Technical implementation of Ukrainian compliance  
 **Status**: Planning, ready to start
 
 **Phases**:
 
-**Phase 5: ПРРО Integration** (3-4 weeks, Лютий 2026)
-- Week 7-8: Core ПРРО infrastructure
-- Week 9-10: Checkbox + Вчасно.Каса APIs
-- Deliverables: Фіскальні чеки, Z-звіти, X-звіти
+**Phase 5: Fiscal Integration** (3-4 weeks, February 2026)
+- Week 7-8: Core fiscal infrastructure
+- Week 9-10: Checkbox + Vchasno.Kasa APIs
+- Deliverables: Fiscal receipts, Z-reports, X-reports
 
-**Phase 6: Податкові Накладні** (2-3 weeks, Березень 2026)
-- Week 11-12: XML generation для ДПС
+**Phase 6: Tax Invoices** (2-3 weeks, March 2026)
+- Week 11-12: XML generation for the State Tax Service
 - Week 13: M.E.Doc integration
-- Deliverables: Реєстрація в ЄРПН, декларація ПДВ
+- Deliverables: Registration in the Unified Register, VAT declaration
 
-**Phase 7: Банківські Виписки** (1-2 weeks, Березень 2026)
+**Phase 7: Bank Statements** (1-2 weeks, March 2026)
 - Week 13-14: Monobank, Privat24, PUMB APIs
-- Deliverables: Auto-matching з рахунками
+- Deliverables: Auto-matching with invoices
 
-**Phase 8: HRM** (3-4 weeks, Квітень 2026)
-- Week 14-17: Зарплата + податки (ЄСВ, ПДФО, Військовий збір)
-- Deliverables: Форма 1ДФ, звіт ЄСВ
+**Phase 8: HRM** (3-4 weeks, April 2026)
+- Week 14-17: Payroll + taxes (USC, PIT, military levy)
+- Deliverables: Form 1DF, USC report
 
-**Phase 9: Delivery** (1 week, Квітень 2026)
-- Week 17: Нова Пошта API
-- Deliverables: Створення ТТН, трекінг
+**Phase 9: Delivery** (1 week, April 2026)
+- Week 17: Nova Poshta API
+- Deliverables: Waybill creation, tracking
 
 **Technical Details**:
 - Database schemas (ПРРО, accounting, banking)
@@ -108,15 +123,15 @@ Strategic planning documents for platform development and market strategy.
 
 ---
 
-## 🎯 Priority Matrix
+## Priority Matrix
 
 | Priority | Feature | Timeline | Impact | Market |
 |----------|---------|----------|--------|--------|
-| 🔴 БЛОКЕР | ПРРО Integration | Week 7-10 | 70% | Роздрібна торгівля |
-| 🔴 БЛОКЕР | Податкові Накладні | Week 11-12 | 50% | Бухгалтерські фірми |
-| 🟡 HIGH | Банківські Виписки | Week 13-14 | 60% | Автоматизація |
-| 🟡 MEDIUM | HRM | Week 14-17 | 40% | Конкурентна перевага |
-| 🟢 MEDIUM | Нова Пошта | Week 17 | 50% | E-commerce |
+| Blocker | Fiscal Integration | Week 7-10 | 70% | Retail |
+| Blocker | Tax Invoices | Week 11-12 | 50% | Accounting firms |
+| High | Bank Statements | Week 13-14 | 60% | Automation |
+| Medium | HRM | Week 14-17 | 40% | Competitive advantage |
+| Medium | Nova Poshta | Week 17 | 50% | E-commerce |
 
 ---
 
