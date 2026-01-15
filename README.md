@@ -34,6 +34,36 @@ Comprehensive business documentation available in multiple languages:
 |   | [](docs/business/BUSINESS_OVERVIEW_JP.md) |  |
 |   | [](docs/business/BUSINESS_OVERVIEW_ZH.md) |  |
 
+### 🇺🇦 NEW: Ukrainian Market Strategy
+
+**CRITICAL OPPORTUNITY**: Заборона російського ПЗ (1С, Bitrix24, AmoCRM) створила величезний вакуум на українському ринку:
+
+- **150,000+ компаній МСБ** шукають альтернативу
+- **$500M+ ринок CRM/ERP** в Україні
+- **70% користувачів 1С** без заміни
+
+**Promenade Competitive Advantages**:
+- Сучасна архітектура (DDD + Event-Driven) vs застаріла 1С
+- Швидкість Go (10-50x швидше)
+- Ціна на 40-60% нижче Terrasoft BPM'online
+- Open-source Core (прозорість і довіра)
+
+**Target**: 5-10% ринку МСБ (7,500-15,000 компаній) за 18 місяців  
+**Projected ARR**: $9.4M-29.9M при 7,500 клієнтів
+
+**Must-Have Features** (Q1-Q2 2026):
+1. ПРРО Integration (Checkbox, Вчасно.Каса) - роздрібна торгівля
+2. Податкові Накладні (XML для ДПС) - бухгалтерські фірми
+3. Банківські Виписки (Monobank, Privat24, PUMB)
+4. HRM (зарплата + українські податки)
+5. Нова Пошта / Укрпошта APIs
+
+**Detailed Strategy**:
+- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Повна бізнес-стратегія (12 місяців)
+- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Технічна імплементація (Q1-Q2 2026)
+
+---
+
 ### What's Included
 
 **Executive Summary**: Modular architecture, event-driven design, 2400+ automated tests
@@ -854,6 +884,7 @@ Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
 | **Order Management**    | Order, OrderLine, Contract, FulfillmentSaga (all live)      | Orders, contracts, fulfillment sagas  | Production    | [Guide](docs/concepts/order-management.md) \| [Saga](internal/contexts/order-mgmt/fulfillment/README.md) |
 | **Billing**             | Invoice, Payment, Subscription (all live)                   | Billing and payments          | Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
 | **Warehouse**           | Inventory, StockMovement, Product, Location (all live) | Inventory + Order Integration | Production (100%)   | [Concept Guide](docs/concepts/warehouse-management.md) \| [Context Guide](internal/contexts/warehouse/README.md) |
+| **Fiscal**              | CashRegister, Receipt (in progress)                         | Ukrainian fiscal compliance   | In progress   | [Context Guide](internal/contexts/fiscal/README.md) |
 
 **Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
@@ -1772,19 +1803,17 @@ id := uuidv7.New()  // Time-ordered UUID
 
 ### Phase 2: Warehouse Context (COMPLETE )
 
-**Status**:  100% Complete (January 6, 2026) - Completed Early!  
-**Duration**: 2 days (planned 12 days - 6x faster!)
+**Status**:  100% Complete (January 7, 2026) - ALL 4 Aggregates Production Ready!  
+**Duration**: 3 days (planned 12 days - 4x faster!)
 
 - [x] Inventory aggregate (COMPLETE - 141 tests, 14 API endpoints)
 - [x] StockMovement aggregate (COMPLETE - 45 tests, audit trail operational)
 - [x] Product aggregate (COMPLETE - 139 tests, 16 API endpoints)
-- [ ] Location aggregate (warehouse locations)
-- [ ] Integration with Order Management (stock reservation)
-- [ ] Low stock alerts system
+- [x] Location aggregate (COMPLETE - 74 tests, 14 API endpoints)
+- [x] Integration with Order Management (stock reservation via Event Bus)
+- [ ] Low stock alerts system - Planned Q1 2026
 
-**Progress**: Three of four aggregates production-ready with 325 tests passing
-
-**Progress**: Both Inventory and StockMovement aggregates production-ready with 186 tests passing
+**Progress**: All 4 aggregates production-ready with 433 tests passing (139 Product + 141 Inventory + 45 StockMovement + 74 Location + 34 Integration)
 
 ### Phase 3: Foundation & Identity Context (Complete)
 
@@ -1846,6 +1875,27 @@ id := uuidv7.New()  // Time-ordered UUID
 - [ ] CQRS read models
 - [ ] Dashboards
 - [ ] Business metrics
+
+### 🇺🇦 Ukrainian Market Expansion (Strategic Priority - Q1-Q2 2026)
+
+**CRITICAL OPPORTUNITY**: Vacancy created by ban on Russian software (1C, Bitrix24, AmoCRM)
+
+**Q1 2026 (Must-Have for Market Entry)**:
+- [ ] ПРРО Integration (Checkbox, Вчасно.Каса) - Cash register compliance
+- [ ] Податкові Накладні (ДПС XML) - Tax invoice system
+- [ ] Банківські Виписки (Monobank, Privat24, PUMB) - Bank statement import
+
+**Q2 2026 (Competitive Advantage)**:
+- [ ] HRM Module (Ukrainian payroll taxes, EDR integration)
+- [ ] Нова Пошта / Укрпошта APIs - Shipping integration
+- [ ] Українська локалізація повна - Full Ukrainian localization
+
+**Detailed Documentation**:
+- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Complete 12-month business plan
+- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Technical implementation guide (Q1-Q2 2026)
+
+**Target**: 7,500-15,000 SMB companies (5-10% market share) within 18 months  
+**Projected ARR**: $9.4M-29.9M at 7,500 clients
 
 ---
 

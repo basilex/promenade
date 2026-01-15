@@ -475,6 +475,7 @@ Cron Trigger → Job Queue → Worker Pool → Executor → Result → Status Up
 | **Order Management**    | Production | Order, OrderLine (live) \| Contract, Fulfillment (planned) | [Order Guide](concepts/order-management.md)                   |
 | **Billing**             | Production | Invoice, Payment, Subscription (all live)                   | [Invoice Guide](concepts/invoice-management.md) \| [Payment Guide](concepts/payment-management.md) |
 | **Warehouse**           | Production (100%) | Inventory, StockMovement, Product, Location (all live) | [Context Guide](../internal/contexts/warehouse/README.md) |
+| **Fiscal**              | In progress | CashRegister, Receipt (in progress)                         | [Context Guide](../internal/contexts/fiscal/README.md) |
 
 **Read**: [Bounded Contexts Overview](concepts/bounded-contexts.md)
 
@@ -568,6 +569,8 @@ Technical specifications and detailed documentation:
 Strategic planning and implementation timelines:
 
 - [Strategic Roadmap 2026](roadmap/STRATEGIC_ROADMAP_2026.md) - Q1-Q2 2026 complete implementation plan (LUA, Scheduler, NATS)
+- [Ukraine Market Strategy 2026](roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - 🇺🇦 **NEW**: Стратегія завоювання українського CRM/ERP ринку (ПРРО, бухгалтерія, банки, 12-місячний план)
+- [Ukraine Compliance Roadmap](roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - 🇺🇦 **NEW**: Технічна імплементація українського комплаєнсу (Q1-Q2 2026, ПРРО, податкові накладні, банківські виписки, HRM)
 - [Phase 3: LUA + UI Metadata](roadmap/PHASE3_LUA_UI_FOUNDATION.md) - 3-week implementation (January 8-28, 2026)
 
 ---

@@ -69,8 +69,12 @@ func TestEngine_StartStop(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		_ = engine.Start()
-		_ = engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
 		
 		if engine.IsRunning() {
 			t.Error("Engine should not be running after Stop()")
@@ -81,8 +85,11 @@ func TestEngine_StartStop(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
 		
-		// Stop without Start should not panic
-		engine.Stop()
+		// Stop without Start should return ErrEngineNotRunning
+		err := engine.Stop()
+		if err != ErrEngineNotRunning {
+			t.Errorf("Expected ErrEngineNotRunning, got %v", err)
+		}
 		
 		if engine.IsRunning() {
 			t.Error("Engine should not be running")
@@ -109,7 +116,9 @@ func TestEngine_RegisterExecutor(t *testing.T) {
 		engine, _ := NewEngine(cfg)
 		
 		executor := NewMockExecutor()
-		_ = engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		err := engine.RegisterExecutor("test", executor)
 		if err != ErrExecutorAlreadyRegistered {
@@ -123,11 +132,19 @@ func TestEngine_AddJob(t *testing.T) {
 	t.Run("add valid job enabled", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -146,11 +163,19 @@ func TestEngine_AddJob(t *testing.T) {
 	t.Run("add valid job disabled", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:             uuidv7.New(),
@@ -169,11 +194,19 @@ func TestEngine_AddJob(t *testing.T) {
 	t.Run("add duplicate job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -183,7 +216,9 @@ func TestEngine_AddJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		_ = engine.AddJob(job)
+		if err := engine.AddJob(job); err != nil {
+			t.Fatalf("AddJob() error = %v", err)
+		}
 		err := engine.AddJob(job)
 		
 		if err != ErrJobAlreadyExists {
@@ -194,11 +229,19 @@ func TestEngine_AddJob(t *testing.T) {
 	t.Run("add invalid cron", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -238,11 +281,19 @@ func TestEngine_RemoveJob(t *testing.T) {
 	t.Run("remove existing job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -252,7 +303,9 @@ func TestEngine_RemoveJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		_ = engine.AddJob(job)
+		if err := engine.AddJob(job); err != nil {
+			t.Fatalf("AddJob() error = %v", err)
+		}
 		err := engine.RemoveJob(job.ID)
 		
 		if err != nil {
@@ -269,8 +322,14 @@ func TestEngine_RemoveJob(t *testing.T) {
 	t.Run("remove non-existent job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		err := engine.RemoveJob(uuidv7.New())
 		if err != ErrJobNotFound {
@@ -294,11 +353,19 @@ func TestEngine_GetJob(t *testing.T) {
 	t.Run("get existing job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -308,7 +375,9 @@ func TestEngine_GetJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		_ = engine.AddJob(job)
+		if err := engine.AddJob(job); err != nil {
+			t.Fatalf("AddJob() error = %v", err)
+		}
 		
 		retrieved, err := engine.GetJob(job.ID)
 		if err != nil {
@@ -323,8 +392,14 @@ func TestEngine_GetJob(t *testing.T) {
 	t.Run("get non-existent job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		_, err := engine.GetJob(uuidv7.New())
 		if err != ErrJobNotFound {
@@ -338,11 +413,19 @@ func TestEngine_UpdateJob(t *testing.T) {
 	t.Run("update existing job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -352,7 +435,9 @@ func TestEngine_UpdateJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-		engine.AddJob(job)
+		if err := engine.AddJob(job); err != nil {
+			t.Fatalf("AddJob() error = %v", err)
+		}
 		
 		// Update job
 		job.Name = "Updated Name"
@@ -372,8 +457,14 @@ func TestEngine_UpdateJob(t *testing.T) {
 	t.Run("update non-existent job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		job := &Job{
 		ID:           uuidv7.New(),
@@ -394,11 +485,19 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 	t.Run("enable job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -408,8 +507,12 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 			Enabled:      false,
 		}
 		
-	engine.AddJob(job)
-	_ = engine.EnableJob(job.ID)
+	if err := engine.AddJob(job); err != nil {
+		t.Fatalf("AddJob() error = %v", err)
+	}
+	if err := engine.EnableJob(job.ID); err != nil {
+		t.Fatalf("EnableJob() error = %v", err)
+	}
 	// Verify enabled
 		retrieved, _ := engine.GetJob(job.ID)
 		if !retrieved.Enabled {
@@ -420,11 +523,19 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 	t.Run("disable job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		job := &Job{
 			ID:           uuidv7.New(),
@@ -434,8 +545,12 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 			Enabled:      true,
 		}
 		
-	engine.AddJob(job)
-	_ = engine.DisableJob(job.ID)
+	if err := engine.AddJob(job); err != nil {
+		t.Fatalf("AddJob() error = %v", err)
+	}
+	if err := engine.DisableJob(job.ID); err != nil {
+		t.Fatalf("DisableJob() error = %v", err)
+	}
 	// Verify disabled
 		retrieved, _ := engine.GetJob(job.ID)
 		if retrieved.Enabled {
@@ -446,8 +561,14 @@ func TestEngine_EnableDisableJob(t *testing.T) {
 	t.Run("enable non-existent job", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		err := engine.EnableJob(uuidv7.New())
 		if err != ErrJobNotFound {
@@ -461,8 +582,14 @@ func TestEngine_ListJobs(t *testing.T) {
 	t.Run("list empty", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		jobs := engine.ListJobs()
 		if len(jobs) != 0 {
@@ -473,11 +600,19 @@ func TestEngine_ListJobs(t *testing.T) {
 	t.Run("list multiple jobs", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		executor := NewMockExecutor()
-		engine.RegisterExecutor("test", executor)
+		if err := engine.RegisterExecutor("test", executor); err != nil {
+			t.Fatalf("RegisterExecutor() error = %v", err)
+		}
 		
 		// Add 3 jobs
 		for i := 1; i <= 3; i++ {
@@ -488,7 +623,9 @@ func TestEngine_ListJobs(t *testing.T) {
 				CronExpression: "* * * * *",
 				Enabled:      true,
 			}
-			engine.AddJob(job)
+			if err := engine.AddJob(job); err != nil {
+				t.Fatalf("AddJob() error = %v", err)
+			}
 		}
 		
 		jobs := engine.ListJobs()
@@ -502,8 +639,14 @@ func TestEngine_ListJobs(t *testing.T) {
 func TestEngine_GetStats(t *testing.T) {
 	cfg := DefaultConfig()
 	engine, _ := NewEngine(cfg)
-	engine.Start()
-	defer engine.Stop()
+	if err := engine.Start(); err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 	
 	stats := engine.GetStats()
 	
@@ -530,8 +673,14 @@ func TestEngine_GetHealth(t *testing.T) {
 	t.Run("healthy when running", func(t *testing.T) {
 		cfg := DefaultConfig()
 		engine, _ := NewEngine(cfg)
-		engine.Start()
-		defer engine.Stop()
+		if err := engine.Start(); err != nil {
+			t.Fatalf("Start() error = %v", err)
+		}
+		defer func() {
+			if err := engine.Stop(); err != nil {
+				t.Fatalf("Stop() error = %v", err)
+			}
+		}()
 		
 		health := engine.GetHealth()
 		
@@ -563,13 +712,17 @@ func TestEngine_IsRunning(t *testing.T) {
 	}
 	
 	// After Start
-	engine.Start()
+	if err := engine.Start(); err != nil {
+		t.Fatalf("Start() error = %v", err)
+	}
 	if !engine.IsRunning() {
 		t.Error("Engine should be running after Start()")
 	}
 	
 	// After Stop
-	engine.Stop()
+	if err := engine.Stop(); err != nil {
+		t.Fatalf("Stop() error = %v", err)
+	}
 	if engine.IsRunning() {
 		t.Error("Engine should not be running after Stop()")
 	}

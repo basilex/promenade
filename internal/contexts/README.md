@@ -209,6 +209,29 @@ Each context follows this structure:
 
 ---
 
+### 6. Fiscal Context
+
+**Domain:** Ukrainian fiscal compliance (ПРРО)  \
+**Directory:** `internal/contexts/fiscal/`  \
+**Aggregates:**
+
+- **CashRegister** - Cash register registration and lifecycle
+- **Receipt** - Fiscal receipt creation and status tracking (in progress)
+
+**Responsibilities:**
+
+- Cash register management
+- Fiscal receipt creation
+- Provider integration (Checkbox API)
+
+**Boundaries:**
+
+- Does NOT handle order management (that is Order Management)
+- Does NOT handle accounting or tax reporting (future Accounting context)
+- Focuses on fiscal compliance operations and receipt issuance
+
+---
+
 ## Communication Between Contexts
 
 ### Anti-Corruption Layer (ACL)
@@ -416,6 +439,7 @@ Phase 4: Remove module code
 - [Identity Context](identity/README.md) - User, Contact, Profile, RBAC
 - [Shared Context](shared/README.md) - Reference data (Country, Currency, Language, Timezone)
 - [Customer Management](customer-mgmt/README.md) - Customer aggregate
+- [Fiscal Context](fiscal/README.md) - CashRegister and Receipt (ПРРО compliance)
 
 **Packages**:
 - [Package Overview](../../pkg/README.md) - All shared packages

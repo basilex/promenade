@@ -71,3 +71,13 @@ cache:
   adapter: "noop"  # or "redis" if Redis is running
   default_ttl: 1h
   max_entries: 1000
+
+# Scheduler - Job scheduling and automation
+scheduler:
+  enabled: true
+  worker_pool_size: 5
+  max_concurrent_jobs: 3
+  health_check_interval: 60s
+  default_timeout: 300s
+  default_retry_attempts: 3
+  default_retry_delay: 60s

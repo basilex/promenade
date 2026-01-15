@@ -160,6 +160,10 @@ func (tdb *TestDB) CleanAllTables() {
 		"warehouse_products",
 		"warehouse_locations",
 
+		// Fiscal Context tables
+		"fiscal_receipts",
+		"fiscal_cash_registers",
+
 		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
 	}
@@ -318,6 +322,11 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	// Run scripting context migrations
 	if err := mgr.MigrateNamespace(ctx, "scripting"); err != nil {
 		return fmt.Errorf("scripting migrations failed: %w", err)
+	}
+
+	// Run fiscal context migrations
+	if err := mgr.MigrateNamespace(ctx, "fiscal"); err != nil {
+		return fmt.Errorf("fiscal migrations failed: %w", err)
 	}
 
 	return nil

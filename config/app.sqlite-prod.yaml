@@ -71,3 +71,13 @@ cache:
   adapter: "redis"  # Use Redis for production caching
   default_ttl: 1h
   max_entries: 10000
+
+# Scheduler - Job scheduling and automation
+scheduler:
+  enabled: true
+  worker_pool_size: 20
+  max_concurrent_jobs: 10
+  health_check_interval: 60s
+  default_timeout: 600s
+  default_retry_attempts: 5
+  default_retry_delay: 120s

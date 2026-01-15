@@ -35,7 +35,11 @@ func TestEngine_Integration_RealJobExecution(t *testing.T) {
 	if err := engine.Start(); err != nil {
 		t.Fatalf("Failed to start engine: %v", err)
 	}
-	defer engine.Stop()
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 
 	// Add job with immediate execution (every second)
 	job := &Job{
@@ -99,7 +103,11 @@ func TestEngine_Integration_JobFailureRetry(t *testing.T) {
 	if err := engine.Start(); err != nil {
 		t.Fatalf("Failed to start engine: %v", err)
 	}
-	defer engine.Stop()
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 
 	// Add job
 	job := &Job{
@@ -163,7 +171,11 @@ func TestEngine_Integration_MultipleJobs(t *testing.T) {
 	if err := engine.Start(); err != nil {
 		t.Fatalf("Failed to start engine: %v", err)
 	}
-	defer engine.Stop()
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 
 	// Add multiple jobs
 	jobs := []*Job{
@@ -246,7 +258,11 @@ func TestEngine_Integration_DisableJobDuringExecution(t *testing.T) {
 	if err := engine.Start(); err != nil {
 		t.Fatalf("Failed to start engine: %v", err)
 	}
-	defer engine.Stop()
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 
 	// Add job
 	job := &Job{
@@ -298,7 +314,11 @@ func TestEngine_Integration_HealthMonitor(t *testing.T) {
 	if err := engine.Start(); err != nil {
 		t.Fatalf("Failed to start engine: %v", err)
 	}
-	defer engine.Stop()
+	defer func() {
+		if err := engine.Stop(); err != nil {
+			t.Fatalf("Stop() error = %v", err)
+		}
+	}()
 
 	// Check health multiple times
 	for i := 0; i < 3; i++ {
@@ -313,7 +333,9 @@ func TestEngine_Integration_HealthMonitor(t *testing.T) {
 	}
 
 	// Stop and check health
-	engine.Stop()
+	if err := engine.Stop(); err != nil {
+		t.Fatalf("Stop() error = %v", err)
+	}
 	health := engine.GetHealth()
 	if health["status"] != "stopped" {
 		t.Errorf("Expected stopped status after Stop(), got %v", health["status"])

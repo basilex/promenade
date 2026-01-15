@@ -1,0 +1,67 @@
+package http
+
+import (
+	"time"
+
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+)
+
+// CreateCashRegisterRequest represents cash register creation request
+type CreateCashRegisterRequest struct {
+	OrganizationID string `json:"organization_id" binding:"required"`
+	FiscalNumber   string `json:"fiscal_number" binding:"required"`
+	Model          string `json:"model" binding:"required"`
+	CreatedBy      string `json:"created_by" binding:"required"`
+}
+
+// UpdateCashRegisterRequest represents cash register update request
+type UpdateCashRegisterRequest struct {
+	Model         *string `json:"model,omitempty"`
+	LicenseKey    *string `json:"license_key,omitempty"`
+	LastUpdatedBy string  `json:"last_updated_by" binding:"required"`
+}
+
+// ActivateCashRegisterRequest represents cash register activation request
+type ActivateCashRegisterRequest struct {
+	LicenseKey  string `json:"license_key" binding:"required"`
+	ActivatedBy string `json:"activated_by" binding:"required"`
+}
+
+// CashRegisterResponse represents cash register response
+type CashRegisterResponse struct {
+	ID             string    `json:"id"`
+	OrganizationID string    `json:"organization_id"`
+	FiscalNumber   string    `json:"fiscal_number"`
+	Model          string    `json:"model"`
+	Status         string    `json:"status"`
+	LicenseKey     string    `json:"license_key,omitempty"`
+	LastSyncAt     *time.Time `json:"last_sync_at,omitempty"`
+	LastUpdatedBy  string    `json:"last_updated_by"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+// ToCashRegisterResponse converts entity to response DTO
+func ToCashRegisterResponse(cr *cashregister.CashRegister) *CashRegisterResponse {
+	return &CashRegisterResponse{
+		ID:             cr.GetID().String(),
+		OrganizationID: cr.OrganizationID.String(),
+		FiscalNumber:   cr.FiscalNumber,
+		Model:          cr.Model,
+		Status:         string(cr.Status),
+		LicenseKey:     cr.LicenseKey,
+		LastSyncAt:     cr.LastSyncAt,
+		LastUpdatedBy:  cr.LastUpdatedBy.String(),
+		CreatedAt:      cr.CreatedAt,
+		UpdatedAt:      cr.UpdatedAt,
+	}
+}
+
+// ToCashRegisterListResponse converts slice of entities to response DTOs
+func ToCashRegisterListResponse(cashRegisters []*cashregister.CashRegister) []*CashRegisterResponse {
+	responses := make([]*CashRegisterResponse, len(cashRegisters))
+	for i, cr := range cashRegisters {
+		responses[i] = ToCashRegisterResponse(cr)
+	}
+	return responses
+}
