@@ -1,7 +1,7 @@
 # Ukrainian Compliance Integration Roadmap
 
-**Date**: January 14, 2026  \
-**Status**: Planning  \
+**Date**: January 16, 2026  \
+**Status**: In progress (PRRO core)  \
 **Priority**: Critical for the Ukrainian market  \
 **Timeline**: Q1-Q2 2026 (February - June)
 
@@ -34,6 +34,11 @@ The ban on Russian software (1C, Bitrix24, AmoCRM) created a major market opport
 
 **Event Flow**:
 Order.Confirm() → order.confirmed event → fiscal receipt creation → fiscal.receipt.printed
+
+**Milestones**:
+- Receipt end-to-end flow (create → print → cancel).
+- Order event wiring and idempotent handler logic.
+- Security-safe error mapping in handlers.
 
 **Testing**:
 - Unit tests: 30+
@@ -139,134 +144,14 @@ Q2 2026:
 
 ## Next Steps
 
-1. Complete Phase 3 (LUA + UI Metadata)
-2. Complete Phase 4 (Scheduler)
-3. Start fiscal integration (Week 7)
-4. Register a Ukrainian legal entity
-5. Recruit 10 beta testers for fiscal integration
-# Ukrainian Compliance Integration Roadmap
+1. Complete Phase 3 (LUA + UI Metadata).
+2. Finalize PRRO receipt flow (E2E + order events + tests).
+3. Integrate scheduler for fiscal retries, shifts, and daily reports.
+4. Start tax invoices after PRRO stabilization.
+5. Recruit 10 beta testers for fiscal integration.
 
-**Дата**: 14 січня 2026  
-**Статус**: Planning  
-**Priority**: CRITICAL для українського ринку  
-**Timeline**: Q1-Q2 2026 (Лютий - Червень)
-
----
-
-## Обґрунтування
-
-Заборона російського ПЗ (1С, Bitrix24, AmoCRM) створила величезну ринкову можливість:
-- **150,000+** компаній МСБ шукають заміну
-- **$500M+** ринок CRM/ERP в Україні
-- **70%** користувачів 1С без альтернативи
-
-**Без українського комплаєнсу Promenade НЕ МОЖЕ конкурувати на цьому ринку.**
-
----
-
-## Phase 5: Ukrainian Compliance Foundation (Q1 2026)
-
-### 🔥 Priority 1: ПРРО Integration (Лютий 2026, 3-4 тижні)
-
-**Критичність**: 🔴 БЛОКЕР - 70% target market  
-**Timeline**: Week 7-10 (Лютий 10 - Березень 3)
-
-#### Week 7-8: ПРРО Core (Лютий 10-23)
-
-**Технічна Архітектура**:
-```
-Новий Context: internal/contexts/fiscal/
-
-Aggregates:
-  - CashRegister (ПРРО реєстратор)
-  - FiscalReceipt (Фіскальний чек)
-  - FiscalShift (Робоча зміна)
-  - FiscalReport (Z-звіт, X-звіт)
-
-Value Objects:
-  - FiscalNumber (фіскальний номер чеку)
-  - FiscalURL (посилання на чек tax.gov.ua)
-
-Integrations:
-  - pkg/fiscal/checkbox/ (Checkbox API client)
-  - pkg/fiscal/vchadno/ (Вчасно.Каса API client)
-```
-
-**Database Schema**:
-```sql
--- migrations/fiscal/000001_fiscal_init.up.sql
-CREATE TABLE fiscal_cash_registers (
-    id UUID PRIMARY KEY,
-    location_id UUID REFERENCES warehouse_locations(id),
-    
-    -- ПРРО реєстрація
-    fiscal_number VARCHAR(50) UNIQUE NOT NULL,  -- фіскальний номер ПРРО
-    registration_number VARCHAR(50),            -- номер свідоцтва реєстрації
-    registered_at TIMESTAMP,
-    provider VARCHAR(20) NOT NULL,              -- 'checkbox', 'vchadno'
-    
-    -- Налаштування
-    name VARCHAR(255),
-    is_active BOOLEAN DEFAULT true,
-    
-    -- API ключі (encrypted)
-    api_key_encrypted TEXT,
-    api_secret_encrypted TEXT,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE fiscal_receipts (
-    id UUID PRIMARY KEY,
-    cash_register_id UUID REFERENCES fiscal_cash_registers(id),
-    order_id UUID REFERENCES orders(id),
-    
-    -- Фіскальні дані
-    fiscal_number VARCHAR(50) UNIQUE,           -- фіскальний номер чеку
-    fiscal_url TEXT,                            -- посилання на чек
-    qr_code TEXT,                               -- QR код (base64)
-    
-    -- Дані чеку
-    receipt_type VARCHAR(20),                   -- 'sale', 'return', 'service_in', 'service_out'
-    payment_type VARCHAR(20),                   -- 'cash', 'card', 'cashless'
-    
-    amount_total INTEGER NOT NULL,              -- копійки
-    amount_paid INTEGER,
-    amount_change INTEGER,
-    
-    -- Податки
-    tax_rate INTEGER,                           -- ПДВ (20, 7, 0)
-    tax_amount INTEGER,
-    amount_without_tax INTEGER,
-    
-    -- Позиції
-    lines JSONB,                                -- [{name, quantity, price, tax}]
-    
-    -- Статуси
-    status VARCHAR(20),                         -- 'pending', 'printed', 'cancelled'
-    printed_at TIMESTAMP,
-    cancelled_at TIMESTAMP,
-    cancellation_reason TEXT,
-    
-    -- Зміна
-    fiscal_shift_id UUID,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE fiscal_shifts (
-    id UUID PRIMARY KEY,
-    cash_register_id UUID REFERENCES fiscal_cash_registers(id),
-    
-    -- Зміна
-    shift_number INTEGER,
-    opened_at TIMESTAMP NOT NULL,
-    closed_at TIMESTAMP,
-    opened_by UUID REFERENCES identity_users(id),
-    closed_by UUID REFERENCES identity_users(id),
-    
-    -- Z-звіт
+<!--
+*** End Patch
     z_report_number INTEGER,
     z_report_data JSONB,
     
@@ -284,6 +169,8 @@ CREATE INDEX idx_receipts_shift ON fiscal_receipts(fiscal_shift_id);
 CREATE INDEX idx_receipts_created ON fiscal_receipts(created_at DESC);
 CREATE INDEX idx_shifts_register ON fiscal_shifts(cash_register_id, opened_at DESC);
 ```
+
+-->
 
 **API Implementation**:
 ```go
