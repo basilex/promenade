@@ -13,6 +13,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/health"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/cache"
+	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
@@ -20,19 +21,26 @@ import (
 	"github.com/basilex/promenade/internal/contexts/warehouse/integration"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+
+	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
+	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
+	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
 )
 
 // App holds all application dependencies
 type App struct {
-	Config            *config.AppConfig
-	DB                *sqlx.DB
-	RedisClient       *redis.Client
-	CacheClient       cache.ICache
-	JWTManager        *jwt.Manager
-	TokenRevoker      *jwt.TokenRevoker
-	EventBus          bus.IBus
-	HealthChecker     *health.Checker
-	OrderEventHandler *integration.OrderEventHandler
+	Config                  *config.AppConfig
+	DB                      *sqlx.DB
+	RedisClient             *redis.Client
+	CacheClient             cache.ICache
+	JWTManager              *jwt.Manager
+	TokenRevoker            *jwt.TokenRevoker
+	EventBus                bus.IBus
+	HealthChecker           *health.Checker
+	OrderEventHandler       *integration.OrderEventHandler
+	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
 }
 
 // Bootstrap initializes all application dependencies
@@ -90,6 +98,13 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 		return nil, err
 	}
 	app.OrderEventHandler = orderEventHandler
+
+	// Initialize Fiscal Integration
+	fiscalOrderEventHandler, err := initFiscalIntegration(db, eventBus, cfg)
+	if err != nil {
+		return nil, err
+	}
+	app.FiscalOrderEventHandler = fiscalOrderEventHandler
 
 	// Initialize Health Checker
 	healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
@@ -303,6 +318,60 @@ func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.Orde
 	logger.Info("Warehouse Integration initialized",
 		slog.String("component", "ReservationService + OrderEventHandler"),
 		slog.Int("event_handlers", 3), // order.confirmed, order.cancelled, order.fulfilled
+	)
+
+	return orderEventHandler, nil
+}
+
+// initFiscalIntegration initializes Fiscal Integration (Order → Receipt auto-print)
+func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig) (*fiscalIntegration.OrderEventHandler, error) {
+	cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
+	receiptRepository := receiptRepo.NewReceiptRepository(db)
+
+	var printer receipt.IPrinter
+	printerEnabled := false
+
+	var pdfPrinter receipt.IPrinter
+	if cfg.Fiscal.PDFOutputDir != "" {
+		pdfPrinter = receiptPrinter.NewPDFPrinter(cfg.Fiscal.PDFOutputDir)
+	}
+
+	var checkboxClient *checkbox.Client
+	checkboxCfg := cfg.Fiscal.Checkbox
+	if checkboxCfg.APIKey != "" {
+		checkboxClient = checkbox.NewClient(&checkbox.Config{
+			APIKey:  checkboxCfg.APIKey,
+			Sandbox: checkboxCfg.Sandbox,
+			Timeout: checkboxCfg.Timeout,
+		})
+	}
+
+	if checkboxClient != nil {
+		checkboxPrinter := receiptPrinter.NewCheckboxPrinter(checkboxClient)
+		if pdfPrinter != nil {
+			printer = receipt.NewMultiPrinter(checkboxPrinter, pdfPrinter)
+		} else {
+			printer = checkboxPrinter
+		}
+	} else if pdfPrinter != nil {
+		printer = pdfPrinter
+	}
+
+	if printer != nil {
+		printerEnabled = true
+	}
+
+	receiptUseCase := receipt.NewUseCase(receiptRepository, printer)
+	orderEventHandler := fiscalIntegration.NewOrderEventHandler(receiptUseCase, cashRegisterRepository, printerEnabled)
+
+	if err := orderEventHandler.RegisterHandlers(eventBus); err != nil {
+		logger.Fatal("Failed to register fiscal order event handlers", slog.Any("error", err))
+		return nil, err
+	}
+
+	logger.Info("Fiscal Integration initialized",
+		slog.String("component", "OrderEventHandler"),
+		slog.Bool("printer_enabled", printerEnabled),
 	)
 
 	return orderEventHandler, nil

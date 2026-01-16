@@ -40,6 +40,8 @@ const (
 	// Order Management Context Topics (future)
 	TopicOrderCreated   = "order.created"
 	TopicOrderConfirmed = "order.confirmed"
+	TopicOrderCancelled = "order.cancelled"
+	TopicOrderFulfilled = "order.fulfilled"
 	TopicOrderShipped   = "order.shipped"
 
 	// Billing Context Topics (future)

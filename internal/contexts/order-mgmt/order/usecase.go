@@ -2,8 +2,10 @@ package order
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 
+	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
@@ -53,13 +55,15 @@ type IUseCase interface {
 
 // useCase implements IUseCase
 type useCase struct {
-	repo IRepository
+	repo     IRepository
+	eventBus bus.IBus
 }
 
 // NewUseCase creates a new order use case
-func NewUseCase(repo IRepository) IUseCase {
+func NewUseCase(repo IRepository, eventBus bus.IBus) IUseCase {
 	return &useCase{
-		repo: repo,
+		repo:     repo,
+		eventBus: eventBus,
 	}
 }
 
@@ -274,6 +278,7 @@ func (uc *useCase) ConfirmOrder(ctx context.Context, orderID uuidv7.UUID) (*Orde
 	}
 
 	log.Info("Order confirmed successfully", slog.String("order_id", orderID.String()))
+	uc.publishOrderConfirmed(ctx, order)
 
 	return order, nil
 }
@@ -328,6 +333,7 @@ func (uc *useCase) MarkFulfilled(ctx context.Context, orderID uuidv7.UUID) (*Ord
 	}
 
 	log.Info("Order marked as fulfilled", slog.String("order_id", orderID.String()))
+	uc.publishOrderFulfilled(ctx, order)
 
 	return order, nil
 }
@@ -355,6 +361,7 @@ func (uc *useCase) CancelOrder(ctx context.Context, orderID uuidv7.UUID) (*Order
 	}
 
 	log.Info("Order cancelled successfully", slog.String("order_id", orderID.String()))
+	uc.publishOrderCancelled(ctx, order, "")
 
 	return order, nil
 }
@@ -414,4 +421,93 @@ func (uc *useCase) ListOrdersByStatus(ctx context.Context, status OrderStatus, p
 	}
 
 	return orders, total, nil
+}
+
+type orderEventItem struct {
+	ProductID uuidv7.UUID `json:"product_id"`
+	SKU       string      `json:"sku"`
+	Quantity  int         `json:"quantity"`
+	UnitPrice int64       `json:"unit_price_cents"`
+}
+
+type orderConfirmedEvent struct {
+	OrderID     uuidv7.UUID      `json:"order_id"`
+	CustomerID  uuidv7.UUID      `json:"customer_id"`
+	Items       []orderEventItem `json:"items"`
+	Currency    string           `json:"currency"`
+	ConfirmedBy uuidv7.UUID      `json:"confirmed_by"`
+}
+
+type orderCancelledEvent struct {
+	OrderID     uuidv7.UUID      `json:"order_id"`
+	Items       []orderEventItem `json:"items"`
+	Reason      string           `json:"reason"`
+	CancelledBy uuidv7.UUID      `json:"cancelled_by"`
+}
+
+type orderFulfilledEvent struct {
+	OrderID     uuidv7.UUID      `json:"order_id"`
+	Items       []orderEventItem `json:"items"`
+	FulfilledBy uuidv7.UUID      `json:"fulfilled_by"`
+}
+
+func (uc *useCase) publishOrderConfirmed(ctx context.Context, order *Order) {
+	uc.publishOrderEvent(ctx, bus.TopicOrderConfirmed, order.GetID(), orderConfirmedEvent{
+		OrderID:     order.GetID(),
+		CustomerID:  order.CustomerID,
+		Items:       uc.buildOrderItems(order),
+		Currency:    order.Currency,
+		ConfirmedBy: order.CustomerID,
+	})
+}
+
+func (uc *useCase) publishOrderCancelled(ctx context.Context, order *Order, reason string) {
+	uc.publishOrderEvent(ctx, bus.TopicOrderCancelled, order.GetID(), orderCancelledEvent{
+		OrderID:     order.GetID(),
+		Items:       uc.buildOrderItems(order),
+		Reason:      reason,
+		CancelledBy: order.CustomerID,
+	})
+}
+
+func (uc *useCase) publishOrderFulfilled(ctx context.Context, order *Order) {
+	uc.publishOrderEvent(ctx, bus.TopicOrderFulfilled, order.GetID(), orderFulfilledEvent{
+		OrderID:     order.GetID(),
+		Items:       uc.buildOrderItems(order),
+		FulfilledBy: order.CustomerID,
+	})
+}
+
+func (uc *useCase) publishOrderEvent(ctx context.Context, topic string, aggregateID uuidv7.UUID, payload interface{}) {
+	if uc.eventBus == nil {
+		return
+	}
+
+	log := logger.FromContext(ctx)
+
+	payloadJSON, err := json.Marshal(payload)
+	if err != nil {
+		log.Error("Failed to marshal order event payload", slog.Any("error", err), slog.String("topic", topic))
+		return
+	}
+
+	event := bus.NewBaseEvent(topic, aggregateID)
+	event.Meta["payload"] = string(payloadJSON)
+
+	if err := uc.eventBus.Publish(ctx, topic, event); err != nil {
+		log.Error("Failed to publish order event", slog.Any("error", err), slog.String("topic", topic))
+	}
+}
+
+func (uc *useCase) buildOrderItems(order *Order) []orderEventItem {
+	items := make([]orderEventItem, 0, len(order.Lines))
+	for _, line := range order.Lines {
+		items = append(items, orderEventItem{
+			ProductID: line.ProductID,
+			SKU:       "",
+			Quantity:  line.Quantity,
+			UnitPrice: line.UnitPrice.Amount,
+		})
+	}
+	return items
 }

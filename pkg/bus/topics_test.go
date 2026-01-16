@@ -40,6 +40,8 @@ func TestTopicConstants_AllExist(t *testing.T) {
 	// Order topics
 	assert.NotEmpty(t, bus.TopicOrderCreated)
 	assert.NotEmpty(t, bus.TopicOrderConfirmed)
+	assert.NotEmpty(t, bus.TopicOrderCancelled)
+	assert.NotEmpty(t, bus.TopicOrderFulfilled)
 	assert.NotEmpty(t, bus.TopicOrderShipped)
 
 	// Billing topics
@@ -80,6 +82,8 @@ func TestTopicConstants_Uniqueness(t *testing.T) {
 		bus.TopicDealWon,
 		bus.TopicOrderCreated,
 		bus.TopicOrderConfirmed,
+		bus.TopicOrderCancelled,
+		bus.TopicOrderFulfilled,
 		bus.TopicOrderShipped,
 		bus.TopicInvoiceGenerated,
 		bus.TopicPaymentReceived,

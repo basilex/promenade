@@ -63,7 +63,7 @@ func (s *Server) SetupRoutes() {
 	sharedRouter := shared.NewRouter(s.app.DB, s.app.CacheClient)
 	identityRouter := identity.NewRouter(s.app.DB, s.app.JWTManager, s.app.TokenRevoker)
 	customerMgmtRouter := customermgmt.NewRouter(s.app.DB)
-	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB)
+	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB, s.app.EventBus)
 	billingRouter := billing.NewRouter(s.app.DB)
 	warehouseRouter := warehouse.NewRouter(s.app.DB)
 	var checkboxClient *checkbox.Client

@@ -138,7 +138,7 @@ func TestUseCase_CreateOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.mockSetup(mockRepo)
-			uc := NewUseCase(mockRepo)
+			uc := NewUseCase(mockRepo, nil)
 
 			order, err := uc.CreateOrder(context.Background(), tt.customerID, tt.companyID, tt.currency)
 
@@ -205,7 +205,7 @@ func TestUseCase_AddOrderLine(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.mockSetup(mockRepo)
-			uc := NewUseCase(mockRepo)
+			uc := NewUseCase(mockRepo, nil)
 
 			order, err := uc.AddOrderLine(ctx, orderID, productID, tt.quantity, tt.unitPrice)
 
@@ -262,7 +262,7 @@ func TestUseCase_ConfirmOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.mockSetup(mockRepo)
-			uc := NewUseCase(mockRepo)
+			uc := NewUseCase(mockRepo, nil)
 
 			order, err := uc.ConfirmOrder(ctx, orderID)
 
@@ -321,7 +321,7 @@ func TestUseCase_StartProcessing(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.mockSetup(mockRepo)
-			uc := NewUseCase(mockRepo)
+			uc := NewUseCase(mockRepo, nil)
 
 			order, err := uc.StartProcessing(ctx, orderID)
 
@@ -383,7 +383,7 @@ func TestUseCase_CancelOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRepo := new(MockRepository)
 			tt.mockSetup(mockRepo)
-			uc := NewUseCase(mockRepo)
+			uc := NewUseCase(mockRepo, nil)
 
 			order, err := uc.CancelOrder(ctx, orderID)
 
