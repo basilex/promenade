@@ -66,7 +66,7 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			orders.PUT("/:id/lines/:line_id", r.orderHandler.UpdateLineQuantity) // Update line quantity
 
 			// Contract routes (nested under orders)
-			orders.GET("/:order_id/contracts", r.contractHandler.ListByOrder) // List contracts for order
+			orders.GET("/:id/contracts", r.contractHandler.ListByOrder) // List contracts for order
 		}
 
 		// Contract routes

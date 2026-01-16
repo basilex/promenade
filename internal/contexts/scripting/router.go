@@ -56,7 +56,7 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			scripts.GET("/name/:name", r.scriptHandler.GetScriptByName)
 
 			// Script execution
-			scripts.POST("/:name/execute", r.scriptHandler.ExecuteScript)
+			scripts.POST("/name/:name/execute", r.scriptHandler.ExecuteScript)
 
 			// Script status management
 			scripts.POST("/:id/activate", r.scriptHandler.ActivateScript)

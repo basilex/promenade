@@ -377,18 +377,18 @@ func (h *ContractHandler) SetExpirationDate(c *gin.Context) {
 	response.Success(c, gin.H{"message": "expiration date set successfully"})
 }
 
-// ListByOrder handles GET /orders/:order_id/contracts - List contracts by order
+// ListByOrder handles GET /orders/:id/contracts - List contracts by order
 // @Summary List contracts by order
 // @Description Get all contracts for a specific order
 // @Tags contracts
 // @Produce json
-// @Param order_id path string true "Order ID (UUID)"
+// @Param id path string true "Order ID (UUID)"
 // @Success 200 {object} response.Response{data=[]ContractResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
-// @Router /orders/{order_id}/contracts [get]
+// @Router /orders/{id}/contracts [get]
 func (h *ContractHandler) ListByOrder(c *gin.Context) {
-	orderID, err := uuidv7.Parse(c.Param("order_id"))
+	orderID, err := uuidv7.Parse(c.Param("id"))
 	if err != nil {
 		response.BadRequest(c, "invalid order ID")
 		return

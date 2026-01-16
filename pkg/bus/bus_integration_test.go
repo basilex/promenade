@@ -15,6 +15,7 @@ import (
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
 	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
+	redisbus "github.com/basilex/promenade/pkg/bus/redis"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -281,6 +282,9 @@ func TestBus_RedisAdapter_CrossProcess(t *testing.T) {
 	b1, err := bus.NewBus(cfg, redisCfg)
 	if err != nil {
 		t.Skipf("Redis not available at %s: %v", redisAddr, err)
+	}
+	if _, ok := b1.(*redisbus.RedisBus); !ok {
+		t.Skip("Redis adapter not active (fallback to memory), skipping cross-process test")
 	}
 
 	// Check if we actually got Redis adapter (not fallback to memory)

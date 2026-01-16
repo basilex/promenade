@@ -41,7 +41,7 @@ func NewScriptHandler(useCase IScriptUseCase) *ScriptHandler {
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
-// @Router /scripts/{name}/execute [post]
+// @Router /scripts/name/{name}/execute [post]
 func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 	scriptName := c.Param("name")
 	if scriptName == "" {
