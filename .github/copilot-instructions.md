@@ -87,7 +87,7 @@ Each context is autonomous with:
 - **Billing** (`internal/contexts/billing/`) - Invoice, Payment, Subscription (all Production)
 - **Warehouse** (`internal/contexts/warehouse/`) - Inventory, StockMovement, Product, Location (ALL Production, 100% complete)
 - **Scripting** (`internal/contexts/scripting/`) - Script aggregate (Production) | LUA execution engine with sandbox | 10 REST endpoints | Job scheduler integrated
-- **Fiscal** (`internal/contexts/fiscal/`) - CashRegister aggregate (Active Development) | Ukrainian ПРРО compliance | Checkbox API integration | Repository layer in progress
+- **Fiscal** (`internal/contexts/fiscal/`) - CashRegister aggregate (Active Development) | Ukrainian PRRO compliance | Checkbox API integration | Repository layer in progress
 
 **Context isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
@@ -109,7 +109,7 @@ Each context is autonomous with:
   - **Security**: Sandbox with memory limits (50MB), CPU timeout (5s), no filesystem/network access
   - **Documentation**: `pkg/scripting/README.md` (600+ lines), `pkg/scheduler/README.md` (752 lines)
 -  **Fiscal Context IN PROGRESS** (January 15, 2026 - Week 1 of 2):
-  - **Ukrainian Market Compliance**: ПРРО (Програмний РРО) integration for retail businesses
+    - **Ukrainian Market Compliance**: PRRO (software fiscal register) integration for retail businesses
   - **Priority**: 🔥 CRITICAL BLOCKER - 70% of target market needs this
   - **CashRegister Aggregate**: ✅ Entity complete (entity, errors, repository, usecase)
   - **Receipt Aggregate**: 🚧 IN PROGRESS (Week 1, Day 2-7)
@@ -1163,10 +1163,10 @@ func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.Orde
 
 **Status**:  IN PROGRESS (January 14, 2026) - Entity structure established
 
-**Purpose**: Ukrainian fiscal compliance for retail businesses via ПРРО (Програмний РРО) integration
+**Purpose**: Ukrainian fiscal compliance for retail businesses via PRRO (software fiscal register) integration
 
 **Key Concepts**:
-- **ПРРО** (Програмний РРО) - Software fiscal registrar required by Ukrainian law for cash transactions
+- **PRRO** (software fiscal register) - Software fiscal registrar required by Ukrainian law for cash transactions
 - **Checkbox API** - Popular Ukrainian fiscal service provider for cloud-based cash registers
 - **Fiscal Receipt** - Government-compliant receipt with fiscal number and QR code
 
@@ -1220,14 +1220,14 @@ type CashRegister struct {
 
 ## 🇺🇦 Ukrainian Market Strategy (CRITICAL OPPORTUNITY)
 
-**Market Vacuum**: Ban on Russian software (1С, Bitrix24, AmoCRM) created $500M+ market opportunity:
+**Market Vacuum**: Ban on Russian software (1C, Bitrix24, AmoCRM) created $500M+ market opportunity:
 
 - **150,000+ SMB companies** seeking alternatives
-- **70% of 1С users** without replacement
+- **70% of 1C users** without replacement
 - **$9.4M-29.9M ARR potential** at 7,500 clients
 
 **Promenade Competitive Advantages**:
-- Modern architecture (DDD + Event-Driven) vs outdated 1С
+- Modern architecture (DDD + Event-Driven) vs outdated 1C
 - Go performance (10-50x faster)
 - Price 40-60% lower than Terrasoft BPM'online
 - Open-source core (transparency + trust)
@@ -1235,17 +1235,17 @@ type CashRegister struct {
 **Target**: 5-10% SMB market (7,500-15,000 companies) within 18 months
 
 **Must-Have Features** (Q1-Q2 2026):
-1. **ПРРО Integration** (Checkbox, Вчасно.Каса) - Retail businesses
-2. **Tax Invoices** (XML for ДПС) - Accounting firms
+1. **PRRO Integration** (Checkbox, Vchasno.Kasa) - Retail businesses
+2. **Tax Invoices** (XML for the State Tax Service) - Accounting firms
 3. **Bank Statements** (Monobank, Privat24, PUMB) - Financial integration
 4. **HRM Module** (Payroll + Ukrainian taxes) - HR management
-5. **Delivery APIs** (Нова Пошта, Укрпошта) - E-commerce
+5. **Delivery APIs** (Nova Poshta, Ukrposhta) - E-commerce
 
 **Strategic Documents**:
 - [Ukraine Market Strategy 2026](../docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - 12-month business plan
 - [Ukraine Compliance Roadmap](../docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Technical implementation (Q1-Q2 2026)
 
-**Implementation Priority**: Fiscal Context (ПРРО) is foundational for Ukrainian market entry
+**Implementation Priority**: Fiscal Context (PRRO) is foundational for Ukrainian market entry
 
 ---
 

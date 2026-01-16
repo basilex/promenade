@@ -61,7 +61,7 @@
 
 ## Must-Have Features (Q1-Q2 2026)
 
-1. **Fiscal Integration (ПРРО)**
+1. **Fiscal Integration (PRRO)**
    - Checkbox + Vchasno.Kasa providers
    - Fiscal receipts, shifts, Z-reports
 

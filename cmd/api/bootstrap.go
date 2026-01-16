@@ -24,13 +24,13 @@ import (
 
 // App holds all application dependencies
 type App struct {
-	Config             *config.AppConfig
+	Config            *config.AppConfig
 	DB                *sqlx.DB
 	RedisClient       *redis.Client
 	CacheClient       cache.ICache
 	JWTManager        *jwt.Manager
 	TokenRevoker      *jwt.TokenRevoker
-	EventBus           bus.IBus
+	EventBus          bus.IBus
 	HealthChecker     *health.Checker
 	OrderEventHandler *integration.OrderEventHandler
 }
@@ -159,7 +159,7 @@ func runMigrations(db *sqlx.DB) error {
 	migrationManager := migration.NewManager(db, "migrations")
 	ctx := context.Background()
 
-	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "warehouse", "scripting"}
+	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "warehouse", "scripting", "fiscal"}
 	for _, ns := range namespaces {
 		if err := migrationManager.MigrateNamespace(ctx, ns); err != nil {
 			logger.Fatal("Failed to run migrations",

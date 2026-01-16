@@ -116,7 +116,7 @@ Strategic planning documents for platform development and market strategy.
 - Deliverables: Waybill creation, tracking
 
 **Technical Details**:
-- Database schemas (ПРРО, accounting, banking)
+- Database schemas (PRRO, accounting, banking)
 - API implementations (Checkbox, M.E.Doc, Monobank)
 - Event flows (Order → FiscalReceipt)
 - Testing strategies (30+ unit, 15+ integration per module)
@@ -135,40 +135,40 @@ Strategic planning documents for platform development and market strategy.
 
 ---
 
-## 📅 Combined Timeline
+## Combined Timeline
 
 ```
-Січень 2026:
+January 2026:
 ════════════════════════════════════════════════════════
-Week 1-2  : ✅ Phase 2 Complete (Domain Errors)
-Week 3    : 🔄 Phase 3 Week 2 (Script Storage)
-Week 4    : 🔄 Phase 3 Week 3 (UI Metadata)
+Week 1-2  : Phase 2 Complete (Domain Errors)
+Week 3    : Phase 3 Week 2 (Script Storage)
+Week 4    : Phase 3 Week 3 (UI Metadata)
 
-Лютий 2026:
+February 2026:
 ════════════════════════════════════════════════════════
-Week 5-6  : ⏱️ Phase 4 (Scheduler)
-Week 7-10 : 🇺🇦 ПРРО Integration (Checkbox + Вчасно.Каса)
+Week 5-6  : Phase 4 (Scheduler)
+Week 7-10 : PRRO Integration (Checkbox + Vchasno.Kasa)
 
-Березень 2026:
+March 2026:
 ════════════════════════════════════════════════════════
-Week 11-12: 🇺🇦 Податкові Накладні + XML
-Week 13-14: 🇺🇦 Банківські Виписки (Monobank, Privat24)
+Week 11-12: Tax Invoices + XML
+Week 13-14: Bank Statements (Monobank, Privat24)
 
-Квітень 2026:
+April 2026:
 ════════════════════════════════════════════════════════
-Week 14-17: 🇺🇦 HRM (Зарплата + Податки)
-Week 17   : 🇺🇦 Нова Пошта API
+Week 14-17: HRM (Payroll + Taxes)
+Week 17   : Nova Poshta API
 
-Травень - Червень 2026:
+May - June 2026:
 ════════════════════════════════════════════════════════
-Week 18-24: ⚡ NATS Gateway + 📱 Mobile App
-Week 25-26: 🎨 Polish + 📚 Documentation
+Week 18-24: NATS Gateway + Mobile App
+Week 25-26: Polish + Documentation
 
 Q3 2026 (Launch):
 ════════════════════════════════════════════════════════
-Жовтень: 🚀 PUBLIC BETA LAUNCH
-Листопад: 🐛 Bug fixes + User Feedback
-Грудень: 💎 Premium Features
+October: PUBLIC BETA LAUNCH
+November: Bug fixes + User Feedback
+December: Premium Features
 
 Q4 2026 Goals:
 ════════════════════════════════════════════════════════
@@ -179,42 +179,42 @@ Q4 2026 Goals:
 
 ---
 
-## 🚀 Next Steps
+## Next Steps
 
-### Immediate (Week 3-4, Січень 2026)
-1. ✅ Завершити Phase 3 (LUA + UI Metadata)
-2. 📝 Підготувати technical specs для ПРРО
-3. 🎯 Знайти 10 beta-тестерів для ПРРО
+### Immediate (Week 3-4, January 2026)
+1. Complete Phase 3 (LUA + UI Metadata)
+2. Prepare technical specs for PRRO
+3. Find 10 beta testers for PRRO
 
-### Short-term (Лютий 2026)
-1. ⏱️ Завершити Phase 4 (Scheduler)
-2. 🇺🇦 Почати ПРРО Integration
-3. 📝 Зареєструвати ТОВ в Україні
+### Short-term (February 2026)
+1. Complete Phase 4 (Scheduler)
+2. Start PRRO Integration
+3. Register a legal entity in Ukraine
 
-### Medium-term (Березень - Квітень 2026)
-1. 🇺🇦 Завершити всі українські комплаєнс модулі
-2. 🎯 100 beta-тестерів
-3. 💰 Перші 10 paying customers
+### Medium-term (March - April 2026)
+1. Complete all Ukrainian compliance modules
+2. 100 beta testers
+3. First 10 paying customers
 
 ### Long-term (Q3-Q4 2026)
-1. 🚀 PUBLIC BETA LAUNCH
-2. 📱 Mobile App (Flutter)
-3. 🎯 500 active users, $15K MRR
+1. PUBLIC BETA LAUNCH
+2. Mobile App (Flutter)
+3. 500 active users, $15K MRR
 
 ---
 
-## 📊 Success Metrics
+## Success Metrics
 
 ### Technical KPIs
 - **Availability**: 99.5% uptime
 - **Performance**: < 200ms API response
 - **Test Coverage**: 90%+
-- **Ukrainian Compliance**: 100% законодавча відповідність
+- **Ukrainian Compliance**: 100% regulatory compliance
 
 ### Business KPIs (Ukrainian Market)
 
 **Q1 2026**:
-- 20 Beta users (ПРРО testing)
+- 20 beta users (PRRO testing)
 - 0 paying customers (beta period)
 - $0 MRR
 
@@ -240,7 +240,7 @@ Q4 2026 Goals:
 
 ---
 
-## 📚 Related Documentation
+## Related Documentation
 
 **Core Platform**:
 - [Main README](../README.md) - Project overview
@@ -254,10 +254,10 @@ Q4 2026 Goals:
 
 **Business**:
 - [Business Overview](../business/BUSINESS_OVERVIEW.md) - For decision-makers
-- [Business Overview (Ukrainian)](../business/BUSINESS_OVERVIEW_UK.md) - Для керівників
+- [Business Overview (Ukrainian)](../business/BUSINESS_OVERVIEW_UK.md) - For decision-makers
 
 ---
 
 **Last Updated**: January 14, 2026  
 **Status**: Active Planning & Development  
-**Maintainer**: Promenade Team 🇺🇦
+**Maintainer**: Promenade Team

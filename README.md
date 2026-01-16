@@ -100,6 +100,24 @@ Comprehensive business documentation available in multiple languages:
 
 ---
 
+## Design and Architecture
+
+Promenade follows a strict DDD and Clean Architecture approach that keeps bounded contexts isolated and promotes long-term maintainability.
+
+**Core principles**:
+- **Bounded Contexts** own their domain model, data, and APIs; cross-context communication happens through the Event Bus.
+- **Clean Architecture layers** separate handlers, use cases, repositories, and entities/value objects.
+- **Database-agnostic persistence** uses SQL dialect abstraction and `jsonstore.Field[T]` for JSON data across PostgreSQL and SQLite.
+- **Consistent error handling** centralizes domain errors in `errors.go`, uses `errors.Is()` in handlers, and hides system errors.
+- **Testing strategy** combines unit, smoke, integration, and benchmark tests for fast feedback and production confidence.
+
+**Fiscal context documentation**:
+- [Fiscal Context Overview](internal/contexts/fiscal/README.md)
+- [Cash Register Aggregate](internal/contexts/fiscal/cashregister/README.md)
+- [Receipt Aggregate](internal/contexts/fiscal/receipt/README.md)
+
+---
+
 ## Security Audit - Completed
 
 **Comprehensive security audit completed** (January 2026) - Systematic review and hardening of all HTTP handlers to prevent information leakage through error messages.
@@ -1876,19 +1894,19 @@ id := uuidv7.New()  // Time-ordered UUID
 - [ ] Dashboards
 - [ ] Business metrics
 
-### 🇺🇦 Ukrainian Market Expansion (Strategic Priority - Q1-Q2 2026)
+### Ukrainian Market Expansion (Strategic Priority - Q1-Q2 2026)
 
 **CRITICAL OPPORTUNITY**: Vacancy created by ban on Russian software (1C, Bitrix24, AmoCRM)
 
 **Q1 2026 (Must-Have for Market Entry)**:
-- [ ] ПРРО Integration (Checkbox, Вчасно.Каса) - Cash register compliance
-- [ ] Податкові Накладні (ДПС XML) - Tax invoice system
-- [ ] Банківські Виписки (Monobank, Privat24, PUMB) - Bank statement import
+- [ ] PRRO Integration (Checkbox, Vchasno.Kasa) - Cash register compliance
+- [ ] Tax Invoices (State Tax Service XML) - Tax invoice system
+- [ ] Bank Statements (Monobank, Privat24, PUMB) - Bank statement import
 
 **Q2 2026 (Competitive Advantage)**:
 - [ ] HRM Module (Ukrainian payroll taxes, EDR integration)
-- [ ] Нова Пошта / Укрпошта APIs - Shipping integration
-- [ ] Українська локалізація повна - Full Ukrainian localization
+- [ ] Nova Poshta / Ukrposhta APIs - Shipping integration
+- [ ] Full Ukrainian localization
 
 **Detailed Documentation**:
 - [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Complete 12-month business plan
