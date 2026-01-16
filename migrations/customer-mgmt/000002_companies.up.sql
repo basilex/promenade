@@ -40,7 +40,7 @@ COMMENT ON TYPE company_size IS 'Company size categories based on employee count
 -- Stores B2B customer information (business organizations)
 CREATE TABLE customer_companies (
     -- Primary Key
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
 
     -- Basic Information
     name VARCHAR(255) NOT NULL,                -- Company name (must be unique)
@@ -74,7 +74,7 @@ CREATE TABLE customer_companies (
     description TEXT,                          -- Company description/notes
 
     -- Relationships
-    parent_company_id UUID,                    -- Parent company (for subsidiaries)
+    parent_company_id TEXT,                    -- Parent company (for subsidiaries)
 
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -100,7 +100,7 @@ CREATE TABLE customer_companies (
 -- Table Comments
 -- ============================================================================
 COMMENT ON TABLE customer_companies IS 'Stores B2B customer information (business organizations)';
-COMMENT ON COLUMN customer_companies.id IS 'UUID v7 primary key (time-ordered)';
+COMMENT ON COLUMN customer_companies.id IS 'UUID v7 stored as TEXT (time-ordered)';
 COMMENT ON COLUMN customer_companies.name IS 'Company name (unique across active companies)';
 COMMENT ON COLUMN customer_companies.legal_name IS 'Legal entity name (may differ from trade name)';
 COMMENT ON COLUMN customer_companies.type IS 'Legal structure of organization';

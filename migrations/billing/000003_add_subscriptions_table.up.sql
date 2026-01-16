@@ -4,9 +4,9 @@
 
 -- Create billing_subscriptions table for recurring billing management
 CREATE TABLE IF NOT EXISTS billing_subscriptions (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     subscription_no VARCHAR(15) NOT NULL UNIQUE, -- SUB-YYYY-NNNNNN format
-    customer_id UUID NOT NULL, -- Reference to customer (no FK for context isolation)
+    customer_id TEXT NOT NULL, -- Reference to customer (no FK for context isolation)
     plan_id VARCHAR(100) NOT NULL, -- Subscription plan identifier
     status VARCHAR(20) NOT NULL CHECK (status IN ('trial', 'active', 'paused', 'cancelled', 'expired')),
     billing_period VARCHAR(20) NOT NULL CHECK (billing_period IN ('monthly', 'quarterly', 'yearly')),

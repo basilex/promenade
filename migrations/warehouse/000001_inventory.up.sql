@@ -7,11 +7,11 @@
 
 -- Inventory table (Inventory aggregate)
 CREATE TABLE IF NOT EXISTS warehouse_inventory (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     version INTEGER NOT NULL DEFAULT 1,
     
     -- Product identification
-    product_id UUID NOT NULL,
+    product_id TEXT NOT NULL,
     sku VARCHAR(100) NOT NULL UNIQUE,
     product_name VARCHAR(255) NOT NULL,
     
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS warehouse_inventory (
     notes TEXT,  -- Admin notes (max 500 chars validated in application layer)
     
     -- Audit
-    last_updated_by UUID NOT NULL,
+    last_updated_by TEXT NOT NULL,
     
     -- Timestamps
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

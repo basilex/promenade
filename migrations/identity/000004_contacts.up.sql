@@ -7,8 +7,8 @@
 
 -- Contacts table (Contact aggregate)
 CREATE TABLE IF NOT EXISTS identity_contacts (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
     
     -- Contact type discriminator
     contact_type VARCHAR(20) NOT NULL CHECK (contact_type IN ('email', 'phone', 'address')),

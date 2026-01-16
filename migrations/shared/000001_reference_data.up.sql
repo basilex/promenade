@@ -8,12 +8,12 @@
 -- - Read-only from application perspective (managed via migrations)
 -- - No soft delete (data doesn't "disappear")
 -- - is_active flag for deactivation without breaking foreign keys
--- - UUID v7 primary keys for consistency
+-- - UUID v7 primary keys stored as TEXT for cross-database compatibility
 -- ============================================================================
 
 -- Countries (ISO 3166-1)
 CREATE TABLE IF NOT EXISTS shared_countries (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     code VARCHAR(2) NOT NULL UNIQUE,           -- ISO 3166-1 alpha-2 (US, UA, DE)
     code3 VARCHAR(3) NOT NULL UNIQUE,          -- ISO 3166-1 alpha-3 (USA, UKR, DEU)
     numeric_code VARCHAR(3) NOT NULL UNIQUE,   -- ISO 3166-1 numeric (840, 804, 276)
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS shared_countries (
     longitude DECIMAL(11, 8),                  -- Country center longitude
     area_km2 INTEGER,                          -- Country area in square kilometers
     population BIGINT,                         -- Country population (approximate)
-    translations JSONB DEFAULT '{}'::jsonb,    -- Name translations (map: lang_code -> name)
+    translations TEXT DEFAULT '{}',            -- Name translations (map: lang_code -> name)
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
@@ -38,7 +38,7 @@ CREATE INDEX idx_shared_countries_code ON shared_countries(code) WHERE is_active
 CREATE INDEX idx_shared_countries_name ON shared_countries(name) WHERE is_active = true;
 CREATE INDEX idx_shared_countries_region ON shared_countries(region) WHERE is_active = true;
 CREATE INDEX idx_shared_countries_subregion ON shared_countries(subregion) WHERE is_active = true;
-CREATE INDEX idx_shared_countries_translations ON shared_countries USING GIN(translations);
+-- JSON indexes are database-specific; intentionally omitted for cross-db compatibility
 
 COMMENT ON TABLE shared_countries IS 'ISO 3166-1 countries (Shared Kernel)';
 COMMENT ON COLUMN shared_countries.code IS 'ISO 3166-1 alpha-2 code (US, UA, DE)';
@@ -47,11 +47,11 @@ COMMENT ON COLUMN shared_countries.capital IS 'Capital city name';
 COMMENT ON COLUMN shared_countries.region IS 'Geographic region (e.g., Europe, Asia)';
 COMMENT ON COLUMN shared_countries.subregion IS 'Geographic subregion (e.g., Western Europe)';
 COMMENT ON COLUMN shared_countries.flag_emoji IS 'Country flag emoji (Unicode)';
-COMMENT ON COLUMN shared_countries.translations IS 'Country name translations (JSONB map: language_code -> name)';
+COMMENT ON COLUMN shared_countries.translations IS 'Country name translations (JSON map: language_code -> name)';
 
 -- Currencies (ISO 4217 + Cryptocurrencies)
 CREATE TABLE IF NOT EXISTS shared_currencies (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     code VARCHAR(10) NOT NULL UNIQUE,          -- ISO 4217 alpha code (USD, EUR, UAH) or crypto symbol (BTC, USDT)
     numeric_code VARCHAR(3) NOT NULL UNIQUE,   -- ISO 4217 numeric (840, 978, 980) or 900-999 for crypto
     name VARCHAR(100) NOT NULL,                -- English name
@@ -74,7 +74,7 @@ COMMENT ON COLUMN shared_currencies.is_crypto IS 'Is cryptocurrency (true/false)
 
 -- Languages (ISO 639-1)
 CREATE TABLE IF NOT EXISTS shared_languages (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     code VARCHAR(2) NOT NULL UNIQUE,           -- ISO 639-1 alpha-2 (en, uk, de)
     code3 VARCHAR(3) NOT NULL UNIQUE,          -- ISO 639-2/T alpha-3 (eng, ukr, deu)
     name VARCHAR(100) NOT NULL,                -- English name
@@ -96,7 +96,7 @@ COMMENT ON COLUMN shared_languages.native_speakers IS 'Number of native speakers
 
 -- Timezones (IANA)
 CREATE TABLE IF NOT EXISTS shared_timezones (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,         -- IANA timezone (America/New_York, Europe/Kyiv)
     abbreviation VARCHAR(10) NOT NULL,         -- Common abbreviation (EST, EET, CET)
     utc_offset INTEGER NOT NULL,               -- UTC offset in seconds
@@ -123,9 +123,9 @@ COMMENT ON COLUMN shared_timezones.display_name IS 'Human-readable timezone name
 
 -- Country-Currency M2M (one country can use multiple currencies, one currency used in multiple countries)
 CREATE TABLE IF NOT EXISTS shared_country_currencies (
-    id UUID PRIMARY KEY,
-    country_id UUID NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
-    currency_id UUID NOT NULL REFERENCES shared_currencies(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY,
+    country_id TEXT NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
+    currency_id TEXT NOT NULL REFERENCES shared_currencies(id) ON DELETE CASCADE,
     is_primary BOOLEAN NOT NULL DEFAULT false,     -- Is this the primary/official currency
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(country_id, currency_id)
@@ -140,9 +140,9 @@ COMMENT ON COLUMN shared_country_currencies.is_primary IS 'Is this the primary/o
 
 -- Country-Language M2M (one country can have multiple official languages, one language used in multiple countries)
 CREATE TABLE IF NOT EXISTS shared_country_languages (
-    id UUID PRIMARY KEY,
-    country_id UUID NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
-    language_id UUID NOT NULL REFERENCES shared_languages(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY,
+    country_id TEXT NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
+    language_id TEXT NOT NULL REFERENCES shared_languages(id) ON DELETE CASCADE,
     is_official BOOLEAN NOT NULL DEFAULT false,    -- Is this an official language
     is_primary BOOLEAN NOT NULL DEFAULT false,     -- Is this the primary language
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -160,9 +160,9 @@ COMMENT ON COLUMN shared_country_languages.is_primary IS 'Is this the primary la
 
 -- Country-Timezone M2M (one country can have multiple timezones, one timezone can span multiple countries)
 CREATE TABLE IF NOT EXISTS shared_country_timezones (
-    id UUID PRIMARY KEY,
-    country_id UUID NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
-    timezone_id UUID NOT NULL REFERENCES shared_timezones(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY,
+    country_id TEXT NOT NULL REFERENCES shared_countries(id) ON DELETE CASCADE,
+    timezone_id TEXT NOT NULL REFERENCES shared_timezones(id) ON DELETE CASCADE,
     is_primary BOOLEAN NOT NULL DEFAULT false,     -- Is this the primary/capital timezone
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(country_id, timezone_id)

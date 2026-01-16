@@ -41,11 +41,11 @@ COMMENT ON TYPE deal_source IS 'Deal origin channels for lead attribution';
 -- Stores sales opportunities and pipeline management
 CREATE TABLE customer_deals (
     -- Primary Key
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
 
     -- Relationships
-    customer_id UUID NOT NULL,                  -- Link to customer (required)
-    company_id UUID,                            -- Link to company (optional, for B2B)
+    customer_id TEXT NOT NULL,                  -- Link to customer (required)
+    company_id TEXT,                            -- Link to company (optional, for B2B)
 
     -- Basic Information
     name VARCHAR(255) NOT NULL,                 -- Deal name/title
@@ -65,7 +65,7 @@ CREATE TABLE customer_deals (
     actual_close_date DATE,                     -- Actual close date (when closed)
 
     -- Ownership
-    assigned_to UUID NOT NULL,                  -- Sales rep (Identity.User)
+    assigned_to TEXT NOT NULL,                  -- Sales rep (Identity.User)
 
     -- Closure Information
     close_reason TEXT,                          -- Win/loss reason
@@ -103,7 +103,7 @@ CREATE TABLE customer_deals (
 -- Table Comments
 -- ============================================================================
 COMMENT ON TABLE customer_deals IS 'Sales opportunities and pipeline management';
-COMMENT ON COLUMN customer_deals.id IS 'Unique deal identifier (UUID v7)';
+COMMENT ON COLUMN customer_deals.id IS 'Unique deal identifier (UUID v7 stored as TEXT)';
 COMMENT ON COLUMN customer_deals.customer_id IS 'Customer this deal belongs to (required)';
 COMMENT ON COLUMN customer_deals.company_id IS 'Company associated with deal (optional, B2B)';
 COMMENT ON COLUMN customer_deals.name IS 'Deal name/title for identification';

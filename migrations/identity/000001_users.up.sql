@@ -17,7 +17,7 @@ COMMENT ON TYPE user_status IS 'User account status lifecycle (Identity Context)
 
 -- Users table (User aggregate root)
 CREATE TABLE identity_users (
-    id                   UUID PRIMARY KEY,
+    id                   TEXT PRIMARY KEY,
     email                VARCHAR(255) UNIQUE NOT NULL,
     password_hash        VARCHAR(255) NOT NULL,
     status               user_status DEFAULT 'active' NOT NULL,
@@ -45,7 +45,7 @@ CREATE INDEX idx_identity_users_deleted_at ON identity_users(deleted_at) WHERE d
 
 -- Comments for documentation
 COMMENT ON TABLE identity_users IS 'User aggregate root (Identity Bounded Context)';
-COMMENT ON COLUMN identity_users.id IS 'UUID v7 - time-ordered primary key';
+COMMENT ON COLUMN identity_users.id IS 'UUID v7 stored as TEXT (time-ordered primary key)';
 COMMENT ON COLUMN identity_users.email IS 'Unique email address for authentication';
 COMMENT ON COLUMN identity_users.password_hash IS 'Bcrypt hashed password';
 COMMENT ON COLUMN identity_users.status IS 'Account lifecycle status';

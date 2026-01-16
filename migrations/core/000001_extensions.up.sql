@@ -1,3 +1,2 @@
--- Enable extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- PostgreSQL extensions are optional and must be enabled manually if needed.
+-- This migration is intentionally a no-op to keep migrations database-agnostic.

@@ -52,11 +52,11 @@ COMMENT ON TYPE interaction_outcome IS 'Outcome or result of customer interactio
 -- Stores all customer interactions (calls, emails, meetings, notes)
 CREATE TABLE customer_interactions (
     -- Primary Key
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
 
     -- Relationships
-    customer_id UUID NOT NULL,                  -- Link to customer (required)
-    company_id UUID,                            -- Link to company (optional, for B2B)
+    customer_id TEXT NOT NULL,                  -- Link to customer (required)
+    company_id TEXT,                            -- Link to company (optional, for B2B)
 
     -- Interaction Details
     type interaction_type NOT NULL,             -- Type of interaction
@@ -68,7 +68,7 @@ CREATE TABLE customer_interactions (
     description TEXT NOT NULL,                  -- Detailed notes
 
     -- Participants
-    created_by UUID NOT NULL,                   -- User who logged interaction
+    created_by TEXT NOT NULL,                   -- User who logged interaction
     attendees TEXT,                             -- JSON array of attendee UUIDs stored as TEXT for cross-DB compatibility
 
     -- Timing
@@ -157,7 +157,7 @@ CREATE INDEX idx_interactions_customer_started
 
 COMMENT ON TABLE customer_interactions IS 'Stores all customer interactions (calls, emails, meetings, notes)';
 
-COMMENT ON COLUMN customer_interactions.id IS 'UUID v7 primary key';
+COMMENT ON COLUMN customer_interactions.id IS 'UUID v7 stored as TEXT primary key';
 COMMENT ON COLUMN customer_interactions.customer_id IS 'Link to customer (required)';
 COMMENT ON COLUMN customer_interactions.company_id IS 'Link to company (optional, for B2B)';
 COMMENT ON COLUMN customer_interactions.type IS 'Type of interaction (call, email, meeting, note, sms, chat)';

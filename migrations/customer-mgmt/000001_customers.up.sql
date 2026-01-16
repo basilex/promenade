@@ -10,9 +10,9 @@ CREATE TYPE customer_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 -- Customers table
 CREATE TABLE customer_customers (
     -- Identity
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES identity_users(id) ON DELETE SET NULL, -- Linked account (optional)
-    company_id UUID, -- B2B company reference (future: REFERENCES customer_companies(id))
+    id TEXT PRIMARY KEY,
+    user_id TEXT REFERENCES identity_users(id) ON DELETE SET NULL, -- Linked account (optional)
+    company_id TEXT, -- B2B company reference (future: REFERENCES customer_companies(id))
     
     -- Basic Info
     name VARCHAR(255) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE customer_customers (
     status customer_status NOT NULL DEFAULT 'lead',
     tier customer_tier NOT NULL DEFAULT 'free',
     source VARCHAR(100) NOT NULL, -- "website", "referral", "cold_call", etc.
-    assigned_to UUID NOT NULL, -- Sales rep (future: REFERENCES identity_users(id))
+    assigned_to TEXT NOT NULL, -- Sales rep (future: REFERENCES identity_users(id))
     
     -- Metadata
     tags TEXT, -- JSON array stored as TEXT for cross-DB compatibility (e.g., ["vip", "high-value"])

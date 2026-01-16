@@ -7,10 +7,10 @@
 
 CREATE TABLE IF NOT EXISTS order_orders (
     -- Identity
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     order_number VARCHAR(50) UNIQUE NOT NULL,  -- ORD-2026-000001
-    customer_id UUID NOT NULL,  -- References customer_customers (cross-context)
-    company_id UUID NULL,       -- References customer_companies (B2B orders)
+    customer_id TEXT NOT NULL,  -- References customer_customers (cross-context)
+    company_id TEXT NULL,       -- References customer_companies (B2B orders)
 
     -- Order Details
     total_amount DECIMAL(15, 2) NOT NULL DEFAULT 0,
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS order_orders (
     cancelled_at TIMESTAMP WITH TIME ZONE NULL,
 
     -- References (to other contexts)
-    contract_id UUID NULL,   -- References order_contracts
-    invoice_id UUID NULL,    -- References billing_invoices (cross-context)
+    contract_id TEXT NULL,   -- References order_contracts
+    invoice_id TEXT NULL,    -- References billing_invoices (cross-context)
 
     -- Lifecycle timestamps
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -61,9 +61,9 @@ CREATE INDEX idx_orders_deleted_at ON order_orders (deleted_at) WHERE deleted_at
 
 CREATE TABLE IF NOT EXISTS order_lines (
     -- Identity
-    id UUID PRIMARY KEY,
-    order_id UUID NOT NULL REFERENCES order_orders (id) ON DELETE CASCADE,
-    product_id UUID NOT NULL,  -- References warehouse_products (cross-context)
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES order_orders (id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL,  -- References warehouse_products (cross-context)
 
     -- Line details
     quantity INT NOT NULL DEFAULT 1,

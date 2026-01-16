@@ -5,10 +5,10 @@
 -- Create stock movements table for immutable audit trail
 CREATE TABLE warehouse_stock_movements (
     -- Primary key
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY,
     
     -- Foreign keys
-    inventory_id UUID NOT NULL REFERENCES warehouse_inventory(id) ON DELETE RESTRICT,
+    inventory_id TEXT NOT NULL REFERENCES warehouse_inventory(id) ON DELETE RESTRICT,
     
     -- Movement type (receipt, reservation, reservation_release, commit, adjustment, transfer, damage, return)
     type VARCHAR(50) NOT NULL CHECK (type IN ('receipt', 'reservation', 'reservation_release', 'commit', 'adjustment', 'transfer', 'damage', 'return')),
@@ -19,14 +19,14 @@ CREATE TABLE warehouse_stock_movements (
     quantity_after_move INTEGER NOT NULL,
     
     -- Warehouse routing (for transfers)
-    from_warehouse_id UUID,
+    from_warehouse_id TEXT,
     from_location_code VARCHAR(50),
-    to_warehouse_id UUID,
+    to_warehouse_id TEXT,
     to_location_code VARCHAR(50),
     
     -- Reference tracking (order, purchase_order, adjustment, etc.)
     reference_type VARCHAR(50),
-    reference_id UUID,
+    reference_id TEXT,
     
     -- Cost tracking (for receipts)
     unit_cost_cents BIGINT,
@@ -36,7 +36,7 @@ CREATE TABLE warehouse_stock_movements (
     -- Audit fields
     reason TEXT,
     notes TEXT,
-    created_by UUID NOT NULL,
+    created_by TEXT NOT NULL,
     movement_date TIMESTAMP NOT NULL,
     
     -- Timestamps

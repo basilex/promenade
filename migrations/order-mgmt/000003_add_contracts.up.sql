@@ -1,8 +1,8 @@
 -- Create order_contracts table for legal agreements
 CREATE TABLE IF NOT EXISTS order_contracts (
-    id UUID PRIMARY KEY,
-    order_id UUID NOT NULL REFERENCES order_orders(id) ON DELETE CASCADE,
-    customer_id UUID NOT NULL,
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES order_orders(id) ON DELETE CASCADE,
+    customer_id TEXT NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'draft',
     terms TEXT NOT NULL,
     terms_url TEXT,

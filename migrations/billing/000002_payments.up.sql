@@ -1,10 +1,10 @@
 -- Payments table
 CREATE TABLE billing_payments (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     payment_no VARCHAR(20) UNIQUE NOT NULL,
     transaction_id VARCHAR(100),
-    customer_id UUID NOT NULL,
-    invoice_id UUID,
+    customer_id TEXT NOT NULL,
+    invoice_id TEXT,
     amount BIGINT NOT NULL CHECK (amount > 0),
     currency VARCHAR(3) NOT NULL DEFAULT 'USD',
     method VARCHAR(50) NOT NULL,

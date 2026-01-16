@@ -7,17 +7,17 @@
 
 -- Cash Registers table
 CREATE TABLE IF NOT EXISTS fiscal_cash_registers (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     version INTEGER NOT NULL DEFAULT 1,
     
-    organization_id UUID NOT NULL,
+    organization_id TEXT NOT NULL,
     fiscal_number VARCHAR(50) UNIQUE NOT NULL,
     model VARCHAR(100) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'inactive' CHECK (status IN ('inactive', 'active', 'maintenance', 'suspended')),
     
     license_key VARCHAR(255),
     last_sync_at TIMESTAMP,
-    last_updated_by UUID NOT NULL,
+    last_updated_by TEXT NOT NULL,
     
     -- Timestamps
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

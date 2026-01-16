@@ -4,7 +4,7 @@
 
 CREATE TABLE warehouse_locations (
     -- Primary key
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     
     -- Business identifiers
     code VARCHAR(50) NOT NULL UNIQUE,
@@ -13,7 +13,7 @@ CREATE TABLE warehouse_locations (
     
     -- Location type and hierarchy
     type VARCHAR(20) NOT NULL CHECK (type IN ('warehouse', 'zone', 'aisle', 'rack', 'shelf', 'bin')),
-    parent_id UUID REFERENCES warehouse_locations(id) ON DELETE RESTRICT,
+    parent_id TEXT REFERENCES warehouse_locations(id) ON DELETE RESTRICT,
     path TEXT NOT NULL,  -- Materialized path: /WH01/A/01
     level INT NOT NULL,  -- 0=warehouse, 1=zone, 2=aisle, etc.
     

@@ -7,8 +7,8 @@
 
 -- User Sessions (Refresh Token Rotation Pattern for JWT)
 CREATE TABLE identity_user_sessions (
-    id            UUID PRIMARY KEY,
-    user_id       UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
+    id            TEXT PRIMARY KEY,
+    user_id       TEXT NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
     refresh_token VARCHAR(512) UNIQUE NOT NULL,
     user_agent    TEXT,
     ip_address    INET,
@@ -27,8 +27,8 @@ COMMENT ON COLUMN identity_user_sessions.expires_at IS 'Session expiration (7-30
 
 -- Password Reset Tokens
 CREATE TABLE identity_password_reset_tokens (
-    id         UUID PRIMARY KEY,
-    user_id    UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
     token      VARCHAR(255) UNIQUE NOT NULL,
     used       BOOLEAN DEFAULT false NOT NULL,
     used_at    TIMESTAMP WITH TIME ZONE,
@@ -46,8 +46,8 @@ COMMENT ON COLUMN identity_password_reset_tokens.used IS 'Token can only be used
 
 -- Email Verification Tokens
 CREATE TABLE identity_email_verification_tokens (
-    id         UUID PRIMARY KEY,
-    user_id    UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
     email      VARCHAR(255) NOT NULL,
     token      VARCHAR(255) UNIQUE NOT NULL,
     used       BOOLEAN DEFAULT false NOT NULL,
@@ -66,7 +66,7 @@ COMMENT ON COLUMN identity_email_verification_tokens.token IS 'Verification toke
 
 -- Login Attempts (Security: Rate Limiting & Breach Detection)
 CREATE TABLE identity_login_attempts (
-    id         UUID PRIMARY KEY,
+    id         TEXT PRIMARY KEY,
     email      VARCHAR(255) NOT NULL,
     ip_address INET NOT NULL,
     success    BOOLEAN DEFAULT false NOT NULL,

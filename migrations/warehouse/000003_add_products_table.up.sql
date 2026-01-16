@@ -7,7 +7,7 @@
 
 -- Products table (Product aggregate)
 CREATE TABLE IF NOT EXISTS warehouse_products (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     version INTEGER NOT NULL DEFAULT 1,
     
     -- Identity
@@ -61,8 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_warehouse_products_is_active ON warehouse_product
 CREATE INDEX IF NOT EXISTS idx_warehouse_products_category ON warehouse_products(category) WHERE deleted_at IS NULL AND category IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_warehouse_products_brand ON warehouse_products(brand) WHERE deleted_at IS NULL AND brand IS NOT NULL;
 
--- Full-text search index for name and description
-CREATE INDEX IF NOT EXISTS idx_warehouse_products_search ON warehouse_products USING gin(to_tsvector('english', name || ' ' || COALESCE(description, ''))) WHERE deleted_at IS NULL;
+-- Full-text index is database-specific; omitted for cross-db compatibility
 
 -- Timestamps
 CREATE INDEX IF NOT EXISTS idx_warehouse_products_created_at ON warehouse_products(created_at) WHERE deleted_at IS NULL;
@@ -76,7 +75,7 @@ CREATE INDEX IF NOT EXISTS idx_warehouse_products_deleted_at ON warehouse_produc
 -- ============================================================================
 
 COMMENT ON TABLE warehouse_products IS 'Product catalog and specifications (Product aggregate)';
-COMMENT ON COLUMN warehouse_products.id IS 'Primary key (UUID v7)';
+COMMENT ON COLUMN warehouse_products.id IS 'Primary key (UUID v7 stored as TEXT)';
 COMMENT ON COLUMN warehouse_products.version IS 'Optimistic locking version';
 COMMENT ON COLUMN warehouse_products.sku IS 'Stock Keeping Unit (unique identifier)';
 COMMENT ON COLUMN warehouse_products.name IS 'Product name';
