@@ -72,7 +72,7 @@ Gerencie todo o ciclo de vida dos seus clientes, desde o primeiro contato até o
 
 - **Rastreamento de Interações**
   - Registro de todos os pontos de contato com clientes (chamadas, e-mails, reuniões, notas)
-  - Reuniões multi-participante com participantes JSONB
+  - Reuniões multi-participante com participantes JSON
   - Gestão de acompanhamentos e lembretes
   - Rastreamento de duração para prestação de contas de tempo
 

@@ -276,9 +276,9 @@ func TestUseCase_CreateCustomer_AlreadyExists(t *testing.T) {
 
 **Sessions**: 10 (Entity Tests - 64 anti-patterns fixed)
 
-### Pattern 6: JSONB Field Validation
+### Pattern 6: JSON Field Validation
 
-**Purpose**: Validate JSONB arrays/objects before database operations
+**Purpose**: Validate JSON arrays/objects before database operations
 
 **Implementation**:
 ```go
@@ -304,7 +304,7 @@ func (c *Customer) AddTag(tag string) error {
 }
 ```
 
-**Sessions**: 4, 7, 8 (contexts with JSONB fields)
+**Sessions**: 4, 7, 8 (contexts with JSON fields)
 
 ### Pattern 7: Soft Delete Error Handling
 

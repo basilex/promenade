@@ -535,10 +535,10 @@ curl http://localhost:8081/api/v1/order-mgmt/orders/status/fulfilled
 **order_mgmt_orders** (main orders table):
 ```sql
 CREATE TABLE order_mgmt_orders (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id TEXT PRIMARY KEY,
     order_number VARCHAR(20) UNIQUE NOT NULL,
-    customer_id UUID NOT NULL,
-    company_id UUID,
+    customer_id TEXT NOT NULL,
+    company_id TEXT,
     status VARCHAR(20) NOT NULL,
     currency VARCHAR(3) NOT NULL,
     
@@ -569,9 +569,9 @@ CREATE INDEX idx_orders_deleted ON order_mgmt_orders(deleted_at);
 **order_mgmt_order_lines** (order line items):
 ```sql
 CREATE TABLE order_mgmt_order_lines (
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
-    order_id UUID NOT NULL,
-    product_id UUID NOT NULL,
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
     quantity INTEGER NOT NULL,
     unit_price BIGINT NOT NULL,
     subtotal BIGINT NOT NULL,

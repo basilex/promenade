@@ -145,7 +145,7 @@ migrations/
   ```sql
   -- migrations/scripting/000001_scripting_init.up.sql
   CREATE TABLE scripting_scripts (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     script_id VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -154,19 +154,19 @@ migrations/
     lua_code TEXT NOT NULL,
     version INTEGER DEFAULT 1,
     is_active BOOLEAN DEFAULT true,
-    created_by UUID REFERENCES identity_users(id),
+    created_by TEXT REFERENCES identity_users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
   );
   
   CREATE TABLE scripting_script_versions (
-    id UUID PRIMARY KEY,
-    script_id UUID REFERENCES scripting_scripts(id),
+    id TEXT PRIMARY KEY,
+    script_id TEXT REFERENCES scripting_scripts(id),
     version INTEGER NOT NULL,
     lua_code TEXT NOT NULL,
     change_log TEXT,
-    created_by UUID REFERENCES identity_users(id),
+    created_by TEXT REFERENCES identity_users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
   
@@ -246,47 +246,48 @@ migrations/
   ```sql
   -- migrations/ui/000001_ui_metadata.up.sql
   CREATE TABLE ui_form_definitions (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     form_id VARCHAR(100) UNIQUE NOT NULL,
     entity_type VARCHAR(50) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     
-    -- Form metadata (JSONB)
-    layout JSONB NOT NULL,           -- sections, tabs, wizard
-    fields JSONB NOT NULL,           -- field definitions
-    validation JSONB,                -- validation rules
-    events JSONB,                    -- LUA event handlers
-    permissions JSONB,               -- RBAC
-    i18n JSONB,                      -- Multi-language support
+    -- Form metadata (JSON stored as TEXT for db-agnostic support)
+    layout TEXT NOT NULL,            -- sections, tabs, wizard
+    fields TEXT NOT NULL,            -- field definitions
+    validation TEXT,                 -- validation rules
+    events TEXT,                     -- LUA event handlers
+    permissions TEXT,                -- RBAC
+    i18n TEXT,                       -- Multi-language support
     
     -- Versioning
     version INTEGER DEFAULT 1,
     is_active BOOLEAN DEFAULT true,
     
     -- Multi-tenant support
-    tenant_id UUID,                  -- NULL = shared form
+    tenant_id TEXT,                  -- NULL = shared form
     
     -- Audit
-    created_by UUID REFERENCES identity_users(id),
+    created_by TEXT REFERENCES identity_users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
   );
   
   CREATE TABLE ui_form_versions (
-    id UUID PRIMARY KEY,
-    form_id UUID REFERENCES ui_form_definitions(id),
+    id TEXT PRIMARY KEY,
+    form_id TEXT REFERENCES ui_form_definitions(id),
     version INTEGER NOT NULL,
-    metadata JSONB NOT NULL,
+    metadata TEXT NOT NULL,
     change_log TEXT,
-    created_by UUID REFERENCES identity_users(id),
+    created_by TEXT REFERENCES identity_users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
   
   CREATE INDEX idx_ui_forms_entity ON ui_form_definitions(entity_type);
   CREATE INDEX idx_ui_forms_tenant ON ui_form_definitions(tenant_id);
-  CREATE INDEX idx_ui_forms_metadata ON ui_form_definitions USING GIN(fields);
+  -- PostgreSQL-only (optional)
+  -- CREATE INDEX idx_ui_forms_metadata ON ui_form_definitions USING GIN(fields);
   ```
 
 - [ ] Define TypeScript/Go types (shared schema):

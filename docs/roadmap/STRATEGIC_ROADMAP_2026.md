@@ -103,7 +103,7 @@ Examples:
 **Database Schema**:
 ```sql
 CREATE TABLE scheduler_jobs (
-    id UUID PRIMARY KEY,
+  id TEXT PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT,
     
@@ -115,10 +115,10 @@ CREATE TABLE scheduler_jobs (
     -- Job definition
     job_type VARCHAR(20) NOT NULL,  -- 'go', 'lua', 'http'
     handler_name VARCHAR(255),      -- For Go jobs
-    lua_script_id UUID,             -- For LUA jobs
+    lua_script_id TEXT,             -- For LUA jobs
     http_url TEXT,                  -- For HTTP jobs
     http_method VARCHAR(10),        -- GET, POST, etc.
-    http_headers JSONB,
+    http_headers TEXT,
     
     -- Execution control
     max_retries INTEGER DEFAULT 3,
@@ -128,14 +128,14 @@ CREATE TABLE scheduler_jobs (
     -- Metadata
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID,
+    created_by TEXT,
     last_run_at TIMESTAMP,
     next_run_at TIMESTAMP
 );
 
 CREATE TABLE scheduler_job_executions (
-    id UUID PRIMARY KEY,
-    job_id UUID REFERENCES scheduler_jobs(id),
+  id TEXT PRIMARY KEY,
+  job_id TEXT REFERENCES scheduler_jobs(id),
     
     -- Execution details
     started_at TIMESTAMP NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE scheduler_job_executions (
     
     -- Context
     triggered_by VARCHAR(50),  -- 'scheduler', 'manual', 'api'
-    triggered_by_user_id UUID
+    triggered_by_user_id TEXT
 );
 
 CREATE INDEX idx_jobs_next_run ON scheduler_jobs(next_run_at) WHERE enabled = true;

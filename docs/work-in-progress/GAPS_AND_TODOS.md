@@ -296,7 +296,7 @@ TestHandler_RegisterRoutes                       PASS
 - Strategic composite indexes for multi-column queries
 - Extensive partial indexes (WHERE deleted_at IS NULL)
 - Functional indexes for case-insensitive searches (LOWER(email))
-- GIN indexes for JSONB array operations
+- GIN indexes for JSON array operations (PostgreSQL-only)
 
 **Key Findings:**
 - **identity_users**: 4 indexes (email, status, created_at, deleted_at)

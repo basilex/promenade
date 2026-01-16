@@ -72,7 +72,7 @@ Manage your entire customer lifecycle from first contact to loyal customer:
 
 - **Interaction Tracking**
   - Record all customer touchpoints (calls, emails, meetings, notes)
-  - Multi-participant meetings with JSONB attendees
+  - Multi-participant meetings with JSON attendees
   - Follow-up management and reminders
   - Duration tracking for time accountability
 

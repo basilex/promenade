@@ -72,7 +72,7 @@ Gérez l'ensemble du cycle de vie de vos clients, du premier contact au client f
 
 - **Suivi des Interactions**
   - Enregistrement de tous les points de contact clients (appels, emails, réunions, notes)
-  - Réunions multi-participants avec participants JSONB
+  - Réunions multi-participants avec participants JSON
   - Gestion des suivis et rappels
   - Suivi de la durée pour la responsabilité du temps
 

@@ -209,14 +209,14 @@ if err.Error() == "not found" {  // Breaks with wrapping
 
 ## Technical Insights
 
-### 8. JSONB Validation Needs Special Care
+### 8. JSON Validation Needs Special Care
 
-**Discovery**: JSONB fields need domain-level validation
+**Discovery**: JSON fields need domain-level validation
 
 **Evidence**:
-- **Session 4**: Product aggregate - JSONB arrays for tags
-- **Session 7**: Company aggregate - JSONB metadata
-- **Session 8**: Subscription aggregate - JSONB features
+- **Session 4**: Product aggregate - JSON arrays for tags
+- **Session 7**: Company aggregate - JSON metadata
+- **Session 8**: Subscription aggregate - JSON features
 
 **Pattern**:
 ```go
@@ -226,7 +226,7 @@ func (c *Customer) AddTag(tag string) error {
         return ErrEmptyTag  // Domain validation
     }
     
-    tags := c.Tags.Get()  // JSONB field
+    tags := c.Tags.Get()  // JSON field
     if contains(tags, tag) {
         return ErrTagAlreadyExists  // Business rule
     }
@@ -237,9 +237,9 @@ func (c *Customer) AddTag(tag string) error {
 }
 ```
 
-**Why**: Database can't validate JSONB content (no constraints)
+**Why**: Database can't validate JSON content (no constraints)
 
-**Lesson**: **JSONB fields require domain-level validation. Never trust database to enforce rules.**
+**Lesson**: **JSON fields require domain-level validation. Never trust database to enforce rules.**
 
 ### 9. Soft Delete Creates Edge Cases
 
@@ -423,7 +423,7 @@ Constants: 22
 
 **When to Test DTOs**:
 - Value object conversion (Money cents → dollars)
-- JSONB marshaling/unmarshaling
+- JSON marshaling/unmarshaling
 - Complex transformations (nested structures)
 - Conditional logic (nullable fields)
 
@@ -621,7 +621,7 @@ Phase 2 refactoring (11/18 sessions) eliminated 341 error handling anti-patterns
 ### Session 4 (Product): Scale Test
 - 60 eliminations (largest session)
 - Proved pattern scales to complex aggregates
-- JSONB validation patterns
+- JSON validation patterns
 
 ### Session 5 (Deal + Order): Critical Discovery
 - **Order**: Critical bug discovered (error wrapping breaks errors.Is())

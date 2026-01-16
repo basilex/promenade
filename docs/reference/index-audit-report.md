@@ -15,7 +15,7 @@
 -  All WHERE clause columns are indexed
 -  Composite indexes for common query patterns
 -  Partial indexes with `WHERE deleted_at IS NULL` for soft-deleted tables
--  GIN indexes for JSONB array operations
+-  GIN indexes for JSON array operations (PostgreSQL-only)
 -  Functional indexes (LOWER() for case-insensitive searches)
 
 **Tables Analyzed:** 13 tables across 4 contexts  
@@ -273,7 +273,7 @@ idx_customers_status          ON status WHERE deleted_at IS NULL            -- L
 idx_customers_tier            ON tier WHERE deleted_at IS NULL              -- Segmentation 
 idx_customers_assigned_to     ON assigned_to WHERE deleted_at IS NULL       -- Assignment 
 idx_customers_created_at      ON created_at DESC WHERE deleted_at IS NULL   -- Sorting 
-idx_customers_tags            USING gin(tags) WHERE deleted_at IS NULL      -- JSONB search 
+idx_customers_tags            USING gin(tags) WHERE deleted_at IS NULL      -- JSON array search (PostgreSQL-only)
 ```
 
 **Query Patterns:**
@@ -419,14 +419,15 @@ CREATE INDEX idx_identity_users_email ON identity_users(LOWER(email));
 
 Enables case-insensitive email lookup: `WHERE LOWER(email) = LOWER($1)`
 
-### 5. GIN Indexes for JSONB
-**Result:**  Array Operations
+### 5. JSON Indexes (PostgreSQL-only)
+**Result:**  Array Operations (optional)
 
 ```sql
-CREATE INDEX idx_customers_tags USING gin(tags);
+-- PostgreSQL-only example (optional)
+-- CREATE INDEX idx_customers_tags USING gin(tags);
 ```
 
-Supports JSONB array queries: `WHERE tags @> '["premium"]'`
+Supports JSON array queries (PostgreSQL-only): `WHERE tags @> '["premium"]'`
 
 ### 6. Partial Indexes for Optimization
 **Result:**  Extensive Use
@@ -443,7 +444,7 @@ Supports JSONB array queries: `WHERE tags @> '["premium"]'`
 ### Index Size Optimization
 - **Partial indexes** reduce storage by 50-90% for soft-deleted tables
 - **Covering indexes** eliminate table lookups for common queries
-- **GIN indexes** enable efficient JSONB array searches
+- **GIN indexes** enable efficient JSON array searches (PostgreSQL-only)
 
 ### Query Performance
 - **Primary key lookups:** O(1) - hash or B-tree
@@ -545,7 +546,7 @@ The Promenade Platform database schema demonstrates **professional-grade indexin
 - Strategic composite indexes for multi-column queries
 - Extensive use of partial indexes for optimization
 - Functional indexes for case-insensitive searches
-- GIN indexes for JSONB array operations
+- GIN indexes for JSON array operations (PostgreSQL-only)
 - Consistent soft delete pattern
 
 **No missing indexes identified.** All queries have appropriate index support.

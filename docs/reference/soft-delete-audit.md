@@ -279,7 +279,7 @@ UPDATE shared_* SET is_active = FALSE WHERE id = $1
 **Pattern:**
 ```sql
 CREATE TABLE example (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     -- fields...
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -314,7 +314,7 @@ CREATE INDEX idx_example_deleted_at ON example(id) WHERE deleted_at IS NULL;
 **Pattern:**
 ```sql
 CREATE TABLE shared_example (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     code VARCHAR(10) UNIQUE NOT NULL,
     -- fields...
     is_active BOOLEAN NOT NULL DEFAULT TRUE

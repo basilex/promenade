@@ -104,7 +104,7 @@ internal/contexts/identity/
 ```sql
 -- Permissions table
 CREATE TABLE identity_permissions (
-    id          UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id          TEXT PRIMARY KEY,
     name        VARCHAR(101) GENERATED ALWAYS AS (resource || ':' || action) STORED NOT NULL,
     resource    VARCHAR(50) NOT NULL,
     action      VARCHAR(50) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE identity_permissions (
 
 -- Roles table
 CREATE TABLE identity_roles (
-    id          UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id          TEXT PRIMARY KEY,
     name        VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,
     is_system   BOOLEAN DEFAULT false,
@@ -128,17 +128,17 @@ CREATE TABLE identity_roles (
 
 -- User-Role junction table
 CREATE TABLE identity_user_roles (
-    user_id     UUID NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
-    role_id     UUID NOT NULL REFERENCES identity_roles(id) ON DELETE CASCADE,
+    user_id     TEXT NOT NULL REFERENCES identity_users(id) ON DELETE CASCADE,
+    role_id     TEXT NOT NULL REFERENCES identity_roles(id) ON DELETE CASCADE,
     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    assigned_by UUID REFERENCES identity_users(id),
+    assigned_by TEXT REFERENCES identity_users(id),
     PRIMARY KEY (user_id, role_id)
 );
 
 -- Role-Permission junction table
 CREATE TABLE identity_role_permissions (
-    role_id       UUID NOT NULL REFERENCES identity_roles(id) ON DELETE CASCADE,
-    permission_id UUID NOT NULL REFERENCES identity_permissions(id) ON DELETE CASCADE,
+    role_id       TEXT NOT NULL REFERENCES identity_roles(id) ON DELETE CASCADE,
+    permission_id TEXT NOT NULL REFERENCES identity_permissions(id) ON DELETE CASCADE,
     PRIMARY KEY (role_id, permission_id)
 );
 ```

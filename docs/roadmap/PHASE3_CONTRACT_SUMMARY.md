@@ -231,9 +231,9 @@ handler_test.go              351 lines  (11 smoke tests with mocks)
 ```sql
 CREATE TABLE order_contracts (
     -- Identity
-    id UUID PRIMARY KEY,
-    order_id UUID NOT NULL REFERENCES order_orders(id) ON DELETE CASCADE,
-    customer_id UUID NOT NULL,
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES order_orders(id) ON DELETE CASCADE,
+    customer_id TEXT NOT NULL,
     
     -- Status
     status VARCHAR(50) NOT NULL DEFAULT 'draft',

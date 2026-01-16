@@ -653,11 +653,11 @@ curl http://localhost:8081/api/v1/customer-mgmt/deals/stats/won | jq .
 ```sql
 CREATE TABLE IF NOT EXISTS customer_deals (
     -- Primary Key
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+  id TEXT PRIMARY KEY,
     
     -- Foreign Keys
-    customer_id UUID NOT NULL REFERENCES customer_mgmt_customers(id),
-    assigned_to UUID NOT NULL REFERENCES identity_users(id),
+    customer_id TEXT NOT NULL REFERENCES customer_mgmt_customers(id),
+    assigned_to TEXT NOT NULL REFERENCES identity_users(id),
     
     -- Deal Information
     name VARCHAR(200) NOT NULL,
@@ -679,7 +679,7 @@ CREATE TABLE IF NOT EXISTS customer_deals (
     
     -- Metadata
     loss_reason TEXT,
-    tags JSONB DEFAULT '[]'::jsonb,
+    tags TEXT DEFAULT '[]',
     
     -- Audit Fields
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -697,7 +697,8 @@ CREATE INDEX idx_deals_assigned_to ON customer_deals(assigned_to) WHERE deleted_
 CREATE INDEX idx_deals_stage ON customer_deals(stage) WHERE deleted_at IS NULL;
 CREATE INDEX idx_deals_expected_close ON customer_deals(expected_close_date) WHERE deleted_at IS NULL;
 CREATE INDEX idx_deals_actual_close ON customer_deals(actual_close_date) WHERE deleted_at IS NULL;
-CREATE INDEX idx_deals_tags ON customer_deals USING GIN (tags) WHERE deleted_at IS NULL;
+-- PostgreSQL-only (optional)
+-- CREATE INDEX idx_deals_tags ON customer_deals USING GIN (tags) WHERE deleted_at IS NULL;
 
 -- Trigger for updated_at
 CREATE TRIGGER trg_deals_updated_at

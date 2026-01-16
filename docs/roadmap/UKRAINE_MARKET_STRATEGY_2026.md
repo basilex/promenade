@@ -371,8 +371,8 @@ Integrations:
 **Database Schema**:
 ```sql
 CREATE TABLE accounting_tax_invoices (
-    id UUID PRIMARY KEY,
-    invoice_id UUID REFERENCES billing_invoices(id),
+   id TEXT PRIMARY KEY,
+   invoice_id TEXT REFERENCES billing_invoices(id),
     
     -- Податкова інформація
     tax_invoice_number VARCHAR(50) UNIQUE,

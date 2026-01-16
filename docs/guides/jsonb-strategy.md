@@ -8,10 +8,8 @@
 
 Promenade uses **jsonstore.Field[T]** to store JSON data in a database-agnostic way:
 
-- **PostgreSQL**: Stores as `JSONB` (binary format, indexable)
-- **SQLite**: Stores as `TEXT` (JSON string)
-- **MySQL**: Stores as `JSON` (native type)
-- **SQL Server**: Stores as `NVARCHAR(MAX)` with JSON functions
+- **All databases**: Store JSON as `TEXT` in migrations
+- **PostgreSQL**: Optional JSONB in Postgres-only migrations if needed
 
 **Key Benefit**: Write Go code once, works with all databases.
 
@@ -236,14 +234,9 @@ order.Touch()
 
 ### PostgreSQL
 
-**Storage**: `JSONB` (binary format)
+**Storage**: `TEXT` by default
 
-**Features**:
-- Indexable: `CREATE INDEX idx_customers_tags ON customers USING GIN (tags);`
-- Queryable: `SELECT * FROM customers WHERE tags @> '["vip"]';`
-- Operators: `@>`, `?`, `?|`, `?&`, `||`, `-`, `#-`
-
-**Performance**: Excellent for complex JSON queries
+**Optional**: Add Postgres-only JSONB columns or indexes in a separate migration if needed.
 
 ### SQLite
 
@@ -254,17 +247,15 @@ order.Touch()
 - Queryable: `SELECT * FROM customers WHERE json_extract(tags, '$[0]') = 'vip';`
 - No native indexing (use computed columns)
 
-**Performance**: Good for simple queries, slow for complex
-
 ### Comparison
 
-| Operation           | PostgreSQL JSONB | SQLite TEXT |
-| ------------------- | ---------------- | ----------- |
-| **Array contains**  | `@> '["vip"]'`   | `json_extract()` |
-| **Array length**    | `jsonb_array_length()` | `json_array_length()` |
-| **Indexing**        | GIN index        | Computed column |
-| **Storage**         | Binary (smaller) | String (larger) |
-| **Query Speed**     | Fast             | Moderate    |
+| Operation           | PostgreSQL (TEXT) | SQLite (TEXT) |
+| ------------------- | ----------------- | ------------ |
+| **Array contains**  | `json_extract()`  | `json_extract()` |
+| **Array length**    | `json_array_length()` | `json_array_length()` |
+| **Indexing**        | Optional (computed or JSONB-only) | Computed column |
+| **Storage**         | String (larger)   | String (larger) |
+| **Query Speed**     | Moderate          | Moderate     |
 
 ---
 
@@ -373,7 +364,7 @@ func TestCustomerRepository_Tags(t *testing.T) {
 
 ## Performance Considerations
 
-### When to Use JSONB
+### When to Use JSON Fields
 
  **Good Use Cases**:
 - Arrays of primitives (tags, IDs, categories)
@@ -389,10 +380,9 @@ func TestCustomerRepository_Tags(t *testing.T) {
 
 ### Optimization Tips
 
-1. **Index frequently queried fields** (PostgreSQL only):
-   ```sql
-   CREATE INDEX idx_customers_tags ON customers USING GIN (tags);
-   ```
+1. **Index frequently queried fields** (database-specific):
+    - PostgreSQL: computed columns or optional JSONB migrations
+    - SQLite: computed columns
 
 2. **Limit JSON size**: Keep under 100KB for best performance
 
@@ -408,7 +398,7 @@ func TestCustomerRepository_Tags(t *testing.T) {
 
 ## Migration Guide
 
-### From JSONB to TEXT (Phase 4 Complete)
+### From JSONB to TEXT (Database-Agnostic)
 
 **Before** (PostgreSQL-specific):
 ```sql
@@ -509,7 +499,7 @@ ALTER TABLE customers ALTER COLUMN tags TYPE TEXT;
 
 ---
 
-**Last Updated**: January 3, 2026  
+**Last Updated**: January 16, 2026  
 **Status**: Production-Ready  
 **Test Coverage**: 100% (pkg/jsonstore)  
 **In Production**: Customer.tags, Interaction.attendees  

@@ -155,7 +155,7 @@ Comprehensive business documentation available in multiple languages:
 
 - **Dialect Pattern**: Abstracts SQL syntax differences (placeholders, JSON types)
 - **Supported**: PostgreSQL (production), SQLite (dev/test), MySQL (planned), SQL Server (planned)
-- **JSONB Abstraction**: `jsonstore.Field[T]` works across all databases
+- **JSON Abstraction**: `jsonstore.Field[T]` stores JSON as TEXT across all databases
 - **UUID Generation**: All IDs in Go code (`uuidv7.New()`), not DB defaults
 - **Timestamp Management**: `.Touch()` updates timestamps (no DB triggers)
 - **Implementation**: [Database Adapters](guides/database-adapters.md) | [JSONB Strategy](guides/jsonb-strategy.md)
@@ -232,7 +232,7 @@ Comprehensive business documentation available in multiple languages:
 
 - **Interaction Types**: Track calls (inbound/outbound), emails, meetings, notes
 - **Interaction Lifecycle**: Create → In Progress → Completed with outcome tracking
-- **JSONB Attendees**: Flexible participant tracking with PostgreSQL JSONB arrays
+- **JSON Attendees**: Flexible participant tracking with TEXT-stored JSON arrays
 - **Follow-up Management**: Flag interactions requiring follow-up with dates and notes
 - **Duration Tracking**: Automatic duration calculation for ended interactions
 - **Performance Optimized**: LEFT JOIN queries prevent N+1 problem when listing interactions
@@ -241,7 +241,7 @@ Comprehensive business documentation available in multiple languages:
 **Key Features**:
 - Flexible interaction types and directions
 - Outcome tracking (successful, failed, no_answer, scheduled, cancelled)
-- Multi-participant support via JSONB attendees array
+- Multi-participant support via JSON attendees array (stored as TEXT)
 - Follow-up scheduling and tracking
 - Company association for B2B interactions
 - Time tracking with started_at, ended_at, duration_sec
@@ -314,7 +314,7 @@ Comprehensive business documentation available in multiple languages:
 - **State Machine**: 7 states (pending → payment_processing → inventory_processing → shipping_processing → completed)
 - **Compensation Logic**: Automatic rollback on failures (compensating → compensated → cancelled)
 - **Optimistic Locking**: Version-based concurrency control prevents lost updates
-- **JSONB Storage**: Flexible arrays for completed steps and reserved items
+- **JSON Storage**: Flexible arrays for completed steps and reserved items (stored as TEXT)
 - **UTC Timestamps**: Consistent timezone handling across all operations
 - **Idempotent Steps**: Safe to retry operations without side effects
 
@@ -498,7 +498,7 @@ Cron Trigger → Job Queue → Worker Pool → Executor → Result → Status Up
 | **migration**   | Database migrations                | 8     | [Guide](../pkg/migration/README.md)        |
 | **saga**        | Distributed transactions           | 28    | [Guide](../pkg/saga/README.md)             |
 | **aggregate**   | Base aggregate pattern             | 5     | [Guide](../pkg/aggregate/README.md)        |
-| **jsonb**       | PostgreSQL JSONB utilities         | 8     | [Guide](../pkg/jsonb/README.md)            |
+| **jsonb**       | PostgreSQL JSONB utilities (optional) | 8  | [Guide](../pkg/jsonb/README.md)            |
 | **scripting**   | LUA scripting engine               | 21    | [Guide](../pkg/scripting/README.md)        |
 | **scheduler**   | Cron-based job scheduler           | 43    | [Guide](../pkg/scheduler/README.md)        |
 

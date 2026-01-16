@@ -81,12 +81,12 @@ When changing table names (e.g., from `customer_mgmt_customers` to `customer_cus
 
 ```sql
 -- Primary Key
-id UUID PRIMARY KEY DEFAULT uuid_v7()
+id TEXT PRIMARY KEY
 
 -- Foreign Keys (with {table}_id pattern)
-user_id UUID NOT NULL
-customer_id UUID NOT NULL
-company_id UUID NOT NULL
+user_id TEXT NOT NULL
+customer_id TEXT NOT NULL
+company_id TEXT NOT NULL
 
 -- Lifecycle Timestamps
 created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -100,22 +100,22 @@ is_verified BOOLEAN NOT NULL DEFAULT FALSE
 is_primary BOOLEAN NOT NULL DEFAULT FALSE
 
 -- Metadata
-tags JSONB DEFAULT '[]'::jsonb
-metadata JSONB DEFAULT '{}'::jsonb
+tags TEXT DEFAULT '[]'
+metadata TEXT DEFAULT '{}'
 ```
 
 ### Column Type Patterns
 
 | Type              | Pattern                   | Example                           |
 |-------------------|---------------------------|-----------------------------------|
-| **ID**            | `UUID DEFAULT uuid_v7()`  | `id UUID PRIMARY KEY DEFAULT uuid_v7()` |
-| **Foreign Key**   | `{table}_id UUID`         | `user_id UUID NOT NULL`           |
+| **ID**            | `TEXT`                    | `id TEXT PRIMARY KEY`             |
+| **Foreign Key**   | `{table}_id TEXT`         | `user_id TEXT NOT NULL`           |
 | **Status**        | `VARCHAR(20)`             | `status VARCHAR(20) NOT NULL`     |
 | **Boolean Flag**  | `is_{condition} BOOLEAN`  | `is_active BOOLEAN DEFAULT TRUE`  |
 | **Timestamp**     | `TIMESTAMP WITH TIME ZONE`| `created_at TIMESTAMP WITH TIME ZONE` |
 | **Money**         | `DECIMAL(15, 2)`          | `total_amount DECIMAL(15, 2)`     |
 | **Currency**      | `VARCHAR(3)`              | `currency VARCHAR(3) NOT NULL`    |
-| **JSONB**         | `JSONB`                   | `tags JSONB DEFAULT '[]'::jsonb`  |
+| **JSON**          | `TEXT`                    | `tags TEXT DEFAULT '[]'`          |
 | **Email**         | `VARCHAR(255)`            | `email VARCHAR(255) NOT NULL`     |
 | **Name**          | `VARCHAR(100)`            | `name VARCHAR(100) NOT NULL`      |
 
@@ -124,10 +124,10 @@ metadata JSONB DEFAULT '{}'::jsonb
 **Foreign Keys**:
 ```sql
 -- Pattern: {referenced_table}_id
-user_id UUID NOT NULL                    -- References identity_users
-customer_id UUID NOT NULL                -- References customer_customers
-company_id UUID NOT NULL                 -- References customer_companies
-assigned_to UUID NULL                    -- References identity_users (sales rep)
+user_id TEXT NOT NULL                    -- References identity_users
+customer_id TEXT NOT NULL                -- References customer_customers
+company_id TEXT NOT NULL                 -- References customer_companies
+assigned_to TEXT NULL                    -- References identity_users (sales rep)
 ```
 
 **Boolean Flags**:
@@ -213,12 +213,10 @@ CREATE INDEX idx_customers_deleted_at ON customer_customers (deleted_at)
     WHERE deleted_at IS NOT NULL;
 ```
 
-**GIN Index** (for JSONB):
+**JSON Indexes** (database-specific):
 ```sql
--- Pattern: idx_{table}_{column}_gin
-CREATE INDEX idx_customers_tags_gin ON customer_customers USING GIN (tags);
-
-CREATE INDEX idx_interactions_attendees_gin ON customer_interactions USING GIN (attendees);
+-- PostgreSQL-only example (optional)
+-- CREATE INDEX idx_customers_tags_gin ON customer_customers USING GIN (tags);
 ```
 
 ### Index Strategy
@@ -350,7 +348,7 @@ CREATE TYPE customer_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 -- Table creation
 CREATE TABLE IF NOT EXISTS customer_customers (
     -- Identity
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id TEXT PRIMARY KEY,
     
     -- Core Fields
     email VARCHAR(255) NOT NULL,
@@ -359,12 +357,12 @@ CREATE TABLE IF NOT EXISTS customer_customers (
     tier customer_tier NOT NULL DEFAULT 'free',
     
     -- Metadata
-    tags JSONB DEFAULT '[]'::jsonb,
+    tags TEXT DEFAULT '[]',
     
     -- Relationships (Foreign Keys)
-    user_id UUID NULL,
-    company_id UUID NULL,
-    assigned_to UUID NULL,  -- Sales rep
+    user_id TEXT NULL,
+    company_id TEXT NULL,
+    assigned_to TEXT NULL,  -- Sales rep
     
     -- Lifecycle Timestamps
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -446,7 +444,7 @@ CREATE TYPE customer_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 -- Customers table
 CREATE TABLE IF NOT EXISTS customer_customers (
     -- Identity
-    id UUID PRIMARY KEY DEFAULT uuid_v7(),
+    id TEXT PRIMARY KEY,
     
     -- Core customer information
     email VARCHAR(255) NOT NULL,
@@ -457,13 +455,13 @@ CREATE TABLE IF NOT EXISTS customer_customers (
     
     -- Business fields
     source VARCHAR(50) NULL,
-    tags JSONB DEFAULT '[]'::jsonb,
+    tags TEXT DEFAULT '[]',
     lifetime_value DECIMAL(15, 2) DEFAULT 0,
     
     -- Relationships
-    user_id UUID NULL,
-    company_id UUID NULL,
-    assigned_to UUID NULL,
+    user_id TEXT NULL,
+    company_id TEXT NULL,
+    assigned_to TEXT NULL,
     
     -- Lifecycle timestamps
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,

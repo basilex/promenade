@@ -51,15 +51,17 @@ type Dialect interface {
 **Implementation**: `pkg/database/postgres/dialect.go`
 
 **Features**:
-- Native JSONB support
-- UUID v7 generation (via `uuid_generate_v7()` extension)
+- Native JSON functions (optional JSONB optimizations)
+- Full-text search (tsvector, tsquery)
+- Advanced indexing (GIN, GiST)
+- Transactional DDL
 - Full-text search (tsvector, tsquery)
 - Advanced indexing (GIN, GiST)
 - Transactional DDL
 
 **Placeholder Style**: `$1`, `$2`, `$3`
 
-**JSON Storage**: `JSONB` (binary format, indexable)
+**JSON Storage**: `TEXT` in base migrations (optional JSONB in Postgres-only migrations)
 
 **Usage**:
 ```go
@@ -164,9 +166,9 @@ query = dialect.ConvertPlaceholders(query)
 
 ### 2. JSON Storage
 
-**Problem**: PostgreSQL has `JSONB`, others use `TEXT`.
+**Problem**: JSON support varies across databases.
 
-**Solution**: Use `jsonstore.Field[T]` wrapper that adapts to database.
+**Solution**: Store JSON as `TEXT` in migrations and use `jsonstore.Field[T]` in Go.
 
 **Example**:
 ```go
@@ -174,10 +176,7 @@ type Customer struct {
     Tags jsonstore.Field[[]string] `db:"tags"`
 }
 
-// PostgreSQL migration:
-// ALTER TABLE customers ADD COLUMN tags JSONB;
-
-// SQLite migration:
+// Database-agnostic migration:
 // ALTER TABLE customers ADD COLUMN tags TEXT;
 
 // Go code works identically for both
@@ -187,20 +186,15 @@ type Customer struct {
 
 ### 3. UUID Generation
 
-**Problem**: PostgreSQL has `uuid_generate_v7()`, SQLite doesn't.
+**Problem**: UUID defaults are database-specific.
 
 **Solution**: Generate UUIDs in Go code, not database defaults.
 
 **Example**:
 ```go
-//  Old (database-specific)
+//  Database-agnostic
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v7()
-);
-
-//  New (database-agnostic)
-CREATE TABLE users (
-    id UUID PRIMARY KEY
+    id TEXT PRIMARY KEY
 );
 
 // Generate in Go
@@ -308,31 +302,23 @@ migrations/
 **Run Order**: `core → shared → identity → customer-mgmt → order-mgmt`
 
 **Database-Agnostic Rules**:
-1.  No UUID defaults in CREATE TABLE
-2.  No UPDATE triggers for timestamps
-3.  No database functions in constraints
-4.  Generate UUIDs in Go (`uuidv7.New()`)
-5.  Update timestamps in Go (`.Touch()`)
-6.  Use TEXT for JSON (SQLite compatible)
+1.  IDs stored as `TEXT` (UUID v7 generated in Go)
+2.  No UUID defaults in CREATE TABLE
+3.  No UPDATE triggers for timestamps
+4.  No database functions in constraints
+5.  Generate UUIDs in Go (`uuidv7.New()`)
+6.  Update timestamps in Go (`.Touch()`)
+7.  Use TEXT for JSON (SQLite compatible)
 
 **Example Migration**:
 ```sql
--- PostgreSQL
+-- Database-agnostic (PostgreSQL + SQLite)
 CREATE TABLE customers (
-    id UUID PRIMARY KEY,  -- No DEFAULT
+    id TEXT PRIMARY KEY,          -- UUID as TEXT
     name VARCHAR(255) NOT NULL,
-    tags TEXT,  -- Not JSONB (SQLite compatible)
+    tags TEXT,                    -- JSON stored as TEXT
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
-);
-
--- SQLite (same DDL)
-CREATE TABLE customers (
-    id TEXT PRIMARY KEY,  -- UUID as TEXT
-    name TEXT NOT NULL,
-    tags TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
 );
 ```
 
@@ -369,8 +355,8 @@ ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 | --------------------- | ------------------ | ------------------ |
 | **Concurrency**       | Excellent          | Limited (WAL mode) |
 | **Dataset Size**      | >1GB optimal       | <1GB optimal       |
-| **JSON Performance**  | Excellent (JSONB)  | Good (TEXT)        |
-| **UUID Storage**      | Native (16 bytes)  | TEXT (36 bytes)    |
+| **JSON Performance**  | Good (TEXT)        | Good (TEXT)        |
+| **UUID Storage**      | TEXT (36 bytes)    | TEXT (36 bytes)    |
 | **Full-Text Search**  | Built-in (tsvector)| Extension required |
 | **Setup Complexity**  | High (server)      | Zero (embedded)    |
 
@@ -393,21 +379,21 @@ ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 
 **Fix**: Use `BaseRepository` methods (Exec, Get, Select) instead of raw sqlx.
 
-### Issue: JSONB Type Error
+### Issue: JSON Type Error
 
 **Symptom**: `ERROR: type "jsonb" does not exist`
 
-**Cause**: Using JSONB in SQLite migration
+**Cause**: Using JSONB in a database-agnostic migration
 
-**Fix**: Use `TEXT` for JSON columns (works in both databases).
+**Fix**: Use `TEXT` for JSON columns (works in all supported databases).
 
 ### Issue: UUID Type Mismatch
 
 **Symptom**: `invalid input syntax for type uuid`
 
-**Cause**: SQLite stores UUID as TEXT, PostgreSQL as UUID
+**Cause**: Mismatched column types in migrations
 
-**Fix**: Use `uuidv7.UUID` type in Go, let driver handle conversion.
+**Fix**: Use `TEXT` for UUID columns in migrations and keep `uuidv7.UUID` in Go.
 
 ---
 

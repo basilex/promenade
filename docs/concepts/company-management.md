@@ -571,7 +571,7 @@ curl /api/v1/customer-mgmt/companies/size/enterprise
 
 ```sql
 CREATE TABLE customer_companies (
-    id UUID PRIMARY KEY,
+  id TEXT PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     legal_name VARCHAR(200),
     type VARCHAR(50) NOT NULL,
@@ -599,7 +599,7 @@ CREATE TABLE customer_companies (
     description TEXT,
     
     -- Relationships
-    parent_company_id UUID REFERENCES customer_companies(id),
+    parent_company_id TEXT REFERENCES customer_companies(id),
     
     -- Audit
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -192,7 +192,7 @@
 **Impact**: HIGH - Interaction aggregate has complex business logic:
 - 14 UseCase methods (CreateInteraction, GetInteraction, UpdateContent, SetOutcome, EndInteraction, SetFollowUp, AddAttendee, RemoveAttendee, 5 List methods, DeleteInteraction)
 - Foreign key constraints (customer_id, company_id, created_by)
-- Complex JSONB attendees array handling
+- Complex JSON attendees array handling
 - Time tracking logic (started_at, ended_at, duration_sec)
 - Follow-up management
 

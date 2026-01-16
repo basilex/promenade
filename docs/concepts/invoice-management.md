@@ -334,9 +334,9 @@ GET /api/v1/billing/invoices?page=1&page_size=20&status=sent
 
 ```sql
 CREATE TABLE billing_invoices (
-    id UUID PRIMARY KEY,
+  id TEXT PRIMARY KEY,
     invoice_number VARCHAR(20) UNIQUE NOT NULL,
-    customer_id UUID NOT NULL,
+    customer_id TEXT NOT NULL,
     status VARCHAR(20) NOT NULL,
     currency VARCHAR(3) NOT NULL,
     subtotal BIGINT NOT NULL,
@@ -346,7 +346,7 @@ CREATE TABLE billing_invoices (
     issue_date TIMESTAMP NOT NULL,
     due_date TIMESTAMP NOT NULL,
     paid_date TIMESTAMP,
-    order_id UUID,
+    order_id TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP

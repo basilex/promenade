@@ -399,8 +399,8 @@ Integrations:
 ```sql
 -- migrations/accounting/000001_tax_invoices.up.sql
 CREATE TABLE accounting_tax_invoices (
-    id UUID PRIMARY KEY,
-    invoice_id UUID REFERENCES billing_invoices(id),
+    id TEXT PRIMARY KEY,
+    invoice_id TEXT REFERENCES billing_invoices(id),
     
     -- Податкова інформація
     tax_invoice_number VARCHAR(50) UNIQUE NOT NULL,
@@ -438,14 +438,14 @@ CREATE TABLE accounting_tax_invoices (
     
     -- Metadata
     notes TEXT,
-    created_by UUID REFERENCES identity_users(id),
+    created_by TEXT REFERENCES identity_users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE accounting_tax_invoice_lines (
-    id UUID PRIMARY KEY,
-    tax_invoice_id UUID REFERENCES accounting_tax_invoices(id),
+    id TEXT PRIMARY KEY,
+    tax_invoice_id TEXT REFERENCES accounting_tax_invoices(id),
     
     -- Товар/послуга
     product_code VARCHAR(20),                   -- УКТЗЕД
@@ -592,7 +592,7 @@ Integrations:
 ```sql
 -- migrations/banking/000001_banking.up.sql
 CREATE TABLE banking_accounts (
-    id UUID PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     
     -- Рахунок
     iban VARCHAR(34) UNIQUE NOT NULL,
@@ -623,8 +623,8 @@ CREATE TABLE banking_accounts (
 );
 
 CREATE TABLE banking_transactions (
-    id UUID PRIMARY KEY,
-    bank_account_id UUID REFERENCES banking_accounts(id),
+    id TEXT PRIMARY KEY,
+    bank_account_id TEXT REFERENCES banking_accounts(id),
     
     -- Транзакція
     transaction_id VARCHAR(50),                  -- ID від банку
@@ -644,14 +644,14 @@ CREATE TABLE banking_transactions (
     description TEXT,
     
     -- Зв'язки
-    invoice_id UUID REFERENCES billing_invoices(id),  -- auto-matched
-    order_id UUID REFERENCES orders(id),
+    invoice_id TEXT REFERENCES billing_invoices(id),  -- auto-matched
+    order_id TEXT REFERENCES orders(id),
     matched_at TIMESTAMP,
-    matched_by UUID REFERENCES identity_users(id),
+    matched_by TEXT REFERENCES identity_users(id),
     
     -- Metadata
     status VARCHAR(20),                          -- 'pending', 'completed', 'reconciled'
-    raw_data JSONB,                             -- повні дані від банку
+    raw_data TEXT,                             -- повні дані від банку
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

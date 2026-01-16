@@ -277,9 +277,9 @@ ORDER BY i.follow_up_date ASC NULLS FIRST, i.started_at DESC
 
 ```sql
 CREATE TABLE customer_interactions (
-    id                 UUID PRIMARY KEY DEFAULT uuid_v7(),
-    customer_id        UUID NOT NULL REFERENCES customer_mgmt_customers(id),
-    company_id         UUID REFERENCES customer_mgmt_companies(id),
+  id                 TEXT PRIMARY KEY,
+  customer_id        TEXT NOT NULL REFERENCES customer_mgmt_customers(id),
+  company_id         TEXT REFERENCES customer_mgmt_companies(id),
     
     type               interaction_type NOT NULL,
     direction          interaction_direction NOT NULL,
@@ -288,8 +288,8 @@ CREATE TABLE customer_interactions (
     subject            VARCHAR(255) NOT NULL,
     description        TEXT NOT NULL DEFAULT '',
     
-    created_by         UUID NOT NULL REFERENCES identity_users(id),
-    attendees          JSONB NOT NULL DEFAULT '[]',
+    created_by         TEXT NOT NULL REFERENCES identity_users(id),
+    attendees          TEXT NOT NULL DEFAULT '[]',
     
     started_at         TIMESTAMPTZ NOT NULL,
     ended_at           TIMESTAMPTZ,

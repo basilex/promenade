@@ -406,10 +406,10 @@ GET /api/v1/billing/payments/customer/01JGABC1234567890ABCDEFGHI?page=1&page_siz
 
 ```sql
 CREATE TABLE billing_payments (
-    id UUID PRIMARY KEY,
+  id TEXT PRIMARY KEY,
     payment_number VARCHAR(20) UNIQUE NOT NULL,
-    customer_id UUID NOT NULL,
-    invoice_id UUID,
+    customer_id TEXT NOT NULL,
+    invoice_id TEXT,
     status VARCHAR(20) NOT NULL,
     payment_method VARCHAR(20) NOT NULL,
     currency VARCHAR(3) NOT NULL,
