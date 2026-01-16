@@ -4,31 +4,34 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/basilex/promenade/internal/contexts/scripting/script"
 	scriptHTTP "github.com/basilex/promenade/internal/contexts/scripting/script/adapter/http"
+	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockScriptUseCase implements IScriptUseCase with function fields for testing
 type MockScriptUseCase struct {
-	CreateScriptFunc       func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*script.Script, error)
-	GetScriptFunc          func(ctx context.Context, scriptID uuidv7.UUID) (*script.Script, error)
-	GetScriptByNameFunc    func(ctx context.Context, name string) (*script.Script, error)
-	UpdateScriptFunc       func(ctx context.Context, scriptID uuidv7.UUID, code string) error
-	DeleteScriptFunc       func(ctx context.Context, scriptID uuidv7.UUID) error
-	ListScriptsFunc        func(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error)
-	ListAllScriptsFunc     func(ctx context.Context, limit, offset int) ([]*script.Script, int, error)
-	ActivateScriptFunc     func(ctx context.Context, scriptID uuidv7.UUID) error
-	DeactivateScriptFunc   func(ctx context.Context, scriptID uuidv7.UUID) error
-	ExecuteScriptFunc      func(ctx context.Context, name string, params map[string]interface{}, executedBy uuidv7.UUID) (interface{}, error)
-	ValidateScriptFunc     func(ctx context.Context, code string) error
-	ArchiveScriptFunc      func(ctx context.Context, scriptID uuidv7.UUID) error
-	UpdateMetadataFunc     func(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error
+	CreateScriptFunc        func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*script.Script, error)
+	GetScriptFunc           func(ctx context.Context, scriptID uuidv7.UUID) (*script.Script, error)
+	GetScriptByNameFunc     func(ctx context.Context, name string) (*script.Script, error)
+	UpdateScriptFunc        func(ctx context.Context, scriptID uuidv7.UUID, code string) error
+	DeleteScriptFunc        func(ctx context.Context, scriptID uuidv7.UUID) error
+	ListScriptsFunc         func(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error)
+	ListAllScriptsFunc      func(ctx context.Context, limit, offset int) ([]*script.Script, int, error)
+	ActivateScriptFunc      func(ctx context.Context, scriptID uuidv7.UUID) error
+	DeactivateScriptFunc    func(ctx context.Context, scriptID uuidv7.UUID) error
+	ExecuteScriptFunc       func(ctx context.Context, name string, params map[string]interface{}, executedBy uuidv7.UUID) (interface{}, error)
+	ValidateScriptFunc      func(ctx context.Context, code string) error
+	ArchiveScriptFunc       func(ctx context.Context, scriptID uuidv7.UUID) error
+	UpdateMetadataFunc      func(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error
 	GetExecutionHistoryFunc func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error)
 	GetRecentExecutionsFunc func(ctx context.Context, limit int) ([]*script.ScriptExecution, error)
 	GetExecutionDetailsFunc func(ctx context.Context, executionID uuidv7.UUID) (*script.ScriptExecution, error)
+	ListScriptVersionsFunc  func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error)
 }
 
 // Implement IScriptUseCase interface methods
@@ -114,6 +117,13 @@ func (m *MockScriptUseCase) GetExecutionDetails(ctx context.Context, executionID
 		return m.GetExecutionDetailsFunc(ctx, executionID)
 	}
 	return nil, fmt.Errorf("execution not found")
+}
+
+func (m *MockScriptUseCase) ListScriptVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
+	if m.ListScriptVersionsFunc != nil {
+		return m.ListScriptVersionsFunc(ctx, scriptID, limit, offset)
+	}
+	return []*script.ScriptVersion{}, 0, nil
 }
 
 func (m *MockScriptUseCase) ActivateScript(ctx context.Context, scriptID uuidv7.UUID) error {
@@ -293,7 +303,7 @@ func TestScriptHandler_UpdateScript_Success(t *testing.T) {
 	router.PUT("/scripts/:id", handler.UpdateScript)
 
 	body := map[string]interface{}{
-		"code": "return 3 + 3",
+		"code":        "return 3 + 3",
 		"description": "Updated description",
 	}
 
@@ -350,4 +360,33 @@ func TestScriptHandler_GetExecutionHistory_Success(t *testing.T) {
 
 	w := smoke.MakeRequest(t, router, "GET", "/scripts/"+smoke.FakeUUID()+"/executions?limit=10&offset=0", nil)
 	smoke.AssertSuccessResponse(t, w, 200)
+}
+
+func TestScriptHandler_ListScriptVersions_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockScriptUseCase{
+		ListScriptVersionsFunc: func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
+			return []*script.ScriptVersion{fakeScriptVersion()}, 1, nil
+		},
+	}
+
+	handler := scriptHTTP.NewScriptHandler(mockUC)
+	router.GET("/scripts/:id/versions", handler.ListScriptVersions)
+
+	w := smoke.MakeRequest(t, router, "GET", "/scripts/"+smoke.FakeUUID()+"/versions?page=1&page_size=20", nil)
+
+	smoke.AssertSuccessResponse(t, w, 200)
+}
+
+func fakeScriptVersion() *script.ScriptVersion {
+	return &script.ScriptVersion{
+		ID:        uuidv7.New(),
+		ScriptID:  uuidv7.New(),
+		Version:   1,
+		Code:      "return 2 + 2",
+		Metadata:  jsonstore.NewField(map[string]string{"source": "test"}),
+		ChangeLog: "initial",
+		CreatedAt: time.Now(),
+	}
 }

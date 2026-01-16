@@ -29,19 +29,19 @@ func NewScriptRepository(db *sqlx.DB) script.IRepository {
 
 // scriptRow is the database row representation
 type scriptRow struct {
-	ID          string                            `db:"id"`
-	Name        string                            `db:"name"`
-	Description sql.NullString                    `db:"description"`
-	Code        string                            `db:"code"`
-	Version     int                               `db:"version"`
-	Status      string                            `db:"status"`
-	ScriptType  sql.NullString                    `db:"script_type"`
-	EntityType  sql.NullString                    `db:"entity_type"`
+	ID          string                             `db:"id"`
+	Name        string                             `db:"name"`
+	Description sql.NullString                     `db:"description"`
+	Code        string                             `db:"code"`
+	Version     int                                `db:"version"`
+	Status      string                             `db:"status"`
+	ScriptType  sql.NullString                     `db:"script_type"`
+	EntityType  sql.NullString                     `db:"entity_type"`
 	Metadata    jsonstore.Field[map[string]string] `db:"metadata"`
-	CreatedBy   sql.NullString                    `db:"created_by"`
-	CreatedAt   time.Time                         `db:"created_at"`
-	UpdatedAt   time.Time                         `db:"updated_at"`
-	DeletedAt   sql.NullTime                      `db:"deleted_at"`
+	CreatedBy   sql.NullString                     `db:"created_by"`
+	CreatedAt   time.Time                          `db:"created_at"`
+	UpdatedAt   time.Time                          `db:"updated_at"`
+	DeletedAt   sql.NullTime                       `db:"deleted_at"`
 }
 
 // executionRow is the database row for script execution
@@ -55,6 +55,51 @@ type executionRow struct {
 	DurationMs   int            `db:"duration_ms"`
 	ExecutedBy   string         `db:"executed_by"`
 	ExecutedAt   time.Time      `db:"executed_at"`
+}
+
+// versionRow is the database row for script version snapshot
+type versionRow struct {
+	ID        string                             `db:"id"`
+	ScriptID  string                             `db:"script_id"`
+	Version   int                                `db:"version"`
+	Code      string                             `db:"code"`
+	Metadata  jsonstore.Field[map[string]string] `db:"metadata"`
+	ChangeLog sql.NullString                     `db:"change_log"`
+	CreatedBy sql.NullString                     `db:"created_by"`
+	CreatedAt time.Time                          `db:"created_at"`
+}
+
+func (r *versionRow) toEntity() (*script.ScriptVersion, error) {
+	scriptID, err := uuidv7.Parse(r.ScriptID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid script ID: %w", err)
+	}
+
+	version := &script.ScriptVersion{
+		ScriptID:  scriptID,
+		Version:   r.Version,
+		Code:      r.Code,
+		Metadata:  r.Metadata,
+		CreatedAt: r.CreatedAt,
+	}
+
+	id, err := uuidv7.Parse(r.ID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid version ID: %w", err)
+	}
+	version.ID = id
+
+	if r.ChangeLog.Valid {
+		version.ChangeLog = r.ChangeLog.String
+	}
+	if r.CreatedBy.Valid {
+		createdBy, err := uuidv7.Parse(r.CreatedBy.String)
+		if err == nil {
+			version.CreatedBy = &createdBy
+		}
+	}
+
+	return version, nil
 }
 
 // toEntity converts scriptRow to domain entity
@@ -221,6 +266,26 @@ func toExecutionRow(e *script.ScriptExecution) (*executionRow, error) {
 	return row, nil
 }
 
+func toVersionRow(v *script.ScriptVersion) *versionRow {
+	row := &versionRow{
+		ID:        v.ID.String(),
+		ScriptID:  v.ScriptID.String(),
+		Version:   v.Version,
+		Code:      v.Code,
+		Metadata:  v.Metadata,
+		CreatedAt: v.CreatedAt,
+	}
+
+	if v.ChangeLog != "" {
+		row.ChangeLog = sql.NullString{String: v.ChangeLog, Valid: true}
+	}
+	if v.CreatedBy != nil {
+		row.CreatedBy = sql.NullString{String: v.CreatedBy.String(), Valid: true}
+	}
+
+	return row
+}
+
 // Create inserts a new script
 func (r *scriptRepository) Create(ctx context.Context, s *script.Script) error {
 	row, err := toRow(s)
@@ -244,6 +309,58 @@ func (r *scriptRepository) Create(ctx context.Context, s *script.Script) error {
 	}
 
 	return nil
+}
+
+// CreateVersion inserts a new script version snapshot
+func (r *scriptRepository) CreateVersion(ctx context.Context, v *script.ScriptVersion) error {
+	if v == nil {
+		return fmt.Errorf("script version is nil")
+	}
+	row := toVersionRow(v)
+	query := `
+		INSERT INTO scripting_script_versions (
+			id, script_id, version, code, metadata,
+			change_log, created_by, created_at
+		) VALUES (
+			:id, :script_id, :version, :code, :metadata,
+			:change_log, :created_by, :created_at
+		)`
+
+	if _, err := r.NamedExec(ctx, query, row); err != nil {
+		return fmt.Errorf("failed to create script version: %w", err)
+	}
+
+	return nil
+}
+
+// ListVersions retrieves script versions for a script ID
+func (r *scriptRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
+	countQuery := `SELECT COUNT(*) FROM scripting_script_versions WHERE script_id = $1`
+	var total int
+	if err := r.Get(ctx, &total, countQuery, scriptID.String()); err != nil {
+		return nil, 0, fmt.Errorf("failed to count script versions: %w", err)
+	}
+
+	query := `SELECT * FROM scripting_script_versions
+		WHERE script_id = $1
+		ORDER BY version DESC
+		LIMIT $2 OFFSET $3`
+
+	var rows []versionRow
+	if err := r.Select(ctx, &rows, query, scriptID.String(), limit, offset); err != nil {
+		return nil, 0, fmt.Errorf("failed to list script versions: %w", err)
+	}
+
+	versions := make([]*script.ScriptVersion, 0, len(rows))
+	for _, row := range rows {
+		version, err := row.toEntity()
+		if err != nil {
+			return nil, 0, err
+		}
+		versions = append(versions, version)
+	}
+
+	return versions, total, nil
 }
 
 // GetByID retrieves a script by ID

@@ -39,14 +39,26 @@ func TestScriptRepository_CRUD(t *testing.T) {
 		assert.Equal(t, "return 2 + 2", found.Code)
 		assert.Equal(t, script.ScriptStatusDraft, found.Status)
 
+		// Version snapshot
+		version, err := script.NewScriptVersion(found, "initial version", nil)
+		require.NoError(t, err)
+		require.NoError(t, repo.CreateVersion(ctx, version))
+
+		versions, total, err := repo.ListVersions(ctx, found.ID, 10, 0)
+		require.NoError(t, err)
+		assert.Equal(t, 1, total)
+		assert.Len(t, versions, 1)
+		assert.Equal(t, found.ID, versions[0].ScriptID)
+		assert.Equal(t, found.Version, versions[0].Version)
+
 		// GetByName
 		foundByName, err := repo.GetByName(ctx, scriptName)
 		require.NoError(t, err)
 		assert.Equal(t, s.ID, foundByName.ID)
 
 		// Update
-	_ = s.UpdateCode("return 4 + 4")
-	_ = s.Activate()
+		_ = s.UpdateCode("return 4 + 4")
+		_ = s.Activate()
 		require.NoError(t, repo.Update(ctx, s))
 		updated, _ := repo.GetByID(ctx, s.ID)
 		assert.Equal(t, "return 4 + 4", updated.Code)
@@ -74,12 +86,12 @@ func TestScriptRepository_List(t *testing.T) {
 			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)), script.ScriptTypeCustom)
 			s.Description = "Test"
 			if i < 3 {
-			_ = s.Activate()
+				_ = s.Activate()
+			}
+			require.NoError(t, repo.Create(ctx, s))
 		}
-		require.NoError(t, repo.Create(ctx, s))
-	}
 
-	// List active scripts
+		// List active scripts
 		activeScripts, total, err := repo.List(ctx, script.ScriptStatusActive, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, 3)
@@ -229,7 +241,7 @@ func TestScriptRepository_Pagination(t *testing.T) {
 			scriptName := fmt.Sprintf("page_script_%d_%s", i, uuid)
 			s, _ := script.NewScript(scriptName, "return "+string(rune('0'+i)), script.ScriptTypeCustom)
 			s.Description = "Test"
-		_ = s.Activate()
+			_ = s.Activate()
 			require.NoError(t, repo.Create(ctx, s))
 		}
 

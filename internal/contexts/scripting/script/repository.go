@@ -15,6 +15,10 @@ type IRepository interface {
 	Update(ctx context.Context, script *Script) error
 	Delete(ctx context.Context, id uuidv7.UUID) error
 
+	// Script versioning
+	CreateVersion(ctx context.Context, version *ScriptVersion) error
+	ListVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*ScriptVersion, int, error)
+
 	// Script queries
 	List(ctx context.Context, status ScriptStatus, limit, offset int) ([]*Script, int, error)
 	ListAll(ctx context.Context, limit, offset int) ([]*Script, int, error)

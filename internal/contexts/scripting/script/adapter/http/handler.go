@@ -267,7 +267,7 @@ func (h *ScriptHandler) UpdateScript(c *gin.Context) {
 			return
 		}
 	}
-	
+
 	// Fetch updated script
 	scr, err = h.useCase.GetScript(c.Request.Context(), id)
 	if err != nil {
@@ -340,13 +340,13 @@ func (h *ScriptHandler) ListScripts(c *gin.Context) {
 
 	var scripts []*Script
 	var total int
-	
+
 	if status != nil {
 		scripts, total, err = h.useCase.ListScripts(c.Request.Context(), *status, limit, offset)
 	} else {
 		scripts, total, err = h.useCase.ListAllScripts(c.Request.Context(), limit, offset)
 	}
-	
+
 	if err != nil {
 		response.ErrorResponse(c, http.StatusInternalServerError, "LIST_ERROR", "Failed to list scripts")
 		return
@@ -522,6 +522,48 @@ func (h *ScriptHandler) GetExecutionHistory(c *gin.Context) {
 	}
 
 	response.Success(c, ToExecutionHistoryResponse(executions, total))
+}
+
+// ListScriptVersions retrieves version history for a script
+// @Summary List script versions
+// @Description List version history for a script
+// @Tags scripts
+// @Produce json
+// @Param id path string true "Script ID"
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Page size" default(20)
+// @Success 200 {object} response.Response{data=[]ScriptVersionResponse}
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /scripts/{id}/versions [get]
+func (h *ScriptHandler) ListScriptVersions(c *gin.Context) {
+	scriptID, err := uuidv7.Parse(c.Param("id"))
+	if err != nil {
+		response.ErrorResponse(c, http.StatusBadRequest, "VALIDATION_ERROR", "Invalid script ID format")
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 20
+	}
+
+	versions, total, err := h.useCase.ListScriptVersions(c.Request.Context(), scriptID, pageSize, (page-1)*pageSize)
+	if err != nil {
+		if errors.Is(err, ErrScriptNotFound) {
+			response.ErrorResponse(c, http.StatusNotFound, "SCRIPT_NOT_FOUND", "Script not found")
+			return
+		}
+		response.ErrorResponse(c, http.StatusInternalServerError, "INTERNAL_ERROR", "Failed to list script versions")
+		return
+	}
+
+	response.SuccessWithPagination(c, ToScriptVersionListResponse(versions), int64(total), page, pageSize)
 }
 
 // GetRecentExecutions retrieves recent executions across all scripts

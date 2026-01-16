@@ -88,6 +88,22 @@ type ExecutionHistoryResponse struct {
 	Total      int                 `json:"total"`
 }
 
+// ============================================================================
+// Version DTOs
+// ============================================================================
+
+// ScriptVersionResponse represents a script version snapshot
+type ScriptVersionResponse struct {
+	ID        string            `json:"id"`
+	ScriptID  string            `json:"script_id"`
+	Version   int               `json:"version"`
+	Code      string            `json:"code"`
+	Metadata  map[string]string `json:"metadata,omitempty"`
+	ChangeLog string            `json:"change_log,omitempty"`
+	CreatedBy *string           `json:"created_by,omitempty"`
+	CreatedAt time.Time         `json:"created_at"`
+}
+
 // ValidationResponse represents script validation result
 type ValidationResponse struct {
 	Valid   bool   `json:"valid"`
@@ -162,6 +178,35 @@ func ToExecutionHistoryResponse(executions []*script.ScriptExecution, total int)
 		Executions: responses,
 		Total:      total,
 	}
+}
+
+// ToScriptVersionResponse converts ScriptVersion entity to DTO
+func ToScriptVersionResponse(v *script.ScriptVersion) ScriptVersionResponse {
+	var createdBy *string
+	if v.CreatedBy != nil {
+		val := v.CreatedBy.String()
+		createdBy = &val
+	}
+
+	return ScriptVersionResponse{
+		ID:        v.ID.String(),
+		ScriptID:  v.ScriptID.String(),
+		Version:   v.Version,
+		Code:      v.Code,
+		Metadata:  v.Metadata.Get(),
+		ChangeLog: v.ChangeLog,
+		CreatedBy: createdBy,
+		CreatedAt: v.CreatedAt,
+	}
+}
+
+// ToScriptVersionListResponse converts ScriptVersion entities to DTOs
+func ToScriptVersionListResponse(versions []*script.ScriptVersion) []ScriptVersionResponse {
+	responses := make([]ScriptVersionResponse, 0, len(versions))
+	for _, v := range versions {
+		responses = append(responses, ToScriptVersionResponse(v))
+	}
+	return responses
 }
 
 // ============================================================================

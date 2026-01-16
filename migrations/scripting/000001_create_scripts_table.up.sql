@@ -6,21 +6,21 @@
 -- Scripts table: stores LUA scripts with versioning and classification
 -- Note: ID, timestamps managed by BaseAggregate in Go code
 CREATE TABLE scripting_scripts (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    id TEXT PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
     description TEXT,
     code TEXT NOT NULL,
     version INTEGER NOT NULL,
-    status VARCHAR(20) NOT NULL,
+    status TEXT NOT NULL,
     
     -- Script classification
-    script_type VARCHAR(50),  -- 'validation', 'workflow', 'report', 'pricing', 'notification', 'automation', 'custom'
-    entity_type VARCHAR(50),  -- 'customer', 'order', 'deal', 'invoice', 'contract', 'payment', 'product'
+    script_type TEXT,  -- 'validation', 'workflow', 'report', 'pricing', 'notification', 'automation', 'custom'
+    entity_type TEXT,  -- 'customer', 'order', 'deal', 'invoice', 'contract', 'payment', 'product'
     
     -- Metadata (stored as TEXT JSON for database-agnostic support)
     metadata TEXT DEFAULT '{}',
     
-    created_by UUID,
+    created_by TEXT,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
@@ -39,9 +39,9 @@ CREATE TABLE scripting_scripts (
 -- Script executions table: audit trail for script runs
 -- Note: ID, executed_at managed by Go code
 CREATE TABLE scripting_script_executions (
-    id UUID PRIMARY KEY,
-    script_id UUID NOT NULL REFERENCES scripting_scripts(id) ON DELETE CASCADE,
-    script_name VARCHAR(255) NOT NULL,
+    id TEXT PRIMARY KEY,
+    script_id TEXT NOT NULL REFERENCES scripting_scripts(id) ON DELETE CASCADE,
+    script_name TEXT NOT NULL,
     
     -- JSON stored as TEXT for database-agnostic support
     input_params TEXT,
@@ -49,7 +49,7 @@ CREATE TABLE scripting_script_executions (
     error TEXT,
     duration_ms INTEGER,
     
-    executed_by UUID NOT NULL,
+    executed_by TEXT NOT NULL,
     executed_at TIMESTAMP NOT NULL,
     
     CONSTRAINT chk_duration CHECK (duration_ms >= 0)

@@ -65,6 +65,9 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 
 			// Execution history
 			scripts.GET("/:id/executions", r.scriptHandler.GetExecutionHistory)
+
+			// Version history
+			scripts.GET("/:id/versions", r.scriptHandler.ListScriptVersions)
 		}
 
 		// Recent executions endpoint (outside of scripts group)

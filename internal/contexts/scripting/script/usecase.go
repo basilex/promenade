@@ -67,6 +67,9 @@ type IScriptUseCase interface {
 
 	// GetExecutionDetails retrieves details of a single execution
 	GetExecutionDetails(ctx context.Context, executionID uuidv7.UUID) (*ScriptExecution, error)
+
+	// ListScriptVersions retrieves versions for a script
+	ListScriptVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*ScriptVersion, int, error)
 }
 
 // useCase implements IScriptUseCase
@@ -190,6 +193,17 @@ func (uc *useCase) CreateScript(ctx context.Context, name, description, code str
 		return nil, ErrScriptCreateFailed
 	}
 
+	// Store version snapshot (log only on failure)
+	version, err := NewScriptVersion(script, "initial version", &createdBy)
+	if err == nil {
+		if saveErr := uc.repo.CreateVersion(ctx, version); saveErr != nil {
+			log.Error("Failed to create script version snapshot",
+				slog.String("script_id", script.GetID().String()),
+				slog.Any("error", saveErr),
+			)
+		}
+	}
+
 	log.Info("Script created successfully",
 		slog.String("script_id", script.GetID().String()),
 		slog.String("script_name", name),
@@ -226,6 +240,17 @@ func (uc *useCase) UpdateScript(ctx context.Context, scriptID uuidv7.UUID, code 
 			slog.Any("error", err),
 		)
 		return ErrScriptUpdateFailed
+	}
+
+	// Store version snapshot (log only on failure)
+	version, err := NewScriptVersion(script, "code update", nil)
+	if err == nil {
+		if saveErr := uc.repo.CreateVersion(ctx, version); saveErr != nil {
+			log.Error("Failed to create script version snapshot",
+				slog.String("script_id", scriptID.String()),
+				slog.Any("error", saveErr),
+			)
+		}
 	}
 
 	log.Info("Script updated successfully",
@@ -438,4 +463,18 @@ func (uc *useCase) GetExecutionDetails(ctx context.Context, executionID uuidv7.U
 		return nil, ErrScriptExecutionNotFound
 	}
 	return execution, nil
+}
+
+// ListScriptVersions retrieves versions for a script
+func (uc *useCase) ListScriptVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*ScriptVersion, int, error) {
+	if _, err := uc.repo.GetByID(ctx, scriptID); err != nil {
+		return nil, 0, ErrScriptNotFound
+	}
+
+	versions, total, err := uc.repo.ListVersions(ctx, scriptID, limit, offset)
+	if err != nil {
+		return nil, 0, ErrScriptListFailed
+	}
+
+	return versions, total, nil
 }

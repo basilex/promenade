@@ -6,8 +6,8 @@
 -- Script versions table: immutable audit trail of all script changes
 -- Stores historical snapshots of code and metadata for rollback capability
 CREATE TABLE scripting_script_versions (
-    id UUID PRIMARY KEY,
-    script_id UUID NOT NULL REFERENCES scripting_scripts(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY,
+    script_id TEXT NOT NULL REFERENCES scripting_scripts(id) ON DELETE CASCADE,
     version INTEGER NOT NULL,
     
     -- Historical snapshot (stored as TEXT for database-agnostic support)
@@ -18,7 +18,7 @@ CREATE TABLE scripting_script_versions (
     change_log TEXT,
     
     -- Audit fields
-    created_by UUID,
+    created_by TEXT,
     created_at TIMESTAMP NOT NULL,
     
     -- Constraints

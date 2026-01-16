@@ -32,6 +32,19 @@ func (m *MockRepository) Delete(ctx context.Context, scriptID uuidv7.UUID) error
 	return args.Error(0)
 }
 
+func (m *MockRepository) CreateVersion(ctx context.Context, version *ScriptVersion) error {
+	args := m.Called(ctx, version)
+	return args.Error(0)
+}
+
+func (m *MockRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*ScriptVersion, int, error) {
+	args := m.Called(ctx, scriptID, limit, offset)
+	if args.Get(0) == nil {
+		return nil, args.Int(1), args.Error(2)
+	}
+	return args.Get(0).([]*ScriptVersion), args.Int(1), args.Error(2)
+}
+
 func (m *MockRepository) GetByID(ctx context.Context, scriptID uuidv7.UUID) (*Script, error) {
 	args := m.Called(ctx, scriptID)
 	if args.Get(0) == nil {
@@ -268,6 +281,7 @@ func TestUseCase_CreateScript(t *testing.T) {
 		code := "return 2 + 2"
 		engine.On("Validate", code).Return(nil)
 		repo.On("Create", ctx, mock.Anything).Return(nil)
+		repo.On("CreateVersion", ctx, mock.Anything).Return(nil)
 
 		script, err := uc.CreateScript(ctx, "test_script", "Test script", code, createdBy)
 
@@ -335,6 +349,7 @@ func TestUseCase_UpdateScript(t *testing.T) {
 		engine.On("Validate", newCode).Return(nil)
 		repo.On("GetByID", ctx, scriptID).Return(existingScript, nil)
 		repo.On("Update", ctx, mock.Anything).Return(nil)
+		repo.On("CreateVersion", ctx, mock.Anything).Return(nil)
 
 		err := uc.UpdateScript(ctx, scriptID, newCode)
 
