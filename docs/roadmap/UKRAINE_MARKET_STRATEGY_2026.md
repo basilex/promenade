@@ -138,18 +138,18 @@
 
 ---
 
-## 📊 Executive Summary
+##  Executive Summary
 
 **Проблема**: Заборона російського ПЗ (1С, Bitrix24, AmoCRM) створила вакуум на українському ринку CRM/ERP для 150K+ компаній МСБ.
 
 **Наше рішення**: Promenade - сучасна, хмарно-орієнтована платформа з українською локалізацією та комплаєнсом.
 
 **Конкурентна перевага**:
-- 🚀 Архітектура Enterprise-рівня (DDD + Event-Driven)
-- ⚡ Швидкість Go vs застарілі технології 1С
-- 🇺🇦 Повна українська локалізація та комплаєнс
-- 🔐 Сучасна безпека (JWT + RBAC)
-- 🎯 No-code кастомізація через LUA
+-  Архітектура Enterprise-рівня (DDD + Event-Driven)
+-  Швидкість Go vs застарілі технології 1С
+-  Повна українська локалізація та комплаєнс
+-  Сучасна безпека (JWT + RBAC)
+-  No-code кастомізація через LUA
 
 **Ціль**: Захопити 5-10% ринку МСБ (7,500-15,000 компаній) протягом 18 місяців.
 
@@ -161,15 +161,15 @@
 
 ---
 
-## 🎯 Ринковий Аналіз
+##  Ринковий Аналіз
 
 ### Поточна Ситуація
 
 **Заборонене ПЗ** (станом на січень 2026):
-- ✖️ 1С:Підприємство (БАС, Бухгалтерія, Управління Торгівлею)
-- ✖️ Bitrix24 (російська розробка)
-- ✖️ AmoCRM (російська компанія)
-- ✖️ Мегаплан (російське ПЗ)
+-  1С:Підприємство (БАС, Бухгалтерія, Управління Торгівлею)
+-  Bitrix24 (російська розробка)
+-  AmoCRM (російська компанія)
+-  Мегаплан (російське ПЗ)
 
 **Розмір Ринку**:
 - **150,000+** компаній МСБ шукають заміну
@@ -198,59 +198,59 @@
 
 ---
 
-## 🏆 Конкурентний Аналіз
+##  Конкурентний Аналіз
 
 ### Прямі Конкуренти
 
 #### 1. KeyCRM (Український)
 **Сильні сторони**:
-- ✅ Вже на ринку (5 років)
-- ✅ Українська локалізація
-- ✅ Інтеграції з НП, Приват24
+-  Вже на ринку (5 років)
+-  Українська локалізація
+-  Інтеграції з НП, Приват24
 
 **Слабкості**:
-- ❌ Обмежений ERP функціонал
-- ❌ Застаріла архітектура (монолітна)
-- ❌ Проблеми з масштабуванням
-- ❌ Немає API для складних інтеграцій
+-  Обмежений ERP функціонал
+-  Застаріла архітектура (монолітна)
+-  Проблеми з масштабуванням
+-  Немає API для складних інтеграцій
 
 **Ціна**: $10-30/користувач/місяць
 
 #### 2. Terrasoft BPM'online (Український)
 **Сильні сторони**:
-- ✅ Потужна платформа
-- ✅ Low-code можливості
-- ✅ Великі клієнти (Київстар, ПриватБанк)
+-  Потужна платформа
+-  Low-code можливості
+-  Великі клієнти (Київстар, ПриватБанк)
 
 **Слабкості**:
-- ❌ Дуже дорого ($50-150/user/місяць)
-- ❌ Складна для МСБ
-- ❌ Довга імплементація (3-6 місяців)
+-  Дуже дорого ($50-150/user/місяць)
+-  Складна для МСБ
+-  Довга імплементація (3-6 місяців)
 
 #### 3. Pipedrive, HubSpot (Закордонні)
 **Сильні сторони**:
-- ✅ Зрілий продукт
-- ✅ Багато інтеграцій
-- ✅ Сучасний UI/UX
+-  Зрілий продукт
+-  Багато інтеграцій
+-  Сучасний UI/UX
 
 **Слабкості**:
-- ❌ Немає українського комплаєнсу
-- ❌ Дорого ($25-120/user/місяць)
-- ❌ Немає інтеграції з ПРРО, ДПС
-- ❌ Підтримка англійською
+-  Немає українського комплаєнсу
+-  Дорого ($25-120/user/місяць)
+-  Немає інтеграції з ПРРО, ДПС
+-  Підтримка англійською
 
 ### Наша Позиція (Promenade)
 
 | Критерій | 1С | KeyCRM | Terrasoft | Закордонні | **Promenade** |
 |----------|-----|--------|-----------|------------|---------------|
 | Ціна | $$ | $ | $$$$ | $$$ | **$ - $$** |
-| Комплаєнс UA | ✅ | ✅ | ✅ | ❌ | **✅** |
-| Архітектура | ❌ стара | ❌ монолітна | ✅ | ✅ | **✅ DDD** |
-| API/Інтеграції | ❌ | ⚠️ обмежені | ✅ | ✅ | **✅** |
-| Low-code | ❌ | ❌ | ✅ | ⚠️ | **✅ LUA** |
+| Комплаєнс UA |  |  |  |  | **** |
+| Архітектура |  стара |  монолітна |  |  | ** DDD** |
+| API/Інтеграції |  |  обмежені |  |  | **** |
+| Low-code |  |  |  |  | ** LUA** |
 | Час впровадження | 3-6 міс | 1-2 тиж | 3-6 міс | 1-4 тиж | **1-4 тиж** |
-| Масштабування | ❌ | ❌ | ✅ | ✅ | **✅** |
-| Open-source | ❌ | ❌ | ❌ | ❌ | **✅ (Core)** |
+| Масштабування |  |  |  |  | **** |
+| Open-source |  |  |  |  | ** (Core)** |
 
 **Конкурентні Переваги**:
 1. **Ціна**: На 40-60% дешевше Terrasoft, але потужніше за KeyCRM
@@ -261,13 +261,13 @@
 
 ---
 
-## 🛠️ Критичний Функціонал для Українського Ринку
+##  Критичний Функціонал для Українського Ринку
 
 ### Priority 1: Must-Have (MVP для запуску)
 
-#### 1.1. ПРРО Інтеграція (Програмний РРО) 🔥
+#### 1.1. ПРРО Інтеграція (Програмний РРО) 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🔴 БЛОКЕР - без цього НЕМОЖЛИВО продавати в роздрібну торгівлю  
+**Criticality**:  БЛОКЕР - без цього НЕМОЖЛИВО продавати в роздрібну торгівлю  
 **Impact**: 70% target market  
 **Timeline**: 3-4 тижні
 
@@ -325,9 +325,9 @@ Order.Confirmed → fiscal.receipt.create → ПРРО API → fiscal.receipt.pr
 
 ---
 
-#### 1.2. Українська Бухгалтерія (Базова) 🔥
+#### 1.2. Українська Бухгалтерія (Базова) 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🔴 БЛОКЕР для бухгалтерських фірм  
+**Criticality**:  БЛОКЕР для бухгалтерських фірм  
 **Impact**: 50% target market  
 **Timeline**: 4-5 тижнів
 
@@ -423,9 +423,9 @@ registrationNumber, err := medocClient.RegisterTaxInvoice(xml)
 
 ---
 
-#### 1.3. Банківські Виписки 🔥
+#### 1.3. Банківські Виписки 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🟡 HIGH - автоматизація  
+**Criticality**:  HIGH - автоматизація  
 **Impact**: 60% target market  
 **Timeline**: 2-3 тижні
 
@@ -485,9 +485,9 @@ for _, tx := range transactions {
 
 ### Priority 2: Should-Have (Конкурентна Перевага)
 
-#### 2.1. Кадровий Облік (HRM) 💼
+#### 2.1. Кадровий Облік (HRM) 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🟡 MEDIUM  
+**Criticality**:  MEDIUM  
 **Impact**: 40% target market  
 **Timeline**: 3-4 тижні
 
@@ -522,9 +522,9 @@ for _, tx := range transactions {
 
 ---
 
-#### 2.2. Виробничий Модуль (Manufacturing) 🏭
+#### 2.2. Виробничий Модуль (Manufacturing) 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🟢 LOW-MEDIUM  
+**Criticality**:  LOW-MEDIUM  
 **Impact**: 20% target market  
 **Timeline**: 4-5 тижнів
 
@@ -553,9 +553,9 @@ for _, tx := range transactions {
 
 ---
 
-#### 2.3. Логістика (Delivery) 🚚
+#### 2.3. Логістика (Delivery) 
 **Статус**: Відсутній (0%)  
-**Criticality**: 🟡 MEDIUM  
+**Criticality**:  MEDIUM  
 **Impact**: 50% e-commerce  
 **Timeline**: 2 тижні
 
@@ -604,7 +604,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ### Priority 3: Nice-to-Have (Довгострокова Перспектива)
 
-#### 3.1. Мобільний Додаток (iOS/Android) 📱
+#### 3.1. Мобільний Додаток (iOS/Android) 
 **Timeline**: Q3-Q4 2026  
 **Tech Stack**: Flutter (вже є front/flutter/)
 
@@ -616,7 +616,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-#### 3.2. Електронна Комерція (E-commerce) 🛒
+#### 3.2. Електронна Комерція (E-commerce) 
 **Timeline**: Q4 2026
 
 **Функціонал**:
@@ -627,7 +627,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-#### 3.3. Маркетплейси 🏪
+#### 3.3. Маркетплейси 
 **Timeline**: 2027
 
 **Інтеграції**:
@@ -637,100 +637,100 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 📅 Детальний Roadmap (12 місяців)
+##  Детальний Roadmap (12 місяців)
 
 ### Q1 2026: Foundation + Ukrainian Compliance
 
 **Січень (Тижні 1-4)**:
-- ✅ Week 1-2: Phase 2 Complete (Domain Errors)
-- 🔄 Week 3: Phase 3 Week 2 (Script Storage)
-- 🔄 Week 4: Phase 3 Week 3 (UI Metadata)
+-  Week 1-2: Phase 2 Complete (Domain Errors)
+-  Week 3: Phase 3 Week 2 (Script Storage)
+-  Week 4: Phase 3 Week 3 (UI Metadata)
 
 **Лютий (Тижні 5-8)**:
-- ⏱️ Week 5-6: Job Scheduler (Phase 4)
-- 🇺🇦 Week 7-8: **ПРРО Integration START**
+- ⏱ Week 5-6: Job Scheduler (Phase 4)
+-  Week 7-8: **ПРРО Integration START**
 
 **Березень (Тижні 9-13)**:
-- 🇺🇦 Week 9-10: **ПРРО Integration COMPLETE**
-- 🇺🇦 Week 11-12: **Українська Бухгалтерія (Податкові Накладні)**
-- 🇺🇦 Week 13: **Банківські Виписки (Monobank + Privat24)**
+-  Week 9-10: **ПРРО Integration COMPLETE**
+-  Week 11-12: **Українська Бухгалтерія (Податкові Накладні)**
+-  Week 13: **Банківські Виписки (Monobank + Privat24)**
 
 **Deliverables Q1**:
-- ✅ Core Platform (Phase 1-4)
-- ✅ ПРРО (Checkbox + Вчасно.Каса)
-- ✅ Податкові Накладні (XML генерація)
-- ✅ Банківські інтеграції (2 банки)
+-  Core Platform (Phase 1-4)
+-  ПРРО (Checkbox + Вчасно.Каса)
+-  Податкові Накладні (XML генерація)
+-  Банківські інтеграції (2 банки)
 
 ---
 
 ### Q2 2026: HRM + Manufacturing + NATS
 
 **Квітень (Тижні 14-17)**:
-- 💼 Week 14-16: **Кадровий Облік (HRM)**
-- 🚚 Week 17: **Логістика (Нова Пошта API)**
+-  Week 14-16: **Кадровий Облік (HRM)**
+-  Week 17: **Логістика (Нова Пошта API)**
 
 **Травень (Тижні 18-21)**:
-- 🏭 Week 18-20: **Виробничий Модуль**
-- ⚡ Week 21: **NATS Gateway START**
+-  Week 18-20: **Виробничий Модуль**
+-  Week 21: **NATS Gateway START**
 
 **Червень (Тижні 22-26)**:
-- ⚡ Week 22-24: **NATS Gateway COMPLETE**
-- 📱 Week 25-26: **Flutter Mobile APP START**
+-  Week 22-24: **NATS Gateway COMPLETE**
+-  Week 25-26: **Flutter Mobile APP START**
 
 **Deliverables Q2**:
-- ✅ HRM з розрахунком зарплати
-- ✅ Виробничий облік (BOM + калькуляція)
-- ✅ Нова Пошта інтеграція
-- ✅ Real-time (NATS)
-- 🔄 Mobile App (MVP)
+-  HRM з розрахунком зарплати
+-  Виробничий облік (BOM + калькуляція)
+-  Нова Пошта інтеграція
+-  Real-time (NATS)
+-  Mobile App (MVP)
 
 ---
 
 ### Q3 2026: Mobile + E-commerce + Polish
 
 **Липень (Тижні 27-30)**:
-- 📱 Week 27-29: **Flutter Mobile APP COMPLETE**
-- 🛒 Week 30: **E-commerce Integration START**
+-  Week 27-29: **Flutter Mobile APP COMPLETE**
+-  Week 30: **E-commerce Integration START**
 
 **Серпень (Тижні 31-35)**:
-- 🛒 Week 31-33: **E-commerce (OpenCart, WooCommerce)**
-- 🏪 Week 34-35: **Укрпошта API**
+-  Week 31-33: **E-commerce (OpenCart, WooCommerce)**
+-  Week 34-35: **Укрпошта API**
 
 **Вересень (Тижні 36-39)**:
-- 🎨 Week 36-37: **UI/UX Polish**
-- 📚 Week 38-39: **Documentation + Videos**
+-  Week 36-37: **UI/UX Polish**
+-  Week 38-39: **Documentation + Videos**
 
 **Deliverables Q3**:
-- ✅ Mobile App (iOS + Android)
-- ✅ E-commerce інтеграції
-- ✅ Повна логістика (НП + Укрпошта)
-- ✅ Готовність до публічного запуску
+-  Mobile App (iOS + Android)
+-  E-commerce інтеграції
+-  Повна логістика (НП + Укрпошта)
+-  Готовність до публічного запуску
 
 ---
 
 ### Q4 2026: Launch + Marketing + Iteration
 
 **Жовтень (Тижні 40-43)**:
-- 🚀 Week 40: **PUBLIC BETA LAUNCH**
-- 📣 Week 41-43: **Marketing Campaign**
+-  Week 40: **PUBLIC BETA LAUNCH**
+-  Week 41-43: **Marketing Campaign**
 
 **Листопад (Тижні 44-48)**:
-- 🐛 Week 44-46: **Bug fixes + User Feedback**
-- 🎯 Week 47-48: **Feature Improvements**
+-  Week 44-46: **Bug fixes + User Feedback**
+-  Week 47-48: **Feature Improvements**
 
 **Грудень (Тижні 49-52)**:
-- 💎 Week 49-50: **Premium Features**
-- 📊 Week 51-52: **Year Review + Q1 2027 Planning**
+-  Week 49-50: **Premium Features**
+-  Week 51-52: **Year Review + Q1 2027 Planning**
 
 **Deliverables Q4**:
-- ✅ 100+ активних клієнтів
-- ✅ Case studies (3-5 компаній)
-- ✅ Партнерська програма
-- ✅ Revenue: $50K-100K MRR
+-  100+ активних клієнтів
+-  Case studies (3-5 компаній)
+-  Партнерська програма
+-  Revenue: $50K-100K MRR
 
 ---
 
-## 💰 Pricing Strategy
+##  Pricing Strategy
 
 ### SaaS Тарифи
 
@@ -790,7 +790,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 🎯 Go-to-Market Strategy
+##  Go-to-Market Strategy
 
 ### Phase 1: Private Beta (Березень 2026)
 
@@ -849,7 +849,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 🤝 Partnership Strategy
+##  Partnership Strategy
 
 ### 1. Бухгалтерські Фірми
 **Value Prop**: Отримуйте 20% від кожного клієнта, якого приведете
@@ -889,7 +889,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 📊 Success Metrics
+##  Success Metrics
 
 ### Technical KPIs
 
@@ -927,7 +927,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 🚨 Risks & Mitigation
+##  Risks & Mitigation
 
 ### Risk 1: Конкуренти швидше додадуть український комплаєнс
 **Probability**: MEDIUM  
@@ -963,7 +963,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 💵 Funding Requirements
+##  Funding Requirements
 
 ### Bootstrap Phase (Q1-Q2 2026): $30K-50K
 
@@ -987,7 +987,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 🎓 Team Requirements
+##  Team Requirements
 
 ### Phase 1 (Q1-Q2): Core Team (2-3 люди)
 
@@ -1023,7 +1023,7 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 📚 Documentation Strategy
+##  Documentation Strategy
 
 ### Для Розробників
 - Architecture Guide (DDD, Event-Driven)
@@ -1042,21 +1042,21 @@ status := delivery.GetStatus() // "in_transit", "delivered", etc.
 
 ---
 
-## 🎯 Conclusion
+##  Conclusion
 
 Promenade має **всі технічні переваги** для завоювання українського ринку CRM/ERP:
 
-✅ **Сучасна архітектура** (Enterprise-grade)  
-✅ **Швидкість** (Go vs 1С)  
-✅ **Гнучкість** (LUA, APIs)  
-✅ **Безпека** (JWT, RBAC)
+ **Сучасна архітектура** (Enterprise-grade)  
+ **Швидкість** (Go vs 1С)  
+ **Гнучкість** (LUA, APIs)  
+ **Безпека** (JWT, RBAC)
 
 **Що потрібно додати** (3-4 місяці):
-1. 🔥 ПРРО Integration (критично)
-2. 🔥 Податкові Накладні (критично)
-3. 🔥 Банківські Виписки (дуже важливо)
-4. 💼 HRM (конкурентна перевага)
-5. 🏭 Manufacturing (ніша)
+1.  ПРРО Integration (критично)
+2.  Податкові Накладні (критично)
+3.  Банківські Виписки (дуже важливо)
+4.  HRM (конкурентна перевага)
+5.  Manufacturing (ніша)
 
 **Timeline до запуску**: 6-9 місяців (Q3 2026)
 
@@ -1068,15 +1068,15 @@ Promenade має **всі технічні переваги** для завою�
 ---
 
 **Next Steps**:
-1. ✅ Доробити Phase 3 (LUA + Scheduler)
-2. 🚀 Почати ПРРО Integration (Березень 2026)
-3. 📝 Зареєструвати ТОВ (якщо ще немає)
-4. 🎯 Знайти 10 beta-тестерів
-5. 💰 Підготувати pitch deck для інвесторів (опціонально)
+1.  Доробити Phase 3 (LUA + Scheduler)
+2.  Почати ПРРО Integration (Березень 2026)
+3.  Зареєструвати ТОВ (якщо ще немає)
+4.  Знайти 10 beta-тестерів
+5.  Підготувати pitch deck для інвесторів (опціонально)
 
 ---
 
 **Автор**: Strategic Planning Team  
 **Дата**: 14 січня 2026  
 **Версія**: 1.0  
-**Статус**: Ready for Execution 🚀
+**Статус**: Ready for Execution 

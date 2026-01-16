@@ -2,21 +2,6 @@
 
 Strategic planning documents for platform development and market strategy.
 
-## Available Roadmaps
-
-### Technical Roadmaps
-
-- [Strategic Roadmap 2026](STRATEGIC_ROADMAP_2026.md)
-- [Phase 3: LUA + UI Metadata Foundation](PHASE3_LUA_UI_FOUNDATION.md)
-
-### Ukrainian Market Strategy
-
-- [Ukraine Market Strategy 2026](UKRAINE_MARKET_STRATEGY_2026.md)
-- [Ukraine Compliance Roadmap](UKRAINE_COMPLIANCE_ROADMAP.md)
-# Promenade Roadmaps
-
-Strategic planning documents for platform development and market strategy.
-
 ---
 
 ## Available Roadmaps
@@ -26,12 +11,12 @@ Strategic planning documents for platform development and market strategy.
 #### [Strategic Roadmap 2026](STRATEGIC_ROADMAP_2026.md)
 **Timeline**: Q1-Q2 2026 (6 months)  
 **Focus**: Core platform development  
-**Status**: Phase 3-4 in progress
+**Status**: Phase 3 in progress (Week 2 underway); Phase 4 planned
 
 **Key Phases**:
 - Phase 1-2: Foundation + Domain Errors (Complete)
-- Phase 3: LUA Scripting Engine (70% done)
-- Phase 4: Job Scheduler (Planned)
+- Phase 3: LUA Scripting Engine + UI Metadata (in progress)
+- Phase 4: Job Scheduler (Complete)
 - Phase 5: NATS Gateway (Planned)
 
 ---
@@ -39,7 +24,7 @@ Strategic planning documents for platform development and market strategy.
 #### [Phase 3: LUA + UI Metadata Foundation](PHASE3_LUA_UI_FOUNDATION.md)
 **Timeline**: 3 weeks (January 8-28, 2026)  
 **Focus**: No-code platform capabilities  
-**Status**: Week 1 complete, Week 2-3 in progress
+**Status**: Week 1 complete; Week 2 in progress (UI metadata foundation complete, scripting storage pending)
 
 **Deliverables**:
 - LUA Scripting Engine (business rules without recompilation)
@@ -139,39 +124,39 @@ Strategic planning documents for platform development and market strategy.
 
 ```
 January 2026:
-════════════════════════════════════════════════════════
+
 Week 1-2  : Phase 2 Complete (Domain Errors)
 Week 3    : Phase 3 Week 2 (Script Storage)
 Week 4    : Phase 3 Week 3 (UI Metadata)
 
 February 2026:
-════════════════════════════════════════════════════════
+
 Week 5-6  : Phase 4 (Scheduler)
 Week 7-10 : PRRO Integration (Checkbox + Vchasno.Kasa)
 
 March 2026:
-════════════════════════════════════════════════════════
+
 Week 11-12: Tax Invoices + XML
 Week 13-14: Bank Statements (Monobank, Privat24)
 
 April 2026:
-════════════════════════════════════════════════════════
+
 Week 14-17: HRM (Payroll + Taxes)
 Week 17   : Nova Poshta API
 
 May - June 2026:
-════════════════════════════════════════════════════════
+
 Week 18-24: NATS Gateway + Mobile App
 Week 25-26: Polish + Documentation
 
 Q3 2026 (Launch):
-════════════════════════════════════════════════════════
+
 October: PUBLIC BETA LAUNCH
 November: Bug fixes + User Feedback
 December: Premium Features
 
 Q4 2026 Goals:
-════════════════════════════════════════════════════════
+
 - 500 active users
 - 150 paying customers
 - $15K MRR
@@ -182,7 +167,7 @@ Q4 2026 Goals:
 ## Next Steps
 
 ### Immediate (Week 3-4, January 2026)
-1. Complete Phase 3 (LUA + UI Metadata)
+1. Complete Phase 3 scripting storage and UI metadata integration
 2. Prepare technical specs for PRRO
 3. Find 10 beta testers for PRRO
 

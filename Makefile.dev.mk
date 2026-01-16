@@ -173,6 +173,7 @@ migrate: validate-env  ## Run all migrations (auto-detects database driver)
 	@$(MAKE) migrate-warehouse
 	@$(MAKE) migrate-scripting
 	@$(MAKE) migrate-fiscal
+	@$(MAKE) migrate-ui
 	@echo "✓ All migrations completed for $(DATABASE_DRIVER)"
 
 migrate-core: validate-env  ## Run core migrations (extensions, auth, RBAC)
@@ -210,6 +211,10 @@ migrate-scripting: validate-env  ## Run scripting context migrations
 migrate-fiscal: validate-env  ## Run fiscal context migrations
 	@echo "Running fiscal context migrations ($(DATABASE_DRIVER))..."
 	@go run cmd/migrate/main.go --cmd=up --namespace=fiscal
+
+migrate-ui: validate-env  ## Run UI context migrations
+	@echo "Running UI context migrations ($(DATABASE_DRIVER))..."
+	@go run cmd/migrate/main.go --cmd=up --namespace=ui
 
 migrate-status: validate-env  ## Show migration status
 	@echo "Migration status ($(DATABASE_DRIVER)):"

@@ -62,26 +62,26 @@ This document consolidates the 2026 strategic plan for core platform milestones 
 ```
                     Scheduler System                        
 
-┌─────────────────────────────────────────────────────────┐
-│                  pkg/scheduler/                         │
-│                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │   Scheduler  │  │  Job Registry│  │   Executor   │ │
-│  │   (Cron)     │  │  (Database)  │  │  (Workers)   │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-│         │                 │                  │         │
-│         └─────────────────┴──────────────────┘         │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              Job Implementations                        │
-│                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │   Go Jobs    │  │  LUA Scripts │  │ HTTP Webhooks│ │
-│  │  (Built-in)  │  │  (Dynamic)   │  │  (External)  │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────────┘
+
+                  pkg/scheduler/                         
+                                                         
+       
+     Scheduler      Job Registry     Executor    
+     (Cron)         (Database)      (Workers)    
+       
+                                                     
+                  
+
+                           
+                           
+
+              Job Implementations                        
+                                                         
+       
+     Go Jobs        LUA Scripts    HTTP Webhooks 
+    (Built-in)      (Dynamic)       (External)   
+       
+
 ```
 
 **Job Types**:
@@ -191,31 +191,31 @@ scheduler.TriggerNow("cleanup_expired_contracts", userID)
 ```
                     NATS Gateway                           
 
-┌─────────────────────────────────────────────────────────┐
-│                   Flutter App                           │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │  NATS Client │  │  WebSocket   │  │   UI Store   │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────────┘
-          │                    │
-          │ Subscribe          │ HTTP/WS
-          ▼                    ▼
-┌─────────────────────────────────────────────────────────┐
-│              Promenade NATS Gateway                     │
-│                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │     NATS     │  │   WebSocket  │  │   Subject    │ │
-│  │   Publisher  │  │    Server    │  │   Router     │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-│         ▲                                              │
-└─────────┼──────────────────────────────────────────────┘
-          │
-          │ Domain Events
-          │
-┌─────────┴───────────────────────────────────────────────┐
-│                  Event Bus                              │
-│  (Memory / Redis / NATS)                                │
-└─────────────────────────────────────────────────────────┘
+
+                   Flutter App                           
+       
+    NATS Client     WebSocket        UI Store    
+       
+
+                              
+           Subscribe           HTTP/WS
+                              
+
+              Promenade NATS Gateway                     
+                                                         
+       
+       NATS          WebSocket       Subject     
+     Publisher        Server         Router      
+       
+                                                       
+
+          
+           Domain Events
+          
+
+                  Event Bus                              
+  (Memory / Redis / NATS)                                
+
 ```
 
 **Subject Design**:
@@ -279,29 +279,29 @@ Wildcards for subscriptions:
 ## Success Metrics
 
 ### Phase 3 (LUA Engine)
-- ✅ 10+ LUA scripts created and tested
-- ✅ 3+ UI forms defined via metadata
-- ✅ 100% test coverage
-- ✅ Documentation complete
+-  10+ LUA scripts created and tested
+-  3+ UI forms defined via metadata
+-  100% test coverage
+-  Documentation complete
 
 ### Phase 4 (Scheduler)
-- ✅ 5+ scheduled jobs running
-- ✅ 0 missed executions
-- ✅ Retry mechanism working
-- ✅ LUA job integration
+-  5+ scheduled jobs running
+-  0 missed executions
+-  Retry mechanism working
+-  LUA job integration
 
 ### Phase 5 (NATS Gateway)
-- ✅ < 100ms event latency
-- ✅ 10K concurrent connections
-- ✅ Flutter real-time working
-- ✅ 99.9% uptime
+-  < 100ms event latency
+-  10K concurrent connections
+-  Flutter real-time working
+-  99.9% uptime
 
 ### Overall
-- ✅ Backend horizontally complete (all contexts production)
-- ✅ No-code flexibility (LUA + UI Metadata)
-- ✅ Real-time capabilities (NATS)
-- ✅ Automation (Scheduler)
-- ✅ 100% test coverage maintained
+-  Backend horizontally complete (all contexts production)
+-  No-code flexibility (LUA + UI Metadata)
+-  Real-time capabilities (NATS)
+-  Automation (Scheduler)
+-  100% test coverage maintained
 
 ---
 
@@ -357,10 +357,10 @@ Wildcards for subscriptions:
 4. Послідовний підхід = менше context switching
 
 **Next Immediate Steps**:
-1. ✅ Завершити Phase 3 Week 2 (Script Storage) - 1 тиждень
-2. ✅ Завершити Phase 3 Week 3 (UI Metadata) - 1 тиждень
-3. ✅ Phase 4 Scheduler - 2 тижні
-4. ✅ Phase 5 NATS Gateway - 3-4 тижні
+1.  Завершити Phase 3 Week 2 (Script Storage) - 1 тиждень
+2.  Завершити Phase 3 Week 3 (UI Metadata) - 1 тиждень
+3.  Phase 4 Scheduler - 2 тижні
+4.  Phase 5 NATS Gateway - 3-4 тижні
 
 **Total Timeline**: 7-8 тижнів до повного completion
 

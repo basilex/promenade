@@ -123,7 +123,7 @@ if errors.Is(err, location.ErrLocationCodeExists) {  // Type-safe
 - **Typed** for type-safe checking (errors.Is)
 - **Documented** with clear comments
 
-**Documentation**: `docs/reference/DOMAIN_ERRORS_REFACTORING_PLAN.md`
+**Documentation**: docs/guides/domain-errors.md
 
 ### Integration: The Unified Standard
 
@@ -1274,7 +1274,7 @@ This document combines two major refactoring efforts into a cohesive, production
 
 - **This Document**: Master reference for all error handling
 - **Phase 1**: `docs/guides/security-patterns.md` (handler security audit)
-- **Phase 2**: `docs/reference/DOMAIN_ERRORS_REFACTORING_PLAN.md` (18 sessions)
+- **Phase 2**: docs/refactoring/README.md (consolidated status)
 - **Gold Standard**: `docs/work-in-progress/LOCATION_AGGREGATE_QUALITY_AUDIT.md` (Session 1)
 
 ---

@@ -2,7 +2,7 @@
 
 **Quick HTTP-level validation** for all handlers - focus on status codes and basic response structure.
 
-**Status**:  **COMPLETE** - 17/17 handlers, 161 tests, 100% pass rate
+**Status**:  **COMPLETE** - 18/18 handlers, 169 tests, 100% pass rate
 
 ---
 
@@ -10,11 +10,11 @@
 
 ###  Statistics
 
-- **Total Tests**: 161
-- **Total Handlers**: 17 (100% complete)
+- **Total Tests**: 169
+- **Total Handlers**: 18 (100% complete)
 - **Pass Rate**: 100%
 - **Test Duration**: ~0.6 seconds (cached)
-- **Contexts Covered**: 5 (Identity, Customer Management, Order Management, Billing, Shared)
+- **Contexts Covered**: 6 (Identity, Customer Management, Order Management, Billing, Shared, UI)
 
 ###  Handler Breakdown
 
@@ -43,6 +43,9 @@
 **Billing Context** (2 handlers, 16 tests):
 - Invoice: 8 tests
 - Payment: 8 tests
+
+**UI Context** (1 handler, 8 tests):
+- Form: 8 tests
 
 ---
 
@@ -201,7 +204,7 @@ func (m *MockCustomerUseCase) CreateCustomer(ctx context.Context, ...) (*custome
 test/smoke/
  README.md                  # This file
  testutils.go              # Shared utilities (5 helper functions)
- contexts/                 # Mirror structure (17 handlers, 138 tests)
+ contexts/                 # Mirror structure (18 handlers, 169 tests)
     identity/               # 5 handlers, 43 tests
        user/handler_test.go
        contact/handler_test.go
@@ -223,6 +226,9 @@ test/smoke/
        currency/handler_test.go
        language/handler_test.go
        timezone/handler_test.go
+     ui/
+         metadata/
+             form/handler_test.go
 ```
 
 ---
@@ -369,7 +375,7 @@ w := smoke.MakeRequest(t, router, "GET", "/timezones/Europe/Kyiv", nil)
 ## Running Tests
 
 ```bash
-# All smoke tests (161 tests)
+# All smoke tests (169 tests)
 go test ./test/smoke/... -v
 
 # All smoke tests (using Makefile)
@@ -395,7 +401,7 @@ ok  github.com/basilex/promenade/test/smoke/contexts/identity/contact   (cached)
 ...
 ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 
- All 161 tests PASSED
+ All 169 tests PASSED
 ```
 
 ---
@@ -410,10 +416,11 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 | Billing               | 2        | 16    |       |
 | Shared                | 4        | 36    |       |
 | Warehouse             | 1        | 23    |       |
-| **Total**             | **17**   | **161** |     |
+| UI                    | 1        | 8     |       |
+| **Total**             | **18**   | **169** |     |
 
 **Test Distribution**:
-- Simple handlers (6-8 tests): 13 handlers
+- Simple handlers (6-8 tests): 14 handlers
 - Extended handlers (9-10 tests): 3 handlers
 - Complex handlers (12 tests): 1 handler (Customer)
 
@@ -457,5 +464,5 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 
 ---
 
-**Last Updated**: January 6, 2026  
-**Status**:  COMPLETE - 17/17 handlers, 161 tests, 100% pass rate  
+**Last Updated**: January 16, 2026  
+**Status**:  COMPLETE - 18/18 handlers, 169 tests, 100% pass rate  

@@ -66,7 +66,7 @@ Comprehensive business documentation available in multiple languages:
 
 ### What's Included
 
-**Executive Summary**: Modular architecture, event-driven design, 2400+ automated tests
+**Executive Summary**: Modular architecture, event-driven design, 2465+ automated tests
 
 **Core Capabilities**: 
 -  CRM (Customer Management, Sales Pipeline, Interactions)
@@ -347,7 +347,7 @@ Promenade implements **IP-based rate limiting** to protect against brute-force a
 
 Promenade provides **interactive API documentation** with Swagger UI for exploring and testing all endpoints.
 
-**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 172+ endpoints directly in the browser without writing any manual documentation.
+**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 182+ endpoints directly in the browser without writing any manual documentation.
 
 **Design**: 
 - **Annotation-Driven**: Swagger comments in handler code (`@Summary`, `@Description`, `@Param`, `@Success`, `@Failure`)
@@ -356,7 +356,7 @@ Promenade provides **interactive API documentation** with Swagger UI for explori
 - **Multi-Format**: JSON, YAML, and embedded Go code for different use cases
 
 **Key Features**:
-- **172+ Documented Endpoints**: All 6 contexts (Identity, Customer Management, Order Management, Billing, Warehouse, Shared)
+- **182+ Documented Endpoints**: All 6 contexts (Identity, Customer Management, Order Management, Billing, Warehouse, Shared)
 - **Try-It-Out**: Test endpoints directly from browser with request/response examples
 - **Authentication**: JWT Bearer token management in UI
 - **Schema Validation**: Request/response models with type definitions
@@ -381,9 +381,9 @@ make dev
 
 ### Postman Collection
 
-Promenade provides **pre-built Postman collection** with 172+ endpoints, authentication flows, and automated testing scripts.
+Promenade provides **pre-built Postman collection** with 182+ endpoints, authentication flows, and automated testing scripts.
 
-**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 172+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
+**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 182+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
 
 **Design**:
 - **Auto-Generated**: OpenAPI spec → Postman collection via openapi-to-postmanv2 tool
@@ -393,7 +393,7 @@ Promenade provides **pre-built Postman collection** with 172+ endpoints, authent
 - **CI/CD Ready**: Newman CLI integration for automated API testing in pipelines
 
 **Key Features**:
-- **172+ Endpoints**: Complete collection organized by 6 bounded contexts
+- **182+ Endpoints**: Complete collection organized by 6 bounded contexts
 - **Auto-Save Tokens**: Login request automatically saves access/refresh tokens to environment
 - **Auto-Refresh**: Pre-request script detects expired tokens and refreshes automatically
 - **3 Environments**: Dev/Staging/Prod with pre-configured base URLs and credentials
@@ -909,7 +909,7 @@ Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
 **Latest Progress** (January 9, 2026):
 -  Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
 -  Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
--  Phase 3 IN PROGRESS: LUA Scripting + UI Metadata Foundation (Week 1 Day 4 Complete)
+-  Phase 3 IN PROGRESS: LUA Scripting + UI Metadata Foundation (Week 2 in progress)
 -  **Fulfillment Saga COMPLETE**: Distributed transaction orchestration ready
   - Entity: 7-state machine with compensation logic (151 lines, 20 tests)
   - Repository: PostgreSQL with optimistic locking (317 lines, 15 integration tests)
@@ -933,7 +933,7 @@ Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
 - StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
 - Product Aggregate: 139 tests passing (25 entity + 83 usecase + 10 smoke + 21 integration), 16 API endpoints operational
 - Location Aggregate: 74 tests passing (48 entity + 17 integration + 9 smoke), 14 API endpoints operational
--  Test Infrastructure: All systems validated (2465+ tests: 2232+ unit, 182+ smoke, 76+ integration)
+-  Test Infrastructure: All systems validated (2465+ tests: 2232+ unit, 169 smoke, 76+ integration)
 -  GitHub Actions CI fully green (100% pass rate)
 
 ---
@@ -1247,7 +1247,7 @@ make lint                  # Run linters
 make test-all              # All tests runner (warns if not test environment)
 make test                  # All tests with race detector (~60s)
 make test-unit             # Unit tests only (~5s)
-make test-smoke            # Smoke tests (handler validation, no DB, ~0.5s, 138 tests)
+make test-smoke            # Smoke tests (handler validation, no DB, ~0.5s, 169 tests)
 make test-integration      # Integration tests with real DB (~14s)
 make test-benchmark        # Benchmark tests (~5s per benchmark)
 make test-coverage         # HTML coverage report
@@ -1302,7 +1302,7 @@ test/smoke/contexts/
  customer-mgmt/
     customer/handler_test.go  # 12 tests (most complex - 23-method mock)
     ...
- # Total: 160+ tests across 17 handlers (100% pass rate)
+ # Total: 169 tests across 18 handlers (100% pass rate)
 
 # Integration tests - mirror path structure (real DB)
 test/integration/contexts/
@@ -1324,13 +1324,13 @@ test/benchmark/contexts/
 ### Running Tests
 
 ```bash
-# All tests (2465+ tests: 2232+ unit, 182+ smoke, 76+ integration)
+# All tests (2465+ tests: 2232+ unit, 169 smoke, 76+ integration)
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
 # By type (four-tier strategy)
 make test-unit              # Unit tests only (~5s)
-make test-smoke             # Smoke tests (handler validation, no DB, ~0.5s, 138 tests)
+make test-smoke             # Smoke tests (handler validation, no DB, ~0.5s, 169 tests)
 make test-integration       # Integration tests with real DB (~14s)
 make test-benchmark         # Benchmark tests (5s per benchmark)
 make test-benchmark-all     # Extended benchmarks (10s per benchmark)
@@ -1366,7 +1366,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
 | **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
 | **pkg/cache**              | 8     | 85%      | cached   | Unit        |
-| **Smoke (all contexts)**   | 161   | -        | ~0.5s    | Smoke       |
+| **Smoke (all contexts)**   | 169   | -        | ~0.5s    | Smoke       |
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
@@ -1377,7 +1377,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **Warehouse (smoke)**      | 31    | -        | cached   | Smoke       |
 | **Warehouse (integration)** | 42   | -        | ~3.2s    | Integration |
 
-**Total**: 2433+ tests across 88+ packages, 90%+ average coverage
+**Total**: 2465+ tests across 88+ packages, 90%+ average coverage
 
 ### Test Database
 
@@ -1807,7 +1807,7 @@ id := uuidv7.New()  // Time-ordered UUID
 **Duration**: 5 days (planned 10 days - 2x faster!)
 
 - [x] Swagger/OpenAPI 3.0 generation (swaggo/swag)
-- [x] Swagger UI at `/api/docs/index.html` (172+ endpoints documented)
+- [x] Swagger UI at `/api/docs/index.html` (182+ endpoints documented)
 - [x] Postman collection (33K lines, 160+ requests, auto-generated)
 - [x] API versioning strategy (URL-based, RFC 8594 compliant)
 - [x] Developer Portal with 4 guides (4600+ lines):
@@ -1995,7 +1995,6 @@ Promenade includes **comprehensive documentation** covering all aspects of the a
 
 - [Test Coverage Report](docs/reference/test-coverage-report.md) - 420+ tests breakdown
 - [Bus Test Coverage](docs/reference/bus-test-coverage.md) - Event Bus test report (67 tests, 100% passing)
-- [Refactoring Roadmap](docs/reference/refactoring-roadmap.md) - Technical debt and improvements
 
 **Bounded Contexts**:
 

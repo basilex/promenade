@@ -170,11 +170,11 @@ Err + {Aggregate} + {Condition}
 
 **Examples**:
 ```go
-// ✅ Good
+//  Good
 ErrLocationNotFound = errors.New("location not found")
 ErrInsufficientStock = errors.New("insufficient stock available")
 
-// ❌ Bad
+//  Bad
 ErrLocationNotFound = errors.New("Location not found.")  // Capitalized, has period
 ErrStockLow = errors.New("stock")  // Not descriptive enough
 ```
@@ -229,24 +229,24 @@ func (uc *useCase) CreateLocation(ctx context.Context, code, name string, locati
 	// Check for duplicate code (business rule)
 	existing, _ := uc.repo.GetLocationByCode(ctx, code)
 	if existing != nil {
-		return nil, ErrLocationCodeExists  // ✅ Domain constant
+		return nil, ErrLocationCodeExists  //  Domain constant
 	}
 	
 	// Validate parent if provided (business rule)
 	if parentID != nil {
 		parent, err := uc.repo.GetLocation(ctx, *parentID)
 		if err != nil {
-			return nil, ErrParentLocationNotFound  // ✅ Domain constant
+			return nil, ErrParentLocationNotFound  //  Domain constant
 		}
 		if parent.DeletedAt != nil {
-			return nil, ErrParentLocationDeleted  // ✅ Domain constant
+			return nil, ErrParentLocationDeleted  //  Domain constant
 		}
 	}
 	
 	// Create location (technical operation)
 	loc := NewLocation(code, name, locationType)
 	if err := uc.repo.Create(ctx, loc); err != nil {
-		return nil, ErrLocationCreateFailed  // ✅ Technical wrapper
+		return nil, ErrLocationCreateFailed  //  Technical wrapper
 	}
 	
 	return loc, nil
@@ -260,24 +260,24 @@ func (uc *useCase) UpdateLocation(ctx context.Context, id uuid.UUID, updates map
 	// Get existing location
 	loc, err := uc.repo.GetLocation(ctx, id)
 	if err != nil {
-		return ErrLocationNotFound  // ✅ Domain constant
+		return ErrLocationNotFound  //  Domain constant
 	}
 	
 	// Check if deleted (business rule)
 	if loc.DeletedAt != nil {
-		return ErrLocationAlreadyDeleted  // ✅ Domain constant
+		return ErrLocationAlreadyDeleted  //  Domain constant
 	}
 	
 	// Apply updates
 	if name, ok := updates["name"].(string); ok {
 		if err := loc.SetName(name); err != nil {
-			return ErrLocationInvalidName  // ✅ Domain constant
+			return ErrLocationInvalidName  //  Domain constant
 		}
 	}
 	
 	// Persist changes
 	if err := uc.repo.Update(ctx, loc); err != nil {
-		return ErrLocationUpdateFailed  // ✅ Technical wrapper
+		return ErrLocationUpdateFailed  //  Technical wrapper
 	}
 	
 	return nil
@@ -291,27 +291,27 @@ func (uc *useCase) DeleteLocation(ctx context.Context, id uuid.UUID) error {
 	// Get location
 	loc, err := uc.repo.GetLocation(ctx, id)
 	if err != nil {
-		return ErrLocationNotFound  // ✅ Domain constant
+		return ErrLocationNotFound  //  Domain constant
 	}
 	
 	// Check business rules
 	if loc.DeletedAt != nil {
-		return ErrLocationAlreadyDeleted  // ✅ Domain constant
+		return ErrLocationAlreadyDeleted  //  Domain constant
 	}
 	
 	// Check for children (business rule requiring DB query)
 	hasChildren, err := uc.repo.HasChildren(ctx, id)
 	if err != nil {
-		// ✅ Wrap system error with context
+		//  Wrap system error with context
 		return fmt.Errorf("failed to check children: %w", err)
 	}
 	if hasChildren {
-		return ErrLocationHasChildren  // ✅ Domain constant
+		return ErrLocationHasChildren  //  Domain constant
 	}
 	
 	// Perform deletion
 	if err := uc.repo.Delete(ctx, id); err != nil {
-		return ErrLocationDeleteFailed  // ✅ Technical wrapper
+		return ErrLocationDeleteFailed  //  Technical wrapper
 	}
 	
 	return nil
@@ -320,7 +320,7 @@ func (uc *useCase) DeleteLocation(ctx context.Context, id uuid.UUID) error {
 
 ### What NOT to Do
 
-**❌ Inline errors.New()** (eliminated in Phase 2):
+** Inline errors.New()** (eliminated in Phase 2):
 ```go
 // WRONG - no domain constant
 if code == "" {
@@ -328,7 +328,7 @@ if code == "" {
 }
 ```
 
-**❌ fmt.Errorf() for business rules** (eliminated in Phase 2):
+** fmt.Errorf() for business rules** (eliminated in Phase 2):
 ```go
 // WRONG - should be domain constant
 if existing != nil {
@@ -336,13 +336,13 @@ if existing != nil {
 }
 ```
 
-**❌ String building in errors** (security risk):
+** String building in errors** (security risk):
 ```go
 // WRONG - information leakage
 return nil, fmt.Errorf("user %s not found", email)
 ```
 
-**✅ Correct approach**:
+** Correct approach**:
 ```go
 // Always return domain constants
 if code == "" {
@@ -429,7 +429,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
 ```go
 // User needs validation feedback
 if err := c.ShouldBindJSON(&req); err != nil {
-	response.BadRequest(c, err.Error())  // ✅ Safe - user's input
+	response.BadRequest(c, err.Error())  //  Safe - user's input
 }
 ```
 
@@ -437,14 +437,14 @@ if err := c.ShouldBindJSON(&req); err != nil {
 ```go
 // Map specific domain errors to clear messages
 if errors.Is(err, location.ErrLocationNotFound) {
-	response.NotFound(c, "Location not found")  // ✅ Clear, no sensitive data
+	response.NotFound(c, "Location not found")  //  Clear, no sensitive data
 }
 ```
 
 **Layer 3 - System Errors** (HIDE details):
 ```go
 // Generic fallback for unknown errors
-response.InternalError(c, "Failed to create location")  // ✅ No implementation details
+response.InternalError(c, "Failed to create location")  //  No implementation details
 ```
 
 **Never Expose**:
@@ -496,7 +496,7 @@ func (h *LocationHandler) Delete(c *gin.Context) {
 
 **Always use `errors.Is()` for type-safe error checking** instead of string comparison:
 
-**✅ Correct** (type-safe):
+** Correct** (type-safe):
 ```go
 func TestUseCase_CreateLocation_CodeExists(t *testing.T) {
 	// ... setup ...
@@ -504,12 +504,12 @@ func TestUseCase_CreateLocation_CodeExists(t *testing.T) {
 	loc, err := uc.CreateLocation(ctx, "EXISTING-CODE", "Test", location.TypeWarehouse)
 	
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, location.ErrLocationCodeExists))  // ✅ Type-safe
+	assert.True(t, errors.Is(err, location.ErrLocationCodeExists))  //  Type-safe
 	assert.Nil(t, loc)
 }
 ```
 
-**❌ Wrong** (fragile, eliminated in Phase 2):
+** Wrong** (fragile, eliminated in Phase 2):
 ```go
 // WRONG - string comparison (anti-pattern)
 assert.Equal(t, "location code already exists", err.Error())
@@ -572,7 +572,7 @@ func TestUseCase_CreateLocation(t *testing.T) {
 			
 			if tt.wantErr != nil {
 				assert.Error(t, err)
-				assert.True(t, errors.Is(err, tt.wantErr))  // ✅ Type-safe
+				assert.True(t, errors.Is(err, tt.wantErr))  //  Type-safe
 				assert.Nil(t, loc)
 			} else {
 				assert.NoError(t, err)
@@ -596,7 +596,7 @@ func TestLocationRepository_GetByCode_NotFound(t *testing.T) {
 	loc, err := repo.GetLocationByCode(ctx, "NON-EXISTENT")
 	
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, location.ErrLocationNotFound))  // ✅ Type-safe
+	assert.True(t, errors.Is(err, location.ErrLocationNotFound))  //  Type-safe
 	assert.Nil(t, loc)
 }
 ```
@@ -609,7 +609,7 @@ func TestLocationHandler_Create_CodeExists(t *testing.T) {
 	
 	mockUC := &MockLocationUseCase{
 		CreateLocationFunc: func(ctx, code, name string, locType location.Type) (*location.Location, error) {
-			return nil, location.ErrLocationCodeExists  // ✅ Return domain error
+			return nil, location.ErrLocationCodeExists  //  Return domain error
 		},
 	}
 	
@@ -624,7 +624,7 @@ func TestLocationHandler_Create_CodeExists(t *testing.T) {
 	
 	w := smoke.MakeRequest(t, router, "POST", "/locations", body)
 	
-	smoke.AssertErrorResponse(t, w, 400, "Location code already exists")  // ✅ Check mapped message
+	smoke.AssertErrorResponse(t, w, 400, "Location code already exists")  //  Check mapped message
 }
 ```
 
@@ -634,7 +634,7 @@ func TestLocationHandler_Create_CodeExists(t *testing.T) {
 
 ### 1. String Comparison Anti-Pattern
 
-**❌ Wrong** (eliminated in Phase 2):
+** Wrong** (eliminated in Phase 2):
 ```go
 // Fragile - breaks if error message changes
 if err != nil {
@@ -644,7 +644,7 @@ if err != nil {
 }
 ```
 
-**✅ Correct**:
+** Correct**:
 ```go
 // Type-safe - compiler checks
 if err != nil {
@@ -656,7 +656,7 @@ if err != nil {
 
 ### 2. Returning Wrong Error Constant
 
-**❌ Wrong**:
+** Wrong**:
 ```go
 // Using wrong aggregate's error
 if customer == nil {
@@ -664,17 +664,17 @@ if customer == nil {
 }
 ```
 
-**✅ Correct**:
+** Correct**:
 ```go
 // Use correct aggregate's error
 if customer == nil {
-	return customer.ErrCustomerNotFound  // ✅ Right aggregate
+	return customer.ErrCustomerNotFound  //  Right aggregate
 }
 ```
 
 ### 3. Information Leakage
 
-**❌ Wrong** (security risk):
+** Wrong** (security risk):
 ```go
 // Exposing sensitive data in error
 return fmt.Errorf("user %s with email %s not found", userID, email)
@@ -683,7 +683,7 @@ return fmt.Errorf("user %s with email %s not found", userID, email)
 response.InternalError(c, err.Error())  // Shows "sql: connection lost"
 ```
 
-**✅ Correct**:
+** Correct**:
 ```go
 // Generic user-facing message
 return customer.ErrCustomerNotFound
@@ -700,7 +700,7 @@ response.InternalError(c, "Failed to retrieve customer")
 
 ### 4. Missing errors.go File
 
-**❌ Wrong**:
+** Wrong**:
 ```go
 // Inline errors in entity.go or usecase.go
 if code == "" {
@@ -708,7 +708,7 @@ if code == "" {
 }
 ```
 
-**✅ Correct**:
+** Correct**:
 ```go
 // Create errors.go with all error constants
 // File: internal/contexts/warehouse/location/errors.go
@@ -722,13 +722,13 @@ if code == "" {
 
 ### 5. Not Using errors.Is() in Tests
 
-**❌ Wrong**:
+** Wrong**:
 ```go
 // String comparison in tests (fragile)
 assert.Equal(t, "location not found", err.Error())
 ```
 
-**✅ Correct**:
+** Correct**:
 ```go
 // Type-safe error checking
 assert.True(t, errors.Is(err, location.ErrLocationNotFound))
@@ -866,7 +866,7 @@ golangci-lint run ./...
 ## References
 
 - **Gold Standard**: `internal/contexts/warehouse/location/` - 14 domain constants, zero fmt.Errorf
-- **Refactoring Plan**: `docs/reference/DOMAIN_ERRORS_REFACTORING_PLAN.md` - Complete 18-session plan
+- **Refactoring Status**: docs/refactoring/README.md - Consolidated completion summary
 - **Test Examples**: `test/integration/contexts/` - 34+ tests using errors.Is()
 - **Security Patterns**: `docs/guides/security-patterns.md` - Handler security audit results
 

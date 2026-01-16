@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**:  **COMPLETE** - 17/17 handlers, 138 tests, 100% pass rate
+**Status**:  **COMPLETE** - 18/18 handlers, 169 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -54,18 +54,24 @@ test/smoke/
        profile/handler_test.go
        role/handler_test.go
        permission/handler_test.go
-    customer-mgmt/          # 4 handlers, 34 tests
+     customer-mgmt/          # 4 handlers, 33 tests
        company/handler_test.go
        customer/handler_test.go  # Most complex: 12 tests, 23-method mock
        deal/handler_test.go
        interaction/handler_test.go
     order-mgmt/             # 1 handler, 10 tests
        order/handler_test.go
+     billing/                # 2 handlers, 16 tests
+         invoice/handler_test.go
+         payment/handler_test.go
     shared/                 # 4 handlers, 36 tests
        country/handler_test.go
        currency/handler_test.go
        language/handler_test.go
        timezone/handler_test.go
+     ui/                     # 1 handler, 8 tests
+         metadata/
+             form/handler_test.go
 ```
 
 **Key Characteristics**:
@@ -73,7 +79,7 @@ test/smoke/
 - Test HTTP status codes (200/201/404/400/500)
 - Validate response format (`{"status":"success"}`)
 - No database dependencies (pure mocks)
-- Fast execution (~0.6s for all 138 tests, cached)
+- Fast execution (~0.6s for all 169 tests, cached)
 - 6-12 tests per handler (simple to complex)
 - Error code patterns vary by context:
   - Identity/Order Management: Simple "NOT_FOUND"
@@ -96,6 +102,9 @@ test/integration/
        timezone/repository_test.go      #  Repository tests with real DB
     identity/
         contact/repository_test.go       #  Repository tests with real DB
+    ui/
+        metadata/
+            form/repository_test.go       #  Repository tests with real DB
  pkg/                        # Package integration tests
      bus/
          bus_integration_test.go
@@ -132,7 +141,7 @@ test/benchmark/
 go test ./... -short -v
 
 # Smoke tests (handler validation, no DB)
-make test-smoke                     # Run all 123 smoke tests
+make test-smoke                     # Run all 169 smoke tests
 
 # Integration tests (with real DB)
 make test-integration
@@ -229,13 +238,19 @@ test/smoke/contexts/
     interaction/handler_test.go # 6 tests
  order-mgmt/
     order/handler_test.go     # 10 tests
+ billing/
+     invoice/handler_test.go   # 8 tests
+     payment/handler_test.go   # 8 tests
  shared/
     country/handler_test.go   # 9 tests
     currency/handler_test.go  # 9 tests
     language/handler_test.go  # 9 tests
     timezone/handler_test.go  # 9 tests
+ ui/
+     metadata/
+         form/handler_test.go   # 8 tests
 
-**Total: 138 smoke tests across 17 handlers (100% pass rate)**
+**Total: 169 smoke tests across 18 handlers (100% pass rate)**
 ```
 
 ### Warehouse Context (Inventory Management)
@@ -318,7 +333,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (2400+ tests: 2200+ unit, 170+ smoke, 42+ integration)
+make test                 # All tests (2465+ tests: 2232+ unit, 169 smoke, 76+ integration)
 ```
 
 ### By Type
@@ -548,7 +563,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (138 tests across 17 handlers)   
+**Smoke Tests**: HTTP handlers with mocks (169 tests across 18 handlers)   
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)
@@ -568,4 +583,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | 138 smoke tests (100% pass rate) | 450+ total tests
+**Test Status**: All tests passing | 169 smoke tests (100% pass rate) | 2465+ total tests

@@ -29,7 +29,7 @@
 6. SESSION_6_USER_FINAL_REPORT.md (2,703 lines)
 7. docs/reference/SESSION_7_COMPANY_SUMMARY.md (679 lines)
 8. docs/reference/SESSION_8_SUBSCRIPTION_SUMMARY.md (390 lines)
-9. docs/refactoring/sessions/SESSION_9_CONTRACT_SUMMARY.md (345 lines)
+9. Session summaries (removed after consolidation)
 
 **Batch 2 - Additional Cleanup** (7 files, 3,062 lines):
 10. docs/reference/SESSION_5_ORDER_SUMMARY.md (605 lines)
@@ -44,7 +44,7 @@
 
 ### Files Created: 11 compact summaries (1,025 lines)
 
-**docs/refactoring/sessions/**:
+**docs/refactoring/sessions/**: Removed after consolidation
 1. session-02-inventory.md (55 lines)
 2. session-03-stockmovement.md (55 lines)
 3. session-04-product.md (60 lines)

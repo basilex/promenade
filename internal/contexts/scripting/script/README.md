@@ -45,10 +45,10 @@ All domain errors are defined as constants in `errors.go` (21 total):
 
 **Domain Layer** (entity.go, usecase.go, execution.go):
 ```go
-// ❌ OLD - NEVER DO THIS
+//  OLD - NEVER DO THIS
 return nil, fmt.Errorf("script not found")
 
-// ✅ NEW - ALWAYS USE CONSTANTS
+//  NEW - ALWAYS USE CONSTANTS
 return nil, ErrScriptNotFound
 ```
 
@@ -134,7 +134,7 @@ script.DeleteMetadata("author")
 - **Dependencies**: No database, mocked repository
 - **Coverage**: All usecase methods (17 total)
 - **Run**: `go test ./internal/contexts/scripting/script -v`
-- **Status**: ✅ PASSING (exit code 0)
+- **Status**:  PASSING (exit code 0)
 
 **Example**:
 ```go
@@ -189,7 +189,7 @@ func TestScriptHandler_GetByName_Success(t *testing.T) {
 - **Dependencies**: integration.SetupTestDB(t), testDB.WithTransaction
 - **Coverage**: Repository CRUD, List, Metadata, Execution tracking, Pagination
 - **Run**: `go test ./test/integration/contexts/scripting/... -v`
-- **Status**: ✅ FIXED (Phase 2 API migration complete)
+- **Status**:  FIXED (Phase 2 API migration complete)
 
 **Test Functions**:
 1. `TestScriptRepository_CRUD` - Create, Read, Update, Delete
@@ -263,10 +263,10 @@ func (h *ScriptHandler) ExecuteScript(c *gin.Context) {
 
 **Solution**:
 ```go
-// ❌ OLD
+//  OLD
 s, err := script.NewScript("test", "return 1")
 
-// ✅ NEW
+//  NEW
 s, err := script.NewScript("test", "return 1", script.ScriptTypeCustom)
 // Use appropriate ScriptType: Validation, Workflow, Report, Pricing, Notification, Automation, Custom
 ```
@@ -277,11 +277,11 @@ s, err := script.NewScript("test", "return 1", script.ScriptTypeCustom)
 
 **Solution**:
 ```go
-// ❌ OLD
+//  OLD
 author := script.Metadata["author"]
 script.Metadata["version"] = "1.0.0"
 
-// ✅ NEW
+//  NEW
 metadata := script.Metadata.Get()
 author := metadata["author"]
 
@@ -310,21 +310,21 @@ script.DeleteMetadata("author")
 
 ### DO
 
-✅ Use domain error constants from `errors.go`  
-✅ Map errors via `errors.Is()` in handlers  
-✅ Use `NewScript(name, code, scriptType)` with all 3 parameters  
-✅ Access metadata via `.Get()` method or entity methods  
-✅ Write smoke tests for all HTTP handlers  
-✅ Write integration tests for repository methods  
-✅ Use `testDB.WithTransaction` for automatic rollback
+ Use domain error constants from `errors.go`  
+ Map errors via `errors.Is()` in handlers  
+ Use `NewScript(name, code, scriptType)` with all 3 parameters  
+ Access metadata via `.Get()` method or entity methods  
+ Write smoke tests for all HTTP handlers  
+ Write integration tests for repository methods  
+ Use `testDB.WithTransaction` for automatic rollback
 
 ### DON'T
 
-❌ Use `fmt.Errorf()` in domain layer (use constants only)  
-❌ Use string comparison for errors (use `errors.Is()`)  
-❌ Direct map access on `script.Metadata` (use `.Get()` or methods)  
-❌ Forget ScriptType parameter in `NewScript()`  
-❌ Skip transaction wrapper in integration tests
+ Use `fmt.Errorf()` in domain layer (use constants only)  
+ Use string comparison for errors (use `errors.Is()`)  
+ Direct map access on `script.Metadata` (use `.Get()` or methods)  
+ Forget ScriptType parameter in `NewScript()`  
+ Skip transaction wrapper in integration tests
 
 ---
 
@@ -338,7 +338,7 @@ script.DeleteMetadata("author")
 
 ---
 
-**Status**: ✅ Production-ready (Phase 2 complete)  
+**Status**:  Production-ready (Phase 2 complete)  
 **Test Coverage**: 3-tier (unit + smoke + integration)  
 **Domain Errors**: 21 constants, 0 fmt.Errorf  
 **Last Updated**: January 13, 2026

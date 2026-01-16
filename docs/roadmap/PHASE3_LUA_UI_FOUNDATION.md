@@ -1,6 +1,6 @@
 # Phase 3: LUA Scripting Engine & UI Metadata Foundation
 
-**Status**:  Week 1 COMPLETE (HTTP Layer Operational) | Week 2-3 IN PROGRESS  
+**Status**:  Week 1 COMPLETE (HTTP Layer Operational) | Week 2 IN PROGRESS (UI metadata foundation complete, scripting storage pending)  
 **Priority**:  CRITICAL - Must-have infrastructure before continuing main development  
 **Duration**: 2-3 weeks (January 8 - January 28, 2026)  
 **Dependencies**: Phase 1 & 2 Complete (API Documentation, Warehouse Context)
@@ -242,7 +242,7 @@ migrations/
 
 **Week 2: Metadata Storage**
 
-- [ ] Create migrations:
+- [x] Create migrations:
   ```sql
   -- migrations/ui/000001_ui_metadata.up.sql
   CREATE TABLE ui_form_definitions (
@@ -312,15 +312,17 @@ migrations/
 
 **Week 3: API & Integration**
 
-- [ ] Implement FormDefinition aggregate
-- [ ] Add REST API endpoints:
+- [x] Implement FormDefinition aggregate
+- [x] Add REST API endpoints:
   - `POST /api/v1/ui/forms` - Create form
   - `GET /api/v1/ui/forms/:id` - Get form
   - `PUT /api/v1/ui/forms/:id` - Update form
   - `DELETE /api/v1/ui/forms/:id` - Delete form
+  - `GET /api/v1/ui/forms` - List forms (by entity_type)
+
+- [ ] Add render and validate endpoints:
   - `GET /api/v1/ui/forms/:id/render` - Get render metadata
   - `POST /api/v1/ui/forms/:id/validate` - Validate form data
-  - `GET /api/v1/ui/forms` - List forms (by entity_type)
 
 - [ ] Integration with LUA engine:
   - Form validation via LUA scripts
@@ -335,8 +337,9 @@ migrations/
 
 **Testing Requirements**
 
+- [x] Smoke tests: handler validation
+- [x] Integration tests: repository coverage
 - [ ] Unit tests: 40+ tests for metadata management
-- [ ] Integration tests: 15+ tests with database
 - [ ] Validation tests: Form metadata schema validation
 - [ ] LUA integration tests: Event handler execution
 
@@ -353,7 +356,7 @@ migrations/
   - Common patterns and examples
   - Debugging tips
 
-- [ ] **UI Metadata Guide** (`docs/guides/ui-metadata.md`):
+- [x] **UI Metadata Guide** (`docs/guides/ui-metadata.md`):
   - FormDefinition schema reference
   - Field types and properties
   - Validation rules

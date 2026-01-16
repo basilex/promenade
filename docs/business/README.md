@@ -116,7 +116,7 @@ When adding new language versions:
 
 5. **Update README.md**
    - Add language to table above
-   - Include flag emoji, file link, status, date
+   - Include language label, file link, status, date
    - Update main README.md and docs/INDEX.md
 
 ---

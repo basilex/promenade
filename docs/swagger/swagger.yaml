@@ -489,6 +489,52 @@ definitions:
     - name
     - value
     type: object
+  http.CreateFormRequest:
+    properties:
+      created_by:
+        type: string
+      description:
+        type: string
+      entity_type:
+        type: string
+      events:
+        additionalProperties: {}
+        type: object
+      fields:
+        items:
+          additionalProperties: {}
+          type: object
+        type: array
+      form_id:
+        type: string
+      i18n:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+      is_active:
+        type: boolean
+      layout:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      permissions:
+        additionalProperties: {}
+        type: object
+      tenant_id:
+        type: string
+      validation:
+        additionalProperties: {}
+        type: object
+    required:
+    - entity_type
+    - fields
+    - form_id
+    - layout
+    - name
+    type: object
   http.CreateInteractionRequest:
     properties:
       company_id:
@@ -877,6 +923,54 @@ definitions:
         type: string
     required:
     - reason
+    type: object
+  http.FormResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      entity_type:
+        type: string
+      events:
+        additionalProperties: {}
+        type: object
+      fields:
+        items:
+          additionalProperties: {}
+          type: object
+        type: array
+      form_id:
+        type: string
+      i18n:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+      id:
+        type: string
+      is_active:
+        type: boolean
+      layout:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      permissions:
+        additionalProperties: {}
+        type: object
+      tenant_id:
+        type: string
+      updated_at:
+        type: string
+      validation:
+        additionalProperties: {}
+        type: object
+      version:
+        type: integer
     type: object
   http.InteractionResponse:
     properties:
@@ -2011,6 +2105,48 @@ definitions:
         type: boolean
       is_putawayable:
         type: boolean
+    type: object
+  http.UpdateFormRequest:
+    properties:
+      description:
+        type: string
+      entity_type:
+        type: string
+      events:
+        additionalProperties: {}
+        type: object
+      fields:
+        items:
+          additionalProperties: {}
+          type: object
+        type: array
+      i18n:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+      is_active:
+        type: boolean
+      layout:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      permissions:
+        additionalProperties: {}
+        type: object
+      tenant_id:
+        type: string
+      validation:
+        additionalProperties: {}
+        type: object
+    required:
+    - entity_type
+    - fields
+    - is_active
+    - layout
+    - name
     type: object
   http.UpdateInventoryRequest:
     properties:
@@ -7938,6 +8074,188 @@ paths:
       summary: Get timezone by IANA name
       tags:
       - Reference Data
+  /ui/forms:
+    get:
+      description: List form definitions by entity_type
+      parameters:
+      - description: Entity type
+        in: query
+        name: entity_type
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.FormResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List form definitions
+      tags:
+      - UIForm
+    post:
+      consumes:
+      - application/json
+      description: Create a new UI form definition
+      parameters:
+      - description: Form creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateFormRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.FormResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create form definition
+      tags:
+      - UIForm
+  /ui/forms/{id}:
+    delete:
+      description: Delete a UI form definition
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete form definition
+      tags:
+      - UIForm
+    get:
+      description: Get UI form definition by ID
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.FormResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get form definition by ID
+      tags:
+      - UIForm
+    put:
+      consumes:
+      - application/json
+      description: Update an existing UI form definition
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Form update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateFormRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.FormResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update form definition
+      tags:
+      - UIForm
   /users:
     get:
       consumes:

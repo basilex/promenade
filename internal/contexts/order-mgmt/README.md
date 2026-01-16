@@ -116,7 +116,7 @@ if errors.Is(err, order.ErrOrderAlreadyConfirmed) {
 // Phase 2 pattern
 order := NewOrder(customerID, "USD")
 err := order.Confirm()
-assert.True(t, errors.Is(err, order.ErrOrderNoLineItems))  // ✅ Type-safe
+assert.True(t, errors.Is(err, order.ErrOrderNoLineItems))  //  Type-safe
 ```
 
 **Integration Tests** (6 tests):

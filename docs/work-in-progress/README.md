@@ -28,16 +28,6 @@ This directory contains **living documents** that track:
 
 - **GAPS_AND_TODOS.md** - Priority tasks and technical debt tracking (living document)
 
-### Architecture Notes
-
-- **GITHUB_PAGES_SETUP.md** - GitHub Pages configuration notes
-- **LINK_AUDIT_REPORT.md** - Documentation links audit report
-
-### Phase 4 Progress
-
-- **PHASE4_CUSTOMER_MGMT_COMPLETE.md** - Customer Management context completion
-- **PHASE4_DETAILED_PLAN.md** - Phase 4 detailed implementation plan
-
 ### Completed & Archived
 
 **Moved to stable documentation:**
@@ -48,10 +38,7 @@ This directory contains **living documents** that track:
 - ~~WORKFLOW_STATE_MANAGEMENT.md~~ → [docs/guides/workspace-management.md](../guides/workspace-management.md)
 
 **Removed (completed/obsolete):**
-- ~~GAPS_AND_TODOS_OLD.md~~ - Replaced by GAPS_AND_TODOS.md
-- ~~CI_FIX_INTEGRATION_TESTS.md~~ - Fixed and integrated
-- ~~DB_AGNOSTIC_REFACTORING.md~~ - Completed
-- ~~PHASE1*.md~~ - Phase 1 completed
+- Progress snapshots, audits, and one-off plans from January 2026
 
 ---
 

@@ -164,6 +164,10 @@ func (tdb *TestDB) CleanAllTables() {
 		"fiscal_receipts",
 		"fiscal_cash_registers",
 
+		// UI Context tables
+		"ui_form_versions",
+		"ui_form_definitions",
+
 		// Shared Kernel tables (reference data - do NOT truncate, needed for tests)
 		// "shared_countries", "shared_currencies", "shared_languages", "shared_timezones",
 	}
@@ -327,6 +331,11 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	// Run fiscal context migrations
 	if err := mgr.MigrateNamespace(ctx, "fiscal"); err != nil {
 		return fmt.Errorf("fiscal migrations failed: %w", err)
+	}
+
+	// Run UI context migrations
+	if err := mgr.MigrateNamespace(ctx, "ui"); err != nil {
+		return fmt.Errorf("ui migrations failed: %w", err)
 	}
 
 	return nil

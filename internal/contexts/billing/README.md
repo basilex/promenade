@@ -135,7 +135,7 @@ if errors.Is(err, payment.ErrPaymentFailed) {
 ```go
 // Phase 2 pattern
 err := invoice.MarkAsPaid()
-assert.True(t, errors.Is(err, invoice.ErrInvoiceAlreadyPaid))  // ✅ Type-safe
+assert.True(t, errors.Is(err, invoice.ErrInvoiceAlreadyPaid))  //  Type-safe
 ```
 
 **Integration Tests** (11 tests):

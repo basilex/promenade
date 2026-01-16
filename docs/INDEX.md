@@ -18,7 +18,7 @@ Comprehensive business documentation available in multiple languages:
 
 **What's included**: Executive summary, value propositions, core capabilities (CRM, Orders, Warehouse, Billing), use cases with ROI, deployment options, roadmap Q1-Q4 2026, success metrics.
 
-**Status**: 80% complete, 160+ API endpoints, 2400+ automated tests, 90%+ code coverage.
+**Status**: 80% complete, 182+ API endpoints, 2465+ automated tests, 90%+ code coverage.
 
 ---
 
@@ -67,7 +67,7 @@ Comprehensive business documentation available in multiple languages:
 
 - **OpenAPI 3.0**: Auto-generated specification from code annotations
 - **Swagger UI**: Interactive browser interface at `/api/docs/index.html`
-- **120+ Endpoints**: All 5 contexts fully documented
+- **182+ Endpoints**: All contexts fully documented
 - **Try-It-Out**: Test APIs directly from browser
 - **JWT Integration**: Bearer token authentication in UI
 - **Export Formats**: JSON/YAML for Postman, Insomnia
@@ -79,7 +79,7 @@ Comprehensive business documentation available in multiple languages:
 
 ### Postman Collection
 
-**Pre-built Postman collection** with 120+ endpoints, authentication flows, and automated testing.
+**Pre-built Postman collection** with 182+ endpoints, authentication flows, and automated testing.
 
 - **Auto-Generated**: OpenAPI spec → Postman collection (33K lines)
 - **Multi-Environment**: Dev/Staging/Prod configs with pre-configured variables
@@ -278,13 +278,13 @@ Comprehensive business documentation available in multiple languages:
 
 **Four-tier testing** with clear separation and professional organization.
 
-- **Unit Tests**: In-place, fast feedback (~5s) - 2000+ tests
-- **Smoke Tests**: HTTP handler validation, no DB (~2s) - 160+ tests, 100% pass rate
+- **Unit Tests**: In-place, fast feedback (~5s) - 2232+ tests
+- **Smoke Tests**: HTTP handler validation, no DB (~2s) - 169 tests, 100% pass rate
 - **Integration Tests**: Real database, full E2E (~14s) - 19 packages
 - **Benchmark Tests**: Performance measurement with real DB
 - **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md) | [Smoke Tests Guide](../test/smoke/README.md)
 
-**2200+ tests total**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
+**2465+ tests total**, 90%+ coverage | [Test Report](reference/test-coverage-report.md)
 
 ---
 
@@ -547,6 +547,7 @@ Step-by-step implementation guides:
 - [Naming Conventions](guides/naming-conventions.md) - Files, directories, Go code naming standards
 - [Database Conventions](guides/database-conventions.md) - Tables, columns, indexes, migrations
 - [Architecture Patterns](guides/architecture-patterns.md) - Repository, UseCase, Handler, Value Object patterns
+- [UI Metadata Guide](guides/ui-metadata.md) - FormDefinition schema, JSON metadata, API endpoints
 - [Domain Errors Guide](guides/domain-errors.md) - Gold Standard error handling (644 lines, 8 sections, comprehensive patterns)
 - [Documentation Style Guide](guides/documentation-style-guide.md) - Official no-emoji policy with automated enforcement (`scripts/clean-emojies.py`)
 
@@ -602,12 +603,12 @@ Strategic planning and implementation timelines:
 ##  Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 2200+ tests (2000+ unit, 160+ smoke, 19 integration packages), 90%+ coverage
+- **Tests**: 2465+ tests (2232+ unit, 169 smoke, 76+ integration), 90%+ coverage
 - **Documentation**: 15,000+ lines across 55+ files
-- **Contexts**: 5 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing), 1 in progress (Warehouse)
+- **Contexts**: 6 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing, Warehouse), 1 in progress (Fiscal)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
 - **Performance**: 377K events/sec (Memory Bus)
-- **API Documentation**: 120+ endpoints (Swagger UI), 33K lines Postman collection
+- **API Documentation**: 182+ endpoints (Swagger UI), 33K lines Postman collection
 
 ---
 
@@ -636,14 +637,14 @@ Contributions are welcome! Please read our style guidelines:
 
 **January 5, 2026**:
 - Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
-- Swagger UI operational (165+ endpoints at `/api/docs/index.html`)
+- Swagger UI operational (182+ endpoints at `/api/docs/index.html`)
 - Postman collection ready (33K lines, auto-generated with test automation)
 - Developer Portal complete (4 guides: Quick Start, Auth Flow, Use Cases, Troubleshooting)
 - Warehouse Context progress (55% complete - Inventory + StockMovement + Product aggregates production-ready)
 - Product aggregate completed (139 tests, 16 endpoints)
 - Subscription aggregate completed (8 endpoints, 120 tests)
 - Billing context fully operational (Invoice, Payment, Subscription)
-- Test infrastructure validated (2380+ tests: 325 warehouse, 161 smoke, 100% PASS)
+- Test infrastructure validated (2465+ tests: 325 warehouse, 169 smoke, 100% pass rate)
 - All lint issues resolved (0 issues)
 
 **January 1, 2026**:

@@ -154,13 +154,13 @@ Customer Management tests demonstrate **PRE-Phase 2** pattern (string comparison
 **Before (PRE-Phase 2)**:
 ```go
 err := usecase.CreateCustomer(ctx, "existing@email.com", "Test")
-assert.Equal(t, "email already exists", err.Error())  // ❌ String comparison
+assert.Equal(t, "email already exists", err.Error())  //  String comparison
 ```
 
 **After (Phase 2)**:
 ```go
 err := usecase.CreateCustomer(ctx, "existing@email.com", "Test")
-assert.True(t, errors.Is(err, customer.ErrCustomerEmailExists))  // ✅ Type-safe
+assert.True(t, errors.Is(err, customer.ErrCustomerEmailExists))  //  Type-safe
 ```
 
 **Smoke Tests** (26 tests across 4 handlers):

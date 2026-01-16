@@ -110,23 +110,23 @@ Each context is autonomous with:
   - **Documentation**: `pkg/scripting/README.md` (600+ lines), `pkg/scheduler/README.md` (752 lines)
 -  **Fiscal Context IN PROGRESS** (January 15, 2026 - Week 1 of 2):
     - **Ukrainian Market Compliance**: PRRO (software fiscal register) integration for retail businesses
-  - **Priority**: 🔥 CRITICAL BLOCKER - 70% of target market needs this
-  - **CashRegister Aggregate**: ✅ Entity complete (entity, errors, repository, usecase)
-  - **Receipt Aggregate**: 🚧 IN PROGRESS (Week 1, Day 2-7)
+  - **Priority**:  CRITICAL BLOCKER - 70% of target market needs this
+  - **CashRegister Aggregate**:  Entity complete (entity, errors, repository, usecase)
+  - **Receipt Aggregate**:  IN PROGRESS (Week 1, Day 2-7)
   - **Error Pattern**: Following gold standard with 24 domain error constants in errors.go
-  - **Database Migration**: ✅ Complete with TEXT-based JSON columns (multi-database compatible)
-  - **Repository Implementation**: ✅ PostgreSQL adapter with BaseRepository pattern
-  - **Checkbox API Client**: ✅ Basic implementation (`pkg/fiscal/checkbox/`)
+  - **Database Migration**:  Complete with TEXT-based JSON columns (multi-database compatible)
+  - **Repository Implementation**:  PostgreSQL adapter with BaseRepository pattern
+  - **Checkbox API Client**:  Basic implementation (`pkg/fiscal/checkbox/`)
   - **Integration Target**: Checkbox API for Ukrainian fiscal compliance
   - **Key Features**: Cash register lifecycle, fiscal receipt management, shift management, Z-reports
   - **Status**: MVP target January 28, 2026 (Week 2 complete)
   - **See**: `internal/contexts/fiscal/README.md` + `internal/contexts/fiscal/cashregister/`
 -  **Database-Agnostic Patterns** (CRITICAL for multi-database support): 
-  - ✅ Use `jsonstore.Field[T]` for JSON data (NOT manual marshal/unmarshal)
-  - ✅ Migrations use TEXT for JSON (convert to JSONB/JSON in query layer)
-  - ✅ All IDs via `uuidv7.New()` in Go code (not DB defaults)
-  - ✅ No JSONB/UUID types in migrations (SQLite compatibility)
-  - ✅ BaseRepository pattern for transaction support via getExecutor(ctx)
+  -  Use `jsonstore.Field[T]` for JSON data (NOT manual marshal/unmarshal)
+  -  Migrations use TEXT for JSON (convert to JSONB/JSON in query layer)
+  -  All IDs via `uuidv7.New()` in Go code (not DB defaults)
+  -  No JSONB/UUID types in migrations (SQLite compatibility)
+  -  BaseRepository pattern for transaction support via getExecutor(ctx)
 -  **Order Management**: Entity tests in progress
 -  Fulfillment Saga COMPLETE: Distributed transaction orchestration (orchestrator.go, 104 lines, 57 tests)
 - Business Documentation COMPLETE: Multi-language business overviews for executives
@@ -160,9 +160,7 @@ Each context is autonomous with:
   - Status: HTTP layer operational, Standard Library integrated, ready for Week 2 (Script storage)
 - Error Handling Documentation COMPLETE:
   - docs/guides/unified-error-handling-standard.md (1287 lines, master reference)
-  - docs/reference/DOMAIN_ERRORS_REFACTORING_PLAN.md (23,193 lines, 18-session plan)
-  - docs/reference/domain-errors-audit.md (12,504 lines, initial audit)
-  - Session summaries: [docs/refactoring/sessions/](docs/refactoring/sessions/) (13 compact summaries)
+- See: docs/refactoring/README.md for consolidated refactoring status
     - session-12-customer-mgmt.md: Deal, Customer, Company aggregates (47 replacements, ~85 min)
     - session-13-interaction.md: Interaction aggregate PRE-Phase 2 pattern (26 replacements, ~75 min, milestone: FIRST 100% Phase 2 context)
 - Test Infrastructure: All systems validated (2465+ tests: 2232+ unit, 182+ smoke, 76+ integration)
@@ -889,13 +887,13 @@ tagsJSON := customer.Tags.MarshalJSON()  // Handles nil safely
 **Database-Agnostic Migration Pattern** (CRITICAL):
 
 ```sql
--- ❌ WRONG - PostgreSQL-only (breaks SQLite/MySQL)
+--  WRONG - PostgreSQL-only (breaks SQLite/MySQL)
 CREATE TABLE scripts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     metadata JSONB DEFAULT '{}'::jsonb
 );
 
--- ✅ CORRECT - Database-agnostic
+--  CORRECT - Database-agnostic
 CREATE TABLE scripts (
     id TEXT PRIMARY KEY,                    -- UUID as TEXT (works everywhere)
     metadata TEXT DEFAULT '{}',             -- JSON as TEXT (works everywhere)
@@ -1200,13 +1198,13 @@ type CashRegister struct {
 - Checkbox API connection
 
 **Implementation Status**:
-- ✅ CashRegister entity with production patterns
-- ✅ Database migration (fiscal_cash_registers, fiscal_receipts)
-- ✅ BaseRepository pattern implemented
-- 🔄 Repository methods in progress
-- 🔄 UseCase business logic in progress
-- 📋 HTTP handlers planned
-- 📋 Checkbox API integration planned
+-  CashRegister entity with production patterns
+-  Database migration (fiscal_cash_registers, fiscal_receipts)
+-  BaseRepository pattern implemented
+-  Repository methods in progress
+-  UseCase business logic in progress
+-  HTTP handlers planned
+-  Checkbox API integration planned
 
 **Production Patterns Applied**:
 - Uses `aggregate.BaseAggregate` (no field duplication)
@@ -1218,7 +1216,7 @@ type CashRegister struct {
 
 ---
 
-## 🇺🇦 Ukrainian Market Strategy (CRITICAL OPPORTUNITY)
+##  Ukrainian Market Strategy (CRITICAL OPPORTUNITY)
 
 **Market Vacuum**: Ban on Russian software (1C, Bitrix24, AmoCRM) created $500M+ market opportunity:
 
