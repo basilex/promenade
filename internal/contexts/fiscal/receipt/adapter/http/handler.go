@@ -185,14 +185,14 @@ func (h *ReceiptHandler) List(c *gin.Context) {
 	response.Success(c, ToReceiptListResponse(receipts))
 }
 
-// MarkPrinted sets fiscal data and marks receipt as printed
-// @Summary Mark receipt as printed
-// @Description Set fiscal data and mark receipt as printed
+// Print prints receipt via provider and stores fiscal data
+// @Summary Print receipt
+// @Description Print receipt via provider and store fiscal data
 // @Tags Receipt
 // @Accept json
 // @Produce json
 // @Param id path string true "Receipt ID"
-// @Param request body MarkPrintedRequest true "Fiscal data"
+// @Param request body PrintReceiptRequest true "Print request"
 // @Success 200 {object} response.Response{data=ReceiptResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
@@ -205,7 +205,7 @@ func (h *ReceiptHandler) MarkPrinted(c *gin.Context) {
 		return
 	}
 
-	var req MarkPrintedRequest
+	var req PrintReceiptRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -217,19 +217,19 @@ func (h *ReceiptHandler) MarkPrinted(c *gin.Context) {
 		return
 	}
 
-	rec, err := h.usecase.MarkPrinted(c.Request.Context(), id, req.FiscalNumber, req.FiscalURL, req.QRCode, printedBy)
+	rec, err := h.usecase.PrintReceipt(c.Request.Context(), id, printedBy)
 	if err != nil {
 		switch {
 		case errors.Is(err, receipt.ErrReceiptNotFound):
 			response.NotFound(c, "Receipt not found")
-		case errors.Is(err, receipt.ErrFiscalNumberRequired):
-			response.BadRequest(c, "Fiscal number is required")
 		case errors.Is(err, receipt.ErrReceiptAlreadyPrinted):
 			response.BadRequest(c, "Receipt is already printed")
 		case errors.Is(err, receipt.ErrReceiptAlreadyCancelled):
 			response.BadRequest(c, "Receipt is cancelled")
+		case errors.Is(err, receipt.ErrReceiptPrintFailed):
+			response.InternalError(c, "Failed to print receipt")
 		default:
-			response.InternalError(c, "Failed to mark receipt as printed")
+			response.InternalError(c, "Failed to print receipt")
 		}
 		return
 	}

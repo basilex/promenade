@@ -98,6 +98,12 @@ jwt:
 export DB_HOST="production-db.example.com"
 export DB_PASSWORD="secure_password"
 export JWT_SECRET="very-long-secret-key-at-least-32-characters"
+
+# Fiscal (Checkbox) printing
+export CHECKBOX_API_KEY="checkbox-api-key"
+export CHECKBOX_SANDBOX="true"         # optional
+export CHECKBOX_TIMEOUT="30s"          # optional
+export FISCAL_PDF_OUTPUT_DIR="tmp/fiscal/receipts" # optional
 ```
 
 ---

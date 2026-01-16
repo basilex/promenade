@@ -712,6 +712,8 @@ func (r *userRepository) Create(ctx context.Context, user *User) error {
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```go
 package valueobject_test
 

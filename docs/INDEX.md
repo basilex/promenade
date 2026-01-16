@@ -279,7 +279,7 @@ Comprehensive business documentation available in multiple languages:
 **Four-tier testing** with clear separation and professional organization.
 
 - **Unit Tests**: In-place, fast feedback (~5s) - 2232+ tests
-- **Smoke Tests**: HTTP handler validation, no DB (~2s) - 169 tests, 100% pass rate
+- **Smoke Tests**: HTTP handler validation, no DB (~2s) - 184 tests, 100% pass rate
 - **Integration Tests**: Real database, full E2E (~14s) - 19 packages
 - **Benchmark Tests**: Performance measurement with real DB
 - **Implementation**: [Testing Patterns](guides/testing-patterns.md) | [Quick Reference](guides/testing-quick-reference.md) | [Smoke Tests Guide](../test/smoke/README.md)
@@ -603,7 +603,7 @@ Strategic planning and implementation timelines:
 ##  Project Statistics
 
 - **Code**: Go 1.24+, PostgreSQL 16, Redis 7
-- **Tests**: 2465+ tests (2232+ unit, 169 smoke, 76+ integration), 90%+ coverage
+- **Tests**: 2465+ tests (2232+ unit, 184 smoke, 76+ integration), 90%+ coverage
 - **Documentation**: 15,000+ lines across 55+ files
 - **Contexts**: 6 production-ready (Shared, Identity, Customer-Mgmt, Order-Mgmt, Billing, Warehouse), 1 in progress (Fiscal)
 - **Packages**: 12 reusable libraries (bus, jwt, logger, middleware, cache, uuidv7, valueobject, response, migration, saga, aggregate, jsonb)
@@ -644,7 +644,7 @@ Contributions are welcome! Please read our style guidelines:
 - Product aggregate completed (139 tests, 16 endpoints)
 - Subscription aggregate completed (8 endpoints, 120 tests)
 - Billing context fully operational (Invoice, Payment, Subscription)
-- Test infrastructure validated (2465+ tests: 325 warehouse, 169 smoke, 100% pass rate)
+- Test infrastructure validated (2465+ tests: 325 warehouse, 184 smoke, 100% pass rate)
 - All lint issues resolved (0 issues)
 
 **January 1, 2026**:

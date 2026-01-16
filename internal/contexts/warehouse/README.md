@@ -66,6 +66,8 @@ The **Warehouse Context** manages physical goods, inventory levels, and stock mo
 
 **Total Tests:** 391 tests across 4 aggregates, 100% passing
 
+Testing budget and risk tiers follow [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md). Warehouse is high-risk, so budgets may be +30–50% over baseline.
+
 ---
 
 ## Domain Errors
@@ -181,6 +183,8 @@ if errors.Is(err, location.ErrParentLocationNotFound) {
 | System errors (wrapped) | 500 | "Failed to {operation}" |
 
 ### Testing Patterns
+
+Baseline budget and risk tiers follow [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md). Warehouse is high-risk, so budgets may be +30–50% over baseline.
 
 All Warehouse tests use `errors.Is()` for type-safe error assertions:
 

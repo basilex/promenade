@@ -354,7 +354,7 @@ func (uc *CreateCustomerUseCase) Execute(ctx context.Context, req CreateCustomer
 
 ## Testing Strategy
 
-### Aggregate Tests
+### Aggregate Tests (Unit)
 
 Test domain logic in isolation:
 
@@ -369,7 +369,7 @@ func TestCustomer_AddContact(t *testing.T) {
 }
 ```
 
-### Repository Tests
+### Repository Tests (Integration)
 
 Integration tests with real database:
 
@@ -384,7 +384,7 @@ func TestPostgresCustomerRepository_Save(t *testing.T) {
 }
 ```
 
-### Use Case Tests
+### Use Case Tests (Unit)
 
 Test business logic with mocks:
 
@@ -405,6 +405,38 @@ func TestCreateCustomerUseCase_Execute(t *testing.T) {
     assert.NotNil(t, customer)
 }
 ```
+
+### Smoke Tests (Handlers)
+
+Minimal HTTP validation without DB:
+
+```go
+func TestCustomerHandler_GetByID_NotFound(t *testing.T) {
+    router := smoke.SetupRouter()
+    mockUC := &MockCustomerUseCase{
+        GetCustomerFunc: func(ctx context.Context, id uuidv7.UUID) (*Customer, error) {
+            return nil, ErrCustomerNotFound
+        },
+    }
+
+    handler := NewCustomerHandler(mockUC)
+    router.GET("/customers/:id", handler.GetByID)
+
+    resp := smoke.MakeRequest(t, router, "GET", "/customers/"+smoke.FakeUUID(), nil)
+    smoke.AssertErrorResponse(t, resp, 404, "NOT_FOUND")
+}
+```
+
+### Baseline Budget (per aggregate)
+
+- Unit tests: 20–30 (invariants, state transitions, validation)
+- Smoke tests: 6–9 (CRUD + key error mappings)
+- Integration tests: 6–10 (happy path + not found + constraint)
+
+Risk tiers:
+- Low risk: baseline only
+- Medium risk: add a few transition tests
+- High risk (payments, fiscal, auth): allow +30–50% tests
 
 ## Migration Strategy
 

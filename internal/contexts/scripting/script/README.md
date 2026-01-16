@@ -126,7 +126,9 @@ script.DeleteMetadata("author")
 
 ## Testing Strategy
 
-### 3-Tier Test Architecture
+### Four-Tier Test Strategy
+
+Baseline budget and risk tiers follow [docs/guides/testing-patterns.md](../../../../docs/guides/testing-patterns.md): Unit 20–30, Smoke 6–9, Integration 6–10, with high-risk aggregates +30–50%.
 
 **1. Unit Tests** (`usecase_test.go`):
 - **Location**: Same directory as code
@@ -190,6 +192,11 @@ func TestScriptHandler_GetByName_Success(t *testing.T) {
 - **Coverage**: Repository CRUD, List, Metadata, Execution tracking, Pagination
 - **Run**: `go test ./test/integration/contexts/scripting/... -v`
 - **Status**:  FIXED (Phase 2 API migration complete)
+
+**4. Benchmark Tests** (optional):
+- **Location**: `pkg/scripting` benchmarks
+- **Purpose**: Script execution performance targets
+- **Run**: `go test -bench=. ./pkg/scripting`
 
 **Test Functions**:
 1. `TestScriptRepository_CRUD` - Create, Read, Update, Delete

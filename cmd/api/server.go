@@ -18,6 +18,7 @@ import (
 	"github.com/basilex/promenade/internal/contexts/ui"
 	"github.com/basilex/promenade/internal/contexts/warehouse"
 	"github.com/basilex/promenade/internal/infrastructure/health"
+	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 
 	_ "github.com/basilex/promenade/docs/swagger" // Import generated docs
 )
@@ -65,7 +66,16 @@ func (s *Server) SetupRoutes() {
 	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB)
 	billingRouter := billing.NewRouter(s.app.DB)
 	warehouseRouter := warehouse.NewRouter(s.app.DB)
-	fiscalRouter := fiscal.NewRouter(s.app.DB)
+	var checkboxClient *checkbox.Client
+	checkboxCfg := s.app.Config.Fiscal.Checkbox
+	if checkboxCfg.APIKey != "" {
+		checkboxClient = checkbox.NewClient(&checkbox.Config{
+			APIKey:  checkboxCfg.APIKey,
+			Sandbox: checkboxCfg.Sandbox,
+			Timeout: checkboxCfg.Timeout,
+		})
+	}
+	fiscalRouter := fiscal.NewRouter(s.app.DB, checkboxClient, s.app.Config.Fiscal.PDFOutputDir)
 	scriptingRouter := scripting.NewRouter(s.app.DB)
 	uiRouter := ui.NewRouter(s.app.DB)
 

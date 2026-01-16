@@ -214,6 +214,8 @@ func (p *Profile) Validate() error
 -  Unit tests: `usecase_test.go` (52 tests, 70% coverage)
 -  Integration tests: `test/integration/contexts/identity/profile/repository_test.go` (6 test functions, 17 subtests)
 
+Baseline budget and risk tiers follow [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md): Unit 20–30, Smoke 6–9, Integration 6–10, with high-risk aggregates +30–50%.
+
 ---
 
 ### 3. Contact Aggregate 

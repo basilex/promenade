@@ -2,7 +2,7 @@
 
 **Quick HTTP-level validation** for all handlers - focus on status codes and basic response structure.
 
-**Status**:  **COMPLETE** - 18/18 handlers, 169 tests, 100% pass rate
+**Status**:  **COMPLETE** - 20/20 handlers, 184 tests, 100% pass rate
 
 ---
 
@@ -10,11 +10,11 @@
 
 ###  Statistics
 
-- **Total Tests**: 169
-- **Total Handlers**: 18 (100% complete)
+- **Total Tests**: 184
+- **Total Handlers**: 20 (100% complete)
 - **Pass Rate**: 100%
 - **Test Duration**: ~0.6 seconds (cached)
-- **Contexts Covered**: 6 (Identity, Customer Management, Order Management, Billing, Shared, UI)
+- **Contexts Covered**: 7 (Identity, Customer Management, Order Management, Billing, Shared, UI, Fiscal)
 
 ###  Handler Breakdown
 
@@ -47,6 +47,10 @@
 **UI Context** (1 handler, 8 tests):
 - Form: 8 tests
 
+**Fiscal Context** (2 handlers, 15 tests):
+- Cash Register: 9 tests
+- Receipt: 6 tests
+
 ---
 
 ## Purpose
@@ -68,6 +72,8 @@ Smoke tests verify **critical HTTP layer functionality** with minimal setup:
 ## Test Strategy
 
 ###  Standard Handler Coverage (6-9 tests):
+
+Baseline smoke budget follows [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
 
 **Minimum** (6 tests):
 1. **Create Success** - POST returns 201
@@ -204,7 +210,7 @@ func (m *MockCustomerUseCase) CreateCustomer(ctx context.Context, ...) (*custome
 test/smoke/
  README.md                  # This file
  testutils.go              # Shared utilities (5 helper functions)
- contexts/                 # Mirror structure (18 handlers, 169 tests)
+ contexts/                 # Mirror structure (20 handlers, 184 tests)
     identity/               # 5 handlers, 43 tests
        user/handler_test.go
        contact/handler_test.go
@@ -229,6 +235,9 @@ test/smoke/
      ui/
          metadata/
              form/handler_test.go
+    fiscal/                 # 2 handlers, 15 tests
+        cashregister/handler_test.go
+        receipt/handler_test.go
 ```
 
 ---
@@ -375,7 +384,7 @@ w := smoke.MakeRequest(t, router, "GET", "/timezones/Europe/Kyiv", nil)
 ## Running Tests
 
 ```bash
-# All smoke tests (169 tests)
+# All smoke tests (184 tests)
 go test ./test/smoke/... -v
 
 # All smoke tests (using Makefile)
@@ -386,6 +395,7 @@ go test ./test/smoke/contexts/identity/... -v
 go test ./test/smoke/contexts/customer-mgmt/... -v
 go test ./test/smoke/contexts/order-mgmt/... -v
 go test ./test/smoke/contexts/shared/... -v
+go test ./test/smoke/contexts/fiscal/... -v
 
 # Specific handler
 go test ./test/smoke/contexts/customer-mgmt/customer -v
@@ -401,7 +411,7 @@ ok  github.com/basilex/promenade/test/smoke/contexts/identity/contact   (cached)
 ...
 ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 
- All 169 tests PASSED
+ All 184 tests PASSED
 ```
 
 ---
@@ -417,7 +427,8 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 | Shared                | 4        | 36    |       |
 | Warehouse             | 1        | 23    |       |
 | UI                    | 1        | 8     |       |
-| **Total**             | **18**   | **169** |     |
+| Fiscal                | 2        | 15    |       |
+| **Total**             | **20**   | **184** |     |
 
 **Test Distribution**:
 - Simple handlers (6-8 tests): 14 handlers
@@ -465,4 +476,4 @@ ok  github.com/basilex/promenade/test/smoke/contexts/shared/timezone    (cached)
 ---
 
 **Last Updated**: January 16, 2026  
-**Status**:  COMPLETE - 18/18 handlers, 169 tests, 100% pass rate  
+**Status**:  COMPLETE - 20/20 handlers, 184 tests, 100% pass rate  

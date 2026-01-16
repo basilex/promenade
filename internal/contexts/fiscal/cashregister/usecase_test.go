@@ -17,14 +17,14 @@ var testOrgID = uuidv7.New()
 
 // MockRepository implements IRepository for testing
 type MockRepository struct {
-	CreateFunc           func(ctx context.Context, cr *CashRegister) error
-	GetByIDFunc          func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error)
+	CreateFunc            func(ctx context.Context, cr *CashRegister) error
+	GetByIDFunc           func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error)
 	GetByFiscalNumberFunc func(ctx context.Context, fiscalNumber string) (*CashRegister, error)
 	GetByLocationFunc     func(ctx context.Context, locationID uuidv7.UUID) ([]*CashRegister, error)
-	ListFunc             func(ctx context.Context, filters *ListFilters) ([]*CashRegister, error)
+	ListFunc              func(ctx context.Context, filters *ListFilters) ([]*CashRegister, error)
 	ListActiveFunc        func(ctx context.Context) ([]*CashRegister, error)
-	UpdateFunc           func(ctx context.Context, cr *CashRegister) error
-	DeleteFunc           func(ctx context.Context, id uuidv7.UUID) error
+	UpdateFunc            func(ctx context.Context, cr *CashRegister) error
+	DeleteFunc            func(ctx context.Context, id uuidv7.UUID) error
 }
 
 func (m *MockRepository) Create(ctx context.Context, cr *CashRegister) error {
@@ -260,6 +260,20 @@ func TestListCashRegisters_Success(t *testing.T) {
 	assert.Equal(t, expected, result)
 }
 
+func TestListCashRegisters_Error(t *testing.T) {
+	repo := &MockRepository{
+		ListFunc: func(ctx context.Context, filters *ListFilters) ([]*CashRegister, error) {
+			return nil, errors.New("list error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	list, err := uc.ListCashRegisters(context.Background(), &testOrgID)
+
+	require.Error(t, err)
+	require.Nil(t, list)
+}
+
 // TestActivateCashRegister_Success tests successful activation
 func TestActivateCashRegister_Success(t *testing.T) {
 	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
@@ -281,6 +295,26 @@ func TestActivateCashRegister_Success(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, StatusActive, activated.Status)
+}
+
+func TestActivateCashRegister_UpdateFailed(t *testing.T) {
+	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
+	crID := cr.GetID()
+
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error) {
+			return cr, nil
+		},
+		UpdateFunc: func(ctx context.Context, cr *CashRegister) error {
+			return errors.New("update error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	updated, err := uc.ActivateCashRegister(context.Background(), crID, "LICENSE-KEY-123", testUserID)
+
+	require.ErrorIs(t, err, ErrCashRegisterUpdateFailed)
+	require.Nil(t, updated)
 }
 
 // TestActivateCashRegister_NotFound tests activation with non-existent cash register
@@ -342,6 +376,27 @@ func TestDeactivateCashRegister_Success(t *testing.T) {
 	assert.Equal(t, StatusInactive, deactivated.Status)
 }
 
+func TestDeactivateCashRegister_UpdateFailed(t *testing.T) {
+	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
+	_ = cr.Activate("LICENSE-KEY", testUserID)
+	crID := cr.GetID()
+
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error) {
+			return cr, nil
+		},
+		UpdateFunc: func(ctx context.Context, cr *CashRegister) error {
+			return errors.New("update error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	updated, err := uc.DeactivateCashRegister(context.Background(), crID, testUserID)
+
+	require.ErrorIs(t, err, ErrCashRegisterUpdateFailed)
+	require.Nil(t, updated)
+}
+
 // TestUpdateCashRegister_Success tests successful update
 func TestUpdateCashRegister_Success(t *testing.T) {
 	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
@@ -356,6 +411,21 @@ func TestUpdateCashRegister_Success(t *testing.T) {
 	err := uc.UpdateCashRegister(context.Background(), cr)
 
 	assert.NoError(t, err)
+}
+
+func TestUpdateCashRegister_UpdateFailed(t *testing.T) {
+	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
+
+	repo := &MockRepository{
+		UpdateFunc: func(ctx context.Context, cr *CashRegister) error {
+			return errors.New("update error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	err := uc.UpdateCashRegister(context.Background(), cr)
+
+	require.ErrorIs(t, err, ErrCashRegisterUpdateFailed)
 }
 
 // TestDeleteCashRegister_Success tests successful deletion
@@ -377,6 +447,25 @@ func TestDeleteCashRegister_Success(t *testing.T) {
 	err := uc.DeleteCashRegister(context.Background(), crID)
 
 	assert.NoError(t, err)
+}
+
+func TestDeleteCashRegister_DeleteFailed(t *testing.T) {
+	cr, _ := NewCashRegister(testOrgID, "FN-DELETE", "Model X", testUserID)
+	crID := cr.GetID()
+
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error) {
+			return cr, nil
+		},
+		DeleteFunc: func(ctx context.Context, id uuidv7.UUID) error {
+			return errors.New("delete error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	err := uc.DeleteCashRegister(context.Background(), crID)
+
+	require.ErrorIs(t, err, ErrCashRegisterDeleteFailed)
 }
 
 // TestDeleteCashRegister_NotFound tests deletion with non-existent cash register
@@ -414,4 +503,24 @@ func TestSyncCashRegister_Success(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotNil(t, synced.LastSyncAt)
+}
+
+func TestSyncCashRegister_UpdateFailed(t *testing.T) {
+	cr, _ := NewCashRegister(testOrgID, "FN-123456", "Model X", testUserID)
+	crID := cr.GetID()
+
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*CashRegister, error) {
+			return cr, nil
+		},
+		UpdateFunc: func(ctx context.Context, cr *CashRegister) error {
+			return errors.New("update error")
+		},
+	}
+
+	uc := NewUseCase(repo)
+	updated, err := uc.SyncCashRegister(context.Background(), crID, testUserID)
+
+	require.ErrorIs(t, err, ErrCashRegisterUpdateFailed)
+	require.Nil(t, updated)
 }

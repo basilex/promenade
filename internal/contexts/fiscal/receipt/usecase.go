@@ -3,7 +3,9 @@ package receipt
 import (
 	"context"
 	"errors"
+	"log/slog"
 
+	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -24,6 +26,9 @@ type IUseCase interface {
 	// MarkPrinted sets fiscal data and marks receipt as printed
 	MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*Receipt, error)
 
+	// PrintReceipt prints receipt via provider and stores fiscal data
+	PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*Receipt, error)
+
 	// CancelReceipt cancels a receipt
 	CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*Receipt, error)
 
@@ -32,12 +37,13 @@ type IUseCase interface {
 }
 
 type useCase struct {
-	repo IRepository
+	repo    IRepository
+	printer IPrinter
 }
 
 // NewUseCase creates a new receipt use case
-func NewUseCase(repo IRepository) IUseCase {
-	return &useCase{repo: repo}
+func NewUseCase(repo IRepository, printer IPrinter) IUseCase {
+	return &useCase{repo: repo, printer: printer}
 }
 
 // CreateReceipt creates a new fiscal receipt
@@ -88,6 +94,38 @@ func (uc *useCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber
 	}
 
 	if err := rec.MarkPrinted(fiscalNumber, fiscalURL, qrCode, printedBy); err != nil {
+		return nil, err
+	}
+
+	if err := uc.repo.Update(ctx, rec); err != nil {
+		return nil, ErrReceiptUpdateFailed
+	}
+
+	return rec, nil
+}
+
+// PrintReceipt prints receipt via provider and stores fiscal data
+func (uc *useCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*Receipt, error) {
+	rec, err := uc.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if uc.printer == nil {
+		logger.FromContext(ctx).Error("Receipt printer is not configured")
+		return nil, ErrReceiptPrintFailed
+	}
+
+	result, err := uc.printer.Print(ctx, rec)
+	if err != nil {
+		logger.FromContext(ctx).Error("Failed to print receipt",
+			slog.String("receipt_id", rec.GetID().String()),
+			slog.Any("error", err),
+		)
+		return nil, ErrReceiptPrintFailed
+	}
+
+	if err := rec.MarkPrinted(result.FiscalNumber, result.FiscalURL, result.QRCode, printedBy); err != nil {
 		return nil, err
 	}
 

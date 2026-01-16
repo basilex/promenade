@@ -9,7 +9,9 @@ import (
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
 	receiptHTTP "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/http"
+	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
+	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 )
 
 // Router handles all Fiscal context routes
@@ -19,7 +21,7 @@ type Router struct {
 }
 
 // NewRouter creates a new Fiscal context router
-func NewRouter(db *sqlx.DB) *Router {
+func NewRouter(db *sqlx.DB, checkboxClient *checkbox.Client, pdfOutputDir string) *Router {
 	// Initialize CashRegister aggregate
 	cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
 	cashRegisterUseCase := cashregister.NewUseCase(cashRegisterRepository)
@@ -27,7 +29,22 @@ func NewRouter(db *sqlx.DB) *Router {
 
 	// Initialize Receipt aggregate
 	receiptRepository := receiptRepo.NewReceiptRepository(db)
-	receiptUseCase := receipt.NewUseCase(receiptRepository)
+	var printer receipt.IPrinter
+	var pdfPrinter receipt.IPrinter
+	if pdfOutputDir != "" {
+		pdfPrinter = receiptPrinter.NewPDFPrinter(pdfOutputDir)
+	}
+	if checkboxClient != nil {
+		checkboxPrinter := receiptPrinter.NewCheckboxPrinter(checkboxClient)
+		if pdfPrinter != nil {
+			printer = receipt.NewMultiPrinter(checkboxPrinter, pdfPrinter)
+		} else {
+			printer = checkboxPrinter
+		}
+	} else if pdfPrinter != nil {
+		printer = pdfPrinter
+	}
+	receiptUseCase := receipt.NewUseCase(receiptRepository, printer)
 	receiptHandler := receiptHTTP.NewReceiptHandler(receiptUseCase)
 
 	return &Router{

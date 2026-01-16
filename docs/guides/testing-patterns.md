@@ -19,22 +19,24 @@
 
 ##  Testing Philosophy
 
-Promenade follows **strict DDD principles** with **three-tier testing strategy**:
+Promenade follows **strict DDD principles** with a **four-tier testing strategy**:
 
 1. **Unit Tests** - Fast feedback, test business logic in isolation
-2. **Integration Tests** - Full E2E with real database
-3. **Benchmark Tests** - Performance measurement and optimization validation
+2. **Smoke Tests** - HTTP handler validation without DB
+3. **Integration Tests** - Repository validation with real database
+4. **Benchmark Tests** - Performance measurement and optimization validation
 
 **Key Principle**: Each test type has **ONE standardized pattern** - maximum pattern consistency for easy understanding and maintenance.
 
 ---
 
-##  Three-Tier Testing Strategy
+##  Four-Tier Testing Strategy
 
 ### Overview
 
 ```
 Unit Tests (in-place)          → Fast (5s)    → Business logic
+Smoke Tests (no DB)            → Fast (2s)    → HTTP handlers
 Integration Tests (real DB)    → Medium (14s) → Repository E2E + Full validation
 Benchmark Tests (real DB)      → Variable     → Performance measurement
 ```
@@ -44,8 +46,40 @@ Benchmark Tests (real DB)      → Variable     → Performance measurement
 | Test Type       | When to Use                             | What to Test                   | Dependencies    |
 | --------------- | --------------------------------------- | ------------------------------ | --------------- |
 | **Unit**        | Business logic, entities, value objects | Domain rules, validation       | None (pure Go)  |
+| **Smoke**       | Handler regression checks               | HTTP status + response shape   | No DB           |
 | **Integration** | Repository, database queries            | SQL operations, transactions   | Real PostgreSQL |
 | **Benchmark**   | After optimizations, N+1 fixes          | Query performance, memory      | Real PostgreSQL |
+ 
+---
+
+##  Context Test Pattern (Baseline Budget)
+
+Goal: reach **75–80% coverage** with a predictable test footprint.
+
+### Baseline budget per aggregate
+
+- **Unit tests**: 20–30 tests
+	- 1–2 happy paths per method
+	- 2–3 critical negative cases per method
+	- Focus on invariants, state transitions, and validation
+- **Smoke tests**: 6–9 tests per handler
+	- CRUD + key error mappings
+	- No exhaustive error permutations
+- **Integration tests**: 6–10 tests per repository
+	- Happy path + not found + constraint error
+	- 1–2 list/filter tests
+
+### Risk tiers
+
+- **Low risk**: follow baseline strictly
+- **Medium risk**: add a few extra unit tests around state transitions
+- **High risk** (payments, fiscal, authentication): allow +30–50% tests, but keep the same pattern
+
+### Anti-duplication rules
+
+- Do not mirror use case error tests in handlers
+- Do not mirror repository edge cases in use cases
+- Use one representative error mapping per handler unless high risk
 
 ---
 

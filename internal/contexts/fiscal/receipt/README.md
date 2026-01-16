@@ -84,6 +84,21 @@ The use case supports:
 
 ---
 
+## Printing (Checkbox + PDF)
+
+Receipt printing supports Checkbox output and optional PDF generation. Configure credentials via environment variables:
+
+- `CHECKBOX_API_KEY` (required)
+- `CHECKBOX_SANDBOX` (optional, default: false)
+- `CHECKBOX_TIMEOUT` (optional, e.g., `30s`)
+- `FISCAL_PDF_OUTPUT_DIR` (optional, default: `tmp/fiscal/receipts`)
+
+Endpoint:
+
+- `POST /api/v1/fiscal/receipts/:id/print`
+
+---
+
 ## Validation Rules
 
 - `CashRegisterID`, `OrderID`, `Currency`, and `CreatedBy` are required.

@@ -453,7 +453,7 @@ make workspace              # Shows DATABASE_DRIVER and ENVIRONMENT
 - `make test-coverage` - HTML coverage report
 - Test DB: Auto-starts on port 5433 with `promenade_test` database
 
-**Smoke Testing**: 182 tests across 18 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
+**Smoke Testing**: 184 tests across 20 handlers, 100% pass rate - see [test/smoke/README.md](test/smoke/README.md)
 
 **Smoke Testing Pattern**:
 

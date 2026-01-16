@@ -628,6 +628,8 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```go
 package handler_test
 

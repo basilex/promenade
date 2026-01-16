@@ -76,3 +76,11 @@ scheduler:
   default_timeout: 30s
   default_retry_attempts: 1
   default_retry_delay: 5s
+
+# Fiscal integrations
+fiscal:
+  checkbox:
+    api_key: ""
+    sandbox: true
+    timeout: 30s
+  pdf_output_dir: "${FISCAL_PDF_OUTPUT_DIR:-tmp/fiscal/receipts}" # PDF output directory

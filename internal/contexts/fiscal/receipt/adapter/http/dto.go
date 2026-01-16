@@ -17,12 +17,9 @@ type CreateReceiptRequest struct {
 	CreatedBy      string               `json:"created_by" binding:"required"`
 }
 
-// MarkPrintedRequest represents printing request
-type MarkPrintedRequest struct {
-	FiscalNumber string `json:"fiscal_number" binding:"required"`
-	FiscalURL    string `json:"fiscal_url"`
-	QRCode       string `json:"qr_code"`
-	PrintedBy    string `json:"printed_by" binding:"required"`
+// PrintReceiptRequest represents print request
+type PrintReceiptRequest struct {
+	PrintedBy string `json:"printed_by" binding:"required"`
 }
 
 // CancelReceiptRequest represents cancellation request

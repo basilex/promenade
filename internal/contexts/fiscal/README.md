@@ -221,22 +221,24 @@ Content-Type: application/json
 
 ## Testing Strategy
 
-### Unit Tests (30+ target)
+Fiscal is **high risk** (money + compliance), so allow a larger test budget while keeping the same pattern.
 
-- CashRegister entity (10 tests)
-- Receipt entity (10 tests)
-- UseCase business logic (10+ tests)
+### Baseline Budget (per aggregate)
 
-### Integration Tests (15+ target)
+- Unit tests: 20–30 (invariants, state transitions, validation)
+- Smoke tests: 6–9 (CRUD + key error mappings)
+- Integration tests: 6–10 (happy path + not found + constraint)
 
-- PostgreSQL repository (10 tests)
-- Checkbox API mock (5 tests)
+### Fiscal Budget (high risk)
 
-### Smoke Tests (10+ target)
+- Unit tests: baseline +30–50%
+- Smoke tests: baseline +30–50%
+- Integration tests: baseline +30–50%
 
-- HTTP handlers (10 tests)
-- Status code validation
-- Response format checks
+### Coverage Target
+
+- 75–80% by default
+- 85–90% for high‑risk operations (printing, fiscal numbers, cancellation)
 
 ---
 

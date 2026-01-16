@@ -454,6 +454,8 @@ func (mb *MemoryBus) handleEvent(ctx context.Context, handler EventHandler, even
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ### Test Organization
 
 **Unit Tests** (in-place):

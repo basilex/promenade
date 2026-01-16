@@ -330,6 +330,8 @@ func NewCustomer(name string) *Customer {
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```bash
 # Run dialect tests
 go test ./pkg/database -v

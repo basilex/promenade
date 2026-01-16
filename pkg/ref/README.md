@@ -127,6 +127,8 @@ ref.Float64(38.8951)  // *float64
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```bash
 # Run tests
 go test ./pkg/ref -v

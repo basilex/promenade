@@ -71,6 +71,7 @@ coverage.txt
 tmp/
 temp/
 *.tmp
+tmp/fiscal/receipts/
 
 # Backup & Old files
 *.disabled

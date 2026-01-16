@@ -336,6 +336,8 @@ if err := cache.Set(ctx, key, value, ttl); err != nil {
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ### With NoOp Cache
 
 ```go

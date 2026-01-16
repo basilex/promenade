@@ -208,6 +208,8 @@ type CSRFConfig struct {
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ### Run Tests
 
 ```bash

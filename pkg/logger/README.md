@@ -299,6 +299,8 @@ func (l *Logger) WithContext(ctx context.Context) *Logger
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 The package includes comprehensive tests for all features:
 
 ```bash

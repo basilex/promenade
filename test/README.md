@@ -15,7 +15,7 @@
 
 ## Test Organization
 
-Promenade uses **four-tier testing strategy** with clear separation:
+Promenade uses **four-tier testing strategy** with clear separation and a baseline budget to keep test counts predictable.
 
 ### 1. Unit Tests (In-Place)
 
@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**:  **COMPLETE** - 18/18 handlers, 169 tests, 100% pass rate
+**Status**:  **COMPLETE** - 20/20 handlers, 184 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -72,6 +72,9 @@ test/smoke/
      ui/                     # 1 handler, 8 tests
          metadata/
              form/handler_test.go
+    fiscal/                 # 2 handlers, 15 tests
+        cashregister/handler_test.go
+        receipt/handler_test.go
 ```
 
 **Key Characteristics**:
@@ -79,7 +82,7 @@ test/smoke/
 - Test HTTP status codes (200/201/404/400/500)
 - Validate response format (`{"status":"success"}`)
 - No database dependencies (pure mocks)
-- Fast execution (~0.6s for all 169 tests, cached)
+- Fast execution (~0.6s for all 184 tests, cached)
 - 6-12 tests per handler (simple to complex)
 - Error code patterns vary by context:
   - Identity/Order Management: Simple "NOT_FOUND"
@@ -102,6 +105,9 @@ test/integration/
        timezone/repository_test.go      #  Repository tests with real DB
     identity/
         contact/repository_test.go       #  Repository tests with real DB
+    fiscal/
+        cashregister/repository_test.go  #  Repository tests with real DB
+        receipt/repository_test.go       #  Repository tests with real DB
     ui/
         metadata/
             form/repository_test.go       #  Repository tests with real DB
@@ -141,7 +147,7 @@ test/benchmark/
 go test ./... -short -v
 
 # Smoke tests (handler validation, no DB)
-make test-smoke                     # Run all 169 smoke tests
+make test-smoke                     # Run all 184 smoke tests
 
 # Integration tests (with real DB)
 make test-integration
@@ -163,6 +169,17 @@ make test
 | **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~2s)    | Before commit         |
 | **Integration** | `/test/integration/contexts/` | Real DB    | Medium (~14s) | Before merge          |
 | **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations   |
+
+### Baseline Budget (per aggregate)
+
+- Unit tests: 20–30 (invariants, state transitions, validation)
+- Smoke tests: 6–9 (CRUD + key error mappings)
+- Integration tests: 6–10 (happy path + not found + constraint)
+
+Risk tiers:
+- Low risk: baseline only
+- Medium risk: add a few transition tests
+- High risk (payments, fiscal, auth): allow +30–50% tests
 
 # Context-specific tests
 
@@ -250,7 +267,7 @@ test/smoke/contexts/
      metadata/
          form/handler_test.go   # 8 tests
 
-**Total: 169 smoke tests across 18 handlers (100% pass rate)**
+**Total: 184 smoke tests across 20 handlers (100% pass rate)**
 ```
 
 ### Warehouse Context (Inventory Management)
@@ -333,7 +350,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (2465+ tests: 2232+ unit, 169 smoke, 76+ integration)
+make test                 # All tests (2465+ tests: 2232+ unit, 184 smoke, 76+ integration)
 ```
 
 ### By Type
@@ -563,7 +580,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (169 tests across 18 handlers)   
+**Smoke Tests**: HTTP handlers with mocks (184 tests across 20 handlers)   
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)
@@ -583,4 +600,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | 169 smoke tests (100% pass rate) | 2465+ total tests
+**Test Status**: All tests passing | 184 smoke tests (100% pass rate) | 2465+ total tests

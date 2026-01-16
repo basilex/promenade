@@ -131,6 +131,8 @@ if errors.Is(err, payment.ErrPaymentFailed) {
 
 ### Testing Patterns
 
+Baseline budget and risk tiers follow [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md): Unit 20–30, Smoke 6–9, Integration 6–10, with high-risk aggregates +30–50%.
+
 **Unit Tests** (58 entity tests):
 ```go
 // Phase 2 pattern

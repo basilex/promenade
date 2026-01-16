@@ -195,3 +195,36 @@ func TestCashRegister_SetMaintenance(t *testing.T) {
 	assert.Equal(t, StatusMaintenance, cr.Status)
 	assert.Equal(t, maintainedBy, cr.LastUpdatedBy)
 }
+
+func TestCashRegister_Suspend(t *testing.T) {
+	orgID := uuidv7.New()
+	createdBy := uuidv7.New()
+	suspendedBy := uuidv7.New()
+
+	cr, err := NewCashRegister(orgID, "1234567890", "Checkbox", createdBy)
+	require.NoError(t, err)
+
+	err = cr.Suspend(suspendedBy)
+	require.NoError(t, err)
+	assert.Equal(t, StatusSuspended, cr.Status)
+	assert.Equal(t, suspendedBy, cr.LastUpdatedBy)
+}
+
+func TestCashRegister_Validate_Errors(t *testing.T) {
+	cr := &CashRegister{}
+	assert.ErrorIs(t, cr.Validate(), ErrOrganizationIDRequired)
+
+	cr.OrganizationID = uuidv7.New()
+	assert.ErrorIs(t, cr.Validate(), ErrFiscalNumberRequired)
+
+	cr.FiscalNumber = "123"
+	assert.ErrorIs(t, cr.Validate(), ErrModelRequired)
+}
+
+func TestCashRegister_Validate_Success(t *testing.T) {
+	cr, err := NewCashRegister(uuidv7.New(), "FN-VALID", "Model", uuidv7.New())
+	require.NoError(t, err)
+
+	err = cr.Validate()
+	require.NoError(t, err)
+}

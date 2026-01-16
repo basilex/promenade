@@ -645,6 +645,8 @@ eventBus.Publish("order.completed", orderID)
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```go
 package saga_test
 

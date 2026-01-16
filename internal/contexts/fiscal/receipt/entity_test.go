@@ -144,6 +144,20 @@ func TestReceipt_MarkPrinted(t *testing.T) {
 	assert.ErrorIs(t, err, ErrReceiptAlreadyPrinted)
 }
 
+func TestReceipt_MarkPrinted_Errors(t *testing.T) {
+	rec := buildReceipt(t)
+	printedBy := uuidv7.New()
+
+	err := rec.MarkPrinted("", "", "", printedBy)
+	assert.ErrorIs(t, err, ErrFiscalNumberRequired)
+
+	cancelledBy := uuidv7.New()
+	require.NoError(t, rec.Cancel("Reason", cancelledBy))
+
+	err = rec.MarkPrinted("FN-123", "url", "qr", printedBy)
+	assert.ErrorIs(t, err, ErrReceiptAlreadyCancelled)
+}
+
 func TestReceipt_Cancel(t *testing.T) {
 	rec := buildReceipt(t)
 	cancelledBy := uuidv7.New()
@@ -156,6 +170,74 @@ func TestReceipt_Cancel(t *testing.T) {
 
 	err = rec.Cancel("Duplicate", cancelledBy)
 	assert.ErrorIs(t, err, ErrReceiptAlreadyCancelled)
+}
+
+func TestReceipt_Cancel_ReasonRequired(t *testing.T) {
+	rec := buildReceipt(t)
+
+	err := rec.Cancel("", uuidv7.New())
+	assert.ErrorIs(t, err, ErrReceiptCancelReasonRequired)
+}
+
+func TestReceipt_Validate_InvalidFields(t *testing.T) {
+	rec, err := NewReceipt(
+		uuidv7.New(),
+		uuidv7.New(),
+		PaymentTypeCash,
+		ReceiptTypeSale,
+		"UAH",
+		[]ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		uuidv7.New(),
+	)
+	require.NoError(t, err)
+
+	rec.PaymentType = PaymentType("invalid")
+	require.ErrorIs(t, rec.Validate(), ErrPaymentTypeRequired)
+
+	rec.PaymentType = PaymentTypeCash
+	rec.ReceiptType = ReceiptType("invalid")
+	require.ErrorIs(t, rec.Validate(), ErrReceiptTypeRequired)
+
+	rec.ReceiptType = ReceiptTypeSale
+	rec.Lines.Set([]ReceiptLine{{Name: "", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
+	require.ErrorIs(t, rec.Validate(), ErrReceiptLineNameRequired)
+}
+
+func TestReceipt_Validate_Success(t *testing.T) {
+	rec := buildReceipt(t)
+	assert.NoError(t, rec.Validate())
+}
+
+func TestCalculateTotals_Success(t *testing.T) {
+	lines := []ReceiptLine{
+		{Name: "Item A", Quantity: 2, PriceCents: 1000, TaxRate: 20},
+		{Name: "Item B", Quantity: 1, PriceCents: 500, TaxRate: 0},
+	}
+
+	calculated, total, tax, err := calculateTotals(lines)
+	require.NoError(t, err)
+	require.Len(t, calculated, 2)
+	require.Equal(t, int64(2500), total)
+	require.Equal(t, int64(400), tax)
+	require.Equal(t, int64(2000), calculated[0].TotalCents)
+	require.Equal(t, int64(400), calculated[0].TaxAmountCents)
+}
+
+func TestCalculateTotals_Errors(t *testing.T) {
+	_, _, _, err := calculateTotals(nil)
+	require.ErrorIs(t, err, ErrReceiptLineNameRequired)
+
+	_, _, _, err = calculateTotals([]ReceiptLine{{Name: "", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
+	require.ErrorIs(t, err, ErrReceiptLineNameRequired)
+
+	_, _, _, err = calculateTotals([]ReceiptLine{{Name: "Item", Quantity: 0, PriceCents: 1000, TaxRate: 20}})
+	require.ErrorIs(t, err, ErrReceiptLineQuantityInvalid)
+
+	_, _, _, err = calculateTotals([]ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: -1, TaxRate: 20}})
+	require.ErrorIs(t, err, ErrReceiptLinePriceInvalid)
+
+	_, _, _, err = calculateTotals([]ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 200}})
+	require.ErrorIs(t, err, ErrReceiptLineTaxRateInvalid)
 }
 
 func buildReceipt(t *testing.T) *Receipt {

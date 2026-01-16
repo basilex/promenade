@@ -452,6 +452,8 @@ UUID v7 and v4 are compatible - no data migration needed. New records will use v
 
 ## Testing
 
+Repository-wide testing strategy and baseline budgets are documented in [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md).
+
 ```go
 package user_test
 

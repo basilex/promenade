@@ -19,6 +19,7 @@ type MockReceiptUseCase struct {
 	GetByOrderIDFunc  func(ctx context.Context, orderID uuidv7.UUID) (*receipt.Receipt, error)
 	ListReceiptsFunc  func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error)
 	MarkPrintedFunc   func(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receipt.Receipt, error)
+	PrintReceiptFunc  func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error)
 	CancelReceiptFunc func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error)
 	DeleteReceiptFunc func(ctx context.Context, id uuidv7.UUID) error
 }
@@ -56,6 +57,13 @@ func (m *MockReceiptUseCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fi
 		return m.MarkPrintedFunc(ctx, id, fiscalNumber, fiscalURL, qrCode, printedBy)
 	}
 	return nil, fmt.Errorf("MarkPrintedFunc not implemented")
+}
+
+func (m *MockReceiptUseCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+	if m.PrintReceiptFunc != nil {
+		return m.PrintReceiptFunc(ctx, id, printedBy)
+	}
+	return nil, fmt.Errorf("PrintReceiptFunc not implemented")
 }
 
 func (m *MockReceiptUseCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
@@ -182,6 +190,46 @@ func TestReceiptHandler_List_Success(t *testing.T) {
 
 	w := smoke.MakeRequest(t, router, "GET", "/fiscal/receipts", nil)
 	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestReceiptHandler_Print_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return fakeReceipt(t), nil
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/print", handler.MarkPrinted)
+
+	body := map[string]any{
+		"printed_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/print", body)
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestReceiptHandler_Print_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return nil, receipt.ErrReceiptNotFound
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/print", handler.MarkPrinted)
+
+	body := map[string]any{
+		"printed_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/print", body)
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
 }
 
 func TestReceiptHandler_Delete_Success(t *testing.T) {

@@ -23,6 +23,7 @@ type AppConfig struct {
 	Email     EmailSection      `yaml:"email"`
 	Purge     PurgeSection      `yaml:"purge"`
 	Modules   ModulesSection    `yaml:"modules"`
+	Fiscal    FiscalSection     `yaml:"fiscal"`
 }
 
 type AppSection struct {
@@ -171,6 +172,19 @@ type PurgeSection struct {
 // ModulesSection represents modules configuration
 type ModulesSection struct {
 	Enabled []string `yaml:"enabled"`
+}
+
+// FiscalSection holds fiscal integrations configuration
+type FiscalSection struct {
+	Checkbox     CheckboxSection `yaml:"checkbox"`
+	PDFOutputDir string          `yaml:"pdf_output_dir"`
+}
+
+// CheckboxSection holds Checkbox API configuration
+type CheckboxSection struct {
+	APIKey  string        `yaml:"api_key"`
+	Sandbox bool          `yaml:"sandbox"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 // ModuleConfig represents a module's configuration
@@ -379,5 +393,23 @@ func applyEnvOverrides(cfg *AppConfig) {
 	// Bus adapter override
 	if v := os.Getenv("BUS_ADAPTER"); v != "" {
 		cfg.Bus.Adapter = v
+	}
+
+	// Fiscal Checkbox overrides
+	if v := os.Getenv("CHECKBOX_API_KEY"); v != "" {
+		cfg.Fiscal.Checkbox.APIKey = v
+	}
+	if v := os.Getenv("CHECKBOX_SANDBOX"); v != "" {
+		if parsed, err := strconv.ParseBool(v); err == nil {
+			cfg.Fiscal.Checkbox.Sandbox = parsed
+		}
+	}
+	if v := os.Getenv("CHECKBOX_TIMEOUT"); v != "" {
+		if parsed, err := time.ParseDuration(v); err == nil {
+			cfg.Fiscal.Checkbox.Timeout = parsed
+		}
+	}
+	if v := os.Getenv("FISCAL_PDF_OUTPUT_DIR"); v != "" {
+		cfg.Fiscal.PDFOutputDir = v
 	}
 }

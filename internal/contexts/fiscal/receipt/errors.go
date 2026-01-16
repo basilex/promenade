@@ -61,6 +61,9 @@ var (
 	// ErrReceiptCreateFailed is returned when creation fails
 	ErrReceiptCreateFailed = errors.New("failed to create receipt")
 
+	// ErrReceiptPrintFailed is returned when printing fails
+	ErrReceiptPrintFailed = errors.New("failed to print receipt")
+
 	// ErrReceiptUpdateFailed is returned when update fails
 	ErrReceiptUpdateFailed = errors.New("failed to update receipt")
 

@@ -615,6 +615,8 @@ func (h *CacheInvalidationHandler) HandleCountryUpdated(ctx context.Context, e b
 
 ## Testing
 
+Baseline budget and risk tiers follow [docs/guides/testing-patterns.md](../../docs/guides/testing-patterns.md): Unit 20–30, Smoke 6–9, Integration 6–10, with high-risk aggregates +30–50%.
+
 ### Test Coverage
 
 **Unit Tests** (in-place):
