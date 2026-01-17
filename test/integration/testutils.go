@@ -55,7 +55,7 @@ func DefaultConfig() Config {
 	}
 	
 	return Config{
-		Host:     getEnv("DB_HOST", getEnv("TEST_DB_HOST", "localhost")),
+		Host:     getEnv("DB_HOST", getEnv("TEST_DB_HOST", "127.0.0.1")),
 		Port:     getEnv("DB_PORT", getEnv("TEST_DB_PORT", defaultPort)),
 		User:     getEnv("DB_USER", getEnv("TEST_DB_USER", "system")),
 		Password: getEnv("DB_PASSWORD", getEnv("TEST_DB_PASSWORD", "passw0rd")),

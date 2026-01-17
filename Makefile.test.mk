@@ -52,7 +52,7 @@ test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER f
 	fi
 	@echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 ./test/integration/contexts/...; \
+		DB_HOST=$${DB_HOST:-127.0.0.1} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-127.0.0.1:6380} go test -v -p 1 ./test/integration/contexts/...; \
 	else \
 		go test -v -p 1 ./test/integration/contexts/...; \
 	fi
@@ -81,7 +81,7 @@ test-integration-path: validate-env  ## Run integration tests for a specific pat
 	fi
 	@echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 $(TEST_PATH); \
+		DB_HOST=$${DB_HOST:-127.0.0.1} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-127.0.0.1:6380} go test -v -p 1 $(TEST_PATH); \
 	else \
 		go test -v -p 1 $(TEST_PATH); \
 	fi
@@ -144,9 +144,23 @@ test-db-start:  ## Start PostgreSQL test database on port 5433
 		echo "ℹ️  CI/CD environment detected - using existing PostgreSQL service"; \
 	else \
 		echo "Starting PostgreSQL test database on port 5433..."; \
+		docker compose -f docker/docker-compose.test.yml down -v; \
 		docker compose -f docker/docker-compose.test.yml up -d; \
-		echo "Waiting for test database..."; \
-		sleep 3; \
+		echo "Waiting for test database health..."; \
+		ready=0; \
+		for i in $$(seq 1 30); do \
+			pg_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade_test_db 2>/dev/null); \
+			redis_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade_test_redis 2>/dev/null); \
+			if [ "$$pg_status" = "healthy" ] && [ "$$redis_status" = "healthy" ]; then \
+				ready=1; \
+				break; \
+			fi; \
+			sleep 2; \
+		done; \
+		if [ "$$ready" -ne 1 ]; then \
+			echo "❌ Test database not healthy"; \
+			exit 1; \
+		fi; \
 	fi
 
 test-db-stop:  ## Stop test database

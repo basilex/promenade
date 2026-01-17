@@ -179,7 +179,7 @@ func (r *receiptRepository) Create(ctx context.Context, rec *receipt.Receipt) er
 			currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code, provider_receipt_id,
 			printed_at, cancelled_at, cancellation_reason, lines, created_by, last_updated_by,
 			status, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`
 
 	row := fromEntity(rec)
 	_, err := r.Exec(ctx, query,
