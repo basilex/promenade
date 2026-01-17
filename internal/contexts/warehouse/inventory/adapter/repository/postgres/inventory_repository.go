@@ -10,17 +10,19 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/repository"
+	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// inventoryRepository implements inventory.IRepository using PostgreSQL.
+// inventoryRepository implements repository.IInventoryRepository using PostgreSQL.
 type inventoryRepository struct {
 	*BaseRepository
 }
 
 // NewInventoryRepository creates a new PostgreSQL inventory repository.
-func NewInventoryRepository(db *sqlx.DB) inventory.IRepository {
+func NewInventoryRepository(db *sqlx.DB) repository.IInventoryRepository {
 	return &inventoryRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
@@ -56,7 +58,7 @@ type inventoryRow struct {
 }
 
 // toEntity converts database row to domain entity.
-func (r *inventoryRow) toEntity() (*inventory.Inventory, error) {
+func (r *inventoryRow) toEntity() (*aggregate.Inventory, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid inventory id: %w", err)
@@ -76,7 +78,7 @@ func (r *inventoryRow) toEntity() (*inventory.Inventory, error) {
 		lastUpdatedBy = uid
 	}
 
-	inv := &inventory.Inventory{}
+	inv := &aggregate.Inventory{}
 	// Hydrate entity fields directly (bypass business logic for database loading)
 	inv.ID = id
 	inv.Version = r.Version
@@ -103,7 +105,7 @@ func (r *inventoryRow) toEntity() (*inventory.Inventory, error) {
 		inv.LastRestocked = r.LastRestocked.Time
 	}
 	
-	inv.Status = inventory.InventoryStatus(r.Status)
+	inv.Status = aggregate.InventoryStatus(r.Status)
 	inv.IsActive = r.IsActive
 	
 	if r.Notes.Valid {
@@ -124,7 +126,7 @@ func (r *inventoryRow) toEntity() (*inventory.Inventory, error) {
 }
 
 // fromEntity converts domain entity to database row.
-func fromEntity(inv *inventory.Inventory) *inventoryRow {
+func fromEntity(inv *aggregate.Inventory) *inventoryRow {
 	row := &inventoryRow{
 		ID:                inv.GetID().String(),
 		Version:           inv.GetVersion(),
@@ -173,7 +175,7 @@ func fromEntity(inv *inventory.Inventory) *inventoryRow {
 // ==============================================================================
 
 // Create inserts a new inventory item.
-func (r *inventoryRepository) Create(ctx context.Context, inv *inventory.Inventory) error {
+func (r *inventoryRepository) Create(ctx context.Context, inv *aggregate.Inventory) error {
 	query := `
 		INSERT INTO warehouse_inventory (
 			id, version, product_id, sku, product_name,
@@ -209,7 +211,7 @@ func (r *inventoryRepository) Create(ctx context.Context, inv *inventory.Invento
 		// Check for unique constraint violation on SKU
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" { // unique_violation
-				return inventory.ErrInventoryAlreadyExists
+				return inventoryerrors.ErrInventoryAlreadyExists
 			}
 		}
 		return fmt.Errorf("failed to create inventory: %w", err)
@@ -219,7 +221,7 @@ func (r *inventoryRepository) Create(ctx context.Context, inv *inventory.Invento
 }
 
 // GetByID retrieves an inventory item by UUID.
-func (r *inventoryRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+func (r *inventoryRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -235,7 +237,7 @@ func (r *inventoryRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*inv
 	var row inventoryRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, inventory.ErrInventoryNotFound
+			return nil, inventoryerrors.ErrInventoryNotFound
 		}
 		return nil, fmt.Errorf("failed to get inventory: %w", err)
 	}
@@ -244,7 +246,7 @@ func (r *inventoryRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*inv
 }
 
 // Update persists changes to an existing inventory item with optimistic locking.
-func (r *inventoryRepository) Update(ctx context.Context, inv *inventory.Inventory) error {
+func (r *inventoryRepository) Update(ctx context.Context, inv *aggregate.Inventory) error {
 	query := `
 		UPDATE warehouse_inventory SET
 			version = version + 1,
@@ -298,9 +300,9 @@ func (r *inventoryRepository) Update(ctx context.Context, inv *inventory.Invento
 		}
 
 		if exists {
-			return inventory.ErrVersionConflict
+			return inventoryerrors.ErrVersionConflict
 		}
-		return inventory.ErrInventoryNotFound
+		return inventoryerrors.ErrInventoryNotFound
 	}
 
 	// Increment version in entity
@@ -327,7 +329,7 @@ func (r *inventoryRepository) Delete(ctx context.Context, id uuidv7.UUID) error 
 	}
 
 	if rowsAffected == 0 {
-		return inventory.ErrInventoryNotFound
+		return inventoryerrors.ErrInventoryNotFound
 	}
 
 	return nil
@@ -338,7 +340,7 @@ func (r *inventoryRepository) Delete(ctx context.Context, id uuidv7.UUID) error 
 // ==============================================================================
 
 // GetBySKU retrieves an inventory item by unique SKU.
-func (r *inventoryRepository) GetBySKU(ctx context.Context, sku string) (*inventory.Inventory, error) {
+func (r *inventoryRepository) GetBySKU(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -354,7 +356,7 @@ func (r *inventoryRepository) GetBySKU(ctx context.Context, sku string) (*invent
 	var row inventoryRow
 	if err := r.Get(ctx, &row, query, sku); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, inventory.ErrInventoryNotFound
+			return nil, inventoryerrors.ErrInventoryNotFound
 		}
 		return nil, fmt.Errorf("failed to get inventory by SKU: %w", err)
 	}
@@ -363,7 +365,7 @@ func (r *inventoryRepository) GetBySKU(ctx context.Context, sku string) (*invent
 }
 
 // GetByProductID retrieves all inventory items for a product across all warehouses.
-func (r *inventoryRepository) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error) {
+func (r *inventoryRepository) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -382,7 +384,7 @@ func (r *inventoryRepository) GetByProductID(ctx context.Context, productID uuid
 		return nil, fmt.Errorf("failed to get inventory by product ID: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		inv, err := row.toEntity()
 		if err != nil {
@@ -395,7 +397,7 @@ func (r *inventoryRepository) GetByProductID(ctx context.Context, productID uuid
 }
 
 // GetByWarehouse retrieves all inventory items in a warehouse.
-func (r *inventoryRepository) GetByWarehouse(ctx context.Context, warehouseID string) ([]*inventory.Inventory, error) {
+func (r *inventoryRepository) GetByWarehouse(ctx context.Context, warehouseID string) ([]*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -414,7 +416,7 @@ func (r *inventoryRepository) GetByWarehouse(ctx context.Context, warehouseID st
 		return nil, fmt.Errorf("failed to get inventory by warehouse: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		inv, err := row.toEntity()
 		if err != nil {
@@ -427,7 +429,7 @@ func (r *inventoryRepository) GetByWarehouse(ctx context.Context, warehouseID st
 }
 
 // GetByLocation retrieves all inventory items at specific warehouse location.
-func (r *inventoryRepository) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+func (r *inventoryRepository) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -446,7 +448,7 @@ func (r *inventoryRepository) GetByLocation(ctx context.Context, warehouseID, lo
 		return nil, fmt.Errorf("failed to get inventory by location: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		item, err := row.toEntity()
 		if err != nil {
@@ -459,9 +461,9 @@ func (r *inventoryRepository) GetByLocation(ctx context.Context, warehouseID, lo
 }
 
 // List retrieves paginated inventory items.
-func (r *inventoryRepository) List(ctx context.Context, limit, offset int) ([]*inventory.Inventory, int64, error) {
+func (r *inventoryRepository) List(ctx context.Context, limit, offset int) ([]*aggregate.Inventory, int64, error) {
 	if limit < 1 || offset < 0 {
-		return nil, 0, inventory.ErrInvalidPagination
+		return nil, 0, inventoryerrors.ErrInvalidPagination
 	}
 
 	// Get total count
@@ -491,7 +493,7 @@ func (r *inventoryRepository) List(ctx context.Context, limit, offset int) ([]*i
 		return nil, 0, fmt.Errorf("failed to list inventory: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		inv, err := row.toEntity()
 		if err != nil {
@@ -508,7 +510,7 @@ func (r *inventoryRepository) List(ctx context.Context, limit, offset int) ([]*i
 // ==============================================================================
 
 // GetLowStock retrieves all active inventory items below reorder point.
-func (r *inventoryRepository) GetLowStock(ctx context.Context) ([]*inventory.Inventory, error) {
+func (r *inventoryRepository) GetLowStock(ctx context.Context) ([]*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -529,7 +531,7 @@ func (r *inventoryRepository) GetLowStock(ctx context.Context) ([]*inventory.Inv
 		return nil, fmt.Errorf("failed to get low stock inventory: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		inv, err := row.toEntity()
 		if err != nil {
@@ -542,7 +544,7 @@ func (r *inventoryRepository) GetLowStock(ctx context.Context) ([]*inventory.Inv
 }
 
 // GetByStatus retrieves all inventory items with specific status.
-func (r *inventoryRepository) GetByStatus(ctx context.Context, status inventory.InventoryStatus) ([]*inventory.Inventory, error) {
+func (r *inventoryRepository) GetByStatus(ctx context.Context, status aggregate.InventoryStatus) ([]*aggregate.Inventory, error) {
 	query := `
 		SELECT 
 			id, version, product_id, sku, product_name,
@@ -561,7 +563,7 @@ func (r *inventoryRepository) GetByStatus(ctx context.Context, status inventory.
 		return nil, fmt.Errorf("failed to get inventory by status: %w", err)
 	}
 
-	items := make([]*inventory.Inventory, 0, len(rows))
+	items := make([]*aggregate.Inventory, 0, len(rows))
 	for _, row := range rows {
 		inv, err := row.toEntity()
 		if err != nil {
@@ -578,7 +580,7 @@ func (r *inventoryRepository) GetByStatus(ctx context.Context, status inventory.
 // ==============================================================================
 
 // BulkUpdate updates multiple inventory items in a single transaction.
-func (r *inventoryRepository) BulkUpdate(ctx context.Context, inventories []*inventory.Inventory) error {
+func (r *inventoryRepository) BulkUpdate(ctx context.Context, inventories []*aggregate.Inventory) error {
 	if len(inventories) == 0 {
 		return nil
 	}

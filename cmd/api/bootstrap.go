@@ -20,8 +20,13 @@ import (
 	"github.com/basilex/promenade/pkg/scheduler"
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/integration"
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
+	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+
+	analyticsHandler "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/http"
+	analyticsIntegration "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/integration"
+	analyticsUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/usecase"
+	salesReportRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/repository/postgres"
 
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
 	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
@@ -42,6 +47,8 @@ type App struct {
 	HealthChecker           *health.Checker
 	OrderEventHandler       *integration.OrderEventHandler
 	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
+	SalesReportEventHandler *analyticsIntegration.SalesReportEventHandler
+	SalesReportHandler      *analyticsHandler.SalesReportHandler
 	Scheduler               *scheduler.Engine
 }
 
@@ -107,6 +114,14 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 		return nil, err
 	}
 	app.FiscalOrderEventHandler = fiscalOrderEventHandler
+
+	// Initialize Sales Report Analytics (event handler + query handler)
+	salesReportEventHandler, salesReportHandler, err := initSalesReportAnalytics(db, eventBus)
+	if err != nil {
+		return nil, err
+	}
+	app.SalesReportEventHandler = salesReportEventHandler
+	app.SalesReportHandler = salesReportHandler
 
 	// Initialize Scheduler (Fiscal retries, etc.)
 	schedulerEngine, err := initScheduler(cfg, db, receiptUC, printerEnabled, checkboxClient)
@@ -310,7 +325,7 @@ func initEventBus(cfg *config.AppConfig) (bus.IBus, error) {
 func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.OrderEventHandler, error) {
 	// Initialize Inventory Use Case
 	invRepo := inventoryRepo.NewInventoryRepository(db)
-	inventoryUC := inventory.NewUseCase(invRepo)
+	inventoryUC := inventoryUseCase.NewInventoryUseCase(invRepo)
 
 	// Initialize Reservation Service
 	reservationService := integration.NewReservationService(inventoryUC)
@@ -384,6 +399,30 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 	)
 
 	return orderEventHandler, receiptUseCase, printerEnabled, checkboxClient, nil
+}
+
+// initSalesReportAnalytics initializes sales report analytics (event handler + query handler)
+func initSalesReportAnalytics(db *sqlx.DB, eventBus bus.IBus) (*analyticsIntegration.SalesReportEventHandler, *analyticsHandler.SalesReportHandler, error) {
+	repo := salesReportRepo.NewSalesReportRepository(db)
+	txManager := database.NewTransactionManager(db)
+	
+	// Event handler (write side - materializes read model)
+	eventHandler := analyticsIntegration.NewSalesReportEventHandler(repo, txManager)
+	if err := eventHandler.RegisterHandlers(eventBus); err != nil {
+		logger.Fatal("Failed to register sales report event handlers", slog.Any("error", err))
+		return nil, nil, err
+	}
+
+	// Query handler (read side - serves HTTP requests)
+	useCase := analyticsUseCase.NewSalesReportUseCase(repo)
+	httpHandler := analyticsHandler.NewSalesReportHandler(useCase)
+
+	logger.Info("Sales Report Analytics initialized",
+		slog.String("component", "SalesReportEventHandler + HTTP Handler"),
+		slog.Int("event_handlers", 3),
+	)
+
+	return eventHandler, httpHandler, nil
 }
 
 // initScheduler initializes scheduler engine and registers fiscal retry jobs

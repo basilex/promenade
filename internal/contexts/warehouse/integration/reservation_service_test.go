@@ -5,34 +5,34 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
-	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // MockInventoryUseCase implements inventory.IUseCase for testing
 type MockInventoryUseCase struct {
-	GetBySKUFunc        func(ctx context.Context, sku string) (*inventory.Inventory, error)
-	GetByProductIDFunc  func(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error)
-	UpdateInventoryFunc func(ctx context.Context, inv *inventory.Inventory) error
+	GetBySKUFunc        func(ctx context.Context, sku string) (*aggregate.Inventory, error)
+	GetByProductIDFunc  func(ctx context.Context, productID uuidv7.UUID) ([]*aggregate.Inventory, error)
+	UpdateInventoryFunc func(ctx context.Context, inv *aggregate.Inventory) error
 }
 
-func (m *MockInventoryUseCase) GetBySKU(ctx context.Context, sku string) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetBySKU(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 	if m.GetBySKUFunc != nil {
 		return m.GetBySKUFunc(ctx, sku)
 	}
 	return nil, fmt.Errorf("GetBySKU not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*aggregate.Inventory, error) {
 	if m.GetByProductIDFunc != nil {
 		return m.GetByProductIDFunc(ctx, productID)
 	}
 	return nil, fmt.Errorf("GetByProductID not implemented")
 }
 
-func (m *MockInventoryUseCase) UpdateInventory(ctx context.Context, inv *inventory.Inventory) error {
+func (m *MockInventoryUseCase) UpdateInventory(ctx context.Context, inv *aggregate.Inventory) error {
 	if m.UpdateInventoryFunc != nil {
 		return m.UpdateInventoryFunc(ctx, inv)
 	}
@@ -40,27 +40,27 @@ func (m *MockInventoryUseCase) UpdateInventory(ctx context.Context, inv *invento
 }
 
 // Stub implementations for remaining IUseCase methods (not used in reservation service)
-func (m *MockInventoryUseCase) CreateInventory(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) CreateInventory(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("CreateInventory not implemented")
 }
 
-func (m *MockInventoryUseCase) GetInventory(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetInventory(ctx context.Context, id uuidv7.UUID) (*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("GetInventory not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByWarehouse(ctx context.Context, warehouseID string) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByWarehouse(ctx context.Context, warehouseID string) ([]*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("GetByWarehouse not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("GetByLocation not implemented")
 }
 
-func (m *MockInventoryUseCase) GetLowStock(ctx context.Context) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetLowStock(ctx context.Context) ([]*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("GetLowStock not implemented")
 }
 
-func (m *MockInventoryUseCase) ListInventory(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error) {
+func (m *MockInventoryUseCase) ListInventory(ctx context.Context, page, pageSize int) ([]*aggregate.Inventory, int64, error) {
 	return nil, 0, fmt.Errorf("ListInventory not implemented")
 }
 
@@ -68,17 +68,17 @@ func (m *MockInventoryUseCase) DeleteInventory(ctx context.Context, id uuidv7.UU
 	return fmt.Errorf("DeleteInventory not implemented")
 }
 
-func (m *MockInventoryUseCase) ReceiveStock(ctx context.Context, inventoryID uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) ReceiveStock(ctx context.Context, inventoryID uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("ReceiveStock not implemented")
 }
 
-func (m *MockInventoryUseCase) CommitStock(ctx context.Context, inventoryID uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) CommitStock(ctx context.Context, inventoryID uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*aggregate.Inventory, error) {
 	return nil, fmt.Errorf("CommitStock not implemented")
 }
 
 // createTestInventory creates an inventory entity for testing
-func createTestInventory(productID uuidv7.UUID, sku string, onHand, reserved int) *inventory.Inventory {
-	inv, _ := inventory.NewInventory(
+func createTestInventory(productID uuidv7.UUID, sku string, onHand, reserved int) *aggregate.Inventory {
+	inv, _ := aggregate.NewInventory(
 		productID,
 		sku,
 		"Test Product", // productName
@@ -104,13 +104,13 @@ func TestReservationService_ReserveForOrder_Success_SingleItem(t *testing.T) {
 	inv := createTestInventory(productID, "SKU-001", 100, 0)
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			if sku == "SKU-001" {
 				return inv, nil
 			}
 			return nil, fmt.Errorf("inventory not found")
 		},
-		UpdateInventoryFunc: func(ctx context.Context, i *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, i *aggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -133,7 +133,7 @@ func TestReservationService_ReserveForOrder_Success_MultipleItems(t *testing.T) 
 	inv2 := createTestInventory(uuidv7.New(), "SKU-002", 50, 0)
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			if sku == "SKU-001" {
 				return inv1, nil
 			}
@@ -142,7 +142,7 @@ func TestReservationService_ReserveForOrder_Success_MultipleItems(t *testing.T) 
 			}
 			return nil, fmt.Errorf("inventory not found")
 		},
-		UpdateInventoryFunc: func(ctx context.Context, i *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, i *aggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -168,7 +168,7 @@ func TestReservationService_ReserveForOrder_InsufficientStock(t *testing.T) {
 	inv := createTestInventory(productID, "SKU-001", 5, 0)
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return inv, nil
 		},
 	}
@@ -187,7 +187,7 @@ func TestReservationService_ReserveForOrder_InventoryNotFound(t *testing.T) {
 	userID := uuidv7.New()
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return nil, fmt.Errorf("inventory not found")
 		},
 	}
@@ -235,7 +235,7 @@ func TestReservationService_ReserveForOrder_RollbackOnError(t *testing.T) {
 	updateCallCount := 0
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			if sku == "SKU-001" {
 				return inv1, nil
 			}
@@ -244,7 +244,7 @@ func TestReservationService_ReserveForOrder_RollbackOnError(t *testing.T) {
 			}
 			return nil, fmt.Errorf("inventory not found")
 		},
-		UpdateInventoryFunc: func(ctx context.Context, i *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, i *aggregate.Inventory) error {
 			updateCallCount++
 			return nil
 		},
@@ -271,10 +271,10 @@ func TestReservationService_ReleaseForOrder_Success(t *testing.T) {
 	inv := createTestInventory(uuidv7.New(), "SKU-001", 100, 10)
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return inv, nil
 		},
-		UpdateInventoryFunc: func(ctx context.Context, i *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, i *aggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -294,7 +294,7 @@ func TestReservationService_ReleaseForOrder_Idempotent(t *testing.T) {
 	userID := uuidv7.New()
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return nil, fmt.Errorf("inventory not found")
 		},
 	}
@@ -314,10 +314,10 @@ func TestReservationService_CommitForOrder_Success(t *testing.T) {
 	inv := createTestInventory(uuidv7.New(), "SKU-001", 100, 10)
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return inv, nil
 		},
-		UpdateInventoryFunc: func(ctx context.Context, i *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, i *aggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -339,7 +339,7 @@ func TestReservationService_CommitForOrder_NoReservation(t *testing.T) {
 	inv := createTestInventory(uuidv7.New(), "SKU-001", 100, 0) // No reservation
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Inventory, error) {
 			return inv, nil
 		},
 	}

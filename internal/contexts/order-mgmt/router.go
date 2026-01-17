@@ -7,9 +7,9 @@ import (
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
 	contractHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/http"
 	contractRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	orderHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/http"
 	orderRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/repository/postgres"
+	orderUseCase "github.com/basilex/promenade/internal/contexts/order-mgmt/order/usecase"
 	"github.com/basilex/promenade/pkg/bus"
 )
 
@@ -23,8 +23,8 @@ type Router struct {
 func NewRouter(db *sqlx.DB, eventBus bus.IBus) *Router {
 	// Initialize Order aggregate
 	orderRepository := orderRepo.NewOrderRepository(db)
-	orderUseCase := order.NewUseCase(orderRepository, eventBus)
-	orderHandler := orderHTTP.NewOrderHandler(orderUseCase)
+	orderUseCaseImpl := orderUseCase.NewOrderUseCase(orderRepository, eventBus)
+	orderHandler := orderHTTP.NewOrderHandler(orderUseCaseImpl)
 
 	// Initialize Contract aggregate
 	contractRepository := contractRepo.NewContractRepository(db)

@@ -9,20 +9,21 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/repository"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// customerRepository implements customer.ICustomerRepository
-type customerRepository struct {
+// CustomerRepository implements repository.ICustomerRepository
+type CustomerRepository struct {
 	*BaseRepository
 }
 
 // NewCustomerRepository creates a new customer repository
-func NewCustomerRepository(db *sqlx.DB) customer.ICustomerRepository {
-	return &customerRepository{
+func NewCustomerRepository(db *sqlx.DB) repository.ICustomerRepository {
+	return &CustomerRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
@@ -50,7 +51,7 @@ type customerRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *customerRow) toEntity() (*customer.Customer, error) {
+func (r *customerRow) toEntity() (*aggregate.Customer, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid customer ID: %w", err)
@@ -66,11 +67,11 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 		return nil, fmt.Errorf("invalid email: %w", err)
 	}
 
-	c := &customer.Customer{
+	c := &aggregate.Customer{
 		Name:       r.Name,
 		Email:      email,
-		Status:     customer.CustomerStatus(r.Status),
-		Tier:       customer.CustomerTier(r.Tier),
+		Status:     aggregate.CustomerStatus(r.Status),
+		Tier:       aggregate.CustomerTier(r.Tier),
 		Source:     r.Source,
 		AssignedTo: assignedTo,
 	}
@@ -133,7 +134,7 @@ func (r *customerRow) toEntity() (*customer.Customer, error) {
 }
 
 // toRow converts domain entity to database row
-func toRow(c *customer.Customer) (*customerRow, error) {
+func toRow(c *aggregate.Customer) (*customerRow, error) {
 	row := &customerRow{
 		ID:         c.GetID().String(),
 		Name:       c.Name,
@@ -185,7 +186,7 @@ func toRow(c *customer.Customer) (*customerRow, error) {
 }
 
 // Create inserts a new customer
-func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) error {
+func (r *CustomerRepository) Create(ctx context.Context, c *aggregate.Customer) error {
 	row, err := toRow(c)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -212,7 +213,7 @@ func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) e
 }
 
 // GetByID retrieves a customer by ID
-func (r *customerRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*customer.Customer, error) {
+func (r *CustomerRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Customer, error) {
 	var row customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -229,7 +230,7 @@ func (r *customerRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cust
 }
 
 // GetByEmail retrieves a customer by email
-func (r *customerRepository) GetByEmail(ctx context.Context, email string) (*customer.Customer, error) {
+func (r *CustomerRepository) GetByEmail(ctx context.Context, email string) (*aggregate.Customer, error) {
 	var row customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -246,7 +247,7 @@ func (r *customerRepository) GetByEmail(ctx context.Context, email string) (*cus
 }
 
 // GetByUserID retrieves a customer by linked user ID
-func (r *customerRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*customer.Customer, error) {
+func (r *CustomerRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*aggregate.Customer, error) {
 	var row customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -263,7 +264,7 @@ func (r *customerRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID
 }
 
 // Update updates an existing customer
-func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) error {
+func (r *CustomerRepository) Update(ctx context.Context, c *aggregate.Customer) error {
 	row, err := toRow(c)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -305,7 +306,7 @@ func (r *customerRepository) Update(ctx context.Context, c *customer.Customer) e
 }
 
 // Delete soft-deletes a customer
-func (r *customerRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *CustomerRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE customer_customers
 		SET deleted_at = NOW()
@@ -328,7 +329,7 @@ func (r *customerRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // ExistsByEmail checks if a customer with given email exists
-func (r *customerRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+func (r *CustomerRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
 	var exists bool
 	query := `
 		SELECT EXISTS(
@@ -344,7 +345,7 @@ func (r *customerRepository) ExistsByEmail(ctx context.Context, email string) (b
 }
 
 // ListByAssignedTo retrieves all customers assigned to a sales rep
-func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.UUID, limit, offset int) ([]*customer.Customer, int, error) {
+func (r *CustomerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.UUID, limit, offset int) ([]*aggregate.Customer, int, error) {
 	var rows []customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -365,7 +366,7 @@ func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
 	}
 
-	customers := make([]*customer.Customer, 0, len(rows))
+	customers := make([]*aggregate.Customer, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -378,7 +379,7 @@ func (r *customerRepository) ListByAssignedTo(ctx context.Context, repID uuidv7.
 }
 
 // ListByCompanyID retrieves all customers for a company (B2B)
-func (r *customerRepository) ListByCompanyID(ctx context.Context, companyID uuidv7.UUID) ([]*customer.Customer, error) {
+func (r *CustomerRepository) ListByCompanyID(ctx context.Context, companyID uuidv7.UUID) ([]*aggregate.Customer, error) {
 	var rows []customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -389,7 +390,7 @@ func (r *customerRepository) ListByCompanyID(ctx context.Context, companyID uuid
 		return nil, fmt.Errorf("failed to list customers by company: %w", err)
 	}
 
-	customers := make([]*customer.Customer, 0, len(rows))
+	customers := make([]*aggregate.Customer, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -402,7 +403,7 @@ func (r *customerRepository) ListByCompanyID(ctx context.Context, companyID uuid
 }
 
 // ListByStatus retrieves customers by status
-func (r *customerRepository) ListByStatus(ctx context.Context, status customer.CustomerStatus, limit, offset int) ([]*customer.Customer, int, error) {
+func (r *CustomerRepository) ListByStatus(ctx context.Context, status aggregate.CustomerStatus, limit, offset int) ([]*aggregate.Customer, int, error) {
 	var rows []customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -423,7 +424,7 @@ func (r *customerRepository) ListByStatus(ctx context.Context, status customer.C
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
 	}
 
-	customers := make([]*customer.Customer, 0, len(rows))
+	customers := make([]*aggregate.Customer, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -436,7 +437,7 @@ func (r *customerRepository) ListByStatus(ctx context.Context, status customer.C
 }
 
 // ListByTier retrieves customers by tier
-func (r *customerRepository) ListByTier(ctx context.Context, tier customer.CustomerTier, limit, offset int) ([]*customer.Customer, int, error) {
+func (r *CustomerRepository) ListByTier(ctx context.Context, tier aggregate.CustomerTier, limit, offset int) ([]*aggregate.Customer, int, error) {
 	var rows []customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -457,7 +458,7 @@ func (r *customerRepository) ListByTier(ctx context.Context, tier customer.Custo
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
 	}
 
-	customers := make([]*customer.Customer, 0, len(rows))
+	customers := make([]*aggregate.Customer, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -470,7 +471,7 @@ func (r *customerRepository) ListByTier(ctx context.Context, tier customer.Custo
 }
 
 // List retrieves customers with pagination
-func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*customer.Customer, int, error) {
+func (r *CustomerRepository) List(ctx context.Context, limit, offset int) ([]*aggregate.Customer, int, error) {
 	var rows []customerRow
 	query := `
 		SELECT * FROM customer_customers
@@ -489,7 +490,7 @@ func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*cu
 		return nil, 0, fmt.Errorf("failed to count customers: %w", err)
 	}
 
-	customers := make([]*customer.Customer, 0, len(rows))
+	customers := make([]*aggregate.Customer, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -502,7 +503,7 @@ func (r *customerRepository) List(ctx context.Context, limit, offset int) ([]*cu
 }
 
 // CountByStatus counts customers by status
-func (r *customerRepository) CountByStatus(ctx context.Context, status customer.CustomerStatus) (int, error) {
+func (r *CustomerRepository) CountByStatus(ctx context.Context, status aggregate.CustomerStatus) (int, error) {
 	var count int
 	query := `
 		SELECT COUNT(*) FROM customer_customers
@@ -516,7 +517,7 @@ func (r *customerRepository) CountByStatus(ctx context.Context, status customer.
 }
 
 // CountByTier counts customers by tier
-func (r *customerRepository) CountByTier(ctx context.Context, tier customer.CustomerTier) (int, error) {
+func (r *CustomerRepository) CountByTier(ctx context.Context, tier aggregate.CustomerTier) (int, error) {
 	var count int
 	query := `
 		SELECT COUNT(*) FROM customer_customers
@@ -530,7 +531,7 @@ func (r *customerRepository) CountByTier(ctx context.Context, tier customer.Cust
 }
 
 // CountByAllStatuses returns counts grouped by all statuses (optimized, single query)
-func (r *customerRepository) CountByAllStatuses(ctx context.Context) (map[customer.CustomerStatus]int, error) {
+func (r *CustomerRepository) CountByAllStatuses(ctx context.Context) (map[aggregate.CustomerStatus]int, error) {
 	type statusCount struct {
 		Status string `db:"status"`
 		Count  int    `db:"count"`
@@ -547,16 +548,16 @@ func (r *customerRepository) CountByAllStatuses(ctx context.Context) (map[custom
 		return nil, fmt.Errorf("failed to count by all statuses: %w", err)
 	}
 
-	counts := make(map[customer.CustomerStatus]int)
+	counts := make(map[aggregate.CustomerStatus]int)
 	for _, result := range results {
-		counts[customer.CustomerStatus(result.Status)] = result.Count
+		counts[aggregate.CustomerStatus(result.Status)] = result.Count
 	}
 
 	return counts, nil
 }
 
 // CountByAllTiers returns counts grouped by all tiers (optimized, single query)
-func (r *customerRepository) CountByAllTiers(ctx context.Context) (map[customer.CustomerTier]int, error) {
+func (r *CustomerRepository) CountByAllTiers(ctx context.Context) (map[aggregate.CustomerTier]int, error) {
 	type tierCount struct {
 		Tier  string `db:"tier"`
 		Count int    `db:"count"`
@@ -573,9 +574,9 @@ func (r *customerRepository) CountByAllTiers(ctx context.Context) (map[customer.
 		return nil, fmt.Errorf("failed to count by all tiers: %w", err)
 	}
 
-	counts := make(map[customer.CustomerTier]int)
+	counts := make(map[aggregate.CustomerTier]int)
 	for _, result := range results {
-		counts[customer.CustomerTier(result.Tier)] = result.Count
+		counts[aggregate.CustomerTier(result.Tier)] = result.Count
 	}
 
 	return counts, nil

@@ -3,15 +3,15 @@ package warehouse
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryHTTP "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/http"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	inventoryusecase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	"github.com/basilex/promenade/internal/contexts/warehouse/location"
 	locationHTTP "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/http"
 	locationRepo "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/warehouse/product"
 	productHTTP "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/http"
 	productRepo "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/repository/postgres"
+	productusecase "github.com/basilex/promenade/internal/contexts/warehouse/product/usecase"
 	"github.com/basilex/promenade/internal/contexts/warehouse/stockmovement"
 	stockmovementHTTP "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/http"
 	stockmovementRepo "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/repository/postgres"
@@ -29,12 +29,12 @@ type Router struct {
 func NewRouter(db *sqlx.DB) *Router {
 	// Initialize Inventory aggregate
 	inventoryRepository := inventoryRepo.NewInventoryRepository(db)
-	inventoryUseCase := inventory.NewUseCase(inventoryRepository)
+	inventoryUseCase := inventoryusecase.NewInventoryUseCase(inventoryRepository)
 	inventoryHandler := inventoryHTTP.NewInventoryHandler(inventoryUseCase)
 
 	// Initialize Product aggregate
 	productRepository := productRepo.NewProductRepository(db)
-	productUseCase := product.NewUseCase(productRepository)
+	productUseCase := productusecase.NewProductUseCase(productRepository)
 	productHandler := productHTTP.NewProductHandler(productUseCase)
 
 	// Initialize StockMovement aggregate

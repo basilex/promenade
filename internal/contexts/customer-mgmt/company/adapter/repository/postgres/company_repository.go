@@ -11,18 +11,20 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// companyRepository implements company.IRepository using PostgreSQL
-type companyRepository struct {
+// CompanyRepository implements repository.ICompanyRepository using PostgreSQL
+type CompanyRepository struct {
 	*BaseRepository
 }
 
 // NewCompanyRepository creates a new PostgreSQL company repository
-func NewCompanyRepository(db *sqlx.DB) company.IRepository {
-	return &companyRepository{
+func NewCompanyRepository(db *sqlx.DB) repository.ICompanyRepository {
+	return &CompanyRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
@@ -58,7 +60,7 @@ type companyRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *companyRow) toEntity() (*company.Company, error) {
+func (r *companyRow) toEntity() (*aggregate.Company, error) {
 	// Parse Company ID
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
@@ -67,11 +69,11 @@ func (r *companyRow) toEntity() (*company.Company, error) {
 
 	// Create Company aggregate
 	legalName := r.LegalName
-	c := &company.Company{
+	c := &aggregate.Company{
 		Name:          r.Name,
 		LegalName:     &legalName,
-		Type:          company.CompanyType(r.Type),
-		Size:          company.CompanySize(r.Size),
+		Type:          aggregate.CompanyType(r.Type),
+		Size:          aggregate.CompanySize(r.Size),
 		EmployeeCount: r.EmployeeCount,
 		Revenue:       r.Revenue,
 		Currency:      r.Currency,
@@ -187,7 +189,7 @@ func (r *companyRow) toEntity() (*company.Company, error) {
 }
 
 // toRow converts domain entity to database row
-func toRow(c *company.Company) (*companyRow, error) {
+func toRow(c *aggregate.Company) (*companyRow, error) {
 	var legalName string
 	if c.LegalName != nil {
 		legalName = *c.LegalName
@@ -281,7 +283,7 @@ func stringPtrValue(ns sql.NullString) string {
 }
 
 // Create inserts a new company
-func (r *companyRepository) Create(ctx context.Context, c *company.Company) error {
+func (r *CompanyRepository) Create(ctx context.Context, c *aggregate.Company) error {
 	row, err := toRow(c)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -312,7 +314,7 @@ func (r *companyRepository) Create(ctx context.Context, c *company.Company) erro
 }
 
 // GetByID retrieves a company by ID
-func (r *companyRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*company.Company, error) {
+func (r *CompanyRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Company, error) {
 	var row companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -329,7 +331,7 @@ func (r *companyRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*compa
 }
 
 // GetByName retrieves a company by name
-func (r *companyRepository) GetByName(ctx context.Context, name string) (*company.Company, error) {
+func (r *CompanyRepository) GetByName(ctx context.Context, name string) (*aggregate.Company, error) {
 	var row companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -346,7 +348,7 @@ func (r *companyRepository) GetByName(ctx context.Context, name string) (*compan
 }
 
 // GetByTaxID retrieves a company by tax ID
-func (r *companyRepository) GetByTaxID(ctx context.Context, taxID string) (*company.Company, error) {
+func (r *CompanyRepository) GetByTaxID(ctx context.Context, taxID string) (*aggregate.Company, error) {
 	var row companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -363,7 +365,7 @@ func (r *companyRepository) GetByTaxID(ctx context.Context, taxID string) (*comp
 }
 
 // List retrieves paginated list of companies
-func (r *companyRepository) List(ctx context.Context, page, pageSize int) ([]*company.Company, int, error) {
+func (r *CompanyRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Company, int, error) {
 	// Convert page/pageSize to limit/offset
 	limit := pageSize
 	offset := (page - 1) * pageSize
@@ -387,7 +389,7 @@ func (r *companyRepository) List(ctx context.Context, page, pageSize int) ([]*co
 	}
 
 	// Convert rows to entities
-	companies := make([]*company.Company, 0, len(rows))
+	companies := make([]*aggregate.Company, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -400,7 +402,7 @@ func (r *companyRepository) List(ctx context.Context, page, pageSize int) ([]*co
 }
 
 // ListByIndustry retrieves paginated list of companies by industry
-func (r *companyRepository) ListByIndustry(ctx context.Context, industry string, page, pageSize int) ([]*company.Company, int, error) {
+func (r *CompanyRepository) ListByIndustry(ctx context.Context, industry string, page, pageSize int) ([]*aggregate.Company, int, error) {
 	// Convert page/pageSize to limit/offset
 	limit := pageSize
 	offset := (page - 1) * pageSize
@@ -426,7 +428,7 @@ func (r *companyRepository) ListByIndustry(ctx context.Context, industry string,
 	}
 
 	// Convert rows to entities
-	companies := make([]*company.Company, 0, len(rows))
+	companies := make([]*aggregate.Company, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -439,7 +441,7 @@ func (r *companyRepository) ListByIndustry(ctx context.Context, industry string,
 }
 
 // ListBySize retrieves paginated list of companies by size
-func (r *companyRepository) ListBySize(ctx context.Context, size string, page, pageSize int) ([]*company.Company, int, error) {
+func (r *CompanyRepository) ListBySize(ctx context.Context, size string, page, pageSize int) ([]*aggregate.Company, int, error) {
 	// Convert page/pageSize to limit/offset
 	limit := pageSize
 	offset := (page - 1) * pageSize
@@ -465,7 +467,7 @@ func (r *companyRepository) ListBySize(ctx context.Context, size string, page, p
 	}
 
 	// Convert rows to entities
-	companies := make([]*company.Company, 0, len(rows))
+	companies := make([]*aggregate.Company, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -478,7 +480,7 @@ func (r *companyRepository) ListBySize(ctx context.Context, size string, page, p
 }
 
 // ListSubsidiaries retrieves all subsidiaries of a parent company
-func (r *companyRepository) ListSubsidiaries(ctx context.Context, parentID uuidv7.UUID) ([]*company.Company, error) {
+func (r *CompanyRepository) ListSubsidiaries(ctx context.Context, parentID uuidv7.UUID) ([]*aggregate.Company, error) {
 	var rows []companyRow
 	query := `
 		SELECT * FROM customer_companies
@@ -490,7 +492,7 @@ func (r *companyRepository) ListSubsidiaries(ctx context.Context, parentID uuidv
 	}
 
 	// Convert rows to entities
-	companies := make([]*company.Company, 0, len(rows))
+	companies := make([]*aggregate.Company, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -503,7 +505,7 @@ func (r *companyRepository) ListSubsidiaries(ctx context.Context, parentID uuidv
 }
 
 // Update updates an existing company
-func (r *companyRepository) Update(ctx context.Context, c *company.Company) error {
+func (r *CompanyRepository) Update(ctx context.Context, c *aggregate.Company) error {
 	row, err := toRow(c)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -553,7 +555,7 @@ func (r *companyRepository) Update(ctx context.Context, c *company.Company) erro
 }
 
 // Delete soft-deletes a company
-func (r *companyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *CompanyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE customer_companies
 		SET deleted_at = NOW()
@@ -576,7 +578,7 @@ func (r *companyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // Exists checks if a company exists
-func (r *companyRepository) Exists(ctx context.Context, id uuidv7.UUID) (bool, error) {
+func (r *CompanyRepository) Exists(ctx context.Context, id uuidv7.UUID) (bool, error) {
 	var exists bool
 	query := `
 		SELECT EXISTS(
@@ -592,7 +594,7 @@ func (r *companyRepository) Exists(ctx context.Context, id uuidv7.UUID) (bool, e
 }
 
 // ExistsByName checks if a company with given name exists
-func (r *companyRepository) ExistsByName(ctx context.Context, name string) (bool, error) {
+func (r *CompanyRepository) ExistsByName(ctx context.Context, name string) (bool, error) {
 	var exists bool
 	query := `
 		SELECT EXISTS(

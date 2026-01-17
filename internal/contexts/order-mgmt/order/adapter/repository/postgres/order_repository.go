@@ -1,6 +1,11 @@
 package postgres
 
 import (
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/repository"
+)
+
+import (
 	"context"
 	"database/sql"
 	"fmt"
@@ -12,14 +17,14 @@ import (
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// orderRepository implements order.IRepository
-type orderRepository struct {
+// OrderRepository implements repository.IOrderRepository
+type OrderRepository struct {
 	*BaseRepository
 }
 
 // NewOrderRepository creates a new PostgreSQL order repository
-func NewOrderRepository(db *sqlx.DB) order.IRepository {
-	return &orderRepository{
+func NewOrderRepository(db *sqlx.DB) repository.IOrderRepository {
+	return &OrderRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
@@ -55,9 +60,9 @@ type orderLineRow struct {
 	Currency    string      `db:"currency"`
 }
 
-// toEntity converts orderRow to order.Order
-func (r *orderRow) toEntity() (*order.Order, error) {
-	o := &order.Order{
+// toEntity converts orderRow to aggregate.Order
+func (r *orderRow) toEntity() (*aggregate.Order, error) {
+	o := &aggregate.Order{
 		OrderNumber: r.OrderNumber,
 		CustomerID:  r.CustomerID,
 		CompanyID:   r.CompanyID,
@@ -66,10 +71,10 @@ func (r *orderRow) toEntity() (*order.Order, error) {
 			Currency: r.Currency,
 		},
 		Currency:   r.Currency,
-		Status:     order.OrderStatus(r.Status),
+		Status:     aggregate.OrderStatus(r.Status),
 		ContractID: r.ContractID,
 		InvoiceID:  r.InvoiceID,
-		Lines:      []order.OrderLine{}, // Will be loaded separately
+		Lines:      []aggregate.OrderLine{}, // Will be loaded separately
 	}
 
 	// Set BaseAggregate fields manually
@@ -109,9 +114,9 @@ func (r *orderRow) toEntity() (*order.Order, error) {
 	return o, nil
 }
 
-// toLineEntity converts orderLineRow to order.OrderLine
-func (r *orderLineRow) toLineEntity() order.OrderLine {
-	return order.OrderLine{
+// toLineEntity converts orderLineRow to aggregate.OrderLine
+func (r *orderLineRow) toLineEntity() aggregate.OrderLine {
+	return aggregate.OrderLine{
 		ID:        r.ID,
 		OrderID:   r.OrderID,
 		ProductID: r.ProductID,
@@ -128,7 +133,7 @@ func (r *orderLineRow) toLineEntity() order.OrderLine {
 }
 
 // Create creates a new order
-func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
+func (r *OrderRepository) Create(ctx context.Context, o *aggregate.Order) error {
 	query := `
 		INSERT INTO order_orders (
 			id, order_number, customer_id, company_id,
@@ -177,7 +182,7 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
 }
 
 // GetByID retrieves an order by its ID
-func (r *orderRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*order.Order, error) {
+func (r *OrderRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Order, error) {
 	query := `
 		SELECT id, order_number, customer_id, company_id,
 			   total_amount, currency, status,
@@ -212,7 +217,7 @@ func (r *orderRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*order.O
 }
 
 // GetByOrderNumber retrieves an order by its order number
-func (r *orderRepository) GetByOrderNumber(ctx context.Context, orderNumber string) (*order.Order, error) {
+func (r *OrderRepository) GetByOrderNumber(ctx context.Context, orderNumber string) (*aggregate.Order, error) {
 	query := `
 		SELECT id, order_number, customer_id, company_id,
 			   total_amount, currency, status,
@@ -235,7 +240,7 @@ func (r *orderRepository) GetByOrderNumber(ctx context.Context, orderNumber stri
 }
 
 // Update updates an existing order
-func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
+func (r *OrderRepository) Update(ctx context.Context, o *aggregate.Order) error {
 	query := `
 		UPDATE order_orders
 		SET order_number = :order_number,
@@ -273,7 +278,7 @@ func (r *orderRepository) Update(ctx context.Context, o *order.Order) error {
 }
 
 // Delete soft-deletes an order
-func (r *orderRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *OrderRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE order_orders
 		SET deleted_at = NOW(),
@@ -286,7 +291,7 @@ func (r *orderRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // ListByCustomerID retrieves all orders for a customer
-func (r *orderRepository) ListByCustomerID(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*order.Order, int64, error) {
+func (r *OrderRepository) ListByCustomerID(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*aggregate.Order, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -318,7 +323,7 @@ func (r *orderRepository) ListByCustomerID(ctx context.Context, customerID uuidv
 		return nil, 0, fmt.Errorf("failed to list orders: %w", err)
 	}
 
-	orders := make([]*order.Order, 0, len(rows))
+	orders := make([]*aggregate.Order, 0, len(rows))
 	for _, row := range rows {
 		o, err := row.toEntity()
 		if err != nil {
@@ -331,7 +336,7 @@ func (r *orderRepository) ListByCustomerID(ctx context.Context, customerID uuidv
 }
 
 // ListByStatus retrieves all orders with a specific status
-func (r *orderRepository) ListByStatus(ctx context.Context, status order.OrderStatus, page, pageSize int) ([]*order.Order, int64, error) {
+func (r *OrderRepository) ListByStatus(ctx context.Context, status aggregate.OrderStatus, page, pageSize int) ([]*aggregate.Order, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -363,7 +368,7 @@ func (r *orderRepository) ListByStatus(ctx context.Context, status order.OrderSt
 		return nil, 0, fmt.Errorf("failed to list orders: %w", err)
 	}
 
-	orders := make([]*order.Order, 0, len(rows))
+	orders := make([]*aggregate.Order, 0, len(rows))
 	for _, row := range rows {
 		o, err := row.toEntity()
 		if err != nil {
@@ -376,7 +381,7 @@ func (r *orderRepository) ListByStatus(ctx context.Context, status order.OrderSt
 }
 
 // List retrieves all orders with pagination
-func (r *orderRepository) List(ctx context.Context, page, pageSize int) ([]*order.Order, int64, error) {
+func (r *OrderRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Order, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -408,7 +413,7 @@ func (r *orderRepository) List(ctx context.Context, page, pageSize int) ([]*orde
 		return nil, 0, fmt.Errorf("failed to list orders: %w", err)
 	}
 
-	orders := make([]*order.Order, 0, len(rows))
+	orders := make([]*aggregate.Order, 0, len(rows))
 	for _, row := range rows {
 		o, err := row.toEntity()
 		if err != nil {
@@ -421,7 +426,7 @@ func (r *orderRepository) List(ctx context.Context, page, pageSize int) ([]*orde
 }
 
 // GetLines retrieves all line items for an order
-func (r *orderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]order.OrderLine, error) {
+func (r *OrderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]aggregate.OrderLine, error) {
 	query := `
 		SELECT id, order_id, product_id, quantity,
 			   unit_price, total_amount, currency
@@ -435,7 +440,7 @@ func (r *orderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]
 		return nil, fmt.Errorf("failed to get order lines: %w", err)
 	}
 
-	lines := make([]order.OrderLine, 0, len(rows))
+	lines := make([]aggregate.OrderLine, 0, len(rows))
 	for _, row := range rows {
 		lines = append(lines, row.toLineEntity())
 	}
@@ -444,7 +449,7 @@ func (r *orderRepository) GetLines(ctx context.Context, orderID uuidv7.UUID) ([]
 }
 
 // CreateLine creates a new order line
-func (r *orderRepository) CreateLine(ctx context.Context, line *order.OrderLine) error {
+func (r *OrderRepository) CreateLine(ctx context.Context, line *aggregate.OrderLine) error {
 	query := `
 		INSERT INTO order_lines (
 			id, order_id, product_id, quantity,
@@ -469,7 +474,7 @@ func (r *orderRepository) CreateLine(ctx context.Context, line *order.OrderLine)
 }
 
 // UpdateLine updates an order line
-func (r *orderRepository) UpdateLine(ctx context.Context, line *order.OrderLine) error {
+func (r *OrderRepository) UpdateLine(ctx context.Context, line *aggregate.OrderLine) error {
 	query := `
 		UPDATE order_lines
 		SET quantity = :quantity,
@@ -489,7 +494,7 @@ func (r *orderRepository) UpdateLine(ctx context.Context, line *order.OrderLine)
 }
 
 // DeleteLine deletes an order line
-func (r *orderRepository) DeleteLine(ctx context.Context, lineID uuidv7.UUID) error {
+func (r *OrderRepository) DeleteLine(ctx context.Context, lineID uuidv7.UUID) error {
 	query := `
 		DELETE FROM order_lines
 		WHERE id = $1

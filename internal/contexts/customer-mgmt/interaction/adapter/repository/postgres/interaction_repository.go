@@ -9,19 +9,21 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
+	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/repository"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // interactionRepository implements interaction.IRepository using PostgreSQL
-type interactionRepository struct {
+type InteractionRepository struct {
 	*BaseRepository
 }
 
 // NewInteractionRepository creates a new PostgreSQL interaction repository
-func NewInteractionRepository(db *sqlx.DB) interaction.IRepository {
-	return &interactionRepository{
+func NewInteractionRepository(db *sqlx.DB) repository.IInteractionRepository {
+	return &InteractionRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
 }
@@ -59,15 +61,15 @@ type interactionRowWithRelations struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *interactionRow) toEntity() (*interaction.Interaction, error) {
+func (r *interactionRow) toEntity() (*aggregate.Interaction, error) {
 	// Get attendees from jsonstore.Field
 	attendees := r.Attendees.Get()
 
-	inter := &interaction.Interaction{
+	inter := &aggregate.Interaction{
 		CustomerID:       r.CustomerID,
 		CompanyID:        r.CompanyID,
-		Type:             interaction.InteractionType(r.Type),
-		Direction:        interaction.InteractionDirection(r.Direction),
+		Type:             aggregate.InteractionType(r.Type),
+		Direction:        aggregate.InteractionDirection(r.Direction),
 		Outcome:          nil,
 		Subject:          r.Subject,
 		Description:      r.Description,
@@ -90,7 +92,7 @@ if r.DeletedAt != nil {
 }
 
 if r.Outcome != nil {
-	outcome := interaction.InteractionOutcome(*r.Outcome)
+	outcome := aggregate.InteractionOutcome(*r.Outcome)
 	inter.Outcome = &outcome
 }
 
@@ -98,7 +100,7 @@ return inter, nil
 }
 
 // toRow converts domain entity to database row
-func toRow(inter *interaction.Interaction) *interactionRow {
+func toRow(inter *aggregate.Interaction) *interactionRow {
 	row := &interactionRow{
 		ID:               inter.GetID(),
 		CustomerID:       inter.CustomerID,
@@ -132,7 +134,7 @@ func toRow(inter *interaction.Interaction) *interactionRow {
 }
 
 // Create creates a new interaction
-func (r *interactionRepository) Create(ctx context.Context, inter *interaction.Interaction) error {
+func (r *InteractionRepository) Create(ctx context.Context, inter *aggregate.Interaction) error {
 	row := toRow(inter)
 
 	query := `
@@ -159,7 +161,7 @@ func (r *interactionRepository) Create(ctx context.Context, inter *interaction.I
 }
 
 // GetByID retrieves an interaction by ID
-func (r *interactionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*interaction.Interaction, error) {
+func (r *InteractionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Interaction, error) {
 	var row interactionRow
 	query := `
 		SELECT 
@@ -173,7 +175,7 @@ func (r *interactionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*i
 
 	if err := r.Get(ctx, &row, query, id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, interaction.ErrInteractionNotFound
+			return nil, interactionerrors.ErrInteractionNotFound
 		}
 		return nil, fmt.Errorf("failed to get interaction: %w", err)
 	}
@@ -182,7 +184,7 @@ func (r *interactionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*i
 }
 
 // Update updates an existing interaction
-func (r *interactionRepository) Update(ctx context.Context, inter *interaction.Interaction) error {
+func (r *InteractionRepository) Update(ctx context.Context, inter *aggregate.Interaction) error {
 	inter.UpdatedAt = time.Now()
 	row := toRow(inter)
 
@@ -208,14 +210,14 @@ func (r *interactionRepository) Update(ctx context.Context, inter *interaction.I
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		return interaction.ErrInteractionNotFound
+		return interactionerrors.ErrInteractionNotFound
 	}
 
 	return nil
 }
 
 // Delete soft deletes an interaction
-func (r *interactionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *InteractionRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `
 		UPDATE customer_interactions 
 		SET deleted_at = $1, updated_at = $1
@@ -228,14 +230,14 @@ func (r *interactionRepository) Delete(ctx context.Context, id uuidv7.UUID) erro
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		return interaction.ErrInteractionNotFound
+		return interactionerrors.ErrInteractionNotFound
 	}
 
 	return nil
 }
 
 // ListByCustomer retrieves interactions for a customer
-func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*interaction.Interaction, int64, error) {
+func (r *InteractionRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*aggregate.Interaction, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Count total
@@ -250,7 +252,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 	}
 
 	if total == 0 {
-		return []*interaction.Interaction{}, 0, nil
+		return []*aggregate.Interaction{}, 0, nil
 	}
 
 	// Get page with LEFT JOIN to avoid N+1 (loads customer, company, user names in single query)
@@ -277,7 +279,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
 	}
 
-	interactions := make([]*interaction.Interaction, len(rows))
+	interactions := make([]*aggregate.Interaction, len(rows))
 	for i, row := range rows {
 		inter, err := row.toEntity()
 		if err != nil {
@@ -290,7 +292,7 @@ func (r *interactionRepository) ListByCustomer(ctx context.Context, customerID u
 }
 
 // ListByCompany retrieves interactions for a company
-func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*interaction.Interaction, int64, error) {
+func (r *InteractionRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*aggregate.Interaction, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Count total
@@ -305,7 +307,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 	}
 
 	if total == 0 {
-		return []*interaction.Interaction{}, 0, nil
+		return []*aggregate.Interaction{}, 0, nil
 	}
 
 	// Get page with LEFT JOIN to avoid N+1
@@ -331,7 +333,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
 	}
 
-	interactions := make([]*interaction.Interaction, len(rows))
+	interactions := make([]*aggregate.Interaction, len(rows))
 	for i, row := range rows {
 		inter, err := row.toEntity()
 		if err != nil {
@@ -344,7 +346,7 @@ func (r *interactionRepository) ListByCompany(ctx context.Context, companyID uui
 }
 
 // ListByType retrieves interactions by type
-func (r *interactionRepository) ListByType(ctx context.Context, interactionType string, page, pageSize int) ([]*interaction.Interaction, int64, error) {
+func (r *InteractionRepository) ListByType(ctx context.Context, interactionType string, page, pageSize int) ([]*aggregate.Interaction, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Count total
@@ -359,7 +361,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 	}
 
 	if total == 0 {
-		return []*interaction.Interaction{}, 0, nil
+		return []*aggregate.Interaction{}, 0, nil
 	}
 
 	// Get page with LEFT JOIN to avoid N+1
@@ -386,7 +388,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
 	}
 
-	interactions := make([]*interaction.Interaction, len(rows))
+	interactions := make([]*aggregate.Interaction, len(rows))
 	for i, row := range rows {
 		inter, err := row.toEntity()
 		if err != nil {
@@ -399,7 +401,7 @@ func (r *interactionRepository) ListByType(ctx context.Context, interactionType 
 }
 
 // ListByCreatedBy retrieves interactions created by a user
-func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy uuidv7.UUID, page, pageSize int) ([]*interaction.Interaction, int64, error) {
+func (r *InteractionRepository) ListByCreatedBy(ctx context.Context, createdBy uuidv7.UUID, page, pageSize int) ([]*aggregate.Interaction, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Count total
@@ -414,7 +416,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 	}
 
 	if total == 0 {
-		return []*interaction.Interaction{}, 0, nil
+		return []*aggregate.Interaction{}, 0, nil
 	}
 
 	// Get page with LEFT JOIN to avoid N+1
@@ -441,7 +443,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
 	}
 
-	interactions := make([]*interaction.Interaction, len(rows))
+	interactions := make([]*aggregate.Interaction, len(rows))
 	for i, row := range rows {
 		inter, err := row.toEntity()
 		if err != nil {
@@ -454,7 +456,7 @@ func (r *interactionRepository) ListByCreatedBy(ctx context.Context, createdBy u
 }
 
 // ListPendingFollowUps retrieves interactions with pending follow-ups
-func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, pageSize int) ([]*interaction.Interaction, int64, error) {
+func (r *InteractionRepository) ListPendingFollowUps(ctx context.Context, page, pageSize int) ([]*aggregate.Interaction, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Count total
@@ -471,7 +473,7 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 	}
 
 	if total == 0 {
-		return []*interaction.Interaction{}, 0, nil
+		return []*aggregate.Interaction{}, 0, nil
 	}
 
 	// Get page with LEFT JOIN to avoid N+1
@@ -500,7 +502,7 @@ func (r *interactionRepository) ListPendingFollowUps(ctx context.Context, page, 
 		return nil, 0, fmt.Errorf("failed to list interactions: %w", err)
 	}
 
-	interactions := make([]*interaction.Interaction, len(rows))
+	interactions := make([]*aggregate.Interaction, len(rows))
 	for i, row := range rows {
 		inter, err := row.toEntity()
 		if err != nil {

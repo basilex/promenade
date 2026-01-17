@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/usecase"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate" companyAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
+	dealAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/aggregate"
 	dealRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	interactionRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
@@ -40,7 +40,7 @@ func TestAnalyticsUseCase_GetCustomerOverview(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestCustomersForAnalytics(t, db.DB, ctx)
 
 	overview, err := analyticsUC.GetCustomerOverview(ctx)
@@ -62,7 +62,7 @@ func TestAnalyticsUseCase_GetCustomerLifecycle(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestCustomersForAnalytics(t, db.DB, ctx)
 
 	tests := []struct {
@@ -94,7 +94,7 @@ func TestAnalyticsUseCase_GetCustomerSegmentation(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestCustomersForAnalytics(t, db.DB, ctx)
 
 	segmentation, err := analyticsUC.GetCustomerSegmentation(ctx)
@@ -118,7 +118,7 @@ func TestAnalyticsUseCase_GetDealPipeline(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestDealsForAnalytics(t, db.DB, ctx)
 
 	pipeline, err := analyticsUC.GetDealPipeline(ctx)
@@ -140,7 +140,7 @@ func TestAnalyticsUseCase_GetSalesRepPerformance(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestDealsForAnalytics(t, db.DB, ctx)
 
 	performance, err := analyticsUC.GetSalesRepPerformance(ctx, 10)
@@ -163,7 +163,7 @@ func TestAnalyticsUseCase_GetSalesRepPerformanceByID(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	salesRepID := createTestDealsForAnalytics(t, db.DB, ctx)
 
 	if salesRepID != nil {
@@ -187,7 +187,7 @@ func TestAnalyticsUseCase_GetRevenueTimeSeries(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestDealsForAnalytics(t, db.DB, ctx)
 
 	startDate := time.Now().AddDate(0, -1, 0)
@@ -226,7 +226,7 @@ func TestAnalyticsUseCase_GetInteractionInsights(t *testing.T) {
 	db := integration.SetupTestDBWithCleanTables(t)
 	ctx := context.Background()
 
-	analyticsUC := analytics.NewUseCase(db.DB)
+	analyticsUC := usecase.NewUseCase(db.DB)
 	createTestInteractionsForAnalytics(t, db.DB, ctx)
 
 	insights, err := analyticsUC.GetInteractionInsights(ctx)
@@ -253,14 +253,14 @@ func createTestCustomersForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Cont
 
 	customers := []struct {
 		email  string
-		status customer.CustomerStatus
-		tier   customer.CustomerTier
+		status customerAggregate.CustomerStatus
+		tier   customerAggregate.CustomerTier
 	}{
-		{fmt.Sprintf("test1_%s@example.com", uuidv7.New().String()), customer.CustomerStatusCustomer, customer.CustomerTierPro},
-		{fmt.Sprintf("test2_%s@example.com", uuidv7.New().String()), customer.CustomerStatusCustomer, customer.CustomerTierBasic},
-		{fmt.Sprintf("test3_%s@example.com", uuidv7.New().String()), customer.CustomerStatusProspect, customer.CustomerTierFree},
-		{fmt.Sprintf("test4_%s@example.com", uuidv7.New().String()), customer.CustomerStatusLead, customer.CustomerTierFree},
-		{fmt.Sprintf("test5_%s@example.com", uuidv7.New().String()), customer.CustomerStatusChurned, customer.CustomerTierBasic},
+		{fmt.Sprintf("test1_%s@example.com", uuidv7.New().String()), customerAggregate.CustomerStatusCustomer, customerAggregate.CustomerTierPro},
+		{fmt.Sprintf("test2_%s@example.com", uuidv7.New().String()), customerAggregate.CustomerStatusCustomer, customerAggregate.CustomerTierBasic},
+		{fmt.Sprintf("test3_%s@example.com", uuidv7.New().String()), customerAggregate.CustomerStatusProspect, customerAggregate.CustomerTierFree},
+		{fmt.Sprintf("test4_%s@example.com", uuidv7.New().String()), customerAggregate.CustomerStatusLead, customerAggregate.CustomerTierFree},
+		{fmt.Sprintf("test5_%s@example.com", uuidv7.New().String()), customerAggregate.CustomerStatusChurned, customerAggregate.CustomerTierBasic},
 	}
 
 	for _, c := range customers {
@@ -294,14 +294,14 @@ func createTestDealsForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Context)
 	dealRepository := dealRepo.NewDealRepository(db)
 
 	deals := []struct {
-		stage deal.DealStage
+		stage dealAggregate.DealStage
 		value int64
 	}{
-		{deal.DealStageQualified, 50000},
-		{deal.DealStageProposal, 75000},
-		{deal.DealStageNegotiation, 100000},
-		{deal.DealStageClosedWon, 150000},
-		{deal.DealStageClosedLost, 25000},
+		{dealAggregate.DealStageQualified, 50000},
+		{dealAggregate.DealStageProposal, 75000},
+		{dealAggregate.DealStageNegotiation, 100000},
+		{dealAggregate.DealStageClosedWon, 150000},
+		{dealAggregate.DealStageClosedLost, 25000},
 	}
 
 	for _, d := range deals {
@@ -312,7 +312,7 @@ func createTestDealsForAnalytics(t *testing.T, db *sqlx.DB, ctx context.Context)
 		require.NoError(t, err)
 		newDeal.Stage = d.stage
 
-		if d.stage == deal.DealStageClosedWon {
+		if d.stage == dealAggregate.DealStageClosedWon {
 			now := time.Now()
 			newDeal.ActualCloseDate = &now
 		}

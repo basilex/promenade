@@ -10,18 +10,20 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/product"
+	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
+	"github.com/basilex/promenade/internal/contexts/warehouse/product/repository"
+	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// productRepository implements product.IRepository interface.
+// productRepository implements repository.IProductRepository interface.
 type productRepository struct {
 	*BaseRepository
 }
 
 // NewProductRepository creates a new Product repository.
-func NewProductRepository(db *sqlx.DB) product.IRepository {
+func NewProductRepository(db *sqlx.DB) repository.IProductRepository {
 	return &productRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
@@ -55,13 +57,13 @@ type productRow struct {
 }
 
 // toEntity converts database row to Product entity.
-func (row *productRow) toEntity() (*product.Product, error) {
+func (row *productRow) toEntity() (*aggregate.Product, error) {
 	id, err := uuidv7.Parse(row.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid product ID: %w", err)
 	}
 
-	p := &product.Product{
+	p := &aggregate.Product{
 		SKU:         row.SKU,
 		Name:        row.Name,
 		Description: row.Description,
@@ -69,7 +71,7 @@ func (row *productRow) toEntity() (*product.Product, error) {
 		Brand:       row.Brand,
 		Tags:        row.Tags,
 		Weight:      row.Weight,
-		Dimensions: product.Dimensions{
+		Dimensions: aggregate.Dimensions{
 			Length: row.Length,
 			Width:  row.Width,
 			Height: row.Height,
@@ -80,7 +82,7 @@ func (row *productRow) toEntity() (*product.Product, error) {
 		ReorderQuantity:    row.ReorderQuantity,
 		TrackSerialNumbers: row.TrackSerialNumbers,
 		TrackLotNumbers:    row.TrackLotNumbers,
-		Status:             product.ProductStatus(row.Status),
+		Status:             aggregate.ProductStatus(row.Status),
 		IsActive:           row.IsActive,
 		IsDeleted:          row.IsDeleted,
 	}
@@ -101,7 +103,7 @@ func parseTime(s string) time.Time {
 }
 
 // fromEntity converts Product entity to database row.
-func fromEntity(p *product.Product) *productRow {
+func fromEntity(p *aggregate.Product) *productRow {
 	return &productRow{
 		ID:                 p.GetID().String(),
 		SKU:                p.SKU,
@@ -128,7 +130,7 @@ func fromEntity(p *product.Product) *productRow {
 }
 
 // Create inserts a new product into the database.
-func (r *productRepository) Create(ctx context.Context, p *product.Product) error {
+func (r *productRepository) Create(ctx context.Context, p *aggregate.Product) error {
 	query := `
 		INSERT INTO warehouse_products (
 			id, sku, name, description, category, brand, tags,
@@ -165,7 +167,7 @@ func (r *productRepository) Create(ctx context.Context, p *product.Product) erro
 }
 
 // GetByID retrieves a product by its UUID.
-func (r *productRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+func (r *productRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 	query := `
 		SELECT 
 			id, sku, name, description, category, brand, tags,
@@ -180,7 +182,7 @@ func (r *productRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*produ
 	var row productRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, product.ErrProductNotFound
+			return nil, producterrors.ErrProductNotFound
 		}
 		return nil, fmt.Errorf("failed to get product by ID: %w", err)
 	}
@@ -189,7 +191,7 @@ func (r *productRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*produ
 }
 
 // GetBySKU retrieves a product by its SKU (unique identifier).
-func (r *productRepository) GetBySKU(ctx context.Context, sku string) (*product.Product, error) {
+func (r *productRepository) GetBySKU(ctx context.Context, sku string) (*aggregate.Product, error) {
 	query := `
 		SELECT 
 			id, sku, name, description, category, brand, tags,
@@ -204,7 +206,7 @@ func (r *productRepository) GetBySKU(ctx context.Context, sku string) (*product.
 	var row productRow
 	if err := r.Get(ctx, &row, query, sku); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, product.ErrProductNotFound
+			return nil, producterrors.ErrProductNotFound
 		}
 		return nil, fmt.Errorf("failed to get product by SKU: %w", err)
 	}
@@ -213,7 +215,7 @@ func (r *productRepository) GetBySKU(ctx context.Context, sku string) (*product.
 }
 
 // Update modifies an existing product with optimistic locking.
-func (r *productRepository) Update(ctx context.Context, p *product.Product) error {
+func (r *productRepository) Update(ctx context.Context, p *aggregate.Product) error {
 	query := `
 		UPDATE warehouse_products
 		SET 
@@ -244,7 +246,7 @@ func (r *productRepository) Update(ctx context.Context, p *product.Product) erro
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return product.ErrProductNotFound
+		return producterrors.ErrProductNotFound
 	}
 
 	// Increment version in memory
@@ -270,14 +272,14 @@ func (r *productRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return product.ErrProductNotFound
+		return producterrors.ErrProductNotFound
 	}
 
 	return nil
 }
 
 // List retrieves products with pagination.
-func (r *productRepository) List(ctx context.Context, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 
 	query := `
@@ -298,7 +300,7 @@ func (r *productRepository) List(ctx context.Context, page, pageSize int) ([]*pr
 		return nil, fmt.Errorf("failed to list products: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -311,7 +313,7 @@ func (r *productRepository) List(ctx context.Context, page, pageSize int) ([]*pr
 }
 
 // ListByCategory retrieves products by category with pagination.
-func (r *productRepository) ListByCategory(ctx context.Context, category string, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) ListByCategory(ctx context.Context, category string, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 
 	query := `
@@ -332,7 +334,7 @@ func (r *productRepository) ListByCategory(ctx context.Context, category string,
 		return nil, fmt.Errorf("failed to list products by category: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -345,7 +347,7 @@ func (r *productRepository) ListByCategory(ctx context.Context, category string,
 }
 
 // ListByBrand retrieves products by brand with pagination.
-func (r *productRepository) ListByBrand(ctx context.Context, brand string, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) ListByBrand(ctx context.Context, brand string, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 
 	query := `
@@ -366,7 +368,7 @@ func (r *productRepository) ListByBrand(ctx context.Context, brand string, page,
 		return nil, fmt.Errorf("failed to list products by brand: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -379,7 +381,7 @@ func (r *productRepository) ListByBrand(ctx context.Context, brand string, page,
 }
 
 // ListByStatus retrieves products by status with pagination.
-func (r *productRepository) ListByStatus(ctx context.Context, status product.ProductStatus, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) ListByStatus(ctx context.Context, status aggregate.ProductStatus, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 
 	query := `
@@ -400,7 +402,7 @@ func (r *productRepository) ListByStatus(ctx context.Context, status product.Pro
 		return nil, fmt.Errorf("failed to list products by status: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -413,7 +415,7 @@ func (r *productRepository) ListByStatus(ctx context.Context, status product.Pro
 }
 
 // Search performs full-text search on product name, description, SKU.
-func (r *productRepository) Search(ctx context.Context, query string, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) Search(ctx context.Context, query string, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 	searchPattern := "%" + query + "%"
 
@@ -441,7 +443,7 @@ func (r *productRepository) Search(ctx context.Context, query string, page, page
 		return nil, fmt.Errorf("failed to search products: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -478,9 +480,9 @@ func (r *productRepository) ExistsBySKU(ctx context.Context, sku string) (bool, 
 }
 
 // GetByIDs retrieves multiple products by their UUIDs in a single query.
-func (r *productRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) ([]*product.Product, error) {
+func (r *productRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) ([]*aggregate.Product, error) {
 	if len(ids) == 0 {
-		return []*product.Product{}, nil
+		return []*aggregate.Product{}, nil
 	}
 
 	// Convert UUIDs to strings for SQL IN clause
@@ -514,7 +516,7 @@ func (r *productRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) ([]
 		return nil, fmt.Errorf("failed to get products by IDs: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -529,7 +531,7 @@ func (r *productRepository) GetByIDs(ctx context.Context, ids []uuidv7.UUID) ([]
 // ListLowStock retrieves products below reorder point.
 // Note: This requires integration with Inventory aggregate to check current stock.
 // For now, returns products where reorder_point > 0 (meaning they have reorder tracking).
-func (r *productRepository) ListLowStock(ctx context.Context, page, pageSize int) ([]*product.Product, error) {
+func (r *productRepository) ListLowStock(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error) {
 	offset := (page - 1) * pageSize
 
 	// TODO: Join with inventory table when Inventory aggregate is integrated
@@ -553,7 +555,7 @@ func (r *productRepository) ListLowStock(ctx context.Context, page, pageSize int
 		return nil, fmt.Errorf("failed to list low stock products: %w", err)
 	}
 
-	products := make([]*product.Product, 0, len(rows))
+	products := make([]*aggregate.Product, 0, len(rows))
 	for _, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {

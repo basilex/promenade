@@ -9,18 +9,20 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
+	dealerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/aggregate"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// dealRepository implements deal.IRepository using PostgreSQL
+// dealRepository implements repository.IDealRepository using PostgreSQL
 type dealRepository struct {
 	*BaseRepository
 }
 
 // NewDealRepository creates a new PostgreSQL deal repository
-func NewDealRepository(db *sqlx.DB) deal.IRepository {
+func NewDealRepository(db *sqlx.DB) repository.IDealRepository {
 	return &dealRepository{
 		BaseRepository: NewBaseRepository(db),
 	}
@@ -48,7 +50,7 @@ type dealRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *dealRow) toEntity() (*deal.Deal, error) {
+func (r *dealRow) toEntity() (*aggregate.Deal, error) {
 	// Parse Deal ID
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
@@ -74,14 +76,14 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 	}
 
 	// Create Deal aggregate
-	d := &deal.Deal{
+	d := &aggregate.Deal{
 		CustomerID:        customerID,
 		Name:              r.Name,
 		Value:             money,
 		Currency:          r.Currency,
-		Stage:             deal.DealStage(r.Stage),
+		Stage:             aggregate.DealStage(r.Stage),
 		Probability:       r.Probability,
-		Source:            deal.DealSource(r.Source),
+		Source:            aggregate.DealSource(r.Source),
 		ExpectedCloseDate: r.ExpectedCloseDate,
 		AssignedTo:        assignedTo,
 	}
@@ -124,7 +126,7 @@ func (r *dealRow) toEntity() (*deal.Deal, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(d *deal.Deal) *dealRow {
+func fromEntity(d *aggregate.Deal) *dealRow {
 	row := &dealRow{
 		ID:                d.GetID().String(),
 		CustomerID:        d.CustomerID.String(),
@@ -169,7 +171,7 @@ func fromEntity(d *deal.Deal) *dealRow {
 }
 
 // Create creates a new deal
-func (r *dealRepository) Create(ctx context.Context, d *deal.Deal) error {
+func (r *dealRepository) Create(ctx context.Context, d *aggregate.Deal) error {
 	row := fromEntity(d)
 
 	query := `
@@ -195,7 +197,7 @@ func (r *dealRepository) Create(ctx context.Context, d *deal.Deal) error {
 }
 
 // GetByID retrieves a deal by ID
-func (r *dealRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*deal.Deal, error) {
+func (r *dealRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Deal, error) {
 	query := `
 		SELECT * FROM customer_deals
 		WHERE id = $1 AND deleted_at IS NULL
@@ -204,7 +206,7 @@ func (r *dealRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*deal.Dea
 	var row dealRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, deal.ErrDealNotFound
+			return nil, dealerrors.ErrDealNotFound
 		}
 		return nil, fmt.Errorf("failed to get deal: %w", err)
 	}
@@ -213,7 +215,7 @@ func (r *dealRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*deal.Dea
 }
 
 // Update updates a deal
-func (r *dealRepository) Update(ctx context.Context, d *deal.Deal) error {
+func (r *dealRepository) Update(ctx context.Context, d *aggregate.Deal) error {
 	row := fromEntity(d)
 
 	query := `
@@ -246,7 +248,7 @@ func (r *dealRepository) Update(ctx context.Context, d *deal.Deal) error {
 	}
 
 	if rowsAffected == 0 {
-		return deal.ErrDealNotFound
+		return dealerrors.ErrDealNotFound
 	}
 
 	return nil
@@ -271,14 +273,14 @@ func (r *dealRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if rowsAffected == 0 {
-		return deal.ErrDealNotFound
+		return dealerrors.ErrDealNotFound
 	}
 
 	return nil
 }
 
 // List returns paginated deals
-func (r *dealRepository) List(ctx context.Context, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -301,7 +303,7 @@ func (r *dealRepository) List(ctx context.Context, page, pageSize int) ([]*deal.
 		return nil, 0, fmt.Errorf("failed to list deals: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -314,7 +316,7 @@ func (r *dealRepository) List(ctx context.Context, page, pageSize int) ([]*deal.
 }
 
 // ListByStage returns deals in a specific stage
-func (r *dealRepository) ListByStage(ctx context.Context, stage deal.DealStage, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) ListByStage(ctx context.Context, stage aggregate.DealStage, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -337,7 +339,7 @@ func (r *dealRepository) ListByStage(ctx context.Context, stage deal.DealStage, 
 		return nil, 0, fmt.Errorf("failed to list deals by stage: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -350,7 +352,7 @@ func (r *dealRepository) ListByStage(ctx context.Context, stage deal.DealStage, 
 }
 
 // ListByCustomer returns deals for a specific customer
-func (r *dealRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -373,7 +375,7 @@ func (r *dealRepository) ListByCustomer(ctx context.Context, customerID uuidv7.U
 		return nil, 0, fmt.Errorf("failed to list deals by customer: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -386,7 +388,7 @@ func (r *dealRepository) ListByCustomer(ctx context.Context, customerID uuidv7.U
 }
 
 // ListByCompany returns deals for a specific company
-func (r *dealRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUID, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -409,7 +411,7 @@ func (r *dealRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUI
 		return nil, 0, fmt.Errorf("failed to list deals by company: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -422,7 +424,7 @@ func (r *dealRepository) ListByCompany(ctx context.Context, companyID uuidv7.UUI
 }
 
 // ListByAssignedTo returns deals assigned to a sales rep
-func (r *dealRepository) ListByAssignedTo(ctx context.Context, userID uuidv7.UUID, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) ListByAssignedTo(ctx context.Context, userID uuidv7.UUID, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -445,7 +447,7 @@ func (r *dealRepository) ListByAssignedTo(ctx context.Context, userID uuidv7.UUI
 		return nil, 0, fmt.Errorf("failed to list deals by assigned to: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -458,7 +460,7 @@ func (r *dealRepository) ListByAssignedTo(ctx context.Context, userID uuidv7.UUI
 }
 
 // ListBySource returns deals from a specific source
-func (r *dealRepository) ListBySource(ctx context.Context, source deal.DealSource, page, pageSize int) ([]*deal.Deal, int64, error) {
+func (r *dealRepository) ListBySource(ctx context.Context, source aggregate.DealSource, page, pageSize int) ([]*aggregate.Deal, int64, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -481,7 +483,7 @@ func (r *dealRepository) ListBySource(ctx context.Context, source deal.DealSourc
 		return nil, 0, fmt.Errorf("failed to list deals by source: %w", err)
 	}
 
-	deals := make([]*deal.Deal, 0, len(rows))
+	deals := make([]*aggregate.Deal, 0, len(rows))
 	for _, row := range rows {
 		d, err := row.toEntity()
 		if err != nil {
@@ -494,7 +496,7 @@ func (r *dealRepository) ListBySource(ctx context.Context, source deal.DealSourc
 }
 
 // GetPipelineStats returns deal counts by stage
-func (r *dealRepository) GetPipelineStats(ctx context.Context) (map[deal.DealStage]int64, error) {
+func (r *dealRepository) GetPipelineStats(ctx context.Context) (map[aggregate.DealStage]int64, error) {
 	query := `
 		SELECT stage, COUNT(*) as count
 		FROM customer_deals
@@ -512,9 +514,9 @@ func (r *dealRepository) GetPipelineStats(ctx context.Context) (map[deal.DealSta
 		return nil, fmt.Errorf("failed to get pipeline stats: %w", err)
 	}
 
-	stats := make(map[deal.DealStage]int64)
+	stats := make(map[aggregate.DealStage]int64)
 	for _, row := range rows {
-		stats[deal.DealStage(row.Stage)] = row.Count
+		stats[aggregate.DealStage(row.Stage)] = row.Count
 	}
 
 	return stats, nil

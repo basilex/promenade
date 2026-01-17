@@ -49,6 +49,13 @@ const (
 	TopicPaymentReceived  = "payment.received"
 	TopicPaymentFailed    = "payment.failed"
 
+	// Banking Context Topics (planned)
+	TopicBankingStatementImported = "banking.statement.imported"
+	TopicBankingTransactionCreated = "banking.transaction.created"
+
+	// Accounting Context Topics (planned)
+	TopicAccountingEntryPosted = "accounting.entry.posted"
+
 	// Notification Topics (cross-cutting)
 	TopicNotificationEmail = "notification.email"
 	TopicNotificationSMS   = "notification.sms"

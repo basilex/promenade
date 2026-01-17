@@ -4,20 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics"
-	analyticsHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/http"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/http"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	companyUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/usecase"
 	customerHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/http"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
+	customerUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
 	dealHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/http"
 	dealRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	dealUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/usecase"
 	interactionHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/http"
 	interactionRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
+	interactionUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/usecase"
 )
 
 // Router manages routes for Customer Management context
@@ -26,41 +24,38 @@ type Router struct {
 	companyHandler     *companyHTTP.CompanyHandler
 	dealHandler        *dealHTTP.DealHandler
 	interactionHandler *interactionHTTP.InteractionHandler
-	analyticsHandler   *analyticsHTTP.AnalyticsHandler
+	// Note: Analytics routes registered separately in bootstrap.go
 }
 
 // NewRouter creates a new Customer Management router with all dependencies
 func NewRouter(db *sqlx.DB) *Router {
 	// Initialize Customer aggregate
 	customerRepository := customerRepo.NewCustomerRepository(db)
-	customerUseCase := customer.NewUseCase(customerRepository)
-	customerHandler := customerHTTP.NewCustomerHandler(customerUseCase)
+	customerUseCaseImpl := customerUseCase.NewCustomerUseCase(customerRepository)
+	customerHandler := customerHTTP.NewCustomerHandler(customerUseCaseImpl)
 
 	// Initialize Company aggregate
 	companyRepository := companyRepo.NewCompanyRepository(db)
-	companyUseCase := company.NewUseCase(companyRepository)
-	companyHandler := companyHTTP.NewCompanyHandler(companyUseCase)
+	companyUseCaseImpl := companyUseCase.NewCompanyUseCase(companyRepository)
+	companyHandler := companyHTTP.NewCompanyHandler(companyUseCaseImpl)
 
 	// Initialize Deal aggregate
 	dealRepository := dealRepo.NewDealRepository(db)
-	dealUseCase := deal.NewUseCase(dealRepository)
-	dealHandler := dealHTTP.NewDealHandler(dealUseCase)
+	dealUseCaseImpl := dealUseCase.NewDealUseCase(dealRepository)
+	dealHandler := dealHTTP.NewDealHandler(dealUseCaseImpl)
 
 	// Initialize Interaction aggregate
 	interactionRepository := interactionRepo.NewInteractionRepository(db)
-	interactionUseCase := interaction.NewUseCase(interactionRepository)
-	interactionHandler := interactionHTTP.NewInteractionHandler(interactionUseCase)
+	interactionUseCaseImpl := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	interactionHandler := interactionHTTP.NewInteractionHandler(interactionUseCaseImpl)
 
-	// Initialize Analytics (CQRS read models)
-	analyticsUseCase := analytics.NewUseCase(db)
-	analyticsHandler := analyticsHTTP.NewAnalyticsHandler(analyticsUseCase)
+	// Note: Analytics initialized separately in bootstrap.go with event handlers
 
 	return &Router{
 		customerHandler:    customerHandler,
 		companyHandler:     companyHandler,
 		dealHandler:        dealHandler,
 		interactionHandler: interactionHandler,
-		analyticsHandler:   analyticsHandler,
 	}
 }
 
@@ -147,17 +142,6 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 			interactions.DELETE("/:id", r.interactionHandler.Delete)
 		}
 
-		// Analytics routes (CQRS read models for business intelligence)
-		analytics := customerMgmt.Group("/analytics")
-		{
-			analytics.GET("/customers/overview", r.analyticsHandler.GetCustomerOverview)
-			analytics.GET("/customers/lifecycle", r.analyticsHandler.GetCustomerLifecycle)
-			analytics.GET("/customers/segmentation", r.analyticsHandler.GetCustomerSegmentation)
-			analytics.GET("/deals/pipeline", r.analyticsHandler.GetDealPipeline)
-			analytics.GET("/deals/conversions", r.analyticsHandler.GetDealConversions)
-			analytics.GET("/sales-reps/performance", r.analyticsHandler.GetSalesRepPerformance)
-			analytics.GET("/revenue/time-series", r.analyticsHandler.GetRevenueTimeSeries)
-			analytics.GET("/interactions/insights", r.analyticsHandler.GetInteractionInsights)
-		}
+		// Note: Analytics routes registered separately in bootstrap.go
 	}
 }

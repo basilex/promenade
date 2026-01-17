@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -29,11 +30,11 @@ type OrderItem struct {
 
 // reservationService implements IReservationService
 type reservationService struct {
-	inventoryUC inventory.IUseCase
+	inventoryUC usecase.IInventoryUseCase
 }
 
 // NewReservationService creates a new reservation service
-func NewReservationService(inventoryUC inventory.IUseCase) IReservationService {
+func NewReservationService(inventoryUC usecase.IInventoryUseCase) IReservationService {
 	return &reservationService{
 		inventoryUC: inventoryUC,
 	}
@@ -52,7 +53,7 @@ func (s *reservationService) ReserveForOrder(ctx context.Context, orderID uuidv7
 	}
 
 	// Track successful reservations for rollback on error
-	var reservedInventory []*inventory.Inventory
+	var reservedInventory []*aggregate.Inventory
 
 	// Reserve stock for each item
 	for _, item := range items {
@@ -62,7 +63,7 @@ func (s *reservationService) ReserveForOrder(ctx context.Context, orderID uuidv7
 		}
 
 		// Get inventory by SKU (primary) or ProductID (fallback)
-		var inv *inventory.Inventory
+		var inv *aggregate.Inventory
 		var err error
 		if item.SKU != "" {
 			inv, err = s.inventoryUC.GetBySKU(ctx, item.SKU)
@@ -124,7 +125,7 @@ func (s *reservationService) ReleaseForOrder(ctx context.Context, orderID uuidv7
 		}
 
 		// Get inventory
-		var inv *inventory.Inventory
+		var inv *aggregate.Inventory
 		var err error
 		if item.SKU != "" {
 			inv, err = s.inventoryUC.GetBySKU(ctx, item.SKU)
@@ -173,7 +174,7 @@ func (s *reservationService) CommitForOrder(ctx context.Context, orderID uuidv7.
 		}
 
 		// Get inventory
-		var inv *inventory.Inventory
+		var inv *aggregate.Inventory
 		var err error
 		if item.SKU != "" {
 			inv, err = s.inventoryUC.GetBySKU(ctx, item.SKU)
@@ -209,7 +210,7 @@ func (s *reservationService) CommitForOrder(ctx context.Context, orderID uuidv7.
 }
 
 // rollbackReservations releases previously reserved stock on error
-func (s *reservationService) rollbackReservations(ctx context.Context, orderID uuidv7.UUID, inventories []*inventory.Inventory, releasedBy uuidv7.UUID) {
+func (s *reservationService) rollbackReservations(ctx context.Context, orderID uuidv7.UUID, inventories []*aggregate.Inventory, releasedBy uuidv7.UUID) {
 	for _, inv := range inventories {
 		if err := inv.ReleaseReservation(inv.GetQuantityReserved(), orderID, releasedBy); err != nil {
 			continue

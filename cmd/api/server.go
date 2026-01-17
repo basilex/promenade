@@ -101,6 +101,11 @@ func (s *Server) SetupRoutes() {
 			warehouseRouter.RegisterRoutes(v1)    // Inventory
 			scriptingRouter.RegisterRoutes(v1)    // LUA Scripts
 			uiRouter.RegisterRoutes(v1)           // UI Metadata Forms
+
+			// Analytics routes
+			if s.app.SalesReportHandler != nil {
+				s.app.SalesReportHandler.RegisterRoutes(v1)
+			}
 		}
 	}
 }

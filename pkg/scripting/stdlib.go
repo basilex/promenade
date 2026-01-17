@@ -9,23 +9,24 @@ import (
 	"github.com/jmoiron/sqlx"
 	lua "github.com/yuin/gopher-lua"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
+	customerusecase "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
+	dealusecase "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/usecase"
+	orderusecase "github.com/basilex/promenade/internal/contexts/order-mgmt/order/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // StandardLibrary provides Promenade-specific API for LUA scripts
 type StandardLibrary struct {
-	customerUC customer.ICustomerUseCase
-	orderUC    order.IUseCase
-	dealUC     deal.IUseCase
+	customerUC customerusecase.ICustomerUseCase
+	orderUC    orderusecase.IOrderUseCase
+	dealUC     dealusecase.IDealUseCase
 	db         *sqlx.DB
 	ctx        context.Context
 }
 
 // NewStandardLibrary creates a new standard library instance
-func NewStandardLibrary(ctx context.Context, customerUC customer.ICustomerUseCase, orderUC order.IUseCase, dealUC deal.IUseCase, db *sqlx.DB) *StandardLibrary {
+func NewStandardLibrary(ctx context.Context, customerUC customerusecase.ICustomerUseCase, orderUC orderusecase.IOrderUseCase, dealUC dealusecase.IDealUseCase, db *sqlx.DB) *StandardLibrary {
 	return &StandardLibrary{
 		customerUC: customerUC,
 		orderUC:    orderUC,
@@ -80,7 +81,7 @@ func (s *StandardLibrary) registerCustomerModule(L *lua.LState) {
 		}
 
 		// Parse tier
-		tier := customer.CustomerTier(tierStr)
+		tier := aggregate.CustomerTier(tierStr)
 		
 		err = s.customerUC.UpgradeCustomerTier(s.ctx, customerID, tier)
 		if err != nil {
