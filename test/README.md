@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**:  **COMPLETE** - 20/20 handlers, 184 tests, 100% pass rate
+**Status**:  **COMPLETE** - 20/20 handlers, 196 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -82,7 +82,7 @@ test/smoke/
 - Test HTTP status codes (200/201/404/400/500)
 - Validate response format (`{"status":"success"}`)
 - No database dependencies (pure mocks)
-- Fast execution (~0.6s for all 184 tests, cached)
+- Fast execution (~0.6s for all 196 tests, cached)
 - 6-12 tests per handler (simple to complex)
 - Error code patterns vary by context:
   - Identity/Order Management: Simple "NOT_FOUND"
@@ -149,7 +149,7 @@ test/benchmark/
 go test ./... -short -v
 
 # Smoke tests (handler validation, no DB)
-make test-smoke                     # Run all 184 smoke tests
+make test-smoke                     # Run all 196 smoke tests
 
 # Integration tests (with real DB)
 make test-integration
@@ -272,7 +272,7 @@ test/smoke/contexts/
      metadata/
          form/handler_test.go   # 8 tests
 
-**Total: 184 smoke tests across 20 handlers (100% pass rate)**
+**Total: 196 smoke tests across 20 handlers (100% pass rate)**
 ```
 
 ### Warehouse Context (Inventory Management)
@@ -355,7 +355,7 @@ pkg/
 ### All Tests
 
 ```bash
-make test                 # All tests (2465+ tests: 2232+ unit, 184 smoke, 76+ integration)
+make test                 # All tests (2477+ tests: 2232+ unit, 196 smoke, 76+ integration)
 ```
 
 ### By Type
@@ -585,7 +585,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (184 tests across 20 handlers)   
+**Smoke Tests**: HTTP handlers with mocks (196 tests across 20 handlers)   
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)
@@ -605,4 +605,4 @@ make test-unit || exit 1
 
 ---
 
-**Test Status**: All tests passing | 184 smoke tests (100% pass rate) | 2465+ total tests
+**Test Status**: All tests passing | 196 smoke tests (100% pass rate) | 2477+ total tests

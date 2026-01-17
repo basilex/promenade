@@ -78,17 +78,17 @@ The Fiscal context integrates with Ukrainian PRRO systems to issue fiscal receip
 5. **Testing**
    - Unit tests for receipts, printers, checkbox client
    - Integration tests for order events + shift automation
+   - Smoke tests for receipt + cash register (failure + compensation cases)
 
 ### In Progress
 
 6. **Sandbox Validation**
-   - End-to-end checklist for receipt/shift/Z-report edge cases
-   - Smoke test coverage for fiscal handlers
+   - End-to-end checklist for receipt/shift/Z-report edge cases ([SANDBOX_CHECKLIST.md](SANDBOX_CHECKLIST.md))
 
 ### Planned
 
 7. **Daily Z-Report Cadence + Monitoring**
-   - Operational runbook + alerting
+   - Operational runbook + alerting ([Z_REPORT_RUNBOOK.md](Z_REPORT_RUNBOOK.md))
 
 8. **Beta Testing**
    - Identify 3-5 retail stores
@@ -195,9 +195,8 @@ Content-Type: application/json
 
 ## Next Steps
 
-- Add fiscal smoke tests (failure + compensation cases)
-- Finalize daily Z-report cadence + monitoring
 - Complete Checkbox sandbox validation checklist
+- Finalize daily Z-report cadence + monitoring
 - Prepare beta onboarding checklist and sample data
 
 ---
@@ -261,12 +260,14 @@ Fiscal is **high risk** (money + compliance), so allow a larger test budget whil
 
 - [Ukraine Market Strategy 2026](../../docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md)
 - [Ukraine Compliance Roadmap](../../docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md)
+- [Checkbox Sandbox Checklist](SANDBOX_CHECKLIST.md)
+- [Z-Report Runbook](Z_REPORT_RUNBOOK.md)
 - Checkbox API Docs: https://dev.checkbox.ua/uk/docs/api/
 
 ---
 
 **Status**: MVP core delivered; validation in progress  \
-**Next**: Sandbox checklist + smoke test coverage  \
+**Next**: Sandbox checklist + Z-report runbook validation  \
 **Timeline**: January 2026  \
 **Last Updated**: January 17, 2026
 

@@ -247,3 +247,123 @@ func TestReceiptHandler_Delete_Success(t *testing.T) {
 	w := smoke.MakeRequest(t, router, "DELETE", "/fiscal/receipts/"+smoke.FakeUUID(), nil)
 	smoke.AssertSuccessResponse(t, w, http.StatusOK)
 }
+
+func TestReceiptHandler_Print_AlreadyCancelled(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return nil, receipt.ErrReceiptAlreadyCancelled
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/print", handler.MarkPrinted)
+
+	body := map[string]any{
+		"printed_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/print", body)
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestReceiptHandler_Cancel_Success(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return fakeReceipt(t), nil
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
+
+	body := map[string]any{
+		"reason":        "customer request",
+		"cancelled_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/cancel", body)
+	smoke.AssertSuccessResponse(t, w, http.StatusOK)
+}
+
+func TestReceiptHandler_Cancel_ReasonRequired(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return nil, receipt.ErrReceiptCancelReasonRequired
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
+
+	body := map[string]any{
+		"reason":        "",
+		"cancelled_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/cancel", body)
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestReceiptHandler_Cancel_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return nil, receipt.ErrReceiptNotFound
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
+
+	body := map[string]any{
+		"reason":        "not found",
+		"cancelled_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/cancel", body)
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}
+
+func TestReceiptHandler_Cancel_AlreadyCancelled(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+			return nil, receipt.ErrReceiptAlreadyCancelled
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
+
+	body := map[string]any{
+		"reason":        "duplicate",
+		"cancelled_by": smoke.FakeUUID(),
+	}
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/receipts/"+smoke.FakeUUID()+"/cancel", body)
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestReceiptHandler_Delete_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockReceiptUseCase{
+		DeleteReceiptFunc: func(ctx context.Context, id uuidv7.UUID) error {
+			return receipt.ErrReceiptNotFound
+		},
+	}
+
+	handler := receiptHandler.NewReceiptHandler(mockUC)
+	router.DELETE("/fiscal/receipts/:id", handler.Delete)
+
+	w := smoke.MakeRequest(t, router, "DELETE", "/fiscal/receipts/"+smoke.FakeUUID(), nil)
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}

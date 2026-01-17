@@ -933,7 +933,7 @@ Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
 - StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
 - Product Aggregate: 139 tests passing (25 entity + 83 usecase + 10 smoke + 21 integration), 16 API endpoints operational
 - Location Aggregate: 74 tests passing (48 entity + 17 integration + 9 smoke), 14 API endpoints operational
--  Test Infrastructure: All systems validated (2465+ tests: 2232+ unit, 184 smoke, 76+ integration)
+-  Test Infrastructure: All systems validated (2477+ tests: 2232+ unit, 196 smoke, 76+ integration)
 -  GitHub Actions CI fully green (100% pass rate)
 
 ---
@@ -1247,7 +1247,7 @@ make lint                  # Run linters
 make test-all              # All tests runner (warns if not test environment)
 make test                  # All tests with race detector (~60s)
 make test-unit             # Unit tests only (~5s)
-make test-smoke            # Smoke tests (handler validation, no DB, ~0.5s, 184 tests)
+make test-smoke            # Smoke tests (handler validation, no DB, ~0.5s, 196 tests)
 make test-integration      # Integration tests with real DB (~14s)
 make test-benchmark        # Benchmark tests (~5s per benchmark)
 make test-coverage         # HTML coverage report
@@ -1313,7 +1313,7 @@ test/smoke/contexts/
  customer-mgmt/
     customer/handler_test.go  # 12 tests (most complex - 23-method mock)
     ...
- # Total: 184 tests across 20 handlers (100% pass rate)
+# Total: 196 tests across 20 handlers (100% pass rate)
 
 # Integration tests - mirror path structure (real DB)
 test/integration/contexts/
@@ -1335,13 +1335,13 @@ test/benchmark/contexts/
 ### Running Tests
 
 ```bash
-# All tests (2465+ tests: 2232+ unit, 184 smoke, 76+ integration)
+# All tests (2477+ tests: 2232+ unit, 196 smoke, 76+ integration)
 make test-all               # Runner with environment check
 make test                   # All tests with race detector
 
 # By type (four-tier strategy)
 make test-unit              # Unit tests only (~5s)
-make test-smoke             # Smoke tests (handler validation, no DB, ~0.5s, 184 tests)
+make test-smoke             # Smoke tests (handler validation, no DB, ~0.5s, 196 tests)
 make test-integration       # Integration tests with real DB (~14s)
 make test-benchmark         # Benchmark tests (5s per benchmark)
 make test-benchmark-all     # Extended benchmarks (10s per benchmark)
@@ -1377,7 +1377,7 @@ make pre-push               # Run all CI checks (lint + test + build)
 | **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
 | **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
 | **pkg/cache**              | 8     | 85%      | cached   | Unit        |
-| **Smoke (all contexts)**   | 184   | -        | ~0.5s    | Smoke       |
+| **Smoke (all contexts)**   | 196   | -        | ~0.5s    | Smoke       |
 | **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
 | **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
 | **Customer (integration)** | 14    | -        | ~3.6s    | Integration |

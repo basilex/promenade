@@ -284,3 +284,121 @@ func TestCashRegisterHandler_Sync_Success(t *testing.T) {
 
 	smoke.AssertSuccessResponse(t, w, http.StatusOK)
 }
+
+func TestCashRegisterHandler_Activate_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockCashRegisterUseCase{
+		ActivateCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID, licenseKey string, activatedBy uuidv7.UUID) (*cashregister.CashRegister, error) {
+			return nil, cashregister.ErrCashRegisterNotFound
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.POST("/fiscal/cash-registers/:id/activate", handler.Activate)
+
+	body := map[string]any{
+		"license_key":  "LICENSE-KEY-404",
+		"activated_by": smoke.FakeUUID(),
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/cash-registers/"+smoke.FakeUUID()+"/activate", body)
+
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}
+
+func TestCashRegisterHandler_Activate_AlreadyActive(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockCashRegisterUseCase{
+		ActivateCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID, licenseKey string, activatedBy uuidv7.UUID) (*cashregister.CashRegister, error) {
+			return nil, cashregister.ErrCashRegisterAlreadyActive
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.POST("/fiscal/cash-registers/:id/activate", handler.Activate)
+
+	body := map[string]any{
+		"license_key":  "LICENSE-KEY-ACTIVE",
+		"activated_by": smoke.FakeUUID(),
+	}
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/cash-registers/"+smoke.FakeUUID()+"/activate", body)
+
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestCashRegisterHandler_Deactivate_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+	userID := smoke.FakeUUID()
+
+	mockUC := &MockCashRegisterUseCase{
+		DeactivateCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID, deactivatedBy uuidv7.UUID) (*cashregister.CashRegister, error) {
+			return nil, cashregister.ErrCashRegisterNotFound
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.POST("/fiscal/cash-registers/:id/deactivate", func(c *gin.Context) {
+		c.Set("user_id", userID)
+		c.Next()
+	}, handler.Deactivate)
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/cash-registers/"+smoke.FakeUUID()+"/deactivate", nil)
+
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}
+
+func TestCashRegisterHandler_Deactivate_AlreadyInactive(t *testing.T) {
+	router := smoke.SetupRouter()
+	userID := smoke.FakeUUID()
+
+	mockUC := &MockCashRegisterUseCase{
+		DeactivateCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID, deactivatedBy uuidv7.UUID) (*cashregister.CashRegister, error) {
+			return nil, cashregister.ErrCashRegisterAlreadyInactive
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.POST("/fiscal/cash-registers/:id/deactivate", func(c *gin.Context) {
+		c.Set("user_id", userID)
+		c.Next()
+	}, handler.Deactivate)
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/cash-registers/"+smoke.FakeUUID()+"/deactivate", nil)
+
+	smoke.AssertErrorResponse(t, w, http.StatusBadRequest, "BAD_REQUEST")
+}
+
+func TestCashRegisterHandler_Delete_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockCashRegisterUseCase{
+		DeleteCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID) error {
+			return cashregister.ErrCashRegisterNotFound
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.DELETE("/fiscal/cash-registers/:id", handler.Delete)
+
+	w := smoke.MakeRequest(t, router, "DELETE", "/fiscal/cash-registers/"+smoke.FakeUUID(), nil)
+
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}
+
+func TestCashRegisterHandler_Sync_NotFound(t *testing.T) {
+	router := smoke.SetupRouter()
+
+	mockUC := &MockCashRegisterUseCase{
+		SyncCashRegisterFunc: func(ctx context.Context, id uuidv7.UUID, syncedBy uuidv7.UUID) (*cashregister.CashRegister, error) {
+			return nil, cashregister.ErrCashRegisterNotFound
+		},
+	}
+
+	handler := cashregisterHTTP.NewCashRegisterHandler(mockUC)
+	router.POST("/fiscal/cash-registers/:id/sync", handler.Sync)
+
+	w := smoke.MakeRequest(t, router, "POST", "/fiscal/cash-registers/"+smoke.FakeUUID()+"/sync", nil)
+
+	smoke.AssertErrorResponse(t, w, http.StatusNotFound, "NOT_FOUND")
+}

@@ -46,15 +46,14 @@ This document consolidates the 2026 strategic plan for core platform milestones 
 - M1 (Done): Script storage + versioning (migrations, repository, use case).
 - M2 (Done): UI metadata FormDefinition aggregate + API.
 - M3 (Done): Receipt E2E flow with order events and handler error mapping.
-- M4 (In Progress): Checkbox provider integration complete (sandbox validation).
+- M4 (In Progress): Checkbox provider integration implemented; sandbox validation pending.
 - M5 (Planned): 10 retail beta testers onboarded.
 
 ## Next Steps
 
-1. Add receipt + shift smoke tests (failure + compensation cases).
+1. Complete Checkbox sandbox validation checklist (incl. shift/Z-report edge cases).
 2. Finalize daily Z-report automation cadence + monitoring.
-3. Complete Checkbox sandbox validation checklist (incl. shift/Z-report edge cases).
-4. Prepare beta onboarding checklist and sample data.
+3. Prepare beta onboarding checklist and sample data.
 
 <!--
 *** End Patch
