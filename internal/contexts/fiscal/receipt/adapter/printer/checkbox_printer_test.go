@@ -108,7 +108,33 @@ func TestCheckboxPrinter_Print_Success(t *testing.T) {
 	result, err := printer.Print(context.Background(), rec)
 	require.NoError(t, err)
 	require.NotNil(t, result)
+	require.Equal(t, "1", result.ProviderReceiptID)
 	require.Equal(t, "FC-1", result.FiscalNumber)
 	require.Equal(t, "https://example.com/receipt", result.FiscalURL)
 	require.Equal(t, "https://example.com/qr", result.QRCode)
+}
+
+func TestCheckboxPrinter_Cancel_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		if r.URL.Path != "/receipts/rcpt-1/cancel" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id":"rcpt-1","status":"cancelled"}`))
+	}))
+	defer server.Close()
+
+	client := checkbox.NewClient(&checkbox.Config{APIKey: "test", Sandbox: true})
+	setCheckboxClientTransport(t, client, server.URL, server.Client())
+
+	printer := NewCheckboxPrinter(client)
+	rec := &receipt.Receipt{ProviderReceiptID: "rcpt-1"}
+
+	err := printer.Cancel(context.Background(), rec, "customer request")
+	require.NoError(t, err)
 }

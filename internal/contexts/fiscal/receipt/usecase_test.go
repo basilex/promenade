@@ -27,7 +27,8 @@ type MockRepository struct {
 
 // MockPrinter implements IPrinter for testing
 type MockPrinter struct {
-	PrintFunc func(ctx context.Context, rec *Receipt) (*PrintResult, error)
+	PrintFunc  func(ctx context.Context, rec *Receipt) (*PrintResult, error)
+	CancelFunc func(ctx context.Context, rec *Receipt, reason string) error
 }
 
 func (m *MockPrinter) Print(ctx context.Context, rec *Receipt) (*PrintResult, error) {
@@ -35,6 +36,13 @@ func (m *MockPrinter) Print(ctx context.Context, rec *Receipt) (*PrintResult, er
 		return m.PrintFunc(ctx, rec)
 	}
 	return &PrintResult{FiscalNumber: "FN-TEST", FiscalURL: "url", QRCode: "qr"}, nil
+}
+
+func (m *MockPrinter) Cancel(ctx context.Context, rec *Receipt, reason string) error {
+	if m.CancelFunc != nil {
+		return m.CancelFunc(ctx, rec, reason)
+	}
+	return nil
 }
 
 func (m *MockRepository) Create(ctx context.Context, rec *Receipt) error {
@@ -322,6 +330,55 @@ func TestCancelReceipt_Success(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, ReceiptStatusCancelled, updated.Status)
+}
+
+func TestCancelReceipt_Printed_ProviderCancelSuccess(t *testing.T) {
+	rec := buildReceiptEntity(t)
+	rec.Status = ReceiptStatusPrinted
+	rec.ProviderReceiptID = "provider-1"
+
+	printer := &MockPrinter{
+		CancelFunc: func(ctx context.Context, rec *Receipt, reason string) error {
+			return nil
+		},
+	}
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*Receipt, error) {
+			return rec, nil
+		},
+		UpdateFunc: func(ctx context.Context, rec *Receipt) error {
+			return nil
+		},
+	}
+
+	uc := NewUseCase(repo, printer)
+
+	updated, err := uc.CancelReceipt(context.Background(), rec.GetID(), "Customer request", testReceiptUserID)
+	require.NoError(t, err)
+	assert.Equal(t, ReceiptStatusCancelled, updated.Status)
+}
+
+func TestCancelReceipt_Printed_ProviderCancelError(t *testing.T) {
+	rec := buildReceiptEntity(t)
+	rec.Status = ReceiptStatusPrinted
+	rec.ProviderReceiptID = "provider-1"
+
+	printer := &MockPrinter{
+		CancelFunc: func(ctx context.Context, rec *Receipt, reason string) error {
+			return errors.New("cancel failed")
+		},
+	}
+	repo := &MockRepository{
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*Receipt, error) {
+			return rec, nil
+		},
+	}
+
+	uc := NewUseCase(repo, printer)
+
+	updated, err := uc.CancelReceipt(context.Background(), rec.GetID(), "Customer request", testReceiptUserID)
+	assert.Nil(t, updated)
+	assert.ErrorIs(t, err, ErrReceiptCancelFailed)
 }
 
 func TestCancelReceipt_UpdateFailure(t *testing.T) {

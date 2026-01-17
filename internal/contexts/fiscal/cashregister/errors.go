@@ -69,6 +69,9 @@ var (
 
 	// ErrNoActiveShift is returned when trying to close shift but none is open
 	ErrNoActiveShift = errors.New("no active shift")
+
+	// ErrShiftIDRequired is returned when shift ID is missing
+	ErrShiftIDRequired = errors.New("shift ID is required")
 )
 
 // Technical Operation Errors - Operation wrappers

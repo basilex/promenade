@@ -57,12 +57,12 @@ func NewClient(cfg *Config) *Client {
 
 // Receipt represents a fiscal receipt request
 type Receipt struct {
-	Goods       []ReceiptGood `json:"goods"`
-	Payment     Payment       `json:"payment"`
-	Delivery    *Delivery     `json:"delivery,omitempty"`
-	TaxNumber   string        `json:"tax_number,omitempty"`   // ІПН покупця (optional)
-	Header      string        `json:"header,omitempty"`        // Text at top of receipt
-	Footer      string        `json:"footer,omitempty"`        // Text at bottom of receipt
+	Goods     []ReceiptGood `json:"goods"`
+	Payment   Payment       `json:"payment"`
+	Delivery  *Delivery     `json:"delivery,omitempty"`
+	TaxNumber string        `json:"tax_number,omitempty"` // ІПН покупця (optional)
+	Header    string        `json:"header,omitempty"`     // Text at top of receipt
+	Footer    string        `json:"footer,omitempty"`     // Text at bottom of receipt
 }
 
 // ReceiptGood represents a line item in the receipt
@@ -73,10 +73,10 @@ type ReceiptGood struct {
 
 // Good represents a product/service
 type Good struct {
-	Code  string `json:"code"`            // Product code (optional)
-	Name  string `json:"name"`            // Product name (required)
-	Price int    `json:"price"`           // Price in kopiyky (required)
-	Tax   []int  `json:"tax,omitempty"`   // Tax rates (e.g., [20] for 20% VAT)
+	Code  string `json:"code"`          // Product code (optional)
+	Name  string `json:"name"`          // Product name (required)
+	Price int    `json:"price"`         // Price in kopiyky (required)
+	Tax   []int  `json:"tax,omitempty"` // Tax rates (e.g., [20] for 20% VAT)
 }
 
 // Payment represents payment information
@@ -99,6 +99,26 @@ type ReceiptResponse struct {
 	FiscalURL  string    `json:"fiscal_url"`  // URL to verify receipt
 	QRCodeURL  string    `json:"qrcode_url"`  // QR code image URL
 	CreatedAt  time.Time `json:"created_at"`
+}
+
+// ShiftResponse represents a shift response from Checkbox API
+type ShiftResponse struct {
+	ID       string    `json:"id"`
+	Status   string    `json:"status"`
+	OpenedAt time.Time `json:"opened_at"`
+}
+
+// ZReport represents a Z-report response
+type ZReport struct {
+	ID        string    `json:"id"`
+	ShiftID   string    `json:"shift_id"`
+	Number    int       `json:"number"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// CancelReceiptRequest represents cancellation request payload
+type CancelReceiptRequest struct {
+	Reason string `json:"reason,omitempty"`
 }
 
 // ErrorResponse represents an error response from Checkbox API
@@ -129,6 +149,37 @@ func (c *Client) GetReceipt(ctx context.Context, receiptID string) (*ReceiptResp
 	var result ReceiptResponse
 	if err := c.get(ctx, fmt.Sprintf("/receipts/%s", receiptID), &result); err != nil {
 		return nil, fmt.Errorf("failed to get receipt: %w", err)
+	}
+	return &result, nil
+}
+
+// CancelReceipt cancels a fiscal receipt by ID
+func (c *Client) CancelReceipt(ctx context.Context, receiptID, reason string) (*ReceiptResponse, error) {
+	var result ReceiptResponse
+	request := &CancelReceiptRequest{Reason: reason}
+	if err := c.post(ctx, fmt.Sprintf("/receipts/%s/cancel", receiptID), request, &result); err != nil {
+		return nil, fmt.Errorf("failed to cancel receipt: %w", err)
+	}
+	return &result, nil
+}
+
+// OpenShift opens a fiscal shift for a cash register
+func (c *Client) OpenShift(ctx context.Context, cashRegisterID string) (*ShiftResponse, error) {
+	payload := map[string]interface{}{
+		"cash_register_id": cashRegisterID,
+	}
+	var result ShiftResponse
+	if err := c.post(ctx, "/shifts/open", payload, &result); err != nil {
+		return nil, fmt.Errorf("failed to open shift: %w", err)
+	}
+	return &result, nil
+}
+
+// CloseShift closes a fiscal shift and returns a Z-report
+func (c *Client) CloseShift(ctx context.Context, shiftID string) (*ZReport, error) {
+	var result ZReport
+	if err := c.post(ctx, fmt.Sprintf("/shifts/%s/close", shiftID), nil, &result); err != nil {
+		return nil, fmt.Errorf("failed to close shift: %w", err)
 	}
 	return &result, nil
 }

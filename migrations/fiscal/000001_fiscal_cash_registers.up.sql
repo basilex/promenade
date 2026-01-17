@@ -17,6 +17,12 @@ CREATE TABLE IF NOT EXISTS fiscal_cash_registers (
     
     license_key VARCHAR(255),
     last_sync_at TIMESTAMP,
+    provider_cash_register_id TEXT,
+    active_shift_id TEXT,
+    shift_opened_at TIMESTAMP,
+    shift_closed_at TIMESTAMP,
+    last_z_report_id TEXT,
+    last_z_report_at TIMESTAMP,
     last_updated_by TEXT NOT NULL,
     
     -- Timestamps
@@ -30,6 +36,7 @@ CREATE INDEX idx_fiscal_cash_registers_organization ON fiscal_cash_registers(org
 CREATE INDEX idx_fiscal_cash_registers_fiscal_number ON fiscal_cash_registers(fiscal_number) WHERE deleted_at IS NULL;
 CREATE INDEX idx_fiscal_cash_registers_status ON fiscal_cash_registers(status) WHERE deleted_at IS NULL;
 CREATE INDEX idx_fiscal_cash_registers_active ON fiscal_cash_registers(status) WHERE status = 'active' AND deleted_at IS NULL;
+CREATE INDEX idx_fiscal_cash_registers_provider_id ON fiscal_cash_registers(provider_cash_register_id) WHERE deleted_at IS NULL;
 
 -- Comments for documentation
 COMMENT ON TABLE fiscal_cash_registers IS 'Fiscal cash registers (ПРРО) for Ukrainian compliance';

@@ -14,7 +14,6 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/pkg/bus"
 	_ "github.com/basilex/promenade/pkg/bus/memory" // Register memory adapter
-	_ "github.com/basilex/promenade/pkg/bus/redis"  // Register redis adapter
 	redisbus "github.com/basilex/promenade/pkg/bus/redis"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )

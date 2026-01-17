@@ -7,23 +7,26 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/basilex/promenade/pkg/scheduler"
 )
 
 // AppConfig represents core application configuration
 type AppConfig struct {
-	App       AppSection        `yaml:"app"`
-	Server    ServerSection     `yaml:"server"`
-	Database  DatabasesSection  `yaml:"database"`  // Centralized databases (Postgres, Redis, etc.)
-	JWT       JWTSection        `yaml:"jwt"`
-	Logging   LoggingSection    `yaml:"logging"`
-	CORS      CORSSection       `yaml:"cors"`
-	Bus       BusSection        `yaml:"bus"`
-	Cache     CacheSection      `yaml:"cache"`
-	RateLimit RateLimitSection  `yaml:"rate_limit"`
-	Email     EmailSection      `yaml:"email"`
-	Purge     PurgeSection      `yaml:"purge"`
-	Modules   ModulesSection    `yaml:"modules"`
-	Fiscal    FiscalSection     `yaml:"fiscal"`
+	App       AppSection       `yaml:"app"`
+	Server    ServerSection    `yaml:"server"`
+	Database  DatabasesSection `yaml:"database"` // Centralized databases (Postgres, Redis, etc.)
+	JWT       JWTSection       `yaml:"jwt"`
+	Logging   LoggingSection   `yaml:"logging"`
+	CORS      CORSSection      `yaml:"cors"`
+	Bus       BusSection       `yaml:"bus"`
+	Cache     CacheSection     `yaml:"cache"`
+	Scheduler scheduler.Config `yaml:"scheduler"`
+	RateLimit RateLimitSection `yaml:"rate_limit"`
+	Email     EmailSection     `yaml:"email"`
+	Purge     PurgeSection     `yaml:"purge"`
+	Modules   ModulesSection   `yaml:"modules"`
+	Fiscal    FiscalSection    `yaml:"fiscal"`
 }
 
 type AppSection struct {
@@ -131,11 +134,11 @@ type RateLimitSection struct {
 
 // CacheSection holds cache configuration
 type CacheSection struct {
-	Enabled    bool        `yaml:"enabled"`     // Enable/disable caching
-	Adapter    string      `yaml:"adapter"`     // redis or noop
-	Prefix     string      `yaml:"prefix"`      // Key prefix for namespace isolation
-	DefaultTTL string      `yaml:"default_ttl"` // Default TTL (e.g., "5m")
-	TTL        CacheTTL    `yaml:"ttl"`         // TTL per resource type
+	Enabled    bool     `yaml:"enabled"`     // Enable/disable caching
+	Adapter    string   `yaml:"adapter"`     // redis or noop
+	Prefix     string   `yaml:"prefix"`      // Key prefix for namespace isolation
+	DefaultTTL string   `yaml:"default_ttl"` // Default TTL (e.g., "5m")
+	TTL        CacheTTL `yaml:"ttl"`         // TTL per resource type
 }
 
 // CacheTTL holds TTL configuration for different resource types
@@ -176,8 +179,11 @@ type ModulesSection struct {
 
 // FiscalSection holds fiscal integrations configuration
 type FiscalSection struct {
-	Checkbox     CheckboxSection `yaml:"checkbox"`
-	PDFOutputDir string          `yaml:"pdf_output_dir"`
+	Checkbox       CheckboxSection `yaml:"checkbox"`
+	PDFOutputDir   string          `yaml:"pdf_output_dir"`
+	RetryCron      string          `yaml:"retry_cron"`
+	ShiftOpenCron  string          `yaml:"shift_open_cron"`
+	ShiftCloseCron string          `yaml:"shift_close_cron"`
 }
 
 // CheckboxSection holds Checkbox API configuration
@@ -231,7 +237,7 @@ func LoadAppConfig(configPath string) (*AppConfig, error) {
 		// Build config path: app.{driver}-{env}.yaml
 		envSuffix := getEnvSuffix(env)
 		envConfigPath := fmt.Sprintf("config/app.%s-%s.yaml", driver, envSuffix)
-		
+
 		if _, err := os.Stat(envConfigPath); err == nil {
 			configPath = envConfigPath
 		} else {

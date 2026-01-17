@@ -38,6 +38,7 @@ type receiptRow struct {
 	FiscalNumber       sql.NullString                         `db:"fiscal_number"`
 	FiscalURL          sql.NullString                         `db:"fiscal_url"`
 	QRCode             sql.NullString                         `db:"qr_code"`
+	ProviderReceiptID  sql.NullString                         `db:"provider_receipt_id"`
 	PrintedAt          sql.NullTime                           `db:"printed_at"`
 	CancelledAt        sql.NullTime                           `db:"cancelled_at"`
 	CancellationReason sql.NullString                         `db:"cancellation_reason"`
@@ -104,6 +105,9 @@ func (r *receiptRow) toEntity() (*receipt.Receipt, error) {
 	if r.QRCode.Valid {
 		rec.QRCode = r.QRCode.String
 	}
+	if r.ProviderReceiptID.Valid {
+		rec.ProviderReceiptID = r.ProviderReceiptID.String
+	}
 	if r.PrintedAt.Valid {
 		rec.PrintedAt = &r.PrintedAt.Time
 	}
@@ -148,6 +152,9 @@ func fromEntity(rec *receipt.Receipt) *receiptRow {
 	if rec.QRCode != "" {
 		row.QRCode = sql.NullString{String: rec.QRCode, Valid: true}
 	}
+	if rec.ProviderReceiptID != "" {
+		row.ProviderReceiptID = sql.NullString{String: rec.ProviderReceiptID, Valid: true}
+	}
 	if rec.PrintedAt != nil {
 		row.PrintedAt = sql.NullTime{Time: *rec.PrintedAt, Valid: true}
 	}
@@ -169,7 +176,7 @@ func (r *receiptRepository) Create(ctx context.Context, rec *receipt.Receipt) er
 	query := `
 		INSERT INTO fiscal_receipts (
 			id, version, cash_register_id, order_id, payment_type, receipt_type,
-			currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code,
+			currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code, provider_receipt_id,
 			printed_at, cancelled_at, cancellation_reason, lines, created_by, last_updated_by,
 			status, created_at, updated_at
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`
@@ -177,7 +184,7 @@ func (r *receiptRepository) Create(ctx context.Context, rec *receipt.Receipt) er
 	row := fromEntity(rec)
 	_, err := r.Exec(ctx, query,
 		row.ID, row.Version, row.CashRegisterID, row.OrderID, row.PaymentType, row.ReceiptType,
-		row.Currency, row.TotalAmount, row.TaxAmount, row.FiscalNumber, row.FiscalURL, row.QRCode,
+		row.Currency, row.TotalAmount, row.TaxAmount, row.FiscalNumber, row.FiscalURL, row.QRCode, row.ProviderReceiptID,
 		row.PrintedAt, row.CancelledAt, row.CancellationReason, row.Lines, row.CreatedBy, row.LastUpdatedBy,
 		row.Status, row.CreatedAt, row.UpdatedAt,
 	)
@@ -192,7 +199,7 @@ func (r *receiptRepository) Create(ctx context.Context, rec *receipt.Receipt) er
 func (r *receiptRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error) {
 	query := `
 		SELECT id, version, cash_register_id, order_id, payment_type, receipt_type,
-		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code,
+		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code, provider_receipt_id,
 		       printed_at, cancelled_at, cancellation_reason, lines, created_by, last_updated_by,
 		       status, created_at, updated_at, deleted_at
 		FROM fiscal_receipts
@@ -213,7 +220,7 @@ func (r *receiptRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*recei
 func (r *receiptRepository) GetByOrderID(ctx context.Context, orderID uuidv7.UUID) (*receipt.Receipt, error) {
 	query := `
 		SELECT id, version, cash_register_id, order_id, payment_type, receipt_type,
-		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code,
+		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code, provider_receipt_id,
 		       printed_at, cancelled_at, cancellation_reason, lines, created_by, last_updated_by,
 		       status, created_at, updated_at, deleted_at
 		FROM fiscal_receipts
@@ -234,7 +241,7 @@ func (r *receiptRepository) GetByOrderID(ctx context.Context, orderID uuidv7.UUI
 func (r *receiptRepository) List(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
 	query := `
 		SELECT id, version, cash_register_id, order_id, payment_type, receipt_type,
-		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code,
+		       currency, total_amount, tax_amount, fiscal_number, fiscal_url, qr_code, provider_receipt_id,
 		       printed_at, cancelled_at, cancellation_reason, lines, created_by, last_updated_by,
 		       status, created_at, updated_at, deleted_at
 		FROM fiscal_receipts
@@ -292,21 +299,22 @@ func (r *receiptRepository) Update(ctx context.Context, rec *receipt.Receipt) er
 		    fiscal_number = $9,
 		    fiscal_url = $10,
 		    qr_code = $11,
-		    printed_at = $12,
-		    cancelled_at = $13,
-		    cancellation_reason = $14,
-		    lines = $15,
-		    created_by = $16,
-		    last_updated_by = $17,
-		    status = $18,
-		    updated_at = $19
-		WHERE id = $20 AND deleted_at IS NULL`
+		    provider_receipt_id = $12,
+		    printed_at = $13,
+		    cancelled_at = $14,
+		    cancellation_reason = $15,
+		    lines = $16,
+		    created_by = $17,
+		    last_updated_by = $18,
+		    status = $19,
+		    updated_at = $20
+		WHERE id = $21 AND deleted_at IS NULL`
 
 	row := fromEntity(rec)
 	result, err := r.Exec(ctx, query,
 		row.Version, row.CashRegisterID, row.OrderID, row.PaymentType, row.ReceiptType,
 		row.Currency, row.TotalAmount, row.TaxAmount, row.FiscalNumber, row.FiscalURL, row.QRCode,
-		row.PrintedAt, row.CancelledAt, row.CancellationReason, row.Lines, row.CreatedBy, row.LastUpdatedBy,
+		row.ProviderReceiptID, row.PrintedAt, row.CancelledAt, row.CancellationReason, row.Lines, row.CreatedBy, row.LastUpdatedBy,
 		row.Status, row.UpdatedAt, row.ID,
 	)
 	if err != nil {

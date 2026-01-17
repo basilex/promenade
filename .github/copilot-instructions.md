@@ -1,22 +1,24 @@
 ```instructions
 # Promenade Copilot Instructions
 
-Use this as a concise, high-signal guide. See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full docs.
+Use this as a concise, high-signal guide. See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md).
 
 ## Big picture architecture
-- DDD with strict bounded contexts under [internal/contexts](internal/contexts); **no cross-context imports**. Cross-context communication goes through the Event Bus in [pkg/bus](pkg/bus/README.md).
+- DDD with strict bounded contexts in [internal/contexts](internal/contexts); **no cross-context imports**. Cross-context communication goes through the Event Bus in [pkg/bus](pkg/bus/README.md).
+- Contexts are domain-focused; legacy/technical “modules” live elsewhere (see [internal/contexts/README.md](internal/contexts/README.md)).
 - Dependency wiring lives in [cmd/api/bootstrap.go](cmd/api/bootstrap.go) (logger → DB → migrations → Redis/cache → JWT → Event Bus → integrations → routers).
-- Multi-database support is intentional (PostgreSQL prod, SQLite dev/test). Migrations must be DB-agnostic: use `TEXT` for UUID/JSON, generate IDs in Go. See [migrations/README.md](migrations/README.md).
+- Multi-database support is intentional (PostgreSQL prod, SQLite dev/test). Migrations must be DB-agnostic: use `TEXT` for UUID/JSON, generate IDs in Go (see [migrations/README.md](migrations/README.md)).
 
 ## Critical workflows
-- Workspace state is in [.promenade.workspace](.promenade.workspace.example). Typical flow: `make switch-postgres-dev` or `make switch-sqlite-dev` → `make dev` / `make dev-fresh`. See [Makefile](Makefile).
-- Tests are four-tier: `make test-unit`, `make test-smoke`, `make test-integration`, `make test`. See [test/README.md](test/README.md) and [test/smoke/README.md](test/smoke/README.md).
+- Workspace state is in [.promenade.workspace](.promenade.workspace.example). Typical flow: `make switch-postgres-dev` or `make switch-sqlite-dev` → `make dev` / `make dev-fresh` (see [Makefile](Makefile)).
+- Tests are four-tier: `make test-unit`, `make test-smoke`, `make test-integration`, `make test` (see [test/README.md](test/README.md) and [test/smoke/README.md](test/smoke/README.md)).
+- Namespace-based migrations: `make migrate`, `make migrate-module MODULE=...`, `make migrate-rollback MODULE=...` (see [migrations/README.md](migrations/README.md)).
 - Before push: `make pre-push` (lint + tests + build) in [Makefile.dev.mk](Makefile.dev.mk).
 
 ## Project-specific conventions (must follow)
 - IDs: always `uuidv7.New()` from [pkg/uuidv7](pkg/uuidv7/README.md); never UUID v4.
-- Aggregates embed `aggregate.BaseAggregate`; use `Touch()` and `GetID()` (see [pkg/aggregate/README.md](pkg/aggregate/README.md)).
-- Use cases return **domain error constants** from `errors.go`; no inline `fmt.Errorf` in `usecase.go`. Handlers map with `errors.Is()` and return generic system messages (see [docs/guides/security-patterns.md](docs/guides/security-patterns.md)).
+- Aggregates embed `aggregate.BaseAggregate`; use `Touch()`/`GetID()` (see [pkg/aggregate/README.md](pkg/aggregate/README.md)).
+- Use cases return **domain error constants** from `errors.go`; no inline `fmt.Errorf` in `usecase.go`. Handlers map with `errors.Is()` and return generic system errors (see [docs/guides/security-patterns.md](docs/guides/security-patterns.md)).
 - Repositories embed `BaseRepository` and use `getExecutor(ctx)` for tx propagation (examples across [internal/contexts](internal/contexts)).
 - JSON fields use `jsonstore.Field[T]` from [pkg/jsonstore](pkg/jsonstore/README.md); no manual marshal/unmarshal.
 

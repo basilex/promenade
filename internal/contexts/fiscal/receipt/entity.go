@@ -50,9 +50,10 @@ type Receipt struct {
 	TotalAmount int64
 	TaxAmount   int64
 
-	FiscalNumber string
-	FiscalURL    string
-	QRCode       string
+	FiscalNumber      string
+	FiscalURL         string
+	QRCode            string
+	ProviderReceiptID string
 
 	PrintedAt   *time.Time
 	CancelledAt *time.Time

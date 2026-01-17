@@ -2,9 +2,9 @@
 
 **Ukrainian fiscal compliance** for retail businesses via cash register integration.
 
-**Status**: MVP in progress (Week 1 of 2)  \
+**Status**: MVP core delivered; sandbox validation in progress  \
 **Priority**: Critical blocker - 70% of target market  \
-**Timeline**: January 14 - January 28, 2026
+**Timeline**: January 2026
 
 ---
 
@@ -17,9 +17,9 @@ The Fiscal context integrates with Ukrainian PRRO systems to issue fiscal receip
 - Cash register management
 - Fiscal receipt printing
 - Checkbox API integration (MVP)
-- Receipt status tracking (Week 2)
-- Shift management (Week 2)
-- Z-reports (Week 2)
+- Receipt status tracking
+- Shift open/close automation (scheduler)
+- Z-report references on shift close
 - Vchasno.Kasa integration (future)
 
 ---
@@ -34,16 +34,16 @@ The Fiscal context integrates with Ukrainian PRRO systems to issue fiscal receip
    - Location-based assignment
    - Active/inactive status
 
-2. **Receipt** ([receipt/README.md](receipt/README.md)) - in progress
+2. **Receipt** ([receipt/README.md](receipt/README.md))
    - Fiscal receipt creation
    - Order integration
    - Payment type tracking
    - Status: pending → printed → cancelled
 
-3. **Shift** (`shift/`) - planned
-   - Shift management (open/close)
-   - Z-report generation
-   - Daily summaries
+3. **Shift Automation** (via CashRegister)
+   - Shift open/close via Checkbox API
+   - Z-report references on close
+   - Daily cadence via scheduler jobs
 
 ### External Integrations
 
@@ -54,40 +54,43 @@ The Fiscal context integrates with Ukrainian PRRO systems to issue fiscal receip
 
 ---
 
-## Current Status (Week 1)
+## Current Status (January 2026)
 
 ### Completed
 
-1. **Project Structure**
-   - Directory structure created
-   - CashRegister aggregate (entity, errors, repository, usecase)
-   - Database migration (fiscal_cash_registers, fiscal_receipts)
-   - Checkbox API client (basic implementation)
+1. **Core Aggregates + Repositories**
+   - CashRegister + Receipt aggregates
+   - PostgreSQL repositories + migrations
+   - Provider receipt ID persistence
 
-### In Progress (Week 1, Day 2-7)
+2. **Checkbox Integration**
+   - Create/print/cancel receipt
+   - Shift open/close + Z-report response
 
-2. **Receipt Aggregate**
-   - Entity implementation
-   - Repository (PostgreSQL)
-   - UseCase (business logic)
+3. **Order Event Flow**
+   - order.confirmed → receipt creation
+   - Optional auto-print on confirmation
 
-3. **HTTP API**
-   - Cash register handlers
-   - Receipt handlers
-   - Router setup
-
-4. **Integration with Order Context**
-   - Order → Receipt event flow
-   - Auto-print on order confirmation
-
-### Planned (Week 2)
+4. **Scheduler Integration**
+   - Retry printing job
+   - Shift open/close jobs
 
 5. **Testing**
-   - Unit tests (30+ target)
-   - Integration tests (15+ target)
-   - Smoke tests (10+ target)
+   - Unit tests for receipts, printers, checkbox client
+   - Integration tests for order events + shift automation
 
-6. **Beta Testing**
+### In Progress
+
+6. **Sandbox Validation**
+   - End-to-end checklist for receipt/shift/Z-report edge cases
+   - Smoke test coverage for fiscal handlers
+
+### Planned
+
+7. **Daily Z-Report Cadence + Monitoring**
+   - Operational runbook + alerting
+
+8. **Beta Testing**
    - Identify 3-5 retail stores
    - Real-world validation
    - Feedback collection
@@ -153,6 +156,8 @@ Content-Type: application/json
 - Checkbox API integration only
 - Cash register CRUD
 - Receipt creation from orders
+- Receipt printing + cancellation
+- Shift open/close automation with Z-report references
 - Basic error handling
 - Fiscal number tracking
 
@@ -160,7 +165,6 @@ Content-Type: application/json
 
 - Vchasno.Kasa integration
 - Shift management UI
-- Z-report automation
 - Receipt corrections
 - Multiple tax rates per receipt
 
@@ -189,33 +193,12 @@ Content-Type: application/json
 
 ---
 
-## Next Steps (Week 1, Days 2-7)
+## Next Steps
 
-### Day 2 (Today)
-
-- Create Fiscal Context structure
-- Implement CashRegister aggregate
-- Create database migration
-- Implement Checkbox API client
-- Write README
-
-### Days 3-4 (January 15-16)
-
-- Implement Receipt aggregate
-- Create PostgreSQL repository
-- Implement business logic (UseCase)
-
-### Days 5-6 (January 17-18)
-
-- HTTP handlers (DTOs, validation)
-- Router setup
-- Bootstrap integration
-
-### Day 7 (January 19)
-
-- Unit tests (30+ tests)
-- Manual testing (Postman)
-- Code review
+- Add fiscal smoke tests (failure + compensation cases)
+- Finalize daily Z-report cadence + monitoring
+- Complete Checkbox sandbox validation checklist
+- Prepare beta onboarding checklist and sample data
 
 ---
 
@@ -282,8 +265,8 @@ Fiscal is **high risk** (money + compliance), so allow a larger test budget whil
 
 ---
 
-**Status**: Day 1 Complete  \
-**Next**: Receipt aggregate implementation (Day 2)  \
-**Timeline**: On track for 2-week MVP  \
-**Last Updated**: January 14, 2026
+**Status**: MVP core delivered; validation in progress  \
+**Next**: Sandbox checklist + smoke test coverage  \
+**Timeline**: January 2026  \
+**Last Updated**: January 17, 2026
 

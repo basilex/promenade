@@ -4,7 +4,7 @@
 # All test commands are database-agnostic and use .promenade.workspace
 # ============================================================================
 
-.PHONY: test-all test test-unit test-integration test-smoke test-benchmark test-benchmark-all test-coverage test-db-start test-db-stop
+.PHONY: test-all test test-unit test-integration test-integration-path test-smoke test-benchmark test-benchmark-all test-coverage test-db-start test-db-stop
 
 # ============================================================================
 # Testing Runner
@@ -55,6 +55,35 @@ test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER f
 		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 ./test/integration/contexts/...; \
 	else \
 		go test -v -p 1 ./test/integration/contexts/...; \
+	fi
+	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			$(MAKE) test-db-stop; \
+		fi \
+	fi
+
+test-integration-path: validate-env  ## Run integration tests for a specific path (TEST_PATH=./test/integration/contexts/...) 
+	@if [ -z "$(TEST_PATH)" ]; then \
+		echo "❌ TEST_PATH is required (e.g., make test-integration-path TEST_PATH=./test/integration/contexts/fiscal/integration)"; \
+		exit 1; \
+	fi
+	@echo "Running integration tests for $(TEST_PATH) ($(DATABASE_DRIVER))..."
+	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
+		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
+			echo "Test DB: PostgreSQL on localhost:5433/promenade_test"; \
+			$(MAKE) test-db-start; \
+			sleep 3; \
+		else \
+			echo "CI environment: Using PostgreSQL service on localhost:5432"; \
+		fi \
+	else \
+		echo "Test DB: SQLite (embedded, no Docker needed)"; \
+	fi
+	@echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"
+	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
+		DB_HOST=$${DB_HOST:-localhost} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-localhost:6380} go test -v -p 1 $(TEST_PATH); \
+	else \
+		go test -v -p 1 $(TEST_PATH); \
 	fi
 	@if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
 		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \

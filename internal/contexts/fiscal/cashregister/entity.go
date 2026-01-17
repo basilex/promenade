@@ -21,13 +21,19 @@ const (
 type CashRegister struct {
 	aggregate.BaseAggregate
 
-	OrganizationID uuidv7.UUID        `db:"organization_id"`
-	FiscalNumber   string             `db:"fiscal_number"`
-	Model          string             `db:"model"`
-	Status         CashRegisterStatus `db:"status"`
-	LicenseKey     string             `db:"license_key"`
-	LastSyncAt     *time.Time         `db:"last_sync_at"`
-	LastUpdatedBy  uuidv7.UUID        `db:"last_updated_by"`
+	OrganizationID         uuidv7.UUID        `db:"organization_id"`
+	FiscalNumber           string             `db:"fiscal_number"`
+	Model                  string             `db:"model"`
+	Status                 CashRegisterStatus `db:"status"`
+	LicenseKey             string             `db:"license_key"`
+	LastSyncAt             *time.Time         `db:"last_sync_at"`
+	ProviderCashRegisterID string             `db:"provider_cash_register_id"`
+	ActiveShiftID          string             `db:"active_shift_id"`
+	ShiftOpenedAt          *time.Time         `db:"shift_opened_at"`
+	ShiftClosedAt          *time.Time         `db:"shift_closed_at"`
+	LastZReportID          string             `db:"last_z_report_id"`
+	LastZReportAt          *time.Time         `db:"last_z_report_at"`
+	LastUpdatedBy          uuidv7.UUID        `db:"last_updated_by"`
 }
 
 // NewCashRegister creates a new cash register aggregate
@@ -99,6 +105,42 @@ func (cr *CashRegister) UpdateLastSync(syncedBy uuidv7.UUID) error {
 	now := time.Now()
 	cr.LastSyncAt = &now
 	cr.LastUpdatedBy = syncedBy
+	cr.Touch()
+
+	return nil
+}
+
+// OpenShift marks a cash register shift as opened
+func (cr *CashRegister) OpenShift(shiftID string, openedBy uuidv7.UUID) error {
+	if shiftID == "" {
+		return ErrShiftIDRequired
+	}
+	if cr.ActiveShiftID != "" {
+		return ErrShiftAlreadyOpen
+	}
+
+	now := time.Now()
+	cr.ActiveShiftID = shiftID
+	cr.ShiftOpenedAt = &now
+	cr.ShiftClosedAt = nil
+	cr.LastUpdatedBy = openedBy
+	cr.Touch()
+
+	return nil
+}
+
+// CloseShift marks a cash register shift as closed and stores Z-report info
+func (cr *CashRegister) CloseShift(zReportID string, closedBy uuidv7.UUID) error {
+	if cr.ActiveShiftID == "" {
+		return ErrNoActiveShift
+	}
+
+	now := time.Now()
+	cr.ActiveShiftID = ""
+	cr.ShiftClosedAt = &now
+	cr.LastZReportID = zReportID
+	cr.LastZReportAt = &now
+	cr.LastUpdatedBy = closedBy
 	cr.Touch()
 
 	return nil

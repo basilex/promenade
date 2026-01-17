@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS fiscal_receipts (
     fiscal_number VARCHAR(50),
     fiscal_url TEXT,
     qr_code TEXT,
+    provider_receipt_id TEXT,
 
     printed_at TIMESTAMP,
     cancelled_at TIMESTAMP,
@@ -43,6 +44,7 @@ CREATE INDEX idx_fiscal_receipts_order ON fiscal_receipts(order_id) WHERE delete
 CREATE INDEX idx_fiscal_receipts_status ON fiscal_receipts(status) WHERE deleted_at IS NULL;
 CREATE INDEX idx_fiscal_receipts_created_at ON fiscal_receipts(created_at) WHERE deleted_at IS NULL;
 CREATE UNIQUE INDEX idx_fiscal_receipts_order_unique ON fiscal_receipts(order_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_fiscal_receipts_provider_id ON fiscal_receipts(provider_receipt_id) WHERE deleted_at IS NULL;
 
 COMMENT ON TABLE fiscal_receipts IS 'Fiscal receipts for Ukrainian compliance';
 COMMENT ON COLUMN fiscal_receipts.version IS 'Optimistic locking version - incremented on every update';

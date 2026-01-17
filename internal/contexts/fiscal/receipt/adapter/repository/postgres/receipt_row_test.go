@@ -39,6 +39,7 @@ func TestReceiptRow_ToEntityAndFromEntity(t *testing.T) {
 		FiscalNumber:       nullString("FN-123"),
 		FiscalURL:          nullString("https://example.com"),
 		QRCode:             nullString("qr"),
+		ProviderReceiptID:  nullString("provider-123"),
 		PrintedAt:          nullTime(printedAt),
 		CancelledAt:        nullTime(cancelledAt),
 		CancellationReason: nullString("test"),
@@ -50,6 +51,7 @@ func TestReceiptRow_ToEntityAndFromEntity(t *testing.T) {
 	require.Equal(t, "FN-123", entity.FiscalNumber)
 	require.Equal(t, "https://example.com", entity.FiscalURL)
 	require.Equal(t, "qr", entity.QRCode)
+	require.Equal(t, "provider-123", entity.ProviderReceiptID)
 	require.NotNil(t, entity.PrintedAt)
 	require.NotNil(t, entity.CancelledAt)
 	require.Equal(t, "test", entity.CancellationReason)

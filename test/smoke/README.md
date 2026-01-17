@@ -240,11 +240,6 @@ test/smoke/
         receipt/handler_test.go
 ```
 
----
-
-## Structure
-
-
 ## Writing Smoke Tests
 
 ### 1. Use Helper Utilities (testutils.go)

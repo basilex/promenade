@@ -22,6 +22,7 @@ The Receipt aggregate ties an order to a fiscal cash register and tracks the fis
 - **FiscalNumber**: Provider fiscal number once printed.
 - **FiscalURL**: Provider receipt URL.
 - **QRCode**: Base64 QR code data.
+- **ProviderReceiptID**: Provider receipt identifier used for cancel.
 - **PrintedAt** / **CancelledAt**: Lifecycle timestamps.
 - **CancellationReason**: Required when cancelled.
 - **Lines**: Receipt line items stored as `jsonstore.Field[[]ReceiptLine]`.
@@ -53,7 +54,7 @@ The Receipt aggregate ties an order to a fiscal cash register and tracks the fis
 
 - `NewReceipt(...)` validates input, calculates totals, and initializes the receipt.
 - `MarkPrinted(...)` stores fiscal metadata and moves to `printed`.
-- `Cancel(...)` requires a reason and moves to `cancelled`.
+- `Cancel(...)` requires a reason and moves to `cancelled` (and attempts provider cancel when available).
 - `Validate()` ensures payment/receipt types and line items are valid.
 
 ---

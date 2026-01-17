@@ -1,7 +1,7 @@
 # Strategic Roadmap 2026
 
 **Created**: January 13, 2026  \
-**Updated**: January 16, 2026 (priority reordering + fiscal milestones)
+**Updated**: January 17, 2026 (Phase 3 completed; fiscal PRRO E2E + scheduler shift/retry wired)
 
 ---
 
@@ -28,8 +28,10 @@ This document consolidates the 2026 strategic plan for core platform milestones 
 ## Current Status (January 2026)
 
 - Phase 1–2 complete (architecture + domain errors refactor).
-- Phase 3 Week 1 complete (engine + HTTP layer).
-- Fiscal context in progress: cash register aggregate done; receipt aggregate and routes added; fiscal migrations extended.
+- Phase 3 complete: LUA engine + HTTP layer + script storage/versioning + UI metadata FormDefinition API.
+- Scheduler core package production-ready (`pkg/scheduler`); fiscal retries + shift open/close jobs wired.
+- Fiscal context in progress: cash register aggregate done; receipt aggregate and routes added; fiscal migrations extended; checkbox cancel + shift flows added.
+- Order Management Contract aggregate complete (see docs/roadmap/PHASE3_CONTRACT_SUMMARY.md).
 
 ## Priority Sequence (Q1 2026)
 
@@ -41,19 +43,18 @@ This document consolidates the 2026 strategic plan for core platform milestones 
 
 ## Q1 Milestones
 
-- M1: Script storage + versioning (migrations, repository, use case).
-- M2: UI metadata FormDefinition aggregate + API.
-- M3: Receipt E2E flow with order events and handler error mapping.
-- M4: Checkbox provider integration complete (sandbox validation).
-- M5: 10 retail beta testers onboarded.
+- M1 (Done): Script storage + versioning (migrations, repository, use case).
+- M2 (Done): UI metadata FormDefinition aggregate + API.
+- M3 (Done): Receipt E2E flow with order events and handler error mapping.
+- M4 (In Progress): Checkbox provider integration complete (sandbox validation).
+- M5 (Planned): 10 retail beta testers onboarded.
 
 ## Next Steps
 
-1. Finish script storage migrations and repository.
-2. Implement UI metadata aggregate and HTTP layer.
-3. Wire order.confirmed events to fiscal receipt creation.
-4. Add receipt integration tests and smoke tests.
-5. Prepare beta onboarding checklist and sample data.
+1. Add receipt + shift smoke tests (failure + compensation cases).
+2. Finalize daily Z-report automation cadence + monitoring.
+3. Complete Checkbox sandbox validation checklist (incl. shift/Z-report edge cases).
+4. Prepare beta onboarding checklist and sample data.
 
 <!--
 *** End Patch

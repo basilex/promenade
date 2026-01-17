@@ -2,9 +2,9 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/Tests-2465+-success?style=flat)](test/)
-[![Coverage](https://img.shields.io/badge/Coverage-90%25+-success?style=flat)](test/)
-[![Swagger](https://img.shields.io/badge/Swagger-182+_endpoints-success?style=flat)](http://localhost:8081/api/docs/index.html)
+[![Tests](https://img.shields.io/badge/Tests-passing-success?style=flat)](test/)
+[![Coverage](https://img.shields.io/badge/Coverage-report-success?style=flat)](test/)
+[![Swagger](https://img.shields.io/badge/Swagger-API-success?style=flat)](http://localhost:8081/api/docs/index.html)
 [![Security Audit](https://img.shields.io/badge/Security_Audit-Complete-success?style=flat)](docs/guides/security-patterns.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
@@ -31,8 +31,8 @@ Comprehensive business documentation available in multiple languages:
 |  Français | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
 |  Español | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
 |  Português | [Visão Geral de Negócios](docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
-|   | [](docs/business/BUSINESS_OVERVIEW_JP.md) |  |
-|   | [](docs/business/BUSINESS_OVERVIEW_ZH.md) |  |
+|  日本語 | [ビジネス概要](docs/business/BUSINESS_OVERVIEW_JP.md) | 経営者、マネージャー、投資家 |
+|  中文 | [商业概览](docs/business/BUSINESS_OVERVIEW_ZH.md) | 管理层、经理、投资人 |
 
 ### NEW: Ukrainian Market Strategy
 
@@ -66,7 +66,7 @@ Comprehensive business documentation available in multiple languages:
 
 ### What's Included
 
-**Executive Summary**: Modular architecture, event-driven design, 2465+ automated tests
+**Executive Summary**: Modular architecture, event-driven design, automated tests
 
 **Core Capabilities**: 
 -  CRM (Customer Management, Sales Pipeline, Interactions)
@@ -90,7 +90,7 @@ Comprehensive business documentation available in multiple languages:
 - **Android Application**: Kotlin/Compose, 12-16 weeks, $35K-60K USD
 - **Contact**: alexander.vasilenko@gmail.com
 
-**Implementation Status**: 80% complete, 182+ API endpoints, 2465+ automated tests, 90%+ code coverage
+**Implementation Status**: Active development, API documented in Swagger, automated tests across unit/smoke/integration
 
 ---
 
@@ -129,7 +129,7 @@ Promenade follows a strict DDD and Clean Architecture approach that keeps bounde
 - **Sessions Completed**: 18
 - **Final Commit**: [4eac8c9](https://github.com/basilex/promenade/commit/4eac8c9)
 - **Code Quality**: 0 lint issues (perfect score)
-- **Test Coverage**: 2465+ tests, 100% pass rate
+- **Test Coverage**: Full suite passing (see [test/README.md](test/README.md))
 - **Status**: Production-ready
 
 ### Security Improvements
@@ -186,7 +186,7 @@ if err != nil {
 - Status: Perfect score
 
 **Functional Testing** (go test):
-- Tests Run: 2465+
+- Tests Run: Full suite
 - Pass Rate: 100%
 - Status: All functionality preserved
 

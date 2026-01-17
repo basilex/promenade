@@ -84,3 +84,5 @@ fiscal:
     sandbox: true
     timeout: 30s
   pdf_output_dir: "${FISCAL_PDF_OUTPUT_DIR:-tmp/fiscal/receipts}" # PDF output directory
+  shift_open_cron: "0 9 * * *"
+  shift_close_cron: "0 23 * * *"

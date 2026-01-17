@@ -25,18 +25,24 @@ func NewCashRegisterRepository(db *sqlx.DB) cashregister.IRepository {
 
 // cashRegisterRow represents database row structure for cash register table
 type cashRegisterRow struct {
-	ID             string         `db:"id"`
-	Version        int            `db:"version"`
-	OrganizationID string         `db:"organization_id"`
-	FiscalNumber   string         `db:"fiscal_number"`
-	Model          string         `db:"model"`
-	Status         string         `db:"status"`
-	LicenseKey     sql.NullString `db:"license_key"`
-	LastSyncAt     sql.NullTime   `db:"last_sync_at"`
-	LastUpdatedBy  string         `db:"last_updated_by"`
-	CreatedAt      time.Time      `db:"created_at"`
-	UpdatedAt      time.Time      `db:"updated_at"`
-	DeletedAt      sql.NullTime   `db:"deleted_at"`
+	ID                     string         `db:"id"`
+	Version                int            `db:"version"`
+	OrganizationID         string         `db:"organization_id"`
+	FiscalNumber           string         `db:"fiscal_number"`
+	Model                  string         `db:"model"`
+	Status                 string         `db:"status"`
+	LicenseKey             sql.NullString `db:"license_key"`
+	LastSyncAt             sql.NullTime   `db:"last_sync_at"`
+	ProviderCashRegisterID sql.NullString `db:"provider_cash_register_id"`
+	ActiveShiftID          sql.NullString `db:"active_shift_id"`
+	ShiftOpenedAt          sql.NullTime   `db:"shift_opened_at"`
+	ShiftClosedAt          sql.NullTime   `db:"shift_closed_at"`
+	LastZReportID          sql.NullString `db:"last_z_report_id"`
+	LastZReportAt          sql.NullTime   `db:"last_z_report_at"`
+	LastUpdatedBy          string         `db:"last_updated_by"`
+	CreatedAt              time.Time      `db:"created_at"`
+	UpdatedAt              time.Time      `db:"updated_at"`
+	DeletedAt              sql.NullTime   `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity
@@ -71,15 +77,33 @@ func (r *cashRegisterRow) toEntity() (*cashregister.CashRegister, error) {
 	cr.Version = r.Version
 	cr.CreatedAt = r.CreatedAt
 	cr.UpdatedAt = r.UpdatedAt
-	
+
 	if r.LicenseKey.Valid {
 		cr.LicenseKey = r.LicenseKey.String
 	}
-	
+
 	if r.LastSyncAt.Valid {
 		cr.LastSyncAt = &r.LastSyncAt.Time
 	}
-	
+	if r.ProviderCashRegisterID.Valid {
+		cr.ProviderCashRegisterID = r.ProviderCashRegisterID.String
+	}
+	if r.ActiveShiftID.Valid {
+		cr.ActiveShiftID = r.ActiveShiftID.String
+	}
+	if r.ShiftOpenedAt.Valid {
+		cr.ShiftOpenedAt = &r.ShiftOpenedAt.Time
+	}
+	if r.ShiftClosedAt.Valid {
+		cr.ShiftClosedAt = &r.ShiftClosedAt.Time
+	}
+	if r.LastZReportID.Valid {
+		cr.LastZReportID = r.LastZReportID.String
+	}
+	if r.LastZReportAt.Valid {
+		cr.LastZReportAt = &r.LastZReportAt.Time
+	}
+
 	return cr, nil
 }
 
@@ -104,6 +128,24 @@ func fromEntity(cr *cashregister.CashRegister) *cashRegisterRow {
 	if cr.LastSyncAt != nil {
 		row.LastSyncAt = sql.NullTime{Time: *cr.LastSyncAt, Valid: true}
 	}
+	if cr.ProviderCashRegisterID != "" {
+		row.ProviderCashRegisterID = sql.NullString{String: cr.ProviderCashRegisterID, Valid: true}
+	}
+	if cr.ActiveShiftID != "" {
+		row.ActiveShiftID = sql.NullString{String: cr.ActiveShiftID, Valid: true}
+	}
+	if cr.ShiftOpenedAt != nil {
+		row.ShiftOpenedAt = sql.NullTime{Time: *cr.ShiftOpenedAt, Valid: true}
+	}
+	if cr.ShiftClosedAt != nil {
+		row.ShiftClosedAt = sql.NullTime{Time: *cr.ShiftClosedAt, Valid: true}
+	}
+	if cr.LastZReportID != "" {
+		row.LastZReportID = sql.NullString{String: cr.LastZReportID, Valid: true}
+	}
+	if cr.LastZReportAt != nil {
+		row.LastZReportAt = sql.NullTime{Time: *cr.LastZReportAt, Valid: true}
+	}
 
 	if cr.DeletedAt != nil {
 		row.DeletedAt = sql.NullTime{Time: *cr.DeletedAt, Valid: true}
@@ -117,15 +159,17 @@ func (r *cashRegisterRepository) Create(ctx context.Context, cr *cashregister.Ca
 	query := `
 		INSERT INTO fiscal_cash_registers (
 			id, version, organization_id, fiscal_number, model, status,
-			license_key, last_sync_at, last_updated_by,
-			created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
+			license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+			shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at,
+			last_updated_by, created_at, updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`
 
 	row := fromEntity(cr)
 	_, err := r.Exec(ctx, query,
 		row.ID, row.Version, row.OrganizationID, row.FiscalNumber, row.Model, row.Status,
-		row.LicenseKey, row.LastSyncAt, row.LastUpdatedBy,
-		row.CreatedAt, row.UpdatedAt,
+		row.LicenseKey, row.LastSyncAt, row.ProviderCashRegisterID, row.ActiveShiftID,
+		row.ShiftOpenedAt, row.ShiftClosedAt, row.LastZReportID, row.LastZReportAt,
+		row.LastUpdatedBy, row.CreatedAt, row.UpdatedAt,
 	)
 
 	if err != nil {
@@ -139,7 +183,8 @@ func (r *cashRegisterRepository) Create(ctx context.Context, cr *cashregister.Ca
 func (r *cashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cashregister.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
-		       license_key, last_sync_at, last_updated_by,
+		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+		       shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at, last_updated_by,
 		       created_at, updated_at, deleted_at
 		FROM fiscal_cash_registers
 		WHERE id = $1 AND deleted_at IS NULL`
@@ -159,7 +204,8 @@ func (r *cashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*
 func (r *cashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNumber string) (*cashregister.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
-		       license_key, last_sync_at, last_updated_by,
+		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+		       shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at, last_updated_by,
 		       created_at, updated_at, deleted_at
 		FROM fiscal_cash_registers
 		WHERE fiscal_number = $1 AND deleted_at IS NULL`
@@ -179,7 +225,8 @@ func (r *cashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNu
 func (r *cashRegisterRepository) List(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
-		       license_key, last_sync_at, last_updated_by,
+		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+		       shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at, last_updated_by,
 		       created_at, updated_at, deleted_at
 		FROM fiscal_cash_registers
 		WHERE deleted_at IS NULL`
@@ -213,7 +260,8 @@ func (r *cashRegisterRepository) List(ctx context.Context, filters *cashregister
 func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID uuidv7.UUID) ([]*cashregister.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
-		       license_key, last_sync_at, last_updated_by,
+		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+		       shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at, last_updated_by,
 		       created_at, updated_at, deleted_at
 		FROM fiscal_cash_registers
 		WHERE organization_id = $1 AND deleted_at IS NULL
@@ -240,7 +288,8 @@ func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID u
 func (r *cashRegisterRepository) ListActive(ctx context.Context) ([]*cashregister.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
-		       license_key, last_sync_at, last_updated_by,
+		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
+		       shift_opened_at, shift_closed_at, last_z_report_id, last_z_report_at, last_updated_by,
 		       created_at, updated_at, deleted_at
 		FROM fiscal_cash_registers
 		WHERE status = $1 AND deleted_at IS NULL
@@ -268,14 +317,22 @@ func (r *cashRegisterRepository) Update(ctx context.Context, cr *cashregister.Ca
 	query := `
 		UPDATE fiscal_cash_registers
 		SET version = $1, model = $2, status = $3,
-		    license_key = $4, last_sync_at = $5, last_updated_by = $6,
-		    updated_at = $7
-		WHERE id = $8 AND version = $9 AND deleted_at IS NULL`
+		    license_key = $4, last_sync_at = $5,
+		    provider_cash_register_id = $6, active_shift_id = $7,
+		    shift_opened_at = $8, shift_closed_at = $9,
+		    last_z_report_id = $10, last_z_report_at = $11,
+		    last_updated_by = $12,
+		    updated_at = $13
+		WHERE id = $14 AND version = $15 AND deleted_at IS NULL`
 
 	row := fromEntity(cr)
 	result, err := r.Exec(ctx, query,
 		row.Version+1, row.Model, row.Status,
-		row.LicenseKey, row.LastSyncAt, row.LastUpdatedBy,
+		row.LicenseKey, row.LastSyncAt,
+		row.ProviderCashRegisterID, row.ActiveShiftID,
+		row.ShiftOpenedAt, row.ShiftClosedAt,
+		row.LastZReportID, row.LastZReportAt,
+		row.LastUpdatedBy,
 		row.UpdatedAt,
 		row.ID, row.Version,
 	)

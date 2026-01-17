@@ -125,6 +125,10 @@ func (uc *useCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy u
 		return nil, ErrReceiptPrintFailed
 	}
 
+	if result != nil && result.ProviderReceiptID != "" {
+		rec.ProviderReceiptID = result.ProviderReceiptID
+	}
+
 	if err := rec.MarkPrinted(result.FiscalNumber, result.FiscalURL, result.QRCode, printedBy); err != nil {
 		return nil, err
 	}
@@ -141,6 +145,18 @@ func (uc *useCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason str
 	rec, err := uc.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
+	}
+
+	if rec.Status == ReceiptStatusPrinted {
+		if canceler, ok := uc.printer.(ICancelPrinter); ok && rec.ProviderReceiptID != "" {
+			if err := canceler.Cancel(ctx, rec, reason); err != nil {
+				logger.FromContext(ctx).Error("Failed to cancel receipt at provider",
+					slog.String("receipt_id", rec.GetID().String()),
+					slog.Any("error", err),
+				)
+				return nil, ErrReceiptCancelFailed
+			}
+		}
 	}
 
 	if err := rec.Cancel(reason, cancelledBy); err != nil {

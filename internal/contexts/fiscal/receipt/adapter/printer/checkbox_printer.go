@@ -54,8 +54,22 @@ func (p *CheckboxPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*rec
 	}
 
 	return &receipt.PrintResult{
-		FiscalNumber: resp.FiscalCode,
-		FiscalURL:    resp.FiscalURL,
-		QRCode:       resp.QRCodeURL,
+		ProviderReceiptID: resp.ID,
+		FiscalNumber:      resp.FiscalCode,
+		FiscalURL:         resp.FiscalURL,
+		QRCode:            resp.QRCodeURL,
 	}, nil
+}
+
+// Cancel cancels a receipt via Checkbox API.
+func (p *CheckboxPrinter) Cancel(ctx context.Context, rec *receipt.Receipt, reason string) error {
+	if p.client == nil {
+		return fmt.Errorf("checkbox client not configured")
+	}
+	if rec.ProviderReceiptID == "" {
+		return fmt.Errorf("provider receipt id is missing")
+	}
+
+	_, err := p.client.CancelReceipt(ctx, rec.ProviderReceiptID, reason)
+	return err
 }

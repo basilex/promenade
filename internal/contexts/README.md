@@ -216,12 +216,13 @@ Each context follows this structure:
 **Aggregates:**
 
 - **CashRegister** - Cash register registration and lifecycle
-- **Receipt** - Fiscal receipt creation and status tracking (in progress)
+- **Receipt** - Fiscal receipt creation and status tracking
 
 **Responsibilities:**
 
 - Cash register management
-- Fiscal receipt creation
+- Fiscal receipt creation + cancellation
+- Shift open/close automation + Z-report references
 - Provider integration (Checkbox API)
 
 **Boundaries:**

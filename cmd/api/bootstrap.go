@@ -17,6 +17,7 @@ import (
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
+	"github.com/basilex/promenade/pkg/scheduler"
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/integration"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
@@ -41,6 +42,7 @@ type App struct {
 	HealthChecker           *health.Checker
 	OrderEventHandler       *integration.OrderEventHandler
 	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
+	Scheduler               *scheduler.Engine
 }
 
 // Bootstrap initializes all application dependencies
@@ -100,11 +102,18 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 	app.OrderEventHandler = orderEventHandler
 
 	// Initialize Fiscal Integration
-	fiscalOrderEventHandler, err := initFiscalIntegration(db, eventBus, cfg)
+	fiscalOrderEventHandler, receiptUC, printerEnabled, checkboxClient, err := initFiscalIntegration(db, eventBus, cfg)
 	if err != nil {
 		return nil, err
 	}
 	app.FiscalOrderEventHandler = fiscalOrderEventHandler
+
+	// Initialize Scheduler (Fiscal retries, etc.)
+	schedulerEngine, err := initScheduler(cfg, db, receiptUC, printerEnabled, checkboxClient)
+	if err != nil {
+		return nil, err
+	}
+	app.Scheduler = schedulerEngine
 
 	// Initialize Health Checker
 	healthChecker := health.NewChecker(db, redisClient, eventBus, cfg.App.Version)
@@ -324,7 +333,7 @@ func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.Orde
 }
 
 // initFiscalIntegration initializes Fiscal Integration (Order → Receipt auto-print)
-func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig) (*fiscalIntegration.OrderEventHandler, error) {
+func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig) (*fiscalIntegration.OrderEventHandler, receipt.IUseCase, bool, *checkbox.Client, error) {
 	cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
 	receiptRepository := receiptRepo.NewReceiptRepository(db)
 
@@ -366,7 +375,7 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 
 	if err := orderEventHandler.RegisterHandlers(eventBus); err != nil {
 		logger.Fatal("Failed to register fiscal order event handlers", slog.Any("error", err))
-		return nil, err
+		return nil, nil, false, nil, err
 	}
 
 	logger.Info("Fiscal Integration initialized",
@@ -374,12 +383,62 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 		slog.Bool("printer_enabled", printerEnabled),
 	)
 
-	return orderEventHandler, nil
+	return orderEventHandler, receiptUseCase, printerEnabled, checkboxClient, nil
+}
+
+// initScheduler initializes scheduler engine and registers fiscal retry jobs
+func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receipt.IUseCase, printerEnabled bool, checkboxClient *checkbox.Client) (*scheduler.Engine, error) {
+	if !cfg.Scheduler.Enabled {
+		logger.Info("Scheduler disabled")
+		return nil, nil
+	}
+
+	engine, err := scheduler.NewEngine(cfg.Scheduler)
+	if err != nil {
+		logger.Fatal("Failed to initialize scheduler", slog.Any("error", err))
+		return nil, err
+	}
+
+	if receiptUC != nil && printerEnabled {
+		if err := fiscalIntegration.RegisterReceiptRetryJob(engine, receiptUC, cfg.Fiscal.RetryCron); err != nil {
+			logger.Fatal("Failed to register fiscal receipt retry job", slog.Any("error", err))
+			return nil, err
+		}
+	} else {
+		logger.Info("Fiscal receipt retry job not registered (printer disabled)")
+	}
+
+	if checkboxClient != nil {
+		cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
+		if err := fiscalIntegration.RegisterShiftJobs(engine, cashRegisterRepository, checkboxClient, cfg.Fiscal.ShiftOpenCron, cfg.Fiscal.ShiftCloseCron); err != nil {
+			logger.Fatal("Failed to register fiscal shift jobs", slog.Any("error", err))
+			return nil, err
+		}
+	} else {
+		logger.Info("Shift jobs not registered (checkbox client not configured)")
+	}
+
+	if err := engine.Start(); err != nil {
+		logger.Fatal("Failed to start scheduler", slog.Any("error", err))
+		return nil, err
+	}
+
+	logger.Info("Scheduler initialized")
+	return engine, nil
 }
 
 // Close gracefully closes all application dependencies
 func (app *App) Close() {
 	ctx := context.Background()
+
+	// Stop scheduler before closing dependencies
+	if app.Scheduler != nil {
+		if err := app.Scheduler.Stop(); err != nil {
+			if err != scheduler.ErrEngineNotRunning {
+				logger.Error("Failed to stop scheduler", slog.Any("error", err))
+			}
+		}
+	}
 
 	// Close event bus first
 	if app.EventBus != nil {

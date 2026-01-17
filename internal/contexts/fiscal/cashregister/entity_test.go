@@ -182,6 +182,54 @@ func TestCashRegister_UpdateLastSync(t *testing.T) {
 	assert.Equal(t, syncedBy, cr.LastUpdatedBy)
 }
 
+func TestCashRegister_OpenShift(t *testing.T) {
+	orgID := uuidv7.New()
+	createdBy := uuidv7.New()
+	openedBy := uuidv7.New()
+
+	cr, err := NewCashRegister(orgID, "1234567890", "Checkbox", createdBy)
+	require.NoError(t, err)
+
+	// Missing shift ID
+	err = cr.OpenShift("", openedBy)
+	assert.ErrorIs(t, err, ErrShiftIDRequired)
+
+	// Success
+	err = cr.OpenShift("shift-1", openedBy)
+	require.NoError(t, err)
+	assert.Equal(t, "shift-1", cr.ActiveShiftID)
+	assert.NotNil(t, cr.ShiftOpenedAt)
+	assert.Nil(t, cr.ShiftClosedAt)
+	assert.Equal(t, openedBy, cr.LastUpdatedBy)
+
+	// Already open
+	err = cr.OpenShift("shift-2", openedBy)
+	assert.ErrorIs(t, err, ErrShiftAlreadyOpen)
+}
+
+func TestCashRegister_CloseShift(t *testing.T) {
+	orgID := uuidv7.New()
+	createdBy := uuidv7.New()
+	closedBy := uuidv7.New()
+
+	cr, err := NewCashRegister(orgID, "1234567890", "Checkbox", createdBy)
+	require.NoError(t, err)
+
+	// No active shift
+	err = cr.CloseShift("z-1", closedBy)
+	assert.ErrorIs(t, err, ErrNoActiveShift)
+
+	// Open shift and close
+	require.NoError(t, cr.OpenShift("shift-1", createdBy))
+	err = cr.CloseShift("z-1", closedBy)
+	require.NoError(t, err)
+	assert.Equal(t, "", cr.ActiveShiftID)
+	assert.NotNil(t, cr.ShiftClosedAt)
+	assert.Equal(t, "z-1", cr.LastZReportID)
+	assert.NotNil(t, cr.LastZReportAt)
+	assert.Equal(t, closedBy, cr.LastUpdatedBy)
+}
+
 func TestCashRegister_SetMaintenance(t *testing.T) {
 	orgID := uuidv7.New()
 	createdBy := uuidv7.New()
