@@ -260,6 +260,7 @@ Fiscal is **high risk** (money + compliance), so allow a larger test budget whil
 
 - [Ukraine Market Strategy 2026](../../docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md)
 - [Ukraine Compliance Roadmap](../../docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md)
+- [Fiscal Ops Guide](../../docs/guides/ops-fiscal.md)
 - [Checkbox Sandbox Checklist](SANDBOX_CHECKLIST.md)
 - [Z-Report Runbook](Z_REPORT_RUNBOOK.md)
 - Checkbox API Docs: https://dev.checkbox.ua/uk/docs/api/

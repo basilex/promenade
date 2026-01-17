@@ -591,6 +591,7 @@ Strategic planning and implementation timelines:
 
 - **Monitoring?** → [Health Checks](guides/health-checks.md)
 - **Caching?** → [Caching Guide](guides/caching.md)
+- **Fiscal ops?** → [Fiscal Ops Guide](guides/ops-fiscal.md)
 
 ### For Architects
 
