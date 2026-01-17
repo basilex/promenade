@@ -108,9 +108,8 @@ test/integration/
     fiscal/
         cashregister/repository_test.go  #  Repository tests with real DB
         receipt/repository_test.go       #  Repository tests with real DB
-        integration/
-            order_event_integration_test.go      # Order → receipt event flow
-            shift_scheduler_integration_test.go  # Shift open/close automation
+        order_event_integration_test.go          # Order → receipt event flow
+        shift_scheduler_integration_test.go      # Shift open/close automation
     ui/
         metadata/
             form/repository_test.go       #  Repository tests with real DB
@@ -156,7 +155,7 @@ make test-smoke                     # Run all 184 smoke tests
 make test-integration
 
 # Integration tests for a specific path (auto DB start/stop like CI)
-make test-integration-path TEST_PATH=./test/integration/contexts/fiscal/integration
+make test-integration TEST_PATH=./test/integration/contexts/fiscal
 
 # Benchmark tests (performance measurement, with real DB)
 make test-benchmark
