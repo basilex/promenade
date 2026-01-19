@@ -11,17 +11,19 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
 	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
+	cashregisterAggregate "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
+	cashregisterRepository "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // createTestCashRegister creates a test cash register with unique fiscal number
-func createTestCashRegister() *cashregister.CashRegister {
+func createTestCashRegister() *cashregisterAggregate.CashRegister {
 	orgID := uuidv7.New()
 	userID := uuidv7.New()
 	// Use UUID in fiscal number for uniqueness
 	fiscalNumber := fmt.Sprintf("FN-%s", uuidv7.New().String()[:8])
-	cr, _ := cashregister.NewCashRegister(orgID, fiscalNumber, "Test Model X", userID)
+	cr, _ := cashregisterAggregate.NewCashRegister(orgID, fiscalNumber, "Test Model X", userID)
 	return cr
 }
 
@@ -43,7 +45,7 @@ func TestCashRegisterRepository_Create(t *testing.T) {
 		assert.Equal(t, cr.ID, found.ID)
 		assert.Equal(t, cr.FiscalNumber, found.FiscalNumber)
 		assert.Equal(t, cr.Model, found.Model)
-		assert.Equal(t, cashregister.StatusInactive, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusInactive, found.Status)
 	})
 }
 
@@ -118,7 +120,7 @@ func TestCashRegisterRepository_Update(t *testing.T) {
 
 		found, err := repo.GetByID(ctx, cr.ID)
 		require.NoError(t, err)
-		assert.Equal(t, cashregister.StatusActive, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusActive, found.Status)
 		assert.Equal(t, "LICENSE-KEY-123", found.LicenseKey)
 	})
 }
@@ -156,13 +158,13 @@ func TestCashRegisterRepository_ListByOrganization(t *testing.T) {
 		// Create cash registers for same organization
 		orgID := uuidv7.New()
 		userID := uuidv7.New()
-		cr1, _ := cashregister.NewCashRegister(orgID, fmt.Sprintf("FN-%s-1", uuidv7.New().String()[:8]), "Model 1", userID)
-		cr2, _ := cashregister.NewCashRegister(orgID, fmt.Sprintf("FN-%s-2", uuidv7.New().String()[:8]), "Model 2", userID)
+		cr1, _ := cashregisterAggregate.NewCashRegister(orgID, fmt.Sprintf("FN-%s-1", uuidv7.New().String()[:8]), "Model 1", userID)
+		cr2, _ := cashregisterAggregate.NewCashRegister(orgID, fmt.Sprintf("FN-%s-2", uuidv7.New().String()[:8]), "Model 2", userID)
 
 		require.NoError(t, repo.Create(ctx, cr1))
 		require.NoError(t, repo.Create(ctx, cr2))
 
-		filters := &cashregister.ListFilters{OrganizationID: &orgID}
+		filters := &cashregisterRepository.ListFilters{OrganizationID: &orgID}
 		cashRegisters, err := repo.List(ctx, filters)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(cashRegisters), 2)
@@ -229,7 +231,7 @@ func TestCashRegisterRepository_List(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, cr))
 
 		// Test with filters
-		filters := &cashregister.ListFilters{
+		filters := &cashregisterRepository.ListFilters{
 			OrganizationID: &cr.OrganizationID,
 		}
 
@@ -275,8 +277,8 @@ func TestCashRegisterRepository_ConcurrentCreate(t *testing.T) {
 		orgID := uuidv7.New()
 		userID := uuidv7.New()
 
-		cr1, _ := cashregister.NewCashRegister(orgID, fmt.Sprintf("FN-%s-CONC1", uuidv7.New().String()[:8]), "Model", userID)
-		cr2, _ := cashregister.NewCashRegister(orgID, fmt.Sprintf("FN-%s-CONC2", uuidv7.New().String()[:8]), "Model", userID)
+		cr1, _ := cashregisterAggregate.NewCashRegister(orgID, fmt.Sprintf("FN-%s-CONC1", uuidv7.New().String()[:8]), "Model", userID)
+		cr2, _ := cashregisterAggregate.NewCashRegister(orgID, fmt.Sprintf("FN-%s-CONC2", uuidv7.New().String()[:8]), "Model", userID)
 
 		// Create both - should succeed
 		err1 := repo.Create(ctx, cr1)
@@ -310,29 +312,29 @@ func TestCashRegisterRepository_StatusTransitions(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, cr))
 
 		// Test status transitions: inactive → active → suspended → maintenance → active
-		
+
 		// Activate
 		require.NoError(t, cr.Activate("LICENSE-KEY", userID))
 		require.NoError(t, repo.Update(ctx, cr))
 		found, _ := repo.GetByID(ctx, cr.ID)
-		assert.Equal(t, cashregister.StatusActive, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusActive, found.Status)
 
 		// Suspend
 		require.NoError(t, cr.Suspend(userID))
 		require.NoError(t, repo.Update(ctx, cr))
 		found, _ = repo.GetByID(ctx, cr.ID)
-		assert.Equal(t, cashregister.StatusSuspended, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusSuspended, found.Status)
 
 		// Set to maintenance
 		require.NoError(t, cr.SetMaintenance(userID))
 		require.NoError(t, repo.Update(ctx, cr))
 		found, _ = repo.GetByID(ctx, cr.ID)
-		assert.Equal(t, cashregister.StatusMaintenance, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusMaintenance, found.Status)
 
 		// Activate again
 		require.NoError(t, cr.Activate("NEW-LICENSE", userID))
 		require.NoError(t, repo.Update(ctx, cr))
 		found, _ = repo.GetByID(ctx, cr.ID)
-		assert.Equal(t, cashregister.StatusActive, found.Status)
+		assert.Equal(t, cashregisterAggregate.StatusActive, found.Status)
 	})
 }

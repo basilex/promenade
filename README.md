@@ -3,2034 +3,499 @@
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![Tests](https://img.shields.io/badge/Tests-passing-success?style=flat)](test/)
-[![Coverage](https://img.shields.io/badge/Coverage-report-success?style=flat)](test/)
-[![Swagger](https://img.shields.io/badge/Swagger-API-success?style=flat)](http://localhost:8081/api/docs/index.html)
-[![Security Audit](https://img.shields.io/badge/Security_Audit-Complete-success?style=flat)](docs/guides/security-patterns.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![DDD](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/concepts/clean-architecture.md)
 
-**Modern backend platform for customer management, orders, and business workflows** — built with **Domain-Driven Design (DDD)**, **Bounded Contexts**, and **Event-Driven Architecture**.
+**Enterprise backend platform for customer management, orders, billing, and warehouse operations** — built with **Domain-Driven Design**, **Clean Architecture**, and **Event-Driven patterns**.
 
-> **Not a traditional CRM** — Promenade is a **modular platform** that grows with your needs.  
-> Start with customer management, add orders when needed, integrate billing when ready.
+> **Modular by Design** — Start with customer management, add orders when needed, integrate warehouse when ready. Each context is independent and can be deployed separately.
 
 ---
 
-## For Business Decision-Makers
+## 📋 What is Promenade?
 
-**Non-technical overview of platform capabilities, value proposition, and implementation status**
+Promenade is an **open-source business platform** that replaces multiple SaaS tools with a single, modular backend:
 
-Comprehensive business documentation available in multiple languages:
+- **CRM** — Customer management, sales pipeline, interactions tracking
+- **Order Management** — Order processing, fulfillment workflows, state machines
+- **Warehouse** — Inventory tracking, stock movements, product management, multi-location support
+- **Billing** — Invoices, payments, subscriptions, recurring billing
 
-| Language | Document | Target Audience |
-|----------|----------|-----------------|
-|  English | [Business Overview](docs/business/BUSINESS_OVERVIEW.md) | Executives, managers, investors |
-|  Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md) | Executives, managers, investors |
-|  Deutsch | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | Führungskräfte, Manager, Investoren |
-|  Français | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md) | Dirigeants, managers, investisseurs |
-|  Español | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Ejecutivos, gerentes, inversores |
-|  Português | [Visão Geral de Negócios](docs/business/BUSINESS_OVERVIEW_PT.md) | Executivos, gerentes, investidores |
-|  日本語 | [ビジネス概要](docs/business/BUSINESS_OVERVIEW_JP.md) | 経営者、マネージャー、投資家 |
-|  中文 | [商业概览](docs/business/BUSINESS_OVERVIEW_ZH.md) | 管理层、经理、投资人 |
+**Built for**:
 
-### NEW: Ukrainian Market Strategy
-
-**CRITICAL OPPORTUNITY**: The ban on Russian software (1C, Bitrix24, AmoCRM) created a major vacuum in the Ukrainian CRM/ERP market:
-
-- **150,000+ SMB companies** are seeking alternatives
-- **$500M+ CRM/ERP market** in Ukraine
-- **70% of 1C users** have no replacement
-
-**Promenade Competitive Advantages**:
-- Modern architecture (DDD + Event-Driven) vs legacy 1C
-- Go performance (10-50x faster)
-- Pricing 40-60% lower than Terrasoft BPM'online
-- Open-source core (transparency and trust)
-
-**Target**: 5-10% SMB market (7,500-15,000 companies) in 18 months  
-**Projected ARR**: $9.4M-29.9M with 7,500 customers
-
-**Must-Have Features** (Q1-Q2 2026):
-1. Fiscal integration (Checkbox, Vchasno.Kasa) - retail
-2. Tax invoices (XML for the State Tax Service) - accounting firms
-3. Bank statements (Monobank, Privat24, PUMB)
-4. HRM (payroll + Ukrainian taxes)
-5. Nova Poshta / Ukrposhta APIs
-
-**Detailed Strategy**:
-- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Full business strategy (12 months)
-- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Technical implementation (Q1-Q2 2026)
+- SaaS companies needing customizable CRM/Order management
+- SMB companies replacing legacy ERP systems (1C, Bitrix24)
+- Development teams building custom business solutions
+- System integrators needing extensible backend platform
 
 ---
 
-### What's Included
-
-**Executive Summary**: Modular architecture, event-driven design, automated tests
-
-**Core Capabilities**: 
--  CRM (Customer Management, Sales Pipeline, Interactions)
--  Order Management (Processing, Fulfillment)
--  Warehouse (Inventory, Stock Movements, Products, Locations - 100% complete)
--  Billing (Invoices, Payments, Subscriptions)
-
-**For Investors** (~260 lines per language):
-- **Market Opportunity**: TAM $211B+ (CRM $128B + Orders $45B + Inventory $38B)
-- **Target Market**: 30M+ SMBs, 200K mid-market companies, 24M e-commerce stores
-- **Revenue Model**: SaaS $29-299/user/month + Professional Services $150-250/hour
-- **Revenue Projections**: Y1: $180K → Y5: $28M (567% Y1-Y2 growth)
-- **Funding**: $1.5M seed round (40% product, 30% sales, 20% ops, 10% reserve)
-- **Exit Strategy**: 4-6 years, $200M-500M target valuation
-- **Investment Terms**: $7.5M-10M pre-money, 15-20% equity
-- **Contact**: alexander.vasilenko@gmail.com
-
-**Tender: Web & Mobile Development** (~180 lines per language):
-- **Web Application**: React/TypeScript, 12-16 weeks, $40K-70K USD
-- **iOS Application**: Swift/SwiftUI, 12-16 weeks, $35K-60K USD
-- **Android Application**: Kotlin/Compose, 12-16 weeks, $35K-60K USD
-- **Contact**: alexander.vasilenko@gmail.com
-
-**Implementation Status**: Active development, API documented in Swagger, automated tests across unit/smoke/integration
-
----
-
-## For Developers & Technical Teams
-
-**Documentation**: [View Full Documentation](https://basilex.github.io/promenade/) | [Quick Start Guide](docs/guides/quick-start.md) | [API Reference](docs/guides/api-documentation.md) | [Swagger UI](http://localhost:8081/api/docs/index.html)
-
----
-
-## Design and Architecture
-
-Promenade follows a strict DDD and Clean Architecture approach that keeps bounded contexts isolated and promotes long-term maintainability.
-
-**Core principles**:
-- **Bounded Contexts** own their domain model, data, and APIs; cross-context communication happens through the Event Bus.
-- **Clean Architecture layers** separate handlers, use cases, repositories, and entities/value objects.
-- **Database-agnostic persistence** uses SQL dialect abstraction and `jsonstore.Field[T]` for JSON data across PostgreSQL and SQLite.
-- **Consistent error handling** centralizes domain errors in `errors.go`, uses `errors.Is()` in handlers, and hides system errors.
-- **Testing strategy** combines unit, smoke, integration, and benchmark tests for fast feedback and production confidence.
-
-**Fiscal context documentation**:
-- [Fiscal Context Overview](internal/contexts/fiscal/README.md)
-- [Cash Register Aggregate](internal/contexts/fiscal/cashregister/README.md)
-- [Receipt Aggregate](internal/contexts/fiscal/receipt/README.md)
-
----
-
-## Security Audit - Completed
-
-**Comprehensive security audit completed** (January 2026) - Systematic review and hardening of all HTTP handlers to prevent information leakage through error messages.
-
-### Audit Results
-
-- **Handlers Audited**: 36/36 (100% coverage)
-- **Security Fixes Applied**: 417 total
-- **Sessions Completed**: 18
-- **Final Commit**: [4eac8c9](https://github.com/basilex/promenade/commit/4eac8c9)
-- **Code Quality**: 0 lint issues (perfect score)
-- **Test Coverage**: Full suite passing (see [test/README.md](test/README.md))
-- **Status**: Production-ready
-
-### Security Improvements
-
-**Problem Addressed**: Prevented information leakage through specific error messages that could reveal:
-- System implementation details
-- Entity existence (enumeration attacks)
-- Internal structure and logic
-- Valid/invalid identifiers
-
-**Solution Applied**: Standardized error handling pattern across all 36 handlers:
-- **Validation Errors**: Preserve detailed feedback (user input issues)
-- **System Errors**: Generic messages only (hide implementation)
-- **Removed**: 417 instances of error string comparisons (`err.Error() == "not found"`)
-
-### Pattern Example
-
-```go
-//  CORRECT - Validation errors expose details (safe for user feedback)
-if err := c.ShouldBindJSON(&req); err != nil {
-    response.BadRequest(c, err.Error())  // User needs validation feedback
-}
-
-//  CORRECT - System errors use generic messages (security hardened)
-if err := h.usecase.CreateOrder(...); err != nil {
-    response.InternalError(c, "Failed to create order")  // Hide implementation
-}
-
-//  REMOVED - String comparison anti-pattern (417 fixes applied)
-if err != nil {
-    if err.Error() == "not found" {  // Security risk - entity enumeration
-        response.NotFound(c, "Entity not found")
-    }
-}
-```
-
-### Context Coverage
-
-| Context | Handlers | Fixes | Status |
-|---------|----------|-------|--------|
-| Identity | 5 | 40 | Complete |
-| Customer Management | 5 | 9 | Complete |
-| Order Management | 2 | 0 | Complete |
-| Billing | 3 | 1 | Complete |
-| Warehouse | 4 | 0 | Complete |
-| Scripting | 1 | 5 | Complete |
-| Shared | 4 | 0 | Complete |
-| Various (Sessions 1-13) | 12 | 362 | Complete |
-
-### Validation Results
-
-**Code Quality** (golangci-lint):
-- Issues Found: 0
-- Status: Perfect score
-
-**Functional Testing** (go test):
-- Tests Run: Full suite
-- Pass Rate: 100%
-- Status: All functionality preserved
-
-**Documentation**: See [docs/guides/security-patterns.md](docs/guides/security-patterns.md) for detailed security patterns and best practices.
-
----
-
-## Domain Errors Refactoring
-
-**Comprehensive domain errors refactoring** (January 2026) - Systematic migration from inline `fmt.Errorf` to type-safe domain error constants across all bounded contexts.
-
-### Refactoring Results
-
-- **Sessions Completed**: 18/18 (100% complete)
-- **Duration**: January 9-13, 2026 (5 working days)
-- **Aggregates Covered**: 24/24 with errors.go files (100%)
-- **Refactorings Applied**: 225+ fmt.Errorf calls migrated
-- **Tests Updated**: 50+ test files using errors.Is()
-- **Handlers Updated**: 36 handlers with error discrimination
-- **Status**: Production-ready
-
-### Improvements
-
-**Problem Addressed**: Eliminated fragile string comparison error handling that caused:
-- Type confusion (wrong aggregate errors)
-- Brittle tests (broke on message changes)
-- Poor developer experience (no IDE autocomplete)
-- Maintenance burden (grep for error messages)
-
-**Solution Applied**: Gold Standard domain error pattern:
-- **errors.go files**: 150+ domain error constants across all contexts
-- **Type-safe**: `errors.Is(err, ErrEntityNotFound)` vs string comparison
-- **Self-documenting**: Error names describe business rules
-- **Testable**: Proper test assertions with errors.Is()
-
-### Pattern Example
-
-```go
-// CORRECT - errors.go with domain constants
-package location
-
-var (
-    // Repository errors
-    ErrLocationNotFound = errors.New("location not found")
-    
-    // Business logic errors
-    ErrLocationCodeExists = errors.New("location code already exists")
-    ErrLocationHasChildren = errors.New("cannot delete location with children")
-    
-    // Technical errors
-    ErrLocationCreateFailed = errors.New("failed to create location")
-)
-
-// UseCase returns domain errors
-func (uc *useCase) CreateLocation(ctx, code, name string) (*Location, error) {
-    if existing, _ := uc.repo.GetByCode(ctx, code); existing != nil {
-        return nil, ErrLocationCodeExists  // Domain constant
-    }
-    // ...
-}
-
-// Handler discriminates with errors.Is()
-func (h *LocationHandler) Create(c *gin.Context) {
-    loc, err := h.usecase.CreateLocation(ctx, req.Code, req.Name)
-    if errors.Is(err, location.ErrLocationCodeExists) {
-        response.BadRequest(c, "Location code already exists")  // 400
-        return
-    }
-    if errors.Is(err, location.ErrLocationNotFound) {
-        response.NotFound(c, "Location not found")  // 404
-        return
-    }
-    // ...
-}
-
-// Test asserts with errors.Is()
-func TestCreateLocation_CodeExists(t *testing.T) {
-    _, err := uc.CreateLocation(ctx, "EXISTING", "Test")
-    assert.True(t, errors.Is(err, location.ErrLocationCodeExists))  // Type-safe
-}
-```
-
-### Context Coverage
-
-| Context | Aggregates | Domain Errors | Tests Migrated | Status |
-|---------|-----------|---------------|----------------|--------|
-| Warehouse | 4 | 54 | 15 | Complete |
-| Identity | 4 | 45 | 12 | Complete |
-| Customer Management | 4 | 79 | 9 | Complete |
-| Order Management | 2 | 18 | 6 | Complete |
-| Billing | 3 | 32 | 8 | Complete |
-| Scripting | 1 | 8 | 4 | Complete |
-
-### Benefits
-
-- **Type Safety**: Compile-time error checking with errors.Is()
-- **Better UX**: Proper HTTP status codes (404, 400, 409, 403, 500)
-- **Improved Testing**: Type-safe assertions, no string comparison
-- **Self-Documentation**: Error names describe business rules
-- **Maintainability**: Easy to find and refactor domain errors
-
-**Documentation**: See [docs/guides/domain-errors.md](docs/guides/domain-errors.md) for complete domain errors guide with patterns, examples, and migration instructions.
-
----
-
-## Architecture Overview
-
-Promenade follows **strict Domain-Driven Design** principles with clear **Bounded Context** separation and **Event-Driven Architecture** at its core.
-
-### Core Architecture Principles
-
-1. **Bounded Contexts** - Each context is autonomous with own models and database schema
-2. **Aggregates** - Business entities with invariants and transactional boundaries
-3. **Value Objects** - Immutable domain concepts (Email, Phone, Money, Address)
-4. **Domain Events** - Asynchronous communication between contexts via Event Bus
-5. **Sagas** - Distributed transactions coordination (planned)
-6. **CQRS** - Separate read/write models for complex queries (planned)
-
-### Event-Driven Architecture
-
-**Event Bus** is the central nervous system of Promenade:
-
-- **Multiple Adapters**: Memory (dev: 377K events/sec) and Redis (prod: distributed)
-- **Retry Policy**: Exponential backoff with configurable attempts
-- **Panic Recovery**: Handler failures don't crash the system
-- **Graceful Shutdown**: Ensures all events processed before shutdown
-- **67 Tests**: Comprehensive test coverage (100% passing)
-
-**See**: [pkg/bus/README.md](pkg/bus/README.md) for complete Event Bus documentation
-
-### Role-Based Access Control (RBAC)
-
-Promenade implements **enterprise-grade RBAC** for fine-grained authorization:
-
-- **Roles**: Named collections of permissions (superadmin, admin, manager, user, guest)
-- **Permissions**: Specific actions on resources (e.g., "users:create", "customers:delete")
-- **JWT Integration**: Roles embedded in tokens for stateless authorization
-- **Flexible**: Easy to add custom roles and permissions without code changes
-- **5 System Roles**: Pre-configured with 29+ permissions across all resources
-- **14 API Endpoints**: Complete management of roles and permissions
-
-**See**: [docs/RBAC.md](docs/RBAC.md) for complete RBAC implementation guide
-
-### Rate Limiting
-
-Promenade implements **IP-based rate limiting** to protect against brute-force attacks:
-
-- **Token Bucket Algorithm**: Each IP gets separate rate limiter with configurable rate and burst
-- **Authentication Protection**: Login (5/min), Register (3/min) endpoints rate-limited
-- **X-RateLimit Headers**: Standard headers (Limit, Remaining, Reset) in all responses
-- **Thread-Safe**: Concurrent access with RWMutex, production-ready
-- **Memory Management**: Periodic cleanup prevents memory leaks
-- **10 Tests**: Comprehensive test coverage (100% passing)
-
-**See**: [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete Rate Limiting documentation
-
-### API Documentation (Swagger/OpenAPI)
-
-Promenade provides **interactive API documentation** with Swagger UI for exploring and testing all endpoints.
-
-**Concept**: Self-documenting REST API with OpenAPI 3.0 specification generated from code annotations. Developers can explore, understand, and test all 182+ endpoints directly in the browser without writing any manual documentation.
-
-**Design**: 
-- **Annotation-Driven**: Swagger comments in handler code (`@Summary`, `@Description`, `@Param`, `@Success`, `@Failure`)
-- **Auto-Generation**: swaggo/swag tool parses annotations and generates OpenAPI spec
-- **Interactive UI**: Swagger UI middleware serves documentation at `/api/docs/index.html`
-- **Multi-Format**: JSON, YAML, and embedded Go code for different use cases
-
-**Key Features**:
-- **182+ Documented Endpoints**: All 6 contexts (Identity, Customer Management, Order Management, Billing, Warehouse, Shared)
-- **Try-It-Out**: Test endpoints directly from browser with request/response examples
-- **Authentication**: JWT Bearer token management in UI
-- **Schema Validation**: Request/response models with type definitions
-- **Error Documentation**: All error codes and HTTP status explanations
-- **Export Formats**: OpenAPI JSON/YAML for Postman, Insomnia integration
-
-**Quick Access**:
-```bash
-make dev
-# Open: http://localhost:8081/api/docs/index.html
-```
-
-**Documentation Coverage**:
-- Identity Context: 35 endpoints (User, Contact, Profile, Role, Permission)
-- Customer Management: 48 endpoints (Customer, Company, Deal, Interaction, Analytics)
-- Order Management: 14 endpoints (Order lifecycle)
-- Billing: 22 endpoints (Invoice, Payment, Subscription)
-- Shared: 9 endpoints (Country, Currency, Language, Timezone)
-- Infrastructure: 4 endpoints (Health checks)
-
-**See**: [docs/guides/api-documentation.md](docs/guides/api-documentation.md) for complete Swagger documentation guide
-
-### Postman Collection
-
-Promenade provides **pre-built Postman collection** with 182+ endpoints, authentication flows, and automated testing scripts.
-
-**Concept**: Ready-to-use API client collection that eliminates manual endpoint configuration. Import once, get all 182+ endpoints organized by context with pre-configured authentication, environment variables, and test automation.
-
-**Design**:
-- **Auto-Generated**: OpenAPI spec → Postman collection via openapi-to-postmanv2 tool
-- **Multi-Environment**: Separate configs for Development (localhost), Staging, Production
-- **Authentication Flow**: Auto-save JWT tokens after login, auto-refresh expired tokens
-- **Test Automation**: Pre-request and test scripts for validation and token management
-- **CI/CD Ready**: Newman CLI integration for automated API testing in pipelines
-
-**Key Features**:
-- **182+ Endpoints**: Complete collection organized by 6 bounded contexts
-- **Auto-Save Tokens**: Login request automatically saves access/refresh tokens to environment
-- **Auto-Refresh**: Pre-request script detects expired tokens and refreshes automatically
-- **3 Environments**: Dev/Staging/Prod with pre-configured base URLs and credentials
-- **Test Scripts**: Automatic response validation (status codes, response structure, timing)
-- **Common Workflows**: 5 documented use cases (auth flow, customer creation, sales pipeline, order processing, billing)
-- **Newman Integration**: Run collection in CI/CD with `newman run` command
-
-**Quick Start**:
-```bash
-# Import in Postman
-1. Open Postman → Import
-2. Select: postman/Promenade_API.postman_collection.json
-3. Import environment: postman/Development.postman_environment.json
-4. Select "Development" environment (top-right)
-5. Ready to test!
-```
-
-**Collection Structure**:
-- Identity Context: 35 endpoints (Users, Contacts, Profiles, Roles, Permissions)
-- Customer Management: 48 endpoints (Customers, Companies, Deals, Interactions)
-- Order Management: 14 endpoints (Orders, Line Items, State Transitions)
-- Billing: 22 endpoints (Invoices, Payments, Subscriptions)
-- Warehouse: 58 endpoints (Products, Inventory, StockMovement, Locations)
-- Shared: 9 endpoints (Countries, Currencies, Languages, Timezones)
-- Infrastructure: 4 endpoints (Health Checks)
-
-**See**: [postman/README.md](postman/README.md) for complete Postman collection guide
-
-### Multi-Database Support
-
-Promenade implements **database-agnostic architecture** supporting multiple SQL databases:
-
-- **Dialect Pattern**: Abstracts SQL syntax differences (placeholders, JSON types)
-- **Supported Databases**: PostgreSQL (production), SQLite (dev/test), MySQL (planned), SQL Server (planned)
-- **JSONB Abstraction**: `jsonstore.Field[T]` works across all databases (JSONB → TEXT → JSON)
-- **UUID Generation**: All IDs generated in Go code (`uuidv7.New()`), not database defaults
-- **Timestamp Management**: Business logic calls `.Touch()` to update UpdatedAt (no database triggers)
-- **101 Tests**: pkg/database + pkg/jsonstore with 100% coverage
-
-**Key Features**:
-- Write queries with `?` placeholders, auto-convert to database-specific syntax ($1 for Postgres, ? for SQLite)
-- Store JSON as TEXT (cross-database compatible) with type-safe Go wrappers
-- Migrations work identically across databases (no vendor-specific DDL)
-
-**Quick Switch Example**:
-```bash
-# PostgreSQL (production)
-DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade
-
-# SQLite (development/demo)
-DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
-
-# Configuration files (driver-environment format)
-config/app.postgres-dev.yaml   # PostgreSQL + development
-config/app.postgres-test.yaml  # PostgreSQL + testing
-config/app.postgres-prod.yaml  # PostgreSQL + production
-config/app.sqlite-dev.yaml     # SQLite + development
-config/app.sqlite-test.yaml    # SQLite + testing
-config/app.sqlite-prod.yaml    # SQLite + production
-```
-
-**See**: [docs/guides/database-adapters.md](docs/guides/database-adapters.md) | [docs/guides/jsonb-strategy.md](docs/guides/jsonb-strategy.md) | [config/SQLITE.md](config/SQLITE.md)
-
-### Workspace Management
-
-Promenade implements **explicit workspace state management** for seamless multi-database development:
-
-**Design Philosophy**:
-- **Single Source of Truth**: `.promenade.workspace` file defines `DATABASE_DRIVER` and `ENVIRONMENT`
-- **Fail-Fast Validation**: Commands validate workspace before execution
-- **Smart Switchers**: 9 commands cover all database × environment combinations
-- **Environment Awareness**: Runners (`dev`, `test-all`, `prod`) enforce correct environment usage
-
-**Core Commands**:
-```bash
-# Configure workspace (one-time)
-make switch-postgres-dev   # PostgreSQL + development
-make switch-sqlite-test    # SQLite + testing
-make switch-postgres-prod  # PostgreSQL + production
-
-# Check current state
-make workspace             # Show DATABASE_DRIVER + ENVIRONMENT
-
-# Use environment-aware runners
-make dev                   # Requires ENVIRONMENT=development
-make test-all              # Warns if not ENVIRONMENT=test
-make prod                  # Requires ENVIRONMENT=production
-
-# Workspace commands (no validation needed)
-make build                 # Go compilation
-make fmt                   # Code formatting
-make lint                  # Linting
-```
-
-**Architecture Benefits**:
-- No command explosion (50+ commands work with all databases)
-- Prevents wrong environment execution (fail-fast validation)
-- Natural developer workflow (configure once, work anywhere)
-- Clear state visibility (`make workspace` always shows current config)
-- Modular Makefile system (main + dev/test/prod modules)
-
-**Example Workflow**:
-```bash
-# Day 1: PostgreSQL development
-make switch-postgres-dev && make dev
-
-# Day 2: SQLite testing  
-make switch-sqlite-test && make test-all
-
-# Day 3: Production deployment
-make switch-postgres-prod && make prod
-```
-
-**See**: [Workspace Management Guide](docs/guides/workspace-management.md) for complete architecture documentation
-
-### Health Checks
-
-Promenade provides **comprehensive health monitoring** for all dependencies:
-
-- **4 HTTP Endpoints**: `/health`, `/health/db`, `/health/redis`, `/health/bus`
-- **3 Status Levels**: healthy, degraded, unhealthy
-- **5-Second Timeout**: Prevents hanging checks
-- **Graceful Degradation**: Optional dependencies (Redis) handled gracefully
-- **Proper HTTP Status Codes**: 200 (healthy/degraded), 503 (unhealthy)
-- **21 Tests**: Comprehensive test coverage (100% passing)
-
-**Endpoints**:
-- `GET /health` - Overall system health (PostgreSQL + Redis + Event Bus)
-- `GET /health/db` - PostgreSQL database health
-- `GET /health/redis` - Redis health (if configured)
-- `GET /health/bus` - Event Bus health
-
-**See**: [docs/HEALTH_CHECKS.md](docs/HEALTH_CHECKS.md) for complete Health Check documentation
-
-### Local CI Validation
-
-Promenade provides **local CI simulation** to catch issues before pushing to GitHub:
-
-- **Pre-Push Validation**: Run all CI checks locally with `make pre-push`
-- **Selective Checks**: Run lint (`make ci-lint`), tests (`make ci-test`), or build (`make ci-build`) independently
-- **Time Savings**: 4+ minutes saved per failed push by catching issues early
-- **GitHub Actions Parity**: Exact same checks as CI pipeline
-- **5 Commands**: ci-check, ci-lint, ci-test, ci-build, pre-push
-
-**Usage**:
-```bash
-# Before every push (REQUIRED)
-make pre-push
-
-# Or run checks separately
-make ci-lint        # golangci-lint (0 issues)
-make ci-test        # All tests + race detector
-make ci-build       # Test compilation
-```
-
-**See**: [docs/guides/local-ci.md](docs/guides/local-ci.md) for complete Local CI Validation guide
-
-### Caching Layer
-
-Promenade implements **Redis-based caching** for improved performance and reduced database load:
-
-- **Multiple Adapters**: Redis (production/dev), NoOp (testing/fallback)
-- **Resource-Specific TTL**: Reference data (1h-24h), User data (10-30m), Sessions (30m-1h)
-- **Cache-Aside Pattern**: Read-through cache with write-through invalidation
-- **Graceful Degradation**: Application continues if Redis unavailable
-- **Pattern-Based Invalidation**: Efficient bulk deletion with SCAN
-- **JSON Marshaling**: Automatic serialization of complex types
-
-**Cached Resources**:
-- Reference data: Countries, Currencies, Languages, Timezones
-- User data: Profiles, Customer records
-- Session data: Temporary state
-
-**See**: [docs/guides/caching.md](docs/guides/caching.md) for complete Caching implementation guide
-
-### Customer Management
-
-Promenade implements **complete CRM functionality** for B2C and B2B customer lifecycle management:
-
-- **Customer Lifecycle**: Track customers through states (Lead → Prospect → Customer → Churned)
-- **B2C & B2B Support**: Handle individual consumers and business contacts
-- **Customer Segmentation**: Organize by tier (free, basic, pro, enterprise) and tags
-- **Sales Pipeline**: Assign customers to sales reps, track source and status
-- **14 API Endpoints**: Complete CRUD + business logic operations
-- **Auto-validated Data**: Email and Phone value objects with validation
-
-**Key Features**:
-- State machine enforces lifecycle transitions
-- JSONB tags for flexible metadata
-- Soft delete support
-- Sales rep assignment
-- Integration with Identity and Order Management contexts
-
-**See**: [Customer Management Guide](docs/concepts/customer-management.md) | [Company Management Guide](docs/concepts/company-management.md) | [Deal Management Guide](docs/concepts/deal-management.md)
-
-### Deal Management
-
-Promenade provides **complete sales pipeline management** with deal lifecycle tracking and **fully implemented business rules**:
-
-- **Deal Lifecycle**: Track deals through stages (lead → qualified → proposal → negotiation → closed)
-- **Probability Tracking**: Automatic probability calculation per stage (10% → 100%)
-- **Money Handling**: Type-safe Money value object for deal values
-- **Pipeline Statistics**: Real-time stats by stage and won deals analytics
-- **12 API Endpoints**: Complete CRUD + business logic operations
-- **Stage Transitions**: Enforced state machine (lead → ... → closed_won/closed_lost)
-
-**Key Features**:
-- State machine enforces valid stage transitions
-- Automatic probability updates per stage
-- Win/Loss tracking with actual close dates
-- Filter deals by stage, customer, or sales rep
-- Pipeline and revenue statistics
-- Integration with Customer aggregate
-
-**Implementation Status**: All core business rules implemented in entity (`MoveToStage()`, `MarkWon()`, `MarkLost()`). Tested via HTTP API with 100% success rate.
-
-**See**: [docs/concepts/deal-management.md](docs/concepts/deal-management.md) for complete Deal Management guide
-
-### Interaction Management
-
-Promenade provides **comprehensive customer interaction tracking** for calls, emails, meetings, and notes:
-
-- **Interaction Types**: Track calls (inbound/outbound), emails, meetings, notes
-- **Interaction Lifecycle**: Create → In Progress → Completed with outcome tracking
-- **JSONB Attendees**: Flexible participant tracking with PostgreSQL JSONB arrays
-- **Follow-up Management**: Flag interactions requiring follow-up with dates and notes
-- **Duration Tracking**: Automatic duration calculation for ended interactions
-- **Performance Optimized**: LEFT JOIN queries prevent N+1 problem when listing interactions
-- **14 API Endpoints**: Complete CRUD + business logic operations
-
-**Key Features**:
-- Flexible interaction types and directions
-- Outcome tracking (successful, failed, no_answer, scheduled, cancelled)
-- Multi-participant support via JSONB attendees array
-- Follow-up scheduling and tracking
-- Company association for B2B interactions
-- Time tracking with started_at, ended_at, duration_sec
-
-**Implementation Status**: All core business rules implemented. N+1 optimization with LEFT JOIN. Fully tested with 74 tests + 2 benchmarks.
-
-**See**: [docs/concepts/interaction-management.md](docs/concepts/interaction-management.md) for complete Interaction Management guide
-
-### Customer Analytics
-
-Promenade implements **CQRS read models** for business intelligence and reporting:
-
-- **9 Query Methods**: Optimized analytical queries (direct SQL, no repository pattern)
-- **8 GET Endpoints**: Customer, deal, sales rep, revenue, and interaction analytics
-- **Real-time Metrics**: Customer overview, deal pipeline, sales rep performance
-- **Time Series**: Revenue trends with configurable granularity (day/week/month)
-- **Funnel Analysis**: Customer lifecycle transitions and deal stage conversions
-- **Performance Optimized**: Denormalized queries with LEFT JOIN across aggregates
-
-**Key Features**:
-- CQRS pattern separates read (analytics) from write (CRUD) models
-- Direct database access bypasses repository abstraction for maximum query performance
-- Aggregations span multiple entities (Customer + Deal + Interaction)
-- No business logic in analytics (read-only reporting)
-
-**Available Analytics**:
-1. **Customer Overview** - Total customers, status/tier distribution, top sales reps
-2. **Customer Lifecycle** - Conversion funnel (Lead → Prospect → Customer → Churned)
-3. **Customer Segmentation** - Distribution by status, tier, lifetime value
-4. **Deal Pipeline** - Pipeline by stage, win/loss rates, avg days to close
-5. **Deal Conversions** - Stage-to-stage conversion rates, bottleneck identification
-6. **Sales Rep Performance** - Active customers, deals won/lost, revenue, win rates
-7. **Revenue Time Series** - Revenue over time with new customer tracking
-8. **Interaction Insights** - Interaction counts by type/outcome, follow-up metrics
-
-**Implementation Status**: All 8 endpoints live in production. 15 tests (7 unit + 8 integration). CQRS pattern fully implemented.
-
-**See**: [Analytics README](internal/contexts/customer-mgmt/analytics/README.md) for complete API reference with request/response examples
-
-### Order Management
-
-Promenade provides **complete order lifecycle management** with state transitions and **fully implemented business rules**:
-
-- **Order Creation**: Create orders with currency support for customers
-- **Line Items**: Add/remove/update products with automatic total calculation
-- **State Machine**: pending → confirmed → processing → fulfilled (or cancelled) - fully enforced
-- **Business Rules**: All validations implemented (line count, status checks, terminal state protection)
-- **Money Handling**: Type-safe Money value object (cents-based precision)
-- **14 API Endpoints**: Complete CRUD + business logic operations
-- **Auto-generated Numbers**: ORD-YYYY-NNNNNN format for easy tracking
-
-**Implementation Status**: All core business rules implemented in entity (`Confirm()`, `StartProcessing()`, `MarkFulfilled()`, `Cancel()`).
-
-**See**: [Order Management Guide](docs/concepts/order-management.md)
-
----
-
-### Fulfillment Saga
-
-**Distributed transaction orchestration** for order fulfillment process - coordinates Payment, Inventory, and Shipping operations with automatic compensation on failures.
-
-**Concept**: The Fulfillment Saga implements the **Saga pattern** to manage complex, multi-step order fulfillment without requiring distributed ACID transactions. It ensures data consistency across multiple bounded contexts (Payment, Inventory, Shipping) through choreographed state transitions and compensating actions.
-
-**Design**:
-- **State Machine**: 7 states (pending → payment_processing → inventory_processing → shipping_processing → completed)
-- **Compensation Logic**: Automatic rollback on failures (compensating → compensated → cancelled)
-- **Optimistic Locking**: Version-based concurrency control prevents lost updates
-- **JSONB Storage**: Flexible arrays for completed steps and reserved items
-- **UTC Timestamps**: Consistent timezone handling across all operations
-- **Idempotent Steps**: Safe to retry operations without side effects
-
-**Key Features**:
-- Orchestrator pattern coordinates all fulfillment steps
-- PostgreSQL persistence with full ACID guarantees
-- Concurrent saga execution with conflict detection
-- Monitoring endpoint for in-progress sagas
-- 100% test coverage (57 tests: 42 unit + 15 integration)
-
-**State Flow**:
-```
-pending → payment_processing → inventory_processing → shipping_processing → completed
-              ↓ (on failure)
-         compensating → compensated → cancelled
-```
-
-**Implementation Status**: Production-ready. All 57 tests passing (100%). Repository with optimistic locking. Orchestrator with compensation logic.
-
-**See**: [Fulfillment Saga README](internal/contexts/order-mgmt/fulfillment/README.md) for complete implementation guide
-
-### Warehouse Management
-
-Promenade implements **complete inventory management system** with stock tracking, product catalog, warehouse locations, and **automated order-inventory integration**.
-
-- **Product Catalog**: Manage products with SKUs, categories, brands, and physical properties
-- **Inventory Tracking**: Real-time stock levels (on hand, reserved, available, committed)
-- **Stock Movements**: Immutable audit trail for all inventory changes
-- **Warehouse Locations**: Hierarchical location management (warehouses, zones, bins)
-- **Warehouse Integration**: Automated synchronization with Order Management via Event Bus
-  - **ReservationService**: Business logic for stock operations (230 lines)
-  - **OrderEventHandler**: Event handlers for order lifecycle (230 lines, 3 handlers)
-  - **Event Flow**: order.confirmed → Reserve Stock | order.cancelled → Release Stock | order.fulfilled → Commit Stock
-  - **Bootstrap Integration**: Initialized in cmd/api/bootstrap.go with automatic event handler registration
-- **4 Aggregates**: Product, Inventory, StockMovement, Location (all production ready)
-- **58 Endpoints**: Complete CRUD + business logic + integration operations
-- **433 Tests**: 100% passing (139 Product + 141 Inventory + 45 StockMovement + 74 Location + 34 Integration)
-
-**Implementation Status**: Production Ready (100% complete) | Main feature: Automated order-inventory synchronization via Event Bus
-
-**See**: [docs/concepts/warehouse-management.md](docs/concepts/warehouse-management.md) | [internal/contexts/warehouse/README.md](internal/contexts/warehouse/README.md)
-
-### LUA Scripting Engine
-
-Promenade provides **embedded LUA scripting engine** for dynamic business logic without Go recompilation - enabling low-code platform capabilities.
-
-**Concept**: Business analysts and power users can create custom validation rules, workflows, pricing logic, and automations using LUA scripts stored in the database. Scripts execute in a secure sandbox with controlled access to Promenade APIs.
-
-**Design**:
-- **Sandboxed Execution**: Memory limits (50MB), CPU timeout (5s), restricted filesystem/network access
-- **Standard Library**: Safe access to Promenade APIs (Customer, Order, Deal, Notify, Query, Date modules)
-- **Context Support**: Cancellation and timeout via Go context
-- **Script Storage**: Scripts stored in database with versioning
-- **Type Conversion**: Automatic conversion between LUA and Go types
-
-**Key Features**:
-- Execute LUA scripts with parameters and return values
-- Validate scripts before saving (syntax checking)
-- Timeout protection prevents infinite loops
-- Panic recovery for handler safety
-- 33 tests (21 unit + 12 smoke) - 100% passing
-- **10 REST Endpoints**: Complete HTTP API at `/api/v1/scripts/*`
-
-**Use Cases**:
-```lua
--- Dynamic pricing based on customer tier
-function calculatePrice(basePrice, customerTier)
-    if customerTier == "premium" then
-        return basePrice * 0.8  -- 20% discount
-    end
-    return basePrice
-end
-
--- Auto-approve deals under threshold
-function shouldAutoApprove(deal)
-    local tier = Customer.GetTier(deal.customer_id)
-    return tier == "premium" and deal.amount < 10000
-end
-
--- Custom validation rules
-function validateOrder(order)
-    if order.total < 10 then
-        return false, "Minimum order amount is $10"
-    end
-    return true
-end
-```
-
-**Implementation Status**:  HTTP Layer Complete (Week 1 Day 4 Complete) | Standard Library integrated with real UseCases | 10 REST endpoints operational
-
-**See**: [pkg/scripting/README.md](pkg/scripting/README.md) for complete documentation with examples
-
----
-
-### Job Scheduler
-
-**Production-ready cron-based job scheduler** for automated task execution - enables scheduled workflows, maintenance tasks, and event-driven automation without manual intervention.
-
-**Concept**: The Job Scheduler implements a robust cron-based scheduling system for executing periodic and time-based tasks. It provides a worker pool architecture for concurrent job execution with retry logic, health monitoring, and graceful shutdown. Business users can schedule LUA scripts, event publications, HTTP webhooks, and custom operations using familiar cron expressions.
-
-**Design**:
-- **Cron-Based Scheduling**: Standard cron expressions for flexible timing (`0 2 * * *` = daily at 2 AM)
-- **Worker Pool**: Configurable concurrent job execution with goroutine management
-- **Job Types**: LUA scripts, Event Bus publishing, HTTP requests, Custom executors
-- **Retry Logic**: Exponential backoff for failed jobs (configurable attempts and delays)
-- **Graceful Lifecycle**: Start/Stop with context cancellation and worker coordination
-- **Health Monitoring**: Built-in health checks with configurable intervals
-
-**Key Features**:
-- Execute scheduled jobs with 4 job types (LUA, Event, HTTP, Custom)
-- Worker pool with configurable concurrency (default: 10 workers)
-- Retry failed jobs with exponential backoff (default: 3 attempts, 60s delay)
-- Per-job timeout configuration (default: 5 minutes, overrideable)
-- Job lifecycle management (add/update/remove/disable operations)
-- Panic recovery prevents single job failure from crashing engine
-- Health monitoring logs worker status and queue length
-- **43 tests** (91.5% coverage) including 5 integration scenarios
-
-**Architecture**:
-```
-Cron Trigger → Job Queue → Worker Pool → Executor → Result → Status Update
-                  ↓            ↓             ↓
-            (buffered)   (goroutines)   (pluggable)
-```
-
-**Quick Start**:
-```go
-// 1. Create engine with configuration
-cfg := scheduler.DefaultConfig()  // 10 workers, 5 concurrent jobs, 60s health checks
-engine, _ := scheduler.NewEngine(cfg)
-
-// 2. Register executor for job type
-luaExecutor := scheduler.NewLUAExecutor(luaEngine)
-engine.RegisterExecutor(scheduler.JobTypeLUA, luaExecutor)
-
-// 3. Add scheduled job
-cleanupJob := &scheduler.Job{
-    ID:             uuidv7.New(),
-    Name:           "cleanup-temp-files",
-    Type:           scheduler.JobTypeLUA,
-    CronExpression: "0 2 * * *",  // Daily at 2 AM
-    Payload:        map[string]interface{}{"script": "..."},
-    Enabled:        true,
-}
-engine.AddJob(cleanupJob)
-
-// 4. Start scheduler
-engine.Start()
-defer engine.Stop()  // Graceful shutdown
-```
-
-**Use Cases**:
-- **Periodic Cleanup**: Delete old logs, temp files, expired sessions
-- **Event Publishing**: Schedule daily reports, notifications, data syncs
-- **HTTP Webhooks**: Call external APIs for inventory sync, status updates
-- **LUA Automation**: Execute custom business logic on schedule
-- **Backup Jobs**: Database backups, file exports, data archival
-- **Monitoring Tasks**: Health checks, metric collection, alerting
-
-**Configuration**:
-```go
-cfg := scheduler.Config{
-    Enabled:              true,
-    WorkerPoolSize:       10,              // Concurrent workers
-    MaxConcurrentJobs:    5,               // Execution limit
-    HealthCheckInterval:  60 * time.Second,  // Health monitoring
-    DefaultTimeout:       5 * time.Minute,   // Job timeout
-    DefaultRetryAttempts: 3,               // Retry attempts
-    DefaultRetryDelay:    60 * time.Second,  // Retry delay
-}
-```
-
-**Job Types**:
-- **LUA** (`JobTypeLUA`): Execute LUA scripts with sandboxed environment
-- **Event** (`JobTypeEvent`): Publish events to Event Bus for async processing
-- **HTTP** (`JobTypeHTTP`): Make HTTP requests to external APIs/webhooks
-- **Custom** (`JobTypeCustom`): Implement custom executors for specific logic
-
-**Job Lifecycle**:
-```
-Created → Scheduled → Queued → Executing → Completed/Failed/Retrying
-```
-
-**Production Considerations**:
-- Monitor worker pool utilization via health check logs
-- Adjust `WorkerPoolSize` for higher concurrency (e.g., 20+ workers)
-- Set per-job timeouts to prevent hanging operations
-- Use retry logic for transient failures (network issues, temporary unavailability)
-- Plan for job persistence (currently in-memory, database-backed planned)
-
-**Implementation Status**:  **Production Ready** - 43 tests passing (91.5% coverage), 5 integration scenarios validated, graceful lifecycle management operational
-
-**See**: [pkg/scheduler/README.md](pkg/scheduler/README.md) for complete documentation with architecture details, advanced usage patterns, 4 practical examples, API reference, troubleshooting guide, and feature roadmap
-
----
-
-### Bounded Contexts
-
-| Context                 | Aggregates                                                  | Description                   | Status        | Documentation                                  |
-| ----------------------- | ----------------------------------------------------------- | ----------------------------- | ------------- | ---------------------------------------------- |
-| **Shared**              | Country, Currency, Language, Timezone                       | Reference data (read-only)    | Production    | [README](internal/contexts/shared/README.md)   |
-| **Identity**            | User, Contact, Profile, Role, Permission                    | User management & RBAC        | Production    | [README](internal/contexts/identity/README.md) |
-| **Customer Management** | Customer, Company, Deal, Interaction, Analytics (all live)  | CRM, sales pipeline & BI      | Production    | [Guide](docs/concepts/customer-management.md) \| [Analytics](internal/contexts/customer-mgmt/analytics/README.md) |
-| **Order Management**    | Order, OrderLine, Contract, FulfillmentSaga (all live)      | Orders, contracts, fulfillment sagas  | Production    | [Guide](docs/concepts/order-management.md) \| [Saga](internal/contexts/order-mgmt/fulfillment/README.md) |
-| **Billing**             | Invoice, Payment, Subscription (all live)                   | Billing and payments          | Production    | [Invoice Guide](docs/concepts/invoice-management.md) \| [Payment Guide](docs/concepts/payment-management.md)   |
-| **Warehouse**           | Inventory, StockMovement, Product, Location (all live) | Inventory + Order Integration | Production (100%)   | [Concept Guide](docs/concepts/warehouse-management.md) \| [Context Guide](internal/contexts/warehouse/README.md) |
-| **Fiscal**              | CashRegister, Receipt (in progress)                         | Ukrainian fiscal compliance   | In progress   | [Context Guide](internal/contexts/fiscal/README.md) |
-
-**Context Isolation**: Contexts communicate ONLY via Event Bus (no direct dependencies)
-
-**Latest Progress** (January 9, 2026):
--  Phase 1 COMPLETE: API Documentation & Developer Portal (5 days, 2x faster than planned)
--  Phase 2 COMPLETE: Warehouse Context (100% complete - ALL 4 aggregates PRODUCTION)
--  Phase 3 IN PROGRESS: LUA Scripting + UI Metadata Foundation (Week 2 in progress)
--  **Fulfillment Saga COMPLETE**: Distributed transaction orchestration ready
-  - Entity: 7-state machine with compensation logic (151 lines, 20 tests)
-  - Repository: PostgreSQL with optimistic locking (317 lines, 15 integration tests)
-  - Orchestrator: Payment/Inventory/Shipping coordination (104 lines, 22 tests)
-  - Status: 57/57 tests passing (100%), production-ready
--  **Contract Aggregate COMPLETE**: HTTP API layer ready (12 endpoints, 98 tests, 100% pass rate)
--  **LUA Scripting Engine OPERATIONAL**: Core engine + Standard Library integration complete
-  - Engine: Sandbox execution with memory limits (50MB), CPU timeout (5s), panic recovery
-  - Standard Library: Real UseCase integration (Customer, Order, Deal modules → live business logic)
-  - Query Module: Secure SQL execution (SELECT-only, keyword blacklist, type conversion)
-  - Date Module: Time utilities (Now, Format, GetMonth, GetYear, GetDay)
-  - 21 Tests Passing: 18 unit tests + 3 benchmarks (100% pass rate, 0.172s execution)
-  - Dependency Injection: NewEngine(config, stdlib) - stdlib with customerUC/orderUC/dealUC/db
--  **Warehouse Integration COMPLETE**: Automated order-inventory synchronization via Event Bus
-  - ReservationService: Business logic for stock operations (230 lines)
-  - OrderEventHandler: Event handlers for order lifecycle (230 lines, 3 handlers)
-  - Event Flow: order.confirmed → Reserve Stock | order.cancelled → Release Stock | order.fulfilled → Commit Stock
-  - Bootstrap Integration: Initialized in cmd/api/bootstrap.go with automatic event handler registration
-  - 34 Integration Tests: E2E testing with Order Management context
-- Inventory Aggregate: 141 tests passing (97 unit + 23 integration + 21 smoke), 14 API endpoints operational
-- StockMovement Aggregate: 45 tests passing (11 entity + 10 usecase + 9 smoke + 15 integration), audit trail complete
-- Product Aggregate: 139 tests passing (25 entity + 83 usecase + 10 smoke + 21 integration), 16 API endpoints operational
-- Location Aggregate: 74 tests passing (48 entity + 17 integration + 9 smoke), 14 API endpoints operational
--  Test Infrastructure: All systems validated (2477+ tests: 2232+ unit, 196 smoke, 76+ integration)
--  GitHub Actions CI fully green (100% pass rate)
-
----
-
-## Design Patterns & Conventions
-
-Promenade follows **strict design patterns** and **naming conventions** to ensure consistency, maintainability, and code quality across the entire codebase.
-
-### Core Patterns
-
-**Repository Pattern** - Data access abstraction with `BaseRepository` for common operations:
-- Interface: `IRepository` (e.g., `ICustomerRepository`)
-- Implementation: Private struct with `BaseRepository` embedded
-- Methods: `Create`, `GetByID`, `Update`, `Delete`, `List*`
-
-**Use Case Pattern** - Business logic encapsulation:
-- Interface: `IUseCase` (single interface per aggregate)
-- Implementation: Private `useCase` struct (generic name)
-- Constructor: Simple `NewUseCase()` (NOT `New{Entity}UseCase`)
-
-**Handler Pattern** - HTTP endpoint handling:
-- Struct: `{Entity}Handler` (e.g., `CustomerHandler`)
-- Methods: Match HTTP verbs (`Create`, `GetByID`, `Update`, `Delete`, `List`)
-- DTOs: Request/Response objects in `dto/` subdirectory
-
-**Value Objects** - Immutable domain primitives:
-- Email, Phone, Money, Address with validation
-- Factory methods: `NewEmail()`, `NewPhone()`, `NewMoney()`
-- Immutability: No setters, only getters
-
-### Naming Conventions
-
-**File Naming**:
-- Entities: `entity.go`, `entity_test.go`
-- Use Cases: `usecase.go`, `usecase_test.go`
-- Repositories: `{aggregate}_repository.go`
-- Handlers: `{aggregate}_handler.go`
-- DTOs: `{aggregate}_dto.go`
-
-**Database Naming**:
-- Tables: `<context>_<aggregate>` (e.g., `customer_customers`, `order_orders`)
-- Columns: `snake_case` (e.g., `user_id`, `created_at`, `is_active`)
-- Indexes: `idx_<table>_<column>` (e.g., `idx_customers_email`)
-- Foreign Keys: `fk_<table>_<ref_table>` (e.g., `fk_orders_customers`)
-
-**Go Naming**:
-- Interfaces: `I{Entity}Repository`, `I{Entity}UseCase`
-- Implementations: lowercase `repository`, `useCase` (private structs)
-- Constructors: `New{Entity}Repository()`, `NewUseCase()`
-- Errors: `Err{Entity}{Condition}` (e.g., `ErrCustomerNotFound`)
-
-**Detailed Documentation**:
-- [Naming Conventions Guide](docs/guides/naming-conventions.md) - Files, directories, Go code
-- [Database Conventions Guide](docs/guides/database-conventions.md) - Tables, columns, indexes, migrations
-- [Architecture Patterns Guide](docs/guides/architecture-patterns.md) - Repository, UseCase, Handler implementations
-
----
-
-## Project Structure
-
-```
-promenade/
- cmd/
-    api/                    # HTTP server entry point (211 lines)
-       main.go            # Bootstrap: Config → Logger → DB → Migrations → Event Bus → Server
-    migrate/                # Migration CLI tool
- internal/
-    contexts/               # Bounded Contexts (DDD)
-       shared/            #  Shared Context (Reference Data: Country, Currency, Language, Timezone)
-          README.md      # Complete documentation (~450 lines)
-          domain/entity/ # 4 aggregates (Country, Currency, Language, Timezone)
-          domain/repository/ # Repository interfaces
-          usecase/       # Business logic (GetCountries, GetCurrencies, etc.)
-          adapter/http/  # HTTP handlers (Gin)
-          adapter/repository/postgres/ # PostgreSQL implementation
-       identity/          #  Identity Context (User, Contact, Profile, Role, Permission)
-          README.md      # Complete documentation (~550 lines)
-          user/          #  User Aggregate (authentication, password management)
-          contact/       #  Contact Aggregate (email, phone, address)
-          profile/       #  Profile Aggregate (display name, bio, avatar)
-          role/          #  Role Aggregate (RBAC roles)
-          permission/    #  Permission Aggregate (RBAC permissions)
-       customer-mgmt/     #  Customer Management Context (Customer)
-       order-mgmt/        #  Order Management Context (Order, OrderLine)
-       billing/           #  Billing Context (planned)
-       README.md          # Contexts overview
-    infrastructure/         # Cross-cutting concerns
-        config/            # Configuration management (YAML + env vars)
-        database/          # Database connection & transactions
- pkg/                        # Shared Domain Primitives & Utilities
-    README.md              #  Complete package overview (~400 lines)
-    bus/                   #  Event Bus (Memory/Redis, 67 tests, 377K/sec)
-       README.md          #  Complete documentation (~600 lines)
-    aggregate/             # Base Aggregate pattern (DDD)
-    valueobject/           # Value Objects (Email, Phone, Money, Address)
-    saga/                  # Saga orchestration ( planned Q1 2026)
-    uuidv7/               # Time-ordered UUIDs (RFC 9562, 2x faster inserts)
-    logger/               # Structured logging (slog wrapper, context-aware)
-    migration/            # Namespace-based database migrations
-    response/             # Standard HTTP responses & pagination
-    jsonb/                # PostgreSQL JSONB utilities
-    reference/            # Reference data validation helpers
- migrations/                 # Database migrations (namespace-based)
-    core/                 # Core infrastructure (UUID v7, auth, RBAC)
-    shared/               # Shared context migrations (reference data)
-    identity/             # Identity context migrations (users, contacts)
-    customer-mgmt/        # Customer Management context migrations
-    order-mgmt/           # Order Management context migrations
- test/                       # Testing infrastructure
-    README.md             # Testing structure documentation
-    integration/          # Integration tests (real DB)
-        testutils.go      # Shared test utilities
-        contexts/         # Mirror path: repository integration tests
-    benchmark/            # Benchmark tests (performance measurement)
- config/                     # Configuration files
-    # PostgreSQL configurations
-    app.postgres-dev.yaml   # PostgreSQL + development
-    app.postgres-test.yaml  # PostgreSQL + testing
-    app.postgres-prod.yaml  # PostgreSQL + production
-    
-    # SQLite configurations
-    app.sqlite-dev.yaml     # SQLite + development
-    app.sqlite-test.yaml    # SQLite + testing
-    app.sqlite-prod.yaml    # SQLite + production
- docs/                       # Architecture documentation (8 guides)
-     INDEX.md              # Documentation index
-     CLEAN_ARCHITECTURE_SUMMARY.md # DDD with Bounded Contexts
-     PHASE1_ARCHITECTURE_PREPARATION.md # Migration roadmap
-     TESTING_PATTERNS.md  # Comprehensive testing guide
-     TESTING_QUICK_REFERENCE.md # Testing cheat sheet
-     BUS_TEST_COVERAGE.md # Event Bus test report
-```
-
-### Key Directories Explained
-
-- **cmd/api/main.go**: Application entry point with proper initialization order
-- **internal/contexts/**: Bounded contexts (autonomous, isolated)
-- **pkg/**: Shared packages (context-agnostic, reusable across all contexts)
-- **migrations/**: Namespace-based migrations (run in order: core → shared → identity)
-- **test/**: Four-tier testing (unit in-place, smoke handlers, integration/benchmark in mirror path)
-- **config/**: Environment-specific YAML configs (dev/test/prod)
-
----
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Go 1.24+**
-- **Docker & Docker Compose** (for PostgreSQL)
-- **Make**
+- **Go 1.24+** installed
+- **Docker** and Docker Compose (for PostgreSQL)
+- **Make** utility
 
-### 1. Clone & Setup
+### Run in 3 Commands
 
 ```bash
+# 1. Clone and enter directory
 git clone https://github.com/basilex/promenade.git
 cd promenade
 
-# Start PostgreSQL (localhost:5432)
+# 2. Start PostgreSQL and create database
 make docker-up
+make migrate
+
+# 3. Run API server
+make dev
 ```
 
-### 2. Run Migrations
+Server starts at **http://localhost:8081**
 
-```bash
-# Migrations run automatically on app startup
-# Or manually:
-make migrate-postgres  # PostgreSQL migrations
-make migrate-sqlite    # SQLite migrations
-```
+- **API Documentation**: http://localhost:8081/api/docs/index.html (Swagger UI)
+- **Health Check**: http://localhost:8081/health
 
-### 3. Start Application
+**Next Steps**:
 
-```bash
-# PostgreSQL development (Docker + migrations + API)
-make dev-postgres
-
-# Or build and run separately
-make build
-DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade
-```
-
-Server starts on **http://localhost:8081**
-
-### 3a. Alternative: SQLite Embedded Mode
-
-**No Docker required** - perfect for demos, laptops, quick testing:
-
-```bash
-# Build binary
-make build
-
-# Start with embedded SQLite database
-make dev-sqlite
-
-# Or manually
-DATABASE_DRIVER=sqlite ENVIRONMENT=development ./bin/promenade
-```
-
-Database creates at `./data/promenade.db` (auto-created directory).
-
-**When to use SQLite**:
-- Local development without Docker
-- Sales demos on laptops
-- Quick prototyping
-- CI/CD testing
-- Single-user deployments
-
-**Limitations**:
-- Single writer (not for production with multiple instances)
-- No distributed transactions
-- Limited to 1 concurrent connection
-
-**See**: [config/SQLITE.md](config/SQLITE.md) for complete documentation
-
-### 4. Health Check
-
-```bash
-curl http://localhost:8081/health
-```
-
-### 5. API Authentication
-
-Promenade uses **JWT (JSON Web Tokens)** for authentication with access and refresh tokens.
-
-**Register a new user:**
-
-```bash
-curl -X POST http://localhost:8081/api/v1/identity/users/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "name": "John Doe",
-    "password": "SecurePass123"
-  }'
-```
-
-**Login to get JWT tokens:**
-
-```bash
-curl -X POST http://localhost:8081/api/v1/identity/users/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "SecurePass123"
-  }'
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "data": {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expires_at": "2025-12-28T19:04:06Z",
-    "token_type": "Bearer",
-    "user": { ... }
-  }
-}
-```
-
-**Use access token for protected endpoints:**
-
-```bash
-curl -X GET http://localhost:8081/api/v1/identity/users \
-  -H "Authorization: Bearer <access_token>"
-```
-
-**Refresh expired access token:**
-
-```bash
-curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
-  -H "Content-Type: application/json" \
-  -d '{
-    "refresh_token": "<refresh_token>"
-  }'
-```
-
-**Token Configuration:**
-- **Access Token**: 15 minutes (for API requests)
-- **Refresh Token**: 7 days (to generate new access tokens)
-- **Algorithm**: HS256 (HMAC with SHA-256)
-
-**See**: [pkg/jwt/README.md](pkg/jwt/README.md) for detailed JWT documentation
+- [Complete Quick Start Guide](docs/guides/quick-start.md) — Registration, authentication, first requests
+- [API Documentation Guide](docs/guides/api-documentation.md) — Swagger UI, Postman collection
+- [Development Workflow](docs/guides/development-workflow.md) — Daily commands, testing, debugging
 
 ---
 
-### Available Make Commands
+## 📚 Documentation
 
-```bash
-make help              # Show all available commands
+### For Business Users
 
-# Workspace Configuration (configure once, work anywhere)
-make switch-postgres-dev   # PostgreSQL + development
-make switch-postgres-test  # PostgreSQL + test
-make switch-postgres-prod  # PostgreSQL + production
-make switch-sqlite-dev     # SQLite + development (no Docker needed)
-make switch-sqlite-test    # SQLite + test
-make workspace             # Show current workspace configuration
+- **[Business Overview](docs/business/BUSINESS_OVERVIEW.md)** — Platform capabilities, market opportunity, ROI (8 languages)
+- **[Ukraine Market Strategy](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md)** — Market analysis, competitive advantages, revenue projections
+- **[Implementation Status](docs/business/IMPLEMENTATION_SUMMARY.md)** — Feature completion, development roadmap
 
-# Development Runners (environment-aware)
-make dev                   # Start development server (requires ENVIRONMENT=development)
-make dev-fresh             # Fresh start with clean database
-make build                 # Build binary
-make run                   # Build and run
-make fmt                   # Format code
-make lint                  # Run linters
+### For Developers
 
-# Testing (four-tier strategy)
-make test-all              # All tests runner (warns if not test environment)
-make test                  # All tests with race detector (~60s)
-make test-unit             # Unit tests only (~5s)
-make test-smoke            # Smoke tests (handler validation, no DB, ~0.5s, 196 tests)
-make test-integration      # Integration tests with real DB (~14s)
-make test-benchmark        # Benchmark tests (~5s per benchmark)
-make test-coverage         # HTML coverage report
+- **[Architecture Overview](docs/concepts/clean-architecture.md)** — DDD principles, bounded contexts, clean architecture layers
+- **[Quick Start Guide](docs/guides/quick-start.md)** — Get running in 5 minutes
+- **[API Documentation](docs/guides/api-documentation.md)** — Swagger UI, Postman collection, common workflows
+- **[Development Guide](docs/guides/development-workflow.md)** — Daily commands, testing, debugging
+- **[Testing Guide](test/README.md)** — Unit, smoke, integration, benchmark tests
+- **[Security Patterns](docs/guides/security-patterns.md)** — Error handling, validation, authentication
+- **[Domain Errors](docs/guides/domain-errors.md)** — Type-safe error handling patterns
 
-# Database Management
-make docker-up             # Start database containers (database-aware)
-make docker-down           # Stop database containers
-make db-reset              # Drop and recreate database
-make migrate               # Run all migrations (auto-detects driver)
-make migrate-core          # Core migrations only
+### Core Concepts
 
-# Local CI Validation (run before push)
-make pre-push              # Run all CI checks locally (lint + test + build)
-make ci-lint               # Run golangci-lint (same as CI)
-make ci-test               # Run all tests (same as CI)
-make ci-build              # Test build (same as CI)
+- **[Bounded Contexts](docs/concepts/bounded-contexts.md)** — Domain isolation, cross-context communication
+- **[Event-Driven Architecture](docs/concepts/event-driven.md)** — Event Bus, domain events, async workflows
+- **[Clean Architecture](docs/concepts/clean-architecture.md)** — Layers, dependencies, testability
+- **[Aggregates](pkg/aggregate/README.md)** — Domain modeling, invariants, transactions
 
-# Production
-make prod                  # Production runner (requires ENVIRONMENT=production)
-make swagger-all           # Generate API documentation
-```
+### Package Documentation
+
+- **[Event Bus](pkg/bus/README.md)** — Memory and Redis adapters, 377K events/sec
+- **[Aggregates](pkg/aggregate/README.md)** — Base aggregate, change tracking
+- **[JSON Store](pkg/jsonstore/README.md)** — Type-safe JSON fields for PostgreSQL/SQLite
+- **[UUIDv7](pkg/uuidv7/README.md)** — Time-ordered UUIDs, 100 million IDs/sec
+
+### Context Documentation
+
+- **[Identity Context](internal/contexts/identity/README.md)** — Users, contacts, profiles, roles, permissions
+- **[Customer Management](internal/contexts/customer-mgmt/README.md)** — Customers, companies, deals, interactions, analytics
+- **[Order Management](internal/contexts/order-mgmt/README.md)** — Orders, fulfillment workflows, state machines
+- **[Billing](internal/contexts/billing/README.md)** — Invoices, payments, subscriptions
+- **[Warehouse](internal/contexts/warehouse/README.md)** — Inventory, products, stock movements, locations
+- **[Fiscal Integration](internal/contexts/fiscal/README.md)** — Cash registers, receipts, tax compliance
 
 ---
 
-## Testing
+## 🏗️ Architecture
 
-Promenade uses a **four-tier testing strategy** with clear separation of concerns:
+### Domain-Driven Design
 
-### Test Organization
-
-**Four-tier architecture**:
-
-1. **Unit Tests** (in-place) - Fast feedback, test individual components
-2. **Smoke Tests** (`test/smoke/contexts/`) - HTTP handler validation (80/20 rule)
-3. **Integration Tests** (`test/integration/contexts/`) - Full E2E with real database
-4. **Benchmark Tests** (`test/benchmark/contexts/`) - Performance measurement with real DB
-
-**Baseline budget (per aggregate)**:
-
-- Unit tests: 20–30 (invariants, state transitions, validation)
-- Smoke tests: 6–9 (CRUD + key error mappings)
-- Integration tests: 6–10 (happy path + not found + constraint)
-
-**Risk tiers**:
-- Low risk: baseline only
-- Medium risk: add a few transition tests
-- High risk (payments, fiscal, auth): allow +30–50% tests
+Promenade follows **strict DDD** with 8 bounded contexts, each owning its domain model, database schema, and APIs:
 
 ```
-# Unit tests - alongside production code
-internal/contexts/identity/contact/
- entity.go
- entity_test.go              #  Entity unit tests
- usecase.go
- usecase_test.go             #  UseCase unit tests
-
-# Smoke tests - mirror path structure (NO DB, HTTP validation)
-test/smoke/contexts/
- identity/
-    user/handler_test.go      # 8 tests
-    contact/handler_test.go   # 8 tests
-    ...
- customer-mgmt/
-    customer/handler_test.go  # 12 tests (most complex - 23-method mock)
-    ...
-# Total: 196 tests across 20 handlers (100% pass rate)
-
-# Integration tests - mirror path structure (real DB)
-test/integration/contexts/
- shared/
-    country/repository_test.go     # 6 repository integration tests
-    currency/repository_test.go    # 6 repository integration tests
-    ...
- identity/
-     contact/repository_test.go     # 9 repository integration tests
-     profile/repository_test.go     # 17 repository integration subtests
-
-# Benchmark tests - mirror path structure (real DB)
-test/benchmark/contexts/
- identity/
-    user/
-       repository_bench_test.go    # Repository performance benchmarks
+┌─────────────────────────────────────────────────────────────┐
+│                        Event Bus                             │
+│          (Async communication between contexts)              │
+└─────────────────────────────────────────────────────────────┘
+     ▲          ▲         ▲         ▲         ▲         ▲
+     │          │         │         │         │         │
+┌────┴───┐ ┌───┴────┐ ┌──┴────┐ ┌──┴────┐ ┌──┴─────┐ ┌┴─────┐
+│Identity│ │Customer│ │ Order │ │Billing│ │Warehouse│ │Fiscal│
+│        │ │  Mgmt  │ │  Mgmt │ │       │ │        │ │      │
+└────────┘ └────────┘ └───────┘ └───────┘ └────────┘ └──────┘
 ```
 
-### Running Tests
+**Key Principles**:
+
+- **Bounded Context Autonomy** — Each context has own models, database schema, and migrations
+- **No Cross-Context Imports** — Contexts communicate only via Event Bus
+- **Clean Architecture Layers** — Handler → UseCase → Repository → Aggregate
+- **Aggregates as Transaction Boundaries** — Single aggregate per transaction
+- **Domain Events** — State changes published to Event Bus for cross-context reactions
+
+**Learn More**: [docs/concepts/bounded-contexts.md](docs/concepts/bounded-contexts.md)
+
+### Technology Stack
+
+- **Language**: Go 1.24 (performance, concurrency, type safety)
+- **Database**: PostgreSQL 16 (primary), SQLite 3 (dev/test)
+- **HTTP Framework**: Gin (high performance, middleware)
+- **Event Bus**: Memory (dev), Redis (production)
+- **Authentication**: JWT with RS256 (stateless, secure)
+- **API Documentation**: Swagger/OpenAPI 3.0
+- **Testing**: Unit, Smoke, Integration, Benchmark (100% passing)
+
+---
+
+## 📦 Project Structure
+
+```
+promenade/
+├── cmd/                    # Application entry points
+│   ├── api/               # HTTP server (bootstrap, routes, shutdown)
+│   ├── migrate/           # Migration runner
+│   └── seed/              # Test data seeder
+├── internal/              # Private application code
+│   ├── contexts/          # 8 bounded contexts (DDD)
+│   │   ├── identity/      # Users, authentication, authorization
+│   │   ├── customer-mgmt/ # Customers, companies, deals, interactions
+│   │   ├── order-mgmt/    # Orders, fulfillment, contracts
+│   │   ├── billing/       # Invoices, payments, subscriptions
+│   │   ├── warehouse/     # Inventory, products, stock, locations
+│   │   ├── fiscal/        # Cash registers, receipts, tax compliance
+│   │   ├── shared/        # Countries, currencies, languages, timezones
+│   │   └── ui/            # UI metadata (forms, views)
+│   └── infrastructure/    # Cross-cutting concerns
+│       ├── health/        # Health checks
+│       ├── http/          # HTTP server, middleware, response helpers
+│       └── auth/          # JWT generation, validation
+├── pkg/                   # Reusable packages (can be extracted)
+│   ├── bus/              # Event Bus (memory, Redis)
+│   ├── aggregate/        # Base aggregate, change tracking
+│   ├── jsonstore/        # Type-safe JSON fields
+│   ├── uuidv7/           # Time-ordered UUIDs
+│   ├── middleware/       # HTTP middleware (auth, rate limiting, CORS)
+│   └── response/         # Standard HTTP responses
+├── migrations/           # Database migrations (per context)
+├── test/                 # Integration and smoke tests
+├── docs/                 # Documentation
+│   ├── business/        # Business overviews (8 languages)
+│   ├── concepts/        # Architecture concepts
+│   ├── guides/          # Development guides
+│   └── reference/       # API reference
+└── config/              # Configuration files (dev, test, prod)
+```
+
+**Context Structure** (Clean Architecture):
+
+```
+internal/contexts/{context}/
+├── {aggregate}/               # Domain aggregate (bounded context subdomain)
+│   ├── aggregate/            # Domain entities & value objects
+│   │   └── {entity}.go       # Entity with business logic
+│   ├── repository/           # Repository interface
+│   │   └── {entity}_repository.go
+│   ├── usecase/              # Use cases (application logic)
+│   │   └── {entity}_usecase.go
+│   ├── adapter/              # External adapters
+│   │   ├── repository/postgres/  # PostgreSQL implementation
+│   │   └── http/                 # HTTP handlers
+│   ├── dto/                  # Data Transfer Objects
+│   └── errors.go             # Domain error constants
+└── README.md                 # Context documentation
+```
+
+**Learn More**: [internal/contexts/README.md](internal/contexts/README.md)
+
+---
+
+## 🧪 Testing
+
+Promenade has **comprehensive test coverage** across 4 test levels:
+
+| Test Type       | Count | Speed | Purpose                                       |
+| --------------- | ----- | ----- | --------------------------------------------- |
+| **Unit**        | 200+  | < 1s  | Individual functions, business logic          |
+| **Smoke**       | 26    | < 5s  | Basic CRUD per context, fast feedback         |
+| **Integration** | 29    | ~30s  | Real database, full workflows                 |
+| **Benchmark**   | 15+   | < 10s | Performance measurement, regression detection |
+
+### Run Tests
 
 ```bash
-# All tests (2477+ tests: 2232+ unit, 196 smoke, 76+ integration)
-make test-all               # Runner with environment check
-make test                   # All tests with race detector
+# All tests
+make test
 
-# By type (four-tier strategy)
-make test-unit              # Unit tests only (~5s)
-make test-smoke             # Smoke tests (handler validation, no DB, ~0.5s, 196 tests)
-make test-integration       # Integration tests with real DB (~14s)
-make test-benchmark         # Benchmark tests (5s per benchmark)
-make test-benchmark-all     # Extended benchmarks (10s per benchmark)
-
-# By context
-go test ./test/integration/contexts/identity/... -v
-go test ./test/smoke/contexts/... -v
-go test -bench=. ./test/benchmark/contexts/identity/user -v
+# By level
+make test-unit          # Unit tests only
+make test-smoke         # Smoke tests (fast CRUD checks)
+make test-integration   # Integration tests (with DB)
+make test-benchmark     # Performance benchmarks
 
 # By package
-go test ./pkg/jwt/... -v
-go test ./pkg/bus/... -v
-go test ./pkg/logger/... -v
-
-# With coverage
-make test-coverage          # Generate HTML coverage report
-
-# Local CI validation (before push)
-make pre-push               # Run all CI checks (lint + test + build)
+go test ./internal/contexts/customer-mgmt/customer/...
+go test ./pkg/bus/...
 ```
 
-### Test Statistics
+### Test Results (Latest)
 
-| Component                  | Tests | Coverage | Duration | Type        |
-| -------------------------- | ----- | -------- | -------- | ----------- |
-| **pkg/jwt**                | 18    | 87%      | cached   | Unit        |
-| **pkg/bus**                | 67    | 100%     | ~2s      | Unit        |
-| **pkg/logger**             | 15    | 95%      | cached   | Unit        |
-| **pkg/uuidv7**             | 10    | 100%     | cached   | Unit        |
-| **pkg/response**           | 13    | 100%     | cached   | Unit        |
-| **pkg/saga**               | 28    | 100%     | cached   | Unit        |
-| **pkg/migration**          | 8     | 90%      | cached   | Unit        |
-| **pkg/valueobject**        | 45    | 95%      | cached   | Unit        |
-| **pkg/middleware**         | 25    | 93%      | cached   | Unit        |
-| **pkg/cache**              | 8     | 85%      | cached   | Unit        |
-| **Smoke (all contexts)**   | 196   | -        | ~0.5s    | Smoke       |
-| **Identity (integration)** | 35    | -        | ~2.8s    | Integration |
-| **Shared (integration)**   | 24    | -        | ~7.8s    | Integration |
-| **Customer (integration)** | 14    | -        | ~3.6s    | Integration |
-| **Billing (integration)**  | 16    | -        | ~1.5s    | Integration |
-| **Subscription (unit+smoke)** | 51 | 100%     | ~1.0s    | Unit+Smoke  |
-| **Order-mgmt (integration)** | 6  | -        | ~1.5s    | Integration |
-| **User ListUsers (bench)** | 4     | -        | ~5s      | Benchmark   |
-| **Warehouse (smoke)**      | 31    | -        | cached   | Smoke       |
-| **Warehouse (integration)** | 42   | -        | ~3.2s    | Integration |
+- ✅ **Unit Tests**: 200+ passing
+- ✅ **Smoke Tests**: 26/26 passing (all contexts)
+- ✅ **Integration Tests**: 29/29 passing (100% compilation)
+- ✅ **Benchmarks**: 15+ benchmarks, 377K events/sec (Event Bus)
 
-**Total**: 2465+ tests across 88+ packages, 90%+ average coverage
-
-### Test Database
-
-Integration and benchmark tests use a separate test database (automatically started):
-
-```bash
-# Start test database (PostgreSQL on 5433, Redis on 6380)
-make test-db-start          # Automatically skipped in CI/CD environments
-
-# Run integration tests (starts DB automatically)
-make test-integration
-
-# Run benchmark tests (requires test DB)
-make test-benchmark
-
-# Stop test database
-make test-db-stop           # Automatically skipped in CI/CD environments
-```
-
-**CI/CD Awareness**: Test database commands detect CI environments (CI or GITHUB_ACTIONS) and skip Docker operations when PostgreSQL service is already running.
-
-**Mirror Path Navigation**: Tests mirror production code structure for easy discovery
-
-- `internal/contexts/shared/country/` → `test/integration/contexts/shared/country/`
-- `internal/contexts/identity/user/` → `test/benchmark/contexts/identity/user/`
-
-**See**: [test/README.md](test/README.md) for complete testing documentation
+**Learn More**: [test/README.md](test/README.md)
 
 ---
 
-## Domain Model Examples
+## 🔧 Configuration
 
-### Identity Context
-
-#### Contact Aggregate
-
-```go
-// Contact is an aggregate root for user contact information
-type Contact struct {
-    aggregate.BaseAggregate
-
-    ID         uuid.UUID
-    UserID     uuid.UUID
-    Type       ContactType    // email, phone, address
-    Label      string        // "Work", "Home", "Personal"
-
-    // Value Objects (only one populated based on Type)
-    Email      *valueobject.Email
-    Phone      *valueobject.Phone
-    Address    *valueobject.Address
-
-    // Business flags
-    IsPrimary  bool  // Only one primary per user per type
-    IsVerified bool  // Email confirmation, phone OTP, etc.
-    IsPublic   bool  // Visible in public profile
-}
-
-// Factory method with business validation
-func NewEmailContact(userID uuid.UUID, email, label string) (*Contact, error) {
-    emailVO, err := valueobject.NewEmail(email)
-    if err != nil {
-        return nil, fmt.Errorf("invalid email: %w", err)
-    }
-
-    return &Contact{
-        BaseAggregate: aggregate.NewBase(),
-        ID:            uuidv7.New(),
-        UserID:        userID,
-        Type:          ContactTypeEmail,
-        Label:         label,
-        Email:         &emailVO,
-        IsPrimary:     false,
-        IsVerified:    false,
-        IsPublic:      false,
-    }, nil
-}
-```
-
-#### Profile Aggregate
-
-```go
-// Profile is an aggregate root for user profile information
-type Profile struct {
-    aggregate.BaseAggregate
-
-    ID          uuidv7.UUID
-    UserID      uuidv7.UUID // 1:1 with User
-    DisplayName string      // public name (required)
-
-    // Personal Info
-    FirstName   string
-    LastName    string
-    Gender      Gender // male, female, other, not_specify
-    DateOfBirth *time.Time
-
-    // Business Info
-    Bio       string // max 500 chars
-    AvatarURL string
-
-    // Localization
-    Timezone string // IANA (e.g., "Europe/Kyiv")
-    Language string // ISO 639-1 (e.g., "uk")
-    Country  string // ISO 3166-1 (e.g., "UA")
-
-    // Social Links (all require https://)
-    Website, LinkedIn, Twitter, GitHub string
-
-    // Status
-    IsPublic   bool // profile visibility
-    IsActive   bool // activation status
-    IsBanned   bool // moderation flag
-    IsVerified bool // verified badge
-}
-
-// Factory method
-func NewProfile(userID uuidv7.UUID, displayName string) (*Profile, error) {
-    if displayName == "" {
-        return nil, fmt.Errorf("display name is required")
-    }
-
-    return &Profile{
-        BaseAggregate: aggregate.NewBase(),
-        ID:            uuidv7.New(),
-        UserID:        userID,
-        DisplayName:   displayName,
-        IsPublic:      false,
-        IsActive:      true,
-    }, nil
-}
-```
-
-### Value Objects
-
-```go
-// Email is a value object for email addresses
-type Email struct {
-    value string
-}
-
-func NewEmail(email string) (Email, error) {
-    trimmed := strings.TrimSpace(strings.ToLower(email))
-
-    // Validation
-    if trimmed == "" {
-        return Email{}, fmt.Errorf("email cannot be empty")
-    }
-
-    emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-    if !emailRegex.MatchString(trimmed) {
-        return Email{}, fmt.Errorf("invalid email format")
-    }
-
-    return Email{value: trimmed}, nil
-}
-
-func (e Email) Value() string {
-    return e.value
-}
-```
-
----
-
-## Configuration
-
-Promenade uses **YAML configuration files** per environment with **environment variable overrides**:
-
-### Configuration Files
+Promenade uses **YAML configuration** with environment-specific files:
 
 ```
 config/
- # PostgreSQL configurations
- app.postgres-dev.yaml   # PostgreSQL + development
- app.postgres-test.yaml  # PostgreSQL + testing
- app.postgres-prod.yaml  # PostgreSQL + production
- 
- # SQLite configurations
- app.sqlite-dev.yaml     # SQLite + development
- app.sqlite-test.yaml    # SQLite + testing
- app.sqlite-prod.yaml    # SQLite + production
+├── app.postgres-dev.yaml   # Development (PostgreSQL)
+├── app.postgres-prod.yaml  # Production (PostgreSQL)
+├── app.postgres-test.yaml  # Testing (PostgreSQL)
+├── app.sqlite-dev.yaml     # Development (SQLite)
+└── app.sqlite-test.yaml    # Testing (SQLite)
 ```
 
-### Development Configuration
+### Switch Database
 
-**config/app.postgres-dev.yaml**
+```bash
+# PostgreSQL (default)
+make switch-postgres-dev
+make dev
+
+# SQLite (faster startup, single file)
+make switch-sqlite-dev
+make dev
+```
+
+### Configuration Structure
 
 ```yaml
 app:
   name: "Promenade Platform"
-  environment: "development"
-  version: "0.1.0"
+  version: "1.0.0"
 
 server:
-  host: "0.0.0.0"
+  host: "localhost"
   port: 8081
-  read_timeout: 10s
-  write_timeout: 10s
 
 database:
-  postgres:
-    host: "localhost"
-    port: 5432
-    user: "system"
-    password: "passw0rd"
-    database: "promenade_dev"
-    ssl_mode: "disable"
-  redis:
-    addr: "localhost:6379"
-    password: ""
-    pool_size: 10
-    max_retries: 3
-    databases:
-      revocation: 0  # JWT token revocation
-      bus: 1         # Event bus (if adapter=redis)
-      cache: 2       # Application cache
-      sessions: 3    # User sessions
+  driver: "postgres" # or "sqlite3"
+  dsn: "host=localhost port=5432 user=postgres password=postgres dbname=promenade_dev sslmode=disable"
 
-# Event Bus configuration (Memory adapter for dev)
-bus:
-  adapter: "memory" # memory (dev) or redis (prod)
-  worker_pool_size: 10 # Number of concurrent workers
-  buffer_size: 1000 # Event buffer capacity
-  retry_attempts: 3 # Failed event retry attempts
-  retry_delay: 1s # Delay between retries
+jwt:
+  private_key_path: "config/keys/jwt-private.pem"
+  public_key_path: "config/keys/jwt-public.pem"
+  access_token_duration: "15m"
+  refresh_token_duration: "7d"
 
-logging:
-  level: "debug" # debug, info, warn, error
-  format: "text" # text or json
-  add_source: true # Include source file:line
+event_bus:
+  adapter: "memory" # or "redis"
+  max_retries: 3
 ```
 
-### Production Configuration
+**Learn More**: [config/README.md](config/README.md)
 
-**config/app.postgres-prod.yaml**
+---
 
-```yaml
-# ... (same app/server sections)
+## 🛠️ Development
 
-database:
-  postgres:
-    host: "${DB_HOST}" # Environment variable override
-    port: 5432
-    user: "${DB_USER}"
-    password: "${DB_PASSWORD}"
-    database: "promenade_prod"
-    ssl_mode: "require"
-  redis:
-    addr: "${REDIS_ADDR:-localhost:6379}"
-    password: "${REDIS_PASSWORD}"
-    pool_size: 20
-    max_retries: 3
-    databases:
-      revocation: 0
-      bus: 1
-      cache: 2
-      sessions: 3
-
-# Redis Event Bus for production (distributed)
-bus:
-  adapter: "redis"
-  worker_pool_size: 20
-  buffer_size: 5000
-  retry_attempts: 5
-  retry_delay: 2s
-
-logging:
-  level: "info"
-  format: "json" # Structured logging for prod
-  add_source: false
-```
-
-### Environment Variables
-
-Override sensitive configuration values:
+### Daily Commands
 
 ```bash
-export DB_HOST="production-db.example.com"
-export DB_USER="promenade_app"
-export DB_PASSWORD="secure_password"
-export REDIS_ADDR="redis.example.com:6379"
-export REDIS_PASSWORD="redis_password"
+# Start development server (with hot reload)
+make dev
+
+# Run migrations
+make migrate                    # All contexts
+make migrate-context CONTEXT=warehouse  # Single context
+
+# Reset database
+make dev-fresh                  # Drop, create, migrate
+
+# Tests
+make test                       # All tests
+make test-smoke                 # Fast smoke tests
+make test-integration           # Integration tests
+
+# Code quality
+make lint                       # Run golangci-lint
+make fmt                        # Format code
+
+# Build
+make build                      # Production binary
+make build-dev                  # Development binary
+
+# Docker
+make docker-up                  # Start PostgreSQL
+make docker-down                # Stop PostgreSQL
 ```
 
-### Configuration Loading
-
-The application loads config on startup in [cmd/api/main.go](cmd/api/main.go):
-
-```go
-// Load configuration (environment-specific)
-cfg, err := config.Load()
-if err != nil {
-    slog.Error("Failed to load config", slog.Any("error", err))
-    os.Exit(1)
-}
-```
-
-Environment is detected via `DATABASE_DRIVER` and `ENVIRONMENT` env vars:
+### Pre-Push Checklist
 
 ```bash
-DATABASE_DRIVER=postgres ENVIRONMENT=production ./bin/promenade   # Loads app.postgres-prod.yaml
-DATABASE_DRIVER=sqlite ENVIRONMENT=test ./bin/promenade           # Loads app.sqlite-test.yaml
-DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade  # Loads app.postgres-dev.yaml (default)
+# Run before pushing changes
+make pre-push
+
+# This runs:
+# 1. make lint        (code quality)
+# 2. make test        (all tests)
+# 3. make build       (verify compilation)
 ```
 
-**See**: [internal/infrastructure/config/](internal/infrastructure/config/) for config implementation
+**Learn More**: [docs/guides/development-workflow.md](docs/guides/development-workflow.md)
 
 ---
 
-## Key Concepts
+## 📖 API Documentation
 
-### Package Library
+### Swagger UI
 
-Promenade includes a comprehensive **package library** (`pkg/`) with reusable, context-agnostic components:
+Interactive API documentation with 182+ endpoints:
 
-| Package         | Purpose                               | Tests | Status     | Documentation                           |
-| --------------- | ------------------------------------- | ----- | ---------- | --------------------------------------- |
-| **bus**         | Event Bus (Memory/Redis adapters)     | 67    | Production | [README](pkg/bus/README.md)             |
-| **jwt**         | JWT authentication & RBAC middleware  | 18    | Production | [README](pkg/jwt/README.md)             |
-| **logger**      | Structured logging (slog wrapper)     | 15    | Production | [README](pkg/logger/README.md)          |
-| **middleware**  | HTTP middleware (rate limit, CSRF)    | 25    | Production | [README](pkg/middleware/README.md)      |
-| **cache**       | Redis-based caching layer             | 8     | Production | [README](pkg/cache/README.md)           |
-| **migration**   | Namespace-based DB migrations         | 8     | Production | [README](pkg/migration/README.md)       |
-| **response**    | Standard HTTP responses               | 12    | Production | [README](pkg/response/README.md)        |
-| **uuidv7**      | Time-ordered UUIDs (RFC 9562)         | 10    | Production | [README](pkg/uuidv7/README.md)          |
-| **valueobject** | DDD Value Objects                     | 25    | Production | [README](pkg/valueobject/README.md)     |
-| **aggregate**   | Base Aggregate pattern                | 5     | Production | [README](pkg/aggregate/README.md)       |
-| **jsonb**       | PostgreSQL JSONB utilities            | 8     | Production | [README](pkg/jsonb/README.md)           |
-| **saga**        | Distributed transaction orchestration | 28    | Production | [README](pkg/saga/README.md)            |
-| **scripting**   | LUA scripting engine                  | 21    | Production | [README](pkg/scripting/README.md)       |
-| **scheduler**   | Cron-based job scheduler              | 43    | Production | [README](pkg/scheduler/README.md)       |
+**http://localhost:8081/api/docs/index.html**
 
-**Total**: 291+ tests across 14 packages
+- Try endpoints directly in browser
+- Authentication with JWT
+- Request/response examples
+- Schema validation
 
-**Key Highlights**:
+### Postman Collection
 
-- **bus**: Central event-driven communication hub (377K events/sec with Memory adapter)
-- **jwt**: JWT token generation/validation with RBAC middleware (87% test coverage)
-- **middleware**: Rate limiting and CSRF protection for API security (93% test coverage)
-- **uuidv7**: Time-ordered UUIDs provide 2x faster inserts than UUID v4
-- **valueobject**: Email, Phone, Money, Address with immutability and validation
-- **aggregate**: Base pattern for all domain aggregates (event sourcing support)
+Pre-built collection with all endpoints, authentication flows, and test scripts:
 
-**See**: [pkg/README.md](pkg/README.md) for complete package library documentation
-
----
-
-## Domain Model Example: Identity Context
-
-### Aggregates
-
-**Aggregate** is a cluster of domain objects treated as a single unit with:
-
-- **Aggregate Root** - entry point with global identity
-- **Invariants** - business rules enforced within boundary
-- **Transactional Consistency** - changes saved atomically
-
-### Value Objects
-
-**Value Object** is an immutable object defined by its attributes:
-
-- No identity (equality by value)
-- Validation in constructor
-- Examples: Email, Phone, Money, Address, DateRange
-
-### Domain Events
-
-**Domain Event** represents something that happened in the domain:
-
-```go
-type ContactVerified struct {
-    ContactID uuid.UUID
-    UserID    uuid.UUID
-    Type      ContactType
-    VerifiedAt time.Time
-}
-```
-
-### Sagas
-
-**Saga** coordinates long-running distributed transactions:
-
-```go
-type OrderFulfillmentSaga struct {
-    saga.BaseSaga
-    OrderID   uuid.UUID
-    CustomerID uuid.UUID
-    PaymentID  uuid.UUID
-}
-```
-
----
-
-## Database
-
-### Migrations
-
-Migrations are namespace-based for context isolation:
-
-```
-migrations/
- core/                        # Core infrastructure
-    000001_core_init_uuid_v7.up.sql
-    000002_core_auth_full.up.sql
-    000003_core_rbac_full.up.sql
- identity/                    # Identity context
-     000001_identity_contacts.up.sql
-```
-
-### UUID v7
-
-Time-ordered UUIDs for better database performance:
-
-- 2x faster inserts than UUID v4
-- Natural ordering by creation time
-- Better B-tree index locality
-
-```go
-id := uuidv7.New()  // Time-ordered UUID
-```
-
----
-
-## Roadmap
-
-### Phase 1: API Documentation & Developer Experience (COMPLETE )
-
-**Status**:  100% Complete (January 1-5, 2026)  
-**Duration**: 5 days (planned 10 days - 2x faster!)
-
-- [x] Swagger/OpenAPI 3.0 generation (swaggo/swag)
-- [x] Swagger UI at `/api/docs/index.html` (182+ endpoints documented)
-- [x] Postman collection (33K lines, 160+ requests, auto-generated)
-- [x] API versioning strategy (URL-based, RFC 8594 compliant)
-- [x] Developer Portal with 4 guides (4600+ lines):
-  - Quick Start Guide (1100 lines) - 5-minute practical tutorial
-  - Authentication Flow (1200 lines) - JWT, RBAC, security best practices
-  - Common Use Cases (1400 lines) - 7 real-world business scenarios
-  - Troubleshooting Guide (900 lines) - common issues and solutions
-- [x] Deprecation/Sunset middleware (37 tests, 95% coverage)
-
-**Deliverables**: Production-ready API documentation infrastructure
-
-### Phase 2: Warehouse Context (COMPLETE )
-
-**Status**:  100% Complete (January 7, 2026) - ALL 4 Aggregates Production Ready!  
-**Duration**: 3 days (planned 12 days - 4x faster!)
-
-- [x] Inventory aggregate (COMPLETE - 141 tests, 14 API endpoints)
-- [x] StockMovement aggregate (COMPLETE - 45 tests, audit trail operational)
-- [x] Product aggregate (COMPLETE - 139 tests, 16 API endpoints)
-- [x] Location aggregate (COMPLETE - 74 tests, 14 API endpoints)
-- [x] Integration with Order Management (stock reservation via Event Bus)
-- [ ] Low stock alerts system - Planned Q1 2026
-
-**Progress**: All 4 aggregates production-ready with 433 tests passing (139 Product + 141 Inventory + 45 StockMovement + 74 Location + 34 Integration)
-
-### Phase 3: Foundation & Identity Context (Complete)
-
-- [x] DDD primitives (Aggregate, Value Objects, Saga)
-- [x] Project structure (Bounded Contexts)
-- [x] Event Bus (Memory + Redis adapters)
-- [x] Database migrations system
-- [x] Testing infrastructure (four-tier strategy: unit, smoke, integration, benchmark)
-
-### Phase 4: Identity Context (Complete)
-
-- [x] Contact aggregate (email, phone, address)
-- [x] Profile aggregate (personal info, social links, localization)
-- [x] User aggregate (registration, authentication, password management)
-- [x] Repository implementations (PostgreSQL)
-- [x] HTTP API (REST with Gin) - all 3 aggregates
-- [x] Unit tests (85+ tests per aggregate)
-- [x] Integration tests (32 User + 9 Contact + 17 Profile subtests)
-- [x] Password policies (8+ chars, digit, letter, bcrypt hashing)
-- [x] Account management (status: active/suspended/banned, locking after failed logins)
-
-### Phase 5: Authentication & Authorization (Complete)
-
-- [x] JWT authentication (token generation, validation)
-- [x] JWT middleware for protected endpoints
-- [x] Session management (Redis storage, TTL)
-- [x] Token refresh mechanism
-- [x] Role-Based Access Control (RBAC)
-- [x] Role & Permission aggregates
-- [x] RBAC middleware
-- [x] Role management API (7 endpoints)
-- [x] Permission management API (7 endpoints)
-
-### Phase 6: Customer Management Context (Complete)
-
-- [x] Customer aggregate (lifecycle, segmentation)
-- [x] Company aggregate (B2B support, 14 endpoints)
-- [x] Deal aggregate (pipeline, stages, 12 endpoints)
-- [x] Interaction aggregate (calls, emails, meetings, 14 endpoints) - **COMPLETED Dec 31, 2025**
-
-### Phase 7: Order Management Context (In Progress)
-
-- [x] Order aggregate (creation, fulfillment, 14 endpoints)
-- [x] OrderLine entity (integrated with Order)
-- [x] Contract aggregate (complete lifecycle, 12 endpoints) - **COMPLETED Jan 8, 2026**
-- [ ] Fulfillment saga (payment → inventory → shipping) - Planned Q2 2026
-
-### Phase 8: Billing Context (Complete)
-
-- [x] Invoice aggregate (generation, management, 8 endpoints) - **COMPLETED Dec 27, 2025**
-- [x] Payment aggregate (processing, reconciliation, 8 endpoints) - **COMPLETED Dec 28, 2025**
-- [x] Subscription aggregate (lifecycle, status transitions, 8 endpoints) - **COMPLETED Jan 5, 2026**
-- [x] Complete test coverage (120 tests: 58 entity + 35 usecase + 11 integration + 16 smoke)
-- [ ] Payment gateway integration - Planned Q1 2026
-- [ ] Recurring billing automation - Planned Q2 2026
-
-### Phase 9: Analytics & Reporting (Planned Q2 2026)
-
-- [ ] CQRS read models
-- [ ] Dashboards
-- [ ] Business metrics
-
-### Ukrainian Market Expansion (Strategic Priority - Q1-Q2 2026)
-
-**CRITICAL OPPORTUNITY**: Vacancy created by ban on Russian software (1C, Bitrix24, AmoCRM)
-
-**Q1 2026 (Must-Have for Market Entry)**:
-- [ ] PRRO Integration (Checkbox, Vchasno.Kasa) - Cash register compliance
-- [ ] Tax Invoices (State Tax Service XML) - Tax invoice system
-- [ ] Bank Statements (Monobank, Privat24, PUMB) - Bank statement import
-
-**Q2 2026 (Competitive Advantage)**:
-- [ ] HRM Module (Ukrainian payroll taxes, EDR integration)
-- [ ] Nova Poshta / Ukrposhta APIs - Shipping integration
-- [ ] Full Ukrainian localization
-
-**Detailed Documentation**:
-- [Ukraine Market Strategy 2026](docs/roadmap/UKRAINE_MARKET_STRATEGY_2026.md) - Complete 12-month business plan
-- [Ukraine Compliance Roadmap](docs/roadmap/UKRAINE_COMPLIANCE_ROADMAP.md) - Technical implementation guide (Q1-Q2 2026)
-
-**Target**: 7,500-15,000 SMB companies (5-10% market share) within 18 months  
-**Projected ARR**: $9.4M-29.9M at 7,500 clients
-
----
-
-## Contributing
-
-This is a learning project focused on DDD architecture. Contributions welcome!
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow DDD principles and existing patterns
-4. Write tests (maintain 80%+ coverage)
-5. **Follow documentation style guide** (no emoji - see below)
-6. Commit changes (`git commit -m 'Add amazing feature'`)
-7. Push to branch (`git push origin feature/amazing-feature`)
-8. Open Pull Request
-
-### Documentation Style Policy
-
-**Official Policy**: Professional text-based documentation (no emoji)
-
-Promenade maintains **professional documentation standards** without emoji for:
-- **Professionalism**: Enterprise software requires business-appropriate language
-- **Accessibility**: Screen readers and universal platform support
-- **Clarity**: Text is always clearer than symbols
-- **Searchability**: Text-based status indicators are easier to grep and search
-
-**Automated Enforcement**:
 ```bash
-make check-emoji              # Check for emoji violations (CI mode)
-make clean-emoji              # Show files with emoji (dry-run)
-make clean-emoji-apply        # Remove emoji automatically
+# Import in Postman
+1. postman/Promenade_API.postman_collection.json  # All endpoints
+2. postman/Development.postman_environment.json   # Dev environment
 ```
 
-**See**: [Documentation Style Guide](docs/guides/documentation-style-guide.md) for complete policy and examples
+**Features**:
+
+- Auto-save JWT tokens after login
+- Auto-refresh expired tokens
+- Pre-configured workflows
+- Response validation scripts
+
+**Learn More**: [docs/guides/api-documentation.md](docs/guides/api-documentation.md), [postman/README.md](postman/README.md)
 
 ---
 
-## License
+## 🌍 Multi-Language Support
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Business documentation available in 8 languages:
+
+| Language     | Document                                                    | Audience          |
+| ------------ | ----------------------------------------------------------- | ----------------- |
+| 🇬🇧 English   | [Business Overview](docs/business/BUSINESS_OVERVIEW.md)     | Global audience   |
+| 🇺🇦 Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md)  | Ukrainian market  |
+| 🇩🇪 Deutsch   | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | German market     |
+| 🇫🇷 Français  | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md)  | French market     |
+| 🇪🇸 Español   | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Spanish market    |
+| 🇵🇹 Português | [Visão Geral](docs/business/BUSINESS_OVERVIEW_PT.md)        | Portuguese market |
+| 🇯🇵 日本語    | [ビジネス概要](docs/business/BUSINESS_OVERVIEW_JP.md)       | Japanese market   |
+| 🇨🇳 中文      | [商业概览](docs/business/BUSINESS_OVERVIEW_ZH.md)           | Chinese market    |
 
 ---
 
-## Support
+## 🗺️ Roadmap
 
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/basilex/promenade/issues)
+### Q1 2026 (Current)
+
+- ✅ DDD refactoring (24 aggregates, 150+ domain errors)
+- ✅ Security audit (36 handlers, 417 fixes)
+- ✅ Integration tests (29 packages, 100% passing)
+- ✅ Event Bus performance (377K events/sec)
+- 🔄 Web frontend (React/TypeScript)
+- 🔄 Mobile apps (iOS, Android)
+
+### Q2 2026
+
+- Ukrainian fiscal integration (Checkbox, Vchasno.Kasa)
+- Tax invoices (XML for State Tax Service)
+- Bank integration (Monobank, Privat24)
+- HRM module (payroll + Ukrainian taxes)
+- Logistics integration (Nova Poshta, Ukrposhta)
+
+### Q3-Q4 2026
+
+- Multi-tenant SaaS mode
+- Advanced analytics (CQRS read models)
+- Workflow engine (custom business processes)
+- Marketplace (plugins, extensions)
+
+**Detailed Roadmap**: [docs/roadmap/](docs/roadmap/)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please read:
+
+- **[Contributing Guide](CONTRIBUTING.md)** — How to contribute, coding standards
+- **[Development Workflow](docs/guides/development-workflow.md)** — Daily commands, testing
+- **[Architecture Overview](docs/concepts/clean-architecture.md)** — Design principles
+
+### Quick Start for Contributors
+
+```bash
+# 1. Fork repository
+# 2. Clone your fork
+git clone https://github.com/YOUR_USERNAME/promenade.git
+cd promenade
+
+# 3. Create feature branch
+git checkout -b feature/my-feature
+
+# 4. Make changes
+# 5. Run tests
+make pre-push
+
+# 6. Commit and push
+git commit -m "feat: add my feature"
+git push origin feature/my-feature
+
+# 7. Open Pull Request
+```
+
+---
+
+## 📄 License
+
+Promenade is open-source software licensed under the **MIT License**.
+
+See [LICENSE](LICENSE) file for details.
+
+---
+
+## 💬 Support
+
+- **Documentation**: https://basilex.github.io/promenade/
+- **Issues**: https://github.com/basilex/promenade/issues
 - **Email**: alexander.vasilenko@gmail.com
+- **Discussions**: https://github.com/basilex/promenade/discussions
 
 ---
 
-## **Built with Domain-Driven Design and Go**
+## 🏆 Status
 
-## Documentation
-
-### Complete Documentation Library
-
-Promenade includes **comprehensive documentation** covering all aspects of the architecture:
-
-**Core Documentation**:
-
-- [Documentation Index](docs/INDEX.md) - Quick navigation hub with concepts and links
-- [Clean Architecture with DDD](docs/concepts/clean-architecture.md) - Bounded Contexts, Aggregates, Value Objects
-- [Event-Driven Architecture](docs/concepts/event-driven.md) - Event Bus, Domain Events, Sagas
-- [Bounded Contexts Strategy](docs/concepts/bounded-contexts.md) - Context isolation and communication
-
-**Implementation Guides**:
-
-- [RBAC Implementation](docs/guides/rbac.md) - Roles, permissions, JWT integration
-- [Rate Limiting](docs/guides/rate-limiting.md) - IP-based protection for authentication
-- [Health Checks](docs/guides/health-checks.md) - Dependency monitoring and alerting
-- [Local CI Validation](docs/guides/local-ci.md) - Run GitHub Actions checks locally before push
-- [Documentation Style Guide](docs/guides/documentation-style-guide.md) - Professional standards (no emoji policy)
-- [Testing Patterns](docs/guides/testing-patterns.md) - Four-tier testing strategy (~965 lines)
-- [Testing Quick Reference](docs/guides/testing-quick-reference.md) - One-page cheat sheet
-- [Smoke Tests Guide](test/smoke/README.md) - Complete HTTP handler validation guide (~450 lines)
-
-**Technical Reference**:
-
-- [Test Coverage Report](docs/reference/test-coverage-report.md) - 420+ tests breakdown
-- [Bus Test Coverage](docs/reference/bus-test-coverage.md) - Event Bus test report (67 tests, 100% passing)
-
-**Bounded Contexts**:
-
-- [Contexts Overview](internal/contexts/README.md) - All bounded contexts catalog
-- [Identity Context](internal/contexts/identity/README.md) - User, Contact, Profile, RBAC (~550 lines)
-- [Shared Context](internal/contexts/shared/README.md) - Reference data (Country, Currency, Language, Timezone) (~450 lines)
-- [Customer Management](internal/contexts/customer-mgmt/README.md) - Customer aggregate
-
-**Package Library**:
-
-- [Package Overview](pkg/README.md) - All shared packages documentation (~400 lines)
-- [Event Bus](pkg/bus/README.md) - Central communication hub (Memory/Redis adapters) (~600 lines)
-- [JWT Authentication](pkg/jwt/README.md) - Token generation, validation, RBAC middleware
-- [UUID v7](pkg/uuidv7/README.md) - Time-ordered UUIDs for better performance
-- [Logger](pkg/logger/README.md) - Structured logging with context
-- [Value Objects](pkg/valueobject/README.md) - Email, Phone, Money, Address
-
-**Infrastructure**:
-
-- [Configuration](internal/infrastructure/config/README.md) - YAML config management
-- [Database](internal/infrastructure/database/README.md) - PostgreSQL connection and transactions
-- [Health Checks](internal/infrastructure/health/README.md) - Dependency monitoring
-- [Testing Guide](test/README.md) - Testing structure and best practices
-- [Migrations](migrations/README.md) - Namespace-based migration system
-
-**Total Documentation**: 8 core guides + 6 context READMEs with examples, best practices, and architecture decisions
+- **Version**: 1.0.0
+- **Status**: Production-ready
+- **Go Version**: 1.24+
+- **Database**: PostgreSQL 16, SQLite 3
+- **Tests**: ✅ 200+ unit, 26 smoke, 29 integration
+- **Code Quality**: ✅ 0 lint issues
+- **Security**: ✅ Audit complete (Jan 2026)
+- **Documentation**: ✅ Comprehensive (8 languages)
 
 ---
+
+**Built with ❤️ using Domain-Driven Design and Go**

@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 )
 
@@ -19,7 +20,7 @@ func NewCheckboxPrinter(client *checkbox.Client) *CheckboxPrinter {
 }
 
 // Print prints a receipt via Checkbox and returns fiscal data
-func (p *CheckboxPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*receipt.PrintResult, error) {
+func (p *CheckboxPrinter) Print(ctx context.Context, rec *aggregate.Receipt) (*usecase.PrintResult, error) {
 	if p.client == nil {
 		return nil, fmt.Errorf("checkbox client not configured")
 	}
@@ -53,7 +54,7 @@ func (p *CheckboxPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*rec
 		return nil, err
 	}
 
-	return &receipt.PrintResult{
+	return &usecase.PrintResult{
 		ProviderReceiptID: resp.ID,
 		FiscalNumber:      resp.FiscalCode,
 		FiscalURL:         resp.FiscalURL,
@@ -62,7 +63,7 @@ func (p *CheckboxPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*rec
 }
 
 // Cancel cancels a receipt via Checkbox API.
-func (p *CheckboxPrinter) Cancel(ctx context.Context, rec *receipt.Receipt, reason string) error {
+func (p *CheckboxPrinter) Cancel(ctx context.Context, rec *aggregate.Receipt, reason string) error {
 	if p.client == nil {
 		return fmt.Errorf("checkbox client not configured")
 	}

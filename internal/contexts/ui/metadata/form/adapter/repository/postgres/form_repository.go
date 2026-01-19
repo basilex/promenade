@@ -7,19 +7,49 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/ui/metadata/form"
+	"github.com/basilex/promenade/internal/contexts/ui/metadata/form/aggregate"
+	"github.com/basilex/promenade/internal/contexts/ui/metadata/form/usecase"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// formRepository implements form.IRepository.
+// formRepository implements usecase.IFormRepository
 type formRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
-// NewFormRepository creates a new form repository.
-func NewFormRepository(db *sqlx.DB) form.IRepository {
-	return &formRepository{BaseRepository: NewBaseRepository(db)}
+// NewFormRepository creates a new form repository
+func NewFormRepository(db *sqlx.DB) usecase.IFormRepository {
+	return &formRepository{db: db}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *formRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *formRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *formRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes query without returning rows
+func (r *formRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query
+func (r *formRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 type formRow struct {
@@ -43,13 +73,13 @@ type formRow struct {
 	DeletedAt   sql.NullTime                                  `db:"deleted_at"`
 }
 
-func (r *formRow) toEntity() (*form.FormDefinition, error) {
+func (r *formRow) toEntity() (*aggregate.FormDefinition, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	entity := &form.FormDefinition{
+	entity := &aggregate.FormDefinition{
 		FormID:      r.FormID,
 		EntityType:  r.EntityType,
 		Name:        r.Name,
@@ -92,7 +122,7 @@ func (r *formRow) toEntity() (*form.FormDefinition, error) {
 	return entity, nil
 }
 
-func toRow(f *form.FormDefinition) *formRow {
+func toRow(f *aggregate.FormDefinition) *formRow {
 	row := &formRow{
 		ID:          f.GetID().String(),
 		FormID:      f.FormID,
@@ -129,7 +159,7 @@ func toRow(f *form.FormDefinition) *formRow {
 	return row
 }
 
-func (r *formRepository) Create(ctx context.Context, formEntity *form.FormDefinition) error {
+func (r *formRepository) Create(ctx context.Context, formEntity *aggregate.FormDefinition) error {
 	row := toRow(formEntity)
 	query := `INSERT INTO ui_form_definitions (
 		id, form_id, entity_type, name, description,
@@ -152,7 +182,7 @@ func (r *formRepository) Create(ctx context.Context, formEntity *form.FormDefini
 	return err
 }
 
-func (r *formRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*form.FormDefinition, error) {
+func (r *formRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.FormDefinition, error) {
 	query := `SELECT * FROM ui_form_definitions WHERE id = $1 AND deleted_at IS NULL`
 	var row formRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
@@ -161,7 +191,7 @@ func (r *formRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*form.For
 	return row.toEntity()
 }
 
-func (r *formRepository) GetByFormID(ctx context.Context, formID string) (*form.FormDefinition, error) {
+func (r *formRepository) GetByFormID(ctx context.Context, formID string) (*aggregate.FormDefinition, error) {
 	query := `SELECT * FROM ui_form_definitions WHERE form_id = $1 AND deleted_at IS NULL`
 	var row formRow
 	if err := r.Get(ctx, &row, query, formID); err != nil {
@@ -170,7 +200,7 @@ func (r *formRepository) GetByFormID(ctx context.Context, formID string) (*form.
 	return row.toEntity()
 }
 
-func (r *formRepository) Update(ctx context.Context, formEntity *form.FormDefinition) error {
+func (r *formRepository) Update(ctx context.Context, formEntity *aggregate.FormDefinition) error {
 	row := toRow(formEntity)
 	query := `UPDATE ui_form_definitions SET
 		entity_type = $1,
@@ -213,7 +243,7 @@ func (r *formRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	return err
 }
 
-func (r *formRepository) List(ctx context.Context, entityType string, limit, offset int) ([]*form.FormDefinition, int, error) {
+func (r *formRepository) List(ctx context.Context, entityType string, limit, offset int) ([]*aggregate.FormDefinition, int, error) {
 	if entityType == "" {
 		return r.ListAll(ctx, limit, offset)
 	}
@@ -234,7 +264,7 @@ func (r *formRepository) List(ctx context.Context, entityType string, limit, off
 		return nil, 0, err
 	}
 
-	forms := make([]*form.FormDefinition, 0, len(rows))
+	forms := make([]*aggregate.FormDefinition, 0, len(rows))
 	for _, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {
@@ -246,7 +276,7 @@ func (r *formRepository) List(ctx context.Context, entityType string, limit, off
 	return forms, total, nil
 }
 
-func (r *formRepository) ListAll(ctx context.Context, limit, offset int) ([]*form.FormDefinition, int, error) {
+func (r *formRepository) ListAll(ctx context.Context, limit, offset int) ([]*aggregate.FormDefinition, int, error) {
 	countQuery := `SELECT COUNT(*) FROM ui_form_definitions WHERE deleted_at IS NULL`
 	var total int
 	if err := r.Get(ctx, &total, countQuery); err != nil {
@@ -263,7 +293,7 @@ func (r *formRepository) ListAll(ctx context.Context, limit, offset int) ([]*for
 		return nil, 0, err
 	}
 
-	forms := make([]*form.FormDefinition, 0, len(rows))
+	forms := make([]*aggregate.FormDefinition, 0, len(rows))
 	for _, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/permission"
 	permissionHTTP "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/http"
+	permissionAggregate "github.com/basilex/promenade/internal/contexts/identity/permission/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 	"github.com/stretchr/testify/assert"
@@ -13,37 +14,37 @@ import (
 
 // MockPermissionUseCase mocks permission.IUseCase
 type MockPermissionUseCase struct {
-	CreatePermissionFunc     func(ctx context.Context, resource, action, description string) (*permission.Permission, error)
-	GetPermissionFunc        func(ctx context.Context, permissionID uuidv7.UUID) (*permission.Permission, error)
-	GetPermissionByNameFunc  func(ctx context.Context, name string) (*permission.Permission, error)
-	UpdatePermissionFunc     func(ctx context.Context, permissionID uuidv7.UUID, description string) (*permission.Permission, error)
-	DeletePermissionFunc     func(ctx context.Context, permissionID uuidv7.UUID) error
-	ListPermissionsFunc      func(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error)
-	GetRolePermissionsFunc   func(ctx context.Context, roleID uuidv7.UUID) ([]*permission.Permission, error)
+	CreatePermissionFunc    func(ctx context.Context, resource, action, description string) (*permissionAggregate.Permission, error)
+	GetPermissionFunc       func(ctx context.Context, permissionID uuidv7.UUID) (*permissionAggregate.Permission, error)
+	GetPermissionByNameFunc func(ctx context.Context, name string) (*permissionAggregate.Permission, error)
+	UpdatePermissionFunc    func(ctx context.Context, permissionID uuidv7.UUID, description string) (*permissionAggregate.Permission, error)
+	DeletePermissionFunc    func(ctx context.Context, permissionID uuidv7.UUID) error
+	ListPermissionsFunc     func(ctx context.Context, limit, offset int) ([]*permissionAggregate.Permission, int, error)
+	GetRolePermissionsFunc  func(ctx context.Context, roleID uuidv7.UUID) ([]*permissionAggregate.Permission, error)
 }
 
-func (m *MockPermissionUseCase) CreatePermission(ctx context.Context, resource, action, description string) (*permission.Permission, error) {
+func (m *MockPermissionUseCase) CreatePermission(ctx context.Context, resource, action, description string) (*permissionAggregate.Permission, error) {
 	if m.CreatePermissionFunc != nil {
 		return m.CreatePermissionFunc(ctx, resource, action, description)
 	}
 	return nil, nil
 }
 
-func (m *MockPermissionUseCase) GetPermission(ctx context.Context, permissionID uuidv7.UUID) (*permission.Permission, error) {
+func (m *MockPermissionUseCase) GetPermission(ctx context.Context, permissionID uuidv7.UUID) (*permissionAggregate.Permission, error) {
 	if m.GetPermissionFunc != nil {
 		return m.GetPermissionFunc(ctx, permissionID)
 	}
 	return nil, nil
 }
 
-func (m *MockPermissionUseCase) GetPermissionByName(ctx context.Context, name string) (*permission.Permission, error) {
+func (m *MockPermissionUseCase) GetPermissionByName(ctx context.Context, name string) (*permissionAggregate.Permission, error) {
 	if m.GetPermissionByNameFunc != nil {
 		return m.GetPermissionByNameFunc(ctx, name)
 	}
 	return nil, nil
 }
 
-func (m *MockPermissionUseCase) UpdatePermission(ctx context.Context, permissionID uuidv7.UUID, description string) (*permission.Permission, error) {
+func (m *MockPermissionUseCase) UpdatePermission(ctx context.Context, permissionID uuidv7.UUID, description string) (*permissionAggregate.Permission, error) {
 	if m.UpdatePermissionFunc != nil {
 		return m.UpdatePermissionFunc(ctx, permissionID, description)
 	}
@@ -57,22 +58,22 @@ func (m *MockPermissionUseCase) DeletePermission(ctx context.Context, permission
 	return nil
 }
 
-func (m *MockPermissionUseCase) ListPermissions(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error) {
+func (m *MockPermissionUseCase) ListPermissions(ctx context.Context, limit, offset int) ([]*permissionAggregate.Permission, int, error) {
 	if m.ListPermissionsFunc != nil {
 		return m.ListPermissionsFunc(ctx, limit, offset)
 	}
 	return nil, 0, nil
 }
 
-func (m *MockPermissionUseCase) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*permission.Permission, error) {
+func (m *MockPermissionUseCase) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*permissionAggregate.Permission, error) {
 	if m.GetRolePermissionsFunc != nil {
 		return m.GetRolePermissionsFunc(ctx, roleID)
 	}
 	return nil, nil
 }
 
-func fakePermission() *permission.Permission {
-	p, _ := permission.NewPermission("users", "read", "Read users")
+func fakePermission() *permissionAggregate.Permission {
+	p, _ := permissionAggregate.NewPermission("users", "read", "Read users")
 	return p
 }
 
@@ -80,7 +81,7 @@ func TestPermissionHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		CreatePermissionFunc: func(ctx context.Context, resource, action, description string) (*permission.Permission, error) {
+		CreatePermissionFunc: func(ctx context.Context, resource, action, description string) (*permissionAggregate.Permission, error) {
 			return fakePermission(), nil
 		},
 	}
@@ -114,7 +115,7 @@ func TestPermissionHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		GetPermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID) (*permission.Permission, error) {
+		GetPermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID) (*permissionAggregate.Permission, error) {
 			return fakePermission(), nil
 		},
 	}
@@ -131,7 +132,7 @@ func TestPermissionHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		GetPermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID) (*permission.Permission, error) {
+		GetPermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID) (*permissionAggregate.Permission, error) {
 			return nil, permission.ErrPermissionNotFound
 		},
 	}
@@ -148,8 +149,8 @@ func TestPermissionHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		ListPermissionsFunc: func(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error) {
-			return []*permission.Permission{fakePermission()}, 1, nil
+		ListPermissionsFunc: func(ctx context.Context, limit, offset int) ([]*permissionAggregate.Permission, int, error) {
+			return []*permissionAggregate.Permission{fakePermission()}, 1, nil
 		},
 	}
 
@@ -165,8 +166,8 @@ func TestPermissionHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		ListPermissionsFunc: func(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error) {
-			return []*permission.Permission{}, 0, nil
+		ListPermissionsFunc: func(ctx context.Context, limit, offset int) ([]*permissionAggregate.Permission, int, error) {
+			return []*permissionAggregate.Permission{}, 0, nil
 		},
 	}
 
@@ -182,7 +183,7 @@ func TestPermissionHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockPermissionUseCase{
-		UpdatePermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID, description string) (*permission.Permission, error) {
+		UpdatePermissionFunc: func(ctx context.Context, permissionID uuidv7.UUID, description string) (*permissionAggregate.Permission, error) {
 			return fakePermission(), nil
 		},
 	}

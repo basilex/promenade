@@ -148,12 +148,12 @@ func TestResponse_MultipleFields(t *testing.T) {
 	_, c, w := setupRouter()
 
 	complexData := map[string]interface{}{
-		"id":      123,
-		"name":    "Test Item",
-		"active":  true,
-		"count":   42,
-		"nested":  map[string]string{"key": "value"},
-		"list":    []string{"a", "b", "c"},
+		"id":     123,
+		"name":   "Test Item",
+		"active": true,
+		"count":  42,
+		"nested": map[string]string{"key": "value"},
+		"list":   []string{"a", "b", "c"},
 	}
 
 	Success(c, complexData)

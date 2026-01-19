@@ -12,25 +12,27 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	receipterrors "github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-func createReceiptForMock(t *testing.T) *receipt.Receipt {
-	rec, err := receipt.NewReceipt(
+func createReceiptForMock(t *testing.T) *aggregate.Receipt {
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	require.NoError(t, err)
 	return rec
 }
 
-func buildReceiptRow(t *testing.T) (*receipt.Receipt, []string, []driver.Value) {
+func buildReceiptRow(t *testing.T) (*aggregate.Receipt, []string, []driver.Value) {
 	rec := createReceiptForMock(t)
 	now := time.Now().UTC()
 
@@ -106,7 +108,7 @@ func TestReceiptRepository_Create_ReturnsCreateFailedOnError(t *testing.T) {
 	mock.ExpectExec("INSERT INTO fiscal_receipts").WillReturnError(sql.ErrConnDone)
 
 	err = repo.Create(context.Background(), rec)
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -146,7 +148,7 @@ func TestReceiptRepository_GetByID_NotFound(t *testing.T) {
 	mock.ExpectQuery("SELECT id, version").WillReturnError(sql.ErrNoRows)
 
 	_, err = repo.GetByID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptNotFound)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -165,7 +167,7 @@ func TestReceiptRepository_GetByID_Error(t *testing.T) {
 	mock.ExpectQuery("SELECT id, version").WillReturnError(sql.ErrConnDone)
 
 	_, err = repo.GetByID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -211,7 +213,7 @@ func TestReceiptRepository_GetByID_RowConversionError(t *testing.T) {
 	mock.ExpectQuery("SELECT id, version").WillReturnRows(rows)
 
 	_, err = repo.GetByID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -230,7 +232,7 @@ func TestReceiptRepository_GetByOrderID_NotFound(t *testing.T) {
 	mock.ExpectQuery("WHERE order_id").WillReturnError(sql.ErrNoRows)
 
 	_, err = repo.GetByOrderID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptNotFound)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -249,7 +251,7 @@ func TestReceiptRepository_GetByOrderID_Error(t *testing.T) {
 	mock.ExpectQuery("WHERE order_id").WillReturnError(sql.ErrConnDone)
 
 	_, err = repo.GetByOrderID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -295,7 +297,7 @@ func TestReceiptRepository_GetByOrderID_RowConversionError(t *testing.T) {
 	mock.ExpectQuery("WHERE order_id").WillReturnRows(rows)
 
 	_, err = repo.GetByOrderID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -316,7 +318,7 @@ func TestReceiptRepository_Update_NotFound(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnResult(sqlmock.NewResult(0, 0))
 
 	err = repo.Update(context.Background(), rec)
-	require.ErrorIs(t, err, receipt.ErrReceiptNotFound)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -337,7 +339,7 @@ func TestReceiptRepository_Update_Error(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnError(sql.ErrConnDone)
 
 	err = repo.Update(context.Background(), rec)
-	require.ErrorIs(t, err, receipt.ErrReceiptUpdateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptUpdateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -381,7 +383,7 @@ func TestReceiptRepository_Update_RowsAffectedError(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnResult(sqlmock.NewErrorResult(errors.New("rows error")))
 
 	err = repo.Update(context.Background(), rec)
-	require.ErrorIs(t, err, receipt.ErrReceiptUpdateFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptUpdateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -400,7 +402,7 @@ func TestReceiptRepository_Delete_ReturnsDeleteFailedOnError(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnError(sql.ErrConnDone)
 
 	err = repo.Delete(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptDeleteFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptDeleteFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -419,7 +421,7 @@ func TestReceiptRepository_Delete_NotFound(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnResult(sqlmock.NewResult(0, 0))
 
 	err = repo.Delete(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptNotFound)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -457,7 +459,7 @@ func TestReceiptRepository_Delete_RowsAffectedError(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_receipts").WillReturnResult(sqlmock.NewErrorResult(errors.New("rows error")))
 
 	err = repo.Delete(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, receipt.ErrReceiptDeleteFailed)
+	require.ErrorIs(t, err, receipterrors.ErrReceiptDeleteFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -478,7 +480,7 @@ func TestReceiptRepository_List_Success(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_receipts").WillReturnRows(rows)
 
-	list, err := repo.List(context.Background(), &receipt.ListFilters{})
+	list, err := repo.List(context.Background(), &repository.ListFilters{})
 	require.NoError(t, err)
 	require.Len(t, list, 1)
 	require.NoError(t, mock.ExpectationsWereMet())
@@ -499,11 +501,11 @@ func TestReceiptRepository_List_WithFilters(t *testing.T) {
 	rec, columns, values := buildReceiptRow(t)
 	rows := sqlmock.NewRows(columns).AddRow(values...)
 
-	filters := &receipt.ListFilters{
+	filters := &repository.ListFilters{
 		CashRegisterID: &rec.CashRegisterID,
 		OrderID:        &rec.OrderID,
 	}
-	status := receipt.ReceiptStatusPrinted
+	status := aggregate.ReceiptStatusPrinted
 	filters.Status = &status
 
 	mock.ExpectQuery("FROM fiscal_receipts").WillReturnRows(rows)
@@ -532,8 +534,8 @@ func TestReceiptRepository_List_RowConversionError(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_receipts").WillReturnRows(rows)
 
-	list, err := repo.List(context.Background(), &receipt.ListFilters{})
-	require.ErrorIs(t, err, receipt.ErrReceiptCreateFailed)
+	list, err := repo.List(context.Background(), &repository.ListFilters{})
+	require.ErrorIs(t, err, receipterrors.ErrReceiptCreateFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
@@ -552,8 +554,8 @@ func TestReceiptRepository_List_Error(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_receipts").WillReturnError(sql.ErrConnDone)
 
-	list, err := repo.List(context.Background(), &receipt.ListFilters{})
-	require.ErrorIs(t, err, receipt.ErrReceiptListFailed)
+	list, err := repo.List(context.Background(), &repository.ListFilters{})
+	require.ErrorIs(t, err, receipterrors.ErrReceiptListFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }

@@ -2,8 +2,8 @@ package subscription_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
-"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/billing/subscription"
 	"github.com/basilex/promenade/internal/contexts/billing/subscription/adapter/repository/postgres"
+	subscriptionAggregate "github.com/basilex/promenade/internal/contexts/billing/subscription/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -40,10 +41,10 @@ func TestSubscriptionRepository_Create(t *testing.T) {
 
 		// Create subscription with metadata
 		startDate := time.Now()
-		sub, err := subscription.NewSubscription(
+		sub, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -70,8 +71,8 @@ func TestSubscriptionRepository_Create(t *testing.T) {
 		assert.Equal(t, sub.ID, retrieved.ID)
 		assert.Equal(t, sub.SubscriptionNo, retrieved.SubscriptionNo)
 		assert.Equal(t, customerID, retrieved.CustomerID)
-		assert.Equal(t, subscription.BillingPeriodMonthly, retrieved.BillingPeriod)
-		assert.Equal(t, subscription.SubscriptionStatusTrial, retrieved.Status)
+		assert.Equal(t, subscriptionAggregate.BillingPeriodMonthly, retrieved.BillingPeriod)
+		assert.Equal(t, subscriptionAggregate.SubscriptionStatusTrial, retrieved.Status)
 		assert.Equal(t, int64(2999), retrieved.Amount.Amount)
 		assert.Equal(t, "USD", retrieved.Amount.Currency)
 
@@ -96,10 +97,10 @@ func TestSubscriptionRepository_GetByID(t *testing.T) {
 			// Create with trial period
 			startDate := time.Now()
 			trialEnd := startDate.Add(14 * 24 * time.Hour)
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customerID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -141,10 +142,10 @@ func TestSubscriptionRepository_Update(t *testing.T) {
 
 		// Create subscription
 		startDate := time.Now()
-		sub, err := subscription.NewSubscription(
+		sub, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -167,7 +168,7 @@ func TestSubscriptionRepository_Update(t *testing.T) {
 		// Verify update
 		retrieved, err := repo.GetByID(ctx, sub.ID)
 		require.NoError(t, err)
-		assert.Equal(t, subscription.SubscriptionStatusActive, retrieved.Status)
+		assert.Equal(t, subscriptionAggregate.SubscriptionStatusActive, retrieved.Status)
 
 		retrievedMetadata := retrieved.Metadata.Get()
 		assert.Equal(t, "NEWCODE", retrievedMetadata["promo_code"])
@@ -186,10 +187,10 @@ func TestSubscriptionRepository_Delete(t *testing.T) {
 
 		// Create subscription
 		startDate := time.Now()
-		sub, err := subscription.NewSubscription(
+		sub, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -219,10 +220,10 @@ func TestSubscriptionRepository_ListSubscriptions(t *testing.T) {
 		// Create 3 subscriptions
 		startDate := time.Now()
 		for i := 0; i < 3; i++ {
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customerID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -257,10 +258,10 @@ func TestSubscriptionRepository_ListByCustomer(t *testing.T) {
 		// Create 2 subscriptions for customer1
 		startDate := time.Now()
 		for i := 0; i < 2; i++ {
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customer1ID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -271,10 +272,10 @@ func TestSubscriptionRepository_ListByCustomer(t *testing.T) {
 		}
 
 		// Create 1 subscription for customer2
-		sub3, err := subscription.NewSubscription(
+		sub3, err := subscriptionAggregate.NewSubscription(
 			customer2ID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -311,10 +312,10 @@ func TestSubscriptionRepository_ListByStatus(t *testing.T) {
 		// Create 2 trial subscriptions
 		startDate := time.Now()
 		for i := 0; i < 2; i++ {
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customerID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -325,10 +326,10 @@ func TestSubscriptionRepository_ListByStatus(t *testing.T) {
 		}
 
 		// Create 1 active subscription
-		subActive, err := subscription.NewSubscription(
+		subActive, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -339,18 +340,18 @@ func TestSubscriptionRepository_ListByStatus(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, subActive))
 
 		// List trial subscriptions
-		trialSubs, err := repo.ListByStatus(ctx, subscription.SubscriptionStatusTrial)
+		trialSubs, err := repo.ListByStatus(ctx, subscriptionAggregate.SubscriptionStatusTrial)
 		require.NoError(t, err)
 		assert.Len(t, trialSubs, 2)
 		for _, sub := range trialSubs {
-			assert.Equal(t, subscription.SubscriptionStatusTrial, sub.Status)
+			assert.Equal(t, subscriptionAggregate.SubscriptionStatusTrial, sub.Status)
 		}
 
 		// List active subscriptions
-		activeSubs, err := repo.ListByStatus(ctx, subscription.SubscriptionStatusActive)
+		activeSubs, err := repo.ListByStatus(ctx, subscriptionAggregate.SubscriptionStatusActive)
 		require.NoError(t, err)
 		assert.Len(t, activeSubs, 1)
-		assert.Equal(t, subscription.SubscriptionStatusActive, activeSubs[0].Status)
+		assert.Equal(t, subscriptionAggregate.SubscriptionStatusActive, activeSubs[0].Status)
 	})
 }
 
@@ -367,10 +368,10 @@ func TestSubscriptionRepository_CountByStatus(t *testing.T) {
 		startDate := time.Now()
 
 		for i := 0; i < 3; i++ {
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customerID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -381,10 +382,10 @@ func TestSubscriptionRepository_CountByStatus(t *testing.T) {
 		}
 
 		for i := 0; i < 2; i++ {
-			sub, err := subscription.NewSubscription(
+			sub, err := subscriptionAggregate.NewSubscription(
 				customerID,
 				"plan_basic",
-				subscription.BillingPeriodMonthly,
+				subscriptionAggregate.BillingPeriodMonthly,
 				"USD",
 				2999,
 				startDate,
@@ -396,15 +397,15 @@ func TestSubscriptionRepository_CountByStatus(t *testing.T) {
 		}
 
 		// Count by status
-		trialCount, err := repo.CountByStatus(ctx, subscription.SubscriptionStatusTrial)
+		trialCount, err := repo.CountByStatus(ctx, subscriptionAggregate.SubscriptionStatusTrial)
 		require.NoError(t, err)
 		assert.Equal(t, int64(3), trialCount)
 
-		activeCount, err := repo.CountByStatus(ctx, subscription.SubscriptionStatusActive)
+		activeCount, err := repo.CountByStatus(ctx, subscriptionAggregate.SubscriptionStatusActive)
 		require.NoError(t, err)
 		assert.Equal(t, int64(2), activeCount)
 
-		pausedCount, err := repo.CountByStatus(ctx, subscription.SubscriptionStatusPaused)
+		pausedCount, err := repo.CountByStatus(ctx, subscriptionAggregate.SubscriptionStatusPaused)
 		require.NoError(t, err)
 		assert.Equal(t, int64(0), pausedCount)
 	})
@@ -422,10 +423,10 @@ func TestSubscriptionRepository_GetTotalRevenue(t *testing.T) {
 		startDate := time.Now()
 
 		// Monthly: $29.99 (2999 cents)
-		subMonthly, err := subscription.NewSubscription(
+		subMonthly, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,
@@ -436,10 +437,10 @@ func TestSubscriptionRepository_GetTotalRevenue(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, subMonthly))
 
 		// Quarterly: $89.97 (8997 cents) → MRR = 8997/3 = 2999 cents
-		subQuarterly, err := subscription.NewSubscription(
+		subQuarterly, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_pro",
-			subscription.BillingPeriodQuarterly,
+			subscriptionAggregate.BillingPeriodQuarterly,
 			"USD",
 			8997,
 			startDate,
@@ -450,10 +451,10 @@ func TestSubscriptionRepository_GetTotalRevenue(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, subQuarterly))
 
 		// Yearly: $359.88 (35988 cents) → MRR = 35988/12 = 2999 cents
-		subYearly, err := subscription.NewSubscription(
+		subYearly, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_enterprise",
-			subscription.BillingPeriodYearly,
+			subscriptionAggregate.BillingPeriodYearly,
 			"USD",
 			35988,
 			startDate,
@@ -464,10 +465,10 @@ func TestSubscriptionRepository_GetTotalRevenue(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, subYearly))
 
 		// Cancelled subscription (should not be counted)
-		subCancelled, err := subscription.NewSubscription(
+		subCancelled, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			1999,
 			startDate,
@@ -496,10 +497,10 @@ func TestSubscriptionRepository_MetadataJSONSerialization(t *testing.T) {
 
 		// Create subscription with complex metadata
 		startDate := time.Now()
-		sub, err := subscription.NewSubscription(
+		sub, err := subscriptionAggregate.NewSubscription(
 			customerID,
 			"plan_basic",
-			subscription.BillingPeriodMonthly,
+			subscriptionAggregate.BillingPeriodMonthly,
 			"USD",
 			2999,
 			startDate,

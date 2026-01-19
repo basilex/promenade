@@ -6,49 +6,50 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/country"
 	countryHTTP "github.com/basilex/promenade/internal/contexts/shared/country/adapter/http"
+	countryAggregate "github.com/basilex/promenade/internal/contexts/shared/country/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockCountryUseCase is a mock implementation of country.IUseCase for testing
 type MockCountryUseCase struct {
-	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*country.Country, error)
-	GetByCodeFunc func(ctx context.Context, code string) (*country.Country, error)
-	ListFunc      func(ctx context.Context) ([]*country.Country, error)
-	CreateFunc    func(ctx context.Context, country *country.Country) error
-	UpdateFunc    func(ctx context.Context, country *country.Country) error
+	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*countryAggregate.Country, error)
+	GetByCodeFunc func(ctx context.Context, code string) (*countryAggregate.Country, error)
+	ListFunc      func(ctx context.Context) ([]*countryAggregate.Country, error)
+	CreateFunc    func(ctx context.Context, country *countryAggregate.Country) error
+	UpdateFunc    func(ctx context.Context, country *countryAggregate.Country) error
 	DeleteFunc    func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockCountryUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*country.Country, error) {
+func (m *MockCountryUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*countryAggregate.Country, error) {
 	if m.GetByIDFunc != nil {
 		return m.GetByIDFunc(ctx, id)
 	}
 	return nil, nil
 }
 
-func (m *MockCountryUseCase) GetByCode(ctx context.Context, code string) (*country.Country, error) {
+func (m *MockCountryUseCase) GetByCode(ctx context.Context, code string) (*countryAggregate.Country, error) {
 	if m.GetByCodeFunc != nil {
 		return m.GetByCodeFunc(ctx, code)
 	}
 	return nil, nil
 }
 
-func (m *MockCountryUseCase) List(ctx context.Context) ([]*country.Country, error) {
+func (m *MockCountryUseCase) List(ctx context.Context) ([]*countryAggregate.Country, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *MockCountryUseCase) Create(ctx context.Context, c *country.Country) error {
+func (m *MockCountryUseCase) Create(ctx context.Context, c *countryAggregate.Country) error {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, c)
 	}
 	return nil
 }
 
-func (m *MockCountryUseCase) Update(ctx context.Context, c *country.Country) error {
+func (m *MockCountryUseCase) Update(ctx context.Context, c *countryAggregate.Country) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, c)
 	}
@@ -63,8 +64,8 @@ func (m *MockCountryUseCase) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // fakeCountry creates a fake country for testing
-func fakeCountry() *country.Country {
-	c, _ := country.NewCountry("US", "United States", "+1")
+func fakeCountry() *countryAggregate.Country {
+	c, _ := countryAggregate.NewCountry("US", "United States", "+1")
 	return c
 }
 
@@ -72,7 +73,7 @@ func TestCountryHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		CreateFunc: func(ctx context.Context, c *country.Country) error {
+		CreateFunc: func(ctx context.Context, c *countryAggregate.Country) error {
 			return nil
 		},
 	}
@@ -111,7 +112,7 @@ func TestCountryHandler_GetByCode_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*country.Country, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*countryAggregate.Country, error) {
 			return fakeCountry(), nil
 		},
 	}
@@ -127,7 +128,7 @@ func TestCountryHandler_GetByCode_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*country.Country, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*countryAggregate.Country, error) {
 			return nil, country.ErrCountryNotFound
 		},
 	}
@@ -143,8 +144,8 @@ func TestCountryHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		ListFunc: func(ctx context.Context) ([]*country.Country, error) {
-			return []*country.Country{fakeCountry()}, nil
+		ListFunc: func(ctx context.Context) ([]*countryAggregate.Country, error) {
+			return []*countryAggregate.Country{fakeCountry()}, nil
 		},
 	}
 
@@ -159,8 +160,8 @@ func TestCountryHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		ListFunc: func(ctx context.Context) ([]*country.Country, error) {
-			return []*country.Country{}, nil
+		ListFunc: func(ctx context.Context) ([]*countryAggregate.Country, error) {
+			return []*countryAggregate.Country{}, nil
 		},
 	}
 
@@ -175,10 +176,10 @@ func TestCountryHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCountryUseCase{
-		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*country.Country, error) {
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*countryAggregate.Country, error) {
 			return fakeCountry(), nil
 		},
-		UpdateFunc: func(ctx context.Context, c *country.Country) error {
+		UpdateFunc: func(ctx context.Context, c *countryAggregate.Country) error {
 			return nil
 		},
 	}
@@ -208,7 +209,7 @@ func TestCountryHandler_Delete_Success(t *testing.T) {
 	router.DELETE("/countries/:id", handler.DeleteCountry)
 
 	w := smoke.MakeRequest(t, router, "DELETE", "/countries/"+smoke.FakeUUID(), nil)
-	
+
 	// Delete returns 204 No Content
 	if w.Code != 204 {
 		t.Errorf("expected status code 204, got %d", w.Code)

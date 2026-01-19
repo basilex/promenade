@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/robfig/cron/v3"
 	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/robfig/cron/v3"
 )
 
 // JobType defines type of job

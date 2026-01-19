@@ -51,6 +51,7 @@ type Dialect interface {
 **Implementation**: `pkg/database/postgres/dialect.go`
 
 **Features**:
+
 - Native JSON functions (optional JSONB optimizations)
 - Full-text search (tsvector, tsquery)
 - Advanced indexing (GIN, GiST)
@@ -64,6 +65,7 @@ type Dialect interface {
 **JSON Storage**: `TEXT` in base migrations (optional JSONB in Postgres-only migrations)
 
 **Usage**:
+
 ```go
 import "github.com/basilex/promenade/pkg/database/postgres"
 
@@ -73,6 +75,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 ```
 
 **Recommended For**:
+
 - Production deployments
 - Large datasets (>1GB)
 - Complex queries with JSONB
@@ -86,6 +89,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 **Implementation**: `pkg/database/sqlite/dialect.go`
 
 **Features**:
+
 - Embedded database (no server)
 - Zero configuration
 - Fast for small datasets (<1GB)
@@ -97,6 +101,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 **JSON Storage**: `TEXT` (stored as JSON string)
 
 **Usage**:
+
 ```go
 import "github.com/basilex/promenade/pkg/database/sqlite"
 
@@ -106,6 +111,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 ```
 
 **Recommended For**:
+
 - Local development
 - Integration tests
 - CI/CD pipelines
@@ -113,6 +119,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 - Quick prototypes
 
 **Limitations**:
+
 - No concurrent writes (WAL helps but limited)
 - No native UUID type (stored as TEXT)
 - JSON operations less efficient (no indexing)
@@ -129,6 +136,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 **JSON Storage**: `JSON` (native type since MySQL 5.7)
 
 **Planned Support**:
+
 - MySQL 8.0+
 - MariaDB 10.5+
 
@@ -153,6 +161,7 @@ sql := dialect.ConvertPlaceholders("SELECT * FROM users WHERE email = ?")
 **Solution**: Write queries with `?`, convert at runtime.
 
 **Example**:
+
 ```go
 // Write SQL with ?
 query := "SELECT * FROM users WHERE email = ? AND status = ?"
@@ -171,6 +180,7 @@ query = dialect.ConvertPlaceholders(query)
 **Solution**: Store JSON as `TEXT` in migrations and use `jsonstore.Field[T]` in Go.
 
 **Example**:
+
 ```go
 type Customer struct {
     Tags jsonstore.Field[[]string] `db:"tags"`
@@ -191,6 +201,7 @@ type Customer struct {
 **Solution**: Generate UUIDs in Go code, not database defaults.
 
 **Example**:
+
 ```go
 //  Database-agnostic
 CREATE TABLE users (
@@ -209,17 +220,29 @@ user := &User{
 
 ### Repository Pattern
 
-**BaseRepository** provides database-agnostic operations:
+**Repositories implement helper methods** for database-agnostic operations:
 
 ```go
 type orderRepository struct {
-    *BaseRepository
+    db *sqlx.DB
 }
 
 func NewOrderRepository(db *sqlx.DB) order.IRepository {
-    return &orderRepository{
-        BaseRepository: NewBaseRepository(db),
-    }
+    return &orderRepository{db: db}
+}
+
+// Helper method for transaction support
+func (r *orderRepository) getExecutor(ctx context.Context) database.Executor {
+    return database.GetExecutor(ctx, r.db)
+}
+
+// Helper methods
+func (r *orderRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+    return database.GetExecutor(ctx, r.db).ExecContext(ctx, query, args...)
+}
+
+func (r *orderRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+    return database.GetExecutor(ctx, r.db).GetContext(ctx, dest, query, args...)
 }
 
 func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
@@ -229,13 +252,15 @@ func (r *orderRepository) Create(ctx context.Context, o *order.Order) error {
         VALUES (?, ?, ?, ?)
     `
 
-    // BaseRepository handles placeholder conversion
+    // Helper method handles placeholder conversion
     _, err := r.Exec(ctx, query, o.ID, o.OrderNumber, o.CustomerID, o.Total.Amount)
     return err
 }
 ```
 
-**BaseRepository** methods:
+**Helper methods**:
+
+- `getExecutor(ctx)` - Get database executor (transaction-aware)
 - `Exec(ctx, query, args)` - Execute with placeholder conversion
 - `Get(ctx, dest, query, args)` - Fetch single row
 - `Select(ctx, dest, query, args)` - Fetch multiple rows
@@ -262,6 +287,7 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
 ### PostgreSQL
 
 **config/app.postgres-prod.yaml**:
+
 ```yaml
 database:
   postgres:
@@ -276,6 +302,7 @@ database:
 ### SQLite
 
 **config/app.postgres-test.yaml**:
+
 ```yaml
 database:
   sqlite:
@@ -302,6 +329,7 @@ migrations/
 **Run Order**: `core → shared → identity → customer-mgmt → order-mgmt`
 
 **Database-Agnostic Rules**:
+
 1.  IDs stored as `TEXT` (UUID v7 generated in Go)
 2.  No UUID defaults in CREATE TABLE
 3.  No UPDATE triggers for timestamps
@@ -311,6 +339,7 @@ migrations/
 7.  Use TEXT for JSON (SQLite compatible)
 
 **Example Migration**:
+
 ```sql
 -- Database-agnostic (PostgreSQL + SQLite)
 CREATE TABLE customers (
@@ -329,11 +358,13 @@ CREATE TABLE customers (
 ### Integration Tests
 
 **Run with PostgreSQL**:
+
 ```bash
 make test-integration  # Uses PostgreSQL on :5433
 ```
 
 **Run with SQLite** (planned):
+
 ```bash
 ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 ```
@@ -341,6 +372,7 @@ ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 ### Benchmark Tests
 
 **Current Results** (PostgreSQL, Apple M4 Max):
+
 - User ListUsers: ~640-750μs
 - Interaction Create: ~413μs
 - Interaction List: ~904μs
@@ -351,14 +383,14 @@ ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 
 ### PostgreSQL vs SQLite
 
-| Feature               | PostgreSQL         | SQLite             |
-| --------------------- | ------------------ | ------------------ |
-| **Concurrency**       | Excellent          | Limited (WAL mode) |
-| **Dataset Size**      | >1GB optimal       | <1GB optimal       |
-| **JSON Performance**  | Good (TEXT)        | Good (TEXT)        |
-| **UUID Storage**      | TEXT (36 bytes)    | TEXT (36 bytes)    |
-| **Full-Text Search**  | Built-in (tsvector)| Extension required |
-| **Setup Complexity**  | High (server)      | Zero (embedded)    |
+| Feature              | PostgreSQL          | SQLite             |
+| -------------------- | ------------------- | ------------------ |
+| **Concurrency**      | Excellent           | Limited (WAL mode) |
+| **Dataset Size**     | >1GB optimal        | <1GB optimal       |
+| **JSON Performance** | Good (TEXT)         | Good (TEXT)        |
+| **UUID Storage**     | TEXT (36 bytes)     | TEXT (36 bytes)    |
+| **Full-Text Search** | Built-in (tsvector) | Extension required |
+| **Setup Complexity** | High (server)       | Zero (embedded)    |
 
 ### Recommendations
 
@@ -377,7 +409,7 @@ ENVIRONMENT=test DB_ADAPTER=sqlite make test-integration
 
 **Cause**: Query not converted via `dialect.ConvertPlaceholders()`
 
-**Fix**: Use `BaseRepository` methods (Exec, Get, Select) instead of raw sqlx.
+**Fix**: Use repository helper methods (Exec, Get, Select) that auto-convert placeholders.
 
 ### Issue: JSON Type Error
 

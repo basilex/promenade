@@ -22,11 +22,11 @@ type UpdateProductRequest struct {
 
 // SetPhysicalPropertiesRequest represents the request to set physical properties.
 type SetPhysicalPropertiesRequest struct {
-	Weight float64    `json:"weight" binding:"gte=0" example:"2.5"`
-	Length float64    `json:"length" binding:"gte=0" example:"35.7"`
-	Width  float64    `json:"width" binding:"gte=0" example:"23.5"`
-	Height float64    `json:"height" binding:"gte=0" example:"1.8"`
-	Unit   string     `json:"unit" binding:"required,oneof=kg lb" example:"kg"`
+	Weight float64 `json:"weight" binding:"gte=0" example:"2.5"`
+	Length float64 `json:"length" binding:"gte=0" example:"35.7"`
+	Width  float64 `json:"width" binding:"gte=0" example:"23.5"`
+	Height float64 `json:"height" binding:"gte=0" example:"1.8"`
+	Unit   string  `json:"unit" binding:"required,oneof=kg lb" example:"kg"`
 }
 
 // UpdateInventorySettingsRequest represents the request to update inventory settings.
@@ -43,29 +43,29 @@ type SetReorderPointRequest struct {
 
 // ProductResponse represents a product in API responses.
 type ProductResponse struct {
-	ID          string     `json:"id" example:"01JGABC123DEF456GHI789JKL0"`
-	SKU         string     `json:"sku" example:"PROD-001"`
-	Name        string     `json:"name" example:"Laptop Dell XPS 15"`
-	Description *string    `json:"description,omitempty" example:"High-performance laptop"`
-	Category    *string    `json:"category,omitempty" example:"Electronics"`
-	Brand       *string    `json:"brand,omitempty" example:"Dell"`
-	Status      string     `json:"status" example:"active"`
-	IsActive    bool       `json:"is_active" example:"true"`
-	
+	ID          string  `json:"id" example:"01JGABC123DEF456GHI789JKL0"`
+	SKU         string  `json:"sku" example:"PROD-001"`
+	Name        string  `json:"name" example:"Laptop Dell XPS 15"`
+	Description *string `json:"description,omitempty" example:"High-performance laptop"`
+	Category    *string `json:"category,omitempty" example:"Electronics"`
+	Brand       *string `json:"brand,omitempty" example:"Dell"`
+	Status      string  `json:"status" example:"active"`
+	IsActive    bool    `json:"is_active" example:"true"`
+
 	// Inventory
-	TrackInventory bool `json:"track_inventory" example:"true"`
-	AllowBackorder bool `json:"allow_backorder" example:"false"`
-	ReorderPoint   int  `json:"reorder_point" example:"10"`
-	ReorderQuantity int `json:"reorder_quantity" example:"50"`
-	
+	TrackInventory  bool `json:"track_inventory" example:"true"`
+	AllowBackorder  bool `json:"allow_backorder" example:"false"`
+	ReorderPoint    int  `json:"reorder_point" example:"10"`
+	ReorderQuantity int  `json:"reorder_quantity" example:"50"`
+
 	// Serial/Lot tracking
 	TrackSerial bool `json:"track_serial" example:"false"`
 	TrackLot    bool `json:"track_lot" example:"false"`
-	
+
 	// Physical properties
 	Weight     float64    `json:"weight" example:"2.5"`
 	Dimensions Dimensions `json:"dimensions"`
-	
+
 	// Timestamps
 	CreatedAt time.Time  `json:"created_at" example:"2026-01-06T12:00:00Z"`
 	UpdatedAt time.Time  `json:"updated_at" example:"2026-01-06T12:00:00Z"`

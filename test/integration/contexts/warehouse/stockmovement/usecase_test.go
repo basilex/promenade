@@ -9,18 +9,20 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/warehouse/stockmovement"
+	inventoryAggregate "github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
+	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	"github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/repository/postgres"
+	stockmovementAggregate "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/aggregate"
+	stockmovementUseCase "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // createTestInventory creates a test inventory record (required for FK constraint)
-func createTestInventoryForUC(t *testing.T, ctx context.Context, db *integration.TestDB) *inventory.Inventory {
+func createTestInventoryForUC(t *testing.T, ctx context.Context, db *integration.TestDB) *inventoryAggregate.Inventory {
 	invRepo := inventoryRepo.NewInventoryRepository(db.DB)
-	invUC := inventory.NewUseCase(invRepo)
+	invUC := inventoryUseCase.NewInventoryUseCase(invRepo)
 	inv, err := invUC.CreateInventory(ctx, uuidv7.New(), "SM-UC-"+uuidv7.New().String()[:8], "Test Product", "WH-MAIN", uuidv7.New())
 	require.NoError(t, err)
 	return inv
@@ -35,7 +37,7 @@ func TestStockMovementUseCase_RecordReceipt(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -45,7 +47,7 @@ func TestStockMovementUseCase_RecordReceipt(t *testing.T) {
 		movement, err := uc.RecordReceipt(ctx, inv.ID, 50, 100, 1500, "USD", createdBy)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.UUID{}, movement.ID)
-		assert.Equal(t, stockmovement.MovementTypeReceipt, movement.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeReceipt, movement.Type)
 		assert.Equal(t, 50, movement.Quantity)
 		assert.Equal(t, 100, movement.QuantityBeforeMove)
 		assert.Equal(t, 150, movement.QuantityAfterMove)
@@ -68,7 +70,7 @@ func TestStockMovementUseCase_RecordReservation(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -79,7 +81,7 @@ func TestStockMovementUseCase_RecordReservation(t *testing.T) {
 		movement, err := uc.RecordReservation(ctx, inv.ID, 30, 150, orderID, createdBy)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.UUID{}, movement.ID)
-		assert.Equal(t, stockmovement.MovementTypeReservation, movement.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeReservation, movement.Type)
 		assert.Equal(t, -30, movement.Quantity)
 		assert.Equal(t, 150, movement.QuantityBeforeMove)
 		assert.Equal(t, 120, movement.QuantityAfterMove)
@@ -97,7 +99,7 @@ func TestStockMovementUseCase_RecordCommit(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -108,7 +110,7 @@ func TestStockMovementUseCase_RecordCommit(t *testing.T) {
 		movement, err := uc.RecordCommit(ctx, inv.ID, 25, 120, orderID, createdBy)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.UUID{}, movement.ID)
-		assert.Equal(t, stockmovement.MovementTypeCommit, movement.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeCommit, movement.Type)
 		assert.Equal(t, -25, movement.Quantity)
 		assert.Equal(t, 120, movement.QuantityBeforeMove)
 		assert.Equal(t, 95, movement.QuantityAfterMove)
@@ -125,7 +127,7 @@ func TestStockMovementUseCase_RecordAdjustment(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -135,7 +137,7 @@ func TestStockMovementUseCase_RecordAdjustment(t *testing.T) {
 		movement, err := uc.RecordAdjustment(ctx, inv.ID, 10, 100, "Stock count correction", createdBy)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.UUID{}, movement.ID)
-		assert.Equal(t, stockmovement.MovementTypeAdjustment, movement.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeAdjustment, movement.Type)
 		assert.Equal(t, 10, movement.Quantity)
 		assert.Equal(t, "Stock count correction", movement.Reason)
 	})
@@ -150,7 +152,7 @@ func TestStockMovementUseCase_RecordTransfer(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -164,7 +166,7 @@ func TestStockMovementUseCase_RecordTransfer(t *testing.T) {
 		movement, err := uc.RecordTransfer(ctx, inv.ID, 20, 100, fromWarehouse, toWarehouse, &fromLocation, &toLocation, createdBy)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.UUID{}, movement.ID)
-		assert.Equal(t, stockmovement.MovementTypeTransfer, movement.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeTransfer, movement.Type)
 		assert.Equal(t, 20, movement.Quantity)
 		assert.Equal(t, fromWarehouse, *movement.FromWarehouseID)
 		assert.Equal(t, toWarehouse, *movement.ToWarehouseID)
@@ -182,7 +184,7 @@ func TestStockMovementUseCase_GetMovementsByInventory(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -216,7 +218,7 @@ func TestStockMovementUseCase_GetMovementsByType(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)
@@ -236,12 +238,12 @@ func TestStockMovementUseCase_GetMovementsByType(t *testing.T) {
 		// Get receipts only
 		startDate := time.Now().Add(-24 * time.Hour)
 		endDate := time.Now().Add(24 * time.Hour)
-		movements, total, err := uc.GetMovementsByType(ctx, stockmovement.MovementTypeReceipt, startDate, endDate, 1, 10)
+		movements, total, err := uc.GetMovementsByType(ctx, stockmovementAggregate.MovementTypeReceipt, startDate, endDate, 1, 10)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, 2)
 		assert.GreaterOrEqual(t, len(movements), 2)
 		for _, m := range movements {
-			assert.Equal(t, stockmovement.MovementTypeReceipt, m.Type)
+			assert.Equal(t, stockmovementAggregate.MovementTypeReceipt, m.Type)
 		}
 	})
 }
@@ -255,7 +257,7 @@ func TestStockMovementUseCase_GetInventorySummary(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewStockMovementRepository(testDB.DB)
-		uc := stockmovement.NewUseCase(repo)
+		uc := stockmovementUseCase.NewStockMovementUseCase(repo)
 
 		// Create inventory first (FK requirement)
 		inv := createTestInventoryForUC(t, ctx, testDB)

@@ -7,44 +7,45 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	formHTTP "github.com/basilex/promenade/internal/contexts/ui/metadata/form/adapter/http"
 	"github.com/basilex/promenade/internal/contexts/ui/metadata/form"
+	formHTTP "github.com/basilex/promenade/internal/contexts/ui/metadata/form/adapter/http"
+	formAggregate "github.com/basilex/promenade/internal/contexts/ui/metadata/form/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 type MockFormUseCase struct {
-	CreateFormFunc       func(ctx context.Context, form *form.FormDefinition) (*form.FormDefinition, error)
-	GetFormFunc          func(ctx context.Context, id uuidv7.UUID) (*form.FormDefinition, error)
-	GetFormByFormIDFunc  func(ctx context.Context, formID string) (*form.FormDefinition, error)
-	UpdateFormFunc       func(ctx context.Context, id uuidv7.UUID, update *form.FormDefinition) (*form.FormDefinition, error)
-	DeleteFormFunc       func(ctx context.Context, id uuidv7.UUID) error
-	ListFormsFunc        func(ctx context.Context, entityType string, limit, offset int) ([]*form.FormDefinition, int, error)
-	ListAllFormsFunc     func(ctx context.Context, limit, offset int) ([]*form.FormDefinition, int, error)
+	CreateFormFunc      func(ctx context.Context, form *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error)
+	GetFormFunc         func(ctx context.Context, id uuidv7.UUID) (*formAggregate.FormDefinition, error)
+	GetFormByFormIDFunc func(ctx context.Context, formID string) (*formAggregate.FormDefinition, error)
+	UpdateFormFunc      func(ctx context.Context, id uuidv7.UUID, update *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error)
+	DeleteFormFunc      func(ctx context.Context, id uuidv7.UUID) error
+	ListFormsFunc       func(ctx context.Context, entityType string, limit, offset int) ([]*formAggregate.FormDefinition, int, error)
+	ListAllFormsFunc    func(ctx context.Context, limit, offset int) ([]*formAggregate.FormDefinition, int, error)
 }
 
-func (m *MockFormUseCase) CreateForm(ctx context.Context, formEntity *form.FormDefinition) (*form.FormDefinition, error) {
+func (m *MockFormUseCase) CreateForm(ctx context.Context, formEntity *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error) {
 	if m.CreateFormFunc != nil {
 		return m.CreateFormFunc(ctx, formEntity)
 	}
 	return nil, errors.New("CreateFormFunc not implemented")
 }
 
-func (m *MockFormUseCase) GetForm(ctx context.Context, id uuidv7.UUID) (*form.FormDefinition, error) {
+func (m *MockFormUseCase) GetForm(ctx context.Context, id uuidv7.UUID) (*formAggregate.FormDefinition, error) {
 	if m.GetFormFunc != nil {
 		return m.GetFormFunc(ctx, id)
 	}
 	return nil, errors.New("GetFormFunc not implemented")
 }
 
-func (m *MockFormUseCase) GetFormByFormID(ctx context.Context, formID string) (*form.FormDefinition, error) {
+func (m *MockFormUseCase) GetFormByFormID(ctx context.Context, formID string) (*formAggregate.FormDefinition, error) {
 	if m.GetFormByFormIDFunc != nil {
 		return m.GetFormByFormIDFunc(ctx, formID)
 	}
 	return nil, errors.New("GetFormByFormIDFunc not implemented")
 }
 
-func (m *MockFormUseCase) UpdateForm(ctx context.Context, id uuidv7.UUID, update *form.FormDefinition) (*form.FormDefinition, error) {
+func (m *MockFormUseCase) UpdateForm(ctx context.Context, id uuidv7.UUID, update *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error) {
 	if m.UpdateFormFunc != nil {
 		return m.UpdateFormFunc(ctx, id, update)
 	}
@@ -58,14 +59,14 @@ func (m *MockFormUseCase) DeleteForm(ctx context.Context, id uuidv7.UUID) error 
 	return errors.New("DeleteFormFunc not implemented")
 }
 
-func (m *MockFormUseCase) ListForms(ctx context.Context, entityType string, limit, offset int) ([]*form.FormDefinition, int, error) {
+func (m *MockFormUseCase) ListForms(ctx context.Context, entityType string, limit, offset int) ([]*formAggregate.FormDefinition, int, error) {
 	if m.ListFormsFunc != nil {
 		return m.ListFormsFunc(ctx, entityType, limit, offset)
 	}
 	return nil, 0, errors.New("ListFormsFunc not implemented")
 }
 
-func (m *MockFormUseCase) ListAllForms(ctx context.Context, limit, offset int) ([]*form.FormDefinition, int, error) {
+func (m *MockFormUseCase) ListAllForms(ctx context.Context, limit, offset int) ([]*formAggregate.FormDefinition, int, error) {
 	if m.ListAllFormsFunc != nil {
 		return m.ListAllFormsFunc(ctx, limit, offset)
 	}
@@ -76,7 +77,7 @@ func TestFormHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		CreateFormFunc: func(ctx context.Context, formEntity *form.FormDefinition) (*form.FormDefinition, error) {
+		CreateFormFunc: func(ctx context.Context, formEntity *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error) {
 			return formEntity, nil
 		},
 	}
@@ -118,7 +119,7 @@ func TestFormHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		GetFormFunc: func(ctx context.Context, id uuidv7.UUID) (*form.FormDefinition, error) {
+		GetFormFunc: func(ctx context.Context, id uuidv7.UUID) (*formAggregate.FormDefinition, error) {
 			return fakeForm(t), nil
 		},
 	}
@@ -135,7 +136,7 @@ func TestFormHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		GetFormFunc: func(ctx context.Context, id uuidv7.UUID) (*form.FormDefinition, error) {
+		GetFormFunc: func(ctx context.Context, id uuidv7.UUID) (*formAggregate.FormDefinition, error) {
 			return nil, form.ErrFormNotFound
 		},
 	}
@@ -152,8 +153,8 @@ func TestFormHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		ListFormsFunc: func(ctx context.Context, entityType string, limit, offset int) ([]*form.FormDefinition, int, error) {
-			return []*form.FormDefinition{fakeForm(t)}, 1, nil
+		ListFormsFunc: func(ctx context.Context, entityType string, limit, offset int) ([]*formAggregate.FormDefinition, int, error) {
+			return []*formAggregate.FormDefinition{fakeForm(t)}, 1, nil
 		},
 	}
 
@@ -169,7 +170,7 @@ func TestFormHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		UpdateFormFunc: func(ctx context.Context, id uuidv7.UUID, update *form.FormDefinition) (*form.FormDefinition, error) {
+		UpdateFormFunc: func(ctx context.Context, id uuidv7.UUID, update *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error) {
 			return fakeForm(t), nil
 		},
 	}
@@ -198,7 +199,7 @@ func TestFormHandler_Update_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockFormUseCase{
-		UpdateFormFunc: func(ctx context.Context, id uuidv7.UUID, update *form.FormDefinition) (*form.FormDefinition, error) {
+		UpdateFormFunc: func(ctx context.Context, id uuidv7.UUID, update *formAggregate.FormDefinition) (*formAggregate.FormDefinition, error) {
 			return nil, form.ErrFormNotFound
 		},
 	}
@@ -240,10 +241,10 @@ func TestFormHandler_Delete_Success(t *testing.T) {
 	smoke.AssertSuccessResponse(t, w, 200)
 }
 
-func fakeForm(t *testing.T) *form.FormDefinition {
+func fakeForm(t *testing.T) *formAggregate.FormDefinition {
 	t.Helper()
 
-	entity, err := form.NewFormDefinition(
+	entity, err := formAggregate.NewFormDefinition(
 		"customer_form",
 		"customer",
 		"Customer Form",

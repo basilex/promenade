@@ -6,21 +6,23 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/shared/currency"
+	currencyerrors "github.com/basilex/promenade/internal/contexts/shared/currency"
+	"github.com/basilex/promenade/internal/contexts/shared/currency/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/currency/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-type repository struct {
+type currencyRepository struct {
 	db sqlx.ExtContext // Works with both *sqlx.DB and *sqlx.Tx
 }
 
 // NewRepository creates a new PostgreSQL currency repository
-func NewRepository(db sqlx.ExtContext) currency.IRepository {
-	return &repository{db: db}
+func NewRepository(db sqlx.ExtContext) repository.ICurrencyRepository {
+	return &currencyRepository{db: db}
 }
 
-func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*currency.Currency, error) {
-	var c currency.Currency
+func (r *currencyRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Currency, error) {
+	var c aggregate.Currency
 	query := `
 		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
@@ -28,13 +30,13 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*currency.Cur
 	`
 	err := sqlx.GetContext(ctx, r.db, &c, query, id)
 	if err == sql.ErrNoRows {
-		return nil, currency.ErrCurrencyNotFound
+		return nil, currencyerrors.ErrCurrencyNotFound
 	}
 	return &c, err
 }
 
-func (r *repository) GetByCode(ctx context.Context, code string) (*currency.Currency, error) {
-	var c currency.Currency
+func (r *currencyRepository) GetByCode(ctx context.Context, code string) (*aggregate.Currency, error) {
+	var c aggregate.Currency
 	query := `
 		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
@@ -42,13 +44,13 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*currency.Curr
 	`
 	err := sqlx.GetContext(ctx, r.db, &c, query, code)
 	if err == sql.ErrNoRows {
-		return nil, currency.ErrCurrencyNotFound
+		return nil, currencyerrors.ErrCurrencyNotFound
 	}
 	return &c, err
 }
 
-func (r *repository) List(ctx context.Context) ([]*currency.Currency, error) {
-	var currencies []*currency.Currency
+func (r *currencyRepository) List(ctx context.Context) ([]*aggregate.Currency, error) {
+	var currencies []*aggregate.Currency
 	query := `
 		SELECT id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at
 		FROM shared_currencies
@@ -59,7 +61,7 @@ func (r *repository) List(ctx context.Context) ([]*currency.Currency, error) {
 	return currencies, err
 }
 
-func (r *repository) Create(ctx context.Context, c *currency.Currency) error {
+func (r *currencyRepository) Create(ctx context.Context, c *aggregate.Currency) error {
 	query := `
 		INSERT INTO shared_currencies (id, code, numeric_code, name, symbol, decimal_places, is_active, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -68,7 +70,7 @@ func (r *repository) Create(ctx context.Context, c *currency.Currency) error {
 	return err
 }
 
-func (r *repository) Update(ctx context.Context, c *currency.Currency) error {
+func (r *currencyRepository) Update(ctx context.Context, c *aggregate.Currency) error {
 	query := `
 		UPDATE shared_currencies
 		SET code = $2, numeric_code = $3, name = $4, symbol = $5, decimal_places = $6, is_active = $7, updated_at = $8
@@ -78,7 +80,7 @@ func (r *repository) Update(ctx context.Context, c *currency.Currency) error {
 	return err
 }
 
-func (r *repository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *currencyRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `UPDATE shared_currencies SET is_active = FALSE WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err

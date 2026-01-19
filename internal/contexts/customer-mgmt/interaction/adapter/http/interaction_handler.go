@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/dto"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/usecase"
-	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )

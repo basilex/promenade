@@ -1,7 +1,7 @@
 package http
 
 import (
-"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // parseCustomerID converts string to UUID

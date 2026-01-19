@@ -20,19 +20,19 @@ import (
 	"github.com/basilex/promenade/pkg/scheduler"
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/integration"
-	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 
 	analyticsHandler "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/http"
+	salesReportRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/repository/postgres"
 	analyticsIntegration "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/integration"
 	analyticsUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/usecase"
-	salesReportRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/adapter/repository/postgres"
 
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
 	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
+	receiptUseCase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 )
 
 // App holds all application dependencies
@@ -348,14 +348,14 @@ func initWarehouseIntegration(db *sqlx.DB, eventBus bus.IBus) (*integration.Orde
 }
 
 // initFiscalIntegration initializes Fiscal Integration (Order → Receipt auto-print)
-func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig) (*fiscalIntegration.OrderEventHandler, receipt.IUseCase, bool, *checkbox.Client, error) {
+func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig) (*fiscalIntegration.OrderEventHandler, receiptUseCase.IReceiptUseCase, bool, *checkbox.Client, error) {
 	cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
 	receiptRepository := receiptRepo.NewReceiptRepository(db)
 
-	var printer receipt.IPrinter
+	var printer receiptUseCase.IPrinter
 	printerEnabled := false
 
-	var pdfPrinter receipt.IPrinter
+	var pdfPrinter receiptUseCase.IPrinter
 	if cfg.Fiscal.PDFOutputDir != "" {
 		pdfPrinter = receiptPrinter.NewPDFPrinter(cfg.Fiscal.PDFOutputDir)
 	}
@@ -373,7 +373,7 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 	if checkboxClient != nil {
 		checkboxPrinter := receiptPrinter.NewCheckboxPrinter(checkboxClient)
 		if pdfPrinter != nil {
-			printer = receipt.NewMultiPrinter(checkboxPrinter, pdfPrinter)
+			printer = receiptUseCase.NewMultiPrinter(checkboxPrinter, pdfPrinter)
 		} else {
 			printer = checkboxPrinter
 		}
@@ -385,7 +385,7 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 		printerEnabled = true
 	}
 
-	receiptUseCase := receipt.NewUseCase(receiptRepository, printer)
+	receiptUseCase := receiptUseCase.NewReceiptUseCase(receiptRepository, printer)
 	orderEventHandler := fiscalIntegration.NewOrderEventHandler(receiptUseCase, cashRegisterRepository, printerEnabled)
 
 	if err := orderEventHandler.RegisterHandlers(eventBus); err != nil {
@@ -405,7 +405,7 @@ func initFiscalIntegration(db *sqlx.DB, eventBus bus.IBus, cfg *config.AppConfig
 func initSalesReportAnalytics(db *sqlx.DB, eventBus bus.IBus) (*analyticsIntegration.SalesReportEventHandler, *analyticsHandler.SalesReportHandler, error) {
 	repo := salesReportRepo.NewSalesReportRepository(db)
 	txManager := database.NewTransactionManager(db)
-	
+
 	// Event handler (write side - materializes read model)
 	eventHandler := analyticsIntegration.NewSalesReportEventHandler(repo, txManager)
 	if err := eventHandler.RegisterHandlers(eventBus); err != nil {
@@ -426,7 +426,7 @@ func initSalesReportAnalytics(db *sqlx.DB, eventBus bus.IBus) (*analyticsIntegra
 }
 
 // initScheduler initializes scheduler engine and registers fiscal retry jobs
-func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receipt.IUseCase, printerEnabled bool, checkboxClient *checkbox.Client) (*scheduler.Engine, error) {
+func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receiptUseCase.IReceiptUseCase, printerEnabled bool, checkboxClient *checkbox.Client) (*scheduler.Engine, error) {
 	if !cfg.Scheduler.Enabled {
 		logger.Info("Scheduler disabled")
 		return nil, nil
@@ -435,6 +435,12 @@ func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receipt.IUseCas
 	engine, err := scheduler.NewEngine(cfg.Scheduler)
 	if err != nil {
 		logger.Fatal("Failed to initialize scheduler", slog.Any("error", err))
+		return nil, err
+	}
+
+	// Start engine before registering jobs
+	if err := engine.Start(); err != nil {
+		logger.Fatal("Failed to start scheduler", slog.Any("error", err))
 		return nil, err
 	}
 
@@ -455,11 +461,6 @@ func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receipt.IUseCas
 		}
 	} else {
 		logger.Info("Shift jobs not registered (checkbox client not configured)")
-	}
-
-	if err := engine.Start(); err != nil {
-		logger.Fatal("Failed to start scheduler", slog.Any("error", err))
-		return nil, err
 	}
 
 	logger.Info("Scheduler initialized")

@@ -1,6 +1,5 @@
 package aggregate
 
-
 import ordererrors "github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 
 import (

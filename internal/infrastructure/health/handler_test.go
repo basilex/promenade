@@ -272,7 +272,7 @@ func TestHandler_RegisterRoutes(t *testing.T) {
 	handler.RegisterRoutes(router)
 
 	routes := router.Routes()
-	
+
 	expectedRoutes := []string{"/health", "/health/db", "/health/redis", "/health/bus"}
 	actualRoutes := make([]string, 0, len(routes))
 	for _, route := range routes {

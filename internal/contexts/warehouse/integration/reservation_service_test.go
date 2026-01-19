@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
+	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // MockInventoryUseCase implements inventory.IUseCase for testing

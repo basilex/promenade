@@ -283,7 +283,7 @@ func (m *manager) MigrateNamespace(ctx context.Context, namespace string) error 
 // applyMigration applies a single migration in a transaction
 func (m *manager) applyMigration(ctx context.Context, mig MigrationFile) error {
 	log := logger.FromContext(ctx)
-	
+
 	tx, err := m.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)

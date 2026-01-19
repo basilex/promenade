@@ -11,10 +11,10 @@ import (
 
 func TestNewProduct(t *testing.T) {
 	tests := []struct {
-		name    string
-		sku     string
+		name     string
+		sku      string
 		prodName string
-		wantErr error
+		wantErr  error
 	}{
 		{
 			name:     "valid product",
@@ -56,7 +56,7 @@ func TestNewProduct(t *testing.T) {
 				assert.Equal(t, tt.prodName, product.Name)
 				assert.Equal(t, ProductStatusDraft, product.Status)
 				assert.False(t, product.IsActive)
-				assert.True(t, product.TrackInventory) // Default
+				assert.True(t, product.TrackInventory)  // Default
 				assert.False(t, product.AllowBackorder) // Default
 				assert.NotNil(t, product.Tags)
 				assert.Empty(t, product.Tags)
@@ -558,11 +558,11 @@ func TestProduct_GetVolumeInCubicMeters(t *testing.T) {
 
 func TestProduct_RequiresReorder(t *testing.T) {
 	tests := []struct {
-		name             string
-		trackInventory   bool
-		reorderPoint     int
-		currentStock     int
-		want             bool
+		name           string
+		trackInventory bool
+		reorderPoint   int
+		currentStock   int
+		want           bool
 	}{
 		{
 			name:           "stock below reorder point",

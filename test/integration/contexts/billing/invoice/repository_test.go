@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/billing/invoice"
 	"github.com/basilex/promenade/internal/contexts/billing/invoice/adapter/repository/postgres"
+	invoiceAggregate "github.com/basilex/promenade/internal/contexts/billing/invoice/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
@@ -32,7 +32,7 @@ func TestInvoiceRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create invoice
-		inv, err := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		inv, err := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, inv))
 		assert.NotEqual(t, uuidv7.UUID{}, inv.ID)
@@ -80,7 +80,7 @@ func TestInvoiceRepository_ListByCustomer(t *testing.T) {
 
 		// Create 3 invoices
 		for i := 0; i < 3; i++ {
-			inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+			inv, _ := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 			invoiceNo, err := repo.GenerateInvoiceNumber(ctx)
 			require.NoError(t, err)
 			inv.InvoiceNo = invoiceNo
@@ -111,14 +111,14 @@ func TestInvoiceRepository_ListByStatus(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create draft invoice
-		inv1, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		inv1, _ := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		invoiceNo1, err := repo.GenerateInvoiceNumber(ctx)
 		require.NoError(t, err)
 		inv1.InvoiceNo = invoiceNo1
 		require.NoError(t, repo.Create(ctx, inv1))
 
 		// Create and send invoice
-		inv2, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		inv2, _ := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		invoiceNo2, err := repo.GenerateInvoiceNumber(ctx)
 		require.NoError(t, err)
 		inv2.InvoiceNo = invoiceNo2
@@ -128,12 +128,12 @@ func TestInvoiceRepository_ListByStatus(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, inv2))
 
 		// List by status
-		drafts, total, err := repo.ListByStatus(ctx, invoice.InvoiceStatusDraft, 1, 10)
+		drafts, total, err := repo.ListByStatus(ctx, invoiceAggregate.InvoiceStatusDraft, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, drafts, 1)
 		assert.Equal(t, 1, total)
 
-		sent, total, err := repo.ListByStatus(ctx, invoice.InvoiceStatusSent, 1, 10)
+		sent, total, err := repo.ListByStatus(ctx, invoiceAggregate.InvoiceStatusSent, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, sent, 1)
 		assert.Equal(t, 1, total)
@@ -157,7 +157,7 @@ func TestInvoiceRepository_CountByStatus(t *testing.T) {
 
 		// Create 2 draft invoices
 		for i := 0; i < 2; i++ {
-			inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+			inv, _ := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 			invoiceNo, err := repo.GenerateInvoiceNumber(ctx)
 			require.NoError(t, err)
 			inv.InvoiceNo = invoiceNo
@@ -165,7 +165,7 @@ func TestInvoiceRepository_CountByStatus(t *testing.T) {
 		}
 
 		// Count drafts
-		count, err := repo.CountByStatus(ctx, invoice.InvoiceStatusDraft)
+		count, err := repo.CountByStatus(ctx, invoiceAggregate.InvoiceStatusDraft)
 		require.NoError(t, err)
 		assert.Equal(t, 2, count)
 	})
@@ -187,7 +187,7 @@ func TestInvoiceRepository_GetTotalRevenue(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create and pay invoice
-		inv, _ := invoice.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
+		inv, _ := invoiceAggregate.NewInvoice(customerID, time.Now().Add(30*24*time.Hour), "USD")
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
 		require.NoError(t, inv.AddLine("Test Item", 1, unitPrice))
 		require.NoError(t, inv.MarkAsSent())

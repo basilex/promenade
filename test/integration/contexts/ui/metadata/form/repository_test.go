@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/ui/metadata/form"
 	formRepo "github.com/basilex/promenade/internal/contexts/ui/metadata/form/adapter/repository/postgres"
+	formAggregate "github.com/basilex/promenade/internal/contexts/ui/metadata/form/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -109,10 +109,10 @@ func TestFormRepository_ListAndGetByFormID(t *testing.T) {
 	})
 }
 
-func newFormDefinition(t *testing.T, formID, entityType string) *form.FormDefinition {
+func newFormDefinition(t *testing.T, formID, entityType string) *formAggregate.FormDefinition {
 	t.Helper()
 
-	entity, err := form.NewFormDefinition(
+	entity, err := formAggregate.NewFormDefinition(
 		formID,
 		entityType,
 		"Test Form",

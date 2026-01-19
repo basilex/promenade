@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	// Repository Errors
-	
+
 	// ErrInteractionNotFound is returned when interaction is not found
 	ErrInteractionNotFound = errors.New("interaction not found")
 
@@ -12,7 +12,7 @@ var (
 	ErrInteractionAlreadyExists = errors.New("interaction already exists")
 
 	// Business Logic Errors
-	
+
 	// ErrInvalidInteractionType is returned when interaction type is invalid
 	ErrInvalidInteractionType = errors.New("invalid interaction type")
 
@@ -38,7 +38,7 @@ var (
 	ErrFollowUpDateRequired = errors.New("follow_up_date required when follow_up_required is true")
 
 	// Technical Operation Errors
-	
+
 	// ErrInteractionCreateFailed is returned when interaction creation fails
 	ErrInteractionCreateFailed = errors.New("failed to create interaction")
 

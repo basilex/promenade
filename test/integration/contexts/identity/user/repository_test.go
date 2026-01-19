@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -26,7 +26,7 @@ func TestUserRepository_CRUD(t *testing.T) {
 
 		// Create with unique email
 		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
-		u, err := user.NewUser(email, "password123")
+		u, err := userAggregate.NewUser(email, "password123")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, u))
 		assert.NotEqual(t, "", u.ID.String())
@@ -45,7 +45,7 @@ func TestUserRepository_CRUD(t *testing.T) {
 		u.Activate()
 		require.NoError(t, repo.Update(ctx, u))
 		updated, _ := repo.GetByID(ctx, u.ID)
-		assert.Equal(t, user.UserStatusActive, updated.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, updated.Status)
 
 		// Update (password)
 		require.NoError(t, u.ChangePassword("newpassword123"))
@@ -71,9 +71,9 @@ func TestUserRepository_Queries(t *testing.T) {
 	// Create 2 users with unique emails
 	email1 := fmt.Sprintf("user1_%s@example.com", uuidv7.New().String())
 	email2 := fmt.Sprintf("user2_%s@example.com", uuidv7.New().String())
-	u1, err := user.NewUser(email1, "password123")
+	u1, err := userAggregate.NewUser(email1, "password123")
 	require.NoError(t, err)
-	u2, err := user.NewUser(email2, "password456")
+	u2, err := userAggregate.NewUser(email2, "password456")
 	require.NoError(t, err)
 	require.NoError(t, repo.Create(ctx, u1))
 	require.NoError(t, repo.Create(ctx, u2))
@@ -96,21 +96,20 @@ func TestUserRepository_Queries(t *testing.T) {
 	assert.GreaterOrEqual(t, total, 2)
 	assert.GreaterOrEqual(t, len(users), 2)
 
-		// ValueObject roundtrip (Email preservation)
-		email3 := fmt.Sprintf("value_%s@object.com", uuidv7.New().String())
-		u3, err := user.NewUser(email3, "password789")
-		require.NoError(t, err)
-		require.NoError(t, repo.Create(ctx, u3))
-		retrieved, _ := repo.GetByID(ctx, u3.ID)
-		assert.Equal(t, email3, retrieved.Email.Value())
-
+	// ValueObject roundtrip (Email preservation)
+	email3 := fmt.Sprintf("value_%s@object.com", uuidv7.New().String())
+	u3, err := userAggregate.NewUser(email3, "password789")
+	require.NoError(t, err)
+	require.NoError(t, repo.Create(ctx, u3))
+	retrieved, _ := repo.GetByID(ctx, u3.ID)
+	assert.Equal(t, email3, retrieved.Email.Value())
 
 	// Create user WITHOUT transaction so it persists for concurrent tests
 	var userID uuidv7.UUID
 	func() {
 		repo := postgres.NewUserRepository(testDB.DB)
 		email := fmt.Sprintf("concurrent_%s@example.com", uuidv7.New().String())
-		u, _ := user.NewUser(email, "password123")
+		u, _ := userAggregate.NewUser(email, "password123")
 		require.NoError(t, repo.Create(context.Background(), u))
 		userID = u.ID
 	}()
@@ -150,5 +149,5 @@ func TestUserRepository_Queries(t *testing.T) {
 	finalRepo := postgres.NewUserRepository(testDB.DB)
 	u, err := finalRepo.GetByID(context.Background(), userID)
 	require.NoError(t, err)
-	assert.Equal(t, user.UserStatusActive, u.Status)
+	assert.Equal(t, userAggregate.UserStatusActive, u.Status)
 }

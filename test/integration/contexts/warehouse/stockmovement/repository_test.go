@@ -8,18 +8,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryRepo "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/warehouse/stockmovement"
+	inventoryAggregate "github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
+	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	stockMovementRepo "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/adapter/repository/postgres"
+	stockmovementAggregate "github.com/basilex/promenade/internal/contexts/warehouse/stockmovement/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // createTestInventory creates an inventory for testing stock movements
-func createTestInventory(t *testing.T, ctx context.Context, db *integration.TestDB) *inventory.Inventory {
+func createTestInventory(t *testing.T, ctx context.Context, db *integration.TestDB) *inventoryAggregate.Inventory {
 	invRepo := inventoryRepo.NewInventoryRepository(db.DB)
-	invUC := inventory.NewUseCase(invRepo)
+	invUC := inventoryUseCase.NewInventoryUseCase(invRepo)
 	inv, err := invUC.CreateInventory(ctx, uuidv7.New(), "SM-TEST-"+uuidv7.New().String()[:8], "Test Product", "WH-MAIN", uuidv7.New())
 	require.NoError(t, err)
 	return inv
@@ -37,9 +38,9 @@ func TestStockMovementRepository_Create(t *testing.T) {
 	// Create stock movement
 	createdBy := uuidv7.New()
 
-	movement, err := stockmovement.NewStockMovement(
+	movement, err := stockmovementAggregate.NewStockMovement(
 		inv.ID,
-		stockmovement.MovementTypeReceipt,
+		stockmovementAggregate.MovementTypeReceipt,
 		10,
 		100,
 		createdBy,
@@ -74,9 +75,9 @@ func TestStockMovementRepository_GetByInventoryID(t *testing.T) {
 
 	// Create multiple movements
 	for i := 0; i < 5; i++ {
-		movement, _ := stockmovement.NewStockMovement(
+		movement, _ := stockmovementAggregate.NewStockMovement(
 			inv.ID,
-			stockmovement.MovementTypeReceipt,
+			stockmovementAggregate.MovementTypeReceipt,
 			10,
 			100+i*10,
 			createdBy,
@@ -109,14 +110,14 @@ func TestStockMovementRepository_GetByType(t *testing.T) {
 	createdBy := uuidv7.New()
 
 	// Create movements of different types
-	types := []stockmovement.MovementType{
-		stockmovement.MovementTypeReceipt,
-		stockmovement.MovementTypeReceipt,
-		stockmovement.MovementTypeReservation,
-		stockmovement.MovementTypeCommit,
+	types := []stockmovementAggregate.MovementType{
+		stockmovementAggregate.MovementTypeReceipt,
+		stockmovementAggregate.MovementTypeReceipt,
+		stockmovementAggregate.MovementTypeReservation,
+		stockmovementAggregate.MovementTypeCommit,
 	}
 	for _, movType := range types {
-		movement, _ := stockmovement.NewStockMovement(
+		movement, _ := stockmovementAggregate.NewStockMovement(
 			inv.ID,
 			movType,
 			10,
@@ -131,12 +132,12 @@ func TestStockMovementRepository_GetByType(t *testing.T) {
 	// Use wide date range to include all movements
 	startDate := time.Now().Add(-24 * time.Hour)
 	endDate := time.Now().Add(24 * time.Hour)
-	movements, total, err := repo.GetByType(ctx, stockmovement.MovementTypeReceipt, startDate, endDate, 1, 10)
+	movements, total, err := repo.GetByType(ctx, stockmovementAggregate.MovementTypeReceipt, startDate, endDate, 1, 10)
 	require.NoError(t, err)
 	assert.Equal(t, 2, total)
 	assert.Len(t, movements, 2)
 	for _, m := range movements {
-		assert.Equal(t, stockmovement.MovementTypeReceipt, m.Type)
+		assert.Equal(t, stockmovementAggregate.MovementTypeReceipt, m.Type)
 	}
 }
 
@@ -153,9 +154,9 @@ func TestStockMovementRepository_GetByReference(t *testing.T) {
 
 	// Create movements with order reference
 	for i := 0; i < 3; i++ {
-		movement, _ := stockmovement.NewStockMovement(
+		movement, _ := stockmovementAggregate.NewStockMovement(
 			inv.ID,
-			stockmovement.MovementTypeReservation,
+			stockmovementAggregate.MovementTypeReservation,
 			10,
 			100-i*10,
 			createdBy,
@@ -186,24 +187,24 @@ func TestStockMovementRepository_GetSummaryByInventory(t *testing.T) {
 	createdBy := uuidv7.New()
 
 	// Create inbound movements (receipt: +50, return: +20)
-	receipt, _ := stockmovement.NewStockMovement(inv.ID, stockmovement.MovementTypeReceipt, 50, 100, createdBy)
+	receipt, _ := stockmovementAggregate.NewStockMovement(inv.ID, stockmovementAggregate.MovementTypeReceipt, 50, 100, createdBy)
 	err := repo.Create(ctx, receipt)
 	require.NoError(t, err)
 
-	returnMov, _ := stockmovement.NewStockMovement(inv.ID, stockmovement.MovementTypeReturn, 20, 150, createdBy)
+	returnMov, _ := stockmovementAggregate.NewStockMovement(inv.ID, stockmovementAggregate.MovementTypeReturn, 20, 150, createdBy)
 	err = repo.Create(ctx, returnMov)
 	require.NoError(t, err)
 
 	// Create outbound movements (reservation: -30, commit: -10, damage: -5)
-	reservation, _ := stockmovement.NewStockMovement(inv.ID, stockmovement.MovementTypeReservation, -30, 170, createdBy)
+	reservation, _ := stockmovementAggregate.NewStockMovement(inv.ID, stockmovementAggregate.MovementTypeReservation, -30, 170, createdBy)
 	err = repo.Create(ctx, reservation)
 	require.NoError(t, err)
 
-	commit, _ := stockmovement.NewStockMovement(inv.ID, stockmovement.MovementTypeCommit, -10, 140, createdBy)
+	commit, _ := stockmovementAggregate.NewStockMovement(inv.ID, stockmovementAggregate.MovementTypeCommit, -10, 140, createdBy)
 	err = repo.Create(ctx, commit)
 	require.NoError(t, err)
 
-	damage, _ := stockmovement.NewStockMovement(inv.ID, stockmovement.MovementTypeDamage, -5, 130, createdBy)
+	damage, _ := stockmovementAggregate.NewStockMovement(inv.ID, stockmovementAggregate.MovementTypeDamage, -5, 130, createdBy)
 	err = repo.Create(ctx, damage)
 	require.NoError(t, err)
 
@@ -213,8 +214,8 @@ func TestStockMovementRepository_GetSummaryByInventory(t *testing.T) {
 	endDate := time.Now().Add(24 * time.Hour)
 	totalIn, totalOut, err := repo.GetSummaryByInventory(ctx, inv.ID, startDate, endDate)
 	require.NoError(t, err)
-	assert.Equal(t, 70, totalIn)   // 50 + 20
-	assert.Equal(t, 45, totalOut)  // 30 + 10 + 5
+	assert.Equal(t, 70, totalIn)  // 50 + 20
+	assert.Equal(t, 45, totalOut) // 30 + 10 + 5
 }
 
 // TestStockMovementRepository_CountByType tests counting movements by type.
@@ -229,16 +230,16 @@ func TestStockMovementRepository_CountByType(t *testing.T) {
 
 	// Create movements
 	movements := []struct {
-		movType stockmovement.MovementType
+		movType stockmovementAggregate.MovementType
 		count   int
 	}{
-		{stockmovement.MovementTypeReceipt, 3},
-		{stockmovement.MovementTypeReservation, 5},
-		{stockmovement.MovementTypeCommit, 2},
+		{stockmovementAggregate.MovementTypeReceipt, 3},
+		{stockmovementAggregate.MovementTypeReservation, 5},
+		{stockmovementAggregate.MovementTypeCommit, 2},
 	}
 	for _, m := range movements {
 		for i := 0; i < m.count; i++ {
-			movement, _ := stockmovement.NewStockMovement(inv.ID, m.movType, 10, 100, createdBy)
+			movement, _ := stockmovementAggregate.NewStockMovement(inv.ID, m.movType, 10, 100, createdBy)
 			err := repo.Create(ctx, movement)
 			require.NoError(t, err)
 		}
@@ -250,9 +251,9 @@ func TestStockMovementRepository_CountByType(t *testing.T) {
 	endDate := time.Now().Add(24 * time.Hour)
 	counts, err := repo.CountByType(ctx, startDate, endDate)
 	require.NoError(t, err)
-	assert.Equal(t, 3, counts[stockmovement.MovementTypeReceipt])
-	assert.Equal(t, 5, counts[stockmovement.MovementTypeReservation])
-	assert.Equal(t, 2, counts[stockmovement.MovementTypeCommit])
+	assert.Equal(t, 3, counts[stockmovementAggregate.MovementTypeReceipt])
+	assert.Equal(t, 5, counts[stockmovementAggregate.MovementTypeReservation])
+	assert.Equal(t, 2, counts[stockmovementAggregate.MovementTypeCommit])
 }
 
 // TestStockMovementRepository_GetByDateRange tests querying movements by date range.
@@ -268,9 +269,9 @@ func TestStockMovementRepository_GetByDateRange(t *testing.T) {
 	// Create movements across different dates
 	baseDate := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	for i := 0; i < 10; i++ {
-		movement, _ := stockmovement.NewStockMovement(
+		movement, _ := stockmovementAggregate.NewStockMovement(
 			inv.ID,
-			stockmovement.MovementTypeReceipt,
+			stockmovementAggregate.MovementTypeReceipt,
 			10,
 			100,
 			createdBy,

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

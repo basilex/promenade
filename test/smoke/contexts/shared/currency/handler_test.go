@@ -6,49 +6,50 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/currency"
 	currencyHTTP "github.com/basilex/promenade/internal/contexts/shared/currency/adapter/http"
+	currencyAggregate "github.com/basilex/promenade/internal/contexts/shared/currency/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockCurrencyUseCase is a mock implementation of currency.IUseCase for testing
 type MockCurrencyUseCase struct {
-	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*currency.Currency, error)
-	GetByCodeFunc func(ctx context.Context, code string) (*currency.Currency, error)
-	ListFunc      func(ctx context.Context) ([]*currency.Currency, error)
-	CreateFunc    func(ctx context.Context, currency *currency.Currency) error
-	UpdateFunc    func(ctx context.Context, currency *currency.Currency) error
+	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*currencyAggregate.Currency, error)
+	GetByCodeFunc func(ctx context.Context, code string) (*currencyAggregate.Currency, error)
+	ListFunc      func(ctx context.Context) ([]*currencyAggregate.Currency, error)
+	CreateFunc    func(ctx context.Context, currency *currencyAggregate.Currency) error
+	UpdateFunc    func(ctx context.Context, currency *currencyAggregate.Currency) error
 	DeleteFunc    func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockCurrencyUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*currency.Currency, error) {
+func (m *MockCurrencyUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*currencyAggregate.Currency, error) {
 	if m.GetByIDFunc != nil {
 		return m.GetByIDFunc(ctx, id)
 	}
 	return nil, nil
 }
 
-func (m *MockCurrencyUseCase) GetByCode(ctx context.Context, code string) (*currency.Currency, error) {
+func (m *MockCurrencyUseCase) GetByCode(ctx context.Context, code string) (*currencyAggregate.Currency, error) {
 	if m.GetByCodeFunc != nil {
 		return m.GetByCodeFunc(ctx, code)
 	}
 	return nil, nil
 }
 
-func (m *MockCurrencyUseCase) List(ctx context.Context) ([]*currency.Currency, error) {
+func (m *MockCurrencyUseCase) List(ctx context.Context) ([]*currencyAggregate.Currency, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *MockCurrencyUseCase) Create(ctx context.Context, c *currency.Currency) error {
+func (m *MockCurrencyUseCase) Create(ctx context.Context, c *currencyAggregate.Currency) error {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, c)
 	}
 	return nil
 }
 
-func (m *MockCurrencyUseCase) Update(ctx context.Context, c *currency.Currency) error {
+func (m *MockCurrencyUseCase) Update(ctx context.Context, c *currencyAggregate.Currency) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, c)
 	}
@@ -63,8 +64,8 @@ func (m *MockCurrencyUseCase) Delete(ctx context.Context, id uuidv7.UUID) error 
 }
 
 // fakeCurrency creates a fake currency for testing
-func fakeCurrency() *currency.Currency {
-	c, _ := currency.NewCurrency("USD", "US Dollar", "$", 2)
+func fakeCurrency() *currencyAggregate.Currency {
+	c, _ := currencyAggregate.NewCurrency("USD", "US Dollar", "$", 2)
 	return c
 }
 
@@ -72,7 +73,7 @@ func TestCurrencyHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		CreateFunc: func(ctx context.Context, c *currency.Currency) error {
+		CreateFunc: func(ctx context.Context, c *currencyAggregate.Currency) error {
 			return nil
 		},
 	}
@@ -111,7 +112,7 @@ func TestCurrencyHandler_GetByCode_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*currency.Currency, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*currencyAggregate.Currency, error) {
 			return fakeCurrency(), nil
 		},
 	}
@@ -127,7 +128,7 @@ func TestCurrencyHandler_GetByCode_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*currency.Currency, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*currencyAggregate.Currency, error) {
 			return nil, currency.ErrCurrencyNotFound
 		},
 	}
@@ -143,8 +144,8 @@ func TestCurrencyHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		ListFunc: func(ctx context.Context) ([]*currency.Currency, error) {
-			return []*currency.Currency{fakeCurrency()}, nil
+		ListFunc: func(ctx context.Context) ([]*currencyAggregate.Currency, error) {
+			return []*currencyAggregate.Currency{fakeCurrency()}, nil
 		},
 	}
 
@@ -159,8 +160,8 @@ func TestCurrencyHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		ListFunc: func(ctx context.Context) ([]*currency.Currency, error) {
-			return []*currency.Currency{}, nil
+		ListFunc: func(ctx context.Context) ([]*currencyAggregate.Currency, error) {
+			return []*currencyAggregate.Currency{}, nil
 		},
 	}
 
@@ -175,10 +176,10 @@ func TestCurrencyHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCurrencyUseCase{
-		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*currency.Currency, error) {
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*currencyAggregate.Currency, error) {
 			return fakeCurrency(), nil
 		},
-		UpdateFunc: func(ctx context.Context, c *currency.Currency) error {
+		UpdateFunc: func(ctx context.Context, c *currencyAggregate.Currency) error {
 			return nil
 		},
 	}
@@ -208,7 +209,7 @@ func TestCurrencyHandler_Delete_Success(t *testing.T) {
 	router.DELETE("/currencies/:id", handler.DeleteCurrency)
 
 	w := smoke.MakeRequest(t, router, "DELETE", "/currencies/"+smoke.FakeUUID(), nil)
-	
+
 	// Delete returns 204 No Content
 	if w.Code != 204 {
 		t.Errorf("expected status code 204, got %d", w.Code)

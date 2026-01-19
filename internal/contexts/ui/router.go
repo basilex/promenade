@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/ui/metadata/form"
 	formHTTP "github.com/basilex/promenade/internal/contexts/ui/metadata/form/adapter/http"
 	formRepo "github.com/basilex/promenade/internal/contexts/ui/metadata/form/adapter/repository/postgres"
+	formUseCase "github.com/basilex/promenade/internal/contexts/ui/metadata/form/usecase"
 )
 
 // Router handles routing for the UI context.
@@ -17,8 +17,8 @@ type Router struct {
 // NewRouter creates a new UI router.
 func NewRouter(db *sqlx.DB) *Router {
 	formRepository := formRepo.NewFormRepository(db)
-	formUseCase := form.NewUseCase(formRepository)
-	formHandler := formHTTP.NewFormHandler(formUseCase)
+	useCase := formUseCase.NewFormUseCase(formRepository)
+	formHandler := formHTTP.NewFormHandler(useCase)
 
 	return &Router{formHandler: formHandler}
 }

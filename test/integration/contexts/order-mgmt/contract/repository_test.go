@@ -14,6 +14,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
 	contractRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/repository/postgres"
+	contractAggregate "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -56,7 +57,7 @@ func TestContractRepository_Create(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create test contract
-		c := contract.NewContract(orderID, customerID, "Test contract terms")
+		c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 
 		err = repo.Create(ctx, c)
 		require.NoError(t, err)
@@ -79,7 +80,7 @@ func TestContractRepository_GetByID(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create and retrieve
-		c := contract.NewContract(orderID, customerID, "Test contract terms")
+		c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 		require.NoError(t, repo.Create(ctx, c))
 
 		retrieved, err := repo.GetByID(ctx, c.GetID())
@@ -87,7 +88,7 @@ func TestContractRepository_GetByID(t *testing.T) {
 		assert.Equal(t, c.GetID(), retrieved.GetID())
 		assert.Equal(t, orderID, retrieved.OrderID)
 		assert.Equal(t, customerID, retrieved.CustomerID)
-		assert.Equal(t, contract.ContractStatusDraft, retrieved.Status)
+		assert.Equal(t, contractAggregate.ContractStatusDraft, retrieved.Status)
 		assert.Equal(t, "Test contract terms", retrieved.Terms)
 		assert.Equal(t, 1, retrieved.Version)
 	})
@@ -118,7 +119,7 @@ func TestContractRepository_Update(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create contract
-		c := contract.NewContract(orderID, customerID, "Test contract terms")
+		c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 		require.NoError(t, repo.Create(ctx, c))
 
 		// Submit for signature
@@ -128,7 +129,7 @@ func TestContractRepository_Update(t *testing.T) {
 		// Verify update
 		retrieved, err := repo.GetByID(ctx, c.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, contract.ContractStatusPendingSignature, retrieved.Status)
+		assert.Equal(t, contractAggregate.ContractStatusPendingSignature, retrieved.Status)
 	})
 }
 
@@ -147,7 +148,7 @@ func TestContractRepository_Delete(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create contract
-		c := contract.NewContract(orderID, customerID, "Test contract terms")
+		c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 		require.NoError(t, repo.Create(ctx, c))
 
 		// Soft delete
@@ -176,7 +177,7 @@ func TestContractRepository_List(t *testing.T) {
 
 		// Create multiple contracts
 		for i := 0; i < 3; i++ {
-			c := contract.NewContract(orderID, customerID, "Test contract terms")
+			c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
@@ -204,7 +205,7 @@ func TestContractRepository_List_Pagination(t *testing.T) {
 
 		// Create 5 contracts
 		for i := 0; i < 5; i++ {
-			c := contract.NewContract(orderID, customerID, "Test contract terms")
+			c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
@@ -239,13 +240,13 @@ func TestContractRepository_GetByOrder(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create contracts for different orders
-		c1 := contract.NewContract(orderID1, customerID, "Contract 1")
+		c1 := contractAggregate.NewContract(orderID1, customerID, "Contract 1")
 		require.NoError(t, repo.Create(ctx, c1))
 
-		c2 := contract.NewContract(orderID1, customerID, "Contract 2")
+		c2 := contractAggregate.NewContract(orderID1, customerID, "Contract 2")
 		require.NoError(t, repo.Create(ctx, c2))
 
-		c3 := contract.NewContract(orderID2, customerID, "Contract 3")
+		c3 := contractAggregate.NewContract(orderID2, customerID, "Contract 3")
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// Get contracts for orderID1
@@ -272,13 +273,13 @@ func TestContractRepository_GetByCustomer(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create contracts for different customers
-		c1 := contract.NewContract(orderID, customerID1, "Contract 1")
+		c1 := contractAggregate.NewContract(orderID, customerID1, "Contract 1")
 		require.NoError(t, repo.Create(ctx, c1))
 
-		c2 := contract.NewContract(orderID, customerID1, "Contract 2")
+		c2 := contractAggregate.NewContract(orderID, customerID1, "Contract 2")
 		require.NoError(t, repo.Create(ctx, c2))
 
-		c3 := contract.NewContract(orderID, customerID2, "Contract 3")
+		c3 := contractAggregate.NewContract(orderID, customerID2, "Contract 3")
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// Get contracts for customerID1
@@ -303,11 +304,11 @@ func TestContractRepository_GetActiveContracts(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create draft contract
-		c1 := contract.NewContract(orderID, customerID, "Contract 1")
+		c1 := contractAggregate.NewContract(orderID, customerID, "Contract 1")
 		require.NoError(t, repo.Create(ctx, c1))
 
 		// Create active contract
-		c2 := contract.NewContract(orderID, customerID, "Contract 2")
+		c2 := contractAggregate.NewContract(orderID, customerID, "Contract 2")
 		require.NoError(t, c2.SubmitForSignature())
 		require.NoError(t, c2.Sign("John Doe", "john@example.com", "sig-123"))
 		require.NoError(t, repo.Create(ctx, c2))
@@ -316,7 +317,7 @@ func TestContractRepository_GetActiveContracts(t *testing.T) {
 		contracts, err := repo.GetActiveContracts(ctx)
 		require.NoError(t, err)
 		assert.Len(t, contracts, 1)
-		assert.Equal(t, contract.ContractStatusActive, contracts[0].Status)
+		assert.Equal(t, contractAggregate.ContractStatusActive, contracts[0].Status)
 	})
 }
 
@@ -335,19 +336,19 @@ func TestContractRepository_ListByStatus(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create contracts with different statuses
-		c1 := contract.NewContract(orderID, customerID, "Contract 1")
+		c1 := contractAggregate.NewContract(orderID, customerID, "Contract 1")
 		require.NoError(t, repo.Create(ctx, c1))
 
-		c2 := contract.NewContract(orderID, customerID, "Contract 2")
+		c2 := contractAggregate.NewContract(orderID, customerID, "Contract 2")
 		require.NoError(t, c2.SubmitForSignature())
 		require.NoError(t, repo.Create(ctx, c2))
 
-		c3 := contract.NewContract(orderID, customerID, "Contract 3")
+		c3 := contractAggregate.NewContract(orderID, customerID, "Contract 3")
 		require.NoError(t, c3.SubmitForSignature())
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// List by status
-		contracts, total, err := repo.ListByStatus(ctx, contract.ContractStatusPendingSignature, 0, 10)
+		contracts, total, err := repo.ListByStatus(ctx, contractAggregate.ContractStatusPendingSignature, 0, 10)
 		require.NoError(t, err)
 		assert.Equal(t, 2, total)
 		assert.Len(t, contracts, 2)
@@ -370,7 +371,7 @@ func TestContractRepository_ListByCustomer(t *testing.T) {
 
 		// Create contracts
 		for i := 0; i < 3; i++ {
-			c := contract.NewContract(orderID, customerID, "Contract terms")
+			c := contractAggregate.NewContract(orderID, customerID, "Contract terms")
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
@@ -397,7 +398,7 @@ func TestContractRepository_ListExpiringSoon(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create active contract expiring in 5 days
-		c1 := contract.NewContract(orderID, customerID, "Contract 1")
+		c1 := contractAggregate.NewContract(orderID, customerID, "Contract 1")
 		expiresAt := time.Now().AddDate(0, 0, 5)
 		require.NoError(t, c1.SetExpirationDate(expiresAt)) // Set expiration BEFORE signing
 		require.NoError(t, c1.SubmitForSignature())
@@ -405,7 +406,7 @@ func TestContractRepository_ListExpiringSoon(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, c1))
 
 		// Create active contract expiring in 20 days (outside range)
-		c2 := contract.NewContract(orderID, customerID, "Contract 2")
+		c2 := contractAggregate.NewContract(orderID, customerID, "Contract 2")
 		expiresAt2 := time.Now().AddDate(0, 0, 20)
 		require.NoError(t, c2.SetExpirationDate(expiresAt2)) // Set expiration BEFORE signing
 		require.NoError(t, c2.SubmitForSignature())

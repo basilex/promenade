@@ -7,18 +7,20 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/location"
+	locationerrors "github.com/basilex/promenade/internal/contexts/warehouse/location"
+	"github.com/basilex/promenade/internal/contexts/warehouse/location/aggregate"
+	"github.com/basilex/promenade/internal/contexts/warehouse/location/repository"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// locationRepository implements location.IRepository
+// locationRepository implements repository.ILocationRepository
 type locationRepository struct {
 	db *sqlx.DB
 }
 
 // NewLocationRepository creates a new location repository
-func NewLocationRepository(db *sqlx.DB) location.IRepository {
+func NewLocationRepository(db *sqlx.DB) repository.ILocationRepository {
 	return &locationRepository{db: db}
 }
 
@@ -48,18 +50,18 @@ type locationRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *locationRow) toEntity() (*location.Location, error) {
+func (r *locationRow) toEntity() (*aggregate.Location, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid location ID: %w", err)
 	}
 
 	// Hydrate entity fields directly (bypass business logic for database loading)
-	loc := &location.Location{}
+	loc := &aggregate.Location{}
 	loc.ID = id
 	loc.Code = r.Code
 	loc.Name = r.Name
-	loc.Type = location.LocationType(r.Type)
+	loc.Type = aggregate.LocationType(r.Type)
 	loc.Description = r.Description
 
 	if r.ParentID.Valid {
@@ -78,7 +80,7 @@ func (r *locationRow) toEntity() (*location.Location, error) {
 	loc.Width = r.Width
 	loc.Height = r.Height
 	loc.Depth = r.Depth
-	loc.Status = location.LocationStatus(r.Status)
+	loc.Status = aggregate.LocationStatus(r.Status)
 	loc.IsPickable = r.IsPickable
 	loc.IsPutawayable = r.IsPutawayable
 	loc.Notes = r.Notes
@@ -88,16 +90,16 @@ func (r *locationRow) toEntity() (*location.Location, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(loc *location.Location) *locationRow {
+func fromEntity(loc *aggregate.Location) *locationRow {
 	var parentID sql.NullString
 	if loc.ParentID != nil {
 		parentID = sql.NullString{String: loc.ParentID.String(), Valid: true}
 	}
 
 	row := &locationRow{
-		ID:                loc.GetID().String(),
-		Code:              loc.Code,
-		ParentID:          parentID,
+		ID:               loc.GetID().String(),
+		Code:             loc.Code,
+		ParentID:         parentID,
 		Name:             loc.Name,
 		Type:             string(loc.Type),
 		Description:      loc.Description,
@@ -132,7 +134,7 @@ func (r *locationRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
 }
 
 // Create inserts a new location
-func (r *locationRepository) Create(ctx context.Context, loc *location.Location) error {
+func (r *locationRepository) Create(ctx context.Context, loc *aggregate.Location) error {
 	query := `
 		INSERT INTO warehouse_locations (
 			id, code, name, type, description, parent_id, path, level,
@@ -155,7 +157,7 @@ func (r *locationRepository) Create(ctx context.Context, loc *location.Location)
 }
 
 // Update updates an existing location
-func (r *locationRepository) Update(ctx context.Context, loc *location.Location) error {
+func (r *locationRepository) Update(ctx context.Context, loc *aggregate.Location) error {
 	query := `
 		UPDATE warehouse_locations SET
 			code = $2, name = $3, type = $4, description = $5,
@@ -190,7 +192,7 @@ func (r *locationRepository) Update(ctx context.Context, loc *location.Location)
 		// Check if location exists to distinguish between not found vs version mismatch
 		var exists bool
 		checkQuery := `SELECT EXISTS(SELECT 1 FROM warehouse_locations WHERE id = $1 AND deleted_at IS NULL)`
-		
+
 		// Use the executor with type assertion for Get method
 		exec := r.getExecutor(ctx)
 		if db, ok := exec.(*sqlx.DB); ok {
@@ -206,10 +208,10 @@ func (r *locationRepository) Update(ctx context.Context, loc *location.Location)
 		}
 
 		if !exists {
-			return location.ErrLocationNotFound
+			return locationerrors.ErrLocationNotFound
 		}
 		// Location exists but version doesn't match
-		return location.ErrVersionMismatch
+		return locationerrors.ErrVersionMismatch
 	}
 
 	return nil
@@ -236,7 +238,7 @@ func (r *locationRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // GetByID retrieves a location by ID
-func (r *locationRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+func (r *locationRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -258,7 +260,7 @@ func (r *locationRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*loca
 }
 
 // GetByCode retrieves a location by code
-func (r *locationRepository) GetByCode(ctx context.Context, code string) (*location.Location, error) {
+func (r *locationRepository) GetByCode(ctx context.Context, code string) (*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -280,7 +282,7 @@ func (r *locationRepository) GetByCode(ctx context.Context, code string) (*locat
 }
 
 // List retrieves paginated locations
-func (r *locationRepository) List(ctx context.Context, limit, offset int) ([]*location.Location, error) {
+func (r *locationRepository) List(ctx context.Context, limit, offset int) ([]*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -297,7 +299,7 @@ func (r *locationRepository) List(ctx context.Context, limit, offset int) ([]*lo
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -314,7 +316,9 @@ func (r *locationRepository) Count(ctx context.Context) (int, error) {
 	query := `SELECT COUNT(*) FROM warehouse_locations WHERE deleted_at IS NULL`
 	var count int
 	exec := r.getExecutor(ctx)
-	if queryer, ok := exec.(interface{ QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row }); ok {
+	if queryer, ok := exec.(interface {
+		QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
+	}); ok {
 		err := queryer.QueryRowxContext(ctx, query).Scan(&count)
 		return count, err
 	}
@@ -324,7 +328,7 @@ func (r *locationRepository) Count(ctx context.Context) (int, error) {
 }
 
 // ListByType retrieves locations by type
-func (r *locationRepository) ListByType(ctx context.Context, locType location.LocationType, limit, offset int) ([]*location.Location, error) {
+func (r *locationRepository) ListByType(ctx context.Context, locType aggregate.LocationType, limit, offset int) ([]*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -341,7 +345,7 @@ func (r *locationRepository) ListByType(ctx context.Context, locType location.Lo
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -354,11 +358,13 @@ func (r *locationRepository) ListByType(ctx context.Context, locType location.Lo
 }
 
 // CountByType returns count of locations by type
-func (r *locationRepository) CountByType(ctx context.Context, locType location.LocationType) (int, error) {
+func (r *locationRepository) CountByType(ctx context.Context, locType aggregate.LocationType) (int, error) {
 	query := `SELECT COUNT(*) FROM warehouse_locations WHERE type = $1 AND deleted_at IS NULL`
 	var count int
 	exec := r.getExecutor(ctx)
-	if queryer, ok := exec.(interface{ QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row }); ok {
+	if queryer, ok := exec.(interface {
+		QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
+	}); ok {
 		err := queryer.QueryRowxContext(ctx, query, string(locType)).Scan(&count)
 		return count, err
 	}
@@ -367,7 +373,7 @@ func (r *locationRepository) CountByType(ctx context.Context, locType location.L
 }
 
 // ListByParent retrieves direct children of a parent location
-func (r *locationRepository) ListByParent(ctx context.Context, parentID uuidv7.UUID) ([]*location.Location, error) {
+func (r *locationRepository) ListByParent(ctx context.Context, parentID uuidv7.UUID) ([]*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -383,7 +389,7 @@ func (r *locationRepository) ListByParent(ctx context.Context, parentID uuidv7.U
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -396,12 +402,14 @@ func (r *locationRepository) ListByParent(ctx context.Context, parentID uuidv7.U
 }
 
 // ListChildren retrieves all descendants of a parent location
-func (r *locationRepository) ListChildren(ctx context.Context, parentID uuidv7.UUID) ([]*location.Location, error) {
+func (r *locationRepository) ListChildren(ctx context.Context, parentID uuidv7.UUID) ([]*aggregate.Location, error) {
 	query := `SELECT path FROM warehouse_locations WHERE id = $1 AND deleted_at IS NULL`
 	var parentPath string
 	var err error
 	exec := r.getExecutor(ctx)
-	if queryer, ok := exec.(interface{ QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row }); ok {
+	if queryer, ok := exec.(interface {
+		QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
+	}); ok {
 		err = queryer.QueryRowxContext(ctx, query, parentID.String()).Scan(&parentPath)
 		if err != nil {
 			return nil, err
@@ -428,7 +436,7 @@ func (r *locationRepository) ListChildren(ctx context.Context, parentID uuidv7.U
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -441,7 +449,7 @@ func (r *locationRepository) ListChildren(ctx context.Context, parentID uuidv7.U
 }
 
 // ListByStatus retrieves locations by status
-func (r *locationRepository) ListByStatus(ctx context.Context, status location.LocationStatus, limit, offset int) ([]*location.Location, error) {
+func (r *locationRepository) ListByStatus(ctx context.Context, status aggregate.LocationStatus, limit, offset int) ([]*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -458,7 +466,7 @@ func (r *locationRepository) ListByStatus(ctx context.Context, status location.L
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -471,11 +479,13 @@ func (r *locationRepository) ListByStatus(ctx context.Context, status location.L
 }
 
 // CountByStatus returns count of locations by status
-func (r *locationRepository) CountByStatus(ctx context.Context, status location.LocationStatus) (int, error) {
+func (r *locationRepository) CountByStatus(ctx context.Context, status aggregate.LocationStatus) (int, error) {
 	query := `SELECT COUNT(*) FROM warehouse_locations WHERE status = $1 AND deleted_at IS NULL`
 	var count int
 	exec := r.getExecutor(ctx)
-	if queryer, ok := exec.(interface{ QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row }); ok {
+	if queryer, ok := exec.(interface {
+		QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
+	}); ok {
 		err := queryer.QueryRowxContext(ctx, query, string(status)).Scan(&count)
 		return count, err
 	}
@@ -484,7 +494,7 @@ func (r *locationRepository) CountByStatus(ctx context.Context, status location.
 }
 
 // ListAvailable retrieves available locations
-func (r *locationRepository) ListAvailable(ctx context.Context, limit, offset int) ([]*location.Location, error) {
+func (r *locationRepository) ListAvailable(ctx context.Context, limit, offset int) ([]*aggregate.Location, error) {
 	query := `
 		SELECT id, code, name, type, description, parent_id, path, level,
 		       capacity, current_occupancy, is_limited, width, height, depth,
@@ -499,12 +509,12 @@ func (r *locationRepository) ListAvailable(ctx context.Context, limit, offset in
 		LIMIT $2 OFFSET $3`
 
 	var rows []locationRow
-	err := sqlx.SelectContext(ctx, r.getExecutor(ctx), &rows, query, string(location.LocationStatusActive), limit, offset)
+	err := sqlx.SelectContext(ctx, r.getExecutor(ctx), &rows, query, string(aggregate.LocationStatusActive), limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	locations := make([]*location.Location, 0, len(rows))
+	locations := make([]*aggregate.Location, 0, len(rows))
 	for _, row := range rows {
 		loc, err := row.toEntity()
 		if err != nil {
@@ -527,10 +537,12 @@ func (r *locationRepository) CountAvailable(ctx context.Context) (int, error) {
 		  AND deleted_at IS NULL`
 	var count int
 	exec := r.getExecutor(ctx)
-	if queryer, ok := exec.(interface{ QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row }); ok {
-		err := queryer.QueryRowxContext(ctx, query, string(location.LocationStatusActive)).Scan(&count)
+	if queryer, ok := exec.(interface {
+		QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
+	}); ok {
+		err := queryer.QueryRowxContext(ctx, query, string(aggregate.LocationStatusActive)).Scan(&count)
 		return count, err
 	}
-	err := r.db.QueryRowx(query, string(location.LocationStatusActive)).Scan(&count)
+	err := r.db.QueryRowx(query, string(aggregate.LocationStatusActive)).Scan(&count)
 	return count, err
 }

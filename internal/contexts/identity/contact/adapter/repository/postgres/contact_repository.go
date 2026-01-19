@@ -4,24 +4,56 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/identity/contact"
+	contacterrors "github.com/basilex/promenade/internal/contexts/identity/contact"
+	"github.com/basilex/promenade/internal/contexts/identity/contact/aggregate"
+	"github.com/basilex/promenade/internal/contexts/identity/contact/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// contactRepository implements contact.IRepository for PostgreSQL
+// contactRepository implements repository.IContactRepository for PostgreSQL
 type contactRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewContactRepository creates a new contact repository
-func NewContactRepository(db *sqlx.DB) contact.IRepository {
+func NewContactRepository(db *sqlx.DB) repository.IContactRepository {
 	return &contactRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *contactRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *contactRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *contactRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *contactRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *contactRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // contactRow represents database row structure for identity_contacts table
@@ -41,15 +73,15 @@ type contactRow struct {
 	IsPrimary         bool           `db:"is_primary"`
 	IsVerified        bool           `db:"is_verified"`
 	IsPublic          bool           `db:"is_public"`
-	CreatedAt         string         `db:"created_at"`
-	UpdatedAt         string         `db:"updated_at"`
+	CreatedAt         time.Time      `db:"created_at"`
+	UpdatedAt         time.Time      `db:"updated_at"`
 }
 
 // toEntity converts database row to domain entity
-func (r *contactRow) toEntity() (*contact.Contact, error) {
-	c := &contact.Contact{
+func (r *contactRow) toEntity() (*aggregate.Contact, error) {
+	c := &aggregate.Contact{
 		UserID:     r.UserID,
-		Type:       contact.ContactType(r.ContactType),
+		Type:       aggregate.ContactType(r.ContactType),
 		Label:      r.Label,
 		IsPrimary:  r.IsPrimary,
 		IsVerified: r.IsVerified,
@@ -57,12 +89,12 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 	}
 	// Initialize BaseAggregate fields
 	c.ID = r.ID
-	c.CreatedAt = parseTime(r.CreatedAt)
-	c.UpdatedAt = parseTime(r.UpdatedAt)
+	c.CreatedAt = r.CreatedAt
+	c.UpdatedAt = r.UpdatedAt
 
 	// Populate value object based on contact type
 	switch c.Type {
-	case contact.ContactTypeEmail:
+	case aggregate.ContactTypeEmail:
 		if r.Email.Valid {
 			email, err := valueobject.NewEmail(r.Email.String)
 			if err != nil {
@@ -70,7 +102,7 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 			}
 			c.Email = &email
 		}
-	case contact.ContactTypePhone:
+	case aggregate.ContactTypePhone:
 		if r.Phone.Valid {
 			phone, err := valueobject.NewPhone(r.Phone.String)
 			if err != nil {
@@ -78,7 +110,7 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 			}
 			c.Phone = &phone
 		}
-	case contact.ContactTypeAddress:
+	case aggregate.ContactTypeAddress:
 		if r.AddressStreet.Valid && r.AddressCity.Valid && r.AddressCountry.Valid && r.AddressPostalCode.Valid {
 			address, err := valueobject.NewAddress(
 				r.AddressStreet.String,
@@ -106,7 +138,7 @@ func (r *contactRow) toEntity() (*contact.Contact, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(c *contact.Contact) *contactRow {
+func fromEntity(c *aggregate.Contact) *contactRow {
 	row := &contactRow{
 		ID:          c.GetID(),
 		UserID:      c.UserID,
@@ -119,15 +151,15 @@ func fromEntity(c *contact.Contact) *contactRow {
 
 	// Populate database fields based on contact type
 	switch c.Type {
-	case contact.ContactTypeEmail:
+	case aggregate.ContactTypeEmail:
 		if c.Email != nil {
 			row.Email = sql.NullString{String: c.Email.Value(), Valid: true}
 		}
-	case contact.ContactTypePhone:
+	case aggregate.ContactTypePhone:
 		if c.Phone != nil {
 			row.Phone = sql.NullString{String: c.Phone.Value(), Valid: true}
 		}
-	case contact.ContactTypeAddress:
+	case aggregate.ContactTypeAddress:
 		if c.Address != nil {
 			row.AddressStreet = sql.NullString{String: c.Address.Street, Valid: true}
 			row.AddressCity = sql.NullString{String: c.Address.City, Valid: true}
@@ -146,7 +178,7 @@ func fromEntity(c *contact.Contact) *contactRow {
 }
 
 // Create creates a new contact in the database
-func (r *contactRepository) Create(ctx context.Context, c *contact.Contact) error {
+func (r *contactRepository) Create(ctx context.Context, c *aggregate.Contact) error {
 	row := fromEntity(c)
 
 	query := `
@@ -163,11 +195,12 @@ func (r *contactRepository) Create(ctx context.Context, c *contact.Contact) erro
 		)
 	`
 
-	return r.NamedExec(ctx, query, row)
+	_, err := r.NamedExec(ctx, query, row)
+	return err
 }
 
 // GetByID retrieves a contact by ID
-func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*contact.Contact, error) {
+func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Contact, error) {
 	var row contactRow
 	query := `
 		SELECT id, user_id, contact_type, label,
@@ -181,7 +214,7 @@ func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*conta
 
 	if err := r.Get(ctx, &row, query, id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, contact.ErrContactNotFound
+			return nil, contacterrors.ErrContactNotFound
 		}
 		return nil, fmt.Errorf("failed to get contact: %w", err)
 	}
@@ -190,7 +223,7 @@ func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*conta
 }
 
 // GetByUserID retrieves all contacts for a user
-func (r *contactRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) ([]*contact.Contact, error) {
+func (r *contactRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) ([]*aggregate.Contact, error) {
 	var rows []contactRow
 	query := `
 		SELECT id, user_id, contact_type, label,
@@ -207,7 +240,7 @@ func (r *contactRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID)
 		return nil, fmt.Errorf("failed to get user contacts: %w", err)
 	}
 
-	contacts := make([]*contact.Contact, 0, len(rows))
+	contacts := make([]*aggregate.Contact, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -220,7 +253,7 @@ func (r *contactRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID)
 }
 
 // GetByUserIDAndType retrieves contacts for a user filtered by type
-func (r *contactRepository) GetByUserIDAndType(ctx context.Context, userID uuidv7.UUID, contactType contact.ContactType) ([]*contact.Contact, error) {
+func (r *contactRepository) GetByUserIDAndType(ctx context.Context, userID uuidv7.UUID, contactType aggregate.ContactType) ([]*aggregate.Contact, error) {
 	var rows []contactRow
 	query := `
 		SELECT id, user_id, contact_type, label,
@@ -237,7 +270,7 @@ func (r *contactRepository) GetByUserIDAndType(ctx context.Context, userID uuidv
 		return nil, fmt.Errorf("failed to get contacts by type: %w", err)
 	}
 
-	contacts := make([]*contact.Contact, 0, len(rows))
+	contacts := make([]*aggregate.Contact, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -250,7 +283,7 @@ func (r *contactRepository) GetByUserIDAndType(ctx context.Context, userID uuidv
 }
 
 // GetPrimaryByUserIDAndType retrieves the primary contact for a user and type
-func (r *contactRepository) GetPrimaryByUserIDAndType(ctx context.Context, userID uuidv7.UUID, contactType contact.ContactType) (*contact.Contact, error) {
+func (r *contactRepository) GetPrimaryByUserIDAndType(ctx context.Context, userID uuidv7.UUID, contactType aggregate.ContactType) (*aggregate.Contact, error) {
 	var row contactRow
 	query := `
 		SELECT id, user_id, contact_type, label,
@@ -273,7 +306,7 @@ func (r *contactRepository) GetPrimaryByUserIDAndType(ctx context.Context, userI
 }
 
 // Update updates an existing contact
-func (r *contactRepository) Update(ctx context.Context, c *contact.Contact) error {
+func (r *contactRepository) Update(ctx context.Context, c *aggregate.Contact) error {
 	row := fromEntity(c)
 
 	query := `
@@ -295,13 +328,15 @@ func (r *contactRepository) Update(ctx context.Context, c *contact.Contact) erro
 		WHERE id = :id
 	`
 
-	return r.NamedExec(ctx, query, row)
+	_, err := r.NamedExec(ctx, query, row)
+	return err
 }
 
 // Delete deletes a contact by ID
 func (r *contactRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `DELETE FROM identity_contacts WHERE id = $1`
-	return r.Exec(ctx, query, id)
+	_, err := r.Exec(ctx, query, id)
+	return err
 }
 
 // SetPrimary sets a contact as primary and unsets other primary contacts of the same type
@@ -323,7 +358,7 @@ func (r *contactRepository) SetPrimary(ctx context.Context, id uuidv7.UUID) erro
 		SET is_primary = false
 		WHERE user_id = $1 AND contact_type = $2
 	`
-	if err := r.Exec(ctx, unsetQuery, info.UserID, info.ContactType); err != nil {
+	if _, err := r.Exec(ctx, unsetQuery, info.UserID, info.ContactType); err != nil {
 		return fmt.Errorf("failed to unset primary flags: %w", err)
 	}
 
@@ -333,11 +368,12 @@ func (r *contactRepository) SetPrimary(ctx context.Context, id uuidv7.UUID) erro
 		SET is_primary = true
 		WHERE id = $1
 	`
-	return r.Exec(ctx, setPrimaryQuery, id)
+	_, err := r.Exec(ctx, setPrimaryQuery, id)
+	return err
 }
 
 // ExistsPrimaryForUserAndType checks if a primary contact exists for a user and type
-func (r *contactRepository) ExistsPrimaryForUserAndType(ctx context.Context, userID uuidv7.UUID, contactType contact.ContactType) (bool, error) {
+func (r *contactRepository) ExistsPrimaryForUserAndType(ctx context.Context, userID uuidv7.UUID, contactType aggregate.ContactType) (bool, error) {
 	var count int
 	query := `
 		SELECT COUNT(*)

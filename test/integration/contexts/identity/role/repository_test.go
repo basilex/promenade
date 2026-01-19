@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/identity/role"
 	"github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
+	roleAggregate "github.com/basilex/promenade/internal/contexts/identity/role/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -26,7 +26,7 @@ func TestRoleRepository_CRUD(t *testing.T) {
 		// Create with unique role name
 		uuid := uuidv7.New().String()
 		roleName := fmt.Sprintf("test_role_%s", uuid)
-		r, err := role.NewRole(roleName, "Test Role", "Test description")
+		r, err := roleAggregate.NewRole(roleName, "Test Role", "Test description")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, r))
 
@@ -68,8 +68,8 @@ func TestRoleRepository_Queries(t *testing.T) {
 		uuid := uuidv7.New().String()
 		role1Name := fmt.Sprintf("role1_%s", uuid)
 		role2Name := fmt.Sprintf("role2_%s", uuid)
-		r1, _ := role.NewRole(role1Name, "Role 1", "First")
-		r2, _ := role.NewRole(role2Name, "Role 2", "Second")
+		r1, _ := roleAggregate.NewRole(role1Name, "Role 1", "First")
+		r2, _ := roleAggregate.NewRole(role2Name, "Role 2", "Second")
 		require.NoError(t, repo.Create(ctx, r1))
 		require.NoError(t, repo.Create(ctx, r2))
 

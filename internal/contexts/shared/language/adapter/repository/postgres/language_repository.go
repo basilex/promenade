@@ -6,21 +6,23 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/shared/language"
+	languageerrors "github.com/basilex/promenade/internal/contexts/shared/language"
+	"github.com/basilex/promenade/internal/contexts/shared/language/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/language/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-type repository struct {
+type languageRepository struct {
 	db sqlx.ExtContext // Works with both *sqlx.DB and *sqlx.Tx
 }
 
 // NewRepository creates a new PostgreSQL language repository
-func NewRepository(db sqlx.ExtContext) language.IRepository {
-	return &repository{db: db}
+func NewRepository(db sqlx.ExtContext) repository.ILanguageRepository {
+	return &languageRepository{db: db}
 }
 
-func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*language.Language, error) {
-	var l language.Language
+func (r *languageRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Language, error) {
+	var l aggregate.Language
 	query := `
 		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
@@ -28,13 +30,13 @@ func (r *repository) GetByID(ctx context.Context, id uuidv7.UUID) (*language.Lan
 	`
 	err := sqlx.GetContext(ctx, r.db, &l, query, id)
 	if err == sql.ErrNoRows {
-		return nil, language.ErrLanguageNotFound
+		return nil, languageerrors.ErrLanguageNotFound
 	}
 	return &l, err
 }
 
-func (r *repository) GetByCode(ctx context.Context, code string) (*language.Language, error) {
-	var l language.Language
+func (r *languageRepository) GetByCode(ctx context.Context, code string) (*aggregate.Language, error) {
+	var l aggregate.Language
 	query := `
 		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
@@ -42,13 +44,13 @@ func (r *repository) GetByCode(ctx context.Context, code string) (*language.Lang
 	`
 	err := sqlx.GetContext(ctx, r.db, &l, query, code)
 	if err == sql.ErrNoRows {
-		return nil, language.ErrLanguageNotFound
+		return nil, languageerrors.ErrLanguageNotFound
 	}
 	return &l, err
 }
 
-func (r *repository) List(ctx context.Context) ([]*language.Language, error) {
-	var languages []*language.Language
+func (r *languageRepository) List(ctx context.Context) ([]*aggregate.Language, error) {
+	var languages []*aggregate.Language
 	query := `
 		SELECT id, code, code3, name, native_name, is_active, created_at, updated_at
 		FROM shared_languages
@@ -59,7 +61,7 @@ func (r *repository) List(ctx context.Context) ([]*language.Language, error) {
 	return languages, err
 }
 
-func (r *repository) Create(ctx context.Context, l *language.Language) error {
+func (r *languageRepository) Create(ctx context.Context, l *aggregate.Language) error {
 	query := `
 		INSERT INTO shared_languages (id, code, code3, name, native_name, is_active, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -68,7 +70,7 @@ func (r *repository) Create(ctx context.Context, l *language.Language) error {
 	return err
 }
 
-func (r *repository) Update(ctx context.Context, l *language.Language) error {
+func (r *languageRepository) Update(ctx context.Context, l *aggregate.Language) error {
 	query := `
 		UPDATE shared_languages
 		SET code = $2, code3 = $3, name = $4, native_name = $5, is_active = $6, updated_at = $7
@@ -78,7 +80,7 @@ func (r *repository) Update(ctx context.Context, l *language.Language) error {
 	return err
 }
 
-func (r *repository) Delete(ctx context.Context, id uuidv7.UUID) error {
+func (r *languageRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `UPDATE shared_languages SET is_active = FALSE WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err

@@ -6,6 +6,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	contactHTTP "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http"
+	contactAggregate "github.com/basilex/promenade/internal/contexts/identity/contact/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 	"github.com/stretchr/testify/assert"
@@ -13,33 +14,33 @@ import (
 
 // MockContactUseCase implements minimal contact.IUseCase interface for testing
 type MockContactUseCase struct {
-	CreateEmailContactFunc   func(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contact.Contact, error)
-	GetContactFunc           func(ctx context.Context, contactID uuidv7.UUID) (*contact.Contact, error)
-	GetUserContactsFunc      func(ctx context.Context, userID uuidv7.UUID) ([]*contact.Contact, error)
-	DeleteContactFunc        func(ctx context.Context, contactID uuidv7.UUID) error
-	VerifyContactFunc        func(ctx context.Context, contactID uuidv7.UUID) error
-	SetAsPrimaryFunc         func(ctx context.Context, contactID uuidv7.UUID) error
+	CreateEmailContactFunc func(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contactAggregate.Contact, error)
+	GetContactFunc         func(ctx context.Context, contactID uuidv7.UUID) (*contactAggregate.Contact, error)
+	GetUserContactsFunc    func(ctx context.Context, userID uuidv7.UUID) ([]*contactAggregate.Contact, error)
+	DeleteContactFunc      func(ctx context.Context, contactID uuidv7.UUID) error
+	VerifyContactFunc      func(ctx context.Context, contactID uuidv7.UUID) error
+	SetAsPrimaryFunc       func(ctx context.Context, contactID uuidv7.UUID) error
 }
 
-func (m *MockContactUseCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contact.Contact, error) {
+func (m *MockContactUseCase) CreateEmailContact(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contactAggregate.Contact, error) {
 	if m.CreateEmailContactFunc != nil {
 		return m.CreateEmailContactFunc(ctx, userID, email, label, isPrimary)
 	}
 	return fakeContact(), nil
 }
 
-func (m *MockContactUseCase) GetContact(ctx context.Context, contactID uuidv7.UUID) (*contact.Contact, error) {
+func (m *MockContactUseCase) GetContact(ctx context.Context, contactID uuidv7.UUID) (*contactAggregate.Contact, error) {
 	if m.GetContactFunc != nil {
 		return m.GetContactFunc(ctx, contactID)
 	}
 	return fakeContact(), nil
 }
 
-func (m *MockContactUseCase) GetUserContacts(ctx context.Context, userID uuidv7.UUID) ([]*contact.Contact, error) {
+func (m *MockContactUseCase) GetUserContacts(ctx context.Context, userID uuidv7.UUID) ([]*contactAggregate.Contact, error) {
 	if m.GetUserContactsFunc != nil {
 		return m.GetUserContactsFunc(ctx, userID)
 	}
-	return []*contact.Contact{fakeContact()}, nil
+	return []*contactAggregate.Contact{fakeContact()}, nil
 }
 
 func (m *MockContactUseCase) DeleteContact(ctx context.Context, contactID uuidv7.UUID) error {
@@ -64,25 +65,25 @@ func (m *MockContactUseCase) SetAsPrimary(ctx context.Context, contactID uuidv7.
 }
 
 // Stub implementations for other IUseCase methods
-func (m *MockContactUseCase) CreatePhoneContact(ctx context.Context, userID uuidv7.UUID, phone, label string, isPrimary bool) (*contact.Contact, error) {
+func (m *MockContactUseCase) CreatePhoneContact(ctx context.Context, userID uuidv7.UUID, phone, label string, isPrimary bool) (*contactAggregate.Contact, error) {
 	return fakeContact(), nil
 }
-func (m *MockContactUseCase) CreateAddressContact(ctx context.Context, userID uuidv7.UUID, street, city, country, postalCode, label string, isPrimary bool) (*contact.Contact, error) {
+func (m *MockContactUseCase) CreateAddressContact(ctx context.Context, userID uuidv7.UUID, street, city, country, postalCode, label string, isPrimary bool) (*contactAggregate.Contact, error) {
 	return fakeContact(), nil
 }
-func (m *MockContactUseCase) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID, contactType contact.ContactType) ([]*contact.Contact, error) {
-	return []*contact.Contact{fakeContact()}, nil
+func (m *MockContactUseCase) GetUserContactsByType(ctx context.Context, userID uuidv7.UUID, contactType contactAggregate.ContactType) ([]*contactAggregate.Contact, error) {
+	return []*contactAggregate.Contact{fakeContact()}, nil
 }
-func (m *MockContactUseCase) UpdateContact(ctx context.Context, c *contact.Contact) error {
+func (m *MockContactUseCase) UpdateContact(ctx context.Context, c *contactAggregate.Contact) error {
 	return nil
 }
 func (m *MockContactUseCase) UpdateVisibility(ctx context.Context, contactID uuidv7.UUID, isPublic bool) error {
 	return nil
 }
 
-func fakeContact() *contact.Contact {
+func fakeContact() *contactAggregate.Contact {
 	userID := uuidv7.New()
-	c, _ := contact.NewEmailContact(userID, "test@example.com", "Work")
+	c, _ := contactAggregate.NewEmailContact(userID, "test@example.com", "Work")
 	return c
 }
 
@@ -90,7 +91,7 @@ func TestContactHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContactUseCase{
-		CreateEmailContactFunc: func(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contact.Contact, error) {
+		CreateEmailContactFunc: func(ctx context.Context, userID uuidv7.UUID, email, label string, isPrimary bool) (*contactAggregate.Contact, error) {
 			return fakeContact(), nil
 		},
 	}
@@ -125,7 +126,7 @@ func TestContactHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContactUseCase{
-		GetContactFunc: func(ctx context.Context, contactID uuidv7.UUID) (*contact.Contact, error) {
+		GetContactFunc: func(ctx context.Context, contactID uuidv7.UUID) (*contactAggregate.Contact, error) {
 			return fakeContact(), nil
 		},
 	}
@@ -142,8 +143,8 @@ func TestContactHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContactUseCase{
-		GetContactFunc: func(ctx context.Context, contactID uuidv7.UUID) (*contact.Contact, error) {
-			return nil, contact.ErrNotFound
+		GetContactFunc: func(ctx context.Context, contactID uuidv7.UUID) (*contactAggregate.Contact, error) {
+			return nil, contact.ErrContactNotFound
 		},
 	}
 
@@ -159,8 +160,8 @@ func TestContactHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContactUseCase{
-		GetUserContactsFunc: func(ctx context.Context, userID uuidv7.UUID) ([]*contact.Contact, error) {
-			return []*contact.Contact{fakeContact()}, nil
+		GetUserContactsFunc: func(ctx context.Context, userID uuidv7.UUID) ([]*contactAggregate.Contact, error) {
+			return []*contactAggregate.Contact{fakeContact()}, nil
 		},
 	}
 
@@ -176,8 +177,8 @@ func TestContactHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContactUseCase{
-		GetUserContactsFunc: func(ctx context.Context, userID uuidv7.UUID) ([]*contact.Contact, error) {
-			return []*contact.Contact{}, nil
+		GetUserContactsFunc: func(ctx context.Context, userID uuidv7.UUID) ([]*contactAggregate.Contact, error) {
+			return []*contactAggregate.Contact{}, nil
 		},
 	}
 
@@ -211,7 +212,7 @@ func TestContactHandler_Delete_NotFound(t *testing.T) {
 
 	mockUC := &MockContactUseCase{
 		DeleteContactFunc: func(ctx context.Context, contactID uuidv7.UUID) error {
-			return contact.ErrNotFound
+			return contact.ErrContactNotFound
 		},
 	}
 

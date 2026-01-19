@@ -13,7 +13,7 @@ func TestNewEngine(t *testing.T) {
 	config := DefaultConfig()
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(config, stdlib)
-	
+
 	assert.NotNil(t, engine)
 	assert.NotNil(t, engine.stdlib)
 	assert.NotNil(t, engine.sandbox)
@@ -23,11 +23,11 @@ func TestEngine_Execute_SimpleScript(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return 2 + 2`
-	
+
 	result, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, float64(4), result)
 }
@@ -36,15 +36,15 @@ func TestEngine_Execute_WithParameters(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return x + y`
 	params := map[string]interface{}{
 		"x": 10,
 		"y": 20,
 	}
-	
+
 	result, err := engine.Execute(ctx, script, params)
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, float64(30), result)
 }
@@ -53,11 +53,11 @@ func TestEngine_Execute_StringResult(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return "Hello, World!"`
-	
+
 	result, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello, World!", result)
 }
@@ -66,11 +66,11 @@ func TestEngine_Execute_BooleanResult(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return true`
-	
+
 	result, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, true, result)
 }
@@ -79,11 +79,11 @@ func TestEngine_Execute_TableResult(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return {name = "John", age = 30}`
-	
+
 	result, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.NoError(t, err)
 	resultMap, ok := result.(map[string]interface{})
 	assert.True(t, ok)
@@ -95,11 +95,11 @@ func TestEngine_Execute_SyntaxError(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
-	script := `return 2 +`  // Syntax error
-	
+
+	script := `return 2 +` // Syntax error
+
 	_, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.Error(t, err)
 }
 
@@ -109,11 +109,11 @@ func TestEngine_Execute_Timeout(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(config, stdlib)
 	ctx := context.Background()
-	
-	script := `while true do end`  // Infinite loop
-	
+
+	script := `while true do end` // Infinite loop
+
 	_, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "timeout")
 }
@@ -122,15 +122,15 @@ func TestEngine_ExecuteFunction_Success(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `
 		function greet(name)
 			return "Hello, " .. name .. "!"
 		end
 	`
-	
+
 	result, err := engine.ExecuteFunction(ctx, script, "greet", "Alice")
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello, Alice!", result)
 }
@@ -139,11 +139,11 @@ func TestEngine_ExecuteFunction_NotFound(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `function foo() end`
-	
+
 	_, err := engine.ExecuteFunction(ctx, script, "bar")
-	
+
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "not found")
 }
@@ -151,22 +151,22 @@ func TestEngine_ExecuteFunction_NotFound(t *testing.T) {
 func TestEngine_Validate_Success(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
-	
+
 	script := `return 2 + 2`
-	
+
 	err := engine.Validate(script)
-	
+
 	assert.NoError(t, err)
 }
 
 func TestEngine_Validate_SyntaxError(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
-	
+
 	script := `return 2 +`
-	
+
 	err := engine.Validate(script)
-	
+
 	assert.Error(t, err)
 }
 
@@ -174,14 +174,14 @@ func TestEngine_StandardLibrary(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	// With nil dependencies, Customer.GetTier will raise error
 	// Use valid UUID v7 format
 	validUUID := "018d6e7f-8e9a-7b2c-9d3e-4f5a6b7c8d9e"
 	script := fmt.Sprintf(`return Customer.GetTier("%s")`, validUUID)
-	
+
 	_, err := engine.Execute(ctx, script, nil)
-	
+
 	// Should fail because customerUC is nil (nil pointer dereference or explicit error)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "runtime error")
@@ -191,16 +191,16 @@ func TestEngine_Sandbox_NoDangerousFunctions(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	tests := []struct {
-		name     string
-		script   string
+		name   string
+		script string
 	}{
 		{"dofile", `return type(dofile)`},
 		{"loadfile", `return type(loadfile)`},
 		{"require", `return type(require)`},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := engine.Execute(ctx, tt.script, nil)
@@ -214,11 +214,11 @@ func TestEngine_Sandbox_NoFileIO(t *testing.T) {
 	stdlib := NewStandardLibrary(context.Background(), nil, nil, nil, nil)
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
-	
+
 	script := `return type(io)`
-	
+
 	result, err := engine.Execute(ctx, script, nil)
-	
+
 	assert.NoError(t, err)
 	assert.Equal(t, "nil", result)
 }
@@ -229,7 +229,7 @@ func BenchmarkEngine_Execute_Simple(b *testing.B) {
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
 	script := `return 2 + 2`
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, _ = engine.Execute(ctx, script, nil)
@@ -242,7 +242,7 @@ func BenchmarkEngine_Execute_WithParams(b *testing.B) {
 	ctx := context.Background()
 	script := `return x + y`
 	params := map[string]interface{}{"x": 10, "y": 20}
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, _ = engine.Execute(ctx, script, params)
@@ -254,7 +254,7 @@ func BenchmarkEngine_ExecuteFunction(b *testing.B) {
 	engine := NewEngine(DefaultConfig(), stdlib)
 	ctx := context.Background()
 	script := `function add(a, b) return a + b end`
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, _ = engine.ExecuteFunction(ctx, script, "add", 10, 20)

@@ -103,4 +103,3 @@ var (
 	// ErrOrderCancelFailed is returned when order cancellation fails
 	ErrOrderCancelFailed = errors.New("failed to cancel order")
 )
-

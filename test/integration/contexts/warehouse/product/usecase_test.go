@@ -11,6 +11,8 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/product"
 	productRepo "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/repository/postgres"
+	productAggregate "github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
+	productUseCase "github.com/basilex/promenade/internal/contexts/warehouse/product/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -24,7 +26,7 @@ func TestProductUseCase_CreateProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product with unique SKU
 		uniqueSKU := fmt.Sprintf("UC-SKU-%s", uuidv7.New().String()[:8])
@@ -33,7 +35,7 @@ func TestProductUseCase_CreateProduct(t *testing.T) {
 		assert.NotEqual(t, uuidv7.UUID{}, p.GetID())
 		assert.Equal(t, uniqueSKU, p.SKU)
 		assert.Equal(t, "Test Product", p.Name)
-		assert.Equal(t, product.ProductStatusDraft, p.Status)
+		assert.Equal(t, productAggregate.ProductStatusDraft, p.Status)
 
 		// Test - Duplicate SKU should fail
 		_, err = uc.CreateProduct(ctx, uniqueSKU, "Another Product")
@@ -51,7 +53,7 @@ func TestProductUseCase_GetProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product
 		uniqueSKU := fmt.Sprintf("UC-GET-%s", uuidv7.New().String()[:8])
@@ -81,7 +83,7 @@ func TestProductUseCase_GetBySKU(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product with unique SKU
 		uniqueSKU := fmt.Sprintf("UC-FIND-%s", uuidv7.New().String()[:8])
@@ -110,7 +112,7 @@ func TestProductUseCase_UpdateProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product
 		uniqueSKU := fmt.Sprintf("UC-UPD-%s", uuidv7.New().String()[:8])
@@ -141,7 +143,7 @@ func TestProductUseCase_SetClassification(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product
 		uniqueSKU := fmt.Sprintf("UC-CLASS-%s", uuidv7.New().String()[:8])
@@ -172,13 +174,13 @@ func TestProductUseCase_ActivateProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product (default status: draft)
 		uniqueSKU := fmt.Sprintf("UC-ACT-%s", uuidv7.New().String()[:8])
 		p, err := uc.CreateProduct(ctx, uniqueSKU, "Product")
 		require.NoError(t, err)
-		assert.Equal(t, product.ProductStatusDraft, p.Status)
+		assert.Equal(t, productAggregate.ProductStatusDraft, p.Status)
 
 		// Activate product
 		err = uc.ActivateProduct(ctx, p.GetID())
@@ -187,7 +189,7 @@ func TestProductUseCase_ActivateProduct(t *testing.T) {
 		// Verify activation
 		activated, err := uc.GetProduct(ctx, p.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, product.ProductStatusActive, activated.Status)
+		assert.Equal(t, productAggregate.ProductStatusActive, activated.Status)
 	})
 }
 
@@ -200,7 +202,7 @@ func TestProductUseCase_DeactivateProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create and activate product
 		uniqueSKU := fmt.Sprintf("UC-DEACT-%s", uuidv7.New().String()[:8])
@@ -216,7 +218,7 @@ func TestProductUseCase_DeactivateProduct(t *testing.T) {
 		// Verify deactivation
 		deactivated, err := uc.GetProduct(ctx, p.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, product.ProductStatusOutOfStock, deactivated.Status)
+		assert.Equal(t, productAggregate.ProductStatusOutOfStock, deactivated.Status)
 	})
 }
 
@@ -229,7 +231,7 @@ func TestProductUseCase_ListProducts(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create multiple products with unique SKUs
 		prefix := fmt.Sprintf("UC-LIST-%s", uuidv7.New().String()[:8])
@@ -255,7 +257,7 @@ func TestProductUseCase_ListByCategory(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create products with unique SKUs and category
 		category := "Integration-Electronics"
@@ -290,7 +292,7 @@ func TestProductUseCase_SearchProducts(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product with unique searchable name
 		searchTerm := fmt.Sprintf("UltraGadget-%s", uuidv7.New().String()[:8])
@@ -328,7 +330,7 @@ func TestProductUseCase_DeleteProduct(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := productRepo.NewProductRepository(testDB.DB)
-		uc := product.NewUseCase(repo)
+		uc := productUseCase.NewProductUseCase(repo)
 
 		// Create product
 		uniqueSKU := fmt.Sprintf("UC-DEL-%s", uuidv7.New().String()[:8])

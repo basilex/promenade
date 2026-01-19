@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
 	ordererrors "github.com/basilex/promenade/internal/contexts/order-mgmt/order"
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/repository"
 )
 

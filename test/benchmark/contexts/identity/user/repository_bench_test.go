@@ -9,10 +9,12 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"github.com/basilex/promenade/internal/contexts/identity/role"
 	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
+	roleAggregate "github.com/basilex/promenade/internal/contexts/identity/role/aggregate"
+	roleRepository "github.com/basilex/promenade/internal/contexts/identity/role/repository"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	userRepository "github.com/basilex/promenade/internal/contexts/identity/user/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -130,7 +132,7 @@ func BenchmarkListUsers_NoRoles(b *testing.B) {
 
 	// Setup: Create 20 users WITHOUT roles
 	for i := 0; i < 20; i++ {
-		u, _ := user.NewUser(fmt.Sprintf("user%d@test.com", i), "password123")
+		u, _ := userAggregate.NewUser(fmt.Sprintf("user%d@test.com", i), "password123")
 		if err := repo.Create(ctx, u); err != nil {
 			b.Fatalf("Failed to create user: %v", err)
 		}
@@ -170,9 +172,9 @@ func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 	ctx := context.Background()
 
 	// Setup: Create roles
-	adminRole, _ := role.NewRole("admin", "Administrator", "Administrator role")
-	managerRole, _ := role.NewRole("manager", "Manager", "Manager role")
-	userRole, _ := role.NewRole("user", "User", "User role")
+	adminRole, _ := roleAggregate.NewRole("admin", "Administrator", "Administrator role")
+	managerRole, _ := roleAggregate.NewRole("manager", "Manager", "Manager role")
+	userRole, _ := roleAggregate.NewRole("user", "User", "User role")
 
 	_ = roleRepository.Create(ctx, adminRole)
 	_ = roleRepository.Create(ctx, managerRole)
@@ -180,7 +182,7 @@ func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 
 	// Setup: Create 20 users, each with 3 roles
 	for i := 0; i < 20; i++ {
-		u, _ := user.NewUser(fmt.Sprintf("user%d@test.com", i), "password123")
+		u, _ := userAggregate.NewUser(fmt.Sprintf("user%d@test.com", i), "password123")
 		if err := repo.Create(ctx, u); err != nil {
 			b.Fatalf("Failed to create user: %v", err)
 		}
@@ -216,16 +218,16 @@ func BenchmarkListUsers_MultipleRoles(b *testing.B) {
 }
 
 // Helper function to setup users with roles for benchmarks
-func setupUsersWithRoles(b *testing.B, ctx context.Context, db *sqlx.DB, repo user.IRepository, roleRepository role.IRepository, count int) {
+func setupUsersWithRoles(b *testing.B, ctx context.Context, db *sqlx.DB, repo userRepository.IUserRepository, roleRepository roleRepository.IRoleRepository, count int) {
 	// Create a default role
-	defaultRole, _ := role.NewRole("user", "User", "Default user role")
+	defaultRole, _ := roleAggregate.NewRole("user", "User", "Default user role")
 	if err := roleRepository.Create(ctx, defaultRole); err != nil {
 		b.Fatalf("Failed to create role: %v", err)
 	}
 
 	// Create users and assign role
 	for i := 0; i < count; i++ {
-		u, _ := user.NewUser(fmt.Sprintf("user%d_%s@test.com", i, uuidv7.New().String()[:8]), "password123")
+		u, _ := userAggregate.NewUser(fmt.Sprintf("user%d_%s@test.com", i, uuidv7.New().String()[:8]), "password123")
 		if err := repo.Create(ctx, u); err != nil {
 			b.Fatalf("Failed to create user: %v", err)
 		}

@@ -35,8 +35,7 @@ internal/contexts/{context}/{aggregate}/
          dto.go                 # Data transfer objects
          dto_test.go            # DTO tests (optional)
       repository/postgres/
-          base_repository.go    # BaseRepository (per context)
-          {aggregate}_repository.go # PostgreSQL implementation
+          {aggregate}_repository.go # PostgreSQL implementation with helper methods
 ```
 
 **Real Example - Company Aggregate**:
@@ -56,11 +55,11 @@ internal/contexts/customer-mgmt/company/
         dto.go
         dto_test.go
      repository/postgres/
-         base_repository.go
          company_repository.go
 ```
 
 **Why This Structure?**
+
 - **Simple**: Fewer directories, easier navigation
 - **Flat**: Files directly in `adapter/http/`, not nested in `handler/` and `dto/`
 - **Consistent**: Same pattern across all 21 tables/aggregates
@@ -83,6 +82,7 @@ adapter/http/
 ```
 
 **Benefits**:
+
 - Quick navigation (2 files)
 - Easy to understand
 - Minimal cognitive overhead
@@ -107,6 +107,7 @@ adapter/http/
 ```
 
 **Triggers**:
+
 - 5+ handler methods in `handler.go` (100+ lines)
 - 10+ DTO structs in `dto.go` (200+ lines)
 - Multiple concerns mixing in one file
@@ -133,6 +134,7 @@ adapter/http/
 ```
 
 **Triggers**:
+
 - API versioning required (v1, v2)
 - 20+ handler methods
 - Team size > 5 (avoid merge conflicts)
@@ -153,28 +155,29 @@ When transitioning between phases:
 
 ### Current Decision
 
-**Status**: Phase 1 (Simple Structure)   
+**Status**: Phase 1 (Simple Structure)  
 **Review Date**: When any aggregate reaches 10+ files  
 **Philosophy**: "Make it work, make it right, make it fast" - we're at "make it work"
 
 ### File Naming Rules
 
-| File Type         | Pattern                         | Example                      |
-|-------------------|---------------------------------|------------------------------|
-| **Entity**        | `entity.go`                     | `entity.go`                  |
-| **Entity Tests**  | `entity_test.go`                | `entity_test.go`             |
-| **Repository**    | `{aggregate}_repository.go`     | `customer_repository.go`     |
-| **Repository Tests** | `{aggregate}_repository_test.go` | `customer_repository_test.go` |
-| **Use Case**      | `usecase.go`                    | `usecase.go`                 |
-| **Use Case Tests**| `usecase_test.go`               | `usecase_test.go`            |
-| **Handler**       | `handler.go` (in `adapter/http/`) | `handler.go`               |
-| **Handler Tests** | `handler_test.go` (optional)    | `handler_test.go`            |
-| **DTOs**          | `dto.go` (in `adapter/http/`)   | `dto.go`                     |
-| **DTO Tests**     | `dto_test.go` (optional)        | `dto_test.go`                |
-| **Errors**        | `errors.go` (optional)          | `errors.go`                  |
-| **Migrations**    | `{number}_{name}.{up|down}.sql` | `000001_customers.up.sql`    |
+| File Type            | Pattern                           | Example                       |
+| -------------------- | --------------------------------- | ----------------------------- | ------------------------- |
+| **Entity**           | `entity.go`                       | `entity.go`                   |
+| **Entity Tests**     | `entity_test.go`                  | `entity_test.go`              |
+| **Repository**       | `{aggregate}_repository.go`       | `customer_repository.go`      |
+| **Repository Tests** | `{aggregate}_repository_test.go`  | `customer_repository_test.go` |
+| **Use Case**         | `usecase.go`                      | `usecase.go`                  |
+| **Use Case Tests**   | `usecase_test.go`                 | `usecase_test.go`             |
+| **Handler**          | `handler.go` (in `adapter/http/`) | `handler.go`                  |
+| **Handler Tests**    | `handler_test.go` (optional)      | `handler_test.go`             |
+| **DTOs**             | `dto.go` (in `adapter/http/`)     | `dto.go`                      |
+| **DTO Tests**        | `dto_test.go` (optional)          | `dto_test.go`                 |
+| **Errors**           | `errors.go` (optional)            | `errors.go`                   |
+| **Migrations**       | `{number}\_{name}.{up             | down}.sql`                    | `000001_customers.up.sql` |
 
 **Key Rules**:
+
 - Use `snake_case` for file names
 - Entity and UseCase files are generic (`entity.go`, `usecase.go`)
 - Repository files are aggregate-specific (`{aggregate}_repository.go`)
@@ -208,6 +211,7 @@ type ICustomerUseCase interface {
 ```
 
 **Rules**:
+
 - Always prefix with `I` for interfaces
 - Use full words, no abbreviations (`IRepository`, NOT `IRepo`)
 - Repository: `I{Entity}Repository`
@@ -220,13 +224,11 @@ type ICustomerUseCase interface {
 ```go
 // Repository implementation
 type customerRepository struct {
-    *BaseRepository
+    db *sqlx.DB
 }
 
 func NewCustomerRepository(db *sqlx.DB) ICustomerRepository {
-    return &customerRepository{
-        BaseRepository: NewBaseRepository(db),
-    }
+    return &customerRepository{db: db}
 }
 
 // Use case implementation
@@ -240,6 +242,7 @@ func NewUseCase(repo ICustomerRepository) ICustomerUseCase {
 ```
 
 **Rules**:
+
 - Private structs: lowercase first letter
 - Repository: `{aggregate}Repository` (e.g., `customerRepository`)
 - Use Case: `useCase` (generic, NOT `customerUseCase`)
@@ -252,7 +255,7 @@ func NewUseCase(repo ICustomerRepository) ICustomerUseCase {
 ```go
 // Repository constructor (aggregate-specific)
 func NewCustomerRepository(db *sqlx.DB) ICustomerRepository {
-    return &customerRepository{BaseRepository: NewBaseRepository(db)}
+    return &customerRepository{db: db}
 }
 
 // Use case constructor (SIMPLE, generic)
@@ -282,6 +285,7 @@ func NewCustomer(email, name string, tier CustomerTier) (*Customer, error) {
 ```
 
 **Rules**:
+
 - Repository: `New{Entity}Repository()`
 - Use Case: `NewUseCase()` (SIMPLE, no entity prefix)
 - Handler: `New{Entity}Handler()`
@@ -328,6 +332,7 @@ func (h *CustomerHandler) List(c *gin.Context)
 ```
 
 **Rules**:
+
 - Repository: `GetByXxx`, `ListXxx`, `CountXxx`, `ExistsByXxx`
 - Use Case: `{Verb}{Entity}`, `{BusinessOperation}`
 - Handler: Match HTTP methods (`Create`, `GetByID`, `Update`, `Delete`, `List`)
@@ -387,6 +392,7 @@ if errors.Is(err, ErrCustomerNotFound) {
 ```
 
 **Rules**:
+
 - Prefix with `Err`
 - Entity name + Condition
 - Use `errors.Is()` for checking
@@ -421,6 +427,7 @@ const (
 ```
 
 **Rules**:
+
 - Entity name prefix for domain constants
 - PascalCase for exported constants
 - Group related constants with `const ()`
@@ -437,14 +444,14 @@ package customer
 // Entity file: entity.go
 type Customer struct {
     aggregate.BaseAggregate
-    
+
     ID       uuidv7.UUID
     Email    valueobject.Email
     Name     string
     Status   CustomerStatus
     Tier     CustomerTier
     Tags     []string
-    
+
     CreatedAt time.Time
     UpdatedAt time.Time
     DeletedAt *time.Time
@@ -456,7 +463,7 @@ func NewCustomer(email, name string, tier CustomerTier) (*Customer, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return &Customer{
         BaseAggregate: aggregate.NewBase(),
         ID:            uuidv7.New(),
@@ -478,13 +485,24 @@ package postgres
 
 // Repository file: customer_repository.go
 type customerRepository struct {
-    *BaseRepository
+    db *sqlx.DB
 }
 
 func NewCustomerRepository(db *sqlx.DB) customer.ICustomerRepository {
-    return &customerRepository{
-        BaseRepository: NewBaseRepository(db),
-    }
+    return &customerRepository{db: db}
+}
+
+// Helper methods
+func (r *customerRepository) getExecutor(ctx context.Context) database.Executor {
+    return database.GetExecutor(ctx, r.db)
+}
+
+func (r *customerRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+    return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+func (r *customerRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+    return r.getExecutor(ctx).GetContext(ctx, dest, query, args...)
 }
 
 func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) error {
@@ -495,8 +513,8 @@ func (r *customerRepository) Create(ctx context.Context, c *customer.Customer) e
             $1, $2, $3, $4, $5, $6, $7, $8
         )
     `
-    _, err := r.Exec(ctx, query, 
-        c.ID, c.Email.Value(), c.Name, c.Status, c.Tier, 
+    _, err := r.Exec(ctx, query,
+        c.ID, c.Email.Value(), c.Name, c.Status, c.Tier,
         pq.Array(c.Tags), c.CreatedAt, c.UpdatedAt,
     )
     return err
@@ -549,18 +567,18 @@ func (uc *useCase) CreateCustomer(ctx context.Context, email, name string, tier 
     if exists {
         return nil, ErrEmailAlreadyExists
     }
-    
+
     // Create customer entity
     customer, err := NewCustomer(email, name, tier)
     if err != nil {
         return nil, fmt.Errorf("failed to create customer entity: %w", err)
     }
-    
+
     // Save to database
     if err := uc.repo.Create(ctx, customer); err != nil {
         return nil, fmt.Errorf("failed to save customer: %w", err)
     }
-    
+
     return customer, nil
 }
 ```
@@ -585,7 +603,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
         response.Error(c, http.StatusBadRequest, "VALIDATION_ERROR", err.Error())
         return
     }
-    
+
     customer, err := h.usecase.CreateCustomer(c.Request.Context(), req.Email, req.Name, req.Tier)
     if errors.Is(err, customer.ErrEmailAlreadyExists) {
         response.Error(c, http.StatusConflict, "EMAIL_EXISTS", err.Error())
@@ -595,7 +613,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
         response.Error(c, http.StatusInternalServerError, "CREATE_FAILED", err.Error())
         return
     }
-    
+
     response.Success(c, dto.ToCustomerResponse(customer))
 }
 
@@ -605,7 +623,7 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
         response.Error(c, http.StatusBadRequest, "INVALID_ID", "Invalid customer ID")
         return
     }
-    
+
     customer, err := h.usecase.GetCustomer(c.Request.Context(), id)
     if errors.Is(err, customer.ErrCustomerNotFound) {
         response.Error(c, http.StatusNotFound, "CUSTOMER_NOT_FOUND", err.Error())
@@ -615,7 +633,7 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
         response.Error(c, http.StatusInternalServerError, "GET_FAILED", err.Error())
         return
     }
-    
+
     response.Success(c, dto.ToCustomerResponse(customer))
 }
 ```
@@ -624,7 +642,7 @@ func (h *CustomerHandler) GetByID(c *gin.Context) {
 
 ## Anti-Patterns to Avoid
 
-###  DON'T
+### DON'T
 
 ```go
 // DON'T: Abbreviations in interfaces
@@ -647,7 +665,7 @@ var ErrNotFound                      // Use ErrCustomerNotFound
 type user_repository struct {}       // Use userRepository (camelCase)
 ```
 
-###  DO
+### DO
 
 ```go
 // DO: Full interface names
@@ -674,19 +692,20 @@ type customerRepository struct {}
 
 ## Summary
 
-| Component       | Pattern                          | Example                    |
-|-----------------|----------------------------------|----------------------------|
-| **Interface**   | `I{Entity}{Type}`                | `ICustomerRepository`      |
-| **Struct**      | lowercase `{entity}{type}`       | `customerRepository`       |
+| Component       | Pattern                                | Example                                   |
+| --------------- | -------------------------------------- | ----------------------------------------- |
+| **Interface**   | `I{Entity}{Type}`                      | `ICustomerRepository`                     |
+| **Struct**      | lowercase `{entity}{type}`             | `customerRepository`                      |
 | **Constructor** | `New{Entity}{Type}()` / `NewUseCase()` | `NewCustomerRepository()`, `NewUseCase()` |
-| **Method**      | `{Verb}{Entity}` / `GetByXxx`    | `CreateCustomer`, `GetByEmail` |
-| **Error**       | `Err{Entity}{Condition}`         | `ErrCustomerNotFound`      |
-| **File**        | `{aggregate}_{type}.go`          | `customer_repository.go`   |
-| **Directory**   | `{context}/{aggregate}/`         | `customer-mgmt/customer/`  |
+| **Method**      | `{Verb}{Entity}` / `GetByXxx`          | `CreateCustomer`, `GetByEmail`            |
+| **Error**       | `Err{Entity}{Condition}`               | `ErrCustomerNotFound`                     |
+| **File**        | `{aggregate}_{type}.go`                | `customer_repository.go`                  |
+| **Directory**   | `{context}/{aggregate}/`               | `customer-mgmt/customer/`                 |
 
 ---
 
 **See Also**:
+
 - [Database Conventions Guide](database-conventions.md) - Tables, columns, indexes
 - [Architecture Patterns Guide](architecture-patterns.md) - Repository, UseCase, Handler patterns
 - [Testing Patterns](testing-patterns.md) - Test organization and naming

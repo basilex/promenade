@@ -183,7 +183,7 @@ func TestChecker_CheckAll_WithTimeout(t *testing.T) {
 	mock.ExpectPing().WillDelayFor(10 * time.Second)
 
 	checker := NewChecker(sqlxDB, nil, eventBus, "test")
-	
+
 	start := time.Now()
 	report := checker.CheckAll(context.Background())
 	duration := time.Since(start)

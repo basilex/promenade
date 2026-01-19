@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
+	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/repository"
-	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -248,7 +248,7 @@ func (uc *InventoryUseCase) CommitStock(ctx context.Context, id uuidv7.UUID, qua
 	if err := inv.AdjustStock(-quantity, "Stock committed", committedBy); err != nil {
 		return nil, err
 	}
-	
+
 	// Manually increase committed quantity
 	inv.QuantityCommitted += quantity
 	inv.Touch()

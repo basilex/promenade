@@ -7,6 +7,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/profile"
 	profileHTTP "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/http"
+	profileAggregate "github.com/basilex/promenade/internal/contexts/identity/profile/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 	"github.com/stretchr/testify/assert"
@@ -14,29 +15,29 @@ import (
 
 // MockProfileUseCase mocks profile.IUseCase
 type MockProfileUseCase struct {
-	CreateProfileFunc       func(ctx context.Context, userID uuidv7.UUID, displayName string) (*profile.Profile, error)
-	GetProfileFunc          func(ctx context.Context, profileID uuidv7.UUID) (*profile.Profile, error)
-	GetProfileByUserIDFunc  func(ctx context.Context, userID uuidv7.UUID) (*profile.Profile, error)
-	UpdateDisplayNameFunc   func(ctx context.Context, profileID uuidv7.UUID, displayName string) error
-	DeleteProfileFunc       func(ctx context.Context, profileID uuidv7.UUID) error
-	ListPublicProfilesFunc  func(ctx context.Context, limit, offset int) ([]*profile.Profile, error)
+	CreateProfileFunc      func(ctx context.Context, userID uuidv7.UUID, displayName string) (*profileAggregate.Profile, error)
+	GetProfileFunc         func(ctx context.Context, profileID uuidv7.UUID) (*profileAggregate.Profile, error)
+	GetProfileByUserIDFunc func(ctx context.Context, userID uuidv7.UUID) (*profileAggregate.Profile, error)
+	UpdateDisplayNameFunc  func(ctx context.Context, profileID uuidv7.UUID, displayName string) error
+	DeleteProfileFunc      func(ctx context.Context, profileID uuidv7.UUID) error
+	ListPublicProfilesFunc func(ctx context.Context, limit, offset int) ([]*profileAggregate.Profile, error)
 }
 
-func (m *MockProfileUseCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, displayName string) (*profile.Profile, error) {
+func (m *MockProfileUseCase) CreateProfile(ctx context.Context, userID uuidv7.UUID, displayName string) (*profileAggregate.Profile, error) {
 	if m.CreateProfileFunc != nil {
 		return m.CreateProfileFunc(ctx, userID, displayName)
 	}
 	return nil, nil
 }
 
-func (m *MockProfileUseCase) GetProfile(ctx context.Context, profileID uuidv7.UUID) (*profile.Profile, error) {
+func (m *MockProfileUseCase) GetProfile(ctx context.Context, profileID uuidv7.UUID) (*profileAggregate.Profile, error) {
 	if m.GetProfileFunc != nil {
 		return m.GetProfileFunc(ctx, profileID)
 	}
 	return nil, nil
 }
 
-func (m *MockProfileUseCase) GetProfileByUserID(ctx context.Context, userID uuidv7.UUID) (*profile.Profile, error) {
+func (m *MockProfileUseCase) GetProfileByUserID(ctx context.Context, userID uuidv7.UUID) (*profileAggregate.Profile, error) {
 	if m.GetProfileByUserIDFunc != nil {
 		return m.GetProfileByUserIDFunc(ctx, userID)
 	}
@@ -57,7 +58,7 @@ func (m *MockProfileUseCase) DeleteProfile(ctx context.Context, profileID uuidv7
 	return nil
 }
 
-func (m *MockProfileUseCase) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*profile.Profile, error) {
+func (m *MockProfileUseCase) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*profileAggregate.Profile, error) {
 	if m.ListPublicProfilesFunc != nil {
 		return m.ListPublicProfilesFunc(ctx, limit, offset)
 	}
@@ -74,7 +75,7 @@ func (m *MockProfileUseCase) UpdateAvatar(ctx context.Context, profileID uuidv7.
 func (m *MockProfileUseCase) UpdatePersonalInfo(ctx context.Context, profileID uuidv7.UUID, firstName, lastName, middleName string) error {
 	return nil
 }
-func (m *MockProfileUseCase) UpdateGender(ctx context.Context, profileID uuidv7.UUID, gender profile.Gender) error {
+func (m *MockProfileUseCase) UpdateGender(ctx context.Context, profileID uuidv7.UUID, gender profileAggregate.Gender) error {
 	return nil
 }
 func (m *MockProfileUseCase) UpdateDateOfBirth(ctx context.Context, profileID uuidv7.UUID, dateOfBirth *time.Time) error {
@@ -99,9 +100,9 @@ func (m *MockProfileUseCase) Deactivate(ctx context.Context, profileID uuidv7.UU
 	return nil
 }
 
-func fakeProfile() *profile.Profile {
+func fakeProfile() *profileAggregate.Profile {
 	userID := uuidv7.New()
-	p, _ := profile.NewProfile(userID, "Test User")
+	p, _ := profileAggregate.NewProfile(userID, "Test User")
 	return p
 }
 
@@ -109,7 +110,7 @@ func TestProfileHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProfileUseCase{
-		CreateProfileFunc: func(ctx context.Context, userID uuidv7.UUID, displayName string) (*profile.Profile, error) {
+		CreateProfileFunc: func(ctx context.Context, userID uuidv7.UUID, displayName string) (*profileAggregate.Profile, error) {
 			return fakeProfile(), nil
 		},
 	}
@@ -141,7 +142,7 @@ func TestProfileHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProfileUseCase{
-		GetProfileFunc: func(ctx context.Context, profileID uuidv7.UUID) (*profile.Profile, error) {
+		GetProfileFunc: func(ctx context.Context, profileID uuidv7.UUID) (*profileAggregate.Profile, error) {
 			return fakeProfile(), nil
 		},
 	}
@@ -158,7 +159,7 @@ func TestProfileHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProfileUseCase{
-		GetProfileFunc: func(ctx context.Context, profileID uuidv7.UUID) (*profile.Profile, error) {
+		GetProfileFunc: func(ctx context.Context, profileID uuidv7.UUID) (*profileAggregate.Profile, error) {
 			return nil, profile.ErrNotFound
 		},
 	}
@@ -228,8 +229,8 @@ func TestProfileHandler_ListPublic_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProfileUseCase{
-		ListPublicProfilesFunc: func(ctx context.Context, limit, offset int) ([]*profile.Profile, error) {
-			return []*profile.Profile{fakeProfile()}, nil
+		ListPublicProfilesFunc: func(ctx context.Context, limit, offset int) ([]*profileAggregate.Profile, error) {
+			return []*profileAggregate.Profile{fakeProfile()}, nil
 		},
 	}
 
@@ -245,8 +246,8 @@ func TestProfileHandler_ListPublic_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProfileUseCase{
-		ListPublicProfilesFunc: func(ctx context.Context, limit, offset int) ([]*profile.Profile, error) {
-			return []*profile.Profile{}, nil
+		ListPublicProfilesFunc: func(ctx context.Context, limit, offset int) ([]*profileAggregate.Profile, error) {
+			return []*profileAggregate.Profile{}, nil
 		},
 	}
 

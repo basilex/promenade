@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/product"
 	productHTTP "github.com/basilex/promenade/internal/contexts/warehouse/product/adapter/http"
+	productAggregate "github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
@@ -20,48 +21,48 @@ import (
 
 // MockProductUseCase implements product.IUseCase for testing
 type MockProductUseCase struct {
-	CreateProductFunc            func(ctx context.Context, sku, name string) (*product.Product, error)
-	GetProductFunc               func(ctx context.Context, id uuidv7.UUID) (*product.Product, error)
-	GetProductBySKUFunc          func(ctx context.Context, sku string) (*product.Product, error)
-	UpdateProductFunc            func(ctx context.Context, p *product.Product) error
-	DeleteProductFunc            func(ctx context.Context, id uuidv7.UUID) error
-	ListProductsFunc             func(ctx context.Context, page, pageSize int) ([]*product.Product, error)
-	CountProductsFunc            func(ctx context.Context) (int, error)
-	ListProductsByCategoryFunc   func(ctx context.Context, category string, page, pageSize int) ([]*product.Product, error)
-	ListProductsByBrandFunc      func(ctx context.Context, brand string, page, pageSize int) ([]*product.Product, error)
-	ListProductsByStatusFunc     func(ctx context.Context, status product.ProductStatus, page, pageSize int) ([]*product.Product, error)
-	SearchProductsFunc           func(ctx context.Context, query string, page, pageSize int) ([]*product.Product, error)
-	ActivateProductFunc          func(ctx context.Context, id uuidv7.UUID) error
-	DeactivateProductFunc        func(ctx context.Context, id uuidv7.UUID) error
-	DiscontinueProductFunc       func(ctx context.Context, id uuidv7.UUID) error
-	UpdateInventorySettingsFunc  func(ctx context.Context, id uuidv7.UUID, trackInventory, allowBackorder bool) error
-	SetReorderPointFunc          func(ctx context.Context, id uuidv7.UUID, reorderPoint, reorderQuantity int) error
-	SetPhysicalPropertiesFunc    func(ctx context.Context, id uuidv7.UUID, weight float64, dimensions product.Dimensions) error
-	ListLowStockProductsFunc     func(ctx context.Context, page, pageSize int) ([]*product.Product, error)
+	CreateProductFunc           func(ctx context.Context, sku, name string) (*productAggregate.Product, error)
+	GetProductFunc              func(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error)
+	GetProductBySKUFunc         func(ctx context.Context, sku string) (*productAggregate.Product, error)
+	UpdateProductFunc           func(ctx context.Context, p *productAggregate.Product) error
+	DeleteProductFunc           func(ctx context.Context, id uuidv7.UUID) error
+	ListProductsFunc            func(ctx context.Context, page, pageSize int) ([]*productAggregate.Product, error)
+	CountProductsFunc           func(ctx context.Context) (int, error)
+	ListProductsByCategoryFunc  func(ctx context.Context, category string, page, pageSize int) ([]*productAggregate.Product, error)
+	ListProductsByBrandFunc     func(ctx context.Context, brand string, page, pageSize int) ([]*productAggregate.Product, error)
+	ListProductsByStatusFunc    func(ctx context.Context, status productAggregate.ProductStatus, page, pageSize int) ([]*productAggregate.Product, error)
+	SearchProductsFunc          func(ctx context.Context, query string, page, pageSize int) ([]*productAggregate.Product, error)
+	ActivateProductFunc         func(ctx context.Context, id uuidv7.UUID) error
+	DeactivateProductFunc       func(ctx context.Context, id uuidv7.UUID) error
+	DiscontinueProductFunc      func(ctx context.Context, id uuidv7.UUID) error
+	UpdateInventorySettingsFunc func(ctx context.Context, id uuidv7.UUID, trackInventory, allowBackorder bool) error
+	SetReorderPointFunc         func(ctx context.Context, id uuidv7.UUID, reorderPoint, reorderQuantity int) error
+	SetPhysicalPropertiesFunc   func(ctx context.Context, id uuidv7.UUID, weight float64, dimensions productAggregate.Dimensions) error
+	ListLowStockProductsFunc    func(ctx context.Context, page, pageSize int) ([]*productAggregate.Product, error)
 }
 
-func (m *MockProductUseCase) CreateProduct(ctx context.Context, sku, name string) (*product.Product, error) {
+func (m *MockProductUseCase) CreateProduct(ctx context.Context, sku, name string) (*productAggregate.Product, error) {
 	if m.CreateProductFunc != nil {
 		return m.CreateProductFunc(ctx, sku, name)
 	}
 	return nil, errors.New("CreateProductFunc not implemented")
 }
 
-func (m *MockProductUseCase) GetProduct(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+func (m *MockProductUseCase) GetProduct(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error) {
 	if m.GetProductFunc != nil {
 		return m.GetProductFunc(ctx, id)
 	}
 	return nil, errors.New("GetProductFunc not implemented")
 }
 
-func (m *MockProductUseCase) GetProductBySKU(ctx context.Context, sku string) (*product.Product, error) {
+func (m *MockProductUseCase) GetProductBySKU(ctx context.Context, sku string) (*productAggregate.Product, error) {
 	if m.GetProductBySKUFunc != nil {
 		return m.GetProductBySKUFunc(ctx, sku)
 	}
 	return nil, errors.New("GetProductBySKUFunc not implemented")
 }
 
-func (m *MockProductUseCase) UpdateProduct(ctx context.Context, p *product.Product) error {
+func (m *MockProductUseCase) UpdateProduct(ctx context.Context, p *productAggregate.Product) error {
 	if m.UpdateProductFunc != nil {
 		return m.UpdateProductFunc(ctx, p)
 	}
@@ -75,7 +76,7 @@ func (m *MockProductUseCase) DeleteProduct(ctx context.Context, id uuidv7.UUID) 
 	return errors.New("DeleteProductFunc not implemented")
 }
 
-func (m *MockProductUseCase) ListProducts(ctx context.Context, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) ListProducts(ctx context.Context, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.ListProductsFunc != nil {
 		return m.ListProductsFunc(ctx, page, pageSize)
 	}
@@ -89,28 +90,28 @@ func (m *MockProductUseCase) CountProducts(ctx context.Context) (int, error) {
 	return 0, errors.New("CountProductsFunc not implemented")
 }
 
-func (m *MockProductUseCase) ListProductsByCategory(ctx context.Context, category string, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) ListProductsByCategory(ctx context.Context, category string, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.ListProductsByCategoryFunc != nil {
 		return m.ListProductsByCategoryFunc(ctx, category, page, pageSize)
 	}
 	return nil, errors.New("ListProductsByCategoryFunc not implemented")
 }
 
-func (m *MockProductUseCase) ListProductsByBrand(ctx context.Context, brand string, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) ListProductsByBrand(ctx context.Context, brand string, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.ListProductsByBrandFunc != nil {
 		return m.ListProductsByBrandFunc(ctx, brand, page, pageSize)
 	}
 	return nil, errors.New("ListProductsByBrandFunc not implemented")
 }
 
-func (m *MockProductUseCase) ListProductsByStatus(ctx context.Context, status product.ProductStatus, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) ListProductsByStatus(ctx context.Context, status productAggregate.ProductStatus, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.ListProductsByStatusFunc != nil {
 		return m.ListProductsByStatusFunc(ctx, status, page, pageSize)
 	}
 	return nil, errors.New("ListProductsByStatusFunc not implemented")
 }
 
-func (m *MockProductUseCase) SearchProducts(ctx context.Context, query string, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) SearchProducts(ctx context.Context, query string, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.SearchProductsFunc != nil {
 		return m.SearchProductsFunc(ctx, query, page, pageSize)
 	}
@@ -152,14 +153,14 @@ func (m *MockProductUseCase) SetReorderPoint(ctx context.Context, id uuidv7.UUID
 	return errors.New("SetReorderPointFunc not implemented")
 }
 
-func (m *MockProductUseCase) SetPhysicalProperties(ctx context.Context, id uuidv7.UUID, weight float64, dimensions product.Dimensions) error {
+func (m *MockProductUseCase) SetPhysicalProperties(ctx context.Context, id uuidv7.UUID, weight float64, dimensions productAggregate.Dimensions) error {
 	if m.SetPhysicalPropertiesFunc != nil {
 		return m.SetPhysicalPropertiesFunc(ctx, id, weight, dimensions)
 	}
 	return errors.New("SetPhysicalPropertiesFunc not implemented")
 }
 
-func (m *MockProductUseCase) ListLowStockProducts(ctx context.Context, page, pageSize int) ([]*product.Product, error) {
+func (m *MockProductUseCase) ListLowStockProducts(ctx context.Context, page, pageSize int) ([]*productAggregate.Product, error) {
 	if m.ListLowStockProductsFunc != nil {
 		return m.ListLowStockProductsFunc(ctx, page, pageSize)
 	}
@@ -167,8 +168,8 @@ func (m *MockProductUseCase) ListLowStockProducts(ctx context.Context, page, pag
 }
 
 // Helper to create fake product
-func fakeProduct() *product.Product {
-	p, _ := product.NewProduct("TEST-SKU", "Test Product")
+func fakeProduct() *productAggregate.Product {
+	p, _ := productAggregate.NewProduct("TEST-SKU", "Test Product")
 	return p
 }
 
@@ -180,7 +181,7 @@ func TestProductHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		CreateProductFunc: func(ctx context.Context, sku, name string) (*product.Product, error) {
+		CreateProductFunc: func(ctx context.Context, sku, name string) (*productAggregate.Product, error) {
 			return fakeProduct(), nil
 		},
 	}
@@ -201,7 +202,7 @@ func TestProductHandler_Create_DuplicateSKU(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		CreateProductFunc: func(ctx context.Context, sku, name string) (*product.Product, error) {
+		CreateProductFunc: func(ctx context.Context, sku, name string) (*productAggregate.Product, error) {
 			return nil, product.ErrProductSKUDuplicate
 		},
 	}
@@ -222,7 +223,7 @@ func TestProductHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error) {
 			return fakeProduct(), nil
 		},
 	}
@@ -239,7 +240,7 @@ func TestProductHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error) {
 			return nil, product.ErrProductNotFound
 		},
 	}
@@ -256,8 +257,8 @@ func TestProductHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		ListProductsFunc: func(ctx context.Context, page, pageSize int) ([]*product.Product, error) {
-			return []*product.Product{fakeProduct()}, nil
+		ListProductsFunc: func(ctx context.Context, page, pageSize int) ([]*productAggregate.Product, error) {
+			return []*productAggregate.Product{fakeProduct()}, nil
 		},
 		CountProductsFunc: func(ctx context.Context) (int, error) {
 			return 1, nil
@@ -276,10 +277,10 @@ func TestProductHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error) {
 			return fakeProduct(), nil
 		},
-		UpdateProductFunc: func(ctx context.Context, p *product.Product) error {
+		UpdateProductFunc: func(ctx context.Context, p *productAggregate.Product) error {
 			return nil
 		},
 	}
@@ -319,7 +320,7 @@ func TestProductHandler_Activate_Success(t *testing.T) {
 		ActivateProductFunc: func(ctx context.Context, id uuidv7.UUID) error {
 			return nil
 		},
-		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*product.Product, error) {
+		GetProductFunc: func(ctx context.Context, id uuidv7.UUID) (*productAggregate.Product, error) {
 			p := fakeProduct()
 			_ = p.Activate()
 			return p, nil
@@ -338,8 +339,8 @@ func TestProductHandler_Search_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		SearchProductsFunc: func(ctx context.Context, query string, page, pageSize int) ([]*product.Product, error) {
-			return []*product.Product{fakeProduct()}, nil
+		SearchProductsFunc: func(ctx context.Context, query string, page, pageSize int) ([]*productAggregate.Product, error) {
+			return []*productAggregate.Product{fakeProduct()}, nil
 		},
 		CountProductsFunc: func(ctx context.Context) (int, error) {
 			return 1, nil
@@ -358,8 +359,8 @@ func TestProductHandler_ListByCategory_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockProductUseCase{
-		ListProductsByCategoryFunc: func(ctx context.Context, category string, page, pageSize int) ([]*product.Product, error) {
-			return []*product.Product{fakeProduct()}, nil
+		ListProductsByCategoryFunc: func(ctx context.Context, category string, page, pageSize int) ([]*productAggregate.Product, error) {
+			return []*productAggregate.Product{fakeProduct()}, nil
 		},
 		CountProductsFunc: func(ctx context.Context) (int, error) {
 			return 1, nil

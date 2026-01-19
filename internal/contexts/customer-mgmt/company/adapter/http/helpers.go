@@ -50,14 +50,14 @@ func parseAddress(line1, line2, city, state, postal, country *string) (*valueobj
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if line2 != nil && *line2 != "" {
 		addr.Street2 = *line2
 	}
 	if state != nil && *state != "" {
 		addr.State = *state
 	}
-	
+
 	return &addr, nil
 }
 
@@ -71,14 +71,6 @@ func parseParentCompanyID(idStr *string) (*uuidv7.UUID, error) {
 		return nil, err
 	}
 	return &id, nil
-}
-
-// ptrStr safely dereferences string pointer
-func ptrStr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
 }
 
 // toCompanyResponse wraps dto conversion functions

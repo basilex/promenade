@@ -10,6 +10,8 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/permission"
 	permissionPostgres "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/repository/postgres"
+	permissionAggregate "github.com/basilex/promenade/internal/contexts/identity/permission/aggregate"
+	permissionUseCase "github.com/basilex/promenade/internal/contexts/identity/permission/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -20,7 +22,7 @@ func TestPermissionUseCase_CreatePermission(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Test - Create permission
 		perm, err := uc.CreatePermission(ctx, "users", "create", "Create users")
@@ -44,7 +46,7 @@ func TestPermissionUseCase_GetPermission(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create permission
 		created, err := uc.CreatePermission(ctx, "users", "read", "Read users")
@@ -69,7 +71,7 @@ func TestPermissionUseCase_GetPermissionByName(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create permission
 		created, err := uc.CreatePermission(ctx, "users", "update", "Update users")
@@ -94,7 +96,7 @@ func TestPermissionUseCase_UpdatePermission(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create permission
 		created, err := uc.CreatePermission(ctx, "users", "delete", "Delete users")
@@ -124,7 +126,7 @@ func TestPermissionUseCase_DeletePermission(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create permission
 		created, err := uc.CreatePermission(ctx, "posts", "create", "Create posts")
@@ -152,7 +154,7 @@ func TestPermissionUseCase_ListPermissions(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create multiple permissions
 		_, err := uc.CreatePermission(ctx, "users", "create", "Create users")
@@ -188,7 +190,7 @@ func TestPermissionUseCase_GetRolePermissions(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Create permissions
 		perm1, err := uc.CreatePermission(ctx, "users", "create", "Create users")
@@ -243,7 +245,7 @@ func TestPermissionUseCase_CompleteWorkflow(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		permRepo := permissionPostgres.NewPermissionRepository(testDB.DB)
-		uc := permission.NewUseCase(permRepo)
+		uc := permissionUseCase.NewPermissionUseCase(permRepo)
 
 		// Step 1: Create permissions for CRUD operations
 		createPerm, err := uc.CreatePermission(ctx, "posts", "create", "Create posts")
@@ -284,7 +286,7 @@ func TestPermissionUseCase_CompleteWorkflow(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assign all CRUD permissions to role
-		for _, perm := range []*permission.Permission{createPerm, readPerm, updatePerm, deletePerm} {
+		for _, perm := range []*permissionAggregate.Permission{createPerm, readPerm, updatePerm, deletePerm} {
 			_, err = tx.ExecContext(ctx,
 				`INSERT INTO identity_role_permissions (role_id, permission_id) VALUES ($1, $2)`,
 				roleID, perm.GetID(),

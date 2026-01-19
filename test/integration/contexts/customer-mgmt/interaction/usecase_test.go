@@ -10,21 +10,26 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	companyAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
+	companyUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/usecase"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
+	customerUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	interactionRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
+	interactionAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
+	interactionUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/usecase"
 	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	userUseCase "github.com/basilex/promenade/internal/contexts/identity/user/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // setupTestData creates sales rep and customer for interaction tests
-func setupTestData(t *testing.T, ctx context.Context, customerUC customer.ICustomerUseCase, userUC user.IUseCase) (*customer.Customer, *user.User) {
+func setupTestData(t *testing.T, ctx context.Context, customerUC customerUseCase.ICustomerUseCase, userUC userUseCase.IUserUseCase) (*customerAggregate.Customer, *userAggregate.User) {
 	// Create test sales rep user first (required for customer.assignedTo)
 	salesRep, err := userUC.Register(ctx, fmt.Sprintf("salesrep_%s@example.com", uuidv7.New().String()), "Sales Rep", "password123")
 	require.NoError(t, err)
@@ -47,9 +52,9 @@ func TestInteractionUseCase_CreateInteraction(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -76,8 +81,8 @@ func TestInteractionUseCase_CreateInteraction(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotEqual(t, uuidv7.UUID{}, i.ID)
-	assert.Equal(t, interaction.InteractionTypeCall, i.Type)
-	assert.Equal(t, interaction.InteractionDirectionOutbound, i.Direction)
+	assert.Equal(t, interactionAggregate.InteractionTypeCall, i.Type)
+	assert.Equal(t, interactionAggregate.InteractionDirectionOutbound, i.Direction)
 	assert.Equal(t, "Follow-up call", i.Subject)
 	assert.Equal(t, "Discussed product features", i.Description)
 	assert.Equal(t, testCustomer.ID, i.CustomerID)
@@ -97,10 +102,10 @@ func TestInteractionUseCase_CreateInteractionWithCompany(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	companyUC := company.NewUseCase(companyRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	companyUC := companyUseCase.NewCompanyUseCase(companyRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -109,7 +114,7 @@ func TestInteractionUseCase_CreateInteractionWithCompany(t *testing.T) {
 
 	// Create test company with unique name
 	uuidSuffix := uuidv7.New().String()
-	testCompany, err := companyUC.CreateCompany(ctx, fmt.Sprintf("Test Company %s", uuidSuffix), nil, string(company.CompanyTypeLLC), nil, nil, nil, nil, nil, nil, nil, string(company.CompanySizeSmall), 0, 0, "USD", nil, nil)
+	testCompany, err := companyUC.CreateCompany(ctx, fmt.Sprintf("Test Company %s", uuidSuffix), nil, string(companyAggregate.CompanyTypeLLC), nil, nil, nil, nil, nil, nil, nil, string(companyAggregate.CompanySizeSmall), 0, 0, "USD", nil, nil)
 	require.NoError(t, err)
 
 	// Create test user
@@ -146,9 +151,9 @@ func TestInteractionUseCase_GetInteraction(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -185,7 +190,7 @@ func TestInteractionUseCase_GetInteraction_NotFound(t *testing.T) {
 	defer db.Cleanup()
 
 	interactionRepository := interactionRepo.NewInteractionRepository(db.DB)
-	interactionUC := interaction.NewUseCase(interactionRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
 
 	ctx := context.Background()
 
@@ -206,9 +211,9 @@ func TestInteractionUseCase_UpdateContent(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -249,9 +254,9 @@ func TestInteractionUseCase_SetOutcome(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -280,7 +285,7 @@ func TestInteractionUseCase_SetOutcome(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, updated.Outcome)
 	if updated.Outcome != nil {
-		assert.Equal(t, interaction.InteractionOutcomeSuccessful, *updated.Outcome)
+		assert.Equal(t, interactionAggregate.InteractionOutcomeSuccessful, *updated.Outcome)
 	}
 }
 
@@ -294,9 +299,9 @@ func TestInteractionUseCase_EndInteraction(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -342,9 +347,9 @@ func TestInteractionUseCase_SetFollowUp(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -388,9 +393,9 @@ func TestInteractionUseCase_AddAttendee(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -435,9 +440,9 @@ func TestInteractionUseCase_RemoveAttendee(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -484,9 +489,9 @@ func TestInteractionUseCase_ListByCustomer(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -529,9 +534,9 @@ func TestInteractionUseCase_ListByType(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -555,7 +560,7 @@ func TestInteractionUseCase_ListByType(t *testing.T) {
 	assert.Equal(t, int64(2), total)
 	assert.Len(t, interactions, 2)
 	for _, i := range interactions {
-		assert.Equal(t, interaction.InteractionTypeCall, i.Type)
+		assert.Equal(t, interactionAggregate.InteractionTypeCall, i.Type)
 	}
 }
 
@@ -569,9 +574,9 @@ func TestInteractionUseCase_ListPendingFollowUps(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -582,7 +587,7 @@ func TestInteractionUseCase_ListPendingFollowUps(t *testing.T) {
 
 	// Create interaction with follow-up
 	startedAt := time.Now()
-	i, err := interactionUC.CreateInteraction(ctx, testCustomer.ID, nil, string(interaction.InteractionTypeCall), string(interaction.InteractionDirectionOutbound), "Call 1", "Desc", testUser.ID, startedAt)
+	i, err := interactionUC.CreateInteraction(ctx, testCustomer.ID, nil, string(interactionAggregate.InteractionTypeCall), string(interactionAggregate.InteractionDirectionOutbound), "Call 1", "Desc", testUser.ID, startedAt)
 	require.NoError(t, err)
 
 	followUpDate := time.Now().Add(-1 * time.Hour) // Past date for pending follow-ups
@@ -609,9 +614,9 @@ func TestInteractionUseCase_DeleteInteraction(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 
-	interactionUC := interaction.NewUseCase(interactionRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	interactionUC := interactionUseCase.NewInteractionUseCase(interactionRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 

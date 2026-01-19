@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/scheduler"
@@ -27,7 +27,7 @@ type ShiftClient interface {
 }
 
 // RegisterShiftJobs registers shift open/close jobs with scheduler.
-func RegisterShiftJobs(engine *scheduler.Engine, repo cashregister.IRepository, client ShiftClient, openCron, closeCron string) error {
+func RegisterShiftJobs(engine *scheduler.Engine, repo repository.ICashRegisterRepository, client ShiftClient, openCron, closeCron string) error {
 	if engine == nil || repo == nil || client == nil {
 		return errors.New("scheduler engine, repository, and checkbox client are required")
 	}
@@ -79,12 +79,12 @@ func RegisterShiftJobs(engine *scheduler.Engine, repo cashregister.IRepository, 
 // ShiftOpenExecutor opens shifts for active cash registers.
 type ShiftOpenExecutor struct {
 	base   *scheduler.BaseExecutor
-	repo   cashregister.IRepository
+	repo   repository.ICashRegisterRepository
 	client ShiftClient
 }
 
 // NewShiftOpenExecutor creates a new shift open executor.
-func NewShiftOpenExecutor(repo cashregister.IRepository, client ShiftClient) *ShiftOpenExecutor {
+func NewShiftOpenExecutor(repo repository.ICashRegisterRepository, client ShiftClient) *ShiftOpenExecutor {
 	return &ShiftOpenExecutor{base: scheduler.NewBaseExecutor(scheduler.JobTypeCustom), repo: repo, client: client}
 }
 
@@ -98,7 +98,7 @@ func (e *ShiftOpenExecutor) Execute(ctx context.Context, job *scheduler.Job) err
 	log := logger.FromContext(ctx)
 
 	active := true
-	registers, err := e.repo.List(ctx, &cashregister.ListFilters{IsActive: &active})
+	registers, err := e.repo.List(ctx, &repository.ListFilters{IsActive: &active})
 	if err != nil {
 		log.Error("Failed to list active cash registers", slog.Any("error", err))
 		return err
@@ -156,12 +156,12 @@ func (e *ShiftOpenExecutor) Execute(ctx context.Context, job *scheduler.Job) err
 // ShiftCloseExecutor closes active shifts and stores Z-report references.
 type ShiftCloseExecutor struct {
 	base   *scheduler.BaseExecutor
-	repo   cashregister.IRepository
+	repo   repository.ICashRegisterRepository
 	client ShiftClient
 }
 
 // NewShiftCloseExecutor creates a new shift close executor.
-func NewShiftCloseExecutor(repo cashregister.IRepository, client ShiftClient) *ShiftCloseExecutor {
+func NewShiftCloseExecutor(repo repository.ICashRegisterRepository, client ShiftClient) *ShiftCloseExecutor {
 	return &ShiftCloseExecutor{base: scheduler.NewBaseExecutor(scheduler.JobTypeCustom), repo: repo, client: client}
 }
 
@@ -175,7 +175,7 @@ func (e *ShiftCloseExecutor) Execute(ctx context.Context, job *scheduler.Job) er
 	log := logger.FromContext(ctx)
 
 	active := true
-	registers, err := e.repo.List(ctx, &cashregister.ListFilters{IsActive: &active})
+	registers, err := e.repo.List(ctx, &repository.ListFilters{IsActive: &active})
 	if err != nil {
 		log.Error("Failed to list active cash registers", slog.Any("error", err))
 		return err

@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/repository"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -18,37 +19,65 @@ import (
 
 // interactionRepository implements interaction.IRepository using PostgreSQL
 type InteractionRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewInteractionRepository creates a new PostgreSQL interaction repository
 func NewInteractionRepository(db *sqlx.DB) repository.IInteractionRepository {
 	return &InteractionRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *InteractionRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *InteractionRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *InteractionRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *InteractionRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *InteractionRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // interactionRow represents a database row for interaction
 type interactionRow struct {
-	ID               uuidv7.UUID    `db:"id"`
-	CustomerID       uuidv7.UUID    `db:"customer_id"`
-	CompanyID        *uuidv7.UUID   `db:"company_id"`
-	Type             string         `db:"type"`
-	Direction        string         `db:"direction"`
-	Outcome          *string        `db:"outcome"`
-	Subject          string                          `db:"subject"`
-	Description      string                          `db:"description"`
-	CreatedBy        uuidv7.UUID                     `db:"created_by"`
-	Attendees        jsonstore.Field[[]uuidv7.UUID]  `db:"attendees"`
-	StartedAt        time.Time                       `db:"started_at"`
-	EndedAt          *time.Time     `db:"ended_at"`
-	DurationSec      *int           `db:"duration_sec"`
-	FollowUpRequired bool           `db:"follow_up_required"`
-	FollowUpDate     *time.Time     `db:"follow_up_date"`
-	FollowUpNotes    string         `db:"follow_up_notes"`
-	CreatedAt        time.Time      `db:"created_at"`
-	UpdatedAt        time.Time      `db:"updated_at"`
-	DeletedAt        *time.Time     `db:"deleted_at"`
+	ID               uuidv7.UUID                    `db:"id"`
+	CustomerID       uuidv7.UUID                    `db:"customer_id"`
+	CompanyID        *uuidv7.UUID                   `db:"company_id"`
+	Type             string                         `db:"type"`
+	Direction        string                         `db:"direction"`
+	Outcome          *string                        `db:"outcome"`
+	Subject          string                         `db:"subject"`
+	Description      string                         `db:"description"`
+	CreatedBy        uuidv7.UUID                    `db:"created_by"`
+	Attendees        jsonstore.Field[[]uuidv7.UUID] `db:"attendees"`
+	StartedAt        time.Time                      `db:"started_at"`
+	EndedAt          *time.Time                     `db:"ended_at"`
+	DurationSec      *int                           `db:"duration_sec"`
+	FollowUpRequired bool                           `db:"follow_up_required"`
+	FollowUpDate     *time.Time                     `db:"follow_up_date"`
+	FollowUpNotes    string                         `db:"follow_up_notes"`
+	CreatedAt        time.Time                      `db:"created_at"`
+	UpdatedAt        time.Time                      `db:"updated_at"`
+	DeletedAt        *time.Time                     `db:"deleted_at"`
 }
 
 // interactionRowWithRelations represents a database row with related entity names (for List queries)
@@ -81,22 +110,22 @@ func (r *interactionRow) toEntity() (*aggregate.Interaction, error) {
 		FollowUpRequired: r.FollowUpRequired,
 		FollowUpDate:     r.FollowUpDate,
 		FollowUpNotes:    r.FollowUpNotes,
-}
+	}
 
-// Set BaseAggregate fields
-inter.ID = r.ID
-inter.CreatedAt = r.CreatedAt
-inter.UpdatedAt = r.UpdatedAt
-if r.DeletedAt != nil {
-	inter.DeletedAt = r.DeletedAt
-}
+	// Set BaseAggregate fields
+	inter.ID = r.ID
+	inter.CreatedAt = r.CreatedAt
+	inter.UpdatedAt = r.UpdatedAt
+	if r.DeletedAt != nil {
+		inter.DeletedAt = r.DeletedAt
+	}
 
-if r.Outcome != nil {
-	outcome := aggregate.InteractionOutcome(*r.Outcome)
-	inter.Outcome = &outcome
-}
+	if r.Outcome != nil {
+		outcome := aggregate.InteractionOutcome(*r.Outcome)
+		inter.Outcome = &outcome
+	}
 
-return inter, nil
+	return inter, nil
 }
 
 // toRow converts domain entity to database row

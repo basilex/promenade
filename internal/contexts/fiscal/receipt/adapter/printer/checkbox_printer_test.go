@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -30,13 +30,13 @@ func setCheckboxClientTransport(t *testing.T, client *checkbox.Client, baseURL s
 func TestCheckboxPrinter_Print_NoClient(t *testing.T) {
 	printer := NewCheckboxPrinter(nil)
 
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	require.NoError(t, err)
@@ -49,10 +49,10 @@ func TestCheckboxPrinter_Print_NoClient(t *testing.T) {
 func TestCheckboxPrinter_Print_InvalidPaymentType(t *testing.T) {
 	printer := NewCheckboxPrinter(&checkbox.Client{})
 
-	lines := jsonstore.Field[[]receipt.ReceiptLine]{}
-	lines.Set([]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
-	rec := &receipt.Receipt{
-		PaymentType: receipt.PaymentType("invalid"),
+	lines := jsonstore.Field[[]aggregate.ReceiptLine]{}
+	lines.Set([]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
+	rec := &aggregate.Receipt{
+		PaymentType: aggregate.PaymentType("invalid"),
 		TotalAmount: 1000,
 		Lines:       lines,
 	}
@@ -73,10 +73,10 @@ func TestCheckboxPrinter_Print_ClientError(t *testing.T) {
 	setCheckboxClientTransport(t, client, server.URL, server.Client())
 
 	printer := NewCheckboxPrinter(client)
-	lines := jsonstore.Field[[]receipt.ReceiptLine]{}
-	lines.Set([]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
-	rec := &receipt.Receipt{
-		PaymentType: receipt.PaymentTypeCash,
+	lines := jsonstore.Field[[]aggregate.ReceiptLine]{}
+	lines.Set([]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
+	rec := &aggregate.Receipt{
+		PaymentType: aggregate.PaymentTypeCash,
 		TotalAmount: 1000,
 		Lines:       lines,
 	}
@@ -97,10 +97,10 @@ func TestCheckboxPrinter_Print_Success(t *testing.T) {
 	setCheckboxClientTransport(t, client, server.URL, server.Client())
 
 	printer := NewCheckboxPrinter(client)
-	lines := jsonstore.Field[[]receipt.ReceiptLine]{}
-	lines.Set([]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
-	rec := &receipt.Receipt{
-		PaymentType: receipt.PaymentTypeCash,
+	lines := jsonstore.Field[[]aggregate.ReceiptLine]{}
+	lines.Set([]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}})
+	rec := &aggregate.Receipt{
+		PaymentType: aggregate.PaymentTypeCash,
 		TotalAmount: 1000,
 		Lines:       lines,
 	}
@@ -133,7 +133,7 @@ func TestCheckboxPrinter_Cancel_Success(t *testing.T) {
 	setCheckboxClientTransport(t, client, server.URL, server.Client())
 
 	printer := NewCheckboxPrinter(client)
-	rec := &receipt.Receipt{ProviderReceiptID: "rcpt-1"}
+	rec := &aggregate.Receipt{ProviderReceiptID: "rcpt-1"}
 
 	err := printer.Cancel(context.Background(), rec, "customer request")
 	require.NoError(t, err)

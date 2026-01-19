@@ -6,7 +6,9 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptrepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/repository"
+	receiptusecase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/scheduler"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -20,11 +22,11 @@ const (
 // ReceiptRetryExecutor retries printing pending fiscal receipts.
 type ReceiptRetryExecutor struct {
 	base      *scheduler.BaseExecutor
-	receiptUC receipt.IUseCase
+	receiptUC receiptusecase.IReceiptUseCase
 }
 
 // NewReceiptRetryExecutor creates a new receipt retry executor.
-func NewReceiptRetryExecutor(receiptUC receipt.IUseCase) *ReceiptRetryExecutor {
+func NewReceiptRetryExecutor(receiptUC receiptusecase.IReceiptUseCase) *ReceiptRetryExecutor {
 	return &ReceiptRetryExecutor{
 		base:      scheduler.NewBaseExecutor(scheduler.JobTypeCustom),
 		receiptUC: receiptUC,
@@ -40,8 +42,8 @@ func (e *ReceiptRetryExecutor) Type() scheduler.JobType {
 func (e *ReceiptRetryExecutor) Execute(ctx context.Context, job *scheduler.Job) error {
 	log := logger.FromContext(ctx)
 
-	status := receipt.ReceiptStatusPending
-	receipts, err := e.receiptUC.ListReceipts(ctx, &receipt.ListFilters{Status: &status})
+	status := aggregate.ReceiptStatusPending
+	receipts, err := e.receiptUC.ListReceipts(ctx, &receiptrepo.ListFilters{Status: &status})
 	if err != nil {
 		log.Error("Failed to list pending receipts for retry", slog.Any("error", err))
 		return err
@@ -75,7 +77,7 @@ func (e *ReceiptRetryExecutor) Execute(ctx context.Context, job *scheduler.Job) 
 }
 
 // RegisterReceiptRetryJob registers fiscal receipt retry job with scheduler.
-func RegisterReceiptRetryJob(engine *scheduler.Engine, receiptUC receipt.IUseCase, cronExpr string) error {
+func RegisterReceiptRetryJob(engine *scheduler.Engine, receiptUC receiptusecase.IReceiptUseCase, cronExpr string) error {
 	if engine == nil || receiptUC == nil {
 		return errors.New("scheduler engine and receipt use case are required")
 	}

@@ -1,16 +1,16 @@
 package payment_test
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/billing/payment"
 	"github.com/basilex/promenade/internal/contexts/billing/payment/adapter/repository/postgres"
+	paymentAggregate "github.com/basilex/promenade/internal/contexts/billing/payment/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
@@ -33,7 +33,7 @@ func TestPaymentRepository_CRUD(t *testing.T) {
 
 		// Create payment
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
-		pmt, err := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+		pmt, err := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, pmt))
 		assert.NotEqual(t, uuidv7.UUID{}, pmt.GetID())
@@ -45,15 +45,15 @@ func TestPaymentRepository_CRUD(t *testing.T) {
 		assert.Equal(t, customerID, retrieved.CustomerID)
 		assert.Equal(t, int64(10000), retrieved.Amount.Amount)
 		assert.Equal(t, "USD", retrieved.Amount.Currency)
-		assert.Equal(t, payment.PaymentMethodCreditCard, retrieved.Method)
-		assert.Equal(t, payment.PaymentStatusPending, retrieved.Status)
+		assert.Equal(t, paymentAggregate.PaymentMethodCreditCard, retrieved.Method)
+		assert.Equal(t, paymentAggregate.PaymentStatusPending, retrieved.Status)
 
 		// Update - process and complete
 		require.NoError(t, pmt.Process())
 		require.NoError(t, pmt.Complete("txn_123456"))
 		require.NoError(t, repo.Update(ctx, pmt))
 		updated, _ := repo.GetByID(ctx, pmt.GetID())
-		assert.Equal(t, payment.PaymentStatusCompleted, updated.Status)
+		assert.Equal(t, paymentAggregate.PaymentStatusCompleted, updated.Status)
 		assert.Equal(t, "txn_123456", updated.TransactionID)
 
 		// GetByTransactionID
@@ -86,7 +86,7 @@ func TestPaymentRepository_ListByCustomer(t *testing.T) {
 		// Create 3 payments with unique payment_no
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
 		for i := 0; i < 3; i++ {
-			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			require.NoError(t, repo.Create(ctx, pmt))
 		}
@@ -124,7 +124,7 @@ func TestPaymentRepository_ListByInvoice(t *testing.T) {
 		// Create 2 payments linked to invoice (unique payment_no)
 		amount := valueobject.Money{Amount: 5000, Currency: "USD"}
 		for i := 0; i < 2; i++ {
-			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			_ = pmt.LinkToInvoice(invoiceID)
 			require.NoError(t, repo.Create(ctx, pmt))
@@ -159,25 +159,25 @@ func TestPaymentRepository_ListByStatus(t *testing.T) {
 		// Create 2 pending payments (unique payment_no, max 20 chars)
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
 		for i := 0; i < 2; i++ {
-			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:6], i)
 			require.NoError(t, repo.Create(ctx, pmt))
 		}
 
 		// Create 1 completed payment (unique payment_no, max 20 chars)
-		pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+		pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 		pmt.PaymentNo = fmt.Sprintf("PAY-%s-C", uuidv7.New().String()[:6])
 		_ = pmt.Process()
 		_ = pmt.Complete("txn_123")
 		require.NoError(t, repo.Create(ctx, pmt))
 
 		// List pending payments
-		pendingPayments, err := repo.ListByStatus(ctx, payment.PaymentStatusPending, 1, 10)
+		pendingPayments, err := repo.ListByStatus(ctx, paymentAggregate.PaymentStatusPending, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, pendingPayments, 2)
 
 		// List completed payments
-		completedPayments, err := repo.ListByStatus(ctx, payment.PaymentStatusCompleted, 1, 10)
+		completedPayments, err := repo.ListByStatus(ctx, paymentAggregate.PaymentStatusCompleted, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, completedPayments, 1)
 	})
@@ -201,7 +201,7 @@ func TestPaymentRepository_CountByStatus(t *testing.T) {
 		// Create 3 completed payments (unique payment_no)
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
 		for i := 0; i < 3; i++ {
-			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			_ = pmt.Process()
 			_ = pmt.Complete("txn-" + uuidv7.New().String())
@@ -232,7 +232,7 @@ func TestPaymentRepository_Refund(t *testing.T) {
 
 		// Create and complete payment
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
-		pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+		pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 		_ = pmt.Process()
 		_ = pmt.Complete("txn_123")
 		require.NoError(t, repo.Create(ctx, pmt))
@@ -245,7 +245,7 @@ func TestPaymentRepository_Refund(t *testing.T) {
 		// Verify refund
 		refunded, err := repo.GetByID(ctx, pmt.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, payment.PaymentStatusRefunded, refunded.Status)
+		assert.Equal(t, paymentAggregate.PaymentStatusRefunded, refunded.Status)
 		require.NotNil(t, refunded.RefundedAmount)
 		assert.Equal(t, int64(5000), refunded.RefundedAmount.Amount)
 		require.NotNil(t, refunded.RefundedAt)
@@ -269,7 +269,7 @@ func TestPaymentRepository_GetByPaymentNo(t *testing.T) {
 
 		// Create payment
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
-		pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+		pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 		require.NoError(t, repo.Create(ctx, pmt))
 
 		// GetByPaymentNo
@@ -306,7 +306,7 @@ func TestPaymentRepository_GetTotalByInvoice(t *testing.T) {
 		// Create 3 completed payments linked to invoice with different amounts (unique payment_no)
 		amounts := []int64{5000, 10000, 15000}
 		for i, amt := range amounts {
-			pmt, _ := payment.NewPayment(customerID, valueobject.Money{Amount: amt, Currency: "USD"}, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, valueobject.Money{Amount: amt, Currency: "USD"}, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			_ = pmt.Process()
 			_ = pmt.Complete("txn-" + uuidv7.New().String())
@@ -339,7 +339,7 @@ func TestPaymentRepository_List(t *testing.T) {
 		// Create 5 payments (unique payment_no)
 		amount := valueobject.Money{Amount: 10000, Currency: "USD"}
 		for i := 0; i < 5; i++ {
-			pmt, _ := payment.NewPayment(customerID, amount, payment.PaymentMethodCreditCard)
+			pmt, _ := paymentAggregate.NewPayment(customerID, amount, paymentAggregate.PaymentMethodCreditCard)
 			pmt.PaymentNo = fmt.Sprintf("PAY-%s-%d", uuidv7.New().String()[:8], i)
 			require.NoError(t, repo.Create(ctx, pmt))
 		}

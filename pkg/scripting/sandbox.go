@@ -19,11 +19,11 @@ func NewSandbox(config Config) *Sandbox {
 // Apply applies all security restrictions to LUA state
 func (s *Sandbox) Apply(L *lua.LState) {
 	s.restrictDangerousFunctions(L)
-	
+
 	if !s.config.AllowFileIO {
 		s.restrictFileIO(L)
 	}
-	
+
 	if !s.config.AllowNetwork {
 		s.restrictNetwork(L)
 	}
@@ -36,11 +36,11 @@ func (s *Sandbox) restrictDangerousFunctions(L *lua.LState) {
 	L.SetGlobal("loadfile", lua.LNil)
 	L.SetGlobal("load", lua.LNil)
 	L.SetGlobal("loadstring", lua.LNil)
-	
+
 	// Remove module system
 	L.SetGlobal("require", lua.LNil)
 	L.SetGlobal("module", lua.LNil)
-	
+
 	// Remove environment manipulation
 	L.SetGlobal("setfenv", lua.LNil)
 	L.SetGlobal("getfenv", lua.LNil)
@@ -50,7 +50,7 @@ func (s *Sandbox) restrictDangerousFunctions(L *lua.LState) {
 func (s *Sandbox) restrictFileIO(L *lua.LState) {
 	// Remove io library completely
 	L.SetGlobal("io", lua.LNil)
-	
+
 	// Remove dangerous os functions
 	os := L.GetGlobal("os")
 	if osTable, ok := os.(*lua.LTable); ok {
@@ -68,7 +68,7 @@ func (s *Sandbox) restrictFileIO(L *lua.LState) {
 func (s *Sandbox) restrictNetwork(L *lua.LState) {
 	// Remove socket library (if loaded)
 	L.SetGlobal("socket", lua.LNil)
-	
+
 	// Remove http libraries
 	L.SetGlobal("http", lua.LNil)
 	L.SetGlobal("https", lua.LNil)

@@ -50,7 +50,7 @@ const (
 	TopicPaymentFailed    = "payment.failed"
 
 	// Banking Context Topics (planned)
-	TopicBankingStatementImported = "banking.statement.imported"
+	TopicBankingStatementImported  = "banking.statement.imported"
 	TopicBankingTransactionCreated = "banking.transaction.created"
 
 	// Accounting Context Topics (planned)

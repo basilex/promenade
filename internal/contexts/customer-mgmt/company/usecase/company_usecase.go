@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	// companyerrors.ErrCompanyNotFound moved to errors.go
-	// companyerrors.ErrCompanyAlreadyExists moved to errors.go
+// companyerrors.ErrCompanyNotFound moved to errors.go
+// companyerrors.ErrCompanyAlreadyExists moved to errors.go
 )
 
 // ICompanyUseCase defines the interface for company business logic

@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -26,7 +26,7 @@ func TestCustomerRepository_CRUD(t *testing.T) {
 		// Create
 		assignedTo := uuidv7.New()
 		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
-		c, err := customer.NewCustomer("Test Customer", email, "website", assignedTo)
+		c, err := customerAggregate.NewCustomer("Test Customer", email, "website", assignedTo)
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, c))
 		assert.NotEqual(t, uuidv7.UUID{}, c.ID)
@@ -48,7 +48,7 @@ func TestCustomerRepository_CRUD(t *testing.T) {
 		require.NoError(t, repo.Update(ctx, c))
 		updated, _ := repo.GetByID(ctx, c.ID)
 		assert.Equal(t, "Updated Customer", updated.Name)
-		assert.Equal(t, customer.CustomerStatusProspect, updated.Status)
+		assert.Equal(t, customerAggregate.CustomerStatusProspect, updated.Status)
 
 		// Delete
 		require.NoError(t, repo.Delete(ctx, c.ID))
@@ -69,7 +69,7 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		// Create 3 customers with unique emails
 		uuid := uuidv7.New().String()
 		for i := range 3 {
-			c, _ := customer.NewCustomer("Customer "+string(rune('A'+i)), fmt.Sprintf("cust%c_%s@test.com", rune('a'+i), uuid), "web", assignedTo)
+			c, _ := customerAggregate.NewCustomer("Customer "+string(rune('A'+i)), fmt.Sprintf("cust%c_%s@test.com", rune('a'+i), uuid), "web", assignedTo)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 
@@ -95,10 +95,10 @@ func TestCustomerRepository_Queries(t *testing.T) {
 		_, err = tx.ExecContext(ctx, `INSERT INTO identity_users (id, email, password_hash, status) VALUES ($1, $2, $3, $4)`,
 			userID, fmt.Sprintf("user_%s@test.com", uuid), "hash", "active")
 		require.NoError(t, err)
-		c4, _ := customer.NewCustomer("User Customer", fmt.Sprintf("user_%s@test.com", uuid), "web", assignedTo)
+		c4, _ := customerAggregate.NewCustomer("User Customer", fmt.Sprintf("user_%s@test.com", uuid), "web", assignedTo)
 		c4.UserID = &userID
 		require.NoError(t, repo.Create(ctx, c4))
-		
+
 		byUser, err := repo.GetByUserID(ctx, userID)
 		require.NoError(t, err)
 		assert.Equal(t, c4.ID, byUser.ID)
@@ -116,36 +116,36 @@ func TestCustomerRepository_StatusAndTier(t *testing.T) {
 
 		// Create customers with different statuses and tiers
 		uuid := uuidv7.New().String()
-		c1, _ := customer.NewCustomer("Lead1", fmt.Sprintf("lead1_%s@test.com", uuid), "web", assignedTo)
-		c2, _ := customer.NewCustomer("Qualified1", fmt.Sprintf("qual1_%s@test.com", uuid), "web", assignedTo)
+		c1, _ := customerAggregate.NewCustomer("Lead1", fmt.Sprintf("lead1_%s@test.com", uuid), "web", assignedTo)
+		c2, _ := customerAggregate.NewCustomer("Qualified1", fmt.Sprintf("qual1_%s@test.com", uuid), "web", assignedTo)
 		_ = c2.QualifyAsProspect()
-		c3, _ := customer.NewCustomer("Active1", fmt.Sprintf("active1_%s@test.com", uuid), "web", assignedTo)
+		c3, _ := customerAggregate.NewCustomer("Active1", fmt.Sprintf("active1_%s@test.com", uuid), "web", assignedTo)
 		_ = c3.ConvertToCustomer()
-		_ = c3.UpgradeTier(customer.CustomerTierPro)
-		
+		_ = c3.UpgradeTier(customerAggregate.CustomerTierPro)
+
 		require.NoError(t, repo.Create(ctx, c1))
 		require.NoError(t, repo.Create(ctx, c2))
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// ListByStatus
-		leads, total, err := repo.ListByStatus(ctx, customer.CustomerStatusLead, 10, 0)
+		leads, total, err := repo.ListByStatus(ctx, customerAggregate.CustomerStatusLead, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, 1)
 		assert.GreaterOrEqual(t, len(leads), 1)
 
 		// CountByStatus
-		leadCount, err := repo.CountByStatus(ctx, customer.CustomerStatusLead)
+		leadCount, err := repo.CountByStatus(ctx, customerAggregate.CustomerStatusLead)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, leadCount, 1)
 
 		// ListByTier
-		proCustomers, total, err := repo.ListByTier(ctx, customer.CustomerTierPro, 10, 0)
+		proCustomers, total, err := repo.ListByTier(ctx, customerAggregate.CustomerTierPro, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, total, 1)
 		assert.GreaterOrEqual(t, len(proCustomers), 1)
 
 		// CountByTier
-		proCount, err := repo.CountByTier(ctx, customer.CustomerTierPro)
+		proCount, err := repo.CountByTier(ctx, customerAggregate.CustomerTierPro)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, proCount, 1)
 	})
@@ -162,14 +162,14 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		// Create customers assigned to specific person
 		assignedTo1 := uuidv7.New()
 		assignedTo2 := uuidv7.New()
-		
+
 		for i := range 2 {
 			uuid := uuidv7.New().String()
-			c, _ := customer.NewCustomer(fmt.Sprintf("Assigned1_%d", i), fmt.Sprintf("assigned1_%s_%d@test.com", uuid, i), "web", assignedTo1)
+			c, _ := customerAggregate.NewCustomer(fmt.Sprintf("Assigned1_%d", i), fmt.Sprintf("assigned1_%s_%d@test.com", uuid, i), "web", assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 		uuid := uuidv7.New().String()
-		c3, _ := customer.NewCustomer("Assigned2", fmt.Sprintf("assigned2_%s@test.com", uuid), "web", assignedTo2)
+		c3, _ := customerAggregate.NewCustomer("Assigned2", fmt.Sprintf("assigned2_%s@test.com", uuid), "web", assignedTo2)
 		require.NoError(t, repo.Create(ctx, c3))
 
 		// ListByAssignedTo
@@ -182,7 +182,7 @@ func TestCustomerRepository_Relations(t *testing.T) {
 		companyID := uuidv7.New()
 		for i := range 2 {
 			uuid2 := uuidv7.New().String()
-			c, _ := customer.NewB2BCustomer(fmt.Sprintf("B2B Customer %d", i), fmt.Sprintf("b2b_%s_%d@test.com", uuid2, i), "web", companyID, assignedTo1)
+			c, _ := customerAggregate.NewB2BCustomer(fmt.Sprintf("B2B Customer %d", i), fmt.Sprintf("b2b_%s_%d@test.com", uuid2, i), "web", companyID, assignedTo1)
 			require.NoError(t, repo.Create(ctx, c))
 		}
 

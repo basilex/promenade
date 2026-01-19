@@ -4,15 +4,16 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/basilex/promenade/internal/contexts/shared/country"
+	"github.com/basilex/promenade/internal/contexts/shared/country/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/country/repository"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/ref"
 )
 
 // newCountry is a helper to create a country with all fields
 func newCountry(code, code3, numericCode, name, nameLocal, phoneCode, capital, region, subregion, flagEmoji string,
-	latitude, longitude *float64, areaKm2 *int, population *int64, translations map[string]any, isActive bool) *country.Country {
-	c, _ := country.NewCountry(code, name, phoneCode)
+	latitude, longitude *float64, areaKm2 *int, population *int64, translations map[string]any, isActive bool) *aggregate.Country {
+	c, _ := aggregate.NewCountry(code, name, phoneCode)
 	c.Code3 = code3
 	c.NumericCode = numericCode
 	c.NameLocal = nameLocal
@@ -30,9 +31,9 @@ func newCountry(code, code3, numericCode, name, nameLocal, phoneCode, capital, r
 }
 
 // CountriesData returns reference country data for seeding (30 countries with full metadata)
-func CountriesData() []*country.Country {
+func CountriesData() []*aggregate.Country {
 
-	return []*country.Country{
+	return []*aggregate.Country{
 		// North America
 		newCountry("US", "USA", "840", "United States", "United States", "+1", "Washington, D.C.", "Americas", "Northern America", "",
 			ref.Float64(38.8951), ref.To(-77.0364), ref.Int(9833520), ref.Int64(331002651),
@@ -147,7 +148,7 @@ func CountriesData() []*country.Country {
 }
 
 // SeedCountries inserts country data into database
-func SeedCountries(ctx context.Context, repo country.IRepository) error {
+func SeedCountries(ctx context.Context, repo repository.ICountryRepository) error {
 	countries := CountriesData()
 	logger.FromContext(ctx).Info("Seeding countries...", slog.Int("count", len(countries)))
 

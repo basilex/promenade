@@ -37,6 +37,6 @@ var (
 	ErrAddressRequiredForAddressContact = errors.New("address is required for address contact")
 
 	// Type validation errors
-	ErrUnknownContactType  = errors.New("unknown contact type")
+	ErrUnknownContactType = errors.New("unknown contact type")
 	ErrInvalidContactType = errors.New("invalid contact type (must be email, phone, or address)")
 )

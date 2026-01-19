@@ -19,14 +19,14 @@ type CreateInventoryRequest struct {
 
 // UpdateInventoryRequest represents inventory update request
 type UpdateInventoryRequest struct {
-	LocationCode   *string `json:"location_code,omitempty"`
-	LocationZone   *string `json:"location_zone,omitempty"`
-	ReorderPoint   *int    `json:"reorder_point,omitempty"`
-	ReorderQuantity *int   `json:"reorder_quantity,omitempty"`
-	UnitCostCents  *int    `json:"unit_cost_cents,omitempty"`
-	CurrencyCode   *string `json:"currency_code,omitempty"`
-	Notes          *string `json:"notes,omitempty"`
-	IsActive       *bool   `json:"is_active,omitempty"`
+	LocationCode    *string `json:"location_code,omitempty"`
+	LocationZone    *string `json:"location_zone,omitempty"`
+	ReorderPoint    *int    `json:"reorder_point,omitempty"`
+	ReorderQuantity *int    `json:"reorder_quantity,omitempty"`
+	UnitCostCents   *int    `json:"unit_cost_cents,omitempty"`
+	CurrencyCode    *string `json:"currency_code,omitempty"`
+	Notes           *string `json:"notes,omitempty"`
+	IsActive        *bool   `json:"is_active,omitempty"`
 }
 
 // ReceiveStockRequest represents stock receiving request
@@ -76,57 +76,57 @@ type ReleaseReservationRequest struct {
 
 // InventoryResponse represents inventory response
 type InventoryResponse struct {
-	ID                 string    `json:"id"`
-	Version            int       `json:"version"`
-	ProductID          string    `json:"product_id"`
-	SKU                string    `json:"sku"`
-	ProductName        string    `json:"product_name"`
-	QuantityOnHand     int       `json:"quantity_on_hand"`
-	QuantityReserved   int       `json:"quantity_reserved"`
-	QuantityCommitted  int       `json:"quantity_committed"`
-	QuantityAvailable  int       `json:"quantity_available"`
-	WarehouseID        string    `json:"warehouse_id"`
-	LocationCode       string    `json:"location_code,omitempty"`
-	LocationZone       string    `json:"location_zone,omitempty"`
-	ReorderPoint       int       `json:"reorder_point"`
-	ReorderQuantity    int       `json:"reorder_quantity"`
-	LastRestocked      *time.Time `json:"last_restocked,omitempty"`
-	Status             string    `json:"status"`
-	IsActive           bool      `json:"is_active"`
-	Notes              string    `json:"notes,omitempty"`
-	UnitCostCents      int       `json:"unit_cost_cents"`
-	CurrencyCode       string    `json:"currency_code"`
-	LastUpdatedBy      string    `json:"last_updated_by"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	ID                string     `json:"id"`
+	Version           int        `json:"version"`
+	ProductID         string     `json:"product_id"`
+	SKU               string     `json:"sku"`
+	ProductName       string     `json:"product_name"`
+	QuantityOnHand    int        `json:"quantity_on_hand"`
+	QuantityReserved  int        `json:"quantity_reserved"`
+	QuantityCommitted int        `json:"quantity_committed"`
+	QuantityAvailable int        `json:"quantity_available"`
+	WarehouseID       string     `json:"warehouse_id"`
+	LocationCode      string     `json:"location_code,omitempty"`
+	LocationZone      string     `json:"location_zone,omitempty"`
+	ReorderPoint      int        `json:"reorder_point"`
+	ReorderQuantity   int        `json:"reorder_quantity"`
+	LastRestocked     *time.Time `json:"last_restocked,omitempty"`
+	Status            string     `json:"status"`
+	IsActive          bool       `json:"is_active"`
+	Notes             string     `json:"notes,omitempty"`
+	UnitCostCents     int        `json:"unit_cost_cents"`
+	CurrencyCode      string     `json:"currency_code"`
+	LastUpdatedBy     string     `json:"last_updated_by"`
+	CreatedAt         time.Time  `json:"created_at"`
+	UpdatedAt         time.Time  `json:"updated_at"`
 }
 
 // ToInventoryResponse converts inventory entity to response DTO
 func ToInventoryResponse(inv *aggregate.Inventory) *InventoryResponse {
 	return &InventoryResponse{
-		ID:                 inv.ID.String(),
-		Version:            inv.Version,
-		ProductID:          inv.ProductID.String(),
-		SKU:                inv.SKU,
-		ProductName:        inv.ProductName,
-		QuantityOnHand:     inv.QuantityOnHand,
-		QuantityReserved:   inv.QuantityReserved,
-		QuantityCommitted:  inv.QuantityCommitted,
-		QuantityAvailable:  inv.QuantityAvailable,
-		WarehouseID:        inv.WarehouseID,
-		LocationCode:       inv.LocationCode,
-		LocationZone:       inv.LocationZone,
-		ReorderPoint:       inv.ReorderPoint,
-		ReorderQuantity:    inv.ReorderQuantity,
-		LastRestocked:      &inv.LastRestocked,
-		Status:             string(inv.Status),
-		IsActive:           inv.IsActive,
-		Notes:              inv.Notes,
-		UnitCostCents:      int(inv.UnitCostCents),
-		CurrencyCode:       inv.CurrencyCode,
-		LastUpdatedBy:      inv.LastUpdatedBy.String(),
-		CreatedAt:          inv.CreatedAt,
-		UpdatedAt:          inv.UpdatedAt,
+		ID:                inv.ID.String(),
+		Version:           inv.Version,
+		ProductID:         inv.ProductID.String(),
+		SKU:               inv.SKU,
+		ProductName:       inv.ProductName,
+		QuantityOnHand:    inv.QuantityOnHand,
+		QuantityReserved:  inv.QuantityReserved,
+		QuantityCommitted: inv.QuantityCommitted,
+		QuantityAvailable: inv.QuantityAvailable,
+		WarehouseID:       inv.WarehouseID,
+		LocationCode:      inv.LocationCode,
+		LocationZone:      inv.LocationZone,
+		ReorderPoint:      inv.ReorderPoint,
+		ReorderQuantity:   inv.ReorderQuantity,
+		LastRestocked:     &inv.LastRestocked,
+		Status:            string(inv.Status),
+		IsActive:          inv.IsActive,
+		Notes:             inv.Notes,
+		UnitCostCents:     int(inv.UnitCostCents),
+		CurrencyCode:      inv.CurrencyCode,
+		LastUpdatedBy:     inv.LastUpdatedBy.String(),
+		CreatedAt:         inv.CreatedAt,
+		UpdatedAt:         inv.UpdatedAt,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/role"
 	roleHTTP "github.com/basilex/promenade/internal/contexts/identity/role/adapter/http"
+	roleAggregate "github.com/basilex/promenade/internal/contexts/identity/role/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 	"github.com/stretchr/testify/assert"
@@ -13,37 +14,37 @@ import (
 
 // MockRoleUseCase mocks role.IUseCase
 type MockRoleUseCase struct {
-	CreateRoleFunc    func(ctx context.Context, name, displayName, description string) (*role.Role, error)
-	GetRoleFunc       func(ctx context.Context, roleID uuidv7.UUID) (*role.Role, error)
-	GetRoleByNameFunc func(ctx context.Context, name string) (*role.Role, error)
-	UpdateRoleFunc    func(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*role.Role, error)
+	CreateRoleFunc    func(ctx context.Context, name, displayName, description string) (*roleAggregate.Role, error)
+	GetRoleFunc       func(ctx context.Context, roleID uuidv7.UUID) (*roleAggregate.Role, error)
+	GetRoleByNameFunc func(ctx context.Context, name string) (*roleAggregate.Role, error)
+	UpdateRoleFunc    func(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*roleAggregate.Role, error)
 	DeleteRoleFunc    func(ctx context.Context, roleID uuidv7.UUID) error
-	ListRolesFunc     func(ctx context.Context, limit, offset int) ([]*role.Role, int, error)
-	GetUserRolesFunc  func(ctx context.Context, userID uuidv7.UUID) ([]*role.Role, error)
+	ListRolesFunc     func(ctx context.Context, limit, offset int) ([]*roleAggregate.Role, int, error)
+	GetUserRolesFunc  func(ctx context.Context, userID uuidv7.UUID) ([]*roleAggregate.Role, error)
 }
 
-func (m *MockRoleUseCase) CreateRole(ctx context.Context, name, displayName, description string) (*role.Role, error) {
+func (m *MockRoleUseCase) CreateRole(ctx context.Context, name, displayName, description string) (*roleAggregate.Role, error) {
 	if m.CreateRoleFunc != nil {
 		return m.CreateRoleFunc(ctx, name, displayName, description)
 	}
 	return nil, nil
 }
 
-func (m *MockRoleUseCase) GetRole(ctx context.Context, roleID uuidv7.UUID) (*role.Role, error) {
+func (m *MockRoleUseCase) GetRole(ctx context.Context, roleID uuidv7.UUID) (*roleAggregate.Role, error) {
 	if m.GetRoleFunc != nil {
 		return m.GetRoleFunc(ctx, roleID)
 	}
 	return nil, nil
 }
 
-func (m *MockRoleUseCase) GetRoleByName(ctx context.Context, name string) (*role.Role, error) {
+func (m *MockRoleUseCase) GetRoleByName(ctx context.Context, name string) (*roleAggregate.Role, error) {
 	if m.GetRoleByNameFunc != nil {
 		return m.GetRoleByNameFunc(ctx, name)
 	}
 	return nil, nil
 }
 
-func (m *MockRoleUseCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*role.Role, error) {
+func (m *MockRoleUseCase) UpdateRole(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*roleAggregate.Role, error) {
 	if m.UpdateRoleFunc != nil {
 		return m.UpdateRoleFunc(ctx, roleID, displayName, description)
 	}
@@ -57,22 +58,22 @@ func (m *MockRoleUseCase) DeleteRole(ctx context.Context, roleID uuidv7.UUID) er
 	return nil
 }
 
-func (m *MockRoleUseCase) ListRoles(ctx context.Context, limit, offset int) ([]*role.Role, int, error) {
+func (m *MockRoleUseCase) ListRoles(ctx context.Context, limit, offset int) ([]*roleAggregate.Role, int, error) {
 	if m.ListRolesFunc != nil {
 		return m.ListRolesFunc(ctx, limit, offset)
 	}
 	return nil, 0, nil
 }
 
-func (m *MockRoleUseCase) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*role.Role, error) {
+func (m *MockRoleUseCase) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*roleAggregate.Role, error) {
 	if m.GetUserRolesFunc != nil {
 		return m.GetUserRolesFunc(ctx, userID)
 	}
 	return nil, nil
 }
 
-func fakeRole() *role.Role {
-	r, _ := role.NewRole("test-role", "Test Role", "Test Description")
+func fakeRole() *roleAggregate.Role {
+	r, _ := roleAggregate.NewRole("test-role", "Test Role", "Test Description")
 	return r
 }
 
@@ -80,7 +81,7 @@ func TestRoleHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		CreateRoleFunc: func(ctx context.Context, name, displayName, description string) (*role.Role, error) {
+		CreateRoleFunc: func(ctx context.Context, name, displayName, description string) (*roleAggregate.Role, error) {
 			return fakeRole(), nil
 		},
 	}
@@ -114,7 +115,7 @@ func TestRoleHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		GetRoleFunc: func(ctx context.Context, roleID uuidv7.UUID) (*role.Role, error) {
+		GetRoleFunc: func(ctx context.Context, roleID uuidv7.UUID) (*roleAggregate.Role, error) {
 			return fakeRole(), nil
 		},
 	}
@@ -131,7 +132,7 @@ func TestRoleHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		GetRoleFunc: func(ctx context.Context, roleID uuidv7.UUID) (*role.Role, error) {
+		GetRoleFunc: func(ctx context.Context, roleID uuidv7.UUID) (*roleAggregate.Role, error) {
 			return nil, role.ErrRoleNotFound
 		},
 	}
@@ -148,8 +149,8 @@ func TestRoleHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		ListRolesFunc: func(ctx context.Context, limit, offset int) ([]*role.Role, int, error) {
-			return []*role.Role{fakeRole()}, 1, nil
+		ListRolesFunc: func(ctx context.Context, limit, offset int) ([]*roleAggregate.Role, int, error) {
+			return []*roleAggregate.Role{fakeRole()}, 1, nil
 		},
 	}
 
@@ -165,8 +166,8 @@ func TestRoleHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		ListRolesFunc: func(ctx context.Context, limit, offset int) ([]*role.Role, int, error) {
-			return []*role.Role{}, 0, nil
+		ListRolesFunc: func(ctx context.Context, limit, offset int) ([]*roleAggregate.Role, int, error) {
+			return []*roleAggregate.Role{}, 0, nil
 		},
 	}
 
@@ -182,7 +183,7 @@ func TestRoleHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockRoleUseCase{
-		UpdateRoleFunc: func(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*role.Role, error) {
+		UpdateRoleFunc: func(ctx context.Context, roleID uuidv7.UUID, displayName, description string) (*roleAggregate.Role, error) {
 			return fakeRole(), nil
 		},
 	}

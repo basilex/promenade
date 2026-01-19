@@ -1,0 +1,270 @@
+package roleHTTP
+
+import (
+	"errors"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+
+	roleerrors "github.com/basilex/promenade/internal/contexts/identity/role"
+	"github.com/basilex/promenade/internal/contexts/identity/role/dto"
+	"github.com/basilex/promenade/internal/contexts/identity/role/usecase"
+	"github.com/basilex/promenade/pkg/response"
+	"github.com/basilex/promenade/pkg/uuidv7"
+)
+
+// RoleHandler handles HTTP requests for role operations
+type RoleHandler struct {
+	usecase usecase.IRoleUseCase
+}
+
+// NewRoleHandler creates a new role handler
+func NewRoleHandler(uc usecase.IRoleUseCase) *RoleHandler {
+	return &RoleHandler{
+		usecase: uc,
+	}
+}
+
+// Create handles POST /roles
+// @Summary Create a new role
+// @Description Create a new role with name and display name
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateRoleRequest true "Role creation request"
+// @Success 201 {object} dto.RoleResponse
+// @Failure 400 {object} response.Response
+// @Failure 409 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles [post]
+func (h *RoleHandler) Create(c *gin.Context) {
+	var req dto.CreateRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	created, err := h.usecase.CreateRole(
+		c.Request.Context(),
+		req.Name,
+		req.DisplayName,
+		req.Description,
+	)
+	if err != nil {
+		if errors.Is(err, roleerrors.ErrRoleNameExists) {
+			response.Conflict(c, "role name already exists")
+			return
+		}
+		response.InternalError(c, "Failed to create role")
+		return
+	}
+
+	response.Created(c, dto.ToRoleResponse(created))
+}
+
+// GetByID handles GET /roles/:id
+// @Summary Get role by ID
+// @Description Retrieve a role by its UUID
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param id path string true "Role UUID"
+// @Success 200 {object} dto.RoleResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles/{id} [get]
+func (h *RoleHandler) GetByID(c *gin.Context) {
+	idStr := c.Param("id")
+	roleID, err := uuidv7.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid role ID")
+		return
+	}
+
+	found, err := h.usecase.GetRole(c.Request.Context(), roleID)
+	if err != nil {
+		if errors.Is(err, roleerrors.ErrRoleNotFound) {
+			response.NotFound(c, "role not found")
+			return
+		}
+		response.InternalError(c, "Failed to retrieve role")
+		return
+	}
+
+	response.Success(c, dto.ToRoleResponse(found))
+}
+
+// GetByName handles GET /roles/name/:name
+// @Summary Get role by name
+// @Description Retrieve a role by its name
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param name path string true "Role name"
+// @Success 200 {object} dto.RoleResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles/name/{name} [get]
+func (h *RoleHandler) GetByName(c *gin.Context) {
+	name := c.Param("name")
+	if name == "" {
+		response.BadRequest(c, "role name is required")
+		return
+	}
+
+	found, err := h.usecase.GetRoleByName(c.Request.Context(), name)
+	if err != nil {
+		if errors.Is(err, roleerrors.ErrRoleNotFound) {
+			response.NotFound(c, "role not found")
+			return
+		}
+		response.InternalError(c, "Failed to retrieve role")
+		return
+	}
+
+	response.Success(c, dto.ToRoleResponse(found))
+}
+
+// Update handles PUT /roles/:id
+// @Summary Update role
+// @Description Update an existing role's display name and description
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param id path string true "Role UUID"
+// @Param request body dto.UpdateRoleRequest true "Role update request"
+// @Success 200 {object} dto.RoleResponse
+// @Failure 400 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles/{id} [put]
+func (h *RoleHandler) Update(c *gin.Context) {
+	idStr := c.Param("id")
+	roleID, err := uuidv7.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid role ID")
+		return
+	}
+
+	var req dto.UpdateRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	updated, err := h.usecase.UpdateRole(
+		c.Request.Context(),
+		roleID,
+		req.DisplayName,
+		req.Description,
+	)
+	if err != nil {
+		if errors.Is(err, roleerrors.ErrRoleNotFound) {
+			response.NotFound(c, "role not found")
+			return
+		}
+		response.InternalError(c, "Failed to update role")
+		return
+	}
+
+	response.Success(c, dto.ToRoleResponse(updated))
+}
+
+// Delete handles DELETE /roles/:id
+// @Summary Delete role
+// @Description Soft delete a role (system roles are protected)
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param id path string true "Role UUID"
+// @Success 204
+// @Failure 400 {object} response.Response
+// @Failure 403 {object} response.Response
+// @Failure 404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles/{id} [delete]
+func (h *RoleHandler) Delete(c *gin.Context) {
+	idStr := c.Param("id")
+	roleID, err := uuidv7.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid role ID")
+		return
+	}
+
+	err = h.usecase.DeleteRole(c.Request.Context(), roleID)
+	if err != nil {
+		if errors.Is(err, roleerrors.ErrRoleNotFound) {
+			response.NotFound(c, "role not found")
+			return
+		}
+		if errors.Is(err, roleerrors.ErrCannotDeleteSystem) {
+			response.Forbidden(c, "cannot delete system role")
+			return
+		}
+		response.InternalError(c, "Failed to delete role")
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// List handles GET /roles
+// @Summary List roles
+// @Description Retrieve a paginated list of roles
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param limit query int false "Limit" default(20)
+// @Param offset query int false "Offset" default(0)
+// @Success 200 {object} dto.RoleListResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /roles [get]
+func (h *RoleHandler) List(c *gin.Context) {
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+
+	roles, total, err := h.usecase.ListRoles(c.Request.Context(), limit, offset)
+	if err != nil {
+		response.InternalError(c, "Failed to list roles")
+		return
+	}
+
+	response.Success(c, dto.ToRoleListResponse(roles, total, limit, offset))
+}
+
+// GetUserRoles handles GET /users/:userId/roles
+// @Summary Get user roles
+// @Description Retrieve all roles assigned to a user
+// @Tags roles
+// @Accept json
+// @Produce json
+// @Param userId path string true "User UUID"
+// @Success 200 {array} dto.RoleResponse
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /users/{userId}/roles [get]
+func (h *RoleHandler) GetUserRoles(c *gin.Context) {
+	userIDStr := c.Param("userId")
+	userID, err := uuidv7.Parse(userIDStr)
+	if err != nil {
+		response.BadRequest(c, "invalid user ID")
+		return
+	}
+
+	roles, err := h.usecase.GetUserRoles(c.Request.Context(), userID)
+	if err != nil {
+		response.InternalError(c, "Failed to retrieve user roles")
+		return
+	}
+
+	result := make([]dto.RoleResponse, len(roles))
+	for i, r := range roles {
+		result[i] = dto.ToRoleResponse(r)
+	}
+
+	response.Success(c, result)
+}

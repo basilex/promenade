@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/shared/currency"
 	"github.com/basilex/promenade/internal/contexts/shared/currency/adapter/repository/postgres"
+	currencyAggregate "github.com/basilex/promenade/internal/contexts/shared/currency/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -20,8 +20,8 @@ func TestCurrencyRepository_CRUD(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		c := func() *currency.Currency {
-			c, _ := currency.NewCurrency("TST", "Test Currency", "T$", 2)
+		c := func() *currencyAggregate.Currency {
+			c, _ := currencyAggregate.NewCurrency("TST", "Test Currency", "T$", 2)
 			c.NumericCode = "999"
 			return c
 		}()
@@ -44,8 +44,8 @@ func TestCurrencyRepository_Queries(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		c := func() *currency.Currency {
-			c, _ := currency.NewCurrency("TST", "Test", "$", 2)
+		c := func() *currencyAggregate.Currency {
+			c, _ := currencyAggregate.NewCurrency("TST", "Test", "$", 2)
 			c.NumericCode = "999"
 			return c
 		}()

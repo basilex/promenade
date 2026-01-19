@@ -1,15 +1,15 @@
 package memory_test
 
 import (
-"context"
-"testing"
-"time"
+	"context"
+	"testing"
+	"time"
 
-"github.com/basilex/promenade/pkg/bus"
-"github.com/basilex/promenade/pkg/bus/memory"
-"github.com/basilex/promenade/pkg/uuidv7"
-"github.com/stretchr/testify/assert"
-"github.com/stretchr/testify/require"
+	"github.com/basilex/promenade/pkg/bus"
+	"github.com/basilex/promenade/pkg/bus/memory"
+	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMemoryBus_PublishSubscribe(t *testing.T) {
@@ -21,7 +21,7 @@ func TestMemoryBus_PublishSubscribe(t *testing.T) {
 	topic := "test.event"
 
 	err := mb.Subscribe(topic, func(ctx context.Context, event bus.Event) error {
-received <- event
+		received <- event
 		return nil
 	})
 	require.NoError(t, err)

@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/dto"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
-	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -31,8 +31,8 @@ func NewInventoryHandler(uc usecase.IInventoryUseCase) *InventoryHandler {
 // @Tags Inventory
 // @Accept json
 // @Produce json
-// @Param request body CreateInventoryRequest true "Inventory creation request"
-// @Success 201 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.CreateInventoryRequest true "Inventory creation request"
+// @Success 201 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory [post]
@@ -95,7 +95,7 @@ func (h *InventoryHandler) Create(c *gin.Context) {
 // @Tags Inventory
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/{id} [get]
@@ -125,7 +125,7 @@ func (h *InventoryHandler) GetByID(c *gin.Context) {
 // @Tags Inventory
 // @Produce json
 // @Param sku path string true "SKU"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/sku/{sku} [get]
@@ -155,7 +155,7 @@ func (h *InventoryHandler) GetBySKU(c *gin.Context) {
 // @Tags Inventory
 // @Produce json
 // @Param product_id path string true "Product ID"
-// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Success 200 {object} response.Response{data=[]dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/product/{product_id} [get]
@@ -181,7 +181,7 @@ func (h *InventoryHandler) GetByProductID(c *gin.Context) {
 // @Tags Inventory
 // @Produce json
 // @Param warehouse_id path string true "Warehouse ID"
-// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Success 200 {object} response.Response{data=[]dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/warehouse/{warehouse_id} [get]
@@ -208,7 +208,7 @@ func (h *InventoryHandler) GetByWarehouse(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Success 200 {object} response.Response{data=[]dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory [get]
@@ -237,7 +237,7 @@ func (h *InventoryHandler) List(c *gin.Context) {
 // @Description Get all inventory items below reorder point
 // @Tags Inventory
 // @Produce json
-// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Success 200 {object} response.Response{data=[]dto.InventoryResponse}
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/low-stock [get]
 func (h *InventoryHandler) GetLowStock(c *gin.Context) {
@@ -257,8 +257,8 @@ func (h *InventoryHandler) GetLowStock(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Param request body UpdateInventoryRequest true "Inventory update request"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.UpdateInventoryRequest true "Inventory update request"
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -367,8 +367,8 @@ func (h *InventoryHandler) Delete(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Param request body ReceiveStockRequest true "Receive stock request"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.ReceiveStockRequest true "Receive stock request"
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -419,8 +419,8 @@ func (h *InventoryHandler) ReceiveStock(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Param request body CommitStockRequest true "Commit stock request"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.CommitStockRequest true "Commit stock request"
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -471,7 +471,7 @@ func (h *InventoryHandler) CommitStock(c *gin.Context) {
 // @Produce json
 // @Param warehouse_id path string true "Warehouse ID"
 // @Param location_code path string true "Location Code"
-// @Success 200 {object} response.Response{data=[]InventoryResponse}
+// @Success 200 {object} response.Response{data=[]dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/inventory/location/{warehouse_id}/{location_code} [get]
@@ -504,8 +504,8 @@ func (h *InventoryHandler) GetByLocation(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Param request body ReserveStockRequest true "Reserve stock request"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.ReserveStockRequest true "Reserve stock request"
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -573,8 +573,8 @@ func (h *InventoryHandler) ReserveStock(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Inventory ID"
-// @Param request body ReleaseReservationRequest true "Release reservation request"
-// @Success 200 {object} response.Response{data=InventoryResponse}
+// @Param request body dto.ReleaseReservationRequest true "Release reservation request"
+// @Success 200 {object} response.Response{data=dto.InventoryResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response

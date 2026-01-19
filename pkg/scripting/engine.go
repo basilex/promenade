@@ -200,6 +200,7 @@ func (e *Engine) convertLuaValue(lv lua.LValue) interface{} {
 		return lv.String()
 	}
 }
+
 // convertGoToLua converts Go interface{} to LUA value
 func (e *Engine) convertGoToLua(L *lua.LState, val interface{}) lua.LValue {
 	if val == nil {

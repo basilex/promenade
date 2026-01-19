@@ -49,11 +49,11 @@ func DefaultConfig() Config {
 	// CI: PostgreSQL service on port 5432
 	// Local: Docker test DB on port 5433
 	defaultPort := "5433"
-	
+
 	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		defaultPort = "5432"
 	}
-	
+
 	return Config{
 		Host:     getEnv("DB_HOST", getEnv("TEST_DB_HOST", "127.0.0.1")),
 		Port:     getEnv("DB_PORT", getEnv("TEST_DB_PORT", defaultPort)),
@@ -112,7 +112,7 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 
 	testDB := SetupTestDB(t)
 	testDB.CleanAllTables()
-	
+
 	// Register cleanup BEFORE the DB close cleanup (using AddCleanup instead of t.Cleanup)
 	// This ensures tables are cleaned while DB is still open
 	testDB.AddCleanup(func() {

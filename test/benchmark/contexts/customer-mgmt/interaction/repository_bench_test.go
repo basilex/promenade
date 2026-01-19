@@ -10,10 +10,11 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
+	customerRepository "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/repository"
 	interactionRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
+	interactionAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -59,8 +60,8 @@ func createTestUser(b *testing.B, ctx context.Context, db *sqlx.DB) uuidv7.UUID 
 }
 
 // createTestCustomer creates a customer for FK constraint
-func createTestCustomer(b *testing.B, ctx context.Context, custRepo customer.ICustomerRepository, userID uuidv7.UUID) uuidv7.UUID {
-	cust, _ := customer.NewCustomer(fmt.Sprintf("Customer %s", uuidv7.New().String()[:8]), 
+func createTestCustomer(b *testing.B, ctx context.Context, custRepo customerRepository.ICustomerRepository, userID uuidv7.UUID) uuidv7.UUID {
+	cust, _ := customerAggregate.NewCustomer(fmt.Sprintf("Customer %s", uuidv7.New().String()[:8]),
 		fmt.Sprintf("cust_%s@test.com", uuidv7.New().String()[:8]), "website", userID)
 	if err := custRepo.Create(ctx, cust); err != nil {
 		b.Fatalf("Failed to create customer: %v", err)
@@ -83,10 +84,10 @@ func BenchmarkCreateInteraction(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		inter, _ := interaction.NewInteraction(
+		inter, _ := interactionAggregate.NewInteraction(
 			customerID, nil,
-			interaction.InteractionTypeCall,
-			interaction.InteractionDirectionOutbound,
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionDirectionOutbound,
 			fmt.Sprintf("Call %d", i),
 			"Benchmark test",
 			userID,
@@ -110,10 +111,10 @@ func BenchmarkCreateInteraction(b *testing.B) {
 //
 // 	userID := createTestUser(b, ctx, db)
 // 	customerID := createTestCustomer(b, ctx, custRepo, userID)
-// 	inter, _ := interaction.NewInteraction(
+// 	inter, _ := interactionAggregate.NewInteraction(
 // 		customerID, nil,
-// 		interaction.InteractionTypeCall,
-// 		interaction.InteractionDirectionOutbound,
+// 		interactionAggregate.InteractionTypeCall,
+// 		interactionAggregate.InteractionDirectionOutbound,
 // 		"Test call",
 // 		"Description",
 // 		userID,
@@ -144,10 +145,10 @@ func BenchmarkListByCustomer(b *testing.B) {
 	customerID := createTestCustomer(b, ctx, custRepo, userID)
 
 	for i := 0; i < 50; i++ {
-		inter, _ := interaction.NewInteraction(
+		inter, _ := interactionAggregate.NewInteraction(
 			customerID, nil,
-			interaction.InteractionTypeCall,
-			interaction.InteractionDirectionOutbound,
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionDirectionOutbound,
 			fmt.Sprintf("Call %d", i),
 			"Description",
 			userID,
@@ -171,4 +172,3 @@ func BenchmarkListByCustomer(b *testing.B) {
 		}
 	}
 }
-

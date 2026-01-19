@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/country"
 	"github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository/postgres"
+	countryAggregate "github.com/basilex/promenade/internal/contexts/shared/country/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -24,8 +25,8 @@ func TestCountryRepository_CRUD(t *testing.T) {
 		repo := postgres.NewRepository(tx)
 
 		// Create
-		c := func() *country.Country {
-			c, _ := country.NewCountry("TS", "Test Country", "+999")
+		c := func() *countryAggregate.Country {
+			c, _ := countryAggregate.NewCountry("TS", "Test Country", "+999")
 			c.Code3 = "TST"
 			c.NumericCode = "999"
 			c.NameLocal = "Test Country Local"
@@ -73,16 +74,16 @@ func TestCountryRepository_Queries(t *testing.T) {
 		repo := postgres.NewRepository(tx)
 
 		// Create test data
-		countries := []*country.Country{
-			func() *country.Country {
-				c, _ := country.NewCountry("T1", "Test Country 1", "+1")
+		countries := []*countryAggregate.Country{
+			func() *countryAggregate.Country {
+				c, _ := countryAggregate.NewCountry("T1", "Test Country 1", "+1")
 				c.Code3 = "TS1"
 				c.NumericCode = "001"
 				c.NameLocal = "Local 1"
 				return c
 			}(),
-			func() *country.Country {
-				c, _ := country.NewCountry("T2", "Test Country 2", "+2")
+			func() *countryAggregate.Country {
+				c, _ := countryAggregate.NewCountry("T2", "Test Country 2", "+2")
 				c.Code3 = "TS2"
 				c.NumericCode = "002"
 				c.NameLocal = "Local 2"

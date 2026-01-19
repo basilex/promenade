@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/repository"
-	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )

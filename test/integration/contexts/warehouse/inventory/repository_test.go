@@ -11,16 +11,17 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	inventoryAggregate "github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
-func createTestInventory() *inventory.Inventory {
+func createTestInventory() *inventoryAggregate.Inventory {
 	productID := uuidv7.New()
 	// Use full UUID for guaranteed uniqueness
 	sku := fmt.Sprintf("TEST-SKU-%s", uuidv7.New().String())
 	userID := uuidv7.New()
-	inv, _ := inventory.NewInventory(
+	inv, _ := inventoryAggregate.NewInventory(
 		productID,
 		sku,
 		"Test Product",

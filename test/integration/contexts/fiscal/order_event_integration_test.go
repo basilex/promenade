@@ -9,12 +9,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
 	crRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
+	cashregisterAggregate "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
 	"github.com/basilex/promenade/internal/contexts/fiscal/integration"
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
+	receiptAggregate "github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptUseCase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/bus/memory"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -63,10 +64,10 @@ func TestFiscalIntegration_OrderConfirmed_CreatesReceipt(t *testing.T) {
 
 	crRepository := crRepo.NewCashRegisterRepository(db.DB)
 	recRepository := receiptRepo.NewReceiptRepository(db.DB)
-	receiptUC := receipt.NewUseCase(recRepository, nil)
+	receiptUC := receiptUseCase.NewReceiptUseCase(recRepository, nil)
 
 	createdBy := uuidv7.New()
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-001", "Model-X", createdBy)
+	cr, err := cashregisterAggregate.NewCashRegister(uuidv7.New(), "FN-001", "Model-X", createdBy)
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-001", createdBy))
 	require.NoError(t, crRepository.Create(ctx, cr))
@@ -89,7 +90,7 @@ func TestFiscalIntegration_OrderConfirmed_CreatesReceipt(t *testing.T) {
 
 	created, err := recRepository.GetByOrderID(ctx, orderID)
 	require.NoError(t, err)
-	require.Equal(t, receipt.ReceiptStatusPending, created.Status)
+	require.Equal(t, receiptAggregate.ReceiptStatusPending, created.Status)
 	require.Equal(t, "UAH", created.Currency)
 	require.Len(t, created.Lines.Get(), 1)
 }
@@ -106,10 +107,10 @@ func TestFiscalIntegration_OrderConfirmed_PrintsReceipt(t *testing.T) {
 	recRepository := receiptRepo.NewReceiptRepository(db.DB)
 	outputDir := t.TempDir()
 	printer := receiptPrinter.NewPDFPrinter(outputDir)
-	receiptUC := receipt.NewUseCase(recRepository, printer)
+	receiptUC := receiptUseCase.NewReceiptUseCase(recRepository, printer)
 
 	createdBy := uuidv7.New()
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-002", "Model-Y", createdBy)
+	cr, err := cashregisterAggregate.NewCashRegister(uuidv7.New(), "FN-002", "Model-Y", createdBy)
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-002", createdBy))
 	require.NoError(t, crRepository.Create(ctx, cr))
@@ -132,7 +133,7 @@ func TestFiscalIntegration_OrderConfirmed_PrintsReceipt(t *testing.T) {
 
 	created, err := recRepository.GetByOrderID(ctx, orderID)
 	require.NoError(t, err)
-	require.Equal(t, receipt.ReceiptStatusPrinted, created.Status)
+	require.Equal(t, receiptAggregate.ReceiptStatusPrinted, created.Status)
 	require.NotEmpty(t, created.FiscalURL)
 
 	info, err := os.Stat(created.FiscalURL)

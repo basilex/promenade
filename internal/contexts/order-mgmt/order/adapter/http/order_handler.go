@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	ordererrors "github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/dto"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/usecase"
-	ordererrors "github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"

@@ -14,10 +14,10 @@ func TestDeprecateEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		name           string
-		sunsetDate     time.Time
-		successorURL   string
-		checkHeaders   func(*testing.T, *httptest.ResponseRecorder)
+		name         string
+		sunsetDate   time.Time
+		successorURL string
+		checkHeaders func(*testing.T, *httptest.ResponseRecorder)
 	}{
 		{
 			name:         "deprecation with successor URL",
@@ -146,11 +146,11 @@ func TestSunsetVersion(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		name              string
-		sunsetDate        time.Time
-		currentTime       time.Time
-		expectedStatus    int
-		shouldAbort       bool
+		name           string
+		sunsetDate     time.Time
+		currentTime    time.Time
+		expectedStatus int
+		shouldAbort    bool
 	}{
 		{
 			name:           "before sunset - allow request",
@@ -179,7 +179,7 @@ func TestSunsetVersion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Mock time.Now() by using sunset date check
 			router := gin.New()
-			
+
 			// Use custom middleware that checks against currentTime instead of time.Now()
 			router.Use(func(c *gin.Context) {
 				if tt.currentTime.After(tt.sunsetDate) {
@@ -196,7 +196,7 @@ func TestSunsetVersion(t *testing.T) {
 				}
 				c.Next()
 			})
-			
+
 			router.GET("/test", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{"status": "ok"})
 			})
@@ -206,7 +206,7 @@ func TestSunsetVersion(t *testing.T) {
 			router.ServeHTTP(w, req)
 
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			
+
 			if tt.shouldAbort {
 				// Verify 410 Gone response structure
 				assert.Contains(t, w.Body.String(), "API_VERSION_SUNSET")
@@ -223,7 +223,7 @@ func TestSunsetVersion_ResponseStructure(t *testing.T) {
 	sunsetDate := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 	successorURL := "/api/v2"
 	migrationGuideURL := "https://docs.example.com/migration"
-	
+
 	router.Use(SunsetVersion(sunsetDate, successorURL, migrationGuideURL))
 	router.GET("/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -236,7 +236,7 @@ func TestSunsetVersion_ResponseStructure(t *testing.T) {
 
 	// Check response headers
 	assert.Equal(t, "</api/v2>; rel=\"successor-version\"", w.Header().Get("Link"))
-	
+
 	// Check response body structure
 	assert.Contains(t, w.Body.String(), "API_VERSION_SUNSET")
 	assert.Contains(t, w.Body.String(), "sunset")

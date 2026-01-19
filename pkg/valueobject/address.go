@@ -55,7 +55,7 @@ func NewAddressWithState(street, city, state, postalCode, country string) (Addre
 	if err != nil {
 		return Address{}, err
 	}
-	
+
 	addr.State = strings.TrimSpace(state)
 	return addr, nil
 }
@@ -69,28 +69,28 @@ func (a Address) WithStreet2(street2 string) Address {
 // String returns a formatted address string.
 func (a Address) String() string {
 	var parts []string
-	
+
 	parts = append(parts, a.Street)
 	if a.Street2 != "" {
 		parts = append(parts, a.Street2)
 	}
-	
+
 	cityLine := a.City
 	if a.State != "" {
 		cityLine += ", " + a.State
 	}
 	cityLine += " " + a.PostalCode
 	parts = append(parts, cityLine)
-	
+
 	parts = append(parts, a.Country)
-	
+
 	return strings.Join(parts, "\n")
 }
 
 // SingleLine returns the address as a single line.
 func (a Address) SingleLine() string {
 	var parts []string
-	
+
 	parts = append(parts, a.Street)
 	if a.Street2 != "" {
 		parts = append(parts, a.Street2)
@@ -101,7 +101,7 @@ func (a Address) SingleLine() string {
 	}
 	parts = append(parts, a.PostalCode)
 	parts = append(parts, a.Country)
-	
+
 	return strings.Join(parts, ", ")
 }
 

@@ -26,7 +26,7 @@ func setupTestDB(t *testing.T) *sqlx.DB {
 	dbname := getEnv("TEST_DB_NAME", "promenade_test")
 
 	dsn := "host=" + host + " port=" + port + " user=" + user + " password=" + password + " dbname=" + dbname + " sslmode=disable"
-	
+
 	db, err := sqlx.Connect("postgres", dsn)
 	require.NoError(t, err, "Failed to connect to test database")
 
@@ -57,7 +57,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		err := tm.WithTransaction(ctx, func(txCtx context.Context) error {
 			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
-			
+
 			executor, ok := database.GetTx(txCtx)
 			if !ok || executor == nil {
 				t.Fatal("Transaction not found in context")
@@ -82,7 +82,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 		err := tm.WithTransaction(ctx, func(txCtx context.Context) error {
 			query := `INSERT INTO identity_users (id, name, email, password) VALUES ($1, $2, $3, $4)`
-			
+
 			executor, ok := database.GetTx(txCtx)
 			if !ok || executor == nil {
 				t.Fatal("Transaction not found in context")
@@ -196,7 +196,7 @@ func TestTransactionManager_Integration(t *testing.T) {
 
 func cleanupTestData(t *testing.T, db *sqlx.DB) {
 	t.Helper()
-	
+
 	// Clean up test users created during tests
 	_, err := db.Exec("DELETE FROM identity_users WHERE email LIKE '%@test.com'")
 	if err != nil {

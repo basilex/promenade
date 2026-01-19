@@ -90,13 +90,13 @@ func TestSagaRepository_Save(t *testing.T) {
 
 	// Verify field values
 	var dbSaga struct {
-		ID            uuidv7.UUID `db:"id"`
-		OrderID       uuidv7.UUID `db:"order_id"`
-		CustomerID    uuidv7.UUID `db:"customer_id"`
-		State         string      `db:"state"`
-		CurrentStep   int         `db:"current_step"`
-		CompletedSteps string     `db:"completed_steps"`
-		ReservedItems  string     `db:"reserved_items"`
+		ID             uuidv7.UUID `db:"id"`
+		OrderID        uuidv7.UUID `db:"order_id"`
+		CustomerID     uuidv7.UUID `db:"customer_id"`
+		State          string      `db:"state"`
+		CurrentStep    int         `db:"current_step"`
+		CompletedSteps string      `db:"completed_steps"`
+		ReservedItems  string      `db:"reserved_items"`
 	}
 	err = db.Get(&dbSaga, "SELECT id, order_id, customer_id, state, current_step, completed_steps, reserved_items FROM order_fulfillment_sagas WHERE id = $1", s.ID)
 	require.NoError(t, err)

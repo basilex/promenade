@@ -12,6 +12,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/repository/postgres"
+	inventoryUseCase "github.com/basilex/promenade/internal/contexts/warehouse/inventory/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -25,7 +26,7 @@ func TestInventoryUseCase_CreateAndGetInventory(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		productID := uuidv7.New()
 		warehouseID := "WH-MAIN"
@@ -60,7 +61,7 @@ func TestInventoryUseCase_GetBySKU(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		// Create inventory with unique SKU
 		productID := uuidv7.New()
@@ -90,7 +91,7 @@ func TestInventoryUseCase_GetByProductID(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		productID := uuidv7.New()
 
@@ -122,7 +123,7 @@ func TestInventoryUseCase_GetByWarehouse(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		// Create items in different warehouses
 		_, err := uc.CreateInventory(ctx, uuidv7.New(), "UC-WH-MAIN-1", "Product 1", "WH-MAIN", uuidv7.New())
@@ -174,7 +175,7 @@ func TestInventoryUseCase_ListInventory(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		// Create 5 inventory items
 		for i := 1; i <= 5; i++ {
@@ -212,7 +213,7 @@ func TestInventoryUseCase_GetLowStock(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		userID := uuidv7.New()
 		lowStockSKU := fmt.Sprintf("UC-LOW-%s", uuidv7.New().String())
@@ -273,7 +274,7 @@ func TestInventoryUseCase_ReceiveStock(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		// Create inventory
 		inv, err := uc.CreateInventory(ctx, uuidv7.New(), "UC-RECEIVE-001", "Product", "WH-MAIN", uuidv7.New())
@@ -306,7 +307,7 @@ func TestInventoryUseCase_CommitStock(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		userID := uuidv7.New()
 
@@ -342,7 +343,7 @@ func TestInventoryUseCase_UpdateAndDelete(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		// Create inventory
 		inv, err := uc.CreateInventory(ctx, uuidv7.New(), "UC-UPDATE-001", "Product", "WH-MAIN", uuidv7.New())
@@ -380,7 +381,7 @@ func TestInventoryUseCase_CompleteWorkflow(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		productID := uuidv7.New()
 		userID := uuidv7.New()
@@ -444,7 +445,7 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewInventoryRepository(testDB.DB)
-		uc := inventory.NewUseCase(repo)
+		uc := inventoryUseCase.NewInventoryUseCase(repo)
 
 		userID := uuidv7.New()
 
@@ -483,10 +484,10 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 			// Invalid quantity (usecase validates with "quantity must be greater than 0")
 			_, err := uc.ReceiveStock(ctx, inv.ID, -10, 1000, userID)
 			assert.Error(t, err)
-		assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
+			assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
 
-		// Invalid cost (no validation in entity, test will pass)
-		// Note: Entity doesn't validate cost < 0, so this will succeed
+			// Invalid cost (no validation in entity, test will pass)
+			// Note: Entity doesn't validate cost < 0, so this will succeed
 		})
 
 		t.Run("CommitStockValidation", func(t *testing.T) {
@@ -495,10 +496,10 @@ func TestInventoryUseCase_EdgeCases(t *testing.T) {
 			// Invalid quantity (usecase validates with "quantity must be greater than 0")
 			_, err := uc.CommitStock(ctx, inv.ID, -10, userID)
 			assert.Error(t, err)
-		assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
+			assert.True(t, errors.Is(err, inventory.ErrInventoryQuantityInvalid))
 
-		// Commit more than available
-		_, err = uc.ReceiveStock(ctx, inv.ID, 10, 1000, userID)
+			// Commit more than available
+			_, err = uc.ReceiveStock(ctx, inv.ID, 10, 1000, userID)
 			require.NoError(t, err)
 
 			_, err = uc.CommitStock(ctx, inv.ID, 20, userID)

@@ -9,7 +9,8 @@ import (
 
 	"github.com/jung-kurt/gofpdf"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 )
 
 // PDFPrinter writes receipt data to a PDF file in the configured directory.
@@ -23,7 +24,7 @@ func NewPDFPrinter(outputDir string) *PDFPrinter {
 }
 
 // Print writes a receipt PDF and returns a print result referencing the file.
-func (p *PDFPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*receipt.PrintResult, error) {
+func (p *PDFPrinter) Print(ctx context.Context, rec *aggregate.Receipt) (*usecase.PrintResult, error) {
 	if p == nil || p.outputDir == "" {
 		return nil, fmt.Errorf("pdf output directory not configured")
 	}
@@ -39,14 +40,14 @@ func (p *PDFPrinter) Print(ctx context.Context, rec *receipt.Receipt) (*receipt.
 		return nil, err
 	}
 
-	return &receipt.PrintResult{
+	return &usecase.PrintResult{
 		FiscalNumber: fmt.Sprintf("PDF-%s", rec.GetID().String()),
 		FiscalURL:    filePath,
 		QRCode:       "",
 	}, nil
 }
 
-func writeReceiptPDF(rec *receipt.Receipt, filePath string) error {
+func writeReceiptPDF(rec *aggregate.Receipt, filePath string) error {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.SetTitle("Fiscal Receipt", false)
 	pdf.AddPage()

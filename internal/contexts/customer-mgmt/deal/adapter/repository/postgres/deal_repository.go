@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -18,14 +19,42 @@ import (
 
 // dealRepository implements repository.IDealRepository using PostgreSQL
 type dealRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewDealRepository creates a new PostgreSQL deal repository
 func NewDealRepository(db *sqlx.DB) repository.IDealRepository {
 	return &dealRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *dealRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *dealRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *dealRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *dealRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *dealRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // dealRow represents a database row for the customer_deals table
@@ -87,7 +116,7 @@ func (r *dealRow) toEntity() (*aggregate.Deal, error) {
 		ExpectedCloseDate: r.ExpectedCloseDate,
 		AssignedTo:        assignedTo,
 	}
-	
+
 	// Set BaseAggregate fields
 	d.ID = id
 	d.CreatedAt = r.CreatedAt

@@ -13,15 +13,18 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/profile"
 	profilePostgres "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
+	profileAggregate "github.com/basilex/promenade/internal/contexts/identity/profile/aggregate"
+	profileUseCase "github.com/basilex/promenade/internal/contexts/identity/profile/usecase"
 	userPostgres "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	userRepository "github.com/basilex/promenade/internal/contexts/identity/user/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // Helper function to create a test user (same as Contact tests)
-func createTestUser(t *testing.T, ctx context.Context, userRepo user.IRepository) uuidv7.UUID {
-	u, err := user.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
+func createTestUser(t *testing.T, ctx context.Context, userRepo userRepository.IUserRepository) uuidv7.UUID {
+	u, err := userAggregate.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
 	require.NoError(t, err)
 	err = userRepo.Create(ctx, u)
 	require.NoError(t, err)
@@ -39,7 +42,7 @@ func TestProfileUseCase_CreateProfile(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		// Create user first (FK constraint)
 		userID := createTestUser(t, ctx, userRepo)
@@ -50,9 +53,9 @@ func TestProfileUseCase_CreateProfile(t *testing.T) {
 		assert.NotEqual(t, uuidv7.Nil, p.GetID())
 		assert.Equal(t, userID, p.UserID)
 		assert.Equal(t, "John Doe", p.DisplayName)
-		assert.Equal(t, profile.GenderNotSpecify, p.Gender) // Default
-		assert.True(t, p.IsPublic)                          // Default
-		assert.True(t, p.IsActive)                          // Default
+		assert.Equal(t, profileAggregate.GenderNotSpecify, p.Gender) // Default
+		assert.True(t, p.IsPublic)                                   // Default
+		assert.True(t, p.IsActive)                                   // Default
 
 		// Verify persistence
 		retrieved, err := uc.GetProfile(ctx, p.GetID())
@@ -72,7 +75,7 @@ func TestProfileUseCase_GetProfile(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 
@@ -89,7 +92,7 @@ func TestProfileUseCase_GetProfile(t *testing.T) {
 		// Test - Non-existent profile
 		_, err = uc.GetProfile(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
+		assert.True(t, errors.Is(err, profile.ErrNotFound))
 	})
 }
 
@@ -104,7 +107,7 @@ func TestProfileUseCase_GetProfileByUserID(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 
@@ -122,7 +125,7 @@ func TestProfileUseCase_GetProfileByUserID(t *testing.T) {
 		// Test - Non-existent user
 		_, err = uc.GetProfileByUserID(ctx, uuidv7.New())
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
+		assert.True(t, errors.Is(err, profile.ErrNotFound))
 	})
 }
 
@@ -137,7 +140,7 @@ func TestProfileUseCase_UpdateDisplayName(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Old Name")
@@ -165,7 +168,7 @@ func TestProfileUseCase_UpdateBio(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -194,7 +197,7 @@ func TestProfileUseCase_UpdateAvatar(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -223,7 +226,7 @@ func TestProfileUseCase_UpdatePersonalInfo(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -253,29 +256,29 @@ func TestProfileUseCase_UpdateGender(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
 		require.NoError(t, err)
-		assert.Equal(t, profile.GenderNotSpecify, p.Gender) // Default
+		assert.Equal(t, profileAggregate.GenderNotSpecify, p.Gender) // Default
 
 		// Test - Update to Male
-		err = uc.UpdateGender(ctx, p.GetID(), profile.GenderMale)
+		err = uc.UpdateGender(ctx, p.GetID(), profileAggregate.GenderMale)
 		require.NoError(t, err)
 
 		// Verify
 		retrieved, err := uc.GetProfile(ctx, p.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, profile.GenderMale, retrieved.Gender)
+		assert.Equal(t, profileAggregate.GenderMale, retrieved.Gender)
 
 		// Test - Update to Female
-		err = uc.UpdateGender(ctx, p.GetID(), profile.GenderFemale)
+		err = uc.UpdateGender(ctx, p.GetID(), profileAggregate.GenderFemale)
 		require.NoError(t, err)
 
 		retrieved, err = uc.GetProfile(ctx, p.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, profile.GenderFemale, retrieved.Gender)
+		assert.Equal(t, profileAggregate.GenderFemale, retrieved.Gender)
 	})
 }
 
@@ -290,7 +293,7 @@ func TestProfileUseCase_UpdateDateOfBirth(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -323,7 +326,7 @@ func TestProfileUseCase_UpdateLocalization(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -353,7 +356,7 @@ func TestProfileUseCase_UpdateSocialLinks(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -393,7 +396,7 @@ func TestProfileUseCase_SetPublicAndSetPrivate(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -429,7 +432,7 @@ func TestProfileUseCase_ActivateAndDeactivate(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -465,7 +468,7 @@ func TestProfileUseCase_DeleteProfile(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 		p, err := uc.CreateProfile(ctx, userID, "Test User")
@@ -478,7 +481,7 @@ func TestProfileUseCase_DeleteProfile(t *testing.T) {
 		// Verify - Should not be found
 		_, err = uc.GetProfile(ctx, p.GetID())
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, profile.ErrProfileNotFound))
+		assert.True(t, errors.Is(err, profile.ErrNotFound))
 	})
 }
 
@@ -493,7 +496,7 @@ func TestProfileUseCase_CompleteWorkflow(t *testing.T) {
 		// Setup
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		profileRepo := profilePostgres.NewProfileRepository(testDB.DB)
-		uc := profile.NewUseCase(profileRepo)
+		uc := profileUseCase.NewProfileUseCase(profileRepo)
 
 		userID := createTestUser(t, ctx, userRepo)
 
@@ -519,7 +522,7 @@ func TestProfileUseCase_CompleteWorkflow(t *testing.T) {
 		require.NoError(t, err)
 
 		// Step 6: Update gender
-		err = uc.UpdateGender(ctx, p.GetID(), profile.GenderMale)
+		err = uc.UpdateGender(ctx, p.GetID(), profileAggregate.GenderMale)
 		require.NoError(t, err)
 
 		// Step 7: Update date of birth
@@ -560,7 +563,7 @@ func TestProfileUseCase_CompleteWorkflow(t *testing.T) {
 		assert.Equal(t, "John", final.FirstName)
 		assert.Equal(t, "Doe", final.LastName)
 		assert.Equal(t, "Michael", final.MiddleName)
-		assert.Equal(t, profile.GenderMale, final.Gender)
+		assert.Equal(t, profileAggregate.GenderMale, final.Gender)
 		require.NotNil(t, final.DateOfBirth)
 		assert.Equal(t, 1990, final.DateOfBirth.Year())
 		assert.Equal(t, "Europe/Kyiv", final.Timezone)

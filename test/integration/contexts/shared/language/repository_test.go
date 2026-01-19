@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/shared/language"
 	"github.com/basilex/promenade/internal/contexts/shared/language/adapter/repository/postgres"
+	languageAggregate "github.com/basilex/promenade/internal/contexts/shared/language/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -20,8 +20,8 @@ func TestLanguageRepository_CRUD(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		l := func() *language.Language {
-			l, _ := language.NewLanguage("ts", "Test", "Local")
+		l := func() *languageAggregate.Language {
+			l, _ := languageAggregate.NewLanguage("ts", "Test", "Local")
 			l.Code3 = "tst"
 			return l
 		}()
@@ -44,8 +44,8 @@ func TestLanguageRepository_Queries(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		l := func() *language.Language {
-			l, _ := language.NewLanguage("ts", "Test", "Local")
+		l := func() *languageAggregate.Language {
+			l, _ := languageAggregate.NewLanguage("ts", "Test", "Local")
 			l.Code3 = "tst"
 			return l
 		}()

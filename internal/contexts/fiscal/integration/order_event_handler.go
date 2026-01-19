@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
+	receipterrors "github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptusecase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -16,13 +18,13 @@ import (
 
 // OrderEventHandler handles order lifecycle events for fiscal receipts.
 type OrderEventHandler struct {
-	receiptUC        receipt.IUseCase
-	cashRegisterRepo cashregister.IRepository
+	receiptUC        receiptusecase.IReceiptUseCase
+	cashRegisterRepo repository.ICashRegisterRepository
 	printerEnabled   bool
 }
 
 // NewOrderEventHandler creates a new fiscal order event handler.
-func NewOrderEventHandler(receiptUC receipt.IUseCase, cashRegisterRepo cashregister.IRepository, printerEnabled bool) *OrderEventHandler {
+func NewOrderEventHandler(receiptUC receiptusecase.IReceiptUseCase, cashRegisterRepo repository.ICashRegisterRepository, printerEnabled bool) *OrderEventHandler {
 	return &OrderEventHandler{
 		receiptUC:        receiptUC,
 		cashRegisterRepo: cashRegisterRepo,
@@ -80,13 +82,13 @@ func (h *OrderEventHandler) HandleOrderConfirmed(ctx context.Context, event bus.
 	}
 
 	cashRegister := cashRegisters[0]
-	lines := make([]receipt.ReceiptLine, 0, len(orderEvent.Items))
+	lines := make([]aggregate.ReceiptLine, 0, len(orderEvent.Items))
 	for _, item := range orderEvent.Items {
 		name := item.SKU
 		if name == "" {
 			name = fmt.Sprintf("Product %s", item.ProductID.String())
 		}
-		lines = append(lines, receipt.ReceiptLine{
+		lines = append(lines, aggregate.ReceiptLine{
 			Name:       name,
 			Quantity:   item.Quantity,
 			PriceCents: item.UnitPrice,
@@ -98,14 +100,14 @@ func (h *OrderEventHandler) HandleOrderConfirmed(ctx context.Context, event bus.
 		ctx,
 		cashRegister.GetID(),
 		orderEvent.OrderID,
-		receipt.PaymentTypeCard,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCard,
+		aggregate.ReceiptTypeSale,
 		orderEvent.Currency,
 		lines,
 		orderEvent.ConfirmedBy,
 	)
 	if err != nil {
-		if errors.Is(err, receipt.ErrReceiptAlreadyExists) {
+		if errors.Is(err, receipterrors.ErrReceiptAlreadyExists) {
 			log.Info("Receipt already exists for order", slog.String("order_id", orderEvent.OrderID.String()))
 			return nil
 		}

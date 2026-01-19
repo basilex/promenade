@@ -1,9 +1,9 @@
 package ref
 
 import (
-"testing"
+	"testing"
 
-"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTo_Int(t *testing.T) {
@@ -90,4 +90,3 @@ func TestFloat64(t *testing.T) {
 	assert.NotNil(t, p)
 	assert.Equal(t, 38.8951, *p)
 }
-

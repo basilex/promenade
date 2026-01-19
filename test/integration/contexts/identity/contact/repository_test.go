@@ -2,15 +2,15 @@ package contact_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
-"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	"github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
+	contactAggregate "github.com/basilex/promenade/internal/contexts/identity/contact/aggregate"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
@@ -32,7 +32,7 @@ func TestContactRepository_CRUD(t *testing.T) {
 
 		// Create email contact
 		testEmail := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
-		c, err := contact.NewEmailContact(userID, testEmail, "Work")
+		c, err := contactAggregate.NewEmailContact(userID, testEmail, "Work")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, c))
 		assert.NotEqual(t, uuidv7.UUID{}, c.ID)
@@ -44,7 +44,7 @@ func TestContactRepository_CRUD(t *testing.T) {
 		assert.Equal(t, testEmail, contacts[0].Email.Value())
 
 		// GetByUserIDAndType
-		emailContacts, err := repo.GetByUserIDAndType(ctx, userID, contact.ContactTypeEmail)
+		emailContacts, err := repo.GetByUserIDAndType(ctx, userID, contactAggregate.ContactTypeEmail)
 		require.NoError(t, err)
 		assert.Len(t, emailContacts, 1)
 
@@ -79,13 +79,13 @@ func TestContactRepository_Primary(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create two contacts
-		c1, _ := contact.NewEmailContact(userID, fmt.Sprintf("first_%s@example.com", uuidv7.New().String()), "Work")
-		c2, _ := contact.NewEmailContact(userID, fmt.Sprintf("second_%s@example.com", uuidv7.New().String()), "Personal")
+		c1, _ := contactAggregate.NewEmailContact(userID, fmt.Sprintf("first_%s@example.com", uuidv7.New().String()), "Work")
+		c2, _ := contactAggregate.NewEmailContact(userID, fmt.Sprintf("second_%s@example.com", uuidv7.New().String()), "Personal")
 		require.NoError(t, repo.Create(ctx, c1))
 		require.NoError(t, repo.Create(ctx, c2))
 
 		// ExistsPrimaryForUserAndType (should be false initially)
-		exists, err := repo.ExistsPrimaryForUserAndType(ctx, userID, contact.ContactTypeEmail)
+		exists, err := repo.ExistsPrimaryForUserAndType(ctx, userID, contactAggregate.ContactTypeEmail)
 		require.NoError(t, err)
 		assert.False(t, exists)
 
@@ -94,12 +94,12 @@ func TestContactRepository_Primary(t *testing.T) {
 		require.NoError(t, repo.Update(ctx, c1))
 
 		// ExistsPrimaryForUserAndType (should be true now)
-		exists, err = repo.ExistsPrimaryForUserAndType(ctx, userID, contact.ContactTypeEmail)
+		exists, err = repo.ExistsPrimaryForUserAndType(ctx, userID, contactAggregate.ContactTypeEmail)
 		require.NoError(t, err)
 		assert.True(t, exists)
 
 		// GetPrimaryByUserIDAndType
-		primary, err := repo.GetPrimaryByUserIDAndType(ctx, userID, contact.ContactTypeEmail)
+		primary, err := repo.GetPrimaryByUserIDAndType(ctx, userID, contactAggregate.ContactTypeEmail)
 		require.NoError(t, err)
 		assert.Equal(t, c1.ID, primary.ID)
 		assert.True(t, primary.IsPrimary)
@@ -124,19 +124,19 @@ func TestContactRepository_WithTransaction(t *testing.T) {
 	// Test transaction rollback
 	tx, err := testDB.DB.BeginTxx(context.Background(), nil)
 	require.NoError(t, err)
-	
+
 	ctx := database.SetTxToContext(context.Background(), tx)
 	repo := postgres.NewContactRepository(testDB.DB)
-	
-	c, _ := contact.NewEmailContact(userID, email, "Work")
+
+	c, _ := contactAggregate.NewEmailContact(userID, email, "Work")
 	err = repo.Create(ctx, c)
 	require.NoError(t, err)
-	
+
 	// Verify contact was created in transaction
 	found, err := repo.GetByID(ctx, c.ID)
 	require.NoError(t, err)
 	assert.Equal(t, c.ID, found.ID)
-	
+
 	// Rollback
 	_ = tx.Rollback()
 

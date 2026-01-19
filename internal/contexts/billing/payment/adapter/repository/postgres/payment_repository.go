@@ -8,20 +8,49 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/billing/payment"
+	paymenterrors "github.com/basilex/promenade/internal/contexts/billing/payment"
+	"github.com/basilex/promenade/internal/contexts/billing/payment/aggregate"
+	"github.com/basilex/promenade/internal/contexts/billing/payment/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
 type paymentRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewPaymentRepository creates a new payment repository
-func NewPaymentRepository(db *sqlx.DB) payment.IRepository {
+func NewPaymentRepository(db *sqlx.DB) usecase.IPaymentRepository {
 	return &paymentRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns the transaction executor from context if available, or the DB otherwise
+func (r *paymentRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	// For now, just return the db
+	// TODO: Add transaction support when needed
+	return r.db
+}
+
+// Get executes a query that returns a single row
+func (r *paymentRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes a query that returns multiple rows
+func (r *paymentRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query that doesn't return rows
+func (r *paymentRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query
+func (r *paymentRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // paymentRow represents a payment database row
@@ -59,7 +88,7 @@ func toNullString(s string) sql.NullString {
 }
 
 // toEntity converts paymentRow to Payment entity
-func (r *paymentRow) toEntity() (*payment.Payment, error) {
+func (r *paymentRow) toEntity() (*aggregate.Payment, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse payment ID: %w", err)
@@ -103,14 +132,14 @@ func (r *paymentRow) toEntity() (*payment.Payment, error) {
 		deletedAt = &r.DeletedAt.Time
 	}
 
-	p := &payment.Payment{
+	p := &aggregate.Payment{
 		PaymentNo:       r.PaymentNo,
 		TransactionID:   r.TransactionID.String,
 		CustomerID:      customerID,
 		InvoiceID:       invoiceID,
 		Amount:          amount,
-		Method:          payment.PaymentMethod(r.Method),
-		Status:          payment.PaymentStatus(r.Status),
+		Method:          aggregate.PaymentMethod(r.Method),
+		Status:          aggregate.PaymentStatus(r.Status),
 		CardLast4:       r.CardLast4.String,
 		CardBrand:       r.CardBrand.String,
 		BankAccount:     r.BankAccount.String,
@@ -122,7 +151,7 @@ func (r *paymentRow) toEntity() (*payment.Payment, error) {
 		ProcessedBy:     r.ProcessedBy.String,
 		Notes:           r.Notes.String,
 	}
-	
+
 	// Set BaseAggregate fields via setters (not direct access)
 	p.ID = id
 	p.CreatedAt = r.CreatedAt
@@ -135,7 +164,7 @@ func (r *paymentRow) toEntity() (*payment.Payment, error) {
 }
 
 // Create creates a new payment
-func (r *paymentRepository) Create(ctx context.Context, p *payment.Payment) error {
+func (r *paymentRepository) Create(ctx context.Context, p *aggregate.Payment) error {
 	query := `
 		INSERT INTO billing_payments (
 			id, payment_no, transaction_id, customer_id, invoice_id,
@@ -178,13 +207,13 @@ func (r *paymentRepository) Create(ctx context.Context, p *payment.Payment) erro
 }
 
 // GetByID retrieves a payment by ID
-func (r *paymentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*payment.Payment, error) {
+func (r *paymentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Payment, error) {
 	var row paymentRow
 	query := `SELECT * FROM billing_payments WHERE id = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, payment.ErrPaymentNotFound
+			return nil, paymenterrors.ErrPaymentNotFound
 		}
 		return nil, fmt.Errorf("failed to get payment: %w", err)
 	}
@@ -193,13 +222,13 @@ func (r *paymentRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*payme
 }
 
 // GetByPaymentNo retrieves a payment by payment number
-func (r *paymentRepository) GetByPaymentNo(ctx context.Context, paymentNo string) (*payment.Payment, error) {
+func (r *paymentRepository) GetByPaymentNo(ctx context.Context, paymentNo string) (*aggregate.Payment, error) {
 	var row paymentRow
 	query := `SELECT * FROM billing_payments WHERE payment_no = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, paymentNo); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, payment.ErrPaymentNotFound
+			return nil, paymenterrors.ErrPaymentNotFound
 		}
 		return nil, fmt.Errorf("failed to get payment by number: %w", err)
 	}
@@ -208,13 +237,13 @@ func (r *paymentRepository) GetByPaymentNo(ctx context.Context, paymentNo string
 }
 
 // GetByTransactionID retrieves a payment by transaction ID
-func (r *paymentRepository) GetByTransactionID(ctx context.Context, transactionID string) (*payment.Payment, error) {
+func (r *paymentRepository) GetByTransactionID(ctx context.Context, transactionID string) (*aggregate.Payment, error) {
 	var row paymentRow
 	query := `SELECT * FROM billing_payments WHERE transaction_id = $1 AND deleted_at IS NULL`
 
 	if err := r.Get(ctx, &row, query, transactionID); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, payment.ErrPaymentNotFound
+			return nil, paymenterrors.ErrPaymentNotFound
 		}
 		return nil, fmt.Errorf("failed to get payment by transaction ID: %w", err)
 	}
@@ -223,7 +252,7 @@ func (r *paymentRepository) GetByTransactionID(ctx context.Context, transactionI
 }
 
 // Update updates a payment
-func (r *paymentRepository) Update(ctx context.Context, p *payment.Payment) error {
+func (r *paymentRepository) Update(ctx context.Context, p *aggregate.Payment) error {
 	query := `
 		UPDATE billing_payments SET
 			payment_no = $1, transaction_id = $2, customer_id = $3, invoice_id = $4,
@@ -254,7 +283,7 @@ func (r *paymentRepository) Update(ctx context.Context, p *payment.Payment) erro
 		p.Amount.Amount, p.Amount.Currency, string(p.Method), toNullString(p.CardLast4), toNullString(p.CardBrand),
 		toNullString(p.BankAccount), toNullString(p.PaymentProvider), string(p.Status), toNullString(p.FailureReason),
 		p.ProcessedAt, refundedAt, refundedAmount, toNullString(p.ProcessedBy),
-		toNullString(p.Notes), r.now(), p.GetID().String(),
+		toNullString(p.Notes), time.Now(), p.GetID().String(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update payment: %w", err)
@@ -262,7 +291,7 @@ func (r *paymentRepository) Update(ctx context.Context, p *payment.Payment) erro
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return payment.ErrPaymentNotFound
+		return paymenterrors.ErrPaymentNotFound
 	}
 
 	return nil
@@ -272,21 +301,21 @@ func (r *paymentRepository) Update(ctx context.Context, p *payment.Payment) erro
 func (r *paymentRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	query := `UPDATE billing_payments SET deleted_at = $1 WHERE id = $2 AND deleted_at IS NULL`
 
-	result, err := r.Exec(ctx, query, r.now(), id.String())
+	result, err := r.Exec(ctx, query, time.Now(), id.String())
 	if err != nil {
 		return fmt.Errorf("failed to delete payment: %w", err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return payment.ErrPaymentNotFound
+		return paymenterrors.ErrPaymentNotFound
 	}
 
 	return nil
 }
 
 // List retrieves all payments with pagination
-func (r *paymentRepository) List(ctx context.Context, page, pageSize int) ([]*payment.Payment, error) {
+func (r *paymentRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Payment, error) {
 	offset := (page - 1) * pageSize
 	query := `
 		SELECT * FROM billing_payments 
@@ -300,7 +329,7 @@ func (r *paymentRepository) List(ctx context.Context, page, pageSize int) ([]*pa
 		return nil, fmt.Errorf("failed to list payments: %w", err)
 	}
 
-	payments := make([]*payment.Payment, len(rows))
+	payments := make([]*aggregate.Payment, len(rows))
 	for i, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -313,7 +342,7 @@ func (r *paymentRepository) List(ctx context.Context, page, pageSize int) ([]*pa
 }
 
 // ListByCustomerID retrieves payments for a customer
-func (r *paymentRepository) ListByCustomerID(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*payment.Payment, error) {
+func (r *paymentRepository) ListByCustomerID(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*aggregate.Payment, error) {
 	offset := (page - 1) * pageSize
 	query := `
 		SELECT * FROM billing_payments 
@@ -327,7 +356,7 @@ func (r *paymentRepository) ListByCustomerID(ctx context.Context, customerID uui
 		return nil, fmt.Errorf("failed to list payments by customer: %w", err)
 	}
 
-	payments := make([]*payment.Payment, len(rows))
+	payments := make([]*aggregate.Payment, len(rows))
 	for i, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -340,7 +369,7 @@ func (r *paymentRepository) ListByCustomerID(ctx context.Context, customerID uui
 }
 
 // ListByInvoiceID retrieves payments for an invoice
-func (r *paymentRepository) ListByInvoiceID(ctx context.Context, invoiceID uuidv7.UUID) ([]*payment.Payment, error) {
+func (r *paymentRepository) ListByInvoiceID(ctx context.Context, invoiceID uuidv7.UUID) ([]*aggregate.Payment, error) {
 	query := `
 		SELECT * FROM billing_payments 
 		WHERE invoice_id = $1 AND deleted_at IS NULL 
@@ -352,7 +381,7 @@ func (r *paymentRepository) ListByInvoiceID(ctx context.Context, invoiceID uuidv
 		return nil, fmt.Errorf("failed to list payments by invoice: %w", err)
 	}
 
-	payments := make([]*payment.Payment, len(rows))
+	payments := make([]*aggregate.Payment, len(rows))
 	for i, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {
@@ -365,7 +394,7 @@ func (r *paymentRepository) ListByInvoiceID(ctx context.Context, invoiceID uuidv
 }
 
 // ListByStatus retrieves payments by status
-func (r *paymentRepository) ListByStatus(ctx context.Context, status payment.PaymentStatus, page, pageSize int) ([]*payment.Payment, error) {
+func (r *paymentRepository) ListByStatus(ctx context.Context, status aggregate.PaymentStatus, page, pageSize int) ([]*aggregate.Payment, error) {
 	offset := (page - 1) * pageSize
 	query := `
 		SELECT * FROM billing_payments 
@@ -379,7 +408,7 @@ func (r *paymentRepository) ListByStatus(ctx context.Context, status payment.Pay
 		return nil, fmt.Errorf("failed to list payments by status: %w", err)
 	}
 
-	payments := make([]*payment.Payment, len(rows))
+	payments := make([]*aggregate.Payment, len(rows))
 	for i, row := range rows {
 		p, err := row.toEntity()
 		if err != nil {

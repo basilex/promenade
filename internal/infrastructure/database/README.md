@@ -14,7 +14,7 @@ The `database` package provides:
 
 - **PostgreSQL Connection**: Connection pooling with sqlx
 - **Transaction Management**: Context-aware transactions
-- **BaseRepository Pattern**: Shared repository functionality
+- **Helper Method Pattern**: Common repository operations via helper methods
 - **Migration Support**: Namespace-based migrations
 
 ---
@@ -83,65 +83,90 @@ err := tm.WithTransaction(ctx, func(ctx context.Context) error {
     if err := userRepo.Create(ctx, user); err != nil {
         return err // Auto-rollback
     }
-    
+
     if err := profileRepo.Create(ctx, profile); err != nil {
         return err // Auto-rollback
     }
-    
+
     return nil // Auto-commit if no error
 })
 ```
 
 **Key features**:
+
 - Automatic commit on success
 - Automatic rollback on error
 - Context propagation (transaction stored in context)
 - Nested transaction detection
 
-### BaseRepository Pattern
+### Repository Helper Methods
 
-**BaseRepository** provides common database operations for all repositories:
+**Repositories implement helper methods** for common database operations with automatic transaction support:
 
 ```go
-// Each context has its own BaseRepository
-type BaseRepository struct {
+// Repository struct with db field
+type contactRepository struct {
     db *sqlx.DB
 }
 
-// Common methods
-func (r *BaseRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-func (r *BaseRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-func (r *BaseRepository) Exec(ctx context.Context, query string, args ...interface{}) error
-func (r *BaseRepository) NamedExec(ctx context.Context, query string, arg interface{}) error
-func (r *BaseRepository) getExecutor(ctx context.Context) database.Executor
+// Constructor
+func NewContactRepository(db *sqlx.DB) IRepository {
+    return &contactRepository{db: db}
+}
+
+// Helper method - automatically uses transaction if present in context
+func (r *contactRepository) getExecutor(ctx context.Context) database.Executor {
+    return database.GetExecutor(ctx, r.db)
+}
+
+// Helper methods for common operations
+func (r *contactRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+    return database.GetExecutor(ctx, r.db).GetContext(ctx, dest, query, args...)
+}
+
+func (r *contactRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+    return database.GetExecutor(ctx, r.db).SelectContext(ctx, dest, query, args...)
+}
+
+func (r *contactRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+    return database.GetExecutor(ctx, r.db).ExecContext(ctx, query, args...)
+}
+
+func (r *contactRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+    return database.GetExecutor(ctx, r.db).NamedExecContext(ctx, query, arg)
+}
 ```
 
-**Repository implementation**:
+**Repository implementation example**:
 
 ```go
-// Identity context repository
-type contactRepository struct {
-    *BaseRepository
-}
-
-func NewContactRepository(db *sqlx.DB) IRepository {
-    return &contactRepository{
-        BaseRepository: NewBaseRepository(db),
-    }
-}
-
 func (r *contactRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*Contact, error) {
     var row contactRow
     query := `SELECT * FROM identity_contacts WHERE id = $1 AND deleted_at IS NULL`
-    
+
     // getExecutor automatically uses transaction if present in context
     if err := r.Get(ctx, &row, query, id); err != nil {
         return nil, err
     }
-    
+
     return row.toEntity()
 }
+
+func (r *contactRepository) Create(ctx context.Context, contact *Contact) error {
+    query := `INSERT INTO identity_contacts (id, user_id, email, phone, ...)
+              VALUES ($1, $2, $3, $4, ...)`
+
+    _, err := r.Exec(ctx, query, contact.ID, contact.UserID, contact.Email.Value, ...)
+    return err
+}
 ```
+
+**Key Benefits**:
+
+- **Transaction Awareness**: `getExecutor(ctx)` automatically uses transaction from context
+- **Type Safety**: Direct method calls without interface assertions
+- **No Embedding**: Clean struct composition without inheritance
+- **Testability**: Easy to mock individual methods
 
 ---
 
@@ -156,6 +181,7 @@ Each context owns its tables with namespace prefix:
 **Customer Management**: `customer_customers`, `customer_companies`, `customer_deals`
 
 **Benefits**:
+
 - Clear ownership
 - No table name conflicts
 - Easy to identify context boundaries
@@ -169,7 +195,7 @@ migrations/
  core/              # Core infrastructure (UUID v7, extensions)
  shared/            # Shared context tables
  identity/          # Identity context tables
- customer-mgmt/     # Customer Management tables
+ cusImplement helper methods** in repositoriesstomer Management tables
 ```
 
 **Run migrations**:
@@ -186,16 +212,16 @@ make migrate-customer-mgmt    # Customer Management only
 
 ## Best Practices
 
-### DO 
+### DO
 
 - **Always pass context** to repository methods
 - **Use transactions** for multi-table operations
 - **Filter soft-deleted records** (`WHERE deleted_at IS NULL`)
 - **Use UUID v7** for primary keys (`uuidv7.New()`)
-- **Use BaseRepository** for common operations
+- **Implement helper methods** in repositories for common operations
 - **Close connections** with `defer db.Close()`
 
-### DON'T 
+### DON'T
 
 - **DON'T use uuid.New()** (use uuidv7.New() instead)
 - **DON'T forget soft delete filter** in SELECT queries
@@ -218,17 +244,17 @@ func (uc *UserUseCase) Register(ctx context.Context, email, name, password strin
         if err != nil {
             return nil, err
         }
-        
+
         if err := uc.userRepo.Create(ctx, user); err != nil {
             return nil, err
         }
-        
+
         // Create default profile (same transaction)
         profile, _ := profile.NewProfile(user.ID, name)
         if err := uc.profileRepo.Create(ctx, profile); err != nil {
             return nil, err // Rollback user creation
         }
-        
+
         return user, nil // Commit both
     })
 }
@@ -239,19 +265,19 @@ func (uc *UserUseCase) Register(ctx context.Context, email, name, password strin
 ```go
 func (r *contactRepository) GetActiveContacts(ctx context.Context, userID uuidv7.UUID) ([]*Contact, error) {
     var rows []contactRow
-    
+
     // Always filter soft-deleted records
     query := `
-        SELECT * FROM identity_contacts 
-        WHERE user_id = $1 
+        SELECT * FROM identity_contacts
+        WHERE user_id = $1
           AND deleted_at IS NULL
         ORDER BY created_at DESC
     `
-    
+
     if err := r.Select(ctx, &rows, query, userID); err != nil {
         return nil, err
     }
-    
+
     return rowsToEntities(rows)
 }
 ```

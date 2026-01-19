@@ -42,8 +42,8 @@ func (h *SalesReportHandler) RegisterRoutes(router *gin.RouterGroup) {
 // @Param limit query int false "Limit (default 100, max 1000)"
 // @Param offset query int false "Offset (default 0)"
 // @Success 200 {object} dto.SalesReportResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
+// @Failure 400 {object} response.Error
+// @Failure 500 {object} response.Error
 // @Router /api/v1/analytics/sales-report [get]
 func (h *SalesReportHandler) GetSalesReport(c *gin.Context) {
 	var req dto.SalesReportRequest

@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/scripting/script"
 	scripthttp "github.com/basilex/promenade/internal/contexts/scripting/script/adapter/http"
 	scriptRepo "github.com/basilex/promenade/internal/contexts/scripting/script/adapter/repository/postgres"
+	scriptUseCase "github.com/basilex/promenade/internal/contexts/scripting/script/usecase"
 	"github.com/basilex/promenade/pkg/scripting"
 )
 
@@ -28,8 +28,8 @@ func NewRouter(db *sqlx.DB) *Router {
 	engine := scripting.NewEngine(config, stdlib)
 
 	// Initialize use case with repository and engine
-	scriptUseCase := script.NewUseCase(scriptRepository, engine)
-	scriptHandler := scripthttp.NewScriptHandler(scriptUseCase)
+	useCase := scriptUseCase.NewScriptUseCase(scriptRepository, engine)
+	scriptHandler := scripthttp.NewScriptHandler(useCase)
 
 	return &Router{
 		scriptHandler: scriptHandler,

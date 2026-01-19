@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
 	contractHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/http"
 	contractRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/repository/postgres"
+	contractUseCase "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/usecase"
 	orderHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/http"
 	orderRepo "github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/repository/postgres"
 	orderUseCase "github.com/basilex/promenade/internal/contexts/order-mgmt/order/usecase"
@@ -28,8 +28,8 @@ func NewRouter(db *sqlx.DB, eventBus bus.IBus) *Router {
 
 	// Initialize Contract aggregate
 	contractRepository := contractRepo.NewContractRepository(db)
-	contractUseCase := contract.NewUseCase(contractRepository)
-	contractHandler := contractHTTP.NewContractHandler(contractUseCase)
+	contractUseCaseImpl := contractUseCase.NewContractUseCase(contractRepository)
+	contractHandler := contractHTTP.NewContractHandler(contractUseCaseImpl)
 
 	return &Router{
 		orderHandler:    orderHandler,

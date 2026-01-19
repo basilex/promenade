@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	interactionerrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 

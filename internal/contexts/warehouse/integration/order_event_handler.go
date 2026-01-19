@@ -25,25 +25,25 @@ func NewOrderEventHandler(reservationService IReservationService) *OrderEventHan
 
 // OrderConfirmedEvent represents the order.confirmed domain event
 type OrderConfirmedEvent struct {
-	OrderID    uuidv7.UUID   `json:"order_id"`
-	CustomerID uuidv7.UUID   `json:"customer_id"`
-	Items      []OrderItem   `json:"items"`
-	ConfirmedBy uuidv7.UUID  `json:"confirmed_by"`
+	OrderID     uuidv7.UUID `json:"order_id"`
+	CustomerID  uuidv7.UUID `json:"customer_id"`
+	Items       []OrderItem `json:"items"`
+	ConfirmedBy uuidv7.UUID `json:"confirmed_by"`
 }
 
 // OrderCancelledEvent represents the order.cancelled domain event
 type OrderCancelledEvent struct {
-	OrderID     uuidv7.UUID   `json:"order_id"`
-	Items       []OrderItem   `json:"items"`
-	Reason      string        `json:"reason"`
-	CancelledBy uuidv7.UUID   `json:"cancelled_by"`
+	OrderID     uuidv7.UUID `json:"order_id"`
+	Items       []OrderItem `json:"items"`
+	Reason      string      `json:"reason"`
+	CancelledBy uuidv7.UUID `json:"cancelled_by"`
 }
 
 // OrderFulfilledEvent represents the order.fulfilled domain event
 type OrderFulfilledEvent struct {
-	OrderID     uuidv7.UUID   `json:"order_id"`
-	Items       []OrderItem   `json:"items"`
-	FulfilledBy uuidv7.UUID   `json:"fulfilled_by"`
+	OrderID     uuidv7.UUID `json:"order_id"`
+	Items       []OrderItem `json:"items"`
+	FulfilledBy uuidv7.UUID `json:"fulfilled_by"`
 }
 
 // HandleOrderConfirmed reserves stock when an order is confirmed

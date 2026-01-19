@@ -12,15 +12,18 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	contactPostgres "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
+	contactAggregate "github.com/basilex/promenade/internal/contexts/identity/contact/aggregate"
+	contactUseCase "github.com/basilex/promenade/internal/contexts/identity/contact/usecase"
 	userPostgres "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	userRepository "github.com/basilex/promenade/internal/contexts/identity/user/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
 // createTestUser creates a test user for contact tests
-func createTestUser(t *testing.T, ctx context.Context, userRepo user.IRepository) uuidv7.UUID {
-	u, err := user.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
+func createTestUser(t *testing.T, ctx context.Context, userRepo userRepository.IUserRepository) uuidv7.UUID {
+	u, err := userAggregate.NewUser(fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "password123")
 	require.NoError(t, err)
 	err = userRepo.Create(ctx, u)
 	require.NoError(t, err)
@@ -37,7 +40,7 @@ func TestContactUseCase_CreateEmailContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -51,7 +54,7 @@ func TestContactUseCase_CreateEmailContact(t *testing.T) {
 
 		// Verify properties
 		assert.Equal(t, userID, c.UserID)
-		assert.Equal(t, contact.ContactTypeEmail, c.Type)
+		assert.Equal(t, contactAggregate.ContactTypeEmail, c.Type)
 		assert.Equal(t, label, c.Label)
 		assert.True(t, c.IsPrimary)
 		assert.False(t, c.IsVerified)
@@ -76,7 +79,7 @@ func TestContactUseCase_CreatePhoneContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -90,7 +93,7 @@ func TestContactUseCase_CreatePhoneContact(t *testing.T) {
 
 		// Verify properties
 		assert.Equal(t, userID, c.UserID)
-		assert.Equal(t, contact.ContactTypePhone, c.Type)
+		assert.Equal(t, contactAggregate.ContactTypePhone, c.Type)
 		assert.Equal(t, label, c.Label)
 		assert.False(t, c.IsPrimary)
 		assert.NotNil(t, c.Phone)
@@ -108,7 +111,7 @@ func TestContactUseCase_CreateAddressContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -125,7 +128,7 @@ func TestContactUseCase_CreateAddressContact(t *testing.T) {
 
 		// Verify properties
 		assert.Equal(t, userID, c.UserID)
-		assert.Equal(t, contact.ContactTypeAddress, c.Type)
+		assert.Equal(t, contactAggregate.ContactTypeAddress, c.Type)
 		assert.Equal(t, label, c.Label)
 		assert.True(t, c.IsPrimary)
 		assert.NotNil(t, c.Address)
@@ -146,7 +149,7 @@ func TestContactUseCase_GetContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -179,7 +182,7 @@ func TestContactUseCase_GetUserContacts(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -198,13 +201,13 @@ func TestContactUseCase_GetUserContacts(t *testing.T) {
 		assert.Len(t, contacts, 3)
 
 		// Verify different types exist
-		types := make(map[contact.ContactType]bool)
+		types := make(map[contactAggregate.ContactType]bool)
 		for _, c := range contacts {
 			types[c.Type] = true
 		}
-		assert.True(t, types[contact.ContactTypeEmail])
-		assert.True(t, types[contact.ContactTypePhone])
-		assert.True(t, types[contact.ContactTypeAddress])
+		assert.True(t, types[contactAggregate.ContactTypeEmail])
+		assert.True(t, types[contactAggregate.ContactTypePhone])
+		assert.True(t, types[contactAggregate.ContactTypeAddress])
 	})
 }
 
@@ -218,7 +221,7 @@ func TestContactUseCase_GetUserContactsByType(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -232,18 +235,18 @@ func TestContactUseCase_GetUserContactsByType(t *testing.T) {
 		require.NoError(t, err)
 
 		// Retrieve only email contacts
-		emailContacts, err := uc.GetUserContactsByType(ctx, userID, contact.ContactTypeEmail)
+		emailContacts, err := uc.GetUserContactsByType(ctx, userID, contactAggregate.ContactTypeEmail)
 		require.NoError(t, err)
 		assert.Len(t, emailContacts, 2)
 		for _, c := range emailContacts {
-			assert.Equal(t, contact.ContactTypeEmail, c.Type)
+			assert.Equal(t, contactAggregate.ContactTypeEmail, c.Type)
 		}
 
 		// Retrieve only phone contacts
-		phoneContacts, err := uc.GetUserContactsByType(ctx, userID, contact.ContactTypePhone)
+		phoneContacts, err := uc.GetUserContactsByType(ctx, userID, contactAggregate.ContactTypePhone)
 		require.NoError(t, err)
 		assert.Len(t, phoneContacts, 1)
-		assert.Equal(t, contact.ContactTypePhone, phoneContacts[0].Type)
+		assert.Equal(t, contactAggregate.ContactTypePhone, phoneContacts[0].Type)
 	})
 }
 
@@ -257,7 +260,7 @@ func TestContactUseCase_UpdateContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -288,7 +291,7 @@ func TestContactUseCase_DeleteContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -318,7 +321,7 @@ func TestContactUseCase_SetAsPrimary(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -358,7 +361,7 @@ func TestContactUseCase_VerifyContact(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -389,7 +392,7 @@ func TestContactUseCase_UpdateVisibility(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -429,7 +432,7 @@ func TestContactUseCase_CompleteWorkflow(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		repo := contactPostgres.NewContactRepository(testDB.DB)
-		uc := contact.NewUseCase(repo)
+		uc := contactUseCase.NewContactUseCase(repo)
 
 		// Create test user first
 		userID := createTestUser(t, ctx, userRepo)
@@ -479,6 +482,6 @@ func TestContactUseCase_CompleteWorkflow(t *testing.T) {
 		remaining, err := uc.GetUserContacts(ctx, userID)
 		require.NoError(t, err)
 		assert.Len(t, remaining, 1)
-		assert.Equal(t, contact.ContactTypeEmail, remaining[0].Type)
+		assert.Equal(t, contactAggregate.ContactTypeEmail, remaining[0].Type)
 	})
 }

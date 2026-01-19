@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/adapter/repository/postgres"
+	orderAggregate "github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
@@ -29,7 +29,7 @@ func TestOrderRepository_CRUD(t *testing.T) {
 			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
-		o, err := order.NewOrder(customerID, "USD")
+		o, err := orderAggregate.NewOrder(customerID, "USD")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, o))
 		assert.NotEqual(t, uuidv7.UUID{}, o.ID)
@@ -48,9 +48,9 @@ func TestOrderRepository_CRUD(t *testing.T) {
 		require.NoError(t, o.AddLine(productID, 2, unitPrice))
 		require.NoError(t, o.Confirm())
 		require.NoError(t, repo.Update(ctx, o))
-		
+
 		updated, _ := repo.GetByID(ctx, o.ID)
-		assert.Equal(t, order.OrderStatusConfirmed, updated.Status)
+		assert.Equal(t, orderAggregate.OrderStatusConfirmed, updated.Status)
 
 		require.NoError(t, repo.Delete(ctx, o.ID))
 		_, err = repo.GetByID(ctx, o.ID)
@@ -73,12 +73,12 @@ func TestOrderRepository_ListByCustomerID(t *testing.T) {
 		require.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
-			o, _ := order.NewOrder(customerID, "USD")
+			o, _ := orderAggregate.NewOrder(customerID, "USD")
 			require.NoError(t, repo.Create(ctx, o))
-	}
+		}
 
-	// Query orders for customer
-	orders, total, err := repo.ListByCustomerID(ctx, customerID, 1, 10)
+		// Query orders for customer
+		orders, total, err := repo.ListByCustomerID(ctx, customerID, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, orders, 3)
 		assert.Equal(t, int64(3), total)
@@ -99,18 +99,17 @@ func TestOrderRepository_ListByStatus(t *testing.T) {
 			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
-		o1, _ := order.NewOrder(customerID, "USD")
+		o1, _ := orderAggregate.NewOrder(customerID, "USD")
 		require.NoError(t, repo.Create(ctx, o1))
 
-
-		o2, _ := order.NewOrder(customerID, "USD")
+		o2, _ := orderAggregate.NewOrder(customerID, "USD")
 		productID := uuidv7.New()
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
 		require.NoError(t, o2.AddLine(productID, 1, unitPrice))
 		require.NoError(t, o2.Confirm())
 		require.NoError(t, repo.Create(ctx, o2))
 
-		pending, total, err := repo.ListByStatus(ctx, order.OrderStatusPending, 1, 10)
+		pending, total, err := repo.ListByStatus(ctx, orderAggregate.OrderStatusPending, 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, pending, 1)
 		assert.Equal(t, int64(1), total)
@@ -132,12 +131,12 @@ func TestOrderRepository_List(t *testing.T) {
 		require.NoError(t, err)
 
 		for i := 0; i < 5; i++ {
-			o, _ := order.NewOrder(customerID, "USD")
+			o, _ := orderAggregate.NewOrder(customerID, "USD")
 			require.NoError(t, repo.Create(ctx, o))
-	}
+		}
 
-	// Query orders with pagination
-	orders, total, err := repo.List(ctx, 1, 3)
+		// Query orders with pagination
+		orders, total, err := repo.List(ctx, 1, 3)
 		require.NoError(t, err)
 		assert.Len(t, orders, 3)
 		assert.Equal(t, int64(5), total)
@@ -158,16 +157,16 @@ func TestOrderRepository_OrderWithLines(t *testing.T) {
 			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
-		o, _ := order.NewOrder(customerID, "USD")
-		
+		o, _ := orderAggregate.NewOrder(customerID, "USD")
+
 		productID1 := uuidv7.New()
 		unitPrice1, _ := valueobject.NewMoney(10000, "USD")
 		require.NoError(t, o.AddLine(productID1, 2, unitPrice1))
-		
+
 		productID2 := uuidv7.New()
 		unitPrice2, _ := valueobject.NewMoney(5000, "USD")
 		require.NoError(t, o.AddLine(productID2, 3, unitPrice2))
-		
+
 		require.NoError(t, repo.Create(ctx, o))
 
 		retrieved, err := repo.GetByID(ctx, o.ID)
@@ -191,26 +190,26 @@ func TestOrderRepository_OrderLifecycle(t *testing.T) {
 			customerID, "Test Customer", "customer_"+customerID.String()+"@test.com", "customer", "free", "direct", assignedTo)
 		require.NoError(t, err)
 
-		o, _ := order.NewOrder(customerID, "USD")
+		o, _ := orderAggregate.NewOrder(customerID, "USD")
 		productID := uuidv7.New()
 		unitPrice, _ := valueobject.NewMoney(10000, "USD")
 		require.NoError(t, o.AddLine(productID, 1, unitPrice))
 		require.NoError(t, repo.Create(ctx, o))
-		assert.Equal(t, order.OrderStatusPending, o.Status)
+		assert.Equal(t, orderAggregate.OrderStatusPending, o.Status)
 
 		require.NoError(t, o.Confirm())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ := repo.GetByID(ctx, o.ID)
-		assert.Equal(t, order.OrderStatusConfirmed, retrieved.Status)
+		assert.Equal(t, orderAggregate.OrderStatusConfirmed, retrieved.Status)
 
 		require.NoError(t, o.StartProcessing())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ = repo.GetByID(ctx, o.ID)
-		assert.Equal(t, order.OrderStatusProcessing, retrieved.Status)
+		assert.Equal(t, orderAggregate.OrderStatusProcessing, retrieved.Status)
 
 		require.NoError(t, o.MarkFulfilled())
 		require.NoError(t, repo.Update(ctx, o))
 		retrieved, _ = repo.GetByID(ctx, o.ID)
-		assert.Equal(t, order.OrderStatusFulfilled, retrieved.Status)
+		assert.Equal(t, orderAggregate.OrderStatusFulfilled, retrieved.Status)
 	})
 }

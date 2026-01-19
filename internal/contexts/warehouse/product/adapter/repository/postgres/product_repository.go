@@ -10,50 +10,79 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/repository"
-	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // productRepository implements repository.IProductRepository interface.
 type productRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewProductRepository creates a new Product repository.
 func NewProductRepository(db *sqlx.DB) repository.IProductRepository {
 	return &productRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *productRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *productRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *productRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *productRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *productRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // productRow represents database row structure.
 type productRow struct {
-	ID                 string   `db:"id"`
-	SKU                string   `db:"sku"`
-	Name               string   `db:"name"`
-	Brand              string   `db:"brand"`
-	Category           string   `db:"category"`
-	Description        string   `db:"description"`
-	Weight             float64  `db:"weight"`
-	Length             float64  `db:"length"`
-	Width              float64  `db:"width"`
-	Height             float64  `db:"height"`
+	ID                 string                    `db:"id"`
+	SKU                string                    `db:"sku"`
+	Name               string                    `db:"name"`
+	Brand              string                    `db:"brand"`
+	Category           string                    `db:"category"`
+	Description        string                    `db:"description"`
+	Weight             float64                   `db:"weight"`
+	Length             float64                   `db:"length"`
+	Width              float64                   `db:"width"`
+	Height             float64                   `db:"height"`
 	Tags               jsonstore.Field[[]string] `db:"tags"` // JSON array (cross-database compatible)
-	TrackInventory     bool     `db:"track_inventory"`
-	AllowBackorder     bool     `db:"allow_backorder"`
-	ReorderPoint       int      `db:"reorder_point"`
-	ReorderQuantity    int      `db:"reorder_quantity"`
-	TrackSerialNumbers bool     `db:"track_serial_numbers"`
-	TrackLotNumbers    bool     `db:"track_lot_numbers"`
-	Status             string   `db:"status"`
-	Version            int      `db:"version"`
-	IsActive           bool     `db:"is_active"`
-	IsDeleted          bool     `db:"is_deleted"`
-	CreatedAt          string   `db:"created_at"`
-	UpdatedAt          string   `db:"updated_at"`
+	TrackInventory     bool                      `db:"track_inventory"`
+	AllowBackorder     bool                      `db:"allow_backorder"`
+	ReorderPoint       int                       `db:"reorder_point"`
+	ReorderQuantity    int                       `db:"reorder_quantity"`
+	TrackSerialNumbers bool                      `db:"track_serial_numbers"`
+	TrackLotNumbers    bool                      `db:"track_lot_numbers"`
+	Status             string                    `db:"status"`
+	Version            int                       `db:"version"`
+	IsActive           bool                      `db:"is_active"`
+	IsDeleted          bool                      `db:"is_deleted"`
+	CreatedAt          string                    `db:"created_at"`
+	UpdatedAt          string                    `db:"updated_at"`
 }
 
 // toEntity converts database row to Product entity.

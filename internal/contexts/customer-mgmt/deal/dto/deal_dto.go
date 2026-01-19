@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"fmt"
-
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -138,25 +136,3 @@ func ToPipelineStatsResponse(stats map[aggregate.DealStage]int64) PipelineStatsR
 }
 
 // Helper functions for parsing fields
-
-// parseCustomerID parses customer ID from request
-func parseCustomerID(customerID string) (uuidv7.UUID, error) {
-	id, err := uuidv7.Parse(customerID)
-	if err != nil {
-		return uuidv7.UUID{}, fmt.Errorf("invalid customer ID format: %w", err)
-	}
-	return id, nil
-}
-
-
-// parseAssignedTo parses assigned to user ID from request
-func parseAssignedTo(assignedTo *string) (*uuidv7.UUID, error) {
-	if assignedTo == nil || *assignedTo == "" {
-		return nil, nil
-	}
-	id, err := uuidv7.Parse(*assignedTo)
-	if err != nil {
-		return nil, fmt.Errorf("invalid assigned to ID format: %w", err)
-	}
-	return &id, nil
-}

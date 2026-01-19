@@ -7,22 +7,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/billing/subscription"
+	subscriptionerrors "github.com/basilex/promenade/internal/contexts/billing/subscription"
+	"github.com/basilex/promenade/internal/contexts/billing/subscription/aggregate"
+	"github.com/basilex/promenade/internal/contexts/billing/subscription/usecase"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// subscriptionRepository implements subscription.IRepository using PostgreSQL
+// subscriptionRepository implements usecase.ISubscriptionRepository using PostgreSQL
 type subscriptionRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewSubscriptionRepository creates a new subscription repository
-func NewSubscriptionRepository(db *sqlx.DB) subscription.IRepository {
+func NewSubscriptionRepository(db *sqlx.DB) usecase.ISubscriptionRepository {
 	return &subscriptionRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns the transaction executor from context if available, or the DB otherwise
+func (r *subscriptionRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	// For now, just return the db
+	// TODO: Add transaction support when needed
+	return r.db
+}
+
+// Get executes a query that returns a single row
+func (r *subscriptionRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes a query that returns multiple rows
+func (r *subscriptionRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query that doesn't return rows
+func (r *subscriptionRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query
+func (r *subscriptionRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // subscriptionRow represents the database row structure
@@ -49,7 +78,7 @@ type subscriptionRow struct {
 }
 
 // toEntity converts database row to subscription entity
-func (r *subscriptionRow) toEntity() (*subscription.Subscription, error) {
+func (r *subscriptionRow) toEntity() (*aggregate.Subscription, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid subscription ID: %w", err)
@@ -73,12 +102,12 @@ func (r *subscriptionRow) toEntity() (*subscription.Subscription, error) {
 		}
 	}
 
-	sub := &subscription.Subscription{
+	sub := &aggregate.Subscription{
 		SubscriptionNo: r.SubscriptionNo,
 		CustomerID:     customerID,
 		PlanID:         r.PlanID,
-		Status:         subscription.SubscriptionStatus(r.Status),
-		BillingPeriod:  subscription.BillingPeriod(r.BillingPeriod),
+		Status:         aggregate.SubscriptionStatus(r.Status),
+		BillingPeriod:  aggregate.BillingPeriod(r.BillingPeriod),
 		Currency:       r.Currency,
 		Amount:         money,
 		Metadata:       metadataField,
@@ -123,7 +152,7 @@ func (r *subscriptionRow) toEntity() (*subscription.Subscription, error) {
 }
 
 // fromEntity converts subscription entity to database row
-func fromEntity(sub *subscription.Subscription) (*subscriptionRow, error) {
+func fromEntity(sub *aggregate.Subscription) (*subscriptionRow, error) {
 	// Marshal metadata using jsonstore
 	metadataJSON, err := sub.Metadata.MarshalJSON()
 	if err != nil {
@@ -172,7 +201,7 @@ func fromEntity(sub *subscription.Subscription) (*subscriptionRow, error) {
 	return row, nil
 }
 
-func (r *subscriptionRepository) Create(ctx context.Context, sub *subscription.Subscription) error {
+func (r *subscriptionRepository) Create(ctx context.Context, sub *aggregate.Subscription) error {
 	row, err := fromEntity(sub)
 	if err != nil {
 		return fmt.Errorf("failed to convert entity: %w", err)
@@ -201,7 +230,7 @@ func (r *subscriptionRepository) Create(ctx context.Context, sub *subscription.S
 	return nil
 }
 
-func (r *subscriptionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+func (r *subscriptionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Subscription, error) {
 	query := `
 		SELECT id, subscription_no, customer_id, plan_id, status, billing_period,
 		       currency, amount_cents, start_date, end_date, renewal_date, trial_end_date,
@@ -213,7 +242,7 @@ func (r *subscriptionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*
 	var row subscriptionRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, subscription.ErrSubscriptionNotFound
+			return nil, subscriptionerrors.ErrSubscriptionNotFound
 		}
 		return nil, fmt.Errorf("failed to get subscription: %w", err)
 	}
@@ -221,7 +250,7 @@ func (r *subscriptionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*
 	return row.toEntity()
 }
 
-func (r *subscriptionRepository) Update(ctx context.Context, sub *subscription.Subscription) error {
+func (r *subscriptionRepository) Update(ctx context.Context, sub *aggregate.Subscription) error {
 	row, err := fromEntity(sub)
 	if err != nil {
 		return fmt.Errorf("failed to convert entity: %w", err)
@@ -249,7 +278,7 @@ func (r *subscriptionRepository) Update(ctx context.Context, sub *subscription.S
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return subscription.ErrSubscriptionNotFound
+		return subscriptionerrors.ErrSubscriptionNotFound
 	}
 
 	return nil
@@ -271,13 +300,13 @@ func (r *subscriptionRepository) Delete(ctx context.Context, id uuidv7.UUID) err
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return subscription.ErrSubscriptionNotFound
+		return subscriptionerrors.ErrSubscriptionNotFound
 	}
 
 	return nil
 }
 
-func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*subscription.Subscription, error) {
+func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*aggregate.Subscription, error) {
 	offset := (page - 1) * pageSize
 
 	query := `
@@ -295,7 +324,7 @@ func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, pa
 		return nil, fmt.Errorf("failed to list subscriptions: %w", err)
 	}
 
-	subscriptions := make([]*subscription.Subscription, 0, len(rows))
+	subscriptions := make([]*aggregate.Subscription, 0, len(rows))
 	for _, row := range rows {
 		sub, err := row.toEntity()
 		if err != nil {
@@ -307,7 +336,7 @@ func (r *subscriptionRepository) ListSubscriptions(ctx context.Context, page, pa
 	return subscriptions, nil
 }
 
-func (r *subscriptionRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*subscription.Subscription, error) {
+func (r *subscriptionRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*aggregate.Subscription, error) {
 	query := `
 		SELECT id, subscription_no, customer_id, plan_id, status, billing_period,
 		       currency, amount_cents, start_date, end_date, renewal_date, trial_end_date,
@@ -322,7 +351,7 @@ func (r *subscriptionRepository) ListByCustomer(ctx context.Context, customerID 
 		return nil, fmt.Errorf("failed to list subscriptions by customer: %w", err)
 	}
 
-	subscriptions := make([]*subscription.Subscription, 0, len(rows))
+	subscriptions := make([]*aggregate.Subscription, 0, len(rows))
 	for _, row := range rows {
 		sub, err := row.toEntity()
 		if err != nil {
@@ -334,7 +363,7 @@ func (r *subscriptionRepository) ListByCustomer(ctx context.Context, customerID 
 	return subscriptions, nil
 }
 
-func (r *subscriptionRepository) ListByStatus(ctx context.Context, status subscription.SubscriptionStatus) ([]*subscription.Subscription, error) {
+func (r *subscriptionRepository) ListByStatus(ctx context.Context, status aggregate.SubscriptionStatus) ([]*aggregate.Subscription, error) {
 	query := `
 		SELECT id, subscription_no, customer_id, plan_id, status, billing_period,
 		       currency, amount_cents, start_date, end_date, renewal_date, trial_end_date,
@@ -349,7 +378,7 @@ func (r *subscriptionRepository) ListByStatus(ctx context.Context, status subscr
 		return nil, fmt.Errorf("failed to list subscriptions by status: %w", err)
 	}
 
-	subscriptions := make([]*subscription.Subscription, 0, len(rows))
+	subscriptions := make([]*aggregate.Subscription, 0, len(rows))
 	for _, row := range rows {
 		sub, err := row.toEntity()
 		if err != nil {
@@ -361,7 +390,7 @@ func (r *subscriptionRepository) ListByStatus(ctx context.Context, status subscr
 	return subscriptions, nil
 }
 
-func (r *subscriptionRepository) CountByStatus(ctx context.Context, status subscription.SubscriptionStatus) (int64, error) {
+func (r *subscriptionRepository) CountByStatus(ctx context.Context, status aggregate.SubscriptionStatus) (int64, error) {
 	query := `
 		SELECT COUNT(*)
 		FROM billing_subscriptions

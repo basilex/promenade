@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/identity/profile"
 	"github.com/basilex/promenade/internal/contexts/identity/profile/adapter/repository/postgres"
+	profileAggregate "github.com/basilex/promenade/internal/contexts/identity/profile/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -30,7 +30,7 @@ func TestProfileRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create
-		p, err := profile.NewProfile(userID, "Test User")
+		p, err := profileAggregate.NewProfile(userID, "Test User")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, p))
 
@@ -75,7 +75,7 @@ func TestProfileRepository_Queries(t *testing.T) {
 				userID, fmt.Sprintf("user%d@test.com", i), "hash", "active")
 			require.NoError(t, err)
 
-			p, _ := profile.NewProfile(userID, fmt.Sprintf("User %d", i))
+			p, _ := profileAggregate.NewProfile(userID, fmt.Sprintf("User %d", i))
 			if i < 2 {
 				p.SetPublic() // Make first 2 public
 			}

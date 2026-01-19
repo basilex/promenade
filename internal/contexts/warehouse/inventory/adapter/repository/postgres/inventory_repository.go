@@ -5,56 +5,85 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 
+	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/repository"
-	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // inventoryRepository implements repository.IInventoryRepository using PostgreSQL.
 type inventoryRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewInventoryRepository creates a new PostgreSQL inventory repository.
 func NewInventoryRepository(db *sqlx.DB) repository.IInventoryRepository {
 	return &inventoryRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *inventoryRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *inventoryRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *inventoryRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *inventoryRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *inventoryRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // inventoryRow represents database row structure for inventory table.
 // Maps database columns to Go struct fields.
 type inventoryRow struct {
-	ID                 string         `db:"id"`
-	Version            int            `db:"version"`
-	ProductID          string         `db:"product_id"`
-	SKU                string         `db:"sku"`
-	ProductName        string         `db:"product_name"`
-	QuantityOnHand     int            `db:"quantity_on_hand"`
-	QuantityReserved   int            `db:"quantity_reserved"`
-	QuantityCommitted  int            `db:"quantity_committed"`
-	QuantityAvailable  int            `db:"quantity_available"`
-	WarehouseID        string         `db:"warehouse_id"`
-	LocationCode       sql.NullString `db:"location_code"`
-	LocationZone       sql.NullString `db:"location_zone"`
-	ReorderPoint       int            `db:"reorder_point"`
-	ReorderQuantity    int            `db:"reorder_quantity"`
-	LastRestocked      sql.NullTime   `db:"last_restocked"`
-	Status             string         `db:"status"`
-	IsActive           bool           `db:"is_active"`
-	Notes              sql.NullString `db:"notes"`
-	UnitCostCents      int64          `db:"unit_cost_cents"`
-	CurrencyCode       string         `db:"currency_code"`
-	LastUpdatedBy      sql.NullString `db:"last_updated_by"`
-	CreatedAt          time.Time      `db:"created_at"`
-	UpdatedAt          time.Time      `db:"updated_at"`
-	DeletedAt          sql.NullTime   `db:"deleted_at"`
+	ID                string         `db:"id"`
+	Version           int            `db:"version"`
+	ProductID         string         `db:"product_id"`
+	SKU               string         `db:"sku"`
+	ProductName       string         `db:"product_name"`
+	QuantityOnHand    int            `db:"quantity_on_hand"`
+	QuantityReserved  int            `db:"quantity_reserved"`
+	QuantityCommitted int            `db:"quantity_committed"`
+	QuantityAvailable int            `db:"quantity_available"`
+	WarehouseID       string         `db:"warehouse_id"`
+	LocationCode      sql.NullString `db:"location_code"`
+	LocationZone      sql.NullString `db:"location_zone"`
+	ReorderPoint      int            `db:"reorder_point"`
+	ReorderQuantity   int            `db:"reorder_quantity"`
+	LastRestocked     sql.NullTime   `db:"last_restocked"`
+	Status            string         `db:"status"`
+	IsActive          bool           `db:"is_active"`
+	Notes             sql.NullString `db:"notes"`
+	UnitCostCents     int64          `db:"unit_cost_cents"`
+	CurrencyCode      string         `db:"currency_code"`
+	LastUpdatedBy     sql.NullString `db:"last_updated_by"`
+	CreatedAt         time.Time      `db:"created_at"`
+	UpdatedAt         time.Time      `db:"updated_at"`
+	DeletedAt         sql.NullTime   `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity.
@@ -90,34 +119,34 @@ func (r *inventoryRow) toEntity() (*aggregate.Inventory, error) {
 	inv.QuantityCommitted = r.QuantityCommitted
 	inv.QuantityAvailable = r.QuantityAvailable
 	inv.WarehouseID = r.WarehouseID
-	
+
 	if r.LocationCode.Valid {
 		inv.LocationCode = r.LocationCode.String
 	}
 	if r.LocationZone.Valid {
 		inv.LocationZone = r.LocationZone.String
 	}
-	
+
 	inv.ReorderPoint = r.ReorderPoint
 	inv.ReorderQuantity = r.ReorderQuantity
-	
+
 	if r.LastRestocked.Valid {
 		inv.LastRestocked = r.LastRestocked.Time
 	}
-	
+
 	inv.Status = aggregate.InventoryStatus(r.Status)
 	inv.IsActive = r.IsActive
-	
+
 	if r.Notes.Valid {
 		inv.Notes = r.Notes.String
 	}
-	
+
 	inv.UnitCostCents = r.UnitCostCents
 	inv.CurrencyCode = r.CurrencyCode
 	inv.LastUpdatedBy = lastUpdatedBy
 	inv.CreatedAt = r.CreatedAt
 	inv.UpdatedAt = r.UpdatedAt
-	
+
 	if r.DeletedAt.Valid {
 		inv.DeletedAt = &r.DeletedAt.Time
 	}

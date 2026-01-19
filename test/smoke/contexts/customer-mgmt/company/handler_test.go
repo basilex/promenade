@@ -6,6 +6,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyHTTP "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/http"
+	companyAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/smoke"
@@ -13,71 +14,71 @@ import (
 
 // MockCompanyUseCase implements company.IUseCase for smoke testing
 type MockCompanyUseCase struct {
-	CreateCompanyFunc             func(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*company.Company, error)
-	GetCompanyFunc                func(ctx context.Context, id uuidv7.UUID) (*company.Company, error)
-	GetCompanyByNameFunc          func(ctx context.Context, name string) (*company.Company, error)
-	GetCompanyByTaxIDFunc         func(ctx context.Context, taxID string) (*company.Company, error)
-	ListCompaniesFunc             func(ctx context.Context, page, pageSize int) ([]*company.Company, int, error)
-	ListCompaniesByIndustryFunc   func(ctx context.Context, industry string, page, pageSize int) ([]*company.Company, int, error)
-	ListCompaniesBySizeFunc       func(ctx context.Context, size string, page, pageSize int) ([]*company.Company, int, error)
-	ListSubsidiariesFunc          func(ctx context.Context, parentCompanyID uuidv7.UUID) ([]*company.Company, error)
-	UpdateCompanyBasicInfoFunc    func(ctx context.Context, id uuidv7.UUID, name string, legalName *string, companyType string, taxID *string, registrationNumber *string) (*company.Company, error)
-	UpdateCompanyContactInfoFunc  func(ctx context.Context, id uuidv7.UUID, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address) (*company.Company, error)
-	UpdateCompanyBusinessInfoFunc func(ctx context.Context, id uuidv7.UUID, industry *string, size string, employeeCount int, revenue int64, currency string) (*company.Company, error)
-	SetParentCompanyFunc          func(ctx context.Context, id uuidv7.UUID, parentCompanyID *uuidv7.UUID) (*company.Company, error)
-	UpdateCompanyDescriptionFunc  func(ctx context.Context, id uuidv7.UUID, description *string) (*company.Company, error)
+	CreateCompanyFunc             func(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*companyAggregate.Company, error)
+	GetCompanyFunc                func(ctx context.Context, id uuidv7.UUID) (*companyAggregate.Company, error)
+	GetCompanyByNameFunc          func(ctx context.Context, name string) (*companyAggregate.Company, error)
+	GetCompanyByTaxIDFunc         func(ctx context.Context, taxID string) (*companyAggregate.Company, error)
+	ListCompaniesFunc             func(ctx context.Context, page, pageSize int) ([]*companyAggregate.Company, int, error)
+	ListCompaniesByIndustryFunc   func(ctx context.Context, industry string, page, pageSize int) ([]*companyAggregate.Company, int, error)
+	ListCompaniesBySizeFunc       func(ctx context.Context, size string, page, pageSize int) ([]*companyAggregate.Company, int, error)
+	ListSubsidiariesFunc          func(ctx context.Context, parentCompanyID uuidv7.UUID) ([]*companyAggregate.Company, error)
+	UpdateCompanyBasicInfoFunc    func(ctx context.Context, id uuidv7.UUID, name string, legalName *string, companyType string, taxID *string, registrationNumber *string) (*companyAggregate.Company, error)
+	UpdateCompanyContactInfoFunc  func(ctx context.Context, id uuidv7.UUID, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address) (*companyAggregate.Company, error)
+	UpdateCompanyBusinessInfoFunc func(ctx context.Context, id uuidv7.UUID, industry *string, size string, employeeCount int, revenue int64, currency string) (*companyAggregate.Company, error)
+	SetParentCompanyFunc          func(ctx context.Context, id uuidv7.UUID, parentCompanyID *uuidv7.UUID) (*companyAggregate.Company, error)
+	UpdateCompanyDescriptionFunc  func(ctx context.Context, id uuidv7.UUID, description *string) (*companyAggregate.Company, error)
 	DeleteCompanyFunc             func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockCompanyUseCase) CreateCompany(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*company.Company, error) {
+func (m *MockCompanyUseCase) CreateCompany(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*companyAggregate.Company, error) {
 	return m.CreateCompanyFunc(ctx, name, legalName, companyType, taxID, registrationNumber, website, email, phone, address, industry, size, employeeCount, revenue, currency, description, parentCompanyID)
 }
 
-func (m *MockCompanyUseCase) GetCompany(ctx context.Context, id uuidv7.UUID) (*company.Company, error) {
+func (m *MockCompanyUseCase) GetCompany(ctx context.Context, id uuidv7.UUID) (*companyAggregate.Company, error) {
 	return m.GetCompanyFunc(ctx, id)
 }
 
-func (m *MockCompanyUseCase) GetCompanyByName(ctx context.Context, name string) (*company.Company, error) {
+func (m *MockCompanyUseCase) GetCompanyByName(ctx context.Context, name string) (*companyAggregate.Company, error) {
 	return m.GetCompanyByNameFunc(ctx, name)
 }
 
-func (m *MockCompanyUseCase) GetCompanyByTaxID(ctx context.Context, taxID string) (*company.Company, error) {
+func (m *MockCompanyUseCase) GetCompanyByTaxID(ctx context.Context, taxID string) (*companyAggregate.Company, error) {
 	return m.GetCompanyByTaxIDFunc(ctx, taxID)
 }
 
-func (m *MockCompanyUseCase) ListCompanies(ctx context.Context, page, pageSize int) ([]*company.Company, int, error) {
+func (m *MockCompanyUseCase) ListCompanies(ctx context.Context, page, pageSize int) ([]*companyAggregate.Company, int, error) {
 	return m.ListCompaniesFunc(ctx, page, pageSize)
 }
 
-func (m *MockCompanyUseCase) ListCompaniesByIndustry(ctx context.Context, industry string, page, pageSize int) ([]*company.Company, int, error) {
+func (m *MockCompanyUseCase) ListCompaniesByIndustry(ctx context.Context, industry string, page, pageSize int) ([]*companyAggregate.Company, int, error) {
 	return m.ListCompaniesByIndustryFunc(ctx, industry, page, pageSize)
 }
 
-func (m *MockCompanyUseCase) ListCompaniesBySize(ctx context.Context, size string, page, pageSize int) ([]*company.Company, int, error) {
+func (m *MockCompanyUseCase) ListCompaniesBySize(ctx context.Context, size string, page, pageSize int) ([]*companyAggregate.Company, int, error) {
 	return m.ListCompaniesBySizeFunc(ctx, size, page, pageSize)
 }
 
-func (m *MockCompanyUseCase) ListSubsidiaries(ctx context.Context, parentCompanyID uuidv7.UUID) ([]*company.Company, error) {
+func (m *MockCompanyUseCase) ListSubsidiaries(ctx context.Context, parentCompanyID uuidv7.UUID) ([]*companyAggregate.Company, error) {
 	return m.ListSubsidiariesFunc(ctx, parentCompanyID)
 }
 
-func (m *MockCompanyUseCase) UpdateCompanyBasicInfo(ctx context.Context, id uuidv7.UUID, name string, legalName *string, companyType string, taxID *string, registrationNumber *string) (*company.Company, error) {
+func (m *MockCompanyUseCase) UpdateCompanyBasicInfo(ctx context.Context, id uuidv7.UUID, name string, legalName *string, companyType string, taxID *string, registrationNumber *string) (*companyAggregate.Company, error) {
 	return m.UpdateCompanyBasicInfoFunc(ctx, id, name, legalName, companyType, taxID, registrationNumber)
 }
 
-func (m *MockCompanyUseCase) UpdateCompanyContactInfo(ctx context.Context, id uuidv7.UUID, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address) (*company.Company, error) {
+func (m *MockCompanyUseCase) UpdateCompanyContactInfo(ctx context.Context, id uuidv7.UUID, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address) (*companyAggregate.Company, error) {
 	return m.UpdateCompanyContactInfoFunc(ctx, id, website, email, phone, address)
 }
 
-func (m *MockCompanyUseCase) UpdateCompanyBusinessInfo(ctx context.Context, id uuidv7.UUID, industry *string, size string, employeeCount int, revenue int64, currency string) (*company.Company, error) {
+func (m *MockCompanyUseCase) UpdateCompanyBusinessInfo(ctx context.Context, id uuidv7.UUID, industry *string, size string, employeeCount int, revenue int64, currency string) (*companyAggregate.Company, error) {
 	return m.UpdateCompanyBusinessInfoFunc(ctx, id, industry, size, employeeCount, revenue, currency)
 }
 
-func (m *MockCompanyUseCase) SetParentCompany(ctx context.Context, id uuidv7.UUID, parentCompanyID *uuidv7.UUID) (*company.Company, error) {
+func (m *MockCompanyUseCase) SetParentCompany(ctx context.Context, id uuidv7.UUID, parentCompanyID *uuidv7.UUID) (*companyAggregate.Company, error) {
 	return m.SetParentCompanyFunc(ctx, id, parentCompanyID)
 }
 
-func (m *MockCompanyUseCase) UpdateCompanyDescription(ctx context.Context, id uuidv7.UUID, description *string) (*company.Company, error) {
+func (m *MockCompanyUseCase) UpdateCompanyDescription(ctx context.Context, id uuidv7.UUID, description *string) (*companyAggregate.Company, error) {
 	return m.UpdateCompanyDescriptionFunc(ctx, id, description)
 }
 
@@ -86,9 +87,9 @@ func (m *MockCompanyUseCase) DeleteCompany(ctx context.Context, id uuidv7.UUID) 
 }
 
 // fakeCompany creates a fake company for testing
-func fakeCompany() *company.Company {
+func fakeCompany() *companyAggregate.Company {
 	legalName := "Acme Corporation LLC"
-	comp, _ := company.NewCompany("Acme Corp", "corporation")
+	comp, _ := companyAggregate.NewCompany("Acme Corp", "corporation")
 	comp.LegalName = &legalName
 	return comp
 }
@@ -98,7 +99,7 @@ func TestCompanyHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCompanyUseCase{
-		CreateCompanyFunc: func(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*company.Company, error) {
+		CreateCompanyFunc: func(ctx context.Context, name string, legalName *string, companyType string, taxID *string, registrationNumber *string, website *string, email *valueobject.Email, phone *valueobject.Phone, address *valueobject.Address, industry *string, size string, employeeCount int, revenue int64, currency string, description *string, parentCompanyID *uuidv7.UUID) (*companyAggregate.Company, error) {
 			return fakeCompany(), nil
 		},
 	}
@@ -140,7 +141,7 @@ func TestCompanyHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCompanyUseCase{
-		GetCompanyFunc: func(ctx context.Context, id uuidv7.UUID) (*company.Company, error) {
+		GetCompanyFunc: func(ctx context.Context, id uuidv7.UUID) (*companyAggregate.Company, error) {
 			return fakeCompany(), nil
 		},
 	}
@@ -157,7 +158,7 @@ func TestCompanyHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCompanyUseCase{
-		GetCompanyFunc: func(ctx context.Context, id uuidv7.UUID) (*company.Company, error) {
+		GetCompanyFunc: func(ctx context.Context, id uuidv7.UUID) (*companyAggregate.Company, error) {
 			return nil, company.ErrCompanyNotFound
 		},
 	}
@@ -174,8 +175,8 @@ func TestCompanyHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCompanyUseCase{
-		ListCompaniesFunc: func(ctx context.Context, page, pageSize int) ([]*company.Company, int, error) {
-			return []*company.Company{fakeCompany()}, 1, nil
+		ListCompaniesFunc: func(ctx context.Context, page, pageSize int) ([]*companyAggregate.Company, int, error) {
+			return []*companyAggregate.Company{fakeCompany()}, 1, nil
 		},
 	}
 
@@ -191,8 +192,8 @@ func TestCompanyHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockCompanyUseCase{
-		ListCompaniesFunc: func(ctx context.Context, page, pageSize int) ([]*company.Company, int, error) {
-			return []*company.Company{}, 0, nil
+		ListCompaniesFunc: func(ctx context.Context, page, pageSize int) ([]*companyAggregate.Company, int, error) {
+			return []*companyAggregate.Company{}, 0, nil
 		},
 	}
 

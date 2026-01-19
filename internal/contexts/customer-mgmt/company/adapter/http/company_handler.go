@@ -209,7 +209,7 @@ func (h *CompanyHandler) GetByTaxID(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} CompanyListResponse
+// @Success 200 {object} dto.CompanyListResponse
 // @Failure 400 {object} response.Response "Invalid pagination"
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies [get]
@@ -234,7 +234,7 @@ func (h *CompanyHandler) List(c *gin.Context) {
 // @Param industry path string true "Industry name"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} CompanyListResponse
+// @Success 200 {object} dto.CompanyListResponse
 // @Failure 400 {object} response.Response "Invalid pagination"
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/industry/{industry} [get]
@@ -265,7 +265,7 @@ func (h *CompanyHandler) ListByIndustry(c *gin.Context) {
 // @Param size path string true "Company size" Enums(micro, small, medium, large, enterprise)
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} CompanyListResponse
+// @Success 200 {object} dto.CompanyListResponse
 // @Failure 400 {object} response.Response "Invalid size or pagination"
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/size/{size} [get]
@@ -297,7 +297,7 @@ func (h *CompanyHandler) ListBySize(c *gin.Context) {
 // @Param id path string true "Parent Company ID (UUID)"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} CompanyListResponse
+// @Success 200 {object} dto.CompanyListResponse
 // @Failure 400 {object} response.Response "Invalid ID or pagination"
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/companies/{id}/subsidiaries [get]

@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	"github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/repository/postgres"
+	timezoneAggregate "github.com/basilex/promenade/internal/contexts/shared/timezone/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -20,8 +20,8 @@ func TestTimezoneRepository_CRUD(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		tz := func() *timezone.Timezone {
-			tz, _ := timezone.NewTimezone("Test/Zone", "TST", 0)
+		tz := func() *timezoneAggregate.Timezone {
+			tz, _ := timezoneAggregate.NewTimezone("Test/Zone", "TST", 0)
 			return tz
 		}()
 		require.NoError(t, repo.Create(ctx, tz))
@@ -43,8 +43,8 @@ func TestTimezoneRepository_Queries(t *testing.T) {
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := postgres.NewRepository(tx)
-		tz := func() *timezone.Timezone {
-			tz, _ := timezone.NewTimezone("Test/Zone", "TST", 0)
+		tz := func() *timezoneAggregate.Timezone {
+			tz, _ := timezoneAggregate.NewTimezone("Test/Zone", "TST", 0)
 			return tz
 		}()
 		require.NoError(t, repo.Create(ctx, tz))

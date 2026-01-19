@@ -60,7 +60,7 @@ func (p Phone) CountryCode() string {
 	if len(p.value) < 2 {
 		return ""
 	}
-	
+
 	// Common country codes (1-3 digits)
 	for i := 2; i <= 4 && i < len(p.value); i++ {
 		code := p.value[1:i]
@@ -68,7 +68,7 @@ func (p Phone) CountryCode() string {
 			return code
 		}
 	}
-	
+
 	return ""
 }
 
@@ -78,11 +78,11 @@ func (p Phone) Formatted() string {
 	if len(p.value) < 4 {
 		return p.value
 	}
-	
+
 	// Simple formatting: +CC XX XXX XXXX
 	result := p.value[:4]
 	remaining := p.value[4:]
-	
+
 	for i := 0; i < len(remaining); i += 3 {
 		end := i + 3
 		if end > len(remaining) {
@@ -90,7 +90,7 @@ func (p Phone) Formatted() string {
 		}
 		result += " " + remaining[i:end]
 	}
-	
+
 	return result
 }
 
@@ -157,6 +157,6 @@ func isValidCountryCode(code string) bool {
 		"420": true, // Czech Republic
 		"421": true, // Slovakia
 	}
-	
+
 	return valid[code]
 }

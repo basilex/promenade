@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
+	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/repository"
-	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 

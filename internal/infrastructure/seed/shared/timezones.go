@@ -4,14 +4,15 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/basilex/promenade/internal/contexts/shared/timezone"
+	"github.com/basilex/promenade/internal/contexts/shared/timezone/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/timezone/repository"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/ref"
 )
 
 // newTimezone is a helper to create a timezone with all fields
-func newTimezone(name, abbreviation string, utcOffsetSeconds int, countryCode string, dstOffset *int, displayName string, isActive bool) *timezone.Timezone {
-	tz, _ := timezone.NewTimezone(name, abbreviation, utcOffsetSeconds)
+func newTimezone(name, abbreviation string, utcOffsetSeconds int, countryCode string, dstOffset *int, displayName string, isActive bool) *aggregate.Timezone {
+	tz, _ := aggregate.NewTimezone(name, abbreviation, utcOffsetSeconds)
 	tz.CountryCode = countryCode
 	tz.DSTOffset = dstOffset
 	tz.DisplayName = displayName
@@ -20,8 +21,8 @@ func newTimezone(name, abbreviation string, utcOffsetSeconds int, countryCode st
 }
 
 // TimezonesData returns reference timezone data for seeding (100+ IANA timezones)
-func TimezonesData() []*timezone.Timezone {
-	return []*timezone.Timezone{
+func TimezonesData() []*aggregate.Timezone {
+	return []*aggregate.Timezone{
 		// UTC & Special
 		newTimezone("UTC", "UTC", 0, "", ref.Int(0), "Coordinated Universal Time", true),
 		newTimezone("GMT", "GMT", 0, "GB", ref.Int(0), "Greenwich Mean Time", true),
@@ -145,7 +146,7 @@ func TimezonesData() []*timezone.Timezone {
 }
 
 // SeedTimezones inserts timezone data into database
-func SeedTimezones(ctx context.Context, repo timezone.IRepository) error {
+func SeedTimezones(ctx context.Context, repo repository.ITimezoneRepository) error {
 	timezones := TimezonesData()
 	logger.FromContext(ctx).Info("Seeding timezones...", slog.Int("count", len(timezones)))
 

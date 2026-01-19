@@ -10,21 +10,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/scripting/script"
+	"github.com/basilex/promenade/internal/contexts/scripting/script/aggregate"
+	"github.com/basilex/promenade/internal/contexts/scripting/script/usecase"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// scriptRepository implements script.IRepository
+// scriptRepository implements repository.IScriptRepository
 type scriptRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewScriptRepository creates a new script repository
-func NewScriptRepository(db *sqlx.DB) script.IRepository {
+func NewScriptRepository(db *sqlx.DB) usecase.IScriptRepository {
 	return &scriptRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *scriptRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *scriptRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *scriptRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes query without returning rows
+func (r *scriptRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query
+func (r *scriptRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // scriptRow is the database row representation
@@ -69,13 +99,13 @@ type versionRow struct {
 	CreatedAt time.Time                          `db:"created_at"`
 }
 
-func (r *versionRow) toEntity() (*script.ScriptVersion, error) {
+func (r *versionRow) toEntity() (*aggregate.ScriptVersion, error) {
 	scriptID, err := uuidv7.Parse(r.ScriptID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid script ID: %w", err)
 	}
 
-	version := &script.ScriptVersion{
+	version := &aggregate.ScriptVersion{
 		ScriptID:  scriptID,
 		Version:   r.Version,
 		Code:      r.Code,
@@ -103,17 +133,17 @@ func (r *versionRow) toEntity() (*script.ScriptVersion, error) {
 }
 
 // toEntity converts scriptRow to domain entity
-func (r *scriptRow) toEntity() (*script.Script, error) {
+func (r *scriptRow) toEntity() (*aggregate.Script, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid script ID: %w", err)
 	}
 
-	s := &script.Script{
+	s := &aggregate.Script{
 		Name:     r.Name,
 		Code:     r.Code,
 		Version:  r.Version,
-		Status:   script.ScriptStatus(r.Status),
+		Status:   aggregate.ScriptStatus(r.Status),
 		Metadata: r.Metadata, // No manual JSON parsing needed!
 	}
 
@@ -128,7 +158,7 @@ func (r *scriptRow) toEntity() (*script.Script, error) {
 	}
 
 	if r.ScriptType.Valid {
-		s.ScriptType = script.ScriptType(r.ScriptType.String)
+		s.ScriptType = aggregate.ScriptType(r.ScriptType.String)
 	}
 
 	if r.EntityType.Valid {
@@ -143,7 +173,7 @@ func (r *scriptRow) toEntity() (*script.Script, error) {
 }
 
 // toRow converts domain entity to database row
-func toRow(s *script.Script) (*scriptRow, error) {
+func toRow(s *aggregate.Script) (*scriptRow, error) {
 	row := &scriptRow{
 		ID:        s.GetID().String(),
 		Name:      s.Name,
@@ -178,7 +208,7 @@ func toRow(s *script.Script) (*scriptRow, error) {
 }
 
 // toExecutionEntity converts executionRow to domain entity
-func (r *executionRow) toEntity() (*script.ScriptExecution, error) {
+func (r *executionRow) toEntity() (*aggregate.ScriptExecution, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid execution ID: %w", err)
@@ -194,7 +224,7 @@ func (r *executionRow) toEntity() (*script.ScriptExecution, error) {
 		return nil, fmt.Errorf("invalid executed_by ID: %w", err)
 	}
 
-	exec := &script.ScriptExecution{
+	exec := &aggregate.ScriptExecution{
 		ID:         id,
 		ScriptID:   scriptID,
 		ScriptName: r.ScriptName,
@@ -221,7 +251,7 @@ func (r *executionRow) toEntity() (*script.ScriptExecution, error) {
 		exec.OutputResult = result
 	}
 
-	// Error message
+	// scripterrors.Error message
 	if r.Error.Valid {
 		exec.Error = &r.Error.String
 	}
@@ -230,7 +260,7 @@ func (r *executionRow) toEntity() (*script.ScriptExecution, error) {
 }
 
 // toExecutionRow converts domain entity to database row
-func toExecutionRow(e *script.ScriptExecution) (*executionRow, error) {
+func toExecutionRow(e *aggregate.ScriptExecution) (*executionRow, error) {
 	row := &executionRow{
 		ID:         e.ID.String(),
 		ScriptID:   e.ScriptID.String(),
@@ -258,7 +288,7 @@ func toExecutionRow(e *script.ScriptExecution) (*executionRow, error) {
 		row.OutputResult = sql.NullString{String: string(resultJSON), Valid: true}
 	}
 
-	// Error message
+	// scripterrors.Error message
 	if e.Error != nil {
 		row.Error = sql.NullString{String: *e.Error, Valid: true}
 	}
@@ -266,7 +296,7 @@ func toExecutionRow(e *script.ScriptExecution) (*executionRow, error) {
 	return row, nil
 }
 
-func toVersionRow(v *script.ScriptVersion) *versionRow {
+func toVersionRow(v *aggregate.ScriptVersion) *versionRow {
 	row := &versionRow{
 		ID:        v.ID.String(),
 		ScriptID:  v.ScriptID.String(),
@@ -287,7 +317,7 @@ func toVersionRow(v *script.ScriptVersion) *versionRow {
 }
 
 // Create inserts a new script
-func (r *scriptRepository) Create(ctx context.Context, s *script.Script) error {
+func (r *scriptRepository) Create(ctx context.Context, s *aggregate.Script) error {
 	row, err := toRow(s)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -312,7 +342,7 @@ func (r *scriptRepository) Create(ctx context.Context, s *script.Script) error {
 }
 
 // CreateVersion inserts a new script version snapshot
-func (r *scriptRepository) CreateVersion(ctx context.Context, v *script.ScriptVersion) error {
+func (r *scriptRepository) CreateVersion(ctx context.Context, v *aggregate.ScriptVersion) error {
 	if v == nil {
 		return fmt.Errorf("script version is nil")
 	}
@@ -334,7 +364,7 @@ func (r *scriptRepository) CreateVersion(ctx context.Context, v *script.ScriptVe
 }
 
 // ListVersions retrieves script versions for a script ID
-func (r *scriptRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
+func (r *scriptRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*aggregate.ScriptVersion, int, error) {
 	countQuery := `SELECT COUNT(*) FROM scripting_script_versions WHERE script_id = $1`
 	var total int
 	if err := r.Get(ctx, &total, countQuery, scriptID.String()); err != nil {
@@ -351,7 +381,7 @@ func (r *scriptRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUI
 		return nil, 0, fmt.Errorf("failed to list script versions: %w", err)
 	}
 
-	versions := make([]*script.ScriptVersion, 0, len(rows))
+	versions := make([]*aggregate.ScriptVersion, 0, len(rows))
 	for _, row := range rows {
 		version, err := row.toEntity()
 		if err != nil {
@@ -364,7 +394,7 @@ func (r *scriptRepository) ListVersions(ctx context.Context, scriptID uuidv7.UUI
 }
 
 // GetByID retrieves a script by ID
-func (r *scriptRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*script.Script, error) {
+func (r *scriptRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Script, error) {
 	var row scriptRow
 	query := `
 		SELECT * FROM scripting_scripts
@@ -381,7 +411,7 @@ func (r *scriptRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*script
 }
 
 // GetByName retrieves a script by name
-func (r *scriptRepository) GetByName(ctx context.Context, name string) (*script.Script, error) {
+func (r *scriptRepository) GetByName(ctx context.Context, name string) (*aggregate.Script, error) {
 	var row scriptRow
 	query := `
 		SELECT * FROM scripting_scripts
@@ -398,7 +428,7 @@ func (r *scriptRepository) GetByName(ctx context.Context, name string) (*script.
 }
 
 // Update updates an existing script
-func (r *scriptRepository) Update(ctx context.Context, s *script.Script) error {
+func (r *scriptRepository) Update(ctx context.Context, s *aggregate.Script) error {
 	row, err := toRow(s)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -460,7 +490,7 @@ func (r *scriptRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 }
 
 // List retrieves scripts by status with pagination
-func (r *scriptRepository) List(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error) {
+func (r *scriptRepository) List(ctx context.Context, status aggregate.ScriptStatus, limit, offset int) ([]*aggregate.Script, int, error) {
 	var rows []scriptRow
 
 	query := `
@@ -484,7 +514,7 @@ func (r *scriptRepository) List(ctx context.Context, status script.ScriptStatus,
 	}
 
 	// Convert rows to entities
-	scripts := make([]*script.Script, 0, len(rows))
+	scripts := make([]*aggregate.Script, 0, len(rows))
 	for _, row := range rows {
 		s, err := row.toEntity()
 		if err != nil {
@@ -497,7 +527,7 @@ func (r *scriptRepository) List(ctx context.Context, status script.ScriptStatus,
 }
 
 // ListAll retrieves all scripts with pagination
-func (r *scriptRepository) ListAll(ctx context.Context, limit, offset int) ([]*script.Script, int, error) {
+func (r *scriptRepository) ListAll(ctx context.Context, limit, offset int) ([]*aggregate.Script, int, error) {
 	var rows []scriptRow
 
 	query := `
@@ -519,7 +549,7 @@ func (r *scriptRepository) ListAll(ctx context.Context, limit, offset int) ([]*s
 	}
 
 	// Convert rows to entities
-	scripts := make([]*script.Script, 0, len(rows))
+	scripts := make([]*aggregate.Script, 0, len(rows))
 	for _, row := range rows {
 		s, err := row.toEntity()
 		if err != nil {
@@ -532,7 +562,7 @@ func (r *scriptRepository) ListAll(ctx context.Context, limit, offset int) ([]*s
 }
 
 // CreateExecution inserts a new script execution record
-func (r *scriptRepository) CreateExecution(ctx context.Context, e *script.ScriptExecution) error {
+func (r *scriptRepository) CreateExecution(ctx context.Context, e *aggregate.ScriptExecution) error {
 	row, err := toExecutionRow(e)
 	if err != nil {
 		return fmt.Errorf("failed to convert to row: %w", err)
@@ -555,7 +585,7 @@ func (r *scriptRepository) CreateExecution(ctx context.Context, e *script.Script
 }
 
 // GetExecutionByID retrieves a script execution by ID
-func (r *scriptRepository) GetExecutionByID(ctx context.Context, id uuidv7.UUID) (*script.ScriptExecution, error) {
+func (r *scriptRepository) GetExecutionByID(ctx context.Context, id uuidv7.UUID) (*aggregate.ScriptExecution, error) {
 	var row executionRow
 	query := `SELECT * FROM scripting_script_executions WHERE id = $1`
 
@@ -570,7 +600,7 @@ func (r *scriptRepository) GetExecutionByID(ctx context.Context, id uuidv7.UUID)
 }
 
 // GetExecutionHistory retrieves execution history for a script with pagination
-func (r *scriptRepository) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error) {
+func (r *scriptRepository) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*aggregate.ScriptExecution, int, error) {
 	var rows []executionRow
 
 	query := `
@@ -592,7 +622,7 @@ func (r *scriptRepository) GetExecutionHistory(ctx context.Context, scriptID uui
 	}
 
 	// Convert rows to entities
-	executions := make([]*script.ScriptExecution, 0, len(rows))
+	executions := make([]*aggregate.ScriptExecution, 0, len(rows))
 	for _, row := range rows {
 		e, err := row.toEntity()
 		if err != nil {
@@ -605,7 +635,7 @@ func (r *scriptRepository) GetExecutionHistory(ctx context.Context, scriptID uui
 }
 
 // GetRecentExecutions retrieves most recent executions across all scripts
-func (r *scriptRepository) GetRecentExecutions(ctx context.Context, limit int) ([]*script.ScriptExecution, error) {
+func (r *scriptRepository) GetRecentExecutions(ctx context.Context, limit int) ([]*aggregate.ScriptExecution, error) {
 	var rows []executionRow
 
 	query := `
@@ -618,7 +648,7 @@ func (r *scriptRepository) GetRecentExecutions(ctx context.Context, limit int) (
 	}
 
 	// Convert rows to entities
-	executions := make([]*script.ScriptExecution, 0, len(rows))
+	executions := make([]*aggregate.ScriptExecution, 0, len(rows))
 	for _, row := range rows {
 		e, err := row.toEntity()
 		if err != nil {

@@ -198,8 +198,8 @@ func TestPaymentTypeCase(t *testing.T) {
 		wantErr bool
 	}{
 		{input: "cash", wantErr: false},
-		{input: "CASH", wantErr: true},  // Case sensitive
-		{input: "Cash", wantErr: true},  // Case sensitive
+		{input: "CASH", wantErr: true}, // Case sensitive
+		{input: "Cash", wantErr: true}, // Case sensitive
 		{input: "card", wantErr: false},
 		{input: "CARD", wantErr: true},
 		{input: "Card", wantErr: true},

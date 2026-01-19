@@ -8,47 +8,73 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
+	contracterrors "github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract/aggregate"
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 type contractRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewContractRepository creates a new contract repository
-func NewContractRepository(db *sqlx.DB) contract.IContractRepository {
+func NewContractRepository(db *sqlx.DB) repository.IContractRepository {
 	return &contractRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *contractRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *contractRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *contractRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes query without returning rows
+func (r *contractRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
 }
 
 // contractRow represents database row for contract
 type contractRow struct {
-	ID                  string         `db:"id"`
-	OrderID             string         `db:"order_id"`
-	CustomerID          string         `db:"customer_id"`
-	Status              string         `db:"status"`
-	Terms               sql.NullString `db:"terms"`
-	TermsURL            sql.NullString `db:"terms_url"`
-	SignatureID         sql.NullString `db:"signature_id"`
-	Version             int            `db:"version"`
-	SignedAt            sql.NullTime   `db:"signed_at"`
-	ActivatedAt         sql.NullTime   `db:"activated_at"`
-	CompletedAt         sql.NullTime   `db:"completed_at"`
-	TerminatedAt        sql.NullTime   `db:"terminated_at"`
-	RenewedAt           sql.NullTime   `db:"renewed_at"`
-	ExpiresAt           sql.NullTime   `db:"expires_at"`
-	TerminationReason   sql.NullString `db:"termination_reason"`
-	SignedByName        sql.NullString `db:"signed_by_name"`
-	SignedByEmail       sql.NullString `db:"signed_by_email"`
-	CreatedAt           time.Time      `db:"created_at"`
-	UpdatedAt           time.Time      `db:"updated_at"`
-	DeletedAt           sql.NullTime   `db:"deleted_at"`
+	ID                string         `db:"id"`
+	OrderID           string         `db:"order_id"`
+	CustomerID        string         `db:"customer_id"`
+	Status            string         `db:"status"`
+	Terms             sql.NullString `db:"terms"`
+	TermsURL          sql.NullString `db:"terms_url"`
+	SignatureID       sql.NullString `db:"signature_id"`
+	Version           int            `db:"version"`
+	SignedAt          sql.NullTime   `db:"signed_at"`
+	ActivatedAt       sql.NullTime   `db:"activated_at"`
+	CompletedAt       sql.NullTime   `db:"completed_at"`
+	TerminatedAt      sql.NullTime   `db:"terminated_at"`
+	RenewedAt         sql.NullTime   `db:"renewed_at"`
+	ExpiresAt         sql.NullTime   `db:"expires_at"`
+	TerminationReason sql.NullString `db:"termination_reason"`
+	SignedByName      sql.NullString `db:"signed_by_name"`
+	SignedByEmail     sql.NullString `db:"signed_by_email"`
+	CreatedAt         time.Time      `db:"created_at"`
+	UpdatedAt         time.Time      `db:"updated_at"`
+	DeletedAt         sql.NullTime   `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity
-func (row *contractRow) toEntity() (*contract.Contract, error) {
+func (row *contractRow) toEntity() (*aggregate.Contract, error) {
 	id, err := uuidv7.Parse(row.ID)
 	if err != nil {
 		return nil, fmt.Errorf("parse contract id: %w", err)
@@ -69,9 +95,9 @@ func (row *contractRow) toEntity() (*contract.Contract, error) {
 		terms = ""
 	}
 
-	c := contract.NewContract(orderID, customerID, terms)
-	c.ID = id  // Set ID directly
-	c.Status = contract.ContractStatus(row.Status)
+	c := aggregate.NewContract(orderID, customerID, terms)
+	c.ID = id // Set ID directly
+	c.Status = aggregate.ContractStatus(row.Status)
 	c.Version = row.Version
 	c.SetCreatedAt(row.CreatedAt)
 	c.SetUpdatedAt(row.UpdatedAt)
@@ -110,14 +136,14 @@ func (row *contractRow) toEntity() (*contract.Contract, error) {
 		c.SignedByEmail = row.SignedByEmail.String
 	}
 	if row.DeletedAt.Valid {
-		c.DeletedAt = &row.DeletedAt.Time  // Set DeletedAt directly
+		c.DeletedAt = &row.DeletedAt.Time // Set DeletedAt directly
 	}
 
 	return c, nil
 }
 
 // toRow converts domain entity to database row
-func toRow(c *contract.Contract) *contractRow {
+func toRow(c *aggregate.Contract) *contractRow {
 	row := &contractRow{
 		ID:         c.GetID().String(),
 		OrderID:    c.OrderID.String(),
@@ -172,7 +198,7 @@ func toRow(c *contract.Contract) *contractRow {
 }
 
 // Create inserts a new contract
-func (r *contractRepository) Create(ctx context.Context, c *contract.Contract) error {
+func (r *contractRepository) Create(ctx context.Context, c *aggregate.Contract) error {
 	row := toRow(c)
 
 	query := `
@@ -186,16 +212,17 @@ func (r *contractRepository) Create(ctx context.Context, c *contract.Contract) e
 		)
 	`
 
-	return r.Exec(ctx, query,
+	_, err := r.Exec(ctx, query,
 		row.ID, row.OrderID, row.CustomerID, row.Status, row.Terms, row.TermsURL,
 		row.SignatureID, row.Version, row.SignedAt, row.ActivatedAt, row.CompletedAt,
 		row.TerminatedAt, row.RenewedAt, row.ExpiresAt, row.TerminationReason,
 		row.SignedByName, row.SignedByEmail, row.CreatedAt, row.UpdatedAt,
 	)
+	return err
 }
 
 // GetByID retrieves a contract by ID
-func (r *contractRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*contract.Contract, error) {
+func (r *contractRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Contract, error) {
 	var row contractRow
 
 	query := `
@@ -209,7 +236,7 @@ func (r *contractRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cont
 
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, contract.ErrContractNotFound
+			return nil, contracterrors.ErrContractNotFound
 		}
 		return nil, fmt.Errorf("get contract: %w", err)
 	}
@@ -218,7 +245,7 @@ func (r *contractRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cont
 }
 
 // Update updates an existing contract
-func (r *contractRepository) Update(ctx context.Context, c *contract.Contract) error {
+func (r *contractRepository) Update(ctx context.Context, c *aggregate.Contract) error {
 	row := toRow(c)
 
 	query := `
@@ -230,7 +257,7 @@ func (r *contractRepository) Update(ctx context.Context, c *contract.Contract) e
 		WHERE id = $15 AND deleted_at IS NULL AND version = $16
 	`
 
-	result, err := r.getExecutor(ctx).ExecContext(ctx, query,
+	result, err := r.Exec(ctx, query,
 		row.Status, row.Terms, row.TermsURL, row.SignatureID, row.SignedAt,
 		row.ActivatedAt, row.CompletedAt, row.TerminatedAt, row.RenewedAt,
 		row.ExpiresAt, row.TerminationReason, row.SignedByName, row.SignedByEmail,
@@ -246,7 +273,7 @@ func (r *contractRepository) Update(ctx context.Context, c *contract.Contract) e
 	}
 
 	if affected == 0 {
-		return contract.ErrContractNotFound
+		return contracterrors.ErrContractNotFound
 	}
 
 	return nil
@@ -260,7 +287,7 @@ func (r *contractRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 		WHERE id = $2 AND deleted_at IS NULL
 	`
 
-	result, err := r.getExecutor(ctx).ExecContext(ctx, query, time.Now(), id.String())
+	result, err := r.Exec(ctx, query, time.Now(), id.String())
 	if err != nil {
 		return fmt.Errorf("delete contract: %w", err)
 	}
@@ -271,14 +298,14 @@ func (r *contractRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if affected == 0 {
-		return contract.ErrContractNotFound
+		return contracterrors.ErrContractNotFound
 	}
 
 	return nil
 }
 
 // List retrieves contracts with pagination
-func (r *contractRepository) List(ctx context.Context, offset, limit int) ([]*contract.Contract, int, error) {
+func (r *contractRepository) List(ctx context.Context, offset, limit int) ([]*aggregate.Contract, int, error) {
 	var rows []contractRow
 
 	query := `
@@ -303,7 +330,7 @@ func (r *contractRepository) List(ctx context.Context, offset, limit int) ([]*co
 		return nil, 0, fmt.Errorf("count contracts: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -316,7 +343,7 @@ func (r *contractRepository) List(ctx context.Context, offset, limit int) ([]*co
 }
 
 // GetByOrder retrieves contracts for a specific order
-func (r *contractRepository) GetByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*contract.Contract, error) {
+func (r *contractRepository) GetByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*aggregate.Contract, error) {
 	var rows []contractRow
 
 	query := `
@@ -333,7 +360,7 @@ func (r *contractRepository) GetByOrder(ctx context.Context, orderID uuidv7.UUID
 		return nil, fmt.Errorf("get contracts by order: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -346,7 +373,7 @@ func (r *contractRepository) GetByOrder(ctx context.Context, orderID uuidv7.UUID
 }
 
 // GetByCustomer retrieves contracts for a specific customer
-func (r *contractRepository) GetByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*contract.Contract, error) {
+func (r *contractRepository) GetByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*aggregate.Contract, error) {
 	var rows []contractRow
 
 	query := `
@@ -363,7 +390,7 @@ func (r *contractRepository) GetByCustomer(ctx context.Context, customerID uuidv
 		return nil, fmt.Errorf("get contracts by customer: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -376,7 +403,7 @@ func (r *contractRepository) GetByCustomer(ctx context.Context, customerID uuidv
 }
 
 // GetActiveContracts retrieves all active contracts
-func (r *contractRepository) GetActiveContracts(ctx context.Context) ([]*contract.Contract, error) {
+func (r *contractRepository) GetActiveContracts(ctx context.Context) ([]*aggregate.Contract, error) {
 	var rows []contractRow
 
 	query := `
@@ -389,11 +416,11 @@ func (r *contractRepository) GetActiveContracts(ctx context.Context) ([]*contrac
 		ORDER BY created_at DESC
 	`
 
-	if err := r.Select(ctx, &rows, query, string(contract.ContractStatusActive)); err != nil {
+	if err := r.Select(ctx, &rows, query, string(aggregate.ContractStatusActive)); err != nil {
 		return nil, fmt.Errorf("get active contracts: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -406,7 +433,7 @@ func (r *contractRepository) GetActiveContracts(ctx context.Context) ([]*contrac
 }
 
 // ListByStatus retrieves contracts by status with pagination
-func (r *contractRepository) ListByStatus(ctx context.Context, status contract.ContractStatus, offset, limit int) ([]*contract.Contract, int, error) {
+func (r *contractRepository) ListByStatus(ctx context.Context, status aggregate.ContractStatus, offset, limit int) ([]*aggregate.Contract, int, error) {
 	var rows []contractRow
 
 	query := `
@@ -431,7 +458,7 @@ func (r *contractRepository) ListByStatus(ctx context.Context, status contract.C
 		return nil, 0, fmt.Errorf("count contracts by status: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -444,7 +471,7 @@ func (r *contractRepository) ListByStatus(ctx context.Context, status contract.C
 }
 
 // ListByCustomer retrieves contracts for a customer with pagination
-func (r *contractRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, offset, limit int) ([]*contract.Contract, int, error) {
+func (r *contractRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, offset, limit int) ([]*aggregate.Contract, int, error) {
 	var rows []contractRow
 
 	query := `
@@ -469,7 +496,7 @@ func (r *contractRepository) ListByCustomer(ctx context.Context, customerID uuid
 		return nil, 0, fmt.Errorf("count contracts by customer: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {
@@ -482,7 +509,7 @@ func (r *contractRepository) ListByCustomer(ctx context.Context, customerID uuid
 }
 
 // ListExpiringSoon retrieves contracts expiring within specified days
-func (r *contractRepository) ListExpiringSoon(ctx context.Context, days int) ([]*contract.Contract, error) {
+func (r *contractRepository) ListExpiringSoon(ctx context.Context, days int) ([]*aggregate.Contract, error) {
 	var rows []contractRow
 
 	query := `
@@ -502,7 +529,7 @@ func (r *contractRepository) ListExpiringSoon(ctx context.Context, days int) ([]
 		return nil, fmt.Errorf("list expiring contracts: %w", err)
 	}
 
-	contracts := make([]*contract.Contract, 0, len(rows))
+	contracts := make([]*aggregate.Contract, 0, len(rows))
 	for _, row := range rows {
 		c, err := row.toEntity()
 		if err != nil {

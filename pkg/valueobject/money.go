@@ -20,7 +20,7 @@ func NewMoney(amount int64, currency string) (Money, error) {
 	if len(currency) != 3 {
 		return Money{}, fmt.Errorf("currency must be 3-letter ISO 4217 code (got %d characters)", len(currency))
 	}
-	
+
 	return Money{Amount: amount, Currency: currency}, nil
 }
 
@@ -30,7 +30,7 @@ func FromFloat(amount float64, currency string) (Money, error) {
 	if math.IsNaN(amount) || math.IsInf(amount, 0) {
 		return Money{}, fmt.Errorf("invalid amount: %f", amount)
 	}
-	
+
 	cents := int64(math.Round(amount * 100))
 	return NewMoney(cents, currency)
 }
@@ -115,7 +115,7 @@ func (m Money) Compare(other Money) (int, error) {
 	if m.Currency != other.Currency {
 		return 0, fmt.Errorf("cannot compare different currencies: %s and %s", m.Currency, other.Currency)
 	}
-	
+
 	if m.Amount < other.Amount {
 		return -1, nil
 	}
@@ -165,7 +165,7 @@ func (m Money) String() string {
 func (m Money) Format() string {
 	symbol := getCurrencySymbol(m.Currency)
 	amount := m.ToFloat()
-	
+
 	if m.Amount < 0 {
 		return fmt.Sprintf("-%s%.2f", symbol, -amount)
 	}
@@ -186,7 +186,7 @@ func getCurrencySymbol(currency string) string {
 		"CAD": "CA$",
 		"AUD": "A$",
 	}
-	
+
 	if symbol, ok := symbols[currency]; ok {
 		return symbol
 	}

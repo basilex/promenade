@@ -8,20 +8,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	roleentity "github.com/basilex/promenade/internal/contexts/identity/role"
+	roleerrors "github.com/basilex/promenade/internal/contexts/identity/role"
+	"github.com/basilex/promenade/internal/contexts/identity/role/aggregate"
+	"github.com/basilex/promenade/internal/contexts/identity/role/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// roleRepository implements roleentity.IRepository for PostgreSQL
+// roleRepository implements repository.IRoleRepository for PostgreSQL
 type roleRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewRoleRepository creates a new role repository
-func NewRoleRepository(db *sqlx.DB) roleentity.IRepository {
+func NewRoleRepository(db *sqlx.DB) repository.IRoleRepository {
 	return &roleRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *roleRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *roleRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *roleRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *roleRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *roleRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // roleRow represents database row structure for identity_roles table
@@ -37,8 +68,8 @@ type roleRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *roleRow) toEntity() (*roleentity.Role, error) {
-	role := &roleentity.Role{
+func (r *roleRow) toEntity() (*aggregate.Role, error) {
+	role := &aggregate.Role{
 		Name:        r.Name,
 		DisplayName: r.DisplayName,
 		Description: r.Description,
@@ -57,7 +88,7 @@ func (r *roleRow) toEntity() (*roleentity.Role, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromRoleEntity(r *roleentity.Role) *roleRow {
+func fromRoleEntity(r *aggregate.Role) *roleRow {
 	row := &roleRow{
 		ID:          r.GetID(),
 		Name:        r.Name,
@@ -76,7 +107,7 @@ func fromRoleEntity(r *roleentity.Role) *roleRow {
 }
 
 // Create creates a new role in the database
-func (r *roleRepository) Create(ctx context.Context, role *roleentity.Role) error {
+func (r *roleRepository) Create(ctx context.Context, role *aggregate.Role) error {
 	row := fromRoleEntity(role)
 
 	query := `
@@ -93,7 +124,7 @@ func (r *roleRepository) Create(ctx context.Context, role *roleentity.Role) erro
 }
 
 // GetByID retrieves a role by ID
-func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*roleentity.Role, error) {
+func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Role, error) {
 	var row roleRow
 
 	query := `
@@ -104,7 +135,7 @@ func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*roleenti
 
 	err := r.Get(ctx, &row, query, id)
 	if err == sql.ErrNoRows {
-		return nil, roleentity.ErrRoleNotFound
+		return nil, roleerrors.ErrRoleNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get role: %w", err)
@@ -114,7 +145,7 @@ func (r *roleRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*roleenti
 }
 
 // GetByName retrieves a role by name
-func (r *roleRepository) GetByName(ctx context.Context, name string) (*roleentity.Role, error) {
+func (r *roleRepository) GetByName(ctx context.Context, name string) (*aggregate.Role, error) {
 	var row roleRow
 
 	query := `
@@ -125,7 +156,7 @@ func (r *roleRepository) GetByName(ctx context.Context, name string) (*roleentit
 
 	err := r.Get(ctx, &row, query, name)
 	if err == sql.ErrNoRows {
-		return nil, roleentity.ErrRoleNotFound
+		return nil, roleerrors.ErrRoleNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get role: %w", err)
@@ -135,7 +166,7 @@ func (r *roleRepository) GetByName(ctx context.Context, name string) (*roleentit
 }
 
 // Update updates an existing role
-func (r *roleRepository) Update(ctx context.Context, role *roleentity.Role) error {
+func (r *roleRepository) Update(ctx context.Context, role *aggregate.Role) error {
 	row := fromRoleEntity(role)
 
 	query := `
@@ -155,7 +186,7 @@ func (r *roleRepository) Update(ctx context.Context, role *roleentity.Role) erro
 	}
 
 	if rowsAffected == 0 {
-		return roleentity.ErrRoleNotFound
+		return roleerrors.ErrRoleNotFound
 	}
 
 	return nil
@@ -168,7 +199,7 @@ func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	checkQuery := `SELECT id, is_system, deleted_at FROM identity_roles WHERE id = $1`
 	err := r.Get(ctx, &row, checkQuery, id)
 	if err == sql.ErrNoRows {
-		return roleentity.ErrRoleNotFound
+		return roleerrors.ErrRoleNotFound
 	}
 	if err != nil {
 		return fmt.Errorf("failed to check role: %w", err)
@@ -176,12 +207,12 @@ func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 	// Check if already deleted
 	if row.DeletedAt.Valid {
-		return roleentity.ErrRoleNotFound
+		return roleerrors.ErrRoleNotFound
 	}
 
 	// Check if system role
 	if row.IsSystem {
-		return roleentity.ErrCannotDeleteSystem
+		return roleerrors.ErrCannotDeleteSystem
 	}
 
 	// Perform soft delete
@@ -203,7 +234,7 @@ func (r *roleRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 
 	if rowsAffected == 0 {
 		// This shouldn't happen given our checks above, but handle defensively
-		return roleentity.ErrCannotDeleteSystem
+		return roleerrors.ErrCannotDeleteSystem
 	}
 
 	return nil
@@ -229,7 +260,7 @@ func (r *roleRepository) ExistsByName(ctx context.Context, name string) (bool, e
 }
 
 // ListRoles lists all roles with pagination
-func (r *roleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*roleentity.Role, int, error) {
+func (r *roleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*aggregate.Role, int, error) {
 	var rows []roleRow
 
 	// Get total count
@@ -257,7 +288,7 @@ func (r *roleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*r
 		return nil, 0, fmt.Errorf("failed to list roles: %w", err)
 	}
 
-	roles := make([]*roleentity.Role, len(rows))
+	roles := make([]*aggregate.Role, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {
@@ -270,7 +301,7 @@ func (r *roleRepository) ListRoles(ctx context.Context, limit, offset int) ([]*r
 }
 
 // GetUserRoles retrieves all roles for a user
-func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*roleentity.Role, error) {
+func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) ([]*aggregate.Role, error) {
 	var rows []roleRow
 
 	query := `
@@ -286,7 +317,7 @@ func (r *roleRepository) GetUserRoles(ctx context.Context, userID uuidv7.UUID) (
 		return nil, fmt.Errorf("failed to get user roles: %w", err)
 	}
 
-	roles := make([]*roleentity.Role, len(rows))
+	roles := make([]*aggregate.Role, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {

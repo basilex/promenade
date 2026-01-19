@@ -12,6 +12,8 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	customerPostgres "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
+	customerUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -22,7 +24,7 @@ func TestCustomerUseCase_CreateCustomer(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer
 		repID := uuidv7.New()
@@ -32,8 +34,8 @@ func TestCustomerUseCase_CreateCustomer(t *testing.T) {
 		assert.NotEqual(t, uuidv7.Nil, cust.GetID())
 		assert.Equal(t, "John Doe", cust.Name)
 		assert.Equal(t, email, cust.Email.Value())
-		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
-		assert.Equal(t, customer.CustomerTierFree, cust.Tier)
+		assert.Equal(t, customerAggregate.CustomerStatusLead, cust.Status)
+		assert.Equal(t, customerAggregate.CustomerTierFree, cust.Tier)
 
 		// Test - Duplicate email should fail
 		_, err = uc.CreateCustomer(ctx, "Jane Doe", email, "referral", repID)
@@ -48,25 +50,25 @@ func TestCustomerUseCase_CreateB2BCustomer(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create company first (use tx for transaction support)
 		companyID := uuidv7.New()
 		_, err := tx.ExecContext(ctx,
 			`INSERT INTO customer_companies (id, name, legal_name, type, size, industry, country)
 			 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		companyID, "Acme Corp", "Acme Corporation", "llc", "small", "Technology", "US",
-	)
-	require.NoError(t, err)
+			companyID, "Acme Corp", "Acme Corporation", "llc", "small", "Technology", "US",
+		)
+		require.NoError(t, err)
 
-	// Create B2B customer
-	repID := uuidv7.New()
+		// Create B2B customer
+		repID := uuidv7.New()
 		cust, err := uc.CreateB2BCustomer(ctx, "Alice Smith", fmt.Sprintf("alice_%s@acme.com", uuidv7.New().String()), "partnership", companyID, repID)
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.Nil, cust.GetID())
 		assert.Equal(t, "Alice Smith", cust.Name)
 		assert.Equal(t, companyID, *cust.CompanyID)
-		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
+		assert.Equal(t, customerAggregate.CustomerStatusLead, cust.Status)
 	})
 }
 
@@ -76,7 +78,7 @@ func TestCustomerUseCase_GetCustomer(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer
 		repID := uuidv7.New()
@@ -101,7 +103,7 @@ func TestCustomerUseCase_GetCustomerByEmail(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer
 		repID := uuidv7.New()
@@ -128,13 +130,13 @@ func TestCustomerUseCase_QualifyAsProspect(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer (starts as Lead)
 		repID := uuidv7.New()
 		cust, err := uc.CreateCustomer(ctx, "David Lee", fmt.Sprintf("david_%s@example.com", uuidv7.New().String()), "referral", repID)
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
+		assert.Equal(t, customerAggregate.CustomerStatusLead, cust.Status)
 
 		// Test - Qualify as prospect
 		err = uc.QualifyAsProspect(ctx, cust.GetID())
@@ -143,7 +145,7 @@ func TestCustomerUseCase_QualifyAsProspect(t *testing.T) {
 		// Verify status changed
 		updated, err := uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerStatusProspect, updated.Status)
+		assert.Equal(t, customerAggregate.CustomerStatusProspect, updated.Status)
 	})
 }
 
@@ -153,7 +155,7 @@ func TestCustomerUseCase_ConvertToCustomer(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create and qualify customer
 		repID := uuidv7.New()
@@ -169,7 +171,7 @@ func TestCustomerUseCase_ConvertToCustomer(t *testing.T) {
 		// Verify status changed
 		updated, err := uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerStatusCustomer, updated.Status)
+		assert.Equal(t, customerAggregate.CustomerStatusCustomer, updated.Status)
 	})
 }
 
@@ -179,37 +181,37 @@ func TestCustomerUseCase_TierManagement(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer (starts as Free tier)
 		repID := uuidv7.New()
 		cust, err := uc.CreateCustomer(ctx, "Frank Miller", fmt.Sprintf("frank_%s@example.com", uuidv7.New().String()), "trial", repID)
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerTierFree, cust.Tier)
+		assert.Equal(t, customerAggregate.CustomerTierFree, cust.Tier)
 
 		// Test - Upgrade to Basic
-		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customer.CustomerTierBasic)
+		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customerAggregate.CustomerTierBasic)
 		require.NoError(t, err)
 
 		updated, err := uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerTierBasic, updated.Tier)
+		assert.Equal(t, customerAggregate.CustomerTierBasic, updated.Tier)
 
 		// Test - Upgrade to Pro
-		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customer.CustomerTierPro)
+		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customerAggregate.CustomerTierPro)
 		require.NoError(t, err)
 
 		updated, err = uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerTierPro, updated.Tier)
+		assert.Equal(t, customerAggregate.CustomerTierPro, updated.Tier)
 
 		// Test - Downgrade to Basic
-		err = uc.DowngradeCustomerTier(ctx, cust.GetID(), customer.CustomerTierBasic)
+		err = uc.DowngradeCustomerTier(ctx, cust.GetID(), customerAggregate.CustomerTierBasic)
 		require.NoError(t, err)
 
 		updated, err = uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerTierBasic, updated.Tier)
+		assert.Equal(t, customerAggregate.CustomerTierBasic, updated.Tier)
 	})
 }
 
@@ -219,7 +221,7 @@ func TestCustomerUseCase_TagManagement(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customer
 		repID := uuidv7.New()
@@ -256,12 +258,12 @@ func TestCustomerUseCase_ListCustomers(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create multiple customers
 		repID := uuidv7.New()
 		for i := 1; i <= 5; i++ {
-			_, err := uc.CreateCustomer(ctx, "Customer "+string(rune('A'+i-1)), 
+			_, err := uc.CreateCustomer(ctx, "Customer "+string(rune('A'+i-1)),
 				string(rune('a'+i-1))+"@example.com", "test", repID)
 			require.NoError(t, err)
 		}
@@ -286,7 +288,7 @@ func TestCustomerUseCase_ListByStatus(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Create customers and qualify some
 		repID := uuidv7.New()
@@ -295,13 +297,13 @@ func TestCustomerUseCase_ListByStatus(t *testing.T) {
 		_ = uc.QualifyAsProspect(ctx, cust2.GetID())
 
 		// Test - List leads
-		leads, total, err := uc.ListCustomersByStatus(ctx, customer.CustomerStatusLead, 10, 0)
+		leads, total, err := uc.ListCustomersByStatus(ctx, customerAggregate.CustomerStatusLead, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(leads), 1)
 		assert.GreaterOrEqual(t, total, 1)
 
 		// Test - List prospects
-		prospects, total, err := uc.ListCustomersByStatus(ctx, customer.CustomerStatusProspect, 10, 0)
+		prospects, total, err := uc.ListCustomersByStatus(ctx, customerAggregate.CustomerStatusProspect, 10, 0)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(prospects), 1)
 		assert.GreaterOrEqual(t, total, 1)
@@ -314,14 +316,14 @@ func TestCustomerUseCase_CompleteWorkflow(t *testing.T) {
 
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		repo := customerPostgres.NewCustomerRepository(testDB.DB)
-		uc := customer.NewUseCase(repo)
+		uc := customerUseCase.NewCustomerUseCase(repo)
 
 		// Step 1: Create lead
 		repID := uuidv7.New()
 		cust, err := uc.CreateCustomer(ctx, "Jack Taylor", fmt.Sprintf("jack_%s@example.com", uuidv7.New().String()), "demo_request", repID)
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerStatusLead, cust.Status)
-		assert.Equal(t, customer.CustomerTierFree, cust.Tier)
+		assert.Equal(t, customerAggregate.CustomerStatusLead, cust.Status)
+		assert.Equal(t, customerAggregate.CustomerTierFree, cust.Tier)
 
 		// Step 2: Add phone number
 		err = uc.SetCustomerPhone(ctx, cust.GetID(), "+1234567890")
@@ -342,14 +344,14 @@ func TestCustomerUseCase_CompleteWorkflow(t *testing.T) {
 		require.NoError(t, err)
 
 		// Step 6: Upgrade to Pro tier
-		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customer.CustomerTierPro)
+		err = uc.UpgradeCustomerTier(ctx, cust.GetID(), customerAggregate.CustomerTierPro)
 		require.NoError(t, err)
 
 		// Verify final state
 		final, err := uc.GetCustomer(ctx, cust.GetID())
 		require.NoError(t, err)
-		assert.Equal(t, customer.CustomerStatusCustomer, final.Status)
-		assert.Equal(t, customer.CustomerTierPro, final.Tier)
+		assert.Equal(t, customerAggregate.CustomerStatusCustomer, final.Status)
+		assert.Equal(t, customerAggregate.CustomerTierPro, final.Tier)
 		assert.Equal(t, "+1234567890", final.Phone.Value())
 		assert.Len(t, final.Tags, 2)
 		assert.Contains(t, final.Tags, "high-value")

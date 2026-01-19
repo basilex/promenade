@@ -4,11 +4,14 @@ import "errors"
 
 // Domain errors for profile aggregate
 var (
-	// ErrProfileNotFound is returned when a profile cannot be found
-	ErrProfileNotFound = errors.New("profile not found")
+	// ErrNotFound is returned when a profile cannot be found
+	ErrNotFound = errors.New("profile not found")
 
 	// ErrProfileAlreadyExists is returned when a profile already exists for a user
 	ErrProfileAlreadyExists = errors.New("profile already exists for user")
+
+	// ErrInvalidGender is returned when gender validation fails
+	ErrInvalidGender = errors.New("invalid gender value")
 
 	// ErrInvalidDisplayName is returned when display name validation fails
 	ErrInvalidDisplayName = errors.New("invalid display name")
@@ -36,7 +39,7 @@ var (
 	ErrMiddleNameTooLong = errors.New("middle name must not exceed 50 characters")
 
 	// Date of birth validation errors
-	ErrAgeTooYoung       = errors.New("user must be at least 13 years old")
+	ErrAgeTooYoung        = errors.New("user must be at least 13 years old")
 	ErrDateOfBirthInvalid = errors.New("invalid date of birth")
 
 	// Localization validation errors

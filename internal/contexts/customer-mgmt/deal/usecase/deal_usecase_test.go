@@ -497,10 +497,10 @@ func TestUseCase_GetPipelineStats(t *testing.T) {
 	ctx := context.Background()
 
 	expectedStats := map[aggregate.DealStage]int64{
-		aggregate.DealStageLead:       5,
-		aggregate.DealStageQualified:  3,
-		aggregate.DealStageProposal:   2,
-		aggregate.DealStageClosedWon:  10,
+		aggregate.DealStageLead:      5,
+		aggregate.DealStageQualified: 3,
+		aggregate.DealStageProposal:  2,
+		aggregate.DealStageClosedWon: 10,
 	}
 
 	mockRepo.On("GetPipelineStats", ctx).Return(expectedStats, nil)

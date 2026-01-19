@@ -63,6 +63,7 @@ const (
 	ProductStatusOutOfStock   ProductStatus = "out_of_stock" // Temporarily unavailable
 	ProductStatusDraft        ProductStatus = "draft"        // Not yet published
 )
+
 // NewProduct creates a new Product aggregate with required fields.
 //
 // Business rules enforced:
@@ -79,12 +80,12 @@ func NewProduct(sku, name string) (*Product, error) {
 	}
 
 	return &Product{
-		BaseAggregate: aggregate.NewBaseAggregate(),
-		SKU:           sku,
-		Name:          name,
-		Status:        ProductStatusDraft,
-		IsActive:      false,
-		TrackInventory: true, // Default: track inventory
+		BaseAggregate:  aggregate.NewBaseAggregate(),
+		SKU:            sku,
+		Name:           name,
+		Status:         ProductStatusDraft,
+		IsActive:       false,
+		TrackInventory: true,  // Default: track inventory
 		AllowBackorder: false, // Default: no backorders
 	}, nil
 }

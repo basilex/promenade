@@ -8,20 +8,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/identity/permission"
+	permissionerrors "github.com/basilex/promenade/internal/contexts/identity/permission"
+	"github.com/basilex/promenade/internal/contexts/identity/permission/aggregate"
+	"github.com/basilex/promenade/internal/contexts/identity/permission/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// permissionRepository implements permission.IRepository for PostgreSQL
+// permissionRepository implements repository.IPermissionRepository for PostgreSQL
 type permissionRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewPermissionRepository creates a new permission repository
-func NewPermissionRepository(db *sqlx.DB) permission.IRepository {
+func NewPermissionRepository(db *sqlx.DB) repository.IPermissionRepository {
 	return &permissionRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *permissionRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *permissionRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *permissionRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *permissionRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *permissionRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // permissionRow represents database row structure for identity_permissions table
@@ -37,8 +68,8 @@ type permissionRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *permissionRow) toEntity() (*permission.Permission, error) {
-	perm := &permission.Permission{
+func (r *permissionRow) toEntity() (*aggregate.Permission, error) {
+	perm := &aggregate.Permission{
 		Name:        r.Name,
 		Resource:    r.Resource,
 		Action:      r.Action,
@@ -57,7 +88,7 @@ func (r *permissionRow) toEntity() (*permission.Permission, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromPermissionEntity(p *permission.Permission) *permissionRow {
+func fromPermissionEntity(p *aggregate.Permission) *permissionRow {
 	row := &permissionRow{
 		ID:          p.GetID(),
 		Name:        p.Name,
@@ -76,7 +107,7 @@ func fromPermissionEntity(p *permission.Permission) *permissionRow {
 }
 
 // Create creates a new permission in the database
-func (r *permissionRepository) Create(ctx context.Context, perm *permission.Permission) error {
+func (r *permissionRepository) Create(ctx context.Context, perm *aggregate.Permission) error {
 	row := fromPermissionEntity(perm)
 
 	query := `
@@ -93,7 +124,7 @@ func (r *permissionRepository) Create(ctx context.Context, perm *permission.Perm
 }
 
 // GetByID retrieves a permission by ID
-func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*permission.Permission, error) {
+func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Permission, error) {
 	var row permissionRow
 
 	query := `
@@ -104,7 +135,7 @@ func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*pe
 
 	err := r.Get(ctx, &row, query, id)
 	if err == sql.ErrNoRows {
-		return nil, permission.ErrPermissionNotFound
+		return nil, permissionerrors.ErrPermissionNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get permission: %w", err)
@@ -114,7 +145,7 @@ func (r *permissionRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*pe
 }
 
 // GetByName retrieves a permission by name (resource:action)
-func (r *permissionRepository) GetByName(ctx context.Context, name string) (*permission.Permission, error) {
+func (r *permissionRepository) GetByName(ctx context.Context, name string) (*aggregate.Permission, error) {
 	var row permissionRow
 
 	query := `
@@ -125,7 +156,7 @@ func (r *permissionRepository) GetByName(ctx context.Context, name string) (*per
 
 	err := r.Get(ctx, &row, query, name)
 	if err == sql.ErrNoRows {
-		return nil, permission.ErrPermissionNotFound
+		return nil, permissionerrors.ErrPermissionNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get permission: %w", err)
@@ -135,7 +166,7 @@ func (r *permissionRepository) GetByName(ctx context.Context, name string) (*per
 }
 
 // Update updates an existing permission
-func (r *permissionRepository) Update(ctx context.Context, perm *permission.Permission) error {
+func (r *permissionRepository) Update(ctx context.Context, perm *aggregate.Permission) error {
 	row := fromPermissionEntity(perm)
 
 	query := `
@@ -155,7 +186,7 @@ func (r *permissionRepository) Update(ctx context.Context, perm *permission.Perm
 	}
 
 	if rowsAffected == 0 {
-		return permission.ErrPermissionNotFound
+		return permissionerrors.ErrPermissionNotFound
 	}
 
 	return nil
@@ -180,7 +211,7 @@ func (r *permissionRepository) Delete(ctx context.Context, id uuidv7.UUID) error
 	}
 
 	if rowsAffected == 0 {
-		return permission.ErrPermissionNotFound
+		return permissionerrors.ErrPermissionNotFound
 	}
 
 	return nil
@@ -206,7 +237,7 @@ func (r *permissionRepository) ExistsByName(ctx context.Context, name string) (b
 }
 
 // ListPermissions lists all permissions with pagination
-func (r *permissionRepository) ListPermissions(ctx context.Context, limit, offset int) ([]*permission.Permission, int, error) {
+func (r *permissionRepository) ListPermissions(ctx context.Context, limit, offset int) ([]*aggregate.Permission, int, error) {
 	var rows []permissionRow
 
 	// Get total count
@@ -234,7 +265,7 @@ func (r *permissionRepository) ListPermissions(ctx context.Context, limit, offse
 		return nil, 0, fmt.Errorf("failed to list permissions: %w", err)
 	}
 
-	permissions := make([]*permission.Permission, len(rows))
+	permissions := make([]*aggregate.Permission, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {
@@ -247,7 +278,7 @@ func (r *permissionRepository) ListPermissions(ctx context.Context, limit, offse
 }
 
 // GetRolePermissions retrieves all permissions for a role
-func (r *permissionRepository) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*permission.Permission, error) {
+func (r *permissionRepository) GetRolePermissions(ctx context.Context, roleID uuidv7.UUID) ([]*aggregate.Permission, error) {
 	var rows []permissionRow
 
 	query := `
@@ -263,7 +294,7 @@ func (r *permissionRepository) GetRolePermissions(ctx context.Context, roleID uu
 		return nil, fmt.Errorf("failed to get role permissions: %w", err)
 	}
 
-	permissions := make([]*permission.Permission, len(rows))
+	permissions := make([]*aggregate.Permission, len(rows))
 	for i, row := range rows {
 		entity, err := row.toEntity()
 		if err != nil {

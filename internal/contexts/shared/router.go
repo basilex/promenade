@@ -4,21 +4,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/shared/country"
 	countryHTTP "github.com/basilex/promenade/internal/contexts/shared/country/adapter/http"
 	countryPostgres "github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository/postgres"
+	countryusecase "github.com/basilex/promenade/internal/contexts/shared/country/usecase"
 
-	"github.com/basilex/promenade/internal/contexts/shared/currency"
 	currencyHTTP "github.com/basilex/promenade/internal/contexts/shared/currency/adapter/http"
 	currencyPostgres "github.com/basilex/promenade/internal/contexts/shared/currency/adapter/repository/postgres"
+	currencyusecase "github.com/basilex/promenade/internal/contexts/shared/currency/usecase"
 
-	"github.com/basilex/promenade/internal/contexts/shared/language"
 	languageHTTP "github.com/basilex/promenade/internal/contexts/shared/language/adapter/http"
 	languagePostgres "github.com/basilex/promenade/internal/contexts/shared/language/adapter/repository/postgres"
+	languageusecase "github.com/basilex/promenade/internal/contexts/shared/language/usecase"
 
-	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	timezoneHTTP "github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/http"
 	timezonePostgres "github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/repository/postgres"
+	timezoneusecase "github.com/basilex/promenade/internal/contexts/shared/timezone/usecase"
 
 	"github.com/basilex/promenade/pkg/cache"
 )
@@ -35,22 +35,22 @@ type Router struct {
 func NewRouter(db *sqlx.DB, cacheClient cache.ICache) *Router {
 	// Country aggregate
 	countryRepo := countryPostgres.NewRepository(db)
-	countryUC := country.NewUseCase(countryRepo, cacheClient)
+	countryUC := countryusecase.NewCountryUseCase(countryRepo, cacheClient)
 	countryHandler := countryHTTP.NewHandler(countryUC)
 
 	// Currency aggregate
 	currencyRepo := currencyPostgres.NewRepository(db)
-	currencyUC := currency.NewUseCase(currencyRepo, cacheClient)
+	currencyUC := currencyusecase.NewCurrencyUseCase(currencyRepo, cacheClient)
 	currencyHandler := currencyHTTP.NewHandler(currencyUC)
 
 	// Language aggregate
 	languageRepo := languagePostgres.NewRepository(db)
-	languageUC := language.NewUseCase(languageRepo, cacheClient)
+	languageUC := languageusecase.NewLanguageUseCase(languageRepo, cacheClient)
 	languageHandler := languageHTTP.NewHandler(languageUC)
 
 	// Timezone aggregate
 	timezoneRepo := timezonePostgres.NewRepository(db)
-	timezoneUC := timezone.NewUseCase(timezoneRepo, cacheClient)
+	timezoneUC := timezoneusecase.NewTimezoneUseCase(timezoneRepo, cacheClient)
 	timezoneHandler := timezoneHTTP.NewHandler(timezoneUC)
 
 	return &Router{
@@ -103,4 +103,3 @@ func (r *Router) RegisterRoutes(rg *gin.RouterGroup) {
 		timezones.DELETE("/:id", r.timezoneHandler.DeleteTimezone)
 	}
 }
-

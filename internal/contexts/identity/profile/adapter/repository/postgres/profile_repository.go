@@ -8,20 +8,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/identity/profile"
+	profileerrors "github.com/basilex/promenade/internal/contexts/identity/profile"
+	"github.com/basilex/promenade/internal/contexts/identity/profile/aggregate"
+	"github.com/basilex/promenade/internal/contexts/identity/profile/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// profileRepository implements profile.IRepository for PostgreSQL
+// profileRepository implements repository.IProfileRepository for PostgreSQL
 type profileRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewProfileRepository creates a new profile repository
-func NewProfileRepository(db *sqlx.DB) profile.IRepository {
+func NewProfileRepository(db *sqlx.DB) repository.IProfileRepository {
 	return &profileRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *profileRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *profileRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *profileRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *profileRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *profileRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // profileRow represents database row structure for identity_profiles table
@@ -53,11 +84,11 @@ type profileRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *profileRow) toEntity() *profile.Profile {
-	p := &profile.Profile{
+func (r *profileRow) toEntity() *aggregate.Profile {
+	p := &aggregate.Profile{
 		UserID:      r.UserID,
 		DisplayName: r.DisplayName,
-		Gender:      profile.Gender(r.Gender),
+		Gender:      aggregate.Gender(r.Gender),
 		IsPublic:    r.IsPublic,
 		IsActive:    r.IsActive,
 	}
@@ -116,7 +147,7 @@ func (r *profileRow) toEntity() *profile.Profile {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(p *profile.Profile) *profileRow {
+func fromEntity(p *aggregate.Profile) *profileRow {
 	row := &profileRow{
 		ID:          p.GetID(),
 		UserID:      p.UserID,
@@ -178,7 +209,7 @@ func fromEntity(p *profile.Profile) *profileRow {
 }
 
 // Create inserts a new profile
-func (r *profileRepository) Create(ctx context.Context, p *profile.Profile) error {
+func (r *profileRepository) Create(ctx context.Context, p *aggregate.Profile) error {
 	query := `
 		INSERT INTO identity_profiles (
 			id, user_id, display_name, bio, avatar_url,
@@ -195,11 +226,12 @@ func (r *profileRepository) Create(ctx context.Context, p *profile.Profile) erro
 		)`
 
 	row := fromEntity(p)
-	return r.NamedExec(ctx, query, row)
+	_, err := r.NamedExec(ctx, query, row)
+	return err
 }
 
 // GetByID retrieves a profile by ID
-func (r *profileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*profile.Profile, error) {
+func (r *profileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Profile, error) {
 	query := `
 		SELECT id, user_id, display_name, bio, avatar_url,
 		       first_name, last_name, middle_name, gender, date_of_birth,
@@ -212,7 +244,7 @@ func (r *profileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*profi
 	var row profileRow
 	if err := r.Get(ctx, &row, query, id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, profile.ErrProfileNotFound
+			return nil, profileerrors.ErrNotFound
 		}
 		return nil, fmt.Errorf("failed to get profile: %w", err)
 	}
@@ -221,7 +253,7 @@ func (r *profileRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*profi
 }
 
 // GetByUserID retrieves a profile by user ID
-func (r *profileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*profile.Profile, error) {
+func (r *profileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID) (*aggregate.Profile, error) {
 	query := `
 		SELECT id, user_id, display_name, bio, avatar_url,
 		       first_name, last_name, middle_name, gender, date_of_birth,
@@ -234,7 +266,7 @@ func (r *profileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID)
 	var row profileRow
 	if err := r.Get(ctx, &row, query, userID); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, profile.ErrProfileNotFound
+			return nil, profileerrors.ErrNotFound
 		}
 		return nil, fmt.Errorf("failed to get profile by user ID: %w", err)
 	}
@@ -243,7 +275,7 @@ func (r *profileRepository) GetByUserID(ctx context.Context, userID uuidv7.UUID)
 }
 
 // Update updates an existing profile
-func (r *profileRepository) Update(ctx context.Context, p *profile.Profile) error {
+func (r *profileRepository) Update(ctx context.Context, p *aggregate.Profile) error {
 	query := `
 		UPDATE identity_profiles SET
 			display_name = :display_name,
@@ -269,7 +301,8 @@ func (r *profileRepository) Update(ctx context.Context, p *profile.Profile) erro
 		WHERE id = :id AND deleted_at IS NULL`
 
 	row := fromEntity(p)
-	return r.NamedExec(ctx, query, row)
+	_, err := r.NamedExec(ctx, query, row)
+	return err
 }
 
 // Delete soft-deletes a profile
@@ -279,11 +312,12 @@ func (r *profileRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 		SET deleted_at = NOW()
 		WHERE id = $1 AND deleted_at IS NULL`
 
-	return r.Exec(ctx, query, id)
+	_, err := r.Exec(ctx, query, id)
+	return err
 }
 
 // ListPublicProfiles lists all public active profiles with pagination
-func (r *profileRepository) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*profile.Profile, error) {
+func (r *profileRepository) ListPublicProfiles(ctx context.Context, limit, offset int) ([]*aggregate.Profile, error) {
 	query := `
 		SELECT id, user_id, display_name, bio, avatar_url,
 		       first_name, last_name, middle_name, gender, date_of_birth,
@@ -300,7 +334,7 @@ func (r *profileRepository) ListPublicProfiles(ctx context.Context, limit, offse
 		return nil, fmt.Errorf("failed to list public profiles: %w", err)
 	}
 
-	profiles := make([]*profile.Profile, len(rows))
+	profiles := make([]*aggregate.Profile, len(rows))
 	for i, row := range rows {
 		profiles[i] = row.toEntity()
 	}

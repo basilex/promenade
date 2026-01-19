@@ -11,14 +11,16 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
+	companyAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
+	companyUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/integration"
 )
 
-func setupCompanyUseCase(db *sqlx.DB) company.IUseCase {
+func setupCompanyUseCase(db *sqlx.DB) companyUseCase.ICompanyUseCase {
 	repo := companyRepo.NewCompanyRepository(db)
-	return company.NewUseCase(repo)
+	return companyUseCase.NewCompanyUseCase(repo)
 }
 
 // TestCompanyUseCase_CreateCompany tests basic company creation
@@ -33,8 +35,8 @@ func TestCompanyUseCase_CreateCompany(t *testing.T) {
 		require.NotNil(t, comp)
 		assert.NotEqual(t, uuidv7.UUID{}, comp.ID)
 		assert.Equal(t, "Acme Corp", comp.Name)
-		assert.Equal(t, company.CompanyType("llc"), comp.Type)
-		assert.Equal(t, company.CompanySize("medium"), comp.Size)
+		assert.Equal(t, companyAggregate.CompanyType("llc"), comp.Type)
+		assert.Equal(t, companyAggregate.CompanySize("medium"), comp.Size)
 		assert.Equal(t, 50, comp.EmployeeCount)
 		assert.Equal(t, int64(1000000), comp.Revenue)
 		assert.Equal(t, "USD", comp.Currency)
@@ -68,7 +70,7 @@ func TestCompanyUseCase_CreateCompanyWithFullData(t *testing.T) {
 
 		assert.Equal(t, "Tech Solutions Inc", comp.Name)
 		assert.Equal(t, "Tech Solutions Limited", *comp.LegalName)
-		assert.Equal(t, company.CompanyType("corporation"), comp.Type)
+		assert.Equal(t, companyAggregate.CompanyType("corporation"), comp.Type)
 		assert.Equal(t, "US-12345678", *comp.TaxID)
 		assert.Equal(t, "REG-2024-001", *comp.RegistrationNumber)
 		assert.Equal(t, "https://techsolutions.com", *comp.Website)
@@ -79,7 +81,7 @@ func TestCompanyUseCase_CreateCompanyWithFullData(t *testing.T) {
 		assert.Equal(t, "94105", comp.Address.PostalCode)
 		assert.Equal(t, "US", comp.Address.Country)
 		assert.Equal(t, "technology", *comp.Industry)
-		assert.Equal(t, company.CompanySize("large"), comp.Size)
+		assert.Equal(t, companyAggregate.CompanySize("large"), comp.Size)
 		assert.Equal(t, 500, comp.EmployeeCount)
 		assert.Equal(t, int64(50000000), comp.Revenue)
 		assert.Equal(t, "Leading provider of cloud solutions", *comp.Description)
@@ -173,7 +175,7 @@ func TestCompanyUseCase_UpdateCompanyBasicInfo(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "New Name Corp", updated.Name)
 		assert.Equal(t, "New Legal Name LLC", *updated.LegalName)
-		assert.Equal(t, company.CompanyType("corporation"), updated.Type)
+		assert.Equal(t, companyAggregate.CompanyType("corporation"), updated.Type)
 		assert.Equal(t, "NEW-TAX-123", *updated.TaxID)
 		assert.Equal(t, "NEW-REG-456", *updated.RegistrationNumber)
 	})
@@ -224,7 +226,7 @@ func TestCompanyUseCase_UpdateCompanyBusinessInfo(t *testing.T) {
 		updated, err := uc.UpdateCompanyBusinessInfo(ctx, comp.ID, &newIndustry, "medium", 50, 2000000, "USD")
 		require.NoError(t, err)
 		assert.Equal(t, "e-commerce", *updated.Industry)
-		assert.Equal(t, company.CompanySize("medium"), updated.Size)
+		assert.Equal(t, companyAggregate.CompanySize("medium"), updated.Size)
 		assert.Equal(t, 50, updated.EmployeeCount)
 		assert.Equal(t, int64(2000000), updated.Revenue)
 	})
@@ -439,7 +441,7 @@ func TestCompanyUseCase_CompleteWorkflow(t *testing.T) {
 		comp, err := uc.CreateCompany(ctx, "Startup Inc", nil, "llc", nil, nil, nil, nil, nil, nil, nil, "micro", 5, 100000, "USD", nil, nil)
 		require.NoError(t, err)
 		assert.Equal(t, "Startup Inc", comp.Name)
-		assert.Equal(t, company.CompanySize("micro"), comp.Size)
+		assert.Equal(t, companyAggregate.CompanySize("micro"), comp.Size)
 		assert.Equal(t, 5, comp.EmployeeCount)
 
 		// Step 2: Update basic info as company formalizes
@@ -472,21 +474,21 @@ func TestCompanyUseCase_CompleteWorkflow(t *testing.T) {
 		industry := "technology"
 		comp, err = uc.UpdateCompanyBusinessInfo(ctx, comp.ID, &industry, "small", 25, 1000000, "USD")
 		require.NoError(t, err)
-		assert.Equal(t, company.CompanySize("small"), comp.Size)
+		assert.Equal(t, companyAggregate.CompanySize("small"), comp.Size)
 		assert.Equal(t, 25, comp.EmployeeCount)
 		assert.Equal(t, int64(1000000), comp.Revenue)
 
 		// Step 6: Continue growth
 		comp, err = uc.UpdateCompanyBusinessInfo(ctx, comp.ID, &industry, "medium", 100, 10000000, "USD")
 		require.NoError(t, err)
-		assert.Equal(t, company.CompanySize("medium"), comp.Size)
+		assert.Equal(t, companyAggregate.CompanySize("medium"), comp.Size)
 		assert.Equal(t, 100, comp.EmployeeCount)
 
 		// Step 7: Verify all data persisted
 		final, err := uc.GetCompany(ctx, comp.ID)
 		require.NoError(t, err)
 		assert.Equal(t, "Startup Inc", final.Name)
-		assert.Equal(t, company.CompanySize("medium"), final.Size)
+		assert.Equal(t, companyAggregate.CompanySize("medium"), final.Size)
 		assert.Equal(t, 100, final.EmployeeCount)
 		assert.Equal(t, emailStr, final.Email.Value())
 		assert.Equal(t, "Innovative startup disrupting the market", *final.Description)

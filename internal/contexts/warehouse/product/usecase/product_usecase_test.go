@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
+	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -19,21 +19,21 @@ import (
 
 // MockRepository is a manual mock implementation of IRepository for testing.
 type MockRepository struct {
-	CreateFunc              func(ctx context.Context, p *aggregate.Product) error
-	GetByIDFunc             func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error)
-	GetBySKUFunc            func(ctx context.Context, sku string) (*aggregate.Product, error)
-	UpdateFunc              func(ctx context.Context, p *aggregate.Product) error
-	DeleteFunc              func(ctx context.Context, id uuidv7.UUID) error
-	ListFunc                func(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error)
-	ListByCategoryFunc      func(ctx context.Context, category string, page, pageSize int) ([]*aggregate.Product, error)
-	ListByBrandFunc         func(ctx context.Context, brand string, page, pageSize int) ([]*aggregate.Product, error)
-	ListByStatusFunc        func(ctx context.Context, status aggregate.ProductStatus, page, pageSize int) ([]*aggregate.Product, error)
-	SearchFunc              func(ctx context.Context, query string, page, pageSize int) ([]*aggregate.Product, error)
-	CountFunc               func(ctx context.Context) (int, error)
-	ExistsBySKUFunc         func(ctx context.Context, sku string) (bool, error)
-	GetByIDsFunc            func(ctx context.Context, ids []uuidv7.UUID) ([]*aggregate.Product, error)
-	ListLowStockFunc        func(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error)
-	BulkUpdateStatusFunc    func(ctx context.Context, ids []uuidv7.UUID, status aggregate.ProductStatus) error
+	CreateFunc           func(ctx context.Context, p *aggregate.Product) error
+	GetByIDFunc          func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error)
+	GetBySKUFunc         func(ctx context.Context, sku string) (*aggregate.Product, error)
+	UpdateFunc           func(ctx context.Context, p *aggregate.Product) error
+	DeleteFunc           func(ctx context.Context, id uuidv7.UUID) error
+	ListFunc             func(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error)
+	ListByCategoryFunc   func(ctx context.Context, category string, page, pageSize int) ([]*aggregate.Product, error)
+	ListByBrandFunc      func(ctx context.Context, brand string, page, pageSize int) ([]*aggregate.Product, error)
+	ListByStatusFunc     func(ctx context.Context, status aggregate.ProductStatus, page, pageSize int) ([]*aggregate.Product, error)
+	SearchFunc           func(ctx context.Context, query string, page, pageSize int) ([]*aggregate.Product, error)
+	CountFunc            func(ctx context.Context) (int, error)
+	ExistsBySKUFunc      func(ctx context.Context, sku string) (bool, error)
+	GetByIDsFunc         func(ctx context.Context, ids []uuidv7.UUID) ([]*aggregate.Product, error)
+	ListLowStockFunc     func(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error)
+	BulkUpdateStatusFunc func(ctx context.Context, ids []uuidv7.UUID, status aggregate.ProductStatus) error
 }
 
 func (m *MockRepository) Create(ctx context.Context, p *aggregate.Product) error {
@@ -240,7 +240,7 @@ func TestUseCase_CreateProduct_RepositoryCreateError(t *testing.T) {
 
 func TestUseCase_GetProduct_Success(t *testing.T) {
 	expectedProduct := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return expectedProduct, nil
@@ -292,7 +292,7 @@ func TestUseCase_GetProduct_RepositoryError(t *testing.T) {
 
 func TestUseCase_GetProductBySKU_Success(t *testing.T) {
 	expectedProduct := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetBySKUFunc: func(ctx context.Context, sku string) (*aggregate.Product, error) {
 			return expectedProduct, nil
@@ -328,7 +328,7 @@ func TestUseCase_GetProductBySKU_NotFound(t *testing.T) {
 
 func TestUseCase_UpdateProduct_Success(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -370,7 +370,7 @@ func TestUseCase_UpdateProduct_NotFound(t *testing.T) {
 
 func TestUseCase_UpdateProduct_RepositoryError(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -393,7 +393,7 @@ func TestUseCase_UpdateProduct_RepositoryError(t *testing.T) {
 
 func TestUseCase_DeleteProduct_Success(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -425,7 +425,7 @@ func TestUseCase_DeleteProduct_NotFound(t *testing.T) {
 
 func TestUseCase_DeleteProduct_RepositoryError(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -451,7 +451,7 @@ func TestUseCase_ListProducts_Success(t *testing.T) {
 		createTestProduct(t),
 		createTestProduct(t),
 	}
-	
+
 	repo := &MockRepository{
 		ListFunc: func(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error) {
 			return expectedProducts, nil
@@ -503,7 +503,7 @@ func TestUseCase_ListProductsByCategory_Success(t *testing.T) {
 		createTestProductWithDetails(t, "SKU-1", "aggregate.Product 1", "Electronics", "Brand A"),
 		createTestProductWithDetails(t, "SKU-2", "aggregate.Product 2", "Electronics", "Brand B"),
 	}
-	
+
 	repo := &MockRepository{
 		ListByCategoryFunc: func(ctx context.Context, category string, page, pageSize int) ([]*aggregate.Product, error) {
 			return expectedProducts, nil
@@ -525,7 +525,7 @@ func TestUseCase_ListProductsByBrand_Success(t *testing.T) {
 	expectedProducts := []*aggregate.Product{
 		createTestProductWithDetails(t, "SKU-1", "aggregate.Product 1", "Electronics", "BrandA"),
 	}
-	
+
 	repo := &MockRepository{
 		ListByBrandFunc: func(ctx context.Context, brand string, page, pageSize int) ([]*aggregate.Product, error) {
 			return expectedProducts, nil
@@ -547,7 +547,7 @@ func TestUseCase_ListProductsByBrand_Success(t *testing.T) {
 func TestUseCase_ListProductsByStatus_Success(t *testing.T) {
 	product := createTestProduct(t)
 	product.Status = aggregate.ProductStatusActive
-	
+
 	repo := &MockRepository{
 		ListByStatusFunc: func(ctx context.Context, status aggregate.ProductStatus, page, pageSize int) ([]*aggregate.Product, error) {
 			return []*aggregate.Product{product}, nil
@@ -570,7 +570,7 @@ func TestUseCase_SearchProducts_Success(t *testing.T) {
 	expectedProducts := []*aggregate.Product{
 		createTestProduct(t),
 	}
-	
+
 	repo := &MockRepository{
 		SearchFunc: func(ctx context.Context, query string, page, pageSize int) ([]*aggregate.Product, error) {
 			return expectedProducts, nil
@@ -638,7 +638,7 @@ func TestUseCase_CountProducts_RepositoryError(t *testing.T) {
 func TestUseCase_ActivateProduct_Success(t *testing.T) {
 	product := createTestProduct(t)
 	product.Status = aggregate.ProductStatusDraft
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -673,7 +673,7 @@ func TestUseCase_ActivateProduct_InvalidStatus(t *testing.T) {
 	product := createTestProduct(t)
 	product.Status = aggregate.ProductStatusActive
 	product.IsActive = true
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -694,8 +694,8 @@ func TestUseCase_ActivateProduct_InvalidStatus(t *testing.T) {
 func TestUseCase_DeactivateProduct_Success(t *testing.T) {
 	product := createTestProduct(t)
 	product.Status = aggregate.ProductStatusActive // Start with Active status
-	product.IsActive = true // Must set IsActive flag
-	
+	product.IsActive = true                        // Must set IsActive flag
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -733,7 +733,7 @@ func TestUseCase_DeactivateProduct_NotFound(t *testing.T) {
 func TestUseCase_DiscontinueProduct_Success(t *testing.T) {
 	product := createTestProduct(t)
 	product.Status = aggregate.ProductStatusActive
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -757,7 +757,7 @@ func TestUseCase_DiscontinueProduct_Success(t *testing.T) {
 func TestUseCase_UpdateInventorySettings_EnableTracking(t *testing.T) {
 	product := createTestProduct(t)
 	product.TrackInventory = false
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -778,7 +778,7 @@ func TestUseCase_UpdateInventorySettings_EnableTracking(t *testing.T) {
 func TestUseCase_UpdateInventorySettings_DisableTracking(t *testing.T) {
 	product := createTestProduct(t)
 	product.TrackInventory = true
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -798,7 +798,7 @@ func TestUseCase_UpdateInventorySettings_DisableTracking(t *testing.T) {
 func TestUseCase_UpdateInventorySettings_EnableBackorder(t *testing.T) {
 	product := createTestProduct(t)
 	product.AllowBackorder = false
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -821,7 +821,7 @@ func TestUseCase_UpdateInventorySettings_EnableBackorder(t *testing.T) {
 
 func TestUseCase_SetReorderPoint_Success(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil
@@ -841,7 +841,7 @@ func TestUseCase_SetReorderPoint_Success(t *testing.T) {
 
 func TestUseCase_SetReorderPoint_InvalidValues(t *testing.T) {
 	product := createTestProduct(t)
-	
+
 	repo := &MockRepository{
 		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*aggregate.Product, error) {
 			return product, nil

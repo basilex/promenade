@@ -6,49 +6,50 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/timezone"
 	timezoneHTTP "github.com/basilex/promenade/internal/contexts/shared/timezone/adapter/http"
+	timezoneAggregate "github.com/basilex/promenade/internal/contexts/shared/timezone/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockTimezoneUseCase is a mock implementation of timezone.IUseCase for testing
 type MockTimezoneUseCase struct {
-	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*timezone.Timezone, error)
-	GetByNameFunc func(ctx context.Context, name string) (*timezone.Timezone, error)
-	ListFunc      func(ctx context.Context) ([]*timezone.Timezone, error)
-	CreateFunc    func(ctx context.Context, timezone *timezone.Timezone) error
-	UpdateFunc    func(ctx context.Context, timezone *timezone.Timezone) error
+	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*timezoneAggregate.Timezone, error)
+	GetByNameFunc func(ctx context.Context, name string) (*timezoneAggregate.Timezone, error)
+	ListFunc      func(ctx context.Context) ([]*timezoneAggregate.Timezone, error)
+	CreateFunc    func(ctx context.Context, timezone *timezoneAggregate.Timezone) error
+	UpdateFunc    func(ctx context.Context, timezone *timezoneAggregate.Timezone) error
 	DeleteFunc    func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockTimezoneUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*timezone.Timezone, error) {
+func (m *MockTimezoneUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*timezoneAggregate.Timezone, error) {
 	if m.GetByIDFunc != nil {
 		return m.GetByIDFunc(ctx, id)
 	}
 	return nil, nil
 }
 
-func (m *MockTimezoneUseCase) GetByName(ctx context.Context, name string) (*timezone.Timezone, error) {
+func (m *MockTimezoneUseCase) GetByName(ctx context.Context, name string) (*timezoneAggregate.Timezone, error) {
 	if m.GetByNameFunc != nil {
 		return m.GetByNameFunc(ctx, name)
 	}
 	return nil, nil
 }
 
-func (m *MockTimezoneUseCase) List(ctx context.Context) ([]*timezone.Timezone, error) {
+func (m *MockTimezoneUseCase) List(ctx context.Context) ([]*timezoneAggregate.Timezone, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *MockTimezoneUseCase) Create(ctx context.Context, tz *timezone.Timezone) error {
+func (m *MockTimezoneUseCase) Create(ctx context.Context, tz *timezoneAggregate.Timezone) error {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, tz)
 	}
 	return nil
 }
 
-func (m *MockTimezoneUseCase) Update(ctx context.Context, tz *timezone.Timezone) error {
+func (m *MockTimezoneUseCase) Update(ctx context.Context, tz *timezoneAggregate.Timezone) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, tz)
 	}
@@ -63,8 +64,8 @@ func (m *MockTimezoneUseCase) Delete(ctx context.Context, id uuidv7.UUID) error 
 }
 
 // fakeTimezone creates a fake timezone for testing
-func fakeTimezone() *timezone.Timezone {
-	tz, _ := timezone.NewTimezone("Europe/Kyiv", "EET", 7200)
+func fakeTimezone() *timezoneAggregate.Timezone {
+	tz, _ := timezoneAggregate.NewTimezone("Europe/Kyiv", "EET", 7200)
 	return tz
 }
 
@@ -72,7 +73,7 @@ func TestTimezoneHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		CreateFunc: func(ctx context.Context, tz *timezone.Timezone) error {
+		CreateFunc: func(ctx context.Context, tz *timezoneAggregate.Timezone) error {
 			return nil
 		},
 	}
@@ -110,7 +111,7 @@ func TestTimezoneHandler_GetByName_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		GetByNameFunc: func(ctx context.Context, name string) (*timezone.Timezone, error) {
+		GetByNameFunc: func(ctx context.Context, name string) (*timezoneAggregate.Timezone, error) {
 			return fakeTimezone(), nil
 		},
 	}
@@ -126,7 +127,7 @@ func TestTimezoneHandler_GetByName_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		GetByNameFunc: func(ctx context.Context, name string) (*timezone.Timezone, error) {
+		GetByNameFunc: func(ctx context.Context, name string) (*timezoneAggregate.Timezone, error) {
 			return nil, timezone.ErrTimezoneNotFound
 		},
 	}
@@ -142,8 +143,8 @@ func TestTimezoneHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		ListFunc: func(ctx context.Context) ([]*timezone.Timezone, error) {
-			return []*timezone.Timezone{fakeTimezone()}, nil
+		ListFunc: func(ctx context.Context) ([]*timezoneAggregate.Timezone, error) {
+			return []*timezoneAggregate.Timezone{fakeTimezone()}, nil
 		},
 	}
 
@@ -158,8 +159,8 @@ func TestTimezoneHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		ListFunc: func(ctx context.Context) ([]*timezone.Timezone, error) {
-			return []*timezone.Timezone{}, nil
+		ListFunc: func(ctx context.Context) ([]*timezoneAggregate.Timezone, error) {
+			return []*timezoneAggregate.Timezone{}, nil
 		},
 	}
 
@@ -174,10 +175,10 @@ func TestTimezoneHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockTimezoneUseCase{
-		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*timezone.Timezone, error) {
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*timezoneAggregate.Timezone, error) {
 			return fakeTimezone(), nil
 		},
-		UpdateFunc: func(ctx context.Context, tz *timezone.Timezone) error {
+		UpdateFunc: func(ctx context.Context, tz *timezoneAggregate.Timezone) error {
 			return nil
 		},
 	}
@@ -207,7 +208,7 @@ func TestTimezoneHandler_Delete_Success(t *testing.T) {
 	router.DELETE("/timezones/:id", handler.DeleteTimezone)
 
 	w := smoke.MakeRequest(t, router, "DELETE", "/timezones/"+smoke.FakeUUID(), nil)
-	
+
 	// Delete returns 204 No Content
 	if w.Code != 204 {
 		t.Errorf("expected status code 204, got %d", w.Code)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -21,7 +21,7 @@ func TestCashRegisterRow_ToEntityAndFromEntity(t *testing.T) {
 		OrganizationID:         uuidv7.New().String(),
 		FiscalNumber:           "FN-123",
 		Model:                  "Checkbox",
-		Status:                 string(cashregister.StatusActive),
+		Status:                 string(aggregate.StatusActive),
 		LicenseKey:             sql.NullString{String: "LIC-123", Valid: true},
 		LastSyncAt:             sql.NullTime{Time: lastSync, Valid: true},
 		ProviderCashRegisterID: sql.NullString{String: "provider-1", Valid: true},
@@ -37,7 +37,7 @@ func TestCashRegisterRow_ToEntityAndFromEntity(t *testing.T) {
 
 	entity, err := row.toEntity()
 	require.NoError(t, err)
-	require.Equal(t, cashregister.StatusActive, entity.Status)
+	require.Equal(t, aggregate.StatusActive, entity.Status)
 	require.Equal(t, "LIC-123", entity.LicenseKey)
 	require.NotNil(t, entity.LastSyncAt)
 	require.Equal(t, "provider-1", entity.ProviderCashRegisterID)

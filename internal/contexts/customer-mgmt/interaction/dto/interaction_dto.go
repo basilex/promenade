@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
-	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // CreateInteractionRequest represents the request to create an interaction
@@ -105,27 +104,4 @@ func ToInteractionResponse(i *aggregate.Interaction) *InteractionResponse {
 	}
 
 	return resp
-}
-
-// Helper functions
-
-func parseUUID(s string) (uuidv7.UUID, error) {
-	return uuidv7.Parse(s)
-}
-
-func parseTime(s string) (time.Time, error) {
-	return time.Parse(time.RFC3339, s)
-}
-
-func parseOptionalTime(s *string) (*time.Time, error) {
-	if s == nil || *s == "" {
-		return nil, nil
-	}
-
-	t, err := time.Parse(time.RFC3339, *s)
-	if err != nil {
-		return nil, err
-	}
-
-	return &t, nil
 }

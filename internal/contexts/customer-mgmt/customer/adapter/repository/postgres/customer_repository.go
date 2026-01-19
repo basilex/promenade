@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -18,36 +19,64 @@ import (
 
 // CustomerRepository implements repository.ICustomerRepository
 type CustomerRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewCustomerRepository creates a new customer repository
 func NewCustomerRepository(db *sqlx.DB) repository.ICustomerRepository {
 	return &CustomerRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *CustomerRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *CustomerRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *CustomerRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *CustomerRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *CustomerRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // customerRow represents database row
 type customerRow struct {
-	ID              string               `db:"id"`
-	UserID          sql.NullString       `db:"user_id"`
-	CompanyID       sql.NullString       `db:"company_id"`
-	Name            string               `db:"name"`
-	Email           string               `db:"email"`
-	Phone           sql.NullString       `db:"phone"`
-	Status          string                       `db:"status"`
-	Tier            string                       `db:"tier"`
-	Source          string                       `db:"source"`
-	AssignedTo      string                       `db:"assigned_to"`
-	Tags            jsonstore.Field[[]string]    `db:"tags"`
-	CreatedAt       time.Time                    `db:"created_at"`
-	UpdatedAt       time.Time            `db:"updated_at"`
-	LastContactedAt sql.NullTime         `db:"last_contacted_at"`
-	ConvertedAt     sql.NullTime         `db:"converted_at"`
-	ChurnedAt       sql.NullTime         `db:"churned_at"`
-	ChurnReason     sql.NullString       `db:"churn_reason"`
-	DeletedAt       sql.NullTime         `db:"deleted_at"`
+	ID              string                    `db:"id"`
+	UserID          sql.NullString            `db:"user_id"`
+	CompanyID       sql.NullString            `db:"company_id"`
+	Name            string                    `db:"name"`
+	Email           string                    `db:"email"`
+	Phone           sql.NullString            `db:"phone"`
+	Status          string                    `db:"status"`
+	Tier            string                    `db:"tier"`
+	Source          string                    `db:"source"`
+	AssignedTo      string                    `db:"assigned_to"`
+	Tags            jsonstore.Field[[]string] `db:"tags"`
+	CreatedAt       time.Time                 `db:"created_at"`
+	UpdatedAt       time.Time                 `db:"updated_at"`
+	LastContactedAt sql.NullTime              `db:"last_contacted_at"`
+	ConvertedAt     sql.NullTime              `db:"converted_at"`
+	ChurnedAt       sql.NullTime              `db:"churned_at"`
+	ChurnReason     sql.NullString            `db:"churn_reason"`
+	DeletedAt       sql.NullTime              `db:"deleted_at"`
 }
 
 // toEntity converts database row to domain entity
@@ -75,7 +104,7 @@ func (r *customerRow) toEntity() (*aggregate.Customer, error) {
 		Source:     r.Source,
 		AssignedTo: assignedTo,
 	}
-	
+
 	// Set BaseAggregate fields
 	c.ID = id
 	c.CreatedAt = r.CreatedAt

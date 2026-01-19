@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -23,25 +25,53 @@ type SalesReportOrderRow struct {
 
 // SalesReportItemRow represents a sales order line item read model row.
 type SalesReportItemRow struct {
-	ID            uuidv7.UUID
-	OrderID       uuidv7.UUID
-	ProductID     uuidv7.UUID
-	Quantity      int
+	ID             uuidv7.UUID
+	OrderID        uuidv7.UUID
+	ProductID      uuidv7.UUID
+	Quantity       int
 	UnitPriceCents int64
-	TotalCents    int64
-	CategoryID    *uuidv7.UUID
-	ManagerID     *uuidv7.UUID
-	UpdatedAt     time.Time
+	TotalCents     int64
+	CategoryID     *uuidv7.UUID
+	ManagerID      *uuidv7.UUID
+	UpdatedAt      time.Time
 }
 
 // SalesReportRepository writes to analytics read model tables.
 type SalesReportRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewSalesReportRepository creates a new SalesReportRepository.
 func NewSalesReportRepository(db *sqlx.DB) *SalesReportRepository {
-	return &SalesReportRepository{BaseRepository: NewBaseRepository(db)}
+	return &SalesReportRepository{db: db}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *SalesReportRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *SalesReportRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *SalesReportRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *SalesReportRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *SalesReportRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // UpsertOrder inserts or updates a sales order read model record.
@@ -138,15 +168,15 @@ func (r *SalesReportRepository) ReplaceItems(ctx context.Context, orderID uuidv7
 
 	for _, item := range items {
 		if _, err := r.NamedExec(ctx, insertQuery, map[string]interface{}{
-			"id":              item.ID.String(),
-			"order_id":        item.OrderID.String(),
-			"product_id":      item.ProductID.String(),
-			"quantity":        item.Quantity,
+			"id":               item.ID.String(),
+			"order_id":         item.OrderID.String(),
+			"product_id":       item.ProductID.String(),
+			"quantity":         item.Quantity,
 			"unit_price_cents": item.UnitPriceCents,
-			"total_cents":     item.TotalCents,
-			"category_id":     uuidPtrToString(item.CategoryID),
-			"manager_id":      uuidPtrToString(item.ManagerID),
-			"updated_at":      item.UpdatedAt,
+			"total_cents":      item.TotalCents,
+			"category_id":      uuidPtrToString(item.CategoryID),
+			"manager_id":       uuidPtrToString(item.ManagerID),
+			"updated_at":       item.UpdatedAt,
 		}); err != nil {
 			return err
 		}
@@ -248,15 +278,15 @@ func (r *SalesReportRepository) GetSalesReport(ctx context.Context, filters Sale
 
 	// Execute query
 	rows := []struct {
-		OrderID     string     `db:"order_id"`
-		CustomerID  string     `db:"customer_id"`
-		ManagerID   *string    `db:"manager_id"`
-		TotalCents  int64      `db:"total_cents"`
-		Currency    string     `db:"currency_code"`
-		Status      string     `db:"status"`
-		ItemCount   int        `db:"item_count"`
-		ConfirmedAt time.Time  `db:"confirmed_at"`
-		UpdatedAt   time.Time  `db:"updated_at"`
+		OrderID     string    `db:"order_id"`
+		CustomerID  string    `db:"customer_id"`
+		ManagerID   *string   `db:"manager_id"`
+		TotalCents  int64     `db:"total_cents"`
+		Currency    string    `db:"currency_code"`
+		Status      string    `db:"status"`
+		ItemCount   int       `db:"item_count"`
+		ConfirmedAt time.Time `db:"confirmed_at"`
+		UpdatedAt   time.Time `db:"updated_at"`
 	}{}
 
 	if err := r.Select(ctx, &rows, query, args...); err != nil {

@@ -11,6 +11,8 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/role"
 	rolePostgres "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
+	roleAggregate "github.com/basilex/promenade/internal/contexts/identity/role/aggregate"
+	roleUseCase "github.com/basilex/promenade/internal/contexts/identity/role/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -25,7 +27,7 @@ func TestRoleUseCase_CreateRole(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Test - Create role
 		r, err := uc.CreateRole(ctx, "manager", "Manager", "Team manager role")
@@ -53,7 +55,7 @@ func TestRoleUseCase_GetRole(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create role
 		created, err := uc.CreateRole(ctx, "editor", "Editor", "Content editor role")
@@ -83,7 +85,7 @@ func TestRoleUseCase_GetRoleByName(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create role
 		created, err := uc.CreateRole(ctx, "viewer", "Viewer", "Read-only viewer role")
@@ -112,7 +114,7 @@ func TestRoleUseCase_UpdateRole(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create role
 		r, err := uc.CreateRole(ctx, "moderator", "Moderator", "Content moderator")
@@ -143,7 +145,7 @@ func TestRoleUseCase_DeleteRole(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create role
 		r, err := uc.CreateRole(ctx, "temp_role", "Temporary Role", "For testing")
@@ -170,7 +172,7 @@ func TestRoleUseCase_ListRoles(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create multiple roles
 		_, err := uc.CreateRole(ctx, "role1", "Role 1", "First role")
@@ -209,17 +211,17 @@ func TestRoleUseCase_GetUserRoles(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Create role directly in repo (avoid usecase rollback)
-		r, err := role.NewRole("test_role", "Test Role", "For user assignment")
+		r, err := roleAggregate.NewRole("test_role", "Test Role", "For user assignment")
 		require.NoError(t, err)
 		err = roleRepo.Create(ctx, r)
 		require.NoError(t, err)
 
 		// Create user and assign role (use tx for transaction support)
 		userID := uuidv7.New()
-		
+
 		// Insert user with unique email
 		uniqueEmail := "test_" + userID.String()[:8] + "@example.com"
 		_, err = tx.ExecContext(ctx,
@@ -268,7 +270,7 @@ func TestRoleUseCase_CompleteWorkflow(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		// Setup
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := role.NewUseCase(roleRepo)
+		uc := roleUseCase.NewRoleUseCase(roleRepo)
 
 		// Step 1: Create multiple roles
 		adminRole, err := uc.CreateRole(ctx, "workflow_admin", "Workflow Admin", "Admin for workflow test")

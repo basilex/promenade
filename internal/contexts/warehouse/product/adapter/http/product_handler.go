@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/aggregate"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/dto"
 	"github.com/basilex/promenade/internal/contexts/warehouse/product/usecase"
-	producterrors "github.com/basilex/promenade/internal/contexts/warehouse/product"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -33,8 +33,8 @@ func NewProductHandler(uc usecase.IProductUseCase) *ProductHandler {
 // @Tags Products
 // @Accept json
 // @Produce json
-// @Param request body CreateProductRequest true "Product creation request"
-// @Success 201 {object} response.Response{data=ProductResponse}
+// @Param request body dto.CreateProductRequest true "Product creation request"
+// @Success 201 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 409 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -66,7 +66,7 @@ func (h *ProductHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -98,7 +98,7 @@ func (h *ProductHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param sku path string true "Product SKU"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products/sku/{sku} [get]
@@ -125,8 +125,8 @@ func (h *ProductHandler) GetBySKU(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Param request body UpdateProductRequest true "Product update request"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Param request body dto.UpdateProductRequest true "Product update request"
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -221,7 +221,7 @@ func (h *ProductHandler) Delete(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=ProductListResponse}
+// @Success 200 {object} response.Response{data=dto.ProductListResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products [get]
@@ -260,7 +260,7 @@ func (h *ProductHandler) List(c *gin.Context) {
 // @Param category path string true "Category name"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=ProductListResponse}
+// @Success 200 {object} response.Response{data=dto.ProductListResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products/category/{category} [get]
@@ -300,7 +300,7 @@ func (h *ProductHandler) ListByCategory(c *gin.Context) {
 // @Param brand path string true "Brand name"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=ProductListResponse}
+// @Success 200 {object} response.Response{data=dto.ProductListResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products/brand/{brand} [get]
@@ -340,7 +340,7 @@ func (h *ProductHandler) ListByBrand(c *gin.Context) {
 // @Param status path string true "Product status" Enums(active, draft, out_of_stock, discontinued)
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=ProductListResponse}
+// @Success 200 {object} response.Response{data=dto.ProductListResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products/status/{status} [get]
@@ -380,7 +380,7 @@ func (h *ProductHandler) ListByStatus(c *gin.Context) {
 // @Param q query string true "Search query"
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=ProductListResponse}
+// @Success 200 {object} response.Response{data=dto.ProductListResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /warehouse/products/search [get]
@@ -423,7 +423,7 @@ func (h *ProductHandler) Search(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 409 {object} response.Response
@@ -466,7 +466,7 @@ func (h *ProductHandler) Activate(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 409 {object} response.Response
@@ -509,7 +509,7 @@ func (h *ProductHandler) Deactivate(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -547,8 +547,8 @@ func (h *ProductHandler) Discontinue(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Param request body UpdateInventorySettingsRequest true "Inventory settings"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Param request body dto.UpdateInventorySettingsRequest true "Inventory settings"
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -592,8 +592,8 @@ func (h *ProductHandler) UpdateInventorySettings(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Param request body SetReorderPointRequest true "Reorder settings"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Param request body dto.SetReorderPointRequest true "Reorder settings"
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -641,8 +641,8 @@ func (h *ProductHandler) SetReorderPoint(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
-// @Param request body SetPhysicalPropertiesRequest true "Physical properties"
-// @Success 200 {object} response.Response{data=ProductResponse}
+// @Param request body dto.SetPhysicalPropertiesRequest true "Physical properties"
+// @Success 200 {object} response.Response{data=dto.ProductResponse}
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response

@@ -8,65 +8,67 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
 	receiptHandler "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/http"
+	receiptAggregate "github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockReceiptUseCase implements receipt.IUseCase for smoke testing
 type MockReceiptUseCase struct {
-	CreateReceiptFunc func(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receipt.PaymentType, receiptType receipt.ReceiptType, currency string, lines []receipt.ReceiptLine, createdBy uuidv7.UUID) (*receipt.Receipt, error)
-	GetReceiptFunc    func(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error)
-	GetByOrderIDFunc  func(ctx context.Context, orderID uuidv7.UUID) (*receipt.Receipt, error)
-	ListReceiptsFunc  func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error)
-	MarkPrintedFunc   func(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receipt.Receipt, error)
-	PrintReceiptFunc  func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error)
-	CancelReceiptFunc func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error)
+	CreateReceiptFunc func(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receiptAggregate.PaymentType, receiptType receiptAggregate.ReceiptType, currency string, lines []receiptAggregate.ReceiptLine, createdBy uuidv7.UUID) (*receiptAggregate.Receipt, error)
+	GetReceiptFunc    func(ctx context.Context, id uuidv7.UUID) (*receiptAggregate.Receipt, error)
+	GetByOrderIDFunc  func(ctx context.Context, orderID uuidv7.UUID) (*receiptAggregate.Receipt, error)
+	ListReceiptsFunc  func(ctx context.Context, filters *receiptRepo.ListFilters) ([]*receiptAggregate.Receipt, error)
+	MarkPrintedFunc   func(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error)
+	PrintReceiptFunc  func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error)
+	CancelReceiptFunc func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error)
 	DeleteReceiptFunc func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockReceiptUseCase) CreateReceipt(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receipt.PaymentType, receiptType receipt.ReceiptType, currency string, lines []receipt.ReceiptLine, createdBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) CreateReceipt(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receiptAggregate.PaymentType, receiptType receiptAggregate.ReceiptType, currency string, lines []receiptAggregate.ReceiptLine, createdBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.CreateReceiptFunc != nil {
 		return m.CreateReceiptFunc(ctx, cashRegisterID, orderID, paymentType, receiptType, currency, lines, createdBy)
 	}
 	return nil, fmt.Errorf("CreateReceiptFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) GetReceipt(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) GetReceipt(ctx context.Context, id uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.GetReceiptFunc != nil {
 		return m.GetReceiptFunc(ctx, id)
 	}
 	return nil, fmt.Errorf("GetReceiptFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) GetByOrderID(ctx context.Context, orderID uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) GetByOrderID(ctx context.Context, orderID uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.GetByOrderIDFunc != nil {
 		return m.GetByOrderIDFunc(ctx, orderID)
 	}
 	return nil, fmt.Errorf("GetByOrderIDFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) ListReceipts(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) ListReceipts(ctx context.Context, filters *receiptRepo.ListFilters) ([]*receiptAggregate.Receipt, error) {
 	if m.ListReceiptsFunc != nil {
 		return m.ListReceiptsFunc(ctx, filters)
 	}
 	return nil, fmt.Errorf("ListReceiptsFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.MarkPrintedFunc != nil {
 		return m.MarkPrintedFunc(ctx, id, fiscalNumber, fiscalURL, qrCode, printedBy)
 	}
 	return nil, fmt.Errorf("MarkPrintedFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.PrintReceiptFunc != nil {
 		return m.PrintReceiptFunc(ctx, id, printedBy)
 	}
 	return nil, fmt.Errorf("PrintReceiptFunc not implemented")
 }
 
-func (m *MockReceiptUseCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *MockReceiptUseCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 	if m.CancelReceiptFunc != nil {
 		return m.CancelReceiptFunc(ctx, id, reason, cancelledBy)
 	}
@@ -80,14 +82,14 @@ func (m *MockReceiptUseCase) DeleteReceipt(ctx context.Context, id uuidv7.UUID) 
 	return fmt.Errorf("DeleteReceiptFunc not implemented")
 }
 
-func fakeReceipt(t *testing.T) *receipt.Receipt {
-	rec, err := receipt.NewReceipt(
+func fakeReceipt(t *testing.T) *receiptAggregate.Receipt {
+	rec, err := receiptAggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		receiptAggregate.PaymentTypeCash,
+		receiptAggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]receiptAggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	if err != nil {
@@ -100,7 +102,7 @@ func TestReceiptHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		CreateReceiptFunc: func(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receipt.PaymentType, receiptType receipt.ReceiptType, currency string, lines []receipt.ReceiptLine, createdBy uuidv7.UUID) (*receipt.Receipt, error) {
+		CreateReceiptFunc: func(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receiptAggregate.PaymentType, receiptType receiptAggregate.ReceiptType, currency string, lines []receiptAggregate.ReceiptLine, createdBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return fakeReceipt(t), nil
 		},
 	}
@@ -148,7 +150,7 @@ func TestReceiptHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		GetReceiptFunc: func(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error) {
+		GetReceiptFunc: func(ctx context.Context, id uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return fakeReceipt(t), nil
 		},
 	}
@@ -164,7 +166,7 @@ func TestReceiptHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		GetReceiptFunc: func(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error) {
+		GetReceiptFunc: func(ctx context.Context, id uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptNotFound
 		},
 	}
@@ -180,8 +182,8 @@ func TestReceiptHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		ListReceiptsFunc: func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
-			return []*receipt.Receipt{fakeReceipt(t), fakeReceipt(t)}, nil
+		ListReceiptsFunc: func(ctx context.Context, filters *receiptRepo.ListFilters) ([]*receiptAggregate.Receipt, error) {
+			return []*receiptAggregate.Receipt{fakeReceipt(t), fakeReceipt(t)}, nil
 		},
 	}
 
@@ -196,7 +198,7 @@ func TestReceiptHandler_Print_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return fakeReceipt(t), nil
 		},
 	}
@@ -216,7 +218,7 @@ func TestReceiptHandler_Print_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptNotFound
 		},
 	}
@@ -252,7 +254,7 @@ func TestReceiptHandler_Print_AlreadyCancelled(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptAlreadyCancelled
 		},
 	}
@@ -272,7 +274,7 @@ func TestReceiptHandler_Cancel_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return fakeReceipt(t), nil
 		},
 	}
@@ -281,7 +283,7 @@ func TestReceiptHandler_Cancel_Success(t *testing.T) {
 	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
 
 	body := map[string]any{
-		"reason":        "customer request",
+		"reason":       "customer request",
 		"cancelled_by": smoke.FakeUUID(),
 	}
 
@@ -293,7 +295,7 @@ func TestReceiptHandler_Cancel_ReasonRequired(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptCancelReasonRequired
 		},
 	}
@@ -302,7 +304,7 @@ func TestReceiptHandler_Cancel_ReasonRequired(t *testing.T) {
 	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
 
 	body := map[string]any{
-		"reason":        "",
+		"reason":       "",
 		"cancelled_by": smoke.FakeUUID(),
 	}
 
@@ -314,7 +316,7 @@ func TestReceiptHandler_Cancel_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptNotFound
 		},
 	}
@@ -323,7 +325,7 @@ func TestReceiptHandler_Cancel_NotFound(t *testing.T) {
 	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
 
 	body := map[string]any{
-		"reason":        "not found",
+		"reason":       "not found",
 		"cancelled_by": smoke.FakeUUID(),
 	}
 
@@ -335,7 +337,7 @@ func TestReceiptHandler_Cancel_AlreadyCancelled(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockReceiptUseCase{
-		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+		CancelReceiptFunc: func(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptAggregate.Receipt, error) {
 			return nil, receipt.ErrReceiptAlreadyCancelled
 		},
 	}
@@ -344,7 +346,7 @@ func TestReceiptHandler_Cancel_AlreadyCancelled(t *testing.T) {
 	router.POST("/fiscal/receipts/:id/cancel", handler.Cancel)
 
 	body := map[string]any{
-		"reason":        "duplicate",
+		"reason":       "duplicate",
 		"cancelled_by": smoke.FakeUUID(),
 	}
 

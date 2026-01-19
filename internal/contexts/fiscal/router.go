@@ -4,13 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
 	cashregisterHTTP "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/http"
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	cashregisterusecase "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/usecase"
 	receiptHTTP "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/http"
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
+	receiptusecase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 )
 
@@ -24,27 +24,27 @@ type Router struct {
 func NewRouter(db *sqlx.DB, checkboxClient *checkbox.Client, pdfOutputDir string) *Router {
 	// Initialize CashRegister aggregate
 	cashRegisterRepository := cashregisterRepo.NewCashRegisterRepository(db)
-	cashRegisterUseCase := cashregister.NewUseCase(cashRegisterRepository)
+	cashRegisterUseCase := cashregisterusecase.NewCashRegisterUseCase(cashRegisterRepository)
 	cashRegisterHandler := cashregisterHTTP.NewCashRegisterHandler(cashRegisterUseCase)
 
 	// Initialize Receipt aggregate
 	receiptRepository := receiptRepo.NewReceiptRepository(db)
-	var printer receipt.IPrinter
-	var pdfPrinter receipt.IPrinter
+	var printer receiptusecase.IPrinter
+	var pdfPrinter receiptusecase.IPrinter
 	if pdfOutputDir != "" {
 		pdfPrinter = receiptPrinter.NewPDFPrinter(pdfOutputDir)
 	}
 	if checkboxClient != nil {
 		checkboxPrinter := receiptPrinter.NewCheckboxPrinter(checkboxClient)
 		if pdfPrinter != nil {
-			printer = receipt.NewMultiPrinter(checkboxPrinter, pdfPrinter)
+			printer = receiptusecase.NewMultiPrinter(checkboxPrinter, pdfPrinter)
 		} else {
 			printer = checkboxPrinter
 		}
 	} else if pdfPrinter != nil {
 		printer = pdfPrinter
 	}
-	receiptUseCase := receipt.NewUseCase(receiptRepository, printer)
+	receiptUseCase := receiptusecase.NewReceiptUseCase(receiptRepository, printer)
 	receiptHandler := receiptHTTP.NewReceiptHandler(receiptUseCase)
 
 	return &Router{

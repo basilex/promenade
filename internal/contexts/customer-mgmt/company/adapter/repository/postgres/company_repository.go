@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"strings"
 	"time"
 
@@ -19,14 +20,42 @@ import (
 
 // CompanyRepository implements repository.ICompanyRepository using PostgreSQL
 type CompanyRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewCompanyRepository creates a new PostgreSQL company repository
 func NewCompanyRepository(db *sqlx.DB) repository.ICompanyRepository {
 	return &CompanyRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *CompanyRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *CompanyRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *CompanyRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *CompanyRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *CompanyRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // companyRow represents a database row for the customer_companies table
@@ -78,7 +107,7 @@ func (r *companyRow) toEntity() (*aggregate.Company, error) {
 		Revenue:       r.Revenue,
 		Currency:      r.Currency,
 	}
-	
+
 	// Set BaseAggregate fields
 	c.ID = id
 	c.CreatedAt = r.CreatedAt
@@ -194,7 +223,7 @@ func toRow(c *aggregate.Company) (*companyRow, error) {
 	if c.LegalName != nil {
 		legalName = *c.LegalName
 	}
-	
+
 	row := &companyRow{
 		ID:            c.GetID().String(),
 		Name:          c.Name,
@@ -202,7 +231,7 @@ func toRow(c *aggregate.Company) (*companyRow, error) {
 		Type:          string(c.Type),
 		Size:          string(c.Size),
 		EmployeeCount: c.EmployeeCount,
-		Revenue: c.Revenue,
+		Revenue:       c.Revenue,
 		Currency:      c.Currency,
 		CreatedAt:     c.GetCreatedAt(),
 		UpdatedAt:     c.GetUpdatedAt(),

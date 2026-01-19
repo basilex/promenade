@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	postgres "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -33,20 +33,20 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 		// Create test data with different statuses and tiers
 		testData := []struct {
 			name   string
-			status customer.CustomerStatus
-			tier   customer.CustomerTier
+			status customerAggregate.CustomerStatus
+			tier   customerAggregate.CustomerTier
 		}{
-			{"Lead Free 1", customer.CustomerStatusLead, customer.CustomerTierFree},
-			{"Lead Free 2", customer.CustomerStatusLead, customer.CustomerTierFree},
-			{"Prospect Basic", customer.CustomerStatusProspect, customer.CustomerTierBasic},
-			{"Customer Pro", customer.CustomerStatusCustomer, customer.CustomerTierPro},
-			{"Customer Enterprise", customer.CustomerStatusCustomer, customer.CustomerTierEnterprise},
-			{"Churned Basic", customer.CustomerStatusChurned, customer.CustomerTierBasic},
+			{"Lead Free 1", customerAggregate.CustomerStatusLead, customerAggregate.CustomerTierFree},
+			{"Lead Free 2", customerAggregate.CustomerStatusLead, customerAggregate.CustomerTierFree},
+			{"Prospect Basic", customerAggregate.CustomerStatusProspect, customerAggregate.CustomerTierBasic},
+			{"Customer Pro", customerAggregate.CustomerStatusCustomer, customerAggregate.CustomerTierPro},
+			{"Customer Enterprise", customerAggregate.CustomerStatusCustomer, customerAggregate.CustomerTierEnterprise},
+			{"Churned Basic", customerAggregate.CustomerStatusChurned, customerAggregate.CustomerTierBasic},
 		}
 
 		uuid := uuidv7.New().String()
 		for i, td := range testData {
-			c, err := customer.NewCustomer(td.name, "cust"+string(rune('a'+i))+"_"+uuid+"@test.com", "web", assignedTo)
+			c, err := customerAggregate.NewCustomer(td.name, "cust"+string(rune('a'+i))+"_"+uuid+"@test.com", "web", assignedTo)
 			require.NoError(t, err)
 			c.Status = td.status
 			c.Tier = td.tier
@@ -59,10 +59,10 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 			require.NoError(t, err)
 
 			// Verify counts
-			assert.Equal(t, 2, statusCounts[customer.CustomerStatusLead], "Expected 2 Leads")
-			assert.Equal(t, 1, statusCounts[customer.CustomerStatusProspect], "Expected 1 Prospect")
-			assert.Equal(t, 2, statusCounts[customer.CustomerStatusCustomer], "Expected 2 Customers")
-			assert.Equal(t, 1, statusCounts[customer.CustomerStatusChurned], "Expected 1 Churned")
+			assert.Equal(t, 2, statusCounts[customerAggregate.CustomerStatusLead], "Expected 2 Leads")
+			assert.Equal(t, 1, statusCounts[customerAggregate.CustomerStatusProspect], "Expected 1 Prospect")
+			assert.Equal(t, 2, statusCounts[customerAggregate.CustomerStatusCustomer], "Expected 2 Customers")
+			assert.Equal(t, 1, statusCounts[customerAggregate.CustomerStatusChurned], "Expected 1 Churned")
 
 			assert.Len(t, statusCounts, 4, "Should return counts for 4 statuses")
 		})
@@ -73,10 +73,10 @@ func TestCustomerRepository_N1Optimization(t *testing.T) {
 			require.NoError(t, err)
 
 			// Verify counts
-			assert.Equal(t, 2, tierCounts[customer.CustomerTierFree], "Expected 2 Free tier")
-			assert.Equal(t, 2, tierCounts[customer.CustomerTierBasic], "Expected 2 Basic tier")
-			assert.Equal(t, 1, tierCounts[customer.CustomerTierPro], "Expected 1 Pro tier")
-			assert.Equal(t, 1, tierCounts[customer.CustomerTierEnterprise], "Expected 1 Enterprise tier")
+			assert.Equal(t, 2, tierCounts[customerAggregate.CustomerTierFree], "Expected 2 Free tier")
+			assert.Equal(t, 2, tierCounts[customerAggregate.CustomerTierBasic], "Expected 2 Basic tier")
+			assert.Equal(t, 1, tierCounts[customerAggregate.CustomerTierPro], "Expected 1 Pro tier")
+			assert.Equal(t, 1, tierCounts[customerAggregate.CustomerTierEnterprise], "Expected 1 Enterprise tier")
 
 			assert.Len(t, tierCounts, 4, "Should return counts for 4 tiers")
 		})

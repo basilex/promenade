@@ -12,14 +12,16 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	cashregistererrors "github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-func buildCashRegisterRow() (cashregister.CashRegister, []string, []driver.Value) {
+func buildCashRegisterRow() (aggregate.CashRegister, []string, []driver.Value) {
 	orgID := uuidv7.New()
 	userID := uuidv7.New()
-	cr, _ := cashregister.NewCashRegister(orgID, "FN-ROW", "Model", userID)
+	cr, _ := aggregate.NewCashRegister(orgID, "FN-ROW", "Model", userID)
 	_ = cr.Activate("LIC-ROW", userID)
 
 	columns := []string{
@@ -79,13 +81,13 @@ func TestCashRegisterRepository_Create_ReturnsCreateFailedOnError(t *testing.T) 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	repo := NewCashRegisterRepository(sqlxDB)
 
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-TEST", "Model", uuidv7.New())
+	cr, err := aggregate.NewCashRegister(uuidv7.New(), "FN-TEST", "Model", uuidv7.New())
 	require.NoError(t, err)
 
 	mock.ExpectExec("INSERT INTO fiscal_cash_registers").WillReturnError(sql.ErrConnDone)
 
 	err = repo.Create(context.Background(), cr)
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -101,7 +103,7 @@ func TestCashRegisterRepository_Create_Success(t *testing.T) {
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	repo := NewCashRegisterRepository(sqlxDB)
 
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-SUCCESS", "Model", uuidv7.New())
+	cr, err := aggregate.NewCashRegister(uuidv7.New(), "FN-SUCCESS", "Model", uuidv7.New())
 	require.NoError(t, err)
 
 	mock.ExpectExec("INSERT INTO fiscal_cash_registers").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -126,7 +128,7 @@ func TestCashRegisterRepository_GetByID_NotFound(t *testing.T) {
 	mock.ExpectQuery("SELECT id, version").WillReturnError(sql.ErrNoRows)
 
 	_, err = repo.GetByID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterNotFound)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -172,7 +174,7 @@ func TestCashRegisterRepository_GetByID_RowConversionError(t *testing.T) {
 	mock.ExpectQuery("SELECT id, version").WillReturnRows(rows)
 
 	_, err = repo.GetByID(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -191,7 +193,7 @@ func TestCashRegisterRepository_GetByFiscalNumber_NotFound(t *testing.T) {
 	mock.ExpectQuery("WHERE fiscal_number").WillReturnError(sql.ErrNoRows)
 
 	_, err = repo.GetByFiscalNumber(context.Background(), "FN-NOT-FOUND")
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterNotFound)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -230,13 +232,13 @@ func TestCashRegisterRepository_Update_NotFound(t *testing.T) {
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	repo := NewCashRegisterRepository(sqlxDB)
 
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-UPDATE", "Model", uuidv7.New())
+	cr, err := aggregate.NewCashRegister(uuidv7.New(), "FN-UPDATE", "Model", uuidv7.New())
 	require.NoError(t, err)
 
 	mock.ExpectExec("UPDATE fiscal_cash_registers").WillReturnResult(sqlmock.NewResult(0, 0))
 
 	err = repo.Update(context.Background(), cr)
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterNotFound)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -252,7 +254,7 @@ func TestCashRegisterRepository_Update_Success(t *testing.T) {
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	repo := NewCashRegisterRepository(sqlxDB)
 
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-UPD", "Model", uuidv7.New())
+	cr, err := aggregate.NewCashRegister(uuidv7.New(), "FN-UPD", "Model", uuidv7.New())
 	require.NoError(t, err)
 	currentVersion := cr.GetVersion()
 
@@ -276,13 +278,13 @@ func TestCashRegisterRepository_Update_RowsAffectedError(t *testing.T) {
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	repo := NewCashRegisterRepository(sqlxDB)
 
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-ROWS", "Model", uuidv7.New())
+	cr, err := aggregate.NewCashRegister(uuidv7.New(), "FN-ROWS", "Model", uuidv7.New())
 	require.NoError(t, err)
 
 	mock.ExpectExec("UPDATE fiscal_cash_registers").WillReturnResult(sqlmock.NewErrorResult(errors.New("rows error")))
 
 	err = repo.Update(context.Background(), cr)
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterUpdateFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterUpdateFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -301,7 +303,7 @@ func TestCashRegisterRepository_Delete_NotFound(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_cash_registers").WillReturnResult(sqlmock.NewResult(0, 0))
 
 	err = repo.Delete(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterNotFound)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterNotFound)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -339,7 +341,7 @@ func TestCashRegisterRepository_Delete_RowsAffectedError(t *testing.T) {
 	mock.ExpectExec("UPDATE fiscal_cash_registers").WillReturnResult(sqlmock.NewErrorResult(errors.New("rows error")))
 
 	err = repo.Delete(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterDeleteFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterDeleteFailed)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
@@ -382,7 +384,7 @@ func TestCashRegisterRepository_ListActive_Error(t *testing.T) {
 	mock.ExpectQuery("FROM fiscal_cash_registers").WillReturnError(sql.ErrConnDone)
 
 	list, err := repo.ListActive(context.Background())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
@@ -404,7 +406,7 @@ func TestCashRegisterRepository_List_WithFilters(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_cash_registers").WillReturnRows(rows)
 
-	filters := &cashregister.ListFilters{OrganizationID: &cr.OrganizationID}
+	filters := &repository.ListFilters{OrganizationID: &cr.OrganizationID}
 	list, err := repo.List(context.Background(), filters)
 	require.NoError(t, err)
 	require.Len(t, list, 1)
@@ -430,8 +432,8 @@ func TestCashRegisterRepository_List_RowConversionError(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_cash_registers").WillReturnRows(rows)
 
-	list, err := repo.List(context.Background(), &cashregister.ListFilters{})
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	list, err := repo.List(context.Background(), &repository.ListFilters{})
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
@@ -450,8 +452,8 @@ func TestCashRegisterRepository_List_Error(t *testing.T) {
 
 	mock.ExpectQuery("FROM fiscal_cash_registers").WillReturnError(sql.ErrConnDone)
 
-	list, err := repo.List(context.Background(), &cashregister.ListFilters{})
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	list, err := repo.List(context.Background(), &repository.ListFilters{})
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
@@ -495,7 +497,7 @@ func TestCashRegisterRepository_GetByLocation_Error(t *testing.T) {
 	mock.ExpectQuery("WHERE organization_id").WillReturnError(sql.ErrConnDone)
 
 	list, err := repo.GetByLocation(context.Background(), uuidv7.New())
-	require.ErrorIs(t, err, cashregister.ErrCashRegisterCreateFailed)
+	require.ErrorIs(t, err, cashregistererrors.ErrCashRegisterCreateFailed)
 	require.Nil(t, list)
 	require.NoError(t, mock.ExpectationsWereMet())
 }

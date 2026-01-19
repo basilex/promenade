@@ -4,25 +4,57 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 
-	"github.com/basilex/promenade/internal/contexts/identity/user"
+	usererrors "github.com/basilex/promenade/internal/contexts/identity/user"
+	"github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	"github.com/basilex/promenade/internal/contexts/identity/user/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
-// userRepository implements user.IRepository for PostgreSQL
+// userRepository implements repository.IUserRepository for PostgreSQL
 type userRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewUserRepository creates a new user repository
-func NewUserRepository(db *sqlx.DB) user.IRepository {
+func NewUserRepository(db *sqlx.DB) repository.IUserRepository {
 	return &userRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *userRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *userRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *userRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *userRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *userRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // userRow represents database row structure for identity_users table
@@ -36,8 +68,8 @@ type userRow struct {
 	LastLoginAt      sql.NullTime `db:"last_login_at"`
 	FailedLoginCount int          `db:"failed_login_count"`
 	LockedUntil      sql.NullTime `db:"locked_until"`
-	CreatedAt        string       `db:"created_at"`
-	UpdatedAt        string       `db:"updated_at"`
+	CreatedAt        time.Time    `db:"created_at"`
+	UpdatedAt        time.Time    `db:"updated_at"`
 	DeletedAt        sql.NullTime `db:"deleted_at"`
 }
 
@@ -48,24 +80,24 @@ type userRowWithRoles struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *userRow) toEntity() (*user.User, error) {
+func (r *userRow) toEntity() (*aggregate.User, error) {
 	// Validate and create email value object
 	emailVO, err := valueobject.NewEmail(r.Email)
 	if err != nil {
 		return nil, fmt.Errorf("invalid email in database: %w", err)
 	}
 
-	u := &user.User{
+	u := &aggregate.User{
 		Email:            emailVO,
 		PasswordHash:     r.PasswordHash,
-		Status:           user.UserStatus(r.Status),
+		Status:           aggregate.UserStatus(r.Status),
 		EmailVerified:    r.EmailVerified,
 		FailedLoginCount: r.FailedLoginCount,
 	}
 	// Initialize BaseAggregate fields
 	u.ID = r.ID
-	u.CreatedAt = parseTime(r.CreatedAt)
-	u.UpdatedAt = parseTime(r.UpdatedAt)
+	u.CreatedAt = r.CreatedAt
+	u.UpdatedAt = r.UpdatedAt
 
 	if r.EmailVerifiedAt.Valid {
 		u.EmailVerifiedAt = &r.EmailVerifiedAt.Time
@@ -81,7 +113,7 @@ func (r *userRow) toEntity() (*user.User, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(u *user.User) *userRow {
+func fromEntity(u *aggregate.User) *userRow {
 	row := &userRow{
 		ID:               u.GetID(),
 		Email:            u.Email.Value(),
@@ -105,7 +137,7 @@ func fromEntity(u *user.User) *userRow {
 }
 
 // Create creates a new user in the database
-func (r *userRepository) Create(ctx context.Context, u *user.User) error {
+func (r *userRepository) Create(ctx context.Context, u *aggregate.User) error {
 	row := fromEntity(u)
 
 	query := `
@@ -128,7 +160,7 @@ func (r *userRepository) Create(ctx context.Context, u *user.User) error {
 }
 
 // GetByID retrieves a user by ID
-func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*user.User, error) {
+func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.User, error) {
 	var row userRow
 
 	query := `
@@ -143,7 +175,7 @@ func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*user.Use
 	err := r.Get(ctx, &row, query, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, user.ErrUserNotFound
+			return nil, usererrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to get user by id: %w", err)
 	}
@@ -162,7 +194,7 @@ func (r *userRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*user.Use
 }
 
 // GetByEmail retrieves a user by email
-func (r *userRepository) GetByEmail(ctx context.Context, email string) (*user.User, error) {
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*aggregate.User, error) {
 	var row userRow
 
 	query := `
@@ -177,7 +209,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*user.Us
 	err := r.Get(ctx, &row, query, email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, user.ErrUserNotFound
+			return nil, usererrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to get user by email: %w", err)
 	}
@@ -196,7 +228,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*user.Us
 }
 
 // Update updates an existing user
-func (r *userRepository) Update(ctx context.Context, u *user.User) error {
+func (r *userRepository) Update(ctx context.Context, u *aggregate.User) error {
 	row := fromEntity(u)
 
 	query := `
@@ -225,7 +257,7 @@ func (r *userRepository) Update(ctx context.Context, u *user.User) error {
 	}
 
 	if rowsAffected == 0 {
-		return user.ErrUserNotFound
+		return usererrors.ErrUserNotFound
 	}
 
 	return nil
@@ -250,7 +282,7 @@ func (r *userRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if rowsAffected == 0 {
-		return user.ErrUserNotFound
+		return usererrors.ErrUserNotFound
 	}
 
 	return nil
@@ -277,7 +309,7 @@ func (r *userRepository) ExistsByEmail(ctx context.Context, email string) (bool,
 
 // ListUsers retrieves a paginated list of users with roles loaded in a single query
 // Optimization: Uses LEFT JOIN with ARRAY_AGG to avoid N+1 query problem
-func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*user.User, int, error) {
+func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*aggregate.User, int, error) {
 	// Get total count
 	var total int
 	countQuery := `
@@ -320,7 +352,7 @@ func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*u
 	}
 
 	// Convert rows to entities (roles already loaded)
-	users := make([]*user.User, 0, len(rows))
+	users := make([]*aggregate.User, 0, len(rows))
 	for _, row := range rows {
 		u, err := row.toEntity()
 		if err != nil {
@@ -335,7 +367,7 @@ func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*u
 }
 
 // loadUserRoles loads roles for a user from identity_user_roles and identity_roles tables
-func (r *userRepository) loadUserRoles(ctx context.Context, u *user.User) error {
+func (r *userRepository) loadUserRoles(ctx context.Context, u *aggregate.User) error {
 	query := `
 		SELECT r.name
 		FROM identity_roles r

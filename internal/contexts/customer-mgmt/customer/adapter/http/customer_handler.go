@@ -4,10 +4,10 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 
+	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/dto"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
-	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/pkg/response"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )

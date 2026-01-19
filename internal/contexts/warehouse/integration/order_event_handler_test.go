@@ -49,11 +49,11 @@ func createOrderConfirmedEvent(orderID, customerID, confirmedBy uuidv7.UUID, ite
 		ConfirmedBy: confirmedBy,
 	}
 	payloadJSON, _ := json.Marshal(payload)
-	
+
 	metadata := map[string]string{
 		"payload": string(payloadJSON),
 	}
-	
+
 	return &testEvent{
 		eventType:   "order.confirmed",
 		aggregateID: orderID,
@@ -71,11 +71,11 @@ func createOrderCancelledEvent(orderID, cancelledBy uuidv7.UUID, items []OrderIt
 		CancelledBy: cancelledBy,
 	}
 	payloadJSON, _ := json.Marshal(payload)
-	
+
 	metadata := map[string]string{
 		"payload": string(payloadJSON),
 	}
-	
+
 	return &testEvent{
 		eventType:   "order.cancelled",
 		aggregateID: orderID,
@@ -92,11 +92,11 @@ func createOrderFulfilledEvent(orderID, fulfilledBy uuidv7.UUID, items []OrderIt
 		FulfilledBy: fulfilledBy,
 	}
 	payloadJSON, _ := json.Marshal(payload)
-	
+
 	metadata := map[string]string{
 		"payload": string(payloadJSON),
 	}
-	
+
 	return &testEvent{
 		eventType:   "order.fulfilled",
 		aggregateID: orderID,

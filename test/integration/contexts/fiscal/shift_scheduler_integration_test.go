@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
 	crRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
+	cashregisterAggregate "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
 	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/scheduler"
@@ -45,7 +45,7 @@ func TestShiftOpenExecutor_Integration_OpensShift(t *testing.T) {
 	repo := crRepo.NewCashRegisterRepository(db.DB)
 
 	createdBy := uuidv7.New()
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-OPEN", "Model", createdBy)
+	cr, err := cashregisterAggregate.NewCashRegister(uuidv7.New(), "FN-OPEN", "Model", createdBy)
 	require.NoError(t, err)
 	require.NoError(t, repo.Create(ctx, cr))
 
@@ -81,7 +81,7 @@ func TestShiftCloseExecutor_Integration_ClosesShift(t *testing.T) {
 	repo := crRepo.NewCashRegisterRepository(db.DB)
 
 	createdBy := uuidv7.New()
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-CLOSE", "Model", createdBy)
+	cr, err := cashregisterAggregate.NewCashRegister(uuidv7.New(), "FN-CLOSE", "Model", createdBy)
 	require.NoError(t, err)
 	require.NoError(t, repo.Create(ctx, cr))
 

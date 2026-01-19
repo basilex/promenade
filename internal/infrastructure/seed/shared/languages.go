@@ -4,14 +4,15 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/basilex/promenade/internal/contexts/shared/language"
+	"github.com/basilex/promenade/internal/contexts/shared/language/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/language/repository"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/ref"
 )
 
 // newLanguage is a helper to create a language with all fields
-func newLanguage(code, code3, name, nativeName, direction string, nativeSpeakers *int64, isActive bool) *language.Language {
-	l, _ := language.NewLanguage(code, name, nativeName)
+func newLanguage(code, code3, name, nativeName, direction string, nativeSpeakers *int64, isActive bool) *aggregate.Language {
+	l, _ := aggregate.NewLanguage(code, name, nativeName)
 	l.Code3 = code3
 	l.Direction = direction
 	l.NativeSpeakers = nativeSpeakers
@@ -20,8 +21,8 @@ func newLanguage(code, code3, name, nativeName, direction string, nativeSpeakers
 }
 
 // LanguagesData returns reference language data for seeding (50+ major world languages)
-func LanguagesData() []*language.Language {
-	return []*language.Language{
+func LanguagesData() []*aggregate.Language {
+	return []*aggregate.Language{
 		// Top 10 Most Spoken Languages
 		newLanguage("en", "eng", "English", "English", "ltr", ref.Int64(380000000), true),
 		newLanguage("zh", "zho", "Chinese", "", "ltr", ref.Int64(1300000000), true),
@@ -93,7 +94,7 @@ func LanguagesData() []*language.Language {
 }
 
 // SeedLanguages inserts language data into database
-func SeedLanguages(ctx context.Context, repo language.IRepository) error {
+func SeedLanguages(ctx context.Context, repo repository.ILanguageRepository) error {
 	languages := LanguagesData()
 	logger.FromContext(ctx).Info("Seeding languages...", slog.Int("count", len(languages)))
 

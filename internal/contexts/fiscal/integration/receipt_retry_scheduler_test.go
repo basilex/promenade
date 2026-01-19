@@ -8,48 +8,49 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	receiptaggregate "github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptrepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/repository"
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/scheduler"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 type mockReceiptUseCase struct {
-	ListReceiptsFunc func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error)
-	PrintReceiptFunc func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error)
+	ListReceiptsFunc func(ctx context.Context, filters *receiptrepo.ListFilters) ([]*receiptaggregate.Receipt, error)
+	PrintReceiptFunc func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptaggregate.Receipt, error)
 }
 
-func (m *mockReceiptUseCase) CreateReceipt(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receipt.PaymentType, receiptType receipt.ReceiptType, currency string, lines []receipt.ReceiptLine, createdBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) CreateReceipt(ctx context.Context, cashRegisterID, orderID uuidv7.UUID, paymentType receiptaggregate.PaymentType, receiptType receiptaggregate.ReceiptType, currency string, lines []receiptaggregate.ReceiptLine, createdBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) GetReceipt(ctx context.Context, id uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) GetReceipt(ctx context.Context, id uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) GetByOrderID(ctx context.Context, orderID uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) GetByOrderID(ctx context.Context, orderID uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) ListReceipts(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) ListReceipts(ctx context.Context, filters *receiptrepo.ListFilters) ([]*receiptaggregate.Receipt, error) {
 	if m.ListReceiptsFunc != nil {
 		return m.ListReceiptsFunc(ctx, filters)
 	}
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) MarkPrinted(ctx context.Context, id uuidv7.UUID, fiscalNumber, fiscalURL, qrCode string, printedBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) PrintReceipt(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	if m.PrintReceiptFunc != nil {
 		return m.PrintReceiptFunc(ctx, id, printedBy)
 	}
 	return nil, nil
 }
 
-func (m *mockReceiptUseCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receipt.Receipt, error) {
+func (m *mockReceiptUseCase) CancelReceipt(ctx context.Context, id uuidv7.UUID, reason string, cancelledBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 	return nil, nil
 }
 
@@ -62,11 +63,11 @@ func TestReceiptRetryExecutor_Execute_NoPendingReceipts(t *testing.T) {
 	printCalled := false
 
 	uc := &mockReceiptUseCase{
-		ListReceiptsFunc: func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
+		ListReceiptsFunc: func(ctx context.Context, filters *receiptrepo.ListFilters) ([]*receiptaggregate.Receipt, error) {
 			listCalled = true
-			return []*receipt.Receipt{}, nil
+			return []*receiptaggregate.Receipt{}, nil
 		},
-		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 			printCalled = true
 			return nil, nil
 		},
@@ -82,16 +83,16 @@ func TestReceiptRetryExecutor_Execute_NoPendingReceipts(t *testing.T) {
 func TestReceiptRetryExecutor_Execute_PrintsPendingReceipts(t *testing.T) {
 	printCount := 0
 
-	rec1 := &receipt.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(uuidv7.New()), LastUpdatedBy: uuidv7.New()}
-	rec2 := &receipt.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(uuidv7.New()), LastUpdatedBy: uuidv7.New()}
+	rec1 := &receiptaggregate.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(uuidv7.New()), LastUpdatedBy: uuidv7.New()}
+	rec2 := &receiptaggregate.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(uuidv7.New()), LastUpdatedBy: uuidv7.New()}
 
 	uc := &mockReceiptUseCase{
-		ListReceiptsFunc: func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
-			return []*receipt.Receipt{rec1, rec2}, nil
+		ListReceiptsFunc: func(ctx context.Context, filters *receiptrepo.ListFilters) ([]*receiptaggregate.Receipt, error) {
+			return []*receiptaggregate.Receipt{rec1, rec2}, nil
 		},
-		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receipt.Receipt, error) {
+		PrintReceiptFunc: func(ctx context.Context, id uuidv7.UUID, printedBy uuidv7.UUID) (*receiptaggregate.Receipt, error) {
 			printCount++
-			return &receipt.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(id)}, nil
+			return &receiptaggregate.Receipt{BaseAggregate: aggregate.NewBaseAggregateWithID(id)}, nil
 		},
 	}
 
@@ -104,7 +105,7 @@ func TestReceiptRetryExecutor_Execute_PrintsPendingReceipts(t *testing.T) {
 func TestReceiptRetryExecutor_Execute_ListError(t *testing.T) {
 	expectedErr := errors.New("list error")
 	uc := &mockReceiptUseCase{
-		ListReceiptsFunc: func(ctx context.Context, filters *receipt.ListFilters) ([]*receipt.Receipt, error) {
+		ListReceiptsFunc: func(ctx context.Context, filters *receiptrepo.ListFilters) ([]*receiptaggregate.Receipt, error) {
 			return nil, expectedErr
 		},
 	}

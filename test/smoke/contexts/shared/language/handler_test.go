@@ -6,49 +6,50 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/shared/language"
 	languageHTTP "github.com/basilex/promenade/internal/contexts/shared/language/adapter/http"
+	languageAggregate "github.com/basilex/promenade/internal/contexts/shared/language/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockLanguageUseCase is a mock implementation of language.IUseCase for testing
 type MockLanguageUseCase struct {
-	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*language.Language, error)
-	GetByCodeFunc func(ctx context.Context, code string) (*language.Language, error)
-	ListFunc      func(ctx context.Context) ([]*language.Language, error)
-	CreateFunc    func(ctx context.Context, language *language.Language) error
-	UpdateFunc    func(ctx context.Context, language *language.Language) error
+	GetByIDFunc   func(ctx context.Context, id uuidv7.UUID) (*languageAggregate.Language, error)
+	GetByCodeFunc func(ctx context.Context, code string) (*languageAggregate.Language, error)
+	ListFunc      func(ctx context.Context) ([]*languageAggregate.Language, error)
+	CreateFunc    func(ctx context.Context, language *languageAggregate.Language) error
+	UpdateFunc    func(ctx context.Context, language *languageAggregate.Language) error
 	DeleteFunc    func(ctx context.Context, id uuidv7.UUID) error
 }
 
-func (m *MockLanguageUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*language.Language, error) {
+func (m *MockLanguageUseCase) GetByID(ctx context.Context, id uuidv7.UUID) (*languageAggregate.Language, error) {
 	if m.GetByIDFunc != nil {
 		return m.GetByIDFunc(ctx, id)
 	}
 	return nil, nil
 }
 
-func (m *MockLanguageUseCase) GetByCode(ctx context.Context, code string) (*language.Language, error) {
+func (m *MockLanguageUseCase) GetByCode(ctx context.Context, code string) (*languageAggregate.Language, error) {
 	if m.GetByCodeFunc != nil {
 		return m.GetByCodeFunc(ctx, code)
 	}
 	return nil, nil
 }
 
-func (m *MockLanguageUseCase) List(ctx context.Context) ([]*language.Language, error) {
+func (m *MockLanguageUseCase) List(ctx context.Context) ([]*languageAggregate.Language, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *MockLanguageUseCase) Create(ctx context.Context, l *language.Language) error {
+func (m *MockLanguageUseCase) Create(ctx context.Context, l *languageAggregate.Language) error {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, l)
 	}
 	return nil
 }
 
-func (m *MockLanguageUseCase) Update(ctx context.Context, l *language.Language) error {
+func (m *MockLanguageUseCase) Update(ctx context.Context, l *languageAggregate.Language) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, l)
 	}
@@ -63,8 +64,8 @@ func (m *MockLanguageUseCase) Delete(ctx context.Context, id uuidv7.UUID) error 
 }
 
 // fakeLanguage creates a fake language for testing
-func fakeLanguage() *language.Language {
-	l, _ := language.NewLanguage("en", "English", "English")
+func fakeLanguage() *languageAggregate.Language {
+	l, _ := languageAggregate.NewLanguage("en", "English", "English")
 	return l
 }
 
@@ -72,7 +73,7 @@ func TestLanguageHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		CreateFunc: func(ctx context.Context, l *language.Language) error {
+		CreateFunc: func(ctx context.Context, l *languageAggregate.Language) error {
 			return nil
 		},
 	}
@@ -110,7 +111,7 @@ func TestLanguageHandler_GetByCode_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*language.Language, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*languageAggregate.Language, error) {
 			return fakeLanguage(), nil
 		},
 	}
@@ -126,7 +127,7 @@ func TestLanguageHandler_GetByCode_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		GetByCodeFunc: func(ctx context.Context, code string) (*language.Language, error) {
+		GetByCodeFunc: func(ctx context.Context, code string) (*languageAggregate.Language, error) {
 			return nil, language.ErrLanguageNotFound
 		},
 	}
@@ -142,8 +143,8 @@ func TestLanguageHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		ListFunc: func(ctx context.Context) ([]*language.Language, error) {
-			return []*language.Language{fakeLanguage()}, nil
+		ListFunc: func(ctx context.Context) ([]*languageAggregate.Language, error) {
+			return []*languageAggregate.Language{fakeLanguage()}, nil
 		},
 	}
 
@@ -158,8 +159,8 @@ func TestLanguageHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		ListFunc: func(ctx context.Context) ([]*language.Language, error) {
-			return []*language.Language{}, nil
+		ListFunc: func(ctx context.Context) ([]*languageAggregate.Language, error) {
+			return []*languageAggregate.Language{}, nil
 		},
 	}
 
@@ -174,10 +175,10 @@ func TestLanguageHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLanguageUseCase{
-		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*language.Language, error) {
+		GetByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*languageAggregate.Language, error) {
 			return fakeLanguage(), nil
 		},
-		UpdateFunc: func(ctx context.Context, l *language.Language) error {
+		UpdateFunc: func(ctx context.Context, l *languageAggregate.Language) error {
 			return nil
 		},
 	}
@@ -207,7 +208,7 @@ func TestLanguageHandler_Delete_Success(t *testing.T) {
 	router.DELETE("/languages/:id", handler.DeleteLanguage)
 
 	w := smoke.MakeRequest(t, router, "DELETE", "/languages/"+smoke.FakeUUID(), nil)
-	
+
 	// Delete returns 204 No Content
 	if w.Code != 204 {
 		t.Errorf("expected status code 204, got %d", w.Code)

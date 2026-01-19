@@ -10,37 +10,71 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/fulfillment/saga"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 type sagaRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 func NewSagaRepository(db *sqlx.DB) saga.ISagaRepository {
 	return &sagaRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
 }
 
+// getExecutor returns either transaction or regular connection from context
+func (r *sagaRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *sagaRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *sagaRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *sagaRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *sagaRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
+}
+
+// Rebind transforms a query from ? to $ placeholders
+func (r *sagaRepository) Rebind(query string) string {
+	return r.db.Rebind(query)
+}
+
 type sagaRow struct {
-	ID              string         `db:"id"`
-	OrderID         string         `db:"order_id"`
-	CustomerID      string         `db:"customer_id"`
-	State           string         `db:"state"`
-	CurrentStep     int            `db:"current_step"`
-	CompletedSteps  string         `db:"completed_steps"`
-	FailedStep      sql.NullString `db:"failed_step"`
-	PaymentID       sql.NullString `db:"payment_id"`
-	ReservedItems   string         `db:"reserved_items"`
-	ShipmentID      sql.NullString `db:"shipment_id"`
-	TrackingNumber  sql.NullString `db:"tracking_number"`
-	StartedAt       string         `db:"started_at"`
-	CompletedAt     sql.NullString `db:"completed_at"`
-	CancelledAt     sql.NullString `db:"cancelled_at"`
-	FailureReason   sql.NullString `db:"failure_reason"`
-	CreatedAt       string         `db:"created_at"`
-	UpdatedAt       string         `db:"updated_at"`
+	ID             string         `db:"id"`
+	OrderID        string         `db:"order_id"`
+	CustomerID     string         `db:"customer_id"`
+	State          string         `db:"state"`
+	CurrentStep    int            `db:"current_step"`
+	CompletedSteps string         `db:"completed_steps"`
+	FailedStep     sql.NullString `db:"failed_step"`
+	PaymentID      sql.NullString `db:"payment_id"`
+	ReservedItems  string         `db:"reserved_items"`
+	ShipmentID     sql.NullString `db:"shipment_id"`
+	TrackingNumber sql.NullString `db:"tracking_number"`
+	StartedAt      string         `db:"started_at"`
+	CompletedAt    sql.NullString `db:"completed_at"`
+	CancelledAt    sql.NullString `db:"cancelled_at"`
+	FailureReason  sql.NullString `db:"failure_reason"`
+	CreatedAt      string         `db:"created_at"`
+	UpdatedAt      string         `db:"updated_at"`
 }
 
 func (r *sagaRepository) Save(ctx context.Context, s *saga.FulfillmentSaga) error {
@@ -233,14 +267,14 @@ func rowToSaga(row *sagaRow) (*saga.FulfillmentSaga, error) {
 	}
 
 	s := &saga.FulfillmentSaga{
-		ID:            id,
-		OrderID:       orderID,
-		CustomerID:    customerID,
-		State:         saga.FulfillmentSagaState(row.State),
-		CurrentStep:   row.CurrentStep,
-		StartedAt:     parseTime(row.StartedAt),
-		CreatedAt:     parseTime(row.CreatedAt),
-		UpdatedAt:     parseTime(row.UpdatedAt),
+		ID:          id,
+		OrderID:     orderID,
+		CustomerID:  customerID,
+		State:       saga.FulfillmentSagaState(row.State),
+		CurrentStep: row.CurrentStep,
+		StartedAt:   parseTime(row.StartedAt),
+		CreatedAt:   parseTime(row.CreatedAt),
+		UpdatedAt:   parseTime(row.UpdatedAt),
 	}
 
 	s.CompletedSteps.Set(completedSteps)

@@ -9,16 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company"
 	companyRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
+	companyUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/company/usecase"
+	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	customerUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/usecase"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/deal"
 	dealRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/adapter/repository/postgres"
-	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
+	dealAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/aggregate"
+	dealUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/deal/usecase"
 	_ "github.com/basilex/promenade/internal/contexts/identity/role"
 	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userUseCase "github.com/basilex/promenade/internal/contexts/identity/user/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -33,9 +35,9 @@ func TestDealUseCase_CreateDeal(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -56,7 +58,7 @@ func TestDealUseCase_CreateDeal(t *testing.T) {
 	assert.Equal(t, salesRep.ID, d.AssignedTo)
 	assert.Equal(t, int64(100000), d.Value.Amount)
 	assert.Equal(t, "USD", d.Value.Currency)
-	assert.Equal(t, deal.DealStageLead, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageLead, d.Stage)
 	assert.Equal(t, 10, d.Probability) // Lead stage = 10%
 	assert.NotNil(t, d.ExpectedCloseDate)
 }
@@ -70,9 +72,9 @@ func TestDealUseCase_CreateDealWithFullData(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -92,9 +94,9 @@ func TestDealUseCase_CreateDealWithFullData(t *testing.T) {
 	assert.Equal(t, "Full Deal Updated", d.Name)
 	assert.Equal(t, "Test description", d.Description)
 
-	d, err = dealUC.SetDealSource(ctx, d.ID, deal.DealSourceReferral)
+	d, err = dealUC.SetDealSource(ctx, d.ID, dealAggregate.DealSourceReferral)
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealSourceReferral, d.Source)
+	assert.Equal(t, dealAggregate.DealSourceReferral, d.Source)
 }
 
 // TestDealUseCase_GetDeal tests retrieving a deal by ID
@@ -106,9 +108,9 @@ func TestDealUseCase_GetDeal(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -135,7 +137,7 @@ func TestDealUseCase_GetDeal_NotFound(t *testing.T) {
 	defer db.Cleanup()
 
 	dealRepository := dealRepo.NewDealRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
 
 	ctx := context.Background()
 
@@ -154,9 +156,9 @@ func TestDealUseCase_UpdateDealBasicInfo(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -185,9 +187,9 @@ func TestDealUseCase_UpdateDealValue(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -216,9 +218,9 @@ func TestDealUseCase_MoveDealToStage(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -230,25 +232,25 @@ func TestDealUseCase_MoveDealToStage(t *testing.T) {
 
 	d, err := dealUC.CreateDeal(ctx, "Test Deal", testCustomer.ID, salesRep.ID, 50000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageLead, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageLead, d.Stage)
 	assert.Equal(t, 10, d.Probability)
 
 	// Move to qualified
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageQualified)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageQualified)
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageQualified, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageQualified, d.Stage)
 	assert.Equal(t, 25, d.Probability)
 
 	// Move to proposal
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageProposal)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageProposal)
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageProposal, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageProposal, d.Stage)
 	assert.Equal(t, 50, d.Probability)
 
 	// Move to negotiation
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageNegotiation)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageNegotiation)
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageNegotiation, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageNegotiation, d.Stage)
 	assert.Equal(t, 75, d.Probability)
 }
 
@@ -261,9 +263,9 @@ func TestDealUseCase_MarkDealAsWon(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -279,7 +281,7 @@ func TestDealUseCase_MarkDealAsWon(t *testing.T) {
 	// Mark as won
 	won, err := dealUC.MarkDealAsWon(ctx, d.ID, "Customer accepted proposal")
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageClosedWon, won.Stage)
+	assert.Equal(t, dealAggregate.DealStageClosedWon, won.Stage)
 	assert.Equal(t, 100, won.Probability)
 	assert.NotNil(t, won.ActualCloseDate)
 	assert.Equal(t, "Customer accepted proposal", won.CloseReason)
@@ -294,9 +296,9 @@ func TestDealUseCase_MarkDealAsLost(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -312,7 +314,7 @@ func TestDealUseCase_MarkDealAsLost(t *testing.T) {
 	// Mark as lost
 	lost, err := dealUC.MarkDealAsLost(ctx, d.ID, "Chose competitor")
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageClosedLost, lost.Stage)
+	assert.Equal(t, dealAggregate.DealStageClosedLost, lost.Stage)
 	assert.Equal(t, 0, lost.Probability)
 	assert.NotNil(t, lost.ActualCloseDate)
 	assert.Equal(t, "Chose competitor", lost.CloseReason)
@@ -327,9 +329,9 @@ func TestDealUseCase_UpdateDealProbability(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -358,9 +360,9 @@ func TestDealUseCase_UpdateDealExpectedCloseDate(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -388,9 +390,9 @@ func TestDealUseCase_AssignDealToSalesRep(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -422,10 +424,10 @@ func TestDealUseCase_LinkDealToCompany(t *testing.T) {
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
 	companyRepository := companyRepo.NewCompanyRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
-	companyUC := company.NewUseCase(companyRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
+	companyUC := companyUseCase.NewCompanyUseCase(companyRepository)
 
 	ctx := context.Background()
 
@@ -443,22 +445,22 @@ func TestDealUseCase_LinkDealToCompany(t *testing.T) {
 	// Use unique name to avoid conflicts when running multiple tests
 	companyName := fmt.Sprintf("Test Company %s", uuidv7.New().String())
 	testCompany, err := companyUC.CreateCompany(ctx,
-		companyName,        // name (unique)
-		nil,                // legalName
-		"llc",              // companyType (valid: llc, corporation, sole_proprietor, partnership, non_profit, other)
-		nil,                // taxID
-		nil,                // registrationNumber
-		nil,                // website
-		nil,                // email
-		nil,                // phone
-		nil,                // address
-		nil,                // industry
-		"small",            // size
-		0,                  // employeeCount
-		0,                  // revenue
-		"USD",              // currency
-		nil,                // description
-		nil,                // parentCompanyID
+		companyName, // name (unique)
+		nil,         // legalName
+		"llc",       // companyType (valid: llc, corporation, sole_proprietor, partnership, non_profit, other)
+		nil,         // taxID
+		nil,         // registrationNumber
+		nil,         // website
+		nil,         // email
+		nil,         // phone
+		nil,         // address
+		nil,         // industry
+		"small",     // size
+		0,           // employeeCount
+		0,           // revenue
+		"USD",       // currency
+		nil,         // description
+		nil,         // parentCompanyID
 	)
 	require.NoError(t, err)
 
@@ -478,9 +480,9 @@ func TestDealUseCase_SetDealSource(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -494,9 +496,9 @@ func TestDealUseCase_SetDealSource(t *testing.T) {
 	require.NoError(t, err)
 
 	// Set source
-	updated, err := dealUC.SetDealSource(ctx, d.ID, deal.DealSourceInbound)
+	updated, err := dealUC.SetDealSource(ctx, d.ID, dealAggregate.DealSourceInbound)
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealSourceInbound, updated.Source)
+	assert.Equal(t, dealAggregate.DealSourceInbound, updated.Source)
 }
 
 // TestDealUseCase_DeleteDeal tests soft deleting a deal
@@ -508,9 +510,9 @@ func TestDealUseCase_DeleteDeal(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -542,9 +544,9 @@ func TestDealUseCase_ListDeals(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -576,9 +578,9 @@ func TestDealUseCase_ListDealsByStage(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -594,28 +596,28 @@ func TestDealUseCase_ListDealsByStage(t *testing.T) {
 
 	d2, err := dealUC.CreateDeal(ctx, "Deal Qualified", testCustomer.ID, salesRep.ID, 20000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	_, err = dealUC.MoveDealToStage(ctx, d2.ID, deal.DealStageQualified)
+	_, err = dealUC.MoveDealToStage(ctx, d2.ID, dealAggregate.DealStageQualified)
 	require.NoError(t, err)
 
 	d3, err := dealUC.CreateDeal(ctx, "Deal Proposal", testCustomer.ID, salesRep.ID, 30000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	_, err = dealUC.MoveDealToStage(ctx, d3.ID, deal.DealStageQualified)
+	_, err = dealUC.MoveDealToStage(ctx, d3.ID, dealAggregate.DealStageQualified)
 	require.NoError(t, err)
-	_, err = dealUC.MoveDealToStage(ctx, d3.ID, deal.DealStageProposal)
+	_, err = dealUC.MoveDealToStage(ctx, d3.ID, dealAggregate.DealStageProposal)
 	require.NoError(t, err)
 
 	// List deals by stage
-	leadDeals, total, err := dealUC.ListDealsByStage(ctx, deal.DealStageLead, 1, 10)
+	leadDeals, total, err := dealUC.ListDealsByStage(ctx, dealAggregate.DealStageLead, 1, 10)
 	require.NoError(t, err)
 	assert.GreaterOrEqual(t, len(leadDeals), 1)
 	assert.GreaterOrEqual(t, total, int64(1))
 
-	qualifiedDeals, total, err := dealUC.ListDealsByStage(ctx, deal.DealStageQualified, 1, 10)
+	qualifiedDeals, total, err := dealUC.ListDealsByStage(ctx, dealAggregate.DealStageQualified, 1, 10)
 	require.NoError(t, err)
 	assert.GreaterOrEqual(t, len(qualifiedDeals), 1)
 	assert.GreaterOrEqual(t, total, int64(1))
 
-	proposalDeals, total, err := dealUC.ListDealsByStage(ctx, deal.DealStageProposal, 1, 10)
+	proposalDeals, total, err := dealUC.ListDealsByStage(ctx, dealAggregate.DealStageProposal, 1, 10)
 	require.NoError(t, err)
 	assert.GreaterOrEqual(t, len(proposalDeals), 1)
 	assert.GreaterOrEqual(t, total, int64(1))
@@ -630,9 +632,9 @@ func TestDealUseCase_ListDealsByCustomer(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -673,9 +675,9 @@ func TestDealUseCase_ListDealsByAssignedTo(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -716,9 +718,9 @@ func TestDealUseCase_ListDealsBySource(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -731,21 +733,21 @@ func TestDealUseCase_ListDealsBySource(t *testing.T) {
 	// Create deals with different sources
 	d1, err := dealUC.CreateDeal(ctx, "Deal Website", testCustomer.ID, salesRep.ID, 10000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	_, err = dealUC.SetDealSource(ctx, d1.ID, deal.DealSourceInbound)
+	_, err = dealUC.SetDealSource(ctx, d1.ID, dealAggregate.DealSourceInbound)
 	require.NoError(t, err)
 
 	d2, err := dealUC.CreateDeal(ctx, "Deal Referral", testCustomer.ID, salesRep.ID, 20000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	_, err = dealUC.SetDealSource(ctx, d2.ID, deal.DealSourceReferral)
+	_, err = dealUC.SetDealSource(ctx, d2.ID, dealAggregate.DealSourceReferral)
 	require.NoError(t, err)
 
 	// List deals by source
-	websiteDeals, total, err := dealUC.ListDealsBySource(ctx, deal.DealSourceInbound, 1, 10)
+	websiteDeals, total, err := dealUC.ListDealsBySource(ctx, dealAggregate.DealSourceInbound, 1, 10)
 	require.NoError(t, err)
 	assert.GreaterOrEqual(t, len(websiteDeals), 1)
 	assert.GreaterOrEqual(t, total, int64(1))
 
-	referralDeals, total, err := dealUC.ListDealsBySource(ctx, deal.DealSourceReferral, 1, 10)
+	referralDeals, total, err := dealUC.ListDealsBySource(ctx, dealAggregate.DealSourceReferral, 1, 10)
 	require.NoError(t, err)
 	assert.GreaterOrEqual(t, len(referralDeals), 1)
 	assert.GreaterOrEqual(t, total, int64(1))
@@ -760,9 +762,9 @@ func TestDealUseCase_GetPipelineStats(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -780,7 +782,7 @@ func TestDealUseCase_GetPipelineStats(t *testing.T) {
 
 	d2, err := dealUC.CreateDeal(ctx, "Deal Qualified", testCustomer.ID, salesRep.ID, 20000, "USD", "2026-12-31")
 	require.NoError(t, err)
-	_, err = dealUC.MoveDealToStage(ctx, d2.ID, deal.DealStageQualified)
+	_, err = dealUC.MoveDealToStage(ctx, d2.ID, dealAggregate.DealStageQualified)
 	require.NoError(t, err)
 
 	_, err = dealUC.MarkDealAsWon(ctx, d1.ID, "Won")
@@ -789,9 +791,9 @@ func TestDealUseCase_GetPipelineStats(t *testing.T) {
 	// Get pipeline stats
 	stats, err := dealUC.GetPipelineStats(ctx)
 	require.NoError(t, err)
-	assert.GreaterOrEqual(t, stats[deal.DealStageLead], int64(1))
-	assert.GreaterOrEqual(t, stats[deal.DealStageQualified], int64(1))
-	assert.GreaterOrEqual(t, stats[deal.DealStageClosedWon], int64(1))
+	assert.GreaterOrEqual(t, stats[dealAggregate.DealStageLead], int64(1))
+	assert.GreaterOrEqual(t, stats[dealAggregate.DealStageQualified], int64(1))
+	assert.GreaterOrEqual(t, stats[dealAggregate.DealStageClosedWon], int64(1))
 }
 
 // TestDealUseCase_GetTotalValue tests getting total value of active deals
@@ -803,9 +805,9 @@ func TestDealUseCase_GetTotalValue(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -836,9 +838,9 @@ func TestDealUseCase_GetWonDeals(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -878,9 +880,9 @@ func TestDealUseCase_CompleteWorkflow(t *testing.T) {
 	customerRepository := customerRepo.NewCustomerRepository(db.DB)
 	userRepository := userRepo.NewUserRepository(db.DB)
 	roleRepository := roleRepo.NewRoleRepository(db.DB)
-	dealUC := deal.NewUseCase(dealRepository)
-	customerUC := customer.NewUseCase(customerRepository)
-	userUC := user.NewUseCase(userRepository, roleRepository)
+	dealUC := dealUseCase.NewDealUseCase(dealRepository)
+	customerUC := customerUseCase.NewCustomerUseCase(customerRepository)
+	userUC := userUseCase.NewUserUseCase(userRepository, roleRepository)
 
 	ctx := context.Background()
 
@@ -893,7 +895,7 @@ func TestDealUseCase_CompleteWorkflow(t *testing.T) {
 	// 2. Create deal
 	d, err := dealUC.CreateDeal(ctx, "Q1 Enterprise Deal", testCustomer.ID, salesRep.ID, 500000, "USD", "2026-03-31")
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageLead, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageLead, d.Stage)
 	assert.Equal(t, 10, d.Probability)
 
 	// 3. Update basic info
@@ -901,15 +903,15 @@ func TestDealUseCase_CompleteWorkflow(t *testing.T) {
 	require.NoError(t, err)
 
 	// 4. Set source
-	d, err = dealUC.SetDealSource(ctx, d.ID, deal.DealSourceInbound)
+	d, err = dealUC.SetDealSource(ctx, d.ID, dealAggregate.DealSourceInbound)
 	require.NoError(t, err)
 
 	// 5. Move through pipeline
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageQualified)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageQualified)
 	require.NoError(t, err)
 	assert.Equal(t, 25, d.Probability)
 
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageProposal)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageProposal)
 	require.NoError(t, err)
 	assert.Equal(t, 50, d.Probability)
 
@@ -918,7 +920,7 @@ func TestDealUseCase_CompleteWorkflow(t *testing.T) {
 	require.NoError(t, err)
 
 	// 7. Move to negotiation
-	d, err = dealUC.MoveDealToStage(ctx, d.ID, deal.DealStageNegotiation)
+	d, err = dealUC.MoveDealToStage(ctx, d.ID, dealAggregate.DealStageNegotiation)
 	require.NoError(t, err)
 	assert.Equal(t, 75, d.Probability)
 
@@ -929,14 +931,14 @@ func TestDealUseCase_CompleteWorkflow(t *testing.T) {
 	// 9. Mark as won
 	d, err = dealUC.MarkDealAsWon(ctx, d.ID, "Contract signed")
 	require.NoError(t, err)
-	assert.Equal(t, deal.DealStageClosedWon, d.Stage)
+	assert.Equal(t, dealAggregate.DealStageClosedWon, d.Stage)
 	assert.Equal(t, 100, d.Probability)
 	assert.NotNil(t, d.ActualCloseDate)
 
 	// 10. Verify stats
 	stats, err := dealUC.GetPipelineStats(ctx)
 	require.NoError(t, err)
-	assert.GreaterOrEqual(t, stats[deal.DealStageClosedWon], int64(1))
+	assert.GreaterOrEqual(t, stats[dealAggregate.DealStageClosedWon], int64(1))
 
 	count, value, err := dealUC.GetWonDeals(ctx)
 	require.NoError(t, err)

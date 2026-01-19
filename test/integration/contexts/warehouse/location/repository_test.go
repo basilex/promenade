@@ -10,6 +10,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/location"
 	locationRepo "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/repository/postgres"
+	locationAggregate "github.com/basilex/promenade/internal/contexts/warehouse/location/aggregate"
 	"github.com/basilex/promenade/test/integration"
 )
 
@@ -18,7 +19,7 @@ func TestLocationRepository_Create(t *testing.T) {
 	repo := locationRepo.NewLocationRepository(db.DB)
 	ctx := context.Background()
 
-	loc, err := location.NewLocation("WH01", "Main Warehouse", location.LocationTypeWarehouse)
+	loc, err := locationAggregate.NewLocation("WH01", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, err)
 
 	err = repo.Create(ctx, loc)
@@ -30,7 +31,7 @@ func TestLocationRepository_Create(t *testing.T) {
 	assert.Equal(t, loc.GetID(), retrieved.GetID())
 	assert.Equal(t, "WH01", retrieved.Code)
 	assert.Equal(t, "Main Warehouse", retrieved.Name)
-	assert.Equal(t, location.LocationTypeWarehouse, retrieved.Type)
+	assert.Equal(t, locationAggregate.LocationTypeWarehouse, retrieved.Type)
 }
 
 func TestLocationRepository_Update(t *testing.T) {
@@ -39,7 +40,7 @@ func TestLocationRepository_Update(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location
-	loc, _ := location.NewLocation("WH01", "Main Warehouse", location.LocationTypeWarehouse)
+	loc, _ := locationAggregate.NewLocation("WH01", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Update
@@ -62,7 +63,7 @@ func TestLocationRepository_Update_OptimisticLocking(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location
-	loc, _ := location.NewLocation("WH01", "Main Warehouse", location.LocationTypeWarehouse)
+	loc, _ := locationAggregate.NewLocation("WH01", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Get two copies
@@ -86,7 +87,7 @@ func TestLocationRepository_Delete(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location
-	loc, _ := location.NewLocation("WH01", "Main Warehouse", location.LocationTypeWarehouse)
+	loc, _ := locationAggregate.NewLocation("WH01", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Delete
@@ -104,7 +105,7 @@ func TestLocationRepository_GetByCode(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location
-	loc, _ := location.NewLocation("WH01", "Main Warehouse", location.LocationTypeWarehouse)
+	loc, _ := locationAggregate.NewLocation("WH01", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc))
 
 	// Get by code
@@ -124,9 +125,9 @@ func TestLocationRepository_List(t *testing.T) {
 	ctx := context.Background()
 
 	// Create multiple locations
-	loc1, _ := location.NewLocation("WH01", "Warehouse 1", location.LocationTypeWarehouse)
-	loc2, _ := location.NewLocation("WH02", "Warehouse 2", location.LocationTypeWarehouse)
-	loc3, _ := location.NewLocation("WH03", "Warehouse 3", location.LocationTypeWarehouse)
+	loc1, _ := locationAggregate.NewLocation("WH01", "Warehouse 1", locationAggregate.LocationTypeWarehouse)
+	loc2, _ := locationAggregate.NewLocation("WH02", "Warehouse 2", locationAggregate.LocationTypeWarehouse)
+	loc3, _ := locationAggregate.NewLocation("WH03", "Warehouse 3", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc1))
 	require.NoError(t, repo.Create(ctx, loc2))
 	require.NoError(t, repo.Create(ctx, loc3))
@@ -157,8 +158,8 @@ func TestLocationRepository_Count(t *testing.T) {
 	assert.Equal(t, 0, count)
 
 	// Create locations
-	loc1, _ := location.NewLocation("WH01", "Warehouse 1", location.LocationTypeWarehouse)
-	loc2, _ := location.NewLocation("WH02", "Warehouse 2", location.LocationTypeWarehouse)
+	loc1, _ := locationAggregate.NewLocation("WH01", "Warehouse 1", locationAggregate.LocationTypeWarehouse)
+	loc2, _ := locationAggregate.NewLocation("WH02", "Warehouse 2", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, loc1))
 	require.NoError(t, repo.Create(ctx, loc2))
 
@@ -179,10 +180,10 @@ func TestLocationRepository_ListByType(t *testing.T) {
 	ctx := context.Background()
 
 	// Create locations of different types
-	wh, _ := location.NewLocation("WH01", "Warehouse", location.LocationTypeWarehouse)
-	zone1, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
-	zone2, _ := location.NewLocation("B", "Zone B", location.LocationTypeZone)
-	aisle, _ := location.NewLocation("01", "Aisle 01", location.LocationTypeAisle)
+	wh, _ := locationAggregate.NewLocation("WH01", "Warehouse", locationAggregate.LocationTypeWarehouse)
+	zone1, _ := locationAggregate.NewLocation("A", "Zone A", locationAggregate.LocationTypeZone)
+	zone2, _ := locationAggregate.NewLocation("B", "Zone B", locationAggregate.LocationTypeZone)
+	aisle, _ := locationAggregate.NewLocation("01", "Aisle 01", locationAggregate.LocationTypeAisle)
 
 	require.NoError(t, repo.Create(ctx, wh))
 	require.NoError(t, repo.Create(ctx, zone1))
@@ -190,15 +191,15 @@ func TestLocationRepository_ListByType(t *testing.T) {
 	require.NoError(t, repo.Create(ctx, aisle))
 
 	// List zones only
-	zones, err := repo.ListByType(ctx, location.LocationTypeZone, 10, 0)
+	zones, err := repo.ListByType(ctx, locationAggregate.LocationTypeZone, 10, 0)
 	require.NoError(t, err)
 	assert.Len(t, zones, 2)
 	for _, z := range zones {
-		assert.Equal(t, location.LocationTypeZone, z.Type)
+		assert.Equal(t, locationAggregate.LocationTypeZone, z.Type)
 	}
 
 	// Count warehouses
-	count, err := repo.CountByType(ctx, location.LocationTypeWarehouse)
+	count, err := repo.CountByType(ctx, locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, err)
 	assert.Equal(t, 1, count)
 }
@@ -209,14 +210,14 @@ func TestLocationRepository_ListByParent(t *testing.T) {
 	ctx := context.Background()
 
 	// Create hierarchy: WH01 -> A, B
-	wh, _ := location.NewLocation("WH01", "Warehouse", location.LocationTypeWarehouse)
+	wh, _ := locationAggregate.NewLocation("WH01", "Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, wh))
 
-	zoneA, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
+	zoneA, _ := locationAggregate.NewLocation("A", "Zone A", locationAggregate.LocationTypeZone)
 	require.NoError(t, zoneA.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneA))
 
-	zoneB, _ := location.NewLocation("B", "Zone B", location.LocationTypeZone)
+	zoneB, _ := locationAggregate.NewLocation("B", "Zone B", locationAggregate.LocationTypeZone)
 	require.NoError(t, zoneB.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneB))
 
@@ -232,18 +233,18 @@ func TestLocationRepository_ListChildren(t *testing.T) {
 	ctx := context.Background()
 
 	// Create hierarchy: WH01 -> A -> 01 -> 02
-	wh, _ := location.NewLocation("WH01", "Warehouse", location.LocationTypeWarehouse)
+	wh, _ := locationAggregate.NewLocation("WH01", "Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, wh))
 
-	zoneA, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
+	zoneA, _ := locationAggregate.NewLocation("A", "Zone A", locationAggregate.LocationTypeZone)
 	require.NoError(t, zoneA.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zoneA))
 
-	aisle, _ := location.NewLocation("01", "Aisle 01", location.LocationTypeAisle)
+	aisle, _ := locationAggregate.NewLocation("01", "Aisle 01", locationAggregate.LocationTypeAisle)
 	require.NoError(t, aisle.SetParent(zoneA.GetID(), zoneA.Path, zoneA.Level))
 	require.NoError(t, repo.Create(ctx, aisle))
 
-	rack, _ := location.NewLocation("02", "Rack 02", location.LocationTypeRack)
+	rack, _ := locationAggregate.NewLocation("02", "Rack 02", locationAggregate.LocationTypeRack)
 	require.NoError(t, rack.SetParent(aisle.GetID(), aisle.Path, aisle.Level))
 	require.NoError(t, repo.Create(ctx, rack))
 
@@ -264,9 +265,9 @@ func TestLocationRepository_ListByStatus(t *testing.T) {
 	ctx := context.Background()
 
 	// Create locations with different statuses
-	active1, _ := location.NewLocation("L1", "Location 1", location.LocationTypeBin)
-	active2, _ := location.NewLocation("L2", "Location 2", location.LocationTypeBin)
-	inactive, _ := location.NewLocation("L3", "Location 3", location.LocationTypeBin)
+	active1, _ := locationAggregate.NewLocation("L1", "Location 1", locationAggregate.LocationTypeBin)
+	active2, _ := locationAggregate.NewLocation("L2", "Location 2", locationAggregate.LocationTypeBin)
+	inactive, _ := locationAggregate.NewLocation("L3", "Location 3", locationAggregate.LocationTypeBin)
 
 	require.NoError(t, repo.Create(ctx, active1))
 	require.NoError(t, repo.Create(ctx, active2))
@@ -277,12 +278,12 @@ func TestLocationRepository_ListByStatus(t *testing.T) {
 	require.NoError(t, repo.Update(ctx, inactive))
 
 	// List active
-	activeLocations, err := repo.ListByStatus(ctx, location.LocationStatusActive, 10, 0)
+	activeLocations, err := repo.ListByStatus(ctx, locationAggregate.LocationStatusActive, 10, 0)
 	require.NoError(t, err)
 	assert.Len(t, activeLocations, 2)
 
 	// Count inactive
-	count, err := repo.CountByStatus(ctx, location.LocationStatusInactive)
+	count, err := repo.CountByStatus(ctx, locationAggregate.LocationStatusInactive)
 	require.NoError(t, err)
 	assert.Equal(t, 1, count)
 }
@@ -293,20 +294,20 @@ func TestLocationRepository_ListAvailable(t *testing.T) {
 	ctx := context.Background()
 
 	// Create locations with different availability
-	available, _ := location.NewLocation("L1", "Available", location.LocationTypeBin)
+	available, _ := locationAggregate.NewLocation("L1", "Available", locationAggregate.LocationTypeBin)
 	require.NoError(t, available.SetCapacity(100, true))
 	require.NoError(t, repo.Create(ctx, available))
 
-	full, _ := location.NewLocation("L2", "Full", location.LocationTypeBin)
+	full, _ := locationAggregate.NewLocation("L2", "Full", locationAggregate.LocationTypeBin)
 	require.NoError(t, full.SetCapacity(100, true))
 	require.NoError(t, full.AddOccupancy(100)) // Fill to capacity
 	require.NoError(t, repo.Create(ctx, full))
 
-	inactive, _ := location.NewLocation("L3", "Inactive", location.LocationTypeBin)
+	inactive, _ := locationAggregate.NewLocation("L3", "Inactive", locationAggregate.LocationTypeBin)
 	require.NoError(t, inactive.Deactivate())
 	require.NoError(t, repo.Create(ctx, inactive))
 
-	notPutawayable, _ := location.NewLocation("L4", "Not Putawayable", location.LocationTypeBin)
+	notPutawayable, _ := locationAggregate.NewLocation("L4", "Not Putawayable", locationAggregate.LocationTypeBin)
 	notPutawayable.DisablePutaway()
 	require.NoError(t, repo.Create(ctx, notPutawayable))
 
@@ -328,14 +329,14 @@ func TestLocationRepository_HierarchyIntegrity(t *testing.T) {
 	ctx := context.Background()
 
 	// Create full hierarchy
-	wh, _ := location.NewLocation("WH01", "Warehouse", location.LocationTypeWarehouse)
+	wh, _ := locationAggregate.NewLocation("WH01", "Warehouse", locationAggregate.LocationTypeWarehouse)
 	require.NoError(t, repo.Create(ctx, wh))
 
-	zone, _ := location.NewLocation("A", "Zone A", location.LocationTypeZone)
+	zone, _ := locationAggregate.NewLocation("A", "Zone A", locationAggregate.LocationTypeZone)
 	require.NoError(t, zone.SetParent(wh.GetID(), wh.Path, wh.Level))
 	require.NoError(t, repo.Create(ctx, zone))
 
-	aisle, _ := location.NewLocation("01", "Aisle 01", location.LocationTypeAisle)
+	aisle, _ := locationAggregate.NewLocation("01", "Aisle 01", locationAggregate.LocationTypeAisle)
 	require.NoError(t, aisle.SetParent(zone.GetID(), zone.Path, zone.Level))
 	require.NoError(t, repo.Create(ctx, aisle))
 
@@ -354,7 +355,7 @@ func TestLocationRepository_CapacityPersistence(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location with capacity
-	loc, _ := location.NewLocation("BIN01", "Bin 01", location.LocationTypeBin)
+	loc, _ := locationAggregate.NewLocation("BIN01", "Bin 01", locationAggregate.LocationTypeBin)
 	require.NoError(t, loc.SetCapacity(500, true))
 	require.NoError(t, loc.AddOccupancy(150))
 	require.NoError(t, repo.Create(ctx, loc))
@@ -374,7 +375,7 @@ func TestLocationRepository_DimensionsPersistence(t *testing.T) {
 	ctx := context.Background()
 
 	// Create location with dimensions
-	loc, _ := location.NewLocation("RACK01", "Rack 01", location.LocationTypeRack)
+	loc, _ := locationAggregate.NewLocation("RACK01", "Rack 01", locationAggregate.LocationTypeRack)
 	require.NoError(t, loc.SetDimensions(2.5, 3.0, 1.2))
 	require.NoError(t, repo.Create(ctx, loc))
 

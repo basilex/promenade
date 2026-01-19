@@ -6,26 +6,26 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/location"
 	handler "github.com/basilex/promenade/internal/contexts/warehouse/location/adapter/http"
+	locationAggregate "github.com/basilex/promenade/internal/contexts/warehouse/location/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockLocationUseCase mocks IUseCase for smoke tests
 type MockLocationUseCase struct {
-	CreateLocationFunc           func(ctx context.Context, code, name string, locationType location.LocationType, description *string, parentID *uuidv7.UUID) (*location.Location, error)
-	GetLocationFunc              func(ctx context.Context, id uuidv7.UUID) (*location.Location, error)
-	GetLocationByCodeFunc        func(ctx context.Context, code string) (*location.Location, error)
-	UpdateLocationFunc           func(ctx context.Context, id uuidv7.UUID, name, description *string) (*location.Location, error)
+	CreateLocationFunc           func(ctx context.Context, code, name string, locationType locationAggregate.LocationType, description *string, parentID *uuidv7.UUID) (*locationAggregate.Location, error)
+	GetLocationFunc              func(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error)
+	GetLocationByCodeFunc        func(ctx context.Context, code string) (*locationAggregate.Location, error)
+	UpdateLocationFunc           func(ctx context.Context, id uuidv7.UUID, name, description *string) (*locationAggregate.Location, error)
 	DeleteLocationFunc           func(ctx context.Context, id uuidv7.UUID) error
-	ListLocationsFunc            func(ctx context.Context, page, pageSize int) ([]*location.Location, int, error)
-	ListLocationsByTypeFunc      func(ctx context.Context, locationType location.LocationType, page, pageSize int) ([]*location.Location, int, error)
-	ListLocationsByParentFunc    func(ctx context.Context, parentID uuidv7.UUID) ([]*location.Location, error)
-	ListLocationsByStatusFunc    func(ctx context.Context, status location.LocationStatus, page, pageSize int) ([]*location.Location, int, error)
-	ListAvailableLocationsFunc   func(ctx context.Context, page, pageSize int) ([]*location.Location, int, error)
-	GetLocationChildrenFunc      func(ctx context.Context, id uuidv7.UUID, recursive bool) ([]*location.Location, error)
-	GetLocationHierarchyFunc     func(ctx context.Context, id uuidv7.UUID) ([]*location.Location, error)
+	ListLocationsFunc            func(ctx context.Context, page, pageSize int) ([]*locationAggregate.Location, int, error)
+	ListLocationsByTypeFunc      func(ctx context.Context, locationType locationAggregate.LocationType, page, pageSize int) ([]*locationAggregate.Location, int, error)
+	ListLocationsByParentFunc    func(ctx context.Context, parentID uuidv7.UUID) ([]*locationAggregate.Location, error)
+	ListLocationsByStatusFunc    func(ctx context.Context, status locationAggregate.LocationStatus, page, pageSize int) ([]*locationAggregate.Location, int, error)
+	ListAvailableLocationsFunc   func(ctx context.Context, page, pageSize int) ([]*locationAggregate.Location, int, error)
+	GetLocationChildrenFunc      func(ctx context.Context, id uuidv7.UUID, recursive bool) ([]*locationAggregate.Location, error)
+	GetLocationHierarchyFunc     func(ctx context.Context, id uuidv7.UUID) ([]*locationAggregate.Location, error)
 	ActivateLocationFunc         func(ctx context.Context, id uuidv7.UUID) error
 	DeactivateLocationFunc       func(ctx context.Context, id uuidv7.UUID) error
 	SetLocationMaintenanceFunc   func(ctx context.Context, id uuidv7.UUID) error
@@ -36,28 +36,28 @@ type MockLocationUseCase struct {
 	GetAvailableCapacityFunc     func(ctx context.Context, id uuidv7.UUID) (int, error)
 }
 
-func (m *MockLocationUseCase) CreateLocation(ctx context.Context, code, name string, locationType location.LocationType, description *string, parentID *uuidv7.UUID) (*location.Location, error) {
+func (m *MockLocationUseCase) CreateLocation(ctx context.Context, code, name string, locationType locationAggregate.LocationType, description *string, parentID *uuidv7.UUID) (*locationAggregate.Location, error) {
 	if m.CreateLocationFunc != nil {
 		return m.CreateLocationFunc(ctx, code, name, locationType, description, parentID)
 	}
 	return nil, errors.New("CreateLocationFunc not implemented")
 }
 
-func (m *MockLocationUseCase) GetLocation(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+func (m *MockLocationUseCase) GetLocation(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error) {
 	if m.GetLocationFunc != nil {
 		return m.GetLocationFunc(ctx, id)
 	}
 	return nil, errors.New("GetLocationFunc not implemented")
 }
 
-func (m *MockLocationUseCase) GetLocationByCode(ctx context.Context, code string) (*location.Location, error) {
+func (m *MockLocationUseCase) GetLocationByCode(ctx context.Context, code string) (*locationAggregate.Location, error) {
 	if m.GetLocationByCodeFunc != nil {
 		return m.GetLocationByCodeFunc(ctx, code)
 	}
 	return nil, errors.New("GetLocationByCodeFunc not implemented")
 }
 
-func (m *MockLocationUseCase) UpdateLocation(ctx context.Context, id uuidv7.UUID, name, description *string) (*location.Location, error) {
+func (m *MockLocationUseCase) UpdateLocation(ctx context.Context, id uuidv7.UUID, name, description *string) (*locationAggregate.Location, error) {
 	if m.UpdateLocationFunc != nil {
 		return m.UpdateLocationFunc(ctx, id, name, description)
 	}
@@ -71,49 +71,49 @@ func (m *MockLocationUseCase) DeleteLocation(ctx context.Context, id uuidv7.UUID
 	return errors.New("DeleteLocationFunc not implemented")
 }
 
-func (m *MockLocationUseCase) ListLocations(ctx context.Context, page, pageSize int) ([]*location.Location, int, error) {
+func (m *MockLocationUseCase) ListLocations(ctx context.Context, page, pageSize int) ([]*locationAggregate.Location, int, error) {
 	if m.ListLocationsFunc != nil {
 		return m.ListLocationsFunc(ctx, page, pageSize)
 	}
 	return nil, 0, errors.New("ListLocationsFunc not implemented")
 }
 
-func (m *MockLocationUseCase) ListLocationsByType(ctx context.Context, locationType location.LocationType, page, pageSize int) ([]*location.Location, int, error) {
+func (m *MockLocationUseCase) ListLocationsByType(ctx context.Context, locationType locationAggregate.LocationType, page, pageSize int) ([]*locationAggregate.Location, int, error) {
 	if m.ListLocationsByTypeFunc != nil {
 		return m.ListLocationsByTypeFunc(ctx, locationType, page, pageSize)
 	}
 	return nil, 0, errors.New("ListLocationsByTypeFunc not implemented")
 }
 
-func (m *MockLocationUseCase) ListLocationsByParent(ctx context.Context, parentID uuidv7.UUID) ([]*location.Location, error) {
+func (m *MockLocationUseCase) ListLocationsByParent(ctx context.Context, parentID uuidv7.UUID) ([]*locationAggregate.Location, error) {
 	if m.ListLocationsByParentFunc != nil {
 		return m.ListLocationsByParentFunc(ctx, parentID)
 	}
 	return nil, errors.New("ListLocationsByParentFunc not implemented")
 }
 
-func (m *MockLocationUseCase) ListLocationsByStatus(ctx context.Context, status location.LocationStatus, page, pageSize int) ([]*location.Location, int, error) {
+func (m *MockLocationUseCase) ListLocationsByStatus(ctx context.Context, status locationAggregate.LocationStatus, page, pageSize int) ([]*locationAggregate.Location, int, error) {
 	if m.ListLocationsByStatusFunc != nil {
 		return m.ListLocationsByStatusFunc(ctx, status, page, pageSize)
 	}
 	return nil, 0, errors.New("ListLocationsByStatusFunc not implemented")
 }
 
-func (m *MockLocationUseCase) ListAvailableLocations(ctx context.Context, page, pageSize int) ([]*location.Location, int, error) {
+func (m *MockLocationUseCase) ListAvailableLocations(ctx context.Context, page, pageSize int) ([]*locationAggregate.Location, int, error) {
 	if m.ListAvailableLocationsFunc != nil {
 		return m.ListAvailableLocationsFunc(ctx, page, pageSize)
 	}
 	return nil, 0, errors.New("ListAvailableLocationsFunc not implemented")
 }
 
-func (m *MockLocationUseCase) GetLocationChildren(ctx context.Context, id uuidv7.UUID, recursive bool) ([]*location.Location, error) {
+func (m *MockLocationUseCase) GetLocationChildren(ctx context.Context, id uuidv7.UUID, recursive bool) ([]*locationAggregate.Location, error) {
 	if m.GetLocationChildrenFunc != nil {
 		return m.GetLocationChildrenFunc(ctx, id, recursive)
 	}
 	return nil, errors.New("GetLocationChildrenFunc not implemented")
 }
 
-func (m *MockLocationUseCase) GetLocationHierarchy(ctx context.Context, id uuidv7.UUID) ([]*location.Location, error) {
+func (m *MockLocationUseCase) GetLocationHierarchy(ctx context.Context, id uuidv7.UUID) ([]*locationAggregate.Location, error) {
 	if m.GetLocationHierarchyFunc != nil {
 		return m.GetLocationHierarchyFunc(ctx, id)
 	}
@@ -177,8 +177,8 @@ func (m *MockLocationUseCase) GetAvailableCapacity(ctx context.Context, id uuidv
 }
 
 // Helper: fake location
-func fakeLocation() *location.Location {
-	loc, _ := location.NewLocation("WH-MAIN", "Main Warehouse", location.LocationTypeWarehouse)
+func fakeLocation() *locationAggregate.Location {
+	loc, _ := locationAggregate.NewLocation("WH-MAIN", "Main Warehouse", locationAggregate.LocationTypeWarehouse)
 	return loc
 }
 
@@ -190,7 +190,7 @@ func TestLocationHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		CreateLocationFunc: func(ctx context.Context, code, name string, locationType location.LocationType, description *string, parentID *uuidv7.UUID) (*location.Location, error) {
+		CreateLocationFunc: func(ctx context.Context, code, name string, locationType locationAggregate.LocationType, description *string, parentID *uuidv7.UUID) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 		UpdateLocationDimensionsFunc: func(ctx context.Context, id uuidv7.UUID, width, height, depth float64) error {
@@ -202,7 +202,7 @@ func TestLocationHandler_Create_Success(t *testing.T) {
 		UpdateLocationFlagsFunc: func(ctx context.Context, id uuidv7.UUID, isPickable, isPutawayable bool) error {
 			return nil
 		},
-		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 	}
@@ -240,7 +240,7 @@ func TestLocationHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 	}
@@ -256,7 +256,7 @@ func TestLocationHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error) {
 			return nil, errors.New("location not found")
 		},
 	}
@@ -272,7 +272,7 @@ func TestLocationHandler_GetByCode_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		GetLocationByCodeFunc: func(ctx context.Context, code string) (*location.Location, error) {
+		GetLocationByCodeFunc: func(ctx context.Context, code string) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 	}
@@ -288,8 +288,8 @@ func TestLocationHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		ListLocationsFunc: func(ctx context.Context, page, pageSize int) ([]*location.Location, int, error) {
-			return []*location.Location{fakeLocation()}, 1, nil
+		ListLocationsFunc: func(ctx context.Context, page, pageSize int) ([]*locationAggregate.Location, int, error) {
+			return []*locationAggregate.Location{fakeLocation()}, 1, nil
 		},
 	}
 
@@ -304,7 +304,7 @@ func TestLocationHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockLocationUseCase{
-		UpdateLocationFunc: func(ctx context.Context, id uuidv7.UUID, name, description *string) (*location.Location, error) {
+		UpdateLocationFunc: func(ctx context.Context, id uuidv7.UUID, name, description *string) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 	}
@@ -343,7 +343,7 @@ func TestLocationHandler_Activate_Success(t *testing.T) {
 		ActivateLocationFunc: func(ctx context.Context, id uuidv7.UUID) error {
 			return nil
 		},
-		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*location.Location, error) {
+		GetLocationFunc: func(ctx context.Context, id uuidv7.UUID) (*locationAggregate.Location, error) {
 			return fakeLocation(), nil
 		},
 	}

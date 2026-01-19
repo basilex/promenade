@@ -34,7 +34,7 @@ func NewDealHandler(dealUC usecase.IDealUseCase) *DealHandler {
 // @Accept json
 // @Produce json
 // @Param body body dto.CreateDealRequest true "Deal creation data"
-// @Success 201 {object} DealResponse
+// @Success 201 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals [post]
@@ -105,7 +105,7 @@ func (h *DealHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Deal ID"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -139,7 +139,7 @@ func (h *DealHandler) GetByID(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Param body body dto.UpdateDealBasicInfoRequest true "Update data"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -164,7 +164,7 @@ func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
 		name = *req.Name
 	}
 	description := "" // No description field in DTO, so empty
-	
+
 	d, err := h.dealUC.UpdateDealBasicInfo(c.Request.Context(), id, name, description)
 	if err != nil {
 		// Validation errors → 400
@@ -196,7 +196,7 @@ func (h *DealHandler) UpdateBasicInfo(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Param body body dto.UpdateDealValueRequest true "Update data"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -246,7 +246,7 @@ func (h *DealHandler) UpdateValue(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Param body body dto.MoveDealToStageRequest true "Stage data"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -293,7 +293,7 @@ func (h *DealHandler) MoveToStage(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Param body body dto.MarkDealAsWonRequest true "Close data"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -346,7 +346,7 @@ func (h *DealHandler) MarkAsWon(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Deal ID"
 // @Param body body dto.MarkDealAsLostRequest true "Close data"
-// @Success 200 {object} DealResponse
+// @Success 200 {object} dto.DealResponse
 // @Failure 400 {object} response.Response
 // @Failure 404 {object} response.Response
 // @Failure 500 {object} response.Response
@@ -436,7 +436,7 @@ func (h *DealHandler) Delete(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=[]DealResponse}
+// @Success 200 {object} response.Response{data=[]dto.DealResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals [get]
@@ -470,7 +470,7 @@ func (h *DealHandler) List(c *gin.Context) {
 // @Param stage path string true "Deal stage" Enums(lead, qualified, proposal, negotiation, closed_won, closed_lost)
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
-// @Success 200 {object} response.Response{data=[]DealResponse}
+// @Success 200 {object} response.Response{data=[]dto.DealResponse}
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/stage/{stage} [get]
@@ -502,7 +502,7 @@ func (h *DealHandler) ListByStage(c *gin.Context) {
 // @Tags Deals
 // @Accept json
 // @Produce json
-// @Success 200 {object} PipelineStatsResponse
+// @Success 200 {object} dto.PipelineStatsResponse
 // @Failure 500 {object} response.Response
 // @Router /customer-mgmt/deals/stats/pipeline [get]
 // @Security Bearer

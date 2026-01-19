@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
+	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -18,18 +18,18 @@ var testUserID = uuidv7.New()
 
 // MockRepository implements IRepository for testing
 type MockRepository struct {
-	CreateFunc          func(ctx context.Context, inv *aggregate.Inventory) error
-	GetByIDFunc         func(ctx context.Context, id uuidv7.UUID) (*aggregate.Inventory, error)
-	GetBySKUFunc        func(ctx context.Context, sku string) (*aggregate.Inventory, error)
-	GetByProductIDFunc  func(ctx context.Context, productID uuidv7.UUID) ([]*aggregate.Inventory, error)
-	GetByWarehouseFunc  func(ctx context.Context, warehouseID string) ([]*aggregate.Inventory, error)
-	GetLowStockFunc     func(ctx context.Context) ([]*aggregate.Inventory, error)
+	CreateFunc         func(ctx context.Context, inv *aggregate.Inventory) error
+	GetByIDFunc        func(ctx context.Context, id uuidv7.UUID) (*aggregate.Inventory, error)
+	GetBySKUFunc       func(ctx context.Context, sku string) (*aggregate.Inventory, error)
+	GetByProductIDFunc func(ctx context.Context, productID uuidv7.UUID) ([]*aggregate.Inventory, error)
+	GetByWarehouseFunc func(ctx context.Context, warehouseID string) ([]*aggregate.Inventory, error)
+	GetLowStockFunc    func(ctx context.Context) ([]*aggregate.Inventory, error)
 	ListInventoryFunc  func(ctx context.Context, limit, offset int) ([]*aggregate.Inventory, int64, error)
 	UpdateFunc         func(ctx context.Context, inventory *aggregate.Inventory) error
 	DeleteFunc         func(ctx context.Context, id uuidv7.UUID) error
 	GetByLocationFunc  func(ctx context.Context, warehouseID, locationCode string) ([]*aggregate.Inventory, error)
 	GetByStatusFunc    func(ctx context.Context, status aggregate.InventoryStatus) ([]*aggregate.Inventory, error)
-	BulkUpdateFunc      func(ctx context.Context, items []*aggregate.Inventory) error
+	BulkUpdateFunc     func(ctx context.Context, items []*aggregate.Inventory) error
 }
 
 func (m *MockRepository) Create(ctx context.Context, inv *aggregate.Inventory) error {
@@ -368,8 +368,8 @@ func TestListInventory(t *testing.T) {
 
 	repo := &MockRepository{
 		ListInventoryFunc: func(ctx context.Context, limit, offset int) ([]*aggregate.Inventory, int64, error) {
-			assert.Equal(t, 20, limit)  // pageSize becomes limit
-			assert.Equal(t, 0, offset)   // (page-1)*pageSize = (1-1)*20 = 0
+			assert.Equal(t, 20, limit) // pageSize becomes limit
+			assert.Equal(t, 0, offset) // (page-1)*pageSize = (1-1)*20 = 0
 			return []*aggregate.Inventory{inv1, inv2}, 2, nil
 		},
 	}
@@ -386,8 +386,8 @@ func TestListInventory(t *testing.T) {
 func TestListInventory_InvalidPage(t *testing.T) {
 	repo := &MockRepository{
 		ListInventoryFunc: func(ctx context.Context, limit, offset int) ([]*aggregate.Inventory, int64, error) {
-			assert.Equal(t, 20, limit)   // Default pageSize
-			assert.Equal(t, 0, offset)   // Normalized to page 1
+			assert.Equal(t, 20, limit) // Default pageSize
+			assert.Equal(t, 0, offset) // Normalized to page 1
 			return nil, 0, nil
 		},
 	}
@@ -402,8 +402,8 @@ func TestListInventory_InvalidPage(t *testing.T) {
 func TestListInventory_InvalidPageSize(t *testing.T) {
 	repo := &MockRepository{
 		ListInventoryFunc: func(ctx context.Context, limit, offset int) ([]*aggregate.Inventory, int64, error) {
-			assert.Equal(t, 20, limit)   // Should normalize to 20
-			assert.Equal(t, 0, offset)   // (1-1)*20 = 0
+			assert.Equal(t, 20, limit) // Should normalize to 20
+			assert.Equal(t, 0, offset) // (1-1)*20 = 0
 			return nil, 0, nil
 		},
 	}

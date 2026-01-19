@@ -8,45 +8,46 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	cashregisteraggregate "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/scheduler"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 type mockCashRegisterRepository struct {
-	ListFunc   func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error)
-	UpdateFunc func(ctx context.Context, cr *cashregister.CashRegister) error
+	ListFunc   func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error)
+	UpdateFunc func(ctx context.Context, cr *cashregisteraggregate.CashRegister) error
 }
 
-func (m *mockCashRegisterRepository) Create(ctx context.Context, cr *cashregister.CashRegister) error {
+func (m *mockCashRegisterRepository) Create(ctx context.Context, cr *cashregisteraggregate.CashRegister) error {
 	return nil
 }
 
-func (m *mockCashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cashregister.CashRegister, error) {
+func (m *mockCashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cashregisteraggregate.CashRegister, error) {
 	return nil, nil
 }
 
-func (m *mockCashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNumber string) (*cashregister.CashRegister, error) {
+func (m *mockCashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNumber string) (*cashregisteraggregate.CashRegister, error) {
 	return nil, nil
 }
 
-func (m *mockCashRegisterRepository) GetByLocation(ctx context.Context, locationID uuidv7.UUID) ([]*cashregister.CashRegister, error) {
+func (m *mockCashRegisterRepository) GetByLocation(ctx context.Context, locationID uuidv7.UUID) ([]*cashregisteraggregate.CashRegister, error) {
 	return nil, nil
 }
 
-func (m *mockCashRegisterRepository) ListActive(ctx context.Context) ([]*cashregister.CashRegister, error) {
+func (m *mockCashRegisterRepository) ListActive(ctx context.Context) ([]*cashregisteraggregate.CashRegister, error) {
 	return nil, nil
 }
 
-func (m *mockCashRegisterRepository) List(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
+func (m *mockCashRegisterRepository) List(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
 	if m.ListFunc != nil {
 		return m.ListFunc(ctx, filters)
 	}
 	return nil, nil
 }
 
-func (m *mockCashRegisterRepository) Update(ctx context.Context, cr *cashregister.CashRegister) error {
+func (m *mockCashRegisterRepository) Update(ctx context.Context, cr *cashregisteraggregate.CashRegister) error {
 	if m.UpdateFunc != nil {
 		return m.UpdateFunc(ctx, cr)
 	}
@@ -109,17 +110,17 @@ func TestRegisterShiftJobs_DefaultCron(t *testing.T) {
 }
 
 func TestShiftOpenExecutor_Execute_OpensShiftAndUpdates(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-001", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-001", "Model", uuidv7.New())
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-001", uuidv7.New()))
 	cr.ProviderCashRegisterID = "cr-1"
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			assert.Equal(t, "shift-1", updatedCR.ActiveShiftID)
 			assert.NotNil(t, updatedCR.ShiftOpenedAt)
@@ -143,16 +144,16 @@ func TestShiftOpenExecutor_Execute_OpensShiftAndUpdates(t *testing.T) {
 }
 
 func TestShiftOpenExecutor_Execute_SkipsAlreadyOpen(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-002", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-002", "Model", uuidv7.New())
 	require.NoError(t, err)
 	cr.ActiveShiftID = "shift-existing"
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			return nil
 		},
@@ -169,7 +170,7 @@ func TestShiftOpenExecutor_Execute_SkipsAlreadyOpen(t *testing.T) {
 func TestShiftOpenExecutor_Execute_ListError(t *testing.T) {
 	expectedErr := errors.New("list error")
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
 			return nil, expectedErr
 		},
 	}
@@ -182,17 +183,17 @@ func TestShiftOpenExecutor_Execute_ListError(t *testing.T) {
 }
 
 func TestShiftOpenExecutor_Execute_OpenShiftErrorDoesNotFail(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-003", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-003", "Model", uuidv7.New())
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-003", uuidv7.New()))
 	cr.ProviderCashRegisterID = "cr-3"
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			return nil
 		},
@@ -211,17 +212,17 @@ func TestShiftOpenExecutor_Execute_OpenShiftErrorDoesNotFail(t *testing.T) {
 }
 
 func TestShiftCloseExecutor_Execute_ClosesShiftAndUpdates(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-004", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-004", "Model", uuidv7.New())
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-004", uuidv7.New()))
 	cr.ActiveShiftID = "shift-1"
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			assert.Equal(t, "", updatedCR.ActiveShiftID)
 			assert.NotNil(t, updatedCR.ShiftClosedAt)
@@ -246,15 +247,15 @@ func TestShiftCloseExecutor_Execute_ClosesShiftAndUpdates(t *testing.T) {
 }
 
 func TestShiftCloseExecutor_Execute_SkipsNoActiveShift(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-005", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-005", "Model", uuidv7.New())
 	require.NoError(t, err)
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			return nil
 		},
@@ -271,7 +272,7 @@ func TestShiftCloseExecutor_Execute_SkipsNoActiveShift(t *testing.T) {
 func TestShiftCloseExecutor_Execute_ListError(t *testing.T) {
 	expectedErr := errors.New("list error")
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
 			return nil, expectedErr
 		},
 	}
@@ -284,17 +285,17 @@ func TestShiftCloseExecutor_Execute_ListError(t *testing.T) {
 }
 
 func TestShiftCloseExecutor_Execute_CloseShiftErrorDoesNotFail(t *testing.T) {
-	cr, err := cashregister.NewCashRegister(uuidv7.New(), "FN-006", "Model", uuidv7.New())
+	cr, err := cashregisteraggregate.NewCashRegister(uuidv7.New(), "FN-006", "Model", uuidv7.New())
 	require.NoError(t, err)
 	require.NoError(t, cr.Activate("LIC-006", uuidv7.New()))
 	cr.ActiveShiftID = "shift-6"
 
 	updated := 0
 	repo := &mockCashRegisterRepository{
-		ListFunc: func(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
-			return []*cashregister.CashRegister{cr}, nil
+		ListFunc: func(ctx context.Context, filters *repository.ListFilters) ([]*cashregisteraggregate.CashRegister, error) {
+			return []*cashregisteraggregate.CashRegister{cr}, nil
 		},
-		UpdateFunc: func(ctx context.Context, updatedCR *cashregister.CashRegister) error {
+		UpdateFunc: func(ctx context.Context, updatedCR *cashregisteraggregate.CashRegister) error {
 			updated++
 			return nil
 		},

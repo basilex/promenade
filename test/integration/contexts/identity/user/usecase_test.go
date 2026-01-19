@@ -13,6 +13,8 @@ import (
 	rolePostgres "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userPostgres "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
+	userUseCase "github.com/basilex/promenade/internal/contexts/identity/user/usecase"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -27,7 +29,7 @@ func TestUserUseCase_RegisterAndAuthenticate(t *testing.T) {
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 		userRepo := userPostgres.NewUserRepository(testDB.DB)
 		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register new user
 		email := fmt.Sprintf("test_%s@example.com", uuidv7.New().String())
@@ -38,7 +40,7 @@ func TestUserUseCase_RegisterAndAuthenticate(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotEqual(t, uuidv7.Nil, registeredUser.ID)
 		assert.Equal(t, email, registeredUser.Email.Value())
-		assert.Equal(t, user.UserStatusActive, registeredUser.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, registeredUser.Status)
 		assert.False(t, registeredUser.EmailVerified)
 
 		// Authenticate with correct password
@@ -62,8 +64,9 @@ func TestUserUseCase_GetUserAndGetUserByEmail(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		email := fmt.Sprintf("getuser_%s@example.com", uuidv7.New().String())
@@ -105,8 +108,9 @@ func TestUserUseCase_VerifyEmail(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		registeredUser, err := uc.Register(ctx, fmt.Sprintf("verify_%s@example.com", uuidv7.New().String()), "Verify User", "password123")
@@ -137,8 +141,9 @@ func TestUserUseCase_ChangePassword(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		email := fmt.Sprintf("changepass_%s@example.com", uuidv7.New().String())
@@ -180,15 +185,16 @@ func TestUserUseCase_SuspendUser(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		email := fmt.Sprintf("suspend_%s@example.com", uuidv7.New().String())
 		password := "password123"
 		registeredUser, err := uc.Register(ctx, email, "Suspend User", password)
 		require.NoError(t, err)
-		assert.Equal(t, user.UserStatusActive, registeredUser.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, registeredUser.Status)
 
 		// Suspend user
 		err = uc.SuspendUser(ctx, registeredUser.ID)
@@ -197,7 +203,7 @@ func TestUserUseCase_SuspendUser(t *testing.T) {
 		// Check suspended status
 		suspendedUser, err := uc.GetUser(ctx, registeredUser.ID)
 		require.NoError(t, err)
-		assert.Equal(t, user.UserStatusSuspended, suspendedUser.Status)
+		assert.Equal(t, userAggregate.UserStatusSuspended, suspendedUser.Status)
 
 		// Authenticate suspended user should fail
 		_, err = uc.Authenticate(ctx, email, password)
@@ -219,8 +225,9 @@ func TestUserUseCase_BanUser(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		email := fmt.Sprintf("ban_%s@example.com", uuidv7.New().String())
@@ -235,7 +242,7 @@ func TestUserUseCase_BanUser(t *testing.T) {
 		// Check banned status
 		bannedUser, err := uc.GetUser(ctx, registeredUser.ID)
 		require.NoError(t, err)
-		assert.Equal(t, user.UserStatusBanned, bannedUser.Status)
+		assert.Equal(t, userAggregate.UserStatusBanned, bannedUser.Status)
 
 		// Authenticate banned user should fail
 		_, err = uc.Authenticate(ctx, email, password)
@@ -257,8 +264,9 @@ func TestUserUseCase_ActivateUser(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register and suspend user
 		email := fmt.Sprintf("activate_%s@example.com", uuidv7.New().String())
@@ -276,7 +284,7 @@ func TestUserUseCase_ActivateUser(t *testing.T) {
 		// Check active status
 		activatedUser, err := uc.GetUser(ctx, registeredUser.ID)
 		require.NoError(t, err)
-		assert.Equal(t, user.UserStatusActive, activatedUser.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, activatedUser.Status)
 
 		// Authenticate activated user should work
 		_, err = uc.Authenticate(ctx, email, password)
@@ -297,8 +305,9 @@ func TestUserUseCase_UnlockUser(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		// Register user
 		email := fmt.Sprintf("unlock_%s@example.com", uuidv7.New().String())
@@ -353,7 +362,7 @@ func TestUserUseCase_ListUsers(t *testing.T) {
 
 	userRepo := userPostgres.NewUserRepository(testDB.DB)
 	roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-	uc := user.NewUseCase(userRepo, roleRepo)
+	uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 	// Create multiple users with unique emails
 	testID := uuidv7.New().String()
@@ -385,8 +394,9 @@ func TestUserUseCase_DuplicateEmailRegistration(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		email := fmt.Sprintf("duplicate_%s@example.com", uuidv7.New().String())
 
@@ -409,8 +419,9 @@ func TestUserUseCase_CompleteWorkflow(t *testing.T) {
 
 	testDB := integration.SetupTestDB(t)
 	testDB.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-		userRepo := userPostgres.NewUserRepository(testDB.DB); roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
-		uc := user.NewUseCase(userRepo, roleRepo)
+		userRepo := userPostgres.NewUserRepository(testDB.DB)
+		roleRepo := rolePostgres.NewRoleRepository(testDB.DB)
+		uc := userUseCase.NewUserUseCase(userRepo, roleRepo)
 
 		email := fmt.Sprintf("workflow_%s@example.com", uuidv7.New().String())
 		password := "password123"
@@ -420,7 +431,7 @@ func TestUserUseCase_CompleteWorkflow(t *testing.T) {
 		u, err := uc.Register(ctx, email, "Workflow User", password)
 		require.NoError(t, err)
 		assert.False(t, u.EmailVerified)
-		assert.Equal(t, user.UserStatusActive, u.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, u.Status)
 
 		// 2. Authenticate
 		_, err = uc.Authenticate(ctx, email, password)
@@ -446,20 +457,20 @@ func TestUserUseCase_CompleteWorkflow(t *testing.T) {
 		require.NoError(t, err)
 
 		u, _ = uc.GetUser(ctx, u.ID)
-		assert.Equal(t, user.UserStatusSuspended, u.Status)
+		assert.Equal(t, userAggregate.UserStatusSuspended, u.Status)
 
 		// 7. Reactivate
 		err = uc.ActivateUser(ctx, u.ID)
 		require.NoError(t, err)
 
 		u, _ = uc.GetUser(ctx, u.ID)
-		assert.Equal(t, user.UserStatusActive, u.Status)
+		assert.Equal(t, userAggregate.UserStatusActive, u.Status)
 
 		// 8. Ban
 		err = uc.BanUser(ctx, u.ID)
 		require.NoError(t, err)
 
 		u, _ = uc.GetUser(ctx, u.ID)
-		assert.Equal(t, user.UserStatusBanned, u.Status)
+		assert.Equal(t, userAggregate.UserStatusBanned, u.Status)
 	})
 }

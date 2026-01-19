@@ -1,12 +1,7 @@
 package dto
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/company/aggregate"
-	"github.com/basilex/promenade/pkg/uuidv7"
-	"github.com/basilex/promenade/pkg/valueobject"
 )
 
 // CreateCompanyRequest is the request body for creating a company
@@ -122,7 +117,7 @@ func ToCompanyResponse(c *aggregate.Company) CompanyResponse {
 		Type:          string(c.Type),
 		Size:          string(c.Size),
 		EmployeeCount: c.EmployeeCount,
-		Revenue: c.Revenue, // entity.Revenue -> response.AnnualRevenue
+		Revenue:       c.Revenue, // entity.Revenue -> response.AnnualRevenue
 		Currency:      c.Currency,
 		CreatedAt:     c.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		UpdatedAt:     c.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
@@ -206,101 +201,3 @@ func ToCompanyListResponse(companies []*aggregate.Company, total, page, pageSize
 }
 
 // Helper functions for parsing nullable fields
-
-// parseEmail parses email from request
-func parseEmail(email *string) (*valueobject.Email, error) {
-	if email == nil || *email == "" {
-		return nil, nil
-	}
-	e, err := valueobject.NewEmail(*email)
-	if err != nil {
-		return nil, fmt.Errorf("invalid email format: %w", err)
-	}
-	return &e, nil
-}
-
-// parsePhone parses phone from request
-func parsePhone(phone, countryCode *string) (*valueobject.Phone, error) {
-	if phone == nil || *phone == "" {
-		return nil, nil
-	}
-	// Combine country code with phone number for E.164 format
-	number := *phone
-	if countryCode != nil && *countryCode != "" {
-		code := *countryCode
-		if !strings.HasPrefix(code, "+") {
-			code = "+" + code
-		}
-		// If phone doesn't start with +, prepend country code
-		if !strings.HasPrefix(number, "+") {
-			number = code + number
-		}
-	}
-	// NewPhone expects E.164 format: +[country][number]
-	p, err := valueobject.NewPhone(number)
-	if err != nil {
-		return nil, fmt.Errorf("invalid phone format: %w", err)
-	}
-	return &p, nil
-}
-
-// parseAddress parses address from request
-func parseAddress(line1, line2, city, state, zip, country *string) (*valueobject.Address, error) {
-	// If all required fields are empty, return nil
-	if (line1 == nil || *line1 == "") &&
-		(city == nil || *city == "") &&
-		(zip == nil || *zip == "") &&
-		(country == nil || *country == "") {
-		return nil, nil
-	}
-
-	// Create address with required fields
-	street := ""
-	if line1 != nil {
-		street = *line1
-	}
-	cityVal := ""
-	if city != nil {
-		cityVal = *city
-	}
-	postalCode := ""
-	if zip != nil {
-		postalCode = *zip
-	}
-	countryVal := ""
-	if country != nil {
-		countryVal = *country
-	}
-
-	// Create base address
-	var addr valueobject.Address
-	var err error
-
-	if state != nil && *state != "" {
-		addr, err = valueobject.NewAddressWithState(street, cityVal, *state, postalCode, countryVal)
-	} else {
-		addr, err = valueobject.NewAddress(street, cityVal, postalCode, countryVal)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("invalid address: %w", err)
-	}
-
-	// Add optional second line
-	if line2 != nil && *line2 != "" {
-		addr = addr.WithStreet2(*line2)
-	}
-
-	return &addr, nil
-}
-
-// parseParentCompanyID parses parent company ID from request
-func parseParentCompanyID(parentID *string) (*uuidv7.UUID, error) {
-	if parentID == nil || *parentID == "" {
-		return nil, nil
-	}
-	id, err := uuidv7.Parse(*parentID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid parent company ID format: %w", err)
-	}
-	return &id, nil
-}

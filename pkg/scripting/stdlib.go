@@ -73,7 +73,7 @@ func (s *StandardLibrary) registerCustomerModule(L *lua.LState) {
 	L.SetField(customerTable, "SetTier", L.NewFunction(func(L *lua.LState) int {
 		customerIDStr := L.CheckString(1)
 		tierStr := L.CheckString(2)
-		
+
 		customerID, err := uuidv7.Parse(customerIDStr)
 		if err != nil {
 			L.RaiseError("invalid customer ID: %s", err.Error())
@@ -82,7 +82,7 @@ func (s *StandardLibrary) registerCustomerModule(L *lua.LState) {
 
 		// Parse tier
 		tier := aggregate.CustomerTier(tierStr)
-		
+
 		err = s.customerUC.UpgradeCustomerTier(s.ctx, customerID, tier)
 		if err != nil {
 			L.RaiseError("failed to set customer tier: %s", err.Error())
@@ -188,7 +188,7 @@ func (s *StandardLibrary) registerDealModule(L *lua.LState) {
 	L.SetField(dealTable, "Reject", L.NewFunction(func(L *lua.LState) int {
 		dealIDStr := L.CheckString(1)
 		reason := L.CheckString(2)
-		
+
 		dealID, err := uuidv7.Parse(dealIDStr)
 		if err != nil {
 			L.RaiseError("invalid deal ID: %s", err.Error())
@@ -319,7 +319,7 @@ func (s *StandardLibrary) registerQueryModule(L *lua.LState) {
 			rowTable := L.NewTable()
 			for i, col := range columns {
 				val := values[i]
-				
+
 				// Convert to LUA value
 				var luaVal lua.LValue
 				switch v := val.(type) {
@@ -338,7 +338,7 @@ func (s *StandardLibrary) registerQueryModule(L *lua.LState) {
 				default:
 					luaVal = lua.LString(fmt.Sprintf("%v", v))
 				}
-				
+
 				rowTable.RawSetString(col, luaVal)
 			}
 

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/basilex/promenade/internal/contexts/scripting/script"
 	scriptHTTP "github.com/basilex/promenade/internal/contexts/scripting/script/adapter/http"
+	scriptAggregate "github.com/basilex/promenade/internal/contexts/scripting/script/aggregate"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
@@ -15,41 +15,41 @@ import (
 
 // MockScriptUseCase implements IScriptUseCase with function fields for testing
 type MockScriptUseCase struct {
-	CreateScriptFunc        func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*script.Script, error)
-	GetScriptFunc           func(ctx context.Context, scriptID uuidv7.UUID) (*script.Script, error)
-	GetScriptByNameFunc     func(ctx context.Context, name string) (*script.Script, error)
+	CreateScriptFunc        func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*scriptAggregate.Script, error)
+	GetScriptFunc           func(ctx context.Context, scriptID uuidv7.UUID) (*scriptAggregate.Script, error)
+	GetScriptByNameFunc     func(ctx context.Context, name string) (*scriptAggregate.Script, error)
 	UpdateScriptFunc        func(ctx context.Context, scriptID uuidv7.UUID, code string) error
 	DeleteScriptFunc        func(ctx context.Context, scriptID uuidv7.UUID) error
-	ListScriptsFunc         func(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error)
-	ListAllScriptsFunc      func(ctx context.Context, limit, offset int) ([]*script.Script, int, error)
+	ListScriptsFunc         func(ctx context.Context, status scriptAggregate.ScriptStatus, limit, offset int) ([]*scriptAggregate.Script, int, error)
+	ListAllScriptsFunc      func(ctx context.Context, limit, offset int) ([]*scriptAggregate.Script, int, error)
 	ActivateScriptFunc      func(ctx context.Context, scriptID uuidv7.UUID) error
 	DeactivateScriptFunc    func(ctx context.Context, scriptID uuidv7.UUID) error
 	ExecuteScriptFunc       func(ctx context.Context, name string, params map[string]interface{}, executedBy uuidv7.UUID) (interface{}, error)
 	ValidateScriptFunc      func(ctx context.Context, code string) error
 	ArchiveScriptFunc       func(ctx context.Context, scriptID uuidv7.UUID) error
 	UpdateMetadataFunc      func(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error
-	GetExecutionHistoryFunc func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error)
-	GetRecentExecutionsFunc func(ctx context.Context, limit int) ([]*script.ScriptExecution, error)
-	GetExecutionDetailsFunc func(ctx context.Context, executionID uuidv7.UUID) (*script.ScriptExecution, error)
-	ListScriptVersionsFunc  func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error)
+	GetExecutionHistoryFunc func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptExecution, int, error)
+	GetRecentExecutionsFunc func(ctx context.Context, limit int) ([]*scriptAggregate.ScriptExecution, error)
+	GetExecutionDetailsFunc func(ctx context.Context, executionID uuidv7.UUID) (*scriptAggregate.ScriptExecution, error)
+	ListScriptVersionsFunc  func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptVersion, int, error)
 }
 
 // Implement IScriptUseCase interface methods
-func (m *MockScriptUseCase) CreateScript(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*script.Script, error) {
+func (m *MockScriptUseCase) CreateScript(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*scriptAggregate.Script, error) {
 	if m.CreateScriptFunc != nil {
 		return m.CreateScriptFunc(ctx, name, description, code, createdBy)
 	}
 	return fakeScript(), nil
 }
 
-func (m *MockScriptUseCase) GetScript(ctx context.Context, scriptID uuidv7.UUID) (*script.Script, error) {
+func (m *MockScriptUseCase) GetScript(ctx context.Context, scriptID uuidv7.UUID) (*scriptAggregate.Script, error) {
 	if m.GetScriptFunc != nil {
 		return m.GetScriptFunc(ctx, scriptID)
 	}
 	return fakeScript(), nil
 }
 
-func (m *MockScriptUseCase) GetScriptByName(ctx context.Context, name string) (*script.Script, error) {
+func (m *MockScriptUseCase) GetScriptByName(ctx context.Context, name string) (*scriptAggregate.Script, error) {
 	if m.GetScriptByNameFunc != nil {
 		return m.GetScriptByNameFunc(ctx, name)
 	}
@@ -70,18 +70,18 @@ func (m *MockScriptUseCase) DeleteScript(ctx context.Context, scriptID uuidv7.UU
 	return nil
 }
 
-func (m *MockScriptUseCase) ListScripts(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error) {
+func (m *MockScriptUseCase) ListScripts(ctx context.Context, status scriptAggregate.ScriptStatus, limit, offset int) ([]*scriptAggregate.Script, int, error) {
 	if m.ListScriptsFunc != nil {
 		return m.ListScriptsFunc(ctx, status, limit, offset)
 	}
-	return []*script.Script{fakeScript()}, 1, nil
+	return []*scriptAggregate.Script{fakeScript()}, 1, nil
 }
 
-func (m *MockScriptUseCase) ListAllScripts(ctx context.Context, limit, offset int) ([]*script.Script, int, error) {
+func (m *MockScriptUseCase) ListAllScripts(ctx context.Context, limit, offset int) ([]*scriptAggregate.Script, int, error) {
 	if m.ListAllScriptsFunc != nil {
 		return m.ListAllScriptsFunc(ctx, limit, offset)
 	}
-	return []*script.Script{fakeScript()}, 1, nil
+	return []*scriptAggregate.Script{fakeScript()}, 1, nil
 }
 
 func (m *MockScriptUseCase) UpdateScriptMetadata(ctx context.Context, scriptID uuidv7.UUID, key string, value string) error {
@@ -98,32 +98,32 @@ func (m *MockScriptUseCase) ExecuteScript(ctx context.Context, name string, para
 	return map[string]interface{}{"result": 4}, nil
 }
 
-func (m *MockScriptUseCase) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error) {
+func (m *MockScriptUseCase) GetExecutionHistory(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptExecution, int, error) {
 	if m.GetExecutionHistoryFunc != nil {
 		return m.GetExecutionHistoryFunc(ctx, scriptID, limit, offset)
 	}
-	return []*script.ScriptExecution{}, 0, nil
+	return []*scriptAggregate.ScriptExecution{}, 0, nil
 }
 
-func (m *MockScriptUseCase) GetRecentExecutions(ctx context.Context, limit int) ([]*script.ScriptExecution, error) {
+func (m *MockScriptUseCase) GetRecentExecutions(ctx context.Context, limit int) ([]*scriptAggregate.ScriptExecution, error) {
 	if m.GetRecentExecutionsFunc != nil {
 		return m.GetRecentExecutionsFunc(ctx, limit)
 	}
-	return []*script.ScriptExecution{}, nil
+	return []*scriptAggregate.ScriptExecution{}, nil
 }
 
-func (m *MockScriptUseCase) GetExecutionDetails(ctx context.Context, executionID uuidv7.UUID) (*script.ScriptExecution, error) {
+func (m *MockScriptUseCase) GetExecutionDetails(ctx context.Context, executionID uuidv7.UUID) (*scriptAggregate.ScriptExecution, error) {
 	if m.GetExecutionDetailsFunc != nil {
 		return m.GetExecutionDetailsFunc(ctx, executionID)
 	}
 	return nil, fmt.Errorf("execution not found")
 }
 
-func (m *MockScriptUseCase) ListScriptVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
+func (m *MockScriptUseCase) ListScriptVersions(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptVersion, int, error) {
 	if m.ListScriptVersionsFunc != nil {
 		return m.ListScriptVersionsFunc(ctx, scriptID, limit, offset)
 	}
-	return []*script.ScriptVersion{}, 0, nil
+	return []*scriptAggregate.ScriptVersion{}, 0, nil
 }
 
 func (m *MockScriptUseCase) ActivateScript(ctx context.Context, scriptID uuidv7.UUID) error {
@@ -155,8 +155,8 @@ func (m *MockScriptUseCase) ValidateScript(ctx context.Context, code string) err
 }
 
 // Helper functions to create fake data
-func fakeScript() *script.Script {
-	s, _ := script.NewScript("test-script", "return 2 + 2", script.ScriptTypeCustom)
+func fakeScript() *scriptAggregate.Script {
+	s, _ := scriptAggregate.NewScript("test-script", "return 2 + 2", scriptAggregate.ScriptTypeCustom)
 	return s
 }
 
@@ -166,7 +166,7 @@ func TestScriptHandler_CreateScript_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		CreateScriptFunc: func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*script.Script, error) {
+		CreateScriptFunc: func(ctx context.Context, name, description, code string, createdBy uuidv7.UUID) (*scriptAggregate.Script, error) {
 			return fakeScript(), nil
 		},
 	}
@@ -205,7 +205,7 @@ func TestScriptHandler_GetScript_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		GetScriptFunc: func(ctx context.Context, scriptID uuidv7.UUID) (*script.Script, error) {
+		GetScriptFunc: func(ctx context.Context, scriptID uuidv7.UUID) (*scriptAggregate.Script, error) {
 			return fakeScript(), nil
 		},
 	}
@@ -221,7 +221,7 @@ func TestScriptHandler_GetScriptByName_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		GetScriptByNameFunc: func(ctx context.Context, name string) (*script.Script, error) {
+		GetScriptByNameFunc: func(ctx context.Context, name string) (*scriptAggregate.Script, error) {
 			return fakeScript(), nil
 		},
 	}
@@ -278,8 +278,8 @@ func TestScriptHandler_ListScripts_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		ListScriptsFunc: func(ctx context.Context, status script.ScriptStatus, limit, offset int) ([]*script.Script, int, error) {
-			return []*script.Script{fakeScript()}, 1, nil
+		ListScriptsFunc: func(ctx context.Context, status scriptAggregate.ScriptStatus, limit, offset int) ([]*scriptAggregate.Script, int, error) {
+			return []*scriptAggregate.Script{fakeScript()}, 1, nil
 		},
 	}
 
@@ -350,8 +350,8 @@ func TestScriptHandler_GetExecutionHistory_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		GetExecutionHistoryFunc: func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptExecution, int, error) {
-			return []*script.ScriptExecution{}, 0, nil
+		GetExecutionHistoryFunc: func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptExecution, int, error) {
+			return []*scriptAggregate.ScriptExecution{}, 0, nil
 		},
 	}
 
@@ -366,8 +366,8 @@ func TestScriptHandler_ListScriptVersions_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockScriptUseCase{
-		ListScriptVersionsFunc: func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*script.ScriptVersion, int, error) {
-			return []*script.ScriptVersion{fakeScriptVersion()}, 1, nil
+		ListScriptVersionsFunc: func(ctx context.Context, scriptID uuidv7.UUID, limit, offset int) ([]*scriptAggregate.ScriptVersion, int, error) {
+			return []*scriptAggregate.ScriptVersion{fakeScriptVersion()}, 1, nil
 		},
 	}
 
@@ -379,8 +379,8 @@ func TestScriptHandler_ListScriptVersions_Success(t *testing.T) {
 	smoke.AssertSuccessResponse(t, w, 200)
 }
 
-func fakeScriptVersion() *script.ScriptVersion {
-	return &script.ScriptVersion{
+func fakeScriptVersion() *scriptAggregate.ScriptVersion {
+	return &scriptAggregate.ScriptVersion{
 		ID:        uuidv7.New(),
 		ScriptID:  uuidv7.New(),
 		Version:   1,

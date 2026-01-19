@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
+	"github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
@@ -17,13 +17,13 @@ func TestPDFPrinter_Print_Success(t *testing.T) {
 	outputDir := t.TempDir()
 	printer := NewPDFPrinter(outputDir)
 
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCard,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCard,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{
+		[]aggregate.ReceiptLine{
 			{Name: "Item A", Quantity: 2, PriceCents: 1000, TaxRate: 20},
 			{Name: "Item B", Quantity: 1, PriceCents: 2500, TaxRate: 20},
 			{Name: "Item C", Quantity: 3, PriceCents: 500, TaxRate: 20},
@@ -47,13 +47,13 @@ func TestPDFPrinter_Print_Success(t *testing.T) {
 func TestPDFPrinter_Print_EmptyOutputDir(t *testing.T) {
 	printer := NewPDFPrinter("")
 
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{
+		[]aggregate.ReceiptLine{
 			{Name: "Item A", Quantity: 1, PriceCents: 1000, TaxRate: 20},
 		},
 		uuidv7.New(),
@@ -68,13 +68,13 @@ func TestPDFPrinter_Print_EmptyOutputDir(t *testing.T) {
 func TestPDFPrinter_Print_NilPrinter(t *testing.T) {
 	var printer *PDFPrinter
 
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	require.NoError(t, err)
@@ -90,13 +90,13 @@ func TestPDFPrinter_Print_MkdirError(t *testing.T) {
 
 	printer := NewPDFPrinter(filePath)
 
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	require.NoError(t, err)
@@ -107,13 +107,13 @@ func TestPDFPrinter_Print_MkdirError(t *testing.T) {
 }
 
 func TestWriteReceiptPDF_Error(t *testing.T) {
-	rec, err := receipt.NewReceipt(
+	rec, err := aggregate.NewReceipt(
 		uuidv7.New(),
 		uuidv7.New(),
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		aggregate.PaymentTypeCash,
+		aggregate.ReceiptTypeSale,
 		"UAH",
-		[]receipt.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
+		[]aggregate.ReceiptLine{{Name: "Item", Quantity: 1, PriceCents: 1000, TaxRate: 20}},
 		uuidv7.New(),
 	)
 	require.NoError(t, err)

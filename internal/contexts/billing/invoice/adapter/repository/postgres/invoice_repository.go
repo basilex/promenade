@@ -8,19 +8,50 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/billing/invoice"
+	invoiceerrors "github.com/basilex/promenade/internal/contexts/billing/invoice"
+	"github.com/basilex/promenade/internal/contexts/billing/invoice/aggregate"
+	"github.com/basilex/promenade/internal/contexts/billing/invoice/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
 
 type invoiceRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
-func NewInvoiceRepository(db *sqlx.DB) invoice.IRepository {
+func NewInvoiceRepository(db *sqlx.DB) repository.IInvoiceRepository {
 	return &invoiceRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *invoiceRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *invoiceRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *invoiceRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *invoiceRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *invoiceRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 type invoiceRow struct {
@@ -52,7 +83,7 @@ type invoiceLineRow struct {
 	UpdatedAt   time.Time `db:"updated_at"`
 }
 
-func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) error {
+func (r *invoiceRepository) Create(ctx context.Context, inv *aggregate.Invoice) error {
 	query := `
 		INSERT INTO billing_invoices (
 			id, invoice_no, customer_id, order_id,
@@ -67,20 +98,20 @@ func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) er
 		)`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":               inv.GetID().String(),
-		"invoice_no":       inv.InvoiceNo,
-		"customer_id":      inv.CustomerID.String(),
-		"order_id":         inv.OrderID,
-		"subtotal_amount":  inv.SubtotalAmount.Amount,
-		"tax_amount":       inv.TaxAmount.Amount,
-		"total_amount":     inv.TotalAmount.Amount,
-		"currency":         inv.Currency,
-		"issue_date":       inv.IssueDate,
-		"due_date":         inv.DueDate,
-		"paid_date":        inv.PaidDate,
-		"status":           string(inv.Status),
-		"created_at":       inv.GetCreatedAt(),
-		"updated_at":       inv.GetUpdatedAt(),
+		"id":              inv.GetID().String(),
+		"invoice_no":      inv.InvoiceNo,
+		"customer_id":     inv.CustomerID.String(),
+		"order_id":        inv.OrderID,
+		"subtotal_amount": inv.SubtotalAmount.Amount,
+		"tax_amount":      inv.TaxAmount.Amount,
+		"total_amount":    inv.TotalAmount.Amount,
+		"currency":        inv.Currency,
+		"issue_date":      inv.IssueDate,
+		"due_date":        inv.DueDate,
+		"paid_date":       inv.PaidDate,
+		"status":          string(inv.Status),
+		"created_at":      inv.GetCreatedAt(),
+		"updated_at":      inv.GetUpdatedAt(),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create invoice: %w", err)
@@ -96,7 +127,7 @@ func (r *invoiceRepository) Create(ctx context.Context, inv *invoice.Invoice) er
 	return nil
 }
 
-func (r *invoiceRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*invoice.Invoice, error) {
+func (r *invoiceRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.Invoice, error) {
 	query := `
 		SELECT id, invoice_no, customer_id, order_id,
 			   subtotal_amount, tax_amount, total_amount, currency,
@@ -108,7 +139,7 @@ func (r *invoiceRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*invoi
 	var row invoiceRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, invoice.ErrInvoiceNotFound
+			return nil, invoiceerrors.ErrInvoiceNotFound
 		}
 		return nil, fmt.Errorf("failed to get invoice: %w", err)
 	}
@@ -127,7 +158,7 @@ func (r *invoiceRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*invoi
 	return inv, nil
 }
 
-func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string) (*invoice.Invoice, error) {
+func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string) (*aggregate.Invoice, error) {
 	query := `
 		SELECT id, invoice_no, customer_id, order_id,
 			   subtotal_amount, tax_amount, total_amount, currency,
@@ -139,7 +170,7 @@ func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string
 	var row invoiceRow
 	if err := r.Get(ctx, &row, query, invoiceNo); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, invoice.ErrInvoiceNotFound
+			return nil, invoiceerrors.ErrInvoiceNotFound
 		}
 		return nil, fmt.Errorf("failed to get invoice: %w", err)
 	}
@@ -159,7 +190,7 @@ func (r *invoiceRepository) GetByInvoiceNo(ctx context.Context, invoiceNo string
 	return inv, nil
 }
 
-func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) error {
+func (r *invoiceRepository) Update(ctx context.Context, inv *aggregate.Invoice) error {
 	query := `
 		UPDATE billing_invoices
 		SET invoice_no = :invoice_no, customer_id = :customer_id, order_id = :order_id,
@@ -169,19 +200,19 @@ func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) er
 		WHERE id = :id AND deleted_at IS NULL`
 
 	result, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"invoice_no":       inv.InvoiceNo,
-		"customer_id":      inv.CustomerID.String(),
-		"order_id":         inv.OrderID,
-		"subtotal_amount":  inv.SubtotalAmount.Amount,
-		"tax_amount":       inv.TaxAmount.Amount,
-		"total_amount":     inv.TotalAmount.Amount,
-		"currency":         inv.Currency,
-		"issue_date":       inv.IssueDate,
-		"due_date":         inv.DueDate,
-		"paid_date":        inv.PaidDate,
-		"status":           string(inv.Status),
-		"updated_at":       inv.GetUpdatedAt(),
-		"id":               inv.GetID().String(),
+		"invoice_no":      inv.InvoiceNo,
+		"customer_id":     inv.CustomerID.String(),
+		"order_id":        inv.OrderID,
+		"subtotal_amount": inv.SubtotalAmount.Amount,
+		"tax_amount":      inv.TaxAmount.Amount,
+		"total_amount":    inv.TotalAmount.Amount,
+		"currency":        inv.Currency,
+		"issue_date":      inv.IssueDate,
+		"due_date":        inv.DueDate,
+		"paid_date":       inv.PaidDate,
+		"status":          string(inv.Status),
+		"updated_at":      inv.GetUpdatedAt(),
+		"id":              inv.GetID().String(),
 	})
 
 	if err != nil {
@@ -194,7 +225,7 @@ func (r *invoiceRepository) Update(ctx context.Context, inv *invoice.Invoice) er
 	}
 
 	if rows == 0 {
-		return invoice.ErrInvoiceNotFound
+		return invoiceerrors.ErrInvoiceNotFound
 	}
 
 	return nil
@@ -214,13 +245,13 @@ func (r *invoiceRepository) Delete(ctx context.Context, id uuidv7.UUID) error {
 	}
 
 	if rows == 0 {
-		return invoice.ErrInvoiceNotFound
+		return invoiceerrors.ErrInvoiceNotFound
 	}
 
 	return nil
 }
 
-func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*aggregate.Invoice, int, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -251,7 +282,7 @@ func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv
 		return nil, 0, fmt.Errorf("failed to list invoices by customer: %w", err)
 	}
 
-	invoices := make([]*invoice.Invoice, 0, len(rows))
+	invoices := make([]*aggregate.Invoice, 0, len(rows))
 	for _, row := range rows {
 		inv, err := r.rowToEntity(&row)
 		if err != nil {
@@ -271,7 +302,7 @@ func (r *invoiceRepository) ListByCustomer(ctx context.Context, customerID uuidv
 	return invoices, total, nil
 }
 
-func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*invoice.Invoice, error) {
+func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*aggregate.Invoice, error) {
 	query := `
 		SELECT id, invoice_no, customer_id, order_id,
 			   due_date, paid_date, status,
@@ -287,7 +318,7 @@ func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID
 		return nil, fmt.Errorf("failed to list invoices by order: %w", err)
 	}
 
-	invoices := make([]*invoice.Invoice, 0, len(rows))
+	invoices := make([]*aggregate.Invoice, 0, len(rows))
 	for _, row := range rows {
 		inv, err := r.rowToEntity(&row)
 		if err != nil {
@@ -307,7 +338,7 @@ func (r *invoiceRepository) ListByOrder(ctx context.Context, orderID uuidv7.UUID
 	return invoices, nil
 }
 
-func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.InvoiceStatus, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (r *invoiceRepository) ListByStatus(ctx context.Context, status aggregate.InvoiceStatus, page, pageSize int) ([]*aggregate.Invoice, int, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -338,7 +369,7 @@ func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.Inv
 		return nil, 0, fmt.Errorf("failed to list invoices by status: %w", err)
 	}
 
-	invoices := make([]*invoice.Invoice, 0, len(rows))
+	invoices := make([]*aggregate.Invoice, 0, len(rows))
 	for _, row := range rows {
 		inv, err := r.rowToEntity(&row)
 		if err != nil {
@@ -358,7 +389,7 @@ func (r *invoiceRepository) ListByStatus(ctx context.Context, status invoice.Inv
 	return invoices, total, nil
 }
 
-func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int) ([]*aggregate.Invoice, int, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -370,7 +401,7 @@ func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int)
 		  AND due_date < NOW()
 		  AND deleted_at IS NULL
 	`
-	if err := r.Get(ctx, &total, countQuery, string(invoice.InvoiceStatusSent)); err != nil {
+	if err := r.Get(ctx, &total, countQuery, string(aggregate.InvoiceStatusSent)); err != nil {
 		return nil, 0, fmt.Errorf("failed to count overdue invoices: %w", err)
 	}
 
@@ -389,11 +420,11 @@ func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int)
 	`
 
 	var rows []invoiceRow
-	if err := r.Select(ctx, &rows, query, string(invoice.InvoiceStatusSent), pageSize, offset); err != nil {
+	if err := r.Select(ctx, &rows, query, string(aggregate.InvoiceStatusSent), pageSize, offset); err != nil {
 		return nil, 0, fmt.Errorf("failed to list overdue invoices: %w", err)
 	}
 
-	invoices := make([]*invoice.Invoice, 0, len(rows))
+	invoices := make([]*aggregate.Invoice, 0, len(rows))
 	for _, row := range rows {
 		inv, err := r.rowToEntity(&row)
 		if err != nil {
@@ -413,7 +444,7 @@ func (r *invoiceRepository) ListOverdue(ctx context.Context, page, pageSize int)
 	return invoices, total, nil
 }
 
-func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*aggregate.Invoice, int, error) {
 	offset := (page - 1) * pageSize
 
 	// Get total count
@@ -444,7 +475,7 @@ func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*in
 		return nil, 0, fmt.Errorf("failed to list invoices: %w", err)
 	}
 
-	invoices := make([]*invoice.Invoice, 0, len(rows))
+	invoices := make([]*aggregate.Invoice, 0, len(rows))
 	for _, row := range rows {
 		inv, err := r.rowToEntity(&row)
 		if err != nil {
@@ -464,7 +495,7 @@ func (r *invoiceRepository) List(ctx context.Context, page, pageSize int) ([]*in
 	return invoices, total, nil
 }
 
-func (r *invoiceRepository) CountByStatus(ctx context.Context, status invoice.InvoiceStatus) (int, error) {
+func (r *invoiceRepository) CountByStatus(ctx context.Context, status aggregate.InvoiceStatus) (int, error) {
 	var count int
 	query := `
 		SELECT COUNT(*)
@@ -489,7 +520,7 @@ func (r *invoiceRepository) GetTotalRevenue(ctx context.Context, from, to time.T
 		  AND deleted_at IS NULL
 	`
 
-	if err := r.Get(ctx, &total, query, string(invoice.InvoiceStatusPaid), from, to); err != nil {
+	if err := r.Get(ctx, &total, query, string(aggregate.InvoiceStatusPaid), from, to); err != nil {
 		return 0, fmt.Errorf("failed to calculate total revenue: %w", err)
 	}
 
@@ -500,7 +531,7 @@ func (r *invoiceRepository) GetTotalRevenue(ctx context.Context, from, to time.T
 	return total.Int64, nil
 }
 
-func (r *invoiceRepository) CreateLine(ctx context.Context, line *invoice.InvoiceLine) error {
+func (r *invoiceRepository) CreateLine(ctx context.Context, line *aggregate.InvoiceLine) error {
 	query := `
 		INSERT INTO billing_invoice_lines (
 			id, invoice_id, description, quantity, unit_price, amount,
@@ -542,13 +573,13 @@ func (r *invoiceRepository) DeleteLine(ctx context.Context, lineID uuidv7.UUID) 
 	}
 
 	if rows == 0 {
-		return invoice.ErrInvoiceLineNotFound
+		return invoiceerrors.ErrInvoiceLineNotFound
 	}
 
 	return nil
 }
 
-func (r *invoiceRepository) GetLinesByInvoiceID(ctx context.Context, invoiceID uuidv7.UUID) ([]invoice.InvoiceLine, error) {
+func (r *invoiceRepository) GetLinesByInvoiceID(ctx context.Context, invoiceID uuidv7.UUID) ([]aggregate.InvoiceLine, error) {
 	query := `
 		SELECT id, invoice_id, description, quantity, unit_price, amount,
 			   created_at, updated_at
@@ -561,7 +592,7 @@ func (r *invoiceRepository) GetLinesByInvoiceID(ctx context.Context, invoiceID u
 		return nil, fmt.Errorf("failed to get invoice lines: %w", err)
 	}
 
-	lines := make([]invoice.InvoiceLine, 0, len(rows))
+	lines := make([]aggregate.InvoiceLine, 0, len(rows))
 	for _, row := range rows {
 		line, err := r.lineRowToEntity(&row)
 		if err != nil {
@@ -612,7 +643,7 @@ func (r *invoiceRepository) GenerateInvoiceNumber(ctx context.Context) (string, 
 	return fmt.Sprintf("%s%06d", prefix, sequence+1), nil
 }
 
-func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, error) {
+func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*aggregate.Invoice, error) {
 	id, err := uuidv7.Parse(row.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid invoice ID: %w", err)
@@ -641,7 +672,7 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 	tax, _ := valueobject.NewMoney(row.TaxAmount, row.Currency)
 	total, _ := valueobject.NewMoney(row.TotalAmount, row.Currency)
 
-	inv := &invoice.Invoice{
+	inv := &aggregate.Invoice{
 		InvoiceNo:      row.InvoiceNo,
 		CustomerID:     customerID,
 		OrderID:        orderID,
@@ -652,10 +683,10 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 		IssueDate:      row.IssueDate,
 		DueDate:        row.DueDate,
 		PaidDate:       paidDate,
-		Status:         invoice.InvoiceStatus(row.Status),
-		Lines:          []invoice.InvoiceLine{},
+		Status:         aggregate.InvoiceStatus(row.Status),
+		Lines:          []aggregate.InvoiceLine{},
 	}
-	
+
 	// Set BaseAggregate fields via setters (not direct access)
 	inv.ID = id
 	inv.CreatedAt = row.CreatedAt
@@ -663,11 +694,11 @@ func (r *invoiceRepository) rowToEntity(row *invoiceRow) (*invoice.Invoice, erro
 	if row.DeletedAt.Valid {
 		inv.DeletedAt = &row.DeletedAt.Time
 	}
-	
+
 	return inv, nil
 }
 
-func (r *invoiceRepository) lineRowToEntity(row *invoiceLineRow) (*invoice.InvoiceLine, error) {
+func (r *invoiceRepository) lineRowToEntity(row *invoiceLineRow) (*aggregate.InvoiceLine, error) {
 	id, err := uuidv7.Parse(row.ID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid line ID: %w", err)
@@ -681,7 +712,7 @@ func (r *invoiceRepository) lineRowToEntity(row *invoiceLineRow) (*invoice.Invoi
 	unitPrice, _ := valueobject.NewMoney(row.UnitPrice, "USD")
 	amount, _ := valueobject.NewMoney(row.Amount, "USD")
 
-	return &invoice.InvoiceLine{
+	return &aggregate.InvoiceLine{
 		ID:          id,
 		InvoiceID:   invoiceID,
 		Description: row.Description,

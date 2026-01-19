@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
+	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/repository"
-	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 

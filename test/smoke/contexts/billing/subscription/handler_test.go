@@ -8,38 +8,39 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/billing/subscription"
 	subscriptionHTTP "github.com/basilex/promenade/internal/contexts/billing/subscription/adapter/http"
+	subscriptionAggregate "github.com/basilex/promenade/internal/contexts/billing/subscription/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockSubscriptionUseCase implements subscription.IUseCase for testing
 type MockSubscriptionUseCase struct {
-	CreateSubscriptionFunc   func(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscription.BillingPeriod, currency string, amount int64, trialDays int) (*subscription.Subscription, error)
-	GetSubscriptionFunc      func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error)
+	CreateSubscriptionFunc   func(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscriptionAggregate.BillingPeriod, currency string, amount int64, trialDays int) (*subscriptionAggregate.Subscription, error)
+	GetSubscriptionFunc      func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error)
 	UpdateSubscriptionFunc   func(ctx context.Context, id uuidv7.UUID, planID string, amount int64) error
 	DeleteSubscriptionFunc   func(ctx context.Context, id uuidv7.UUID) error
-	ListSubscriptionsFunc    func(ctx context.Context, page, pageSize int) ([]*subscription.Subscription, error)
-	ListByCustomerFunc       func(ctx context.Context, customerID uuidv7.UUID) ([]*subscription.Subscription, error)
-	ListByStatusFunc         func(ctx context.Context, status subscription.SubscriptionStatus) ([]*subscription.Subscription, error)
+	ListSubscriptionsFunc    func(ctx context.Context, page, pageSize int) ([]*subscriptionAggregate.Subscription, error)
+	ListByCustomerFunc       func(ctx context.Context, customerID uuidv7.UUID) ([]*subscriptionAggregate.Subscription, error)
+	ListByStatusFunc         func(ctx context.Context, status subscriptionAggregate.SubscriptionStatus) ([]*subscriptionAggregate.Subscription, error)
 	ActivateSubscriptionFunc func(ctx context.Context, id uuidv7.UUID) error
 	PauseSubscriptionFunc    func(ctx context.Context, id uuidv7.UUID) error
 	ResumeSubscriptionFunc   func(ctx context.Context, id uuidv7.UUID) error
 	CancelSubscriptionFunc   func(ctx context.Context, id uuidv7.UUID, reason string, effectiveDate time.Time) error
 	RenewSubscriptionFunc    func(ctx context.Context, id uuidv7.UUID) error
 	ExpireSubscriptionFunc   func(ctx context.Context, id uuidv7.UUID) error
-	CountByStatusFunc        func(ctx context.Context, status subscription.SubscriptionStatus) (int64, error)
+	CountByStatusFunc        func(ctx context.Context, status subscriptionAggregate.SubscriptionStatus) (int64, error)
 	GetTotalRevenueFunc      func(ctx context.Context) (int64, error)
 }
 
 // Implement all IUseCase methods
-func (m *MockSubscriptionUseCase) CreateSubscription(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscription.BillingPeriod, currency string, amount int64, trialDays int) (*subscription.Subscription, error) {
+func (m *MockSubscriptionUseCase) CreateSubscription(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscriptionAggregate.BillingPeriod, currency string, amount int64, trialDays int) (*subscriptionAggregate.Subscription, error) {
 	if m.CreateSubscriptionFunc != nil {
 		return m.CreateSubscriptionFunc(ctx, customerID, planID, billingPeriod, currency, amount, trialDays)
 	}
 	return nil, fmt.Errorf("CreateSubscriptionFunc not implemented")
 }
 
-func (m *MockSubscriptionUseCase) GetSubscription(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+func (m *MockSubscriptionUseCase) GetSubscription(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 	if m.GetSubscriptionFunc != nil {
 		return m.GetSubscriptionFunc(ctx, id)
 	}
@@ -60,21 +61,21 @@ func (m *MockSubscriptionUseCase) DeleteSubscription(ctx context.Context, id uui
 	return fmt.Errorf("DeleteSubscriptionFunc not implemented")
 }
 
-func (m *MockSubscriptionUseCase) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*subscription.Subscription, error) {
+func (m *MockSubscriptionUseCase) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*subscriptionAggregate.Subscription, error) {
 	if m.ListSubscriptionsFunc != nil {
 		return m.ListSubscriptionsFunc(ctx, page, pageSize)
 	}
 	return nil, fmt.Errorf("ListSubscriptionsFunc not implemented")
 }
 
-func (m *MockSubscriptionUseCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*subscription.Subscription, error) {
+func (m *MockSubscriptionUseCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*subscriptionAggregate.Subscription, error) {
 	if m.ListByCustomerFunc != nil {
 		return m.ListByCustomerFunc(ctx, customerID)
 	}
 	return nil, fmt.Errorf("ListByCustomerFunc not implemented")
 }
 
-func (m *MockSubscriptionUseCase) ListByStatus(ctx context.Context, status subscription.SubscriptionStatus) ([]*subscription.Subscription, error) {
+func (m *MockSubscriptionUseCase) ListByStatus(ctx context.Context, status subscriptionAggregate.SubscriptionStatus) ([]*subscriptionAggregate.Subscription, error) {
 	if m.ListByStatusFunc != nil {
 		return m.ListByStatusFunc(ctx, status)
 	}
@@ -123,7 +124,7 @@ func (m *MockSubscriptionUseCase) ExpireSubscription(ctx context.Context, id uui
 	return fmt.Errorf("ExpireSubscriptionFunc not implemented")
 }
 
-func (m *MockSubscriptionUseCase) CountByStatus(ctx context.Context, status subscription.SubscriptionStatus) (int64, error) {
+func (m *MockSubscriptionUseCase) CountByStatus(ctx context.Context, status subscriptionAggregate.SubscriptionStatus) (int64, error) {
 	if m.CountByStatusFunc != nil {
 		return m.CountByStatusFunc(ctx, status)
 	}
@@ -138,11 +139,11 @@ func (m *MockSubscriptionUseCase) GetTotalRevenue(ctx context.Context) (int64, e
 }
 
 // fakeSubscription creates a fake subscription for testing
-func fakeSubscription() *subscription.Subscription {
-	sub, _ := subscription.NewSubscription(
+func fakeSubscription() *subscriptionAggregate.Subscription {
+	sub, _ := subscriptionAggregate.NewSubscription(
 		uuidv7.New(),
 		"plan_premium",
-		subscription.BillingPeriodMonthly,
+		subscriptionAggregate.BillingPeriodMonthly,
 		"USD",
 		2999,
 		time.Now(),
@@ -157,7 +158,7 @@ func TestSubscriptionHandler_Create(t *testing.T) {
 		router := smoke.SetupRouter()
 
 		mockUC := &MockSubscriptionUseCase{
-			CreateSubscriptionFunc: func(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscription.BillingPeriod, currency string, amount int64, trialDays int) (*subscription.Subscription, error) {
+			CreateSubscriptionFunc: func(ctx context.Context, customerID uuidv7.UUID, planID string, billingPeriod subscriptionAggregate.BillingPeriod, currency string, amount int64, trialDays int) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}
@@ -200,7 +201,7 @@ func TestSubscriptionHandler_GetByID(t *testing.T) {
 		router := smoke.SetupRouter()
 
 		mockUC := &MockSubscriptionUseCase{
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}
@@ -216,7 +217,7 @@ func TestSubscriptionHandler_GetByID(t *testing.T) {
 		router := smoke.SetupRouter()
 
 		mockUC := &MockSubscriptionUseCase{
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return nil, subscription.ErrSubscriptionNotFound
 			},
 		}
@@ -238,7 +239,7 @@ func TestSubscriptionHandler_Update(t *testing.T) {
 			UpdateSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID, planID string, amount int64) error {
 				return nil
 			},
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}
@@ -318,8 +319,8 @@ func TestSubscriptionHandler_List(t *testing.T) {
 		router := smoke.SetupRouter()
 
 		mockUC := &MockSubscriptionUseCase{
-			ListSubscriptionsFunc: func(ctx context.Context, page, pageSize int) ([]*subscription.Subscription, error) {
-				return []*subscription.Subscription{fakeSubscription()}, nil
+			ListSubscriptionsFunc: func(ctx context.Context, page, pageSize int) ([]*subscriptionAggregate.Subscription, error) {
+				return []*subscriptionAggregate.Subscription{fakeSubscription()}, nil
 			},
 		}
 
@@ -334,8 +335,8 @@ func TestSubscriptionHandler_List(t *testing.T) {
 		router := smoke.SetupRouter()
 
 		mockUC := &MockSubscriptionUseCase{
-			ListSubscriptionsFunc: func(ctx context.Context, page, pageSize int) ([]*subscription.Subscription, error) {
-				return []*subscription.Subscription{}, nil
+			ListSubscriptionsFunc: func(ctx context.Context, page, pageSize int) ([]*subscriptionAggregate.Subscription, error) {
+				return []*subscriptionAggregate.Subscription{}, nil
 			},
 		}
 
@@ -356,7 +357,7 @@ func TestSubscriptionHandler_Activate(t *testing.T) {
 			ActivateSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) error {
 				return nil
 			},
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}
@@ -394,7 +395,7 @@ func TestSubscriptionHandler_Pause(t *testing.T) {
 			PauseSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) error {
 				return nil
 			},
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}
@@ -432,7 +433,7 @@ func TestSubscriptionHandler_Cancel(t *testing.T) {
 			CancelSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID, reason string, effectiveDate time.Time) error {
 				return nil
 			},
-			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscription.Subscription, error) {
+			GetSubscriptionFunc: func(ctx context.Context, id uuidv7.UUID) (*subscriptionAggregate.Subscription, error) {
 				return fakeSubscription(), nil
 			},
 		}

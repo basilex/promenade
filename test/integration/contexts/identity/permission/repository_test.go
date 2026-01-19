@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/identity/permission"
 	"github.com/basilex/promenade/internal/contexts/identity/permission/adapter/repository/postgres"
+	permissionAggregate "github.com/basilex/promenade/internal/contexts/identity/permission/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -26,7 +26,7 @@ func TestPermissionRepository_CRUD(t *testing.T) {
 		// Create with unique resource name
 		uuid := uuidv7.New().String()
 		resourceName := fmt.Sprintf("test_resource_%s", uuid)
-		p, err := permission.NewPermission(resourceName, "read", "Test permission")
+		p, err := permissionAggregate.NewPermission(resourceName, "read", "Test permission")
 		require.NoError(t, err)
 		require.NoError(t, repo.Create(ctx, p))
 
@@ -67,8 +67,8 @@ func TestPermissionRepository_Queries(t *testing.T) {
 		uuid := uuidv7.New().String()
 		resource1Name := fmt.Sprintf("resource1_%s", uuid)
 		resource2Name := fmt.Sprintf("resource2_%s", uuid)
-		p1, _ := permission.NewPermission(resource1Name, "read", "First")
-		p2, _ := permission.NewPermission(resource2Name, "write", "Second")
+		p1, _ := permissionAggregate.NewPermission(resource1Name, "read", "First")
+		p2, _ := permissionAggregate.NewPermission(resource2Name, "write", "Second")
 		require.NoError(t, repo.Create(ctx, p1))
 		require.NoError(t, repo.Create(ctx, p2))
 

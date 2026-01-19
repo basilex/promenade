@@ -17,6 +17,7 @@
 ### Problems They Solve
 
 **Without Bounded Contexts**:
+
 - God models (User table with 50+ columns)
 - Tight coupling between features
 - Cascade failures
@@ -24,11 +25,12 @@
 - Difficult to refactor
 
 **With Bounded Contexts**:
--  Clear boundaries - each context owns its domain
--  Independent deployment - update one without affecting others
--  Team autonomy - different teams work on different contexts
--  Technology diversity - choose best tool per context
--  Resilience - one context failure doesn't crash system
+
+- Clear boundaries - each context owns its domain
+- Independent deployment - update one without affecting others
+- Team autonomy - different teams work on different contexts
+- Technology diversity - choose best tool per context
+- Resilience - one context failure doesn't crash system
 
 ---
 
@@ -41,6 +43,7 @@
 **Purpose**: Reference data shared across all contexts (read-only)
 
 **Aggregates**:
+
 - Country (ISO 3166-1, 249 countries)
 - Currency (ISO 4217, 179 currencies)
 - Language (ISO 639-1, 184 languages)
@@ -57,6 +60,7 @@
 **Purpose**: User authentication, authorization, profile management
 
 **Aggregates**:
+
 - User (authentication, password, status)
 - Contact (email, phone, address with verification)
 - Profile (display name, bio, avatar, localization)
@@ -68,6 +72,7 @@
 **Documentation**: [Identity Context README](../../internal/contexts/identity/README.md)
 
 **Key Features**:
+
 - JWT authentication (15-min access, 7-day refresh)
 - RBAC with 5 system roles (superadmin, admin, manager, user, guest)
 - 29+ permissions across all resources
@@ -81,6 +86,7 @@
 **Purpose**: CRM functionality - customers, companies, deals, interactions
 
 **Aggregates**:
+
 - Customer (lifecycle, segmentation, contact info)
 - Company (planned)
 - Deal (planned)
@@ -99,6 +105,7 @@
 **Purpose**: Order processing, fulfillment, tracking
 
 **Aggregates**:
+
 - Order (creation, status, items)
 - OrderItem (products, quantities, prices)
 - Fulfillment (shipping, delivery tracking)
@@ -113,6 +120,7 @@
 **Purpose**: Invoicing, payments, subscriptions
 
 **Aggregates**:
+
 - Invoice (generation, items, taxes)
 - Payment (processing, status, reconciliation)
 - Subscription (recurring billing, plans)
@@ -127,6 +135,7 @@
 **Purpose**: Inventory management, stock tracking
 
 **Aggregates**:
+
 - Inventory (stock levels, locations)
 - Stock (movements, adjustments)
 
@@ -142,36 +151,37 @@
 **Rule**: Contexts communicate ONLY via Event Bus (no direct dependencies)
 
 ```
-                    
-  Identity      user.registered     Customer   
-   Context     >  Management  
-                                    Context    
-                    
-                                         
+
+  Identity      user.registered     Customer
+   Context     >  Management
+                                    Context
+
+
         contact.verified                 customer.created
-                                         
 
-             Event Bus (Memory/Redis)             
-                                                  
-  Topics: identity.*, customer.*, order.*        
-  Retry: 3 attempts, exponential backoff         
-  Performance: 377K events/sec (Memory)          
 
-                                         
+             Event Bus (Memory/Redis)
+
+  Topics: identity.*, customer.*, order.*
+  Retry: 3 attempts, exponential backoff
+  Performance: 377K events/sec (Memory)
+
+
         order.created                    payment.received
-                                         
-                    
-    Order                           Billing    
-   Context                          Context    
-                                               
-                    
+
+
+    Order                           Billing
+   Context                          Context
+
+
 ```
 
 **Benefits**:
--  Asynchronous - no blocking calls
--  Decoupled - contexts don't know about each other
--  Resilient - retry policy handles transient failures
--  Scalable - can add new contexts without changing existing ones
+
+- Asynchronous - no blocking calls
+- Decoupled - contexts don't know about each other
+- Resilient - retry policy handles transient failures
+- Scalable - can add new contexts without changing existing ones
 
 **Event Bus Documentation**: [pkg/bus/README.md](../../pkg/bus/README.md)
 
@@ -199,8 +209,7 @@ internal/contexts/{context-name}/
             dto/
                 {aggregate}_dto.go    # Data transfer objects
          repository/postgres/
-             base_repository.go        # BaseRepository (per context)
-             {aggregate}_repository.go # PostgreSQL implementation
+             {aggregate}_repository.go # PostgreSQL implementation with helper methods
 ```
 
 **Example** (Identity Contact Aggregate):
@@ -238,6 +247,7 @@ Each context owns its tables with namespace prefix:
 **Customer Management**: `customer_customers`, `customer_companies`, `customer_deals`
 
 **Benefits**:
+
 - Clear ownership
 - No table name conflicts
 - Easy to see which context owns what
@@ -280,27 +290,27 @@ make migrate-customer-mgmt # Customer Management only
 
    ```go
    package billing
-   
+
    import (
        "github.com/gin-gonic/gin"
        "github.com/jmoiron/sqlx"
    )
-   
+
    type Router struct {
        invoiceHandler *invoiceHTTP.InvoiceHandler
    }
-   
+
    func NewRouter(db *sqlx.DB) *Router {
        // Initialize Invoice aggregate
        invoiceRepo := invoiceRepo.NewInvoiceRepository(db)
        invoiceUseCase := invoice.NewUseCase(invoiceRepo)
        invoiceHandler := invoiceHTTP.NewInvoiceHandler(invoiceUseCase)
-       
+
        return &Router{
            invoiceHandler: invoiceHandler,
        }
    }
-   
+
    func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
        billing := api.Group("/billing")
        {
@@ -317,15 +327,15 @@ make migrate-customer-mgmt # Customer Management only
 
    ```go
    // cmd/api/main.go
-   
+
    import "github.com/basilex/promenade/internal/contexts/billing"
-   
+
    func main() {
        // ... existing setup
-       
+
        // Initialize Billing Context
        billingRouter := billing.NewRouter(db)
-       
+
        // Register routes
        api := r.Group("/api")
        {
@@ -404,7 +414,7 @@ make migrate-customer-mgmt # Customer Management only
 
 ## Best Practices
 
-### DO 
+### DO
 
 - **Keep contexts small** - 3-5 aggregates per context is ideal
 - **Use Event Bus** for all cross-context communication
@@ -412,7 +422,7 @@ make migrate-customer-mgmt # Customer Management only
 - **Document context README** with aggregates, events, and integration points
 - **Test in isolation** - each context should have its own test suite
 
-### DON'T 
+### DON'T
 
 - **DON'T share database tables** between contexts
 - **DON'T import other context packages** (use Event Bus)
@@ -432,7 +442,7 @@ make migrate-customer-mgmt # Customer Management only
    // Identity UseCase
    user, _ := user.NewUser(email, name, password)
    userRepo.Create(ctx, user)
-   
+
    // Publish event
    event := bus.NewBaseEvent("identity.user.registered", user.ID)
    eventBus.Publish(ctx, bus.TopicUserRegistered, event)
@@ -444,7 +454,7 @@ make migrate-customer-mgmt # Customer Management only
    // Customer Management Subscriber
    func (h *CustomerHandler) HandleUserRegistered(ctx context.Context, e bus.Event) error {
        userID := e.AggregateID()
-       
+
        // Create customer record
        customer := customer.NewCustomer(userID)
        return customerRepo.Create(ctx, customer)
@@ -457,7 +467,7 @@ make migrate-customer-mgmt # Customer Management only
    // Billing Subscriber
    func (h *BillingHandler) HandleUserRegistered(ctx context.Context, e bus.Event) error {
        userID := e.AggregateID()
-       
+
        // Create billing account
        account := account.NewAccount(userID)
        return accountRepo.Create(ctx, account)

@@ -7,14 +7,15 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/contract"
 	contractHTTP "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/adapter/http"
+	contractAggregate "github.com/basilex/promenade/internal/contexts/order-mgmt/contract/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockContractUseCase is a mock implementation of contract.IUseCase for testing
 type MockContractUseCase struct {
-	CreateContractFunc          func(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contract.Contract, error)
-	GetContractFunc             func(ctx context.Context, contractID uuidv7.UUID) (*contract.Contract, error)
+	CreateContractFunc          func(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contractAggregate.Contract, error)
+	GetContractFunc             func(ctx context.Context, contractID uuidv7.UUID) (*contractAggregate.Contract, error)
 	UpdateContractFunc          func(ctx context.Context, contractID uuidv7.UUID, terms string) error
 	DeleteContractFunc          func(ctx context.Context, contractID uuidv7.UUID) error
 	SubmitForSignatureFunc      func(ctx context.Context, contractID uuidv7.UUID) error
@@ -23,21 +24,21 @@ type MockContractUseCase struct {
 	TerminateContractFunc       func(ctx context.Context, contractID uuidv7.UUID, reason string) error
 	RenewContractFunc           func(ctx context.Context, contractID uuidv7.UUID) error
 	SetExpirationDateFunc       func(ctx context.Context, contractID uuidv7.UUID, expiresAt time.Time) error
-	ListContractsByOrderFunc    func(ctx context.Context, orderID uuidv7.UUID) ([]*contract.Contract, error)
-	ListContractsByCustomerFunc func(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*contract.Contract, int, error)
-	ListContractsByStatusFunc   func(ctx context.Context, status contract.ContractStatus, page, pageSize int) ([]*contract.Contract, int, error)
-	ListExpiringSoonFunc        func(ctx context.Context, days int) ([]*contract.Contract, error)
-	GetActiveContractsFunc      func(ctx context.Context) ([]*contract.Contract, error)
+	ListContractsByOrderFunc    func(ctx context.Context, orderID uuidv7.UUID) ([]*contractAggregate.Contract, error)
+	ListContractsByCustomerFunc func(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*contractAggregate.Contract, int, error)
+	ListContractsByStatusFunc   func(ctx context.Context, status contractAggregate.ContractStatus, page, pageSize int) ([]*contractAggregate.Contract, int, error)
+	ListExpiringSoonFunc        func(ctx context.Context, days int) ([]*contractAggregate.Contract, error)
+	GetActiveContractsFunc      func(ctx context.Context) ([]*contractAggregate.Contract, error)
 }
 
-func (m *MockContractUseCase) CreateContract(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contract.Contract, error) {
+func (m *MockContractUseCase) CreateContract(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contractAggregate.Contract, error) {
 	if m.CreateContractFunc != nil {
 		return m.CreateContractFunc(ctx, orderID, customerID, terms)
 	}
 	return nil, nil
 }
 
-func (m *MockContractUseCase) GetContract(ctx context.Context, contractID uuidv7.UUID) (*contract.Contract, error) {
+func (m *MockContractUseCase) GetContract(ctx context.Context, contractID uuidv7.UUID) (*contractAggregate.Contract, error) {
 	if m.GetContractFunc != nil {
 		return m.GetContractFunc(ctx, contractID)
 	}
@@ -100,35 +101,35 @@ func (m *MockContractUseCase) SetExpirationDate(ctx context.Context, contractID 
 	return nil
 }
 
-func (m *MockContractUseCase) ListContractsByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*contract.Contract, error) {
+func (m *MockContractUseCase) ListContractsByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*contractAggregate.Contract, error) {
 	if m.ListContractsByOrderFunc != nil {
 		return m.ListContractsByOrderFunc(ctx, orderID)
 	}
 	return nil, nil
 }
 
-func (m *MockContractUseCase) ListContractsByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*contract.Contract, int, error) {
+func (m *MockContractUseCase) ListContractsByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*contractAggregate.Contract, int, error) {
 	if m.ListContractsByCustomerFunc != nil {
 		return m.ListContractsByCustomerFunc(ctx, customerID, page, pageSize)
 	}
 	return nil, 0, nil
 }
 
-func (m *MockContractUseCase) ListContractsByStatus(ctx context.Context, status contract.ContractStatus, page, pageSize int) ([]*contract.Contract, int, error) {
+func (m *MockContractUseCase) ListContractsByStatus(ctx context.Context, status contractAggregate.ContractStatus, page, pageSize int) ([]*contractAggregate.Contract, int, error) {
 	if m.ListContractsByStatusFunc != nil {
 		return m.ListContractsByStatusFunc(ctx, status, page, pageSize)
 	}
 	return nil, 0, nil
 }
 
-func (m *MockContractUseCase) ListExpiringSoon(ctx context.Context, days int) ([]*contract.Contract, error) {
+func (m *MockContractUseCase) ListExpiringSoon(ctx context.Context, days int) ([]*contractAggregate.Contract, error) {
 	if m.ListExpiringSoonFunc != nil {
 		return m.ListExpiringSoonFunc(ctx, days)
 	}
 	return nil, nil
 }
 
-func (m *MockContractUseCase) GetActiveContracts(ctx context.Context) ([]*contract.Contract, error) {
+func (m *MockContractUseCase) GetActiveContracts(ctx context.Context) ([]*contractAggregate.Contract, error) {
 	if m.GetActiveContractsFunc != nil {
 		return m.GetActiveContractsFunc(ctx)
 	}
@@ -136,10 +137,10 @@ func (m *MockContractUseCase) GetActiveContracts(ctx context.Context) ([]*contra
 }
 
 // Helper to create fake contract for testing
-func fakeContract() *contract.Contract {
+func fakeContract() *contractAggregate.Contract {
 	orderID := uuidv7.New()
 	customerID := uuidv7.New()
-	c := contract.NewContract(orderID, customerID, "Test contract terms")
+	c := contractAggregate.NewContract(orderID, customerID, "Test contract terms")
 	return c
 }
 
@@ -148,7 +149,7 @@ func TestContractHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContractUseCase{
-		CreateContractFunc: func(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contract.Contract, error) {
+		CreateContractFunc: func(ctx context.Context, orderID, customerID uuidv7.UUID, terms string) (*contractAggregate.Contract, error) {
 			return fakeContract(), nil
 		},
 	}
@@ -187,7 +188,7 @@ func TestContractHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContractUseCase{
-		GetContractFunc: func(ctx context.Context, contractID uuidv7.UUID) (*contract.Contract, error) {
+		GetContractFunc: func(ctx context.Context, contractID uuidv7.UUID) (*contractAggregate.Contract, error) {
 			return fakeContract(), nil
 		},
 	}
@@ -204,7 +205,7 @@ func TestContractHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContractUseCase{
-		GetContractFunc: func(ctx context.Context, contractID uuidv7.UUID) (*contract.Contract, error) {
+		GetContractFunc: func(ctx context.Context, contractID uuidv7.UUID) (*contractAggregate.Contract, error) {
 			return nil, contract.ErrContractNotFound
 		},
 	}
@@ -337,8 +338,8 @@ func TestContractHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockContractUseCase{
-		GetActiveContractsFunc: func(ctx context.Context) ([]*contract.Contract, error) {
-			return []*contract.Contract{fakeContract()}, nil
+		GetActiveContractsFunc: func(ctx context.Context) ([]*contractAggregate.Contract, error) {
+			return []*contractAggregate.Contract{fakeContract()}, nil
 		},
 	}
 

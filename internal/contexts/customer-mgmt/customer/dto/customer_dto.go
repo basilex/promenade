@@ -64,24 +64,24 @@ type RemoveTagRequest struct {
 
 // CustomerResponse represents customer data in API responses
 type CustomerResponse struct {
-	ID              string    `json:"id"`
-	UserID          *string   `json:"user_id,omitempty"`
-	CompanyID       *string   `json:"company_id,omitempty"`
-	Name            string    `json:"name"`
-	Email           string    `json:"email"`
-	Phone           *string   `json:"phone,omitempty"`
-	Status          string    `json:"status"`
-	Tier            string    `json:"tier"`
-	Source          string    `json:"source"`
-	AssignedTo      string    `json:"assigned_to"`
-	Tags            []string  `json:"tags"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID              string     `json:"id"`
+	UserID          *string    `json:"user_id,omitempty"`
+	CompanyID       *string    `json:"company_id,omitempty"`
+	Name            string     `json:"name"`
+	Email           string     `json:"email"`
+	Phone           *string    `json:"phone,omitempty"`
+	Status          string     `json:"status"`
+	Tier            string     `json:"tier"`
+	Source          string     `json:"source"`
+	AssignedTo      string     `json:"assigned_to"`
+	Tags            []string   `json:"tags"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
 	LastContactedAt *time.Time `json:"last_contacted_at,omitempty"`
 	ConvertedAt     *time.Time `json:"converted_at,omitempty"`
 	ChurnedAt       *time.Time `json:"churned_at,omitempty"`
-	ChurnReason     string    `json:"churn_reason,omitempty"`
-	
+	ChurnReason     string     `json:"churn_reason,omitempty"`
+
 	// Helper flags
 	IsLead           bool `json:"is_lead"`
 	IsProspect       bool `json:"is_prospect"`
@@ -113,7 +113,7 @@ func ToCustomerResponse(c *aggregate.Customer) *CustomerResponse {
 		Tags:       c.Tags,
 		CreatedAt:  c.CreatedAt,
 		UpdatedAt:  c.UpdatedAt,
-		
+
 		// Helper flags
 		IsLead:           c.IsLead(),
 		IsProspect:       c.IsProspect(),
@@ -122,31 +122,31 @@ func ToCustomerResponse(c *aggregate.Customer) *CustomerResponse {
 		IsB2B:            c.IsB2B(),
 		HasAccount:       c.HasAccount(),
 	}
-	
+
 	// Optional UserID
 	if c.UserID != nil {
 		userID := c.UserID.String()
 		resp.UserID = &userID
 	}
-	
+
 	// Optional CompanyID
 	if c.CompanyID != nil {
 		companyID := c.CompanyID.String()
 		resp.CompanyID = &companyID
 	}
-	
+
 	// Optional Phone
 	if c.Phone != nil {
 		phone := c.Phone.Value()
 		resp.Phone = &phone
 	}
-	
+
 	// Optional timestamps
 	resp.LastContactedAt = c.LastContactedAt
 	resp.ConvertedAt = c.ConvertedAt
 	resp.ChurnedAt = c.ChurnedAt
 	resp.ChurnReason = c.ChurnReason
-	
+
 	return resp
 }
 
@@ -165,12 +165,12 @@ func ToCustomerStatsResponse(stats *usecase.CustomerStats) *CustomerStatsRespons
 	for status, count := range stats.ByStatus {
 		byStatus[string(status)] = count
 	}
-	
+
 	byTier := make(map[string]int)
 	for tier, count := range stats.ByTier {
 		byTier[string(tier)] = count
 	}
-	
+
 	return &CustomerStatsResponse{
 		TotalCustomers:   stats.TotalCustomers,
 		ActiveCustomers:  stats.ActiveCustomers,

@@ -6,47 +6,48 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/identity/user"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
+	userAggregate "github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 type MockUserUseCase struct {
-	RegisterFunc       func(ctx context.Context, email, name, password string) (*user.User, error)
-	AuthenticateFunc   func(ctx context.Context, email, password string) (*user.User, error)
-	GetUserFunc        func(ctx context.Context, userID uuidv7.UUID) (*user.User, error)
-	GetUserByEmailFunc func(ctx context.Context, email string) (*user.User, error)
+	RegisterFunc       func(ctx context.Context, email, name, password string) (*userAggregate.User, error)
+	AuthenticateFunc   func(ctx context.Context, email, password string) (*userAggregate.User, error)
+	GetUserFunc        func(ctx context.Context, userID uuidv7.UUID) (*userAggregate.User, error)
+	GetUserByEmailFunc func(ctx context.Context, email string) (*userAggregate.User, error)
 	VerifyEmailFunc    func(ctx context.Context, userID uuidv7.UUID) error
 	ChangePasswordFunc func(ctx context.Context, userID uuidv7.UUID, oldPassword, newPassword string) error
 	SuspendUserFunc    func(ctx context.Context, userID uuidv7.UUID) error
 	BanUserFunc        func(ctx context.Context, userID uuidv7.UUID) error
 	ActivateUserFunc   func(ctx context.Context, userID uuidv7.UUID) error
 	UnlockUserFunc     func(ctx context.Context, userID uuidv7.UUID) error
-	ListUsersFunc      func(ctx context.Context, limit, offset int) ([]*user.User, int, error)
+	ListUsersFunc      func(ctx context.Context, limit, offset int) ([]*userAggregate.User, int, error)
 }
 
-func (m *MockUserUseCase) Register(ctx context.Context, email, name, password string) (*user.User, error) {
+func (m *MockUserUseCase) Register(ctx context.Context, email, name, password string) (*userAggregate.User, error) {
 	if m.RegisterFunc != nil {
 		return m.RegisterFunc(ctx, email, name, password)
 	}
 	return nil, nil
 }
 
-func (m *MockUserUseCase) Authenticate(ctx context.Context, email, password string) (*user.User, error) {
+func (m *MockUserUseCase) Authenticate(ctx context.Context, email, password string) (*userAggregate.User, error) {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(ctx, email, password)
 	}
 	return nil, nil
 }
 
-func (m *MockUserUseCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*user.User, error) {
+func (m *MockUserUseCase) GetUser(ctx context.Context, userID uuidv7.UUID) (*userAggregate.User, error) {
 	if m.GetUserFunc != nil {
 		return m.GetUserFunc(ctx, userID)
 	}
 	return nil, nil
 }
 
-func (m *MockUserUseCase) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
+func (m *MockUserUseCase) GetUserByEmail(ctx context.Context, email string) (*userAggregate.User, error) {
 	if m.GetUserByEmailFunc != nil {
 		return m.GetUserByEmailFunc(ctx, email)
 	}
@@ -95,15 +96,15 @@ func (m *MockUserUseCase) UnlockUser(ctx context.Context, userID uuidv7.UUID) er
 	return nil
 }
 
-func (m *MockUserUseCase) ListUsers(ctx context.Context, limit, offset int) ([]*user.User, int, error) {
+func (m *MockUserUseCase) ListUsers(ctx context.Context, limit, offset int) ([]*userAggregate.User, int, error) {
 	if m.ListUsersFunc != nil {
 		return m.ListUsersFunc(ctx, limit, offset)
 	}
 	return nil, 0, nil
 }
 
-func fakeUser() *user.User {
-	u, _ := user.NewUser("test@example.com", "password123")
+func fakeUser() *userAggregate.User {
+	u, _ := userAggregate.NewUser("test@example.com", "password123")
 	return u
 }
 
@@ -111,7 +112,7 @@ func TestUserHandler_Register_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		RegisterFunc: func(ctx context.Context, email, name, password string) (*user.User, error) {
+		RegisterFunc: func(ctx context.Context, email, name, password string) (*userAggregate.User, error) {
 			return fakeUser(), nil
 		},
 	}
@@ -161,7 +162,7 @@ func TestUserHandler_Login_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		AuthenticateFunc: func(ctx context.Context, email, password string) (*user.User, error) {
+		AuthenticateFunc: func(ctx context.Context, email, password string) (*userAggregate.User, error) {
 			return fakeUser(), nil
 		},
 	}
@@ -188,7 +189,7 @@ func TestUserHandler_Login_Unauthorized(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		AuthenticateFunc: func(ctx context.Context, email, password string) (*user.User, error) {
+		AuthenticateFunc: func(ctx context.Context, email, password string) (*userAggregate.User, error) {
 			return nil, user.ErrInvalidCredentials
 		},
 	}
@@ -215,7 +216,7 @@ func TestUserHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		GetUserFunc: func(ctx context.Context, userID uuidv7.UUID) (*user.User, error) {
+		GetUserFunc: func(ctx context.Context, userID uuidv7.UUID) (*userAggregate.User, error) {
 			return fakeUser(), nil
 		},
 	}
@@ -238,7 +239,7 @@ func TestUserHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		GetUserFunc: func(ctx context.Context, userID uuidv7.UUID) (*user.User, error) {
+		GetUserFunc: func(ctx context.Context, userID uuidv7.UUID) (*userAggregate.User, error) {
 			return nil, user.ErrUserNotFound
 		},
 	}
@@ -261,8 +262,8 @@ func TestUserHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		ListUsersFunc: func(ctx context.Context, limit, offset int) ([]*user.User, int, error) {
-			return []*user.User{fakeUser()}, 1, nil
+		ListUsersFunc: func(ctx context.Context, limit, offset int) ([]*userAggregate.User, int, error) {
+			return []*userAggregate.User{fakeUser()}, 1, nil
 		},
 	}
 
@@ -284,8 +285,8 @@ func TestUserHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockUserUseCase{
-		ListUsersFunc: func(ctx context.Context, limit, offset int) ([]*user.User, int, error) {
-			return []*user.User{}, 0, nil
+		ListUsersFunc: func(ctx context.Context, limit, offset int) ([]*userAggregate.User, int, error) {
+			return []*userAggregate.User{}, 0, nil
 		},
 	}
 

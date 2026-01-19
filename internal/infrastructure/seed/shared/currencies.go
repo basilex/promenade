@@ -4,13 +4,14 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/basilex/promenade/internal/contexts/shared/currency"
+	"github.com/basilex/promenade/internal/contexts/shared/currency/aggregate"
+	"github.com/basilex/promenade/internal/contexts/shared/currency/repository"
 	"github.com/basilex/promenade/pkg/logger"
 )
 
 // newCurrency is a helper to create a currency with all fields
-func newCurrency(code, numericCode, name, symbol string, decimalPlaces, rounding int, isCrypto, isActive bool) *currency.Currency {
-	c, _ := currency.NewCurrency(code, name, symbol, decimalPlaces)
+func newCurrency(code, numericCode, name, symbol string, decimalPlaces, rounding int, isCrypto, isActive bool) *aggregate.Currency {
+	c, _ := aggregate.NewCurrency(code, name, symbol, decimalPlaces)
 	c.NumericCode = numericCode
 	c.Rounding = rounding
 	c.IsCrypto = isCrypto
@@ -19,8 +20,8 @@ func newCurrency(code, numericCode, name, symbol string, decimalPlaces, rounding
 }
 
 // CurrenciesData returns reference currency data for seeding (50+ fiat + crypto currencies)
-func CurrenciesData() []*currency.Currency {
-	return []*currency.Currency{
+func CurrenciesData() []*aggregate.Currency {
+	return []*aggregate.Currency{
 		// Major World Currencies
 		newCurrency("USD", "840", "US Dollar", "$", 2, 0, false, true),
 		newCurrency("EUR", "978", "Euro", "€", 2, 0, false, true),
@@ -93,7 +94,7 @@ func CurrenciesData() []*currency.Currency {
 }
 
 // SeedCurrencies inserts currency data into database
-func SeedCurrencies(ctx context.Context, repo currency.IRepository) error {
+func SeedCurrencies(ctx context.Context, repo repository.ICurrencyRepository) error {
 	currencies := CurrenciesData()
 	logger.FromContext(ctx).Info("Seeding currencies...", slog.Int("count", len(currencies)))
 

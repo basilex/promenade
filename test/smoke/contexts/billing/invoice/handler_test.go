@@ -8,6 +8,7 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/billing/invoice"
 	invoiceHTTP "github.com/basilex/promenade/internal/contexts/billing/invoice/adapter/http"
+	invoiceAggregate "github.com/basilex/promenade/internal/contexts/billing/invoice/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 	"github.com/basilex/promenade/test/smoke"
@@ -15,52 +16,52 @@ import (
 
 // MockInvoiceUseCase implements invoice.IUseCase for testing
 type MockInvoiceUseCase struct {
-	CreateInvoiceFunc      func(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoice.Invoice, error)
-	GetInvoiceFunc         func(ctx context.Context, id uuidv7.UUID) (*invoice.Invoice, error)
-	GetInvoiceByNumberFunc func(ctx context.Context, invoiceNo string) (*invoice.Invoice, error)
-	UpdateInvoiceFunc      func(ctx context.Context, inv *invoice.Invoice) error
+	CreateInvoiceFunc      func(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoiceAggregate.Invoice, error)
+	GetInvoiceFunc         func(ctx context.Context, id uuidv7.UUID) (*invoiceAggregate.Invoice, error)
+	GetInvoiceByNumberFunc func(ctx context.Context, invoiceNo string) (*invoiceAggregate.Invoice, error)
+	UpdateInvoiceFunc      func(ctx context.Context, inv *invoiceAggregate.Invoice) error
 	DeleteInvoiceFunc      func(ctx context.Context, id uuidv7.UUID) error
-	AddLineItemFunc        func(ctx context.Context, invoiceID uuidv7.UUID, description string, quantity int, unitPrice valueobject.Money) (*invoice.Invoice, error)
-	RemoveLineItemFunc     func(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID) (*invoice.Invoice, error)
-	UpdateLineItemFunc     func(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID, quantity int) (*invoice.Invoice, error)
+	AddLineItemFunc        func(ctx context.Context, invoiceID uuidv7.UUID, description string, quantity int, unitPrice valueobject.Money) (*invoiceAggregate.Invoice, error)
+	RemoveLineItemFunc     func(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID) (*invoiceAggregate.Invoice, error)
+	UpdateLineItemFunc     func(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID, quantity int) (*invoiceAggregate.Invoice, error)
 	SendInvoiceFunc        func(ctx context.Context, id uuidv7.UUID) error
 	MarkAsPaidFunc         func(ctx context.Context, id uuidv7.UUID, paidDate time.Time) error
 	MarkAsOverdueFunc      func(ctx context.Context, id uuidv7.UUID) error
 	CancelInvoiceFunc      func(ctx context.Context, id uuidv7.UUID) error
 	VoidInvoiceFunc        func(ctx context.Context, id uuidv7.UUID) error
 	UpdateTaxAmountFunc    func(ctx context.Context, id uuidv7.UUID, taxAmount valueobject.Money) error
-	ListInvoicesFunc       func(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error)
-	ListByCustomerFunc     func(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoice.Invoice, int, error)
-	ListByOrderFunc        func(ctx context.Context, orderID uuidv7.UUID) ([]*invoice.Invoice, error)
-	ListByStatusFunc       func(ctx context.Context, status invoice.InvoiceStatus, page, pageSize int) ([]*invoice.Invoice, int, error)
-	ListOverdueFunc        func(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error)
-	CountByStatusFunc      func(ctx context.Context, status invoice.InvoiceStatus) (int, error)
+	ListInvoicesFunc       func(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error)
+	ListByCustomerFunc     func(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error)
+	ListByOrderFunc        func(ctx context.Context, orderID uuidv7.UUID) ([]*invoiceAggregate.Invoice, error)
+	ListByStatusFunc       func(ctx context.Context, status invoiceAggregate.InvoiceStatus, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error)
+	ListOverdueFunc        func(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error)
+	CountByStatusFunc      func(ctx context.Context, status invoiceAggregate.InvoiceStatus) (int, error)
 	GetTotalRevenueFunc    func(ctx context.Context, from, to time.Time) (int64, error)
 }
 
 // Implement all IUseCase methods
-func (m *MockInvoiceUseCase) CreateInvoice(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) CreateInvoice(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoiceAggregate.Invoice, error) {
 	if m.CreateInvoiceFunc != nil {
 		return m.CreateInvoiceFunc(ctx, customerID, orderID, dueDate, currency)
 	}
 	return nil, fmt.Errorf("CreateInvoiceFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) GetInvoice(ctx context.Context, id uuidv7.UUID) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) GetInvoice(ctx context.Context, id uuidv7.UUID) (*invoiceAggregate.Invoice, error) {
 	if m.GetInvoiceFunc != nil {
 		return m.GetInvoiceFunc(ctx, id)
 	}
 	return nil, fmt.Errorf("GetInvoiceFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) GetInvoiceByNumber(ctx context.Context, invoiceNo string) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) GetInvoiceByNumber(ctx context.Context, invoiceNo string) (*invoiceAggregate.Invoice, error) {
 	if m.GetInvoiceByNumberFunc != nil {
 		return m.GetInvoiceByNumberFunc(ctx, invoiceNo)
 	}
 	return nil, fmt.Errorf("GetInvoiceByNumberFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) UpdateInvoice(ctx context.Context, inv *invoice.Invoice) error {
+func (m *MockInvoiceUseCase) UpdateInvoice(ctx context.Context, inv *invoiceAggregate.Invoice) error {
 	if m.UpdateInvoiceFunc != nil {
 		return m.UpdateInvoiceFunc(ctx, inv)
 	}
@@ -74,21 +75,21 @@ func (m *MockInvoiceUseCase) DeleteInvoice(ctx context.Context, id uuidv7.UUID) 
 	return fmt.Errorf("DeleteInvoiceFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) AddLineItem(ctx context.Context, invoiceID uuidv7.UUID, description string, quantity int, unitPrice valueobject.Money) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) AddLineItem(ctx context.Context, invoiceID uuidv7.UUID, description string, quantity int, unitPrice valueobject.Money) (*invoiceAggregate.Invoice, error) {
 	if m.AddLineItemFunc != nil {
 		return m.AddLineItemFunc(ctx, invoiceID, description, quantity, unitPrice)
 	}
 	return nil, fmt.Errorf("AddLineItemFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) RemoveLineItem(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) RemoveLineItem(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID) (*invoiceAggregate.Invoice, error) {
 	if m.RemoveLineItemFunc != nil {
 		return m.RemoveLineItemFunc(ctx, invoiceID, lineID)
 	}
 	return nil, fmt.Errorf("RemoveLineItemFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID, quantity int) (*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) UpdateLineItem(ctx context.Context, invoiceID uuidv7.UUID, lineID uuidv7.UUID, quantity int) (*invoiceAggregate.Invoice, error) {
 	if m.UpdateLineItemFunc != nil {
 		return m.UpdateLineItemFunc(ctx, invoiceID, lineID, quantity)
 	}
@@ -137,42 +138,42 @@ func (m *MockInvoiceUseCase) UpdateTaxAmount(ctx context.Context, id uuidv7.UUID
 	return fmt.Errorf("UpdateTaxAmountFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) ListInvoices(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (m *MockInvoiceUseCase) ListInvoices(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
 	if m.ListInvoicesFunc != nil {
 		return m.ListInvoicesFunc(ctx, page, pageSize)
 	}
 	return nil, 0, fmt.Errorf("ListInvoicesFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (m *MockInvoiceUseCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
 	if m.ListByCustomerFunc != nil {
 		return m.ListByCustomerFunc(ctx, customerID, page, pageSize)
 	}
 	return nil, 0, fmt.Errorf("ListByCustomerFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*invoice.Invoice, error) {
+func (m *MockInvoiceUseCase) ListByOrder(ctx context.Context, orderID uuidv7.UUID) ([]*invoiceAggregate.Invoice, error) {
 	if m.ListByOrderFunc != nil {
 		return m.ListByOrderFunc(ctx, orderID)
 	}
 	return nil, fmt.Errorf("ListByOrderFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) ListByStatus(ctx context.Context, status invoice.InvoiceStatus, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (m *MockInvoiceUseCase) ListByStatus(ctx context.Context, status invoiceAggregate.InvoiceStatus, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
 	if m.ListByStatusFunc != nil {
 		return m.ListByStatusFunc(ctx, status, page, pageSize)
 	}
 	return nil, 0, fmt.Errorf("ListByStatusFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) ListOverdue(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
+func (m *MockInvoiceUseCase) ListOverdue(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
 	if m.ListOverdueFunc != nil {
 		return m.ListOverdueFunc(ctx, page, pageSize)
 	}
 	return nil, 0, fmt.Errorf("ListOverdueFunc not implemented")
 }
 
-func (m *MockInvoiceUseCase) CountByStatus(ctx context.Context, status invoice.InvoiceStatus) (int, error) {
+func (m *MockInvoiceUseCase) CountByStatus(ctx context.Context, status invoiceAggregate.InvoiceStatus) (int, error) {
 	if m.CountByStatusFunc != nil {
 		return m.CountByStatusFunc(ctx, status)
 	}
@@ -187,8 +188,8 @@ func (m *MockInvoiceUseCase) GetTotalRevenue(ctx context.Context, from, to time.
 }
 
 // Helper functions
-func fakeInvoice() *invoice.Invoice {
-	inv, _ := invoice.NewInvoice(uuidv7.New(), time.Now().Add(30*24*time.Hour), "USD")
+func fakeInvoice() *invoiceAggregate.Invoice {
+	inv, _ := invoiceAggregate.NewInvoice(uuidv7.New(), time.Now().Add(30*24*time.Hour), "USD")
 	return inv
 }
 
@@ -197,7 +198,7 @@ func TestInvoiceHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInvoiceUseCase{
-		CreateInvoiceFunc: func(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoice.Invoice, error) {
+		CreateInvoiceFunc: func(ctx context.Context, customerID uuidv7.UUID, orderID *uuidv7.UUID, dueDate time.Time, currency string) (*invoiceAggregate.Invoice, error) {
 			return fakeInvoice(), nil
 		},
 	}
@@ -236,7 +237,7 @@ func TestInvoiceHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInvoiceUseCase{
-		GetInvoiceFunc: func(ctx context.Context, id uuidv7.UUID) (*invoice.Invoice, error) {
+		GetInvoiceFunc: func(ctx context.Context, id uuidv7.UUID) (*invoiceAggregate.Invoice, error) {
 			return fakeInvoice(), nil
 		},
 	}
@@ -253,7 +254,7 @@ func TestInvoiceHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInvoiceUseCase{
-		GetInvoiceFunc: func(ctx context.Context, id uuidv7.UUID) (*invoice.Invoice, error) {
+		GetInvoiceFunc: func(ctx context.Context, id uuidv7.UUID) (*invoiceAggregate.Invoice, error) {
 			return nil, invoice.ErrInvoiceNotFound
 		},
 	}
@@ -307,8 +308,8 @@ func TestInvoiceHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInvoiceUseCase{
-		ListInvoicesFunc: func(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
-			return []*invoice.Invoice{fakeInvoice()}, 1, nil
+		ListInvoicesFunc: func(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
+			return []*invoiceAggregate.Invoice{fakeInvoice()}, 1, nil
 		},
 	}
 
@@ -324,8 +325,8 @@ func TestInvoiceHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInvoiceUseCase{
-		ListInvoicesFunc: func(ctx context.Context, page, pageSize int) ([]*invoice.Invoice, int, error) {
-			return []*invoice.Invoice{}, 0, nil
+		ListInvoicesFunc: func(ctx context.Context, page, pageSize int) ([]*invoiceAggregate.Invoice, int, error) {
+			return []*invoiceAggregate.Invoice{}, 0, nil
 		},
 	}
 

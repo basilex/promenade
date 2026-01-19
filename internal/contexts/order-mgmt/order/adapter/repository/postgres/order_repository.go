@@ -1,16 +1,15 @@
 package postgres
 
 import (
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
-	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/repository"
-)
-
-import (
 	"context"
 	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/aggregate"
+	"github.com/basilex/promenade/internal/contexts/order-mgmt/order/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 
 	"github.com/basilex/promenade/internal/contexts/order-mgmt/order"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -19,34 +18,62 @@ import (
 
 // OrderRepository implements repository.IOrderRepository
 type OrderRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewOrderRepository creates a new PostgreSQL order repository
 func NewOrderRepository(db *sqlx.DB) repository.IOrderRepository {
 	return &OrderRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *OrderRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *OrderRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *OrderRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *OrderRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *OrderRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // orderRow represents a database row for orders table
 type orderRow struct {
-	ID          uuidv7.UUID    `db:"id"`
-	OrderNumber string         `db:"order_number"`
-	CustomerID  uuidv7.UUID    `db:"customer_id"`
-	CompanyID   *uuidv7.UUID   `db:"company_id"`
-	TotalAmount float64        `db:"total_amount"`
-	Currency    string         `db:"currency"`
-	Status      string         `db:"status"`
-	OrderDate   sql.NullTime   `db:"order_date"`
-	ConfirmedAt *sql.NullTime  `db:"confirmed_at"`
-	FulfilledAt *sql.NullTime  `db:"fulfilled_at"`
-	CancelledAt *sql.NullTime  `db:"cancelled_at"`
-	ContractID  *uuidv7.UUID   `db:"contract_id"`
-	InvoiceID   *uuidv7.UUID   `db:"invoice_id"`
-	CreatedAt   sql.NullTime   `db:"created_at"`
-	UpdatedAt   sql.NullTime   `db:"updated_at"`
-	DeletedAt   *sql.NullTime  `db:"deleted_at"`
+	ID          uuidv7.UUID   `db:"id"`
+	OrderNumber string        `db:"order_number"`
+	CustomerID  uuidv7.UUID   `db:"customer_id"`
+	CompanyID   *uuidv7.UUID  `db:"company_id"`
+	TotalAmount float64       `db:"total_amount"`
+	Currency    string        `db:"currency"`
+	Status      string        `db:"status"`
+	OrderDate   sql.NullTime  `db:"order_date"`
+	ConfirmedAt *sql.NullTime `db:"confirmed_at"`
+	FulfilledAt *sql.NullTime `db:"fulfilled_at"`
+	CancelledAt *sql.NullTime `db:"cancelled_at"`
+	ContractID  *uuidv7.UUID  `db:"contract_id"`
+	InvoiceID   *uuidv7.UUID  `db:"invoice_id"`
+	CreatedAt   sql.NullTime  `db:"created_at"`
+	UpdatedAt   sql.NullTime  `db:"updated_at"`
+	DeletedAt   *sql.NullTime `db:"deleted_at"`
 }
 
 // orderLineRow represents a database row for order_lines table
@@ -151,21 +178,21 @@ func (r *OrderRepository) Create(ctx context.Context, o *aggregate.Order) error 
 	`
 
 	_, err := r.NamedExec(ctx, query, map[string]interface{}{
-		"id":            o.ID,
-		"order_number":  o.OrderNumber,
-		"customer_id":   o.CustomerID,
-		"company_id":    o.CompanyID,
-		"total_amount":  float64(o.Total.Amount) / 100,
-		"currency":      o.Currency,
-		"status":        string(o.Status),
-		"order_date":    o.OrderDate,
-		"confirmed_at":  o.ConfirmedAt,
-		"fulfilled_at":  o.FulfilledAt,
-		"cancelled_at":  o.CancelledAt,
-		"contract_id":   o.ContractID,
-		"invoice_id":    o.InvoiceID,
-		"created_at":    o.CreatedAt,
-		"updated_at":    o.UpdatedAt,
+		"id":           o.ID,
+		"order_number": o.OrderNumber,
+		"customer_id":  o.CustomerID,
+		"company_id":   o.CompanyID,
+		"total_amount": float64(o.Total.Amount) / 100,
+		"currency":     o.Currency,
+		"status":       string(o.Status),
+		"order_date":   o.OrderDate,
+		"confirmed_at": o.ConfirmedAt,
+		"fulfilled_at": o.FulfilledAt,
+		"cancelled_at": o.CancelledAt,
+		"contract_id":  o.ContractID,
+		"invoice_id":   o.InvoiceID,
+		"created_at":   o.CreatedAt,
+		"updated_at":   o.UpdatedAt,
 	})
 	if err != nil {
 		return err

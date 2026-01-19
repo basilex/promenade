@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction"
+	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/adapter/repository/postgres"
+	interactionAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/interaction/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
@@ -40,7 +40,7 @@ func TestInteractionRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
+		cust, err := customerAggregate.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -48,11 +48,11 @@ func TestInteractionRepository_CRUD(t *testing.T) {
 		createdBy := userID
 		startedAt := time.Now()
 
-		inter, err := interaction.NewInteraction(
+		inter, err := interactionAggregate.NewInteraction(
 			customerID,
 			nil,
-			interaction.InteractionTypeCall,
-			interaction.InteractionDirectionOutbound,
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionDirectionOutbound,
 			"Test call",
 			"Discussed requirements",
 			createdBy,
@@ -65,12 +65,12 @@ func TestInteractionRepository_CRUD(t *testing.T) {
 		found, err := repo.GetByID(ctx, inter.ID)
 		require.NoError(t, err)
 		assert.Equal(t, "Test call", found.Subject)
-		assert.Equal(t, interaction.InteractionTypeCall, found.Type)
+		assert.Equal(t, interactionAggregate.InteractionTypeCall, found.Type)
 
-		require.NoError(t, found.SetOutcome(interaction.InteractionOutcomeSuccessful))
+		require.NoError(t, found.SetOutcome(interactionAggregate.InteractionOutcomeSuccessful))
 		require.NoError(t, repo.Update(ctx, found))
 		updated, _ := repo.GetByID(ctx, found.ID)
-		assert.Equal(t, interaction.InteractionOutcomeSuccessful, *updated.Outcome)
+		assert.Equal(t, interactionAggregate.InteractionOutcomeSuccessful, *updated.Outcome)
 
 		require.NoError(t, repo.Delete(ctx, inter.ID))
 		_, err = repo.GetByID(ctx, inter.ID)
@@ -92,7 +92,7 @@ func TestInteractionRepository_ListByCustomer(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
+		cust, err := customerAggregate.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -101,11 +101,11 @@ func TestInteractionRepository_ListByCustomer(t *testing.T) {
 		startedAt := time.Now()
 
 		for i := range 3 {
-			inter, _ := interaction.NewInteraction(
+			inter, _ := interactionAggregate.NewInteraction(
 				customerID,
 				nil,
-				interaction.InteractionTypeCall,
-				interaction.InteractionDirectionOutbound,
+				interactionAggregate.InteractionTypeCall,
+				interactionAggregate.InteractionDirectionOutbound,
 				fmt.Sprintf("Call %d", i+1),
 				"Description",
 				createdBy,
@@ -135,7 +135,7 @@ func TestInteractionRepository_ListByType(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
+		cust, err := customerAggregate.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -143,18 +143,18 @@ func TestInteractionRepository_ListByType(t *testing.T) {
 		createdBy := userID
 		startedAt := time.Now()
 
-		types := []interaction.InteractionType{
-			interaction.InteractionTypeCall,
-			interaction.InteractionTypeCall,
-			interaction.InteractionTypeEmail,
+		types := []interactionAggregate.InteractionType{
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionTypeEmail,
 		}
 
 		for i, iType := range types {
-			inter, _ := interaction.NewInteraction(
+			inter, _ := interactionAggregate.NewInteraction(
 				customerID,
 				nil,
 				iType,
-				interaction.InteractionDirectionOutbound,
+				interactionAggregate.InteractionDirectionOutbound,
 				fmt.Sprintf("Interaction %d", i+1),
 				"Description",
 				createdBy,
@@ -163,7 +163,7 @@ func TestInteractionRepository_ListByType(t *testing.T) {
 			require.NoError(t, repo.Create(ctx, inter))
 		}
 
-		calls, total, err := repo.ListByType(ctx, string(interaction.InteractionTypeCall), 1, 10)
+		calls, total, err := repo.ListByType(ctx, string(interactionAggregate.InteractionTypeCall), 1, 10)
 		require.NoError(t, err)
 		assert.Len(t, calls, 2)
 		assert.Equal(t, int64(2), total)
@@ -184,7 +184,7 @@ func TestInteractionRepository_ListPendingFollowUps(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
+		cust, err := customerAggregate.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -192,11 +192,11 @@ func TestInteractionRepository_ListPendingFollowUps(t *testing.T) {
 		createdBy := userID
 		startedAt := time.Now()
 
-		inter, _ := interaction.NewInteraction(
+		inter, _ := interactionAggregate.NewInteraction(
 			customerID,
 			nil,
-			interaction.InteractionTypeCall,
-			interaction.InteractionDirectionOutbound,
+			interactionAggregate.InteractionTypeCall,
+			interactionAggregate.InteractionDirectionOutbound,
 			"Call with follow-up",
 			"Description",
 			createdBy,
@@ -229,7 +229,7 @@ func TestInteractionRepository_Attendees(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create customer (FK requirement)
-		cust, err := customer.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
+		cust, err := customerAggregate.NewCustomer("Test Customer", fmt.Sprintf("test_%s@example.com", uuidv7.New().String()), "website", userID)
 		require.NoError(t, err)
 		require.NoError(t, custRepo.Create(ctx, cust))
 		customerID := cust.ID
@@ -237,11 +237,11 @@ func TestInteractionRepository_Attendees(t *testing.T) {
 		createdBy := userID
 		startedAt := time.Now()
 
-		inter, _ := interaction.NewInteraction(
+		inter, _ := interactionAggregate.NewInteraction(
 			customerID,
 			nil,
-			interaction.InteractionTypeMeeting,
-			interaction.InteractionDirectionInbound,
+			interactionAggregate.InteractionTypeMeeting,
+			interactionAggregate.InteractionDirectionInbound,
 			"Meeting with attendees",
 			"Description",
 			createdBy,

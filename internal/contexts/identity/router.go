@@ -7,21 +7,21 @@ import (
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/time/rate"
 
-	"github.com/basilex/promenade/internal/contexts/identity/contact"
 	contactHTTP "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/http"
 	contactRepo "github.com/basilex/promenade/internal/contexts/identity/contact/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/permission"
+	"github.com/basilex/promenade/internal/contexts/identity/contact/usecase"
 	permissionHTTP "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/http"
 	permissionRepo "github.com/basilex/promenade/internal/contexts/identity/permission/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/profile"
+	permissionusecase "github.com/basilex/promenade/internal/contexts/identity/permission/usecase"
 	profileHTTP "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/http"
 	profileRepo "github.com/basilex/promenade/internal/contexts/identity/profile/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/role"
+	profileusecase "github.com/basilex/promenade/internal/contexts/identity/profile/usecase"
 	roleHTTP "github.com/basilex/promenade/internal/contexts/identity/role/adapter/http"
 	roleRepo "github.com/basilex/promenade/internal/contexts/identity/role/adapter/repository/postgres"
-	"github.com/basilex/promenade/internal/contexts/identity/user"
+	roleusecase "github.com/basilex/promenade/internal/contexts/identity/role/usecase"
 	userHTTP "github.com/basilex/promenade/internal/contexts/identity/user/adapter/http"
 	userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
+	userusecase "github.com/basilex/promenade/internal/contexts/identity/user/usecase"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/middleware"
 )
@@ -33,35 +33,35 @@ type Router struct {
 	userHandler       *userHTTP.UserHandler
 	roleHandler       *roleHTTP.RoleHandler
 	permissionHandler *permissionHTTP.PermissionHandler
-	jwtManager        *jwt.Manager
 	tokenRevoker      *jwt.TokenRevoker
+	jwtManager        *jwt.Manager
 }
 
 // NewRouter creates a new Identity router with all dependencies
 func NewRouter(db *sqlx.DB, jwtManager *jwt.Manager, tokenRevoker *jwt.TokenRevoker) *Router {
 	// Initialize Contact aggregate
 	contactRepository := contactRepo.NewContactRepository(db)
-	contactUseCase := contact.NewUseCase(contactRepository)
+	contactUseCase := usecase.NewContactUseCase(contactRepository)
 	contactHandler := contactHTTP.NewContactHandler(contactUseCase)
 
 	// Initialize Profile aggregate
 	profileRepository := profileRepo.NewProfileRepository(db)
-	profileUseCase := profile.NewUseCase(profileRepository)
+	profileUseCase := profileusecase.NewProfileUseCase(profileRepository)
 	profileHandler := profileHTTP.NewProfileHandler(profileUseCase)
 
 	// Initialize Role aggregate
 	roleRepository := roleRepo.NewRoleRepository(db)
-	roleUseCase := role.NewUseCase(roleRepository)
+	roleUseCase := roleusecase.NewRoleUseCase(roleRepository)
 	roleHandler := roleHTTP.NewRoleHandler(roleUseCase)
 
 	// Initialize Permission aggregate
 	permissionRepository := permissionRepo.NewPermissionRepository(db)
-	permissionUseCase := permission.NewUseCase(permissionRepository)
+	permissionUseCase := permissionusecase.NewPermissionUseCase(permissionRepository)
 	permissionHandler := permissionHTTP.NewPermissionHandler(permissionUseCase)
 
 	// Initialize User aggregate (with role repository and token revoker)
 	userRepository := userRepo.NewUserRepository(db)
-	userUseCase := user.NewUseCase(userRepository, roleRepository)
+	userUseCase := userusecase.NewUserUseCase(userRepository, roleRepository)
 	userHandler := userHTTP.NewUserHandler(userUseCase, jwtManager, tokenRevoker)
 
 	return &Router{
@@ -97,26 +97,26 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		profiles := identity.Group("/profiles")
 		{
 			// Public routes (no JWT required)
-			profiles.GET("", r.profileHandler.ListPublic)                           // List public profiles
-			profiles.GET("/:id", r.profileHandler.GetByID)                          // Get profile by ID (public profiles)
-			profiles.GET("/user/:user_id", r.profileHandler.GetByUserID)            // Get profile by user ID
+			profiles.GET("", r.profileHandler.ListPublic)                // List public profiles
+			profiles.GET("/:id", r.profileHandler.GetByID)               // Get profile by ID (public profiles)
+			profiles.GET("/user/:user_id", r.profileHandler.GetByUserID) // Get profile by user ID
 
 			// Protected routes (JWT required + token revocation check)
 			protected := profiles.Group("")
 			protected.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 			{
-				protected.POST("", r.profileHandler.Create)                                  // Create new profile
-				protected.DELETE("/:id", r.profileHandler.Delete)                            // Delete profile
-				protected.PUT("/:id/display-name", r.profileHandler.UpdateDisplayName)       // Update display name
-				protected.PUT("/:id/bio", r.profileHandler.UpdateBio)                        // Update bio
-				protected.PUT("/:id/avatar", r.profileHandler.UpdateAvatar)                  // Update avatar
-				protected.PUT("/:id/personal-info", r.profileHandler.UpdatePersonalInfo)     // Update personal info
-				protected.PUT("/:id/gender", r.profileHandler.UpdateGender)                  // Update gender
-				protected.PUT("/:id/date-of-birth", r.profileHandler.UpdateDateOfBirth)      // Update date of birth
-				protected.PUT("/:id/localization", r.profileHandler.UpdateLocalization)      // Update localization
-				protected.PUT("/:id/social-links", r.profileHandler.UpdateSocialLinks)       // Update social links
-				protected.PUT("/:id/public", r.profileHandler.SetPublic)                     // Set profile public
-				protected.PUT("/:id/private", r.profileHandler.SetPrivate)                   // Set profile private
+				protected.POST("", r.profileHandler.Create)                              // Create new profile
+				protected.DELETE("/:id", r.profileHandler.Delete)                        // Delete profile
+				protected.PUT("/:id/display-name", r.profileHandler.UpdateDisplayName)   // Update display name
+				protected.PUT("/:id/bio", r.profileHandler.UpdateBio)                    // Update bio
+				protected.PUT("/:id/avatar", r.profileHandler.UpdateAvatar)              // Update avatar
+				protected.PUT("/:id/personal-info", r.profileHandler.UpdatePersonalInfo) // Update personal info
+				protected.PUT("/:id/gender", r.profileHandler.UpdateGender)              // Update gender
+				protected.PUT("/:id/date-of-birth", r.profileHandler.UpdateDateOfBirth)  // Update date of birth
+				protected.PUT("/:id/localization", r.profileHandler.UpdateLocalization)  // Update localization
+				protected.PUT("/:id/social-links", r.profileHandler.UpdateSocialLinks)   // Update social links
+				protected.PUT("/:id/public", r.profileHandler.SetPublic)                 // Set profile public
+				protected.PUT("/:id/private", r.profileHandler.SetPrivate)               // Set profile private
 			}
 		}
 
@@ -124,8 +124,8 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		users := identity.Group("/users")
 		{
 			// Rate limiters
-			loginLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)       // 5 attempts per minute
-			registerLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/3), 1)    // 3 attempts per minute
+			loginLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/5), 1)    // 5 attempts per minute
+			registerLimiter := middleware.NewRateLimiter(rate.Every(time.Minute/3), 1) // 3 attempts per minute
 
 			// Public routes with rate limiting
 			users.POST("/register", registerLimiter.Limit(), r.userHandler.Register) // Register new user (rate limited)
@@ -151,7 +151,7 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		auth := identity.Group("/auth")
 		{
 			auth.POST("/refresh", r.userHandler.RefreshToken) // Refresh access token
-			
+
 			// Protected auth routes (token revocation check)
 			authProtected := auth.Group("")
 			authProtected.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
@@ -165,12 +165,12 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		roles.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 		// TODO: Add admin authorization middleware here
 		{
-			roles.POST("", r.roleHandler.Create)              // Create new role
-			roles.GET("", r.roleHandler.List)                 // List roles with pagination
-			roles.GET("/:id", r.roleHandler.GetByID)          // Get role by ID
-			roles.GET("/name/:name", r.roleHandler.GetByName) // Get role by name
-			roles.PUT("/:id", r.roleHandler.Update)           // Update role
-			roles.DELETE("/:id", r.roleHandler.Delete)        // Delete role
+			roles.POST("", r.roleHandler.Create)                    // Create new role
+			roles.GET("", r.roleHandler.List)                       // List roles with pagination
+			roles.GET("/:id", r.roleHandler.GetByID)                // Get role by ID
+			roles.GET("/name/:name", r.roleHandler.GetByName)       // Get role by name
+			roles.PUT("/:id", r.roleHandler.Update)                 // Update role
+			roles.DELETE("/:id", r.roleHandler.Delete)              // Delete role
 			roles.GET("/user/:user_id", r.roleHandler.GetUserRoles) // Get user's roles
 		}
 
@@ -179,12 +179,12 @@ func (r *Router) RegisterRoutes(api *gin.RouterGroup) {
 		permissions.Use(jwt.AuthMiddleware(r.jwtManager, r.tokenRevoker))
 		// TODO: Add admin authorization middleware here
 		{
-			permissions.POST("", r.permissionHandler.Create)              // Create new permission
-			permissions.GET("", r.permissionHandler.List)                 // List permissions with pagination
-			permissions.GET("/:id", r.permissionHandler.GetByID)          // Get permission by ID
-			permissions.GET("/name/:name", r.permissionHandler.GetByName) // Get permission by name
-			permissions.PUT("/:id", r.permissionHandler.Update)           // Update permission
-			permissions.DELETE("/:id", r.permissionHandler.Delete)        // Delete permission
+			permissions.POST("", r.permissionHandler.Create)                          // Create new permission
+			permissions.GET("", r.permissionHandler.List)                             // List permissions with pagination
+			permissions.GET("/:id", r.permissionHandler.GetByID)                      // Get permission by ID
+			permissions.GET("/name/:name", r.permissionHandler.GetByName)             // Get permission by name
+			permissions.PUT("/:id", r.permissionHandler.Update)                       // Update permission
+			permissions.DELETE("/:id", r.permissionHandler.Delete)                    // Delete permission
 			permissions.GET("/role/:role_id", r.permissionHandler.GetRolePermissions) // Get role's permissions
 		}
 	}

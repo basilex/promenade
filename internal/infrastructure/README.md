@@ -44,7 +44,7 @@ internal/infrastructure/
 
 - **Driver**: sqlx with connection pooling
 - **Transactions**: Context-aware with auto-commit/rollback
-- **BaseRepository**: Shared repository functionality
+- **Helper Methods**: Common repository operations via helper methods
 - **Documentation**: [database/README.md](database/README.md)
 
 ### Health Checks

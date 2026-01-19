@@ -10,13 +10,15 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/fiscal/receipt"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
+	receiptAggregate "github.com/basilex/promenade/internal/contexts/fiscal/receipt/aggregate"
+	receiptRepository "github.com/basilex/promenade/internal/contexts/fiscal/receipt/repository"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/integration"
 )
 
-func createTestReceipt(cashRegisterID, orderID uuidv7.UUID) *receipt.Receipt {
+func createTestReceipt(cashRegisterID, orderID uuidv7.UUID) *receiptAggregate.Receipt {
 	createdBy := uuidv7.New()
-	lines := []receipt.ReceiptLine{
+	lines := []receiptAggregate.ReceiptLine{
 		{
 			Name:       "Test Item",
 			Quantity:   2,
@@ -25,11 +27,11 @@ func createTestReceipt(cashRegisterID, orderID uuidv7.UUID) *receipt.Receipt {
 		},
 	}
 
-	rec, _ := receipt.NewReceipt(
+	rec, _ := receiptAggregate.NewReceipt(
 		cashRegisterID,
 		orderID,
-		receipt.PaymentTypeCash,
-		receipt.ReceiptTypeSale,
+		receiptAggregate.PaymentTypeCash,
+		receiptAggregate.ReceiptTypeSale,
 		"UAH",
 		lines,
 		createdBy,
@@ -57,7 +59,7 @@ func TestReceiptRepository_Create(t *testing.T) {
 		assert.Equal(t, rec.ID, found.ID)
 		assert.Equal(t, rec.OrderID, found.OrderID)
 		assert.Equal(t, rec.CashRegisterID, found.CashRegisterID)
-		assert.Equal(t, receipt.ReceiptStatusPending, found.Status)
+		assert.Equal(t, receiptAggregate.ReceiptStatusPending, found.Status)
 		assert.Equal(t, rec.TotalAmount, found.TotalAmount)
 		assert.Equal(t, rec.TaxAmount, found.TaxAmount)
 	})
@@ -156,7 +158,7 @@ func TestReceiptRepository_Update_MarkPrinted(t *testing.T) {
 
 		found, err := repo.GetByID(ctx, rec.ID)
 		require.NoError(t, err)
-		assert.Equal(t, receipt.ReceiptStatusPrinted, found.Status)
+		assert.Equal(t, receiptAggregate.ReceiptStatusPrinted, found.Status)
 		assert.Equal(t, "FN-12345", found.FiscalNumber)
 		assert.Equal(t, "https://fiscal.test/receipt", found.FiscalURL)
 		assert.Equal(t, "qr-data", found.QRCode)
@@ -185,7 +187,7 @@ func TestReceiptRepository_Update_Cancel(t *testing.T) {
 
 		found, err := repo.GetByID(ctx, rec.ID)
 		require.NoError(t, err)
-		assert.Equal(t, receipt.ReceiptStatusCancelled, found.Status)
+		assert.Equal(t, receiptAggregate.ReceiptStatusCancelled, found.Status)
 		assert.Equal(t, "Customer request", found.CancellationReason)
 		require.NotNil(t, found.CancelledAt)
 	})
@@ -266,19 +268,19 @@ func TestReceiptRepository_List_WithFilters(t *testing.T) {
 		require.NoError(t, rec2.MarkPrinted("FN-PRINTED", "https://fiscal.test/printed", "qr", printedBy))
 		require.NoError(t, repo.Update(ctx, rec2))
 
-		filters := &receipt.ListFilters{CashRegisterID: &cashRegisterID}
+		filters := &receiptRepository.ListFilters{CashRegisterID: &cashRegisterID}
 		all, err := repo.List(ctx, filters)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(all), 2)
 
-		status := receipt.ReceiptStatusPrinted
-		printed := &receipt.ListFilters{CashRegisterID: &cashRegisterID, Status: &status}
+		status := receiptAggregate.ReceiptStatusPrinted
+		printed := &receiptRepository.ListFilters{CashRegisterID: &cashRegisterID, Status: &status}
 		printedOnly, err := repo.List(ctx, printed)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, len(printedOnly), 1)
 
 		orderID := rec1.OrderID
-		byOrder := &receipt.ListFilters{OrderID: &orderID}
+		byOrder := &receiptRepository.ListFilters{OrderID: &orderID}
 		orderResults, err := repo.List(ctx, byOrder)
 		require.NoError(t, err)
 		require.Len(t, orderResults, 1)

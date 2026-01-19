@@ -23,13 +23,13 @@ type SalesReportResponse struct {
 
 // SalesOrderSummary represents a single order in the report
 type SalesOrderSummary struct {
-	OrderID      string    `json:"order_id"`
-	CustomerID   string    `json:"customer_id"`
-	ManagerID    *string   `json:"manager_id,omitempty"`
-	TotalCents   int64     `json:"total_cents"`
-	Currency     string    `json:"currency"`
-	Status       string    `json:"status"`
-	ItemCount    int       `json:"item_count"`
-	ConfirmedAt  time.Time `json:"confirmed_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	OrderID     string    `json:"order_id"`
+	CustomerID  string    `json:"customer_id"`
+	ManagerID   *string   `json:"manager_id,omitempty"`
+	TotalCents  int64     `json:"total_cents"`
+	Currency    string    `json:"currency"`
+	Status      string    `json:"status"`
+	ItemCount   int       `json:"item_count"`
+	ConfirmedAt time.Time `json:"confirmed_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

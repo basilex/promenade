@@ -7,20 +7,51 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	cashregistererrors "github.com/basilex/promenade/internal/contexts/fiscal/cashregister"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/aggregate"
+	"github.com/basilex/promenade/internal/contexts/fiscal/cashregister/repository"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
-// cashRegisterRepository implements cashregister.IRepository using PostgreSQL
+// cashRegisterRepository implements cashregister.ICashRegisterRepository using PostgreSQL
 type cashRegisterRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewCashRegisterRepository creates a new PostgreSQL cash register repository
-func NewCashRegisterRepository(db *sqlx.DB) cashregister.IRepository {
+func NewCashRegisterRepository(db *sqlx.DB) repository.ICashRegisterRepository {
 	return &cashRegisterRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *cashRegisterRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *cashRegisterRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *cashRegisterRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *cashRegisterRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *cashRegisterRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // cashRegisterRow represents database row structure for cash register table
@@ -46,28 +77,28 @@ type cashRegisterRow struct {
 }
 
 // toEntity converts database row to domain entity
-func (r *cashRegisterRow) toEntity() (*cashregister.CashRegister, error) {
+func (r *cashRegisterRow) toEntity() (*aggregate.CashRegister, error) {
 	id, err := uuidv7.Parse(r.ID)
 	if err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	organizationID, err := uuidv7.Parse(r.OrganizationID)
 	if err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	lastUpdatedBy, err := uuidv7.Parse(r.LastUpdatedBy)
 	if err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	// Reconstruct entity with all fields
-	cr := &cashregister.CashRegister{
+	cr := &aggregate.CashRegister{
 		OrganizationID: organizationID,
 		FiscalNumber:   r.FiscalNumber,
 		Model:          r.Model,
-		Status:         cashregister.CashRegisterStatus(r.Status),
+		Status:         aggregate.CashRegisterStatus(r.Status),
 		LicenseKey:     "",
 		LastUpdatedBy:  lastUpdatedBy,
 	}
@@ -108,7 +139,7 @@ func (r *cashRegisterRow) toEntity() (*cashregister.CashRegister, error) {
 }
 
 // fromEntity converts domain entity to database row
-func fromEntity(cr *cashregister.CashRegister) *cashRegisterRow {
+func fromEntity(cr *aggregate.CashRegister) *cashRegisterRow {
 	row := &cashRegisterRow{
 		ID:             cr.GetID().String(),
 		Version:        cr.GetVersion(),
@@ -155,7 +186,7 @@ func fromEntity(cr *cashregister.CashRegister) *cashRegisterRow {
 }
 
 // Create creates a new cash register
-func (r *cashRegisterRepository) Create(ctx context.Context, cr *cashregister.CashRegister) error {
+func (r *cashRegisterRepository) Create(ctx context.Context, cr *aggregate.CashRegister) error {
 	query := `
 		INSERT INTO fiscal_cash_registers (
 			id, version, organization_id, fiscal_number, model, status,
@@ -173,14 +204,14 @@ func (r *cashRegisterRepository) Create(ctx context.Context, cr *cashregister.Ca
 	)
 
 	if err != nil {
-		return cashregister.ErrCashRegisterCreateFailed
+		return cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	return nil
 }
 
 // GetByID retrieves cash register by ID
-func (r *cashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*cashregister.CashRegister, error) {
+func (r *cashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*aggregate.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
 		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
@@ -192,16 +223,16 @@ func (r *cashRegisterRepository) GetByID(ctx context.Context, id uuidv7.UUID) (*
 	var row cashRegisterRow
 	if err := r.Get(ctx, &row, query, id.String()); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, cashregister.ErrCashRegisterNotFound
+			return nil, cashregistererrors.ErrCashRegisterNotFound
 		}
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	return row.toEntity()
 }
 
 // GetByFiscalNumber retrieves cash register by fiscal number
-func (r *cashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNumber string) (*cashregister.CashRegister, error) {
+func (r *cashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNumber string) (*aggregate.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
 		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
@@ -213,16 +244,16 @@ func (r *cashRegisterRepository) GetByFiscalNumber(ctx context.Context, fiscalNu
 	var row cashRegisterRow
 	if err := r.Get(ctx, &row, query, fiscalNumber); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, cashregister.ErrCashRegisterNotFound
+			return nil, cashregistererrors.ErrCashRegisterNotFound
 		}
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
 	return row.toEntity()
 }
 
 // List retrieves cash registers with filters
-func (r *cashRegisterRepository) List(ctx context.Context, filters *cashregister.ListFilters) ([]*cashregister.CashRegister, error) {
+func (r *cashRegisterRepository) List(ctx context.Context, filters *repository.ListFilters) ([]*aggregate.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
 		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
@@ -241,10 +272,10 @@ func (r *cashRegisterRepository) List(ctx context.Context, filters *cashregister
 
 	var rows []cashRegisterRow
 	if err := r.Select(ctx, &rows, query, args...); err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
-	cashRegisters := make([]*cashregister.CashRegister, len(rows))
+	cashRegisters := make([]*aggregate.CashRegister, len(rows))
 	for i, row := range rows {
 		cr, err := row.toEntity()
 		if err != nil {
@@ -257,7 +288,7 @@ func (r *cashRegisterRepository) List(ctx context.Context, filters *cashregister
 }
 
 // GetByLocation retrieves all cash registers for a location
-func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID uuidv7.UUID) ([]*cashregister.CashRegister, error) {
+func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID uuidv7.UUID) ([]*aggregate.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
 		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
@@ -269,10 +300,10 @@ func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID u
 
 	var rows []cashRegisterRow
 	if err := r.Select(ctx, &rows, query, locationID.String()); err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
-	cashRegisters := make([]*cashregister.CashRegister, len(rows))
+	cashRegisters := make([]*aggregate.CashRegister, len(rows))
 	for i, row := range rows {
 		cr, err := row.toEntity()
 		if err != nil {
@@ -285,7 +316,7 @@ func (r *cashRegisterRepository) GetByLocation(ctx context.Context, locationID u
 }
 
 // ListActive retrieves all active cash registers
-func (r *cashRegisterRepository) ListActive(ctx context.Context) ([]*cashregister.CashRegister, error) {
+func (r *cashRegisterRepository) ListActive(ctx context.Context) ([]*aggregate.CashRegister, error) {
 	query := `
 		SELECT id, version, organization_id, fiscal_number, model, status,
 		       license_key, last_sync_at, provider_cash_register_id, active_shift_id,
@@ -296,11 +327,11 @@ func (r *cashRegisterRepository) ListActive(ctx context.Context) ([]*cashregiste
 		ORDER BY created_at DESC`
 
 	var rows []cashRegisterRow
-	if err := r.Select(ctx, &rows, query, string(cashregister.StatusActive)); err != nil {
-		return nil, cashregister.ErrCashRegisterCreateFailed
+	if err := r.Select(ctx, &rows, query, string(aggregate.StatusActive)); err != nil {
+		return nil, cashregistererrors.ErrCashRegisterCreateFailed
 	}
 
-	cashRegisters := make([]*cashregister.CashRegister, len(rows))
+	cashRegisters := make([]*aggregate.CashRegister, len(rows))
 	for i, row := range rows {
 		cr, err := row.toEntity()
 		if err != nil {
@@ -313,7 +344,7 @@ func (r *cashRegisterRepository) ListActive(ctx context.Context) ([]*cashregiste
 }
 
 // Update updates cash register
-func (r *cashRegisterRepository) Update(ctx context.Context, cr *cashregister.CashRegister) error {
+func (r *cashRegisterRepository) Update(ctx context.Context, cr *aggregate.CashRegister) error {
 	query := `
 		UPDATE fiscal_cash_registers
 		SET version = $1, model = $2, status = $3,
@@ -338,16 +369,16 @@ func (r *cashRegisterRepository) Update(ctx context.Context, cr *cashregister.Ca
 	)
 
 	if err != nil {
-		return cashregister.ErrCashRegisterUpdateFailed
+		return cashregistererrors.ErrCashRegisterUpdateFailed
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return cashregister.ErrCashRegisterUpdateFailed
+		return cashregistererrors.ErrCashRegisterUpdateFailed
 	}
 
 	if rowsAffected == 0 {
-		return cashregister.ErrCashRegisterNotFound
+		return cashregistererrors.ErrCashRegisterNotFound
 	}
 
 	// Update version directly
@@ -364,16 +395,16 @@ func (r *cashRegisterRepository) Delete(ctx context.Context, id uuidv7.UUID) err
 
 	result, err := r.Exec(ctx, query, time.Now(), id.String())
 	if err != nil {
-		return cashregister.ErrCashRegisterDeleteFailed
+		return cashregistererrors.ErrCashRegisterDeleteFailed
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return cashregister.ErrCashRegisterDeleteFailed
+		return cashregistererrors.ErrCashRegisterDeleteFailed
 	}
 
 	if rowsAffected == 0 {
-		return cashregister.ErrCashRegisterNotFound
+		return cashregistererrors.ErrCashRegisterNotFound
 	}
 
 	return nil

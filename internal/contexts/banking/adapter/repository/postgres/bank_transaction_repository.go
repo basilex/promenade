@@ -9,19 +9,48 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/basilex/promenade/internal/contexts/banking/aggregate"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // BankTransactionRepository implements bank transaction persistence
 type BankTransactionRepository struct {
-	*BaseRepository
+	db *sqlx.DB
 }
 
 // NewBankTransactionRepository creates a new bank transaction repository
 func NewBankTransactionRepository(db *sqlx.DB) *BankTransactionRepository {
 	return &BankTransactionRepository{
-		BaseRepository: NewBaseRepository(db),
+		db: db,
 	}
+}
+
+// getExecutor returns either transaction or regular connection from context
+func (r *BankTransactionRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
+	return r.db
+}
+
+// Get executes query and scans single row
+func (r *BankTransactionRepository) Get(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.GetContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Select executes query and scans multiple rows
+func (r *BankTransactionRepository) Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.SelectContext(ctx, r.getExecutor(ctx), dest, query, args...)
+}
+
+// Exec executes a query without returning rows
+func (r *BankTransactionRepository) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return r.getExecutor(ctx).ExecContext(ctx, query, args...)
+}
+
+// NamedExec executes a named query without returning rows
+func (r *BankTransactionRepository) NamedExec(ctx context.Context, query string, arg interface{}) (sql.Result, error) {
+	return sqlx.NamedExecContext(ctx, r.getExecutor(ctx), query, arg)
 }
 
 // Create inserts a new bank transaction
@@ -36,7 +65,7 @@ func (r *BankTransactionRepository) Create(ctx context.Context, tx *aggregate.Ba
 		)
 	`
 
-	return r.Exec(ctx, query,
+	_, err := r.Exec(ctx, query,
 		tx.GetID().String(),
 		tx.GetVersion(),
 		tx.BankAccountID.String(),
@@ -54,6 +83,7 @@ func (r *BankTransactionRepository) Create(ctx context.Context, tx *aggregate.Ba
 		tx.GetCreatedAt(),
 		tx.GetUpdatedAt(),
 	)
+	return err
 }
 
 // GetByID retrieves transaction by ID
@@ -158,7 +188,9 @@ func (r *BankTransactionRepository) ListByAccount(ctx context.Context, accountID
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close() // Ignore close error
+	}()
 
 	var transactions []*aggregate.BankTransaction
 	for rows.Next() {
@@ -244,5 +276,6 @@ func (r *BankTransactionRepository) Delete(ctx context.Context, id uuidv7.UUID) 
 		WHERE id = $2 AND deleted_at IS NULL
 	`
 
-	return r.Exec(ctx, query, time.Now(), id.String())
+	_, err := r.Exec(ctx, query, time.Now(), id.String())
+	return err
 }

@@ -10,85 +10,86 @@ import (
 
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	inventoryHTTP "github.com/basilex/promenade/internal/contexts/warehouse/inventory/adapter/http"
+	inventoryAggregate "github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 // MockInventoryUseCase implements IUseCase interface for smoke testing
 type MockInventoryUseCase struct {
-	CreateInventoryFunc  func(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventory.Inventory, error)
-	GetInventoryFunc     func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error)
-	GetBySKUFunc         func(ctx context.Context, sku string) (*inventory.Inventory, error)
-	GetByProductIDFunc   func(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error)
-	GetByWarehouseFunc   func(ctx context.Context, warehouseID string) ([]*inventory.Inventory, error)
-	GetByLocationFunc    func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error)
-	GetLowStockFunc      func(ctx context.Context) ([]*inventory.Inventory, error)
-	ListInventoryFunc    func(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error)
-	UpdateInventoryFunc  func(ctx context.Context, inv *inventory.Inventory) error
-	DeleteInventoryFunc  func(ctx context.Context, id uuidv7.UUID) error
-	ReceiveStockFunc     func(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventory.Inventory, error)
-	CommitStockFunc      func(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventory.Inventory, error)
+	CreateInventoryFunc func(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventoryAggregate.Inventory, error)
+	GetInventoryFunc    func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error)
+	GetBySKUFunc        func(ctx context.Context, sku string) (*inventoryAggregate.Inventory, error)
+	GetByProductIDFunc  func(ctx context.Context, productID uuidv7.UUID) ([]*inventoryAggregate.Inventory, error)
+	GetByWarehouseFunc  func(ctx context.Context, warehouseID string) ([]*inventoryAggregate.Inventory, error)
+	GetByLocationFunc   func(ctx context.Context, warehouseID, locationCode string) ([]*inventoryAggregate.Inventory, error)
+	GetLowStockFunc     func(ctx context.Context) ([]*inventoryAggregate.Inventory, error)
+	ListInventoryFunc   func(ctx context.Context, page, pageSize int) ([]*inventoryAggregate.Inventory, int64, error)
+	UpdateInventoryFunc func(ctx context.Context, inv *inventoryAggregate.Inventory) error
+	DeleteInventoryFunc func(ctx context.Context, id uuidv7.UUID) error
+	ReceiveStockFunc    func(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error)
+	CommitStockFunc     func(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error)
 }
 
 // Implement IUseCase methods with nil checks
 
-func (m *MockInventoryUseCase) CreateInventory(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) CreateInventory(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 	if m.CreateInventoryFunc != nil {
 		return m.CreateInventoryFunc(ctx, productID, sku, productName, warehouseID, createdBy)
 	}
 	return nil, fmt.Errorf("CreateInventoryFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetInventory(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetInventory(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 	if m.GetInventoryFunc != nil {
 		return m.GetInventoryFunc(ctx, id)
 	}
 	return nil, fmt.Errorf("GetInventoryFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetBySKU(ctx context.Context, sku string) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetBySKU(ctx context.Context, sku string) (*inventoryAggregate.Inventory, error) {
 	if m.GetBySKUFunc != nil {
 		return m.GetBySKUFunc(ctx, sku)
 	}
 	return nil, fmt.Errorf("GetBySKUFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByProductID(ctx context.Context, productID uuidv7.UUID) ([]*inventoryAggregate.Inventory, error) {
 	if m.GetByProductIDFunc != nil {
 		return m.GetByProductIDFunc(ctx, productID)
 	}
 	return nil, fmt.Errorf("GetByProductIDFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByWarehouse(ctx context.Context, warehouseID string) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByWarehouse(ctx context.Context, warehouseID string) ([]*inventoryAggregate.Inventory, error) {
 	if m.GetByWarehouseFunc != nil {
 		return m.GetByWarehouseFunc(ctx, warehouseID)
 	}
 	return nil, fmt.Errorf("GetByWarehouseFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetByLocation(ctx context.Context, warehouseID, locationCode string) ([]*inventoryAggregate.Inventory, error) {
 	if m.GetByLocationFunc != nil {
 		return m.GetByLocationFunc(ctx, warehouseID, locationCode)
 	}
 	return nil, fmt.Errorf("GetByLocationFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) GetLowStock(ctx context.Context) ([]*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) GetLowStock(ctx context.Context) ([]*inventoryAggregate.Inventory, error) {
 	if m.GetLowStockFunc != nil {
 		return m.GetLowStockFunc(ctx)
 	}
 	return nil, fmt.Errorf("GetLowStockFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) ListInventory(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error) {
+func (m *MockInventoryUseCase) ListInventory(ctx context.Context, page, pageSize int) ([]*inventoryAggregate.Inventory, int64, error) {
 	if m.ListInventoryFunc != nil {
 		return m.ListInventoryFunc(ctx, page, pageSize)
 	}
 	return nil, 0, fmt.Errorf("ListInventoryFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) UpdateInventory(ctx context.Context, inv *inventory.Inventory) error {
+func (m *MockInventoryUseCase) UpdateInventory(ctx context.Context, inv *inventoryAggregate.Inventory) error {
 	if m.UpdateInventoryFunc != nil {
 		return m.UpdateInventoryFunc(ctx, inv)
 	}
@@ -102,14 +103,14 @@ func (m *MockInventoryUseCase) DeleteInventory(ctx context.Context, id uuidv7.UU
 	return fmt.Errorf("DeleteInventoryFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) ReceiveStock(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) ReceiveStock(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 	if m.ReceiveStockFunc != nil {
 		return m.ReceiveStockFunc(ctx, id, quantity, unitCostCents, receivedBy)
 	}
 	return nil, fmt.Errorf("ReceiveStockFunc not implemented")
 }
 
-func (m *MockInventoryUseCase) CommitStock(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventory.Inventory, error) {
+func (m *MockInventoryUseCase) CommitStock(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 	if m.CommitStockFunc != nil {
 		return m.CommitStockFunc(ctx, id, quantity, committedBy)
 	}
@@ -117,9 +118,9 @@ func (m *MockInventoryUseCase) CommitStock(ctx context.Context, id uuidv7.UUID, 
 }
 
 // fakeInventory creates a fake inventory item for testing
-func fakeInventory() *inventory.Inventory {
+func fakeInventory() *inventoryAggregate.Inventory {
 	productID := uuidv7.New()
-	inv, _ := inventory.NewInventory(productID, "TEST-SKU-001", "Test Product", "WH-MAIN", uuidv7.New())
+	inv, _ := inventoryAggregate.NewInventory(productID, "TEST-SKU-001", "Test Product", "WH-MAIN", uuidv7.New())
 	userID := uuidv7.New()
 	_ = inv.ReceiveStock(100, 1000, userID)
 	inv.LocationCode = "SHELF-A1"
@@ -135,7 +136,7 @@ func TestInventoryHandler_Create_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		CreateInventoryFunc: func(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventory.Inventory, error) {
+		CreateInventoryFunc: func(ctx context.Context, productID uuidv7.UUID, sku, productName, warehouseID string, createdBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
 	}
@@ -175,7 +176,7 @@ func TestInventoryHandler_GetByID_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
 	}
@@ -192,7 +193,7 @@ func TestInventoryHandler_GetByID_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return nil, inventory.ErrInventoryNotFound
 		},
 	}
@@ -209,7 +210,7 @@ func TestInventoryHandler_GetBySKU_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
 	}
@@ -226,7 +227,7 @@ func TestInventoryHandler_GetBySKU_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetBySKUFunc: func(ctx context.Context, sku string) (*inventory.Inventory, error) {
+		GetBySKUFunc: func(ctx context.Context, sku string) (*inventoryAggregate.Inventory, error) {
 			return nil, inventory.ErrInventoryNotFound
 		},
 	}
@@ -243,8 +244,8 @@ func TestInventoryHandler_List_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		ListInventoryFunc: func(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error) {
-			return []*inventory.Inventory{fakeInventory()}, 1, nil
+		ListInventoryFunc: func(ctx context.Context, page, pageSize int) ([]*inventoryAggregate.Inventory, int64, error) {
+			return []*inventoryAggregate.Inventory{fakeInventory()}, 1, nil
 		},
 	}
 
@@ -260,8 +261,8 @@ func TestInventoryHandler_List_EmptyResult(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		ListInventoryFunc: func(ctx context.Context, page, pageSize int) ([]*inventory.Inventory, int64, error) {
-			return []*inventory.Inventory{}, 0, nil
+		ListInventoryFunc: func(ctx context.Context, page, pageSize int) ([]*inventoryAggregate.Inventory, int64, error) {
+			return []*inventoryAggregate.Inventory{}, 0, nil
 		},
 	}
 
@@ -277,10 +278,10 @@ func TestInventoryHandler_Update_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
-		UpdateInventoryFunc: func(ctx context.Context, inv *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, inv *inventoryAggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -301,7 +302,7 @@ func TestInventoryHandler_Update_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return nil, inventory.ErrInventoryNotFound
 		},
 	}
@@ -355,8 +356,8 @@ func TestInventoryHandler_GetLowStock_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetLowStockFunc: func(ctx context.Context) ([]*inventory.Inventory, error) {
-			return []*inventory.Inventory{fakeInventory()}, nil
+		GetLowStockFunc: func(ctx context.Context) ([]*inventoryAggregate.Inventory, error) {
+			return []*inventoryAggregate.Inventory{fakeInventory()}, nil
 		},
 	}
 
@@ -372,7 +373,7 @@ func TestInventoryHandler_ReceiveStock_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		ReceiveStockFunc: func(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventory.Inventory, error) {
+		ReceiveStockFunc: func(ctx context.Context, id uuidv7.UUID, quantity, unitCostCents int, receivedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
 	}
@@ -394,7 +395,7 @@ func TestInventoryHandler_CommitStock_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		CommitStockFunc: func(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventory.Inventory, error) {
+		CommitStockFunc: func(ctx context.Context, id uuidv7.UUID, quantity int, committedBy uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
 	}
@@ -419,8 +420,8 @@ func TestInventoryHandler_GetByLocation_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
-			return []*inventory.Inventory{fakeInventory()}, nil
+		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventoryAggregate.Inventory, error) {
+			return []*inventoryAggregate.Inventory{fakeInventory()}, nil
 		},
 	}
 
@@ -436,8 +437,8 @@ func TestInventoryHandler_GetByLocation_Empty(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventory.Inventory, error) {
-			return []*inventory.Inventory{}, nil // Empty result
+		GetByLocationFunc: func(ctx context.Context, warehouseID, locationCode string) ([]*inventoryAggregate.Inventory, error) {
+			return []*inventoryAggregate.Inventory{}, nil // Empty result
 		},
 	}
 
@@ -453,10 +454,10 @@ func TestInventoryHandler_ReserveStock_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return fakeInventory(), nil
 		},
-		UpdateInventoryFunc: func(ctx context.Context, inv *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, inv *inventoryAggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -493,7 +494,7 @@ func TestInventoryHandler_ReleaseReservation_Success(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			inv := fakeInventory()
 			// Reserve some stock first
 			orderID := uuidv7.New()
@@ -501,7 +502,7 @@ func TestInventoryHandler_ReleaseReservation_Success(t *testing.T) {
 			_ = inv.ReserveStock(10, orderID, userID)
 			return inv, nil
 		},
-		UpdateInventoryFunc: func(ctx context.Context, inv *inventory.Inventory) error {
+		UpdateInventoryFunc: func(ctx context.Context, inv *inventoryAggregate.Inventory) error {
 			return nil
 		},
 	}
@@ -523,7 +524,7 @@ func TestInventoryHandler_ReleaseReservation_NotFound(t *testing.T) {
 	router := smoke.SetupRouter()
 
 	mockUC := &MockInventoryUseCase{
-		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventory.Inventory, error) {
+		GetInventoryFunc: func(ctx context.Context, id uuidv7.UUID) (*inventoryAggregate.Inventory, error) {
 			return nil, inventory.ErrInventoryNotFound
 		},
 	}
