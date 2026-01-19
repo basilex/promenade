@@ -324,5 +324,21 @@ func createTestOrder(t *testing.T, db *sqlx.DB, ctx context.Context, customerID 
 	err = ordRepo.Create(ctx, order)
 	require.NoError(t, err)
 
+	// Populate read model (analytics_sales_orders) since events are not published in this test
+	_, err = db.ExecContext(ctx, `
+		INSERT INTO analytics_sales_orders (order_id, customer_id, currency_code, total_cents, status, confirmed_at)
+		VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+	`, order.ID, customerID, "USD", totalCents, status)
+	require.NoError(t, err)
+
+	// Insert line items into read model
+	for _, line := range order.Lines {
+		_, err = db.ExecContext(ctx, `
+			INSERT INTO analytics_sales_order_items (id, order_id, product_id, quantity, unit_price_cents, total_cents)
+			VALUES ($1, $2, $3, $4, $5, $6)
+		`, uuidv7.New(), order.ID, line.ProductID, line.Quantity, line.UnitPrice.Amount, line.UnitPrice.Amount*int64(line.Quantity))
+		require.NoError(t, err)
+	}
+
 	return order.ID
 }
