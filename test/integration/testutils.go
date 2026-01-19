@@ -132,6 +132,10 @@ func (tdb *TestDB) CleanAllTables() {
 		"customer_companies",
 		"customer_customers",
 
+		// Analytics (Customer Management) tables
+		"analytics_sales_orders",
+		"analytics_sales_order_items",
+
 		// Identity Context tables
 		"identity_contacts",
 		"identity_user_sessions",
@@ -145,8 +149,13 @@ func (tdb *TestDB) CleanAllTables() {
 		"identity_users",
 
 		// Order Management Context tables
+		"order_contracts",
 		"order_orders",
-		"order_order_lines",
+		"order_lines",
+
+		// Order Fulfillment Saga tables
+		"order_fulfillment_saga_instances",
+		"order_fulfillment_saga_steps",
 
 		// Billing Context tables
 		"billing_invoices",
@@ -163,6 +172,25 @@ func (tdb *TestDB) CleanAllTables() {
 		// Fiscal Context tables
 		"fiscal_receipts",
 		"fiscal_cash_registers",
+
+		// Scripting Context tables
+		"scripting_script_executions",
+		"scripting_script_versions",
+		"scripting_scripts",
+
+		// Banking Context tables (if enabled)
+		"banking_bank_transactions",
+		"banking_bank_statements",
+		"banking_bank_accounts",
+
+		// Accounting Context tables (if enabled)
+		"accounting_posting_rules",
+		"accounting_journal_entry_lines",
+		"accounting_journal_entries",
+		"accounting_chart_of_accounts",
+
+		// Identity profiles
+		"identity_profiles",
 
 		// UI Context tables
 		"ui_form_versions",
