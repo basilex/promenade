@@ -287,9 +287,9 @@ func createTestOrder(t *testing.T, db *sqlx.DB, ctx context.Context, customerID 
 	// Create a product for the line item
 	productID := uuidv7.New()
 	_, err = db.ExecContext(ctx, `
-		INSERT INTO warehouse_products (id, sku, name, unit_price_cents, currency, status)
-		VALUES ($1, $2, $3, $4, $5, $6)
-	`, productID, fmt.Sprintf("SKU-%s", productID.String()[:8]), "Test Product", totalCents, "USD", "active")
+		INSERT INTO warehouse_products (id, sku, name, status, is_active)
+		VALUES ($1, $2, $3, $4, $5)
+	`, productID, fmt.Sprintf("SKU-%s", productID.String()[:8]), "Test Product", "active", true)
 	require.NoError(t, err)
 
 	// Add line item using correct API (productID, quantity, Money)

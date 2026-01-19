@@ -11,6 +11,7 @@ import (
 	paymenterrors "github.com/basilex/promenade/internal/contexts/billing/payment"
 	"github.com/basilex/promenade/internal/contexts/billing/payment/aggregate"
 	"github.com/basilex/promenade/internal/contexts/billing/payment/usecase"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/pkg/valueobject"
 )
@@ -26,10 +27,11 @@ func NewPaymentRepository(db *sqlx.DB) usecase.IPaymentRepository {
 	}
 }
 
-// getExecutor returns the transaction executor from context if available, or the DB otherwise
+// getExecutor returns either transaction or regular connection from context
 func (r *paymentRepository) getExecutor(ctx context.Context) sqlx.ExtContext {
-	// For now, just return the db
-	// TODO: Add transaction support when needed
+	if tx, ok := database.GetTx(ctx); ok {
+		return tx
+	}
 	return r.db
 }
 
