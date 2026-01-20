@@ -1,21 +1,12 @@
 package aggregate
 
 import (
-	"errors"
 	"time"
 
+	"github.com/basilex/promenade/internal/contexts/banking/banktransaction"
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrBankTransactionNotFound = errors.New("bank transaction not found")
-	ErrInvalidDirection        = errors.New("invalid transaction direction")
-	ErrInvalidAmount           = errors.New("invalid transaction amount")
-	ErrAlreadyMatched          = errors.New("transaction already matched")
-	ErrInvalidMatchedEntity    = errors.New("invalid matched entity")
 )
 
 // TransactionDirection represents debit or credit
@@ -90,19 +81,19 @@ func NewBankTransaction(
 	lastUpdatedBy uuidv7.UUID,
 ) (*BankTransaction, error) {
 	if bankAccountID == uuidv7.Nil {
-		return nil, errors.New("bank account ID is required")
+		return nil, banktransaction.ErrInvalidBankAccountID
 	}
 	if direction != DirectionDebit && direction != DirectionCredit {
-		return nil, ErrInvalidDirection
+		return nil, banktransaction.ErrInvalidDirection
 	}
 	if amountCents <= 0 {
-		return nil, ErrInvalidAmount
+		return nil, banktransaction.ErrInvalidAmount
 	}
 	if currencyCode == "" {
 		currencyCode = "UAH"
 	}
 	if lastUpdatedBy == uuidv7.Nil {
-		return nil, errors.New("last updated by is required")
+		return nil, banktransaction.ErrInvalidLastUpdatedBy
 	}
 
 	return &BankTransaction{
@@ -151,7 +142,7 @@ func (t *BankTransaction) Cancel() error {
 		return nil
 	}
 	if t.Status == TransactionStatusReconciled {
-		return errors.New("cannot cancel reconciled transaction")
+		return banktransaction.ErrCannotBookCanceledTx
 	}
 
 	t.Status = TransactionStatusCanceled
@@ -162,10 +153,10 @@ func (t *BankTransaction) Cancel() error {
 // Match matches transaction to an entity (invoice, order, payment)
 func (t *BankTransaction) Match(entityType MatchedEntityType, entityID uuidv7.UUID) error {
 	if t.IsMatched() {
-		return ErrAlreadyMatched
+		return banktransaction.ErrAlreadyMatched
 	}
 	if entityID == uuidv7.Nil {
-		return ErrInvalidMatchedEntity
+		return banktransaction.ErrInvalidMatchedEntity
 	}
 
 	t.MatchedEntityType = &entityType
@@ -180,7 +171,7 @@ func (t *BankTransaction) Match(entityType MatchedEntityType, entityID uuidv7.UU
 // Unmatch removes matching from transaction
 func (t *BankTransaction) Unmatch() error {
 	if !t.IsMatched() {
-		return errors.New("transaction is not matched")
+		return banktransaction.ErrBankTransactionNotFound
 	}
 
 	t.MatchedEntityType = nil
@@ -200,7 +191,7 @@ func (t *BankTransaction) SetRawPayload(payload map[string]interface{}) {
 // LinkToStatement links transaction to statement
 func (t *BankTransaction) LinkToStatement(statementID uuidv7.UUID) error {
 	if statementID == uuidv7.Nil {
-		return errors.New("invalid statement ID")
+		return banktransaction.ErrInvalidBankAccountID
 	}
 
 	t.StatementID = &statementID

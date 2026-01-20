@@ -50,6 +50,13 @@ const (
 	TopicPaymentFailed    = "payment.failed"
 
 	// Banking Context Topics (planned)
+	BankAccountCreated             = "bank.account.created"
+	BankAccountConnected           = "bank.account.connected"
+	BankAccountBalanceUpdated      = "bank.account.balance.updated"
+	BankAccountSynced              = "bank.account.synced"
+	BankTransactionRecorded        = "bank.transaction.recorded"
+	BankTransactionMatched         = "bank.transaction.matched"
+	BankTransactionReconciled      = "bank.transaction.reconciled"
 	TopicBankingStatementImported  = "banking.statement.imported"
 	TopicBankingTransactionCreated = "banking.transaction.created"
 

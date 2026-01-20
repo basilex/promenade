@@ -9,6 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/basilex/promenade/internal/contexts/billing"
+	"github.com/basilex/promenade/internal/contexts/banking"
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/fiscal"
 	"github.com/basilex/promenade/internal/contexts/identity"
@@ -101,6 +102,9 @@ func (s *Server) SetupRoutes() {
 			warehouseRouter.RegisterRoutes(v1)    // Inventory
 			scriptingRouter.RegisterRoutes(v1)    // LUA Scripts
 			uiRouter.RegisterRoutes(v1)           // UI Metadata Forms
+
+			// Banking routes
+			banking.RegisterRoutes(v1, s.app.BankAccountUseCase, s.app.BankTransactionUseCase)
 
 			// Analytics routes
 			if s.app.SalesReportHandler != nil {

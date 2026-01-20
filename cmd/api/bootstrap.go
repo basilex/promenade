@@ -28,6 +28,11 @@ import (
 	analyticsIntegration "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/integration"
 	analyticsUseCase "github.com/basilex/promenade/internal/contexts/customer-mgmt/analytics/usecase"
 
+	bankAccountRepo "github.com/basilex/promenade/internal/contexts/banking/bankaccount/adapter/repository/postgres"
+	bankAccountUseCase "github.com/basilex/promenade/internal/contexts/banking/bankaccount/usecase"
+	bankTransactionRepo "github.com/basilex/promenade/internal/contexts/banking/banktransaction/adapter/repository/postgres"
+	bankTransactionUseCase "github.com/basilex/promenade/internal/contexts/banking/banktransaction/usecase"
+
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
 	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
@@ -49,6 +54,8 @@ type App struct {
 	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
 	SalesReportEventHandler *analyticsIntegration.SalesReportEventHandler
 	SalesReportHandler      *analyticsHandler.SalesReportHandler
+	BankAccountUseCase      bankAccountUseCase.IBankAccountUseCase
+	BankTransactionUseCase  bankTransactionUseCase.IBankTransactionUseCase
 	Scheduler               *scheduler.Engine
 }
 
@@ -122,6 +129,14 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 	}
 	app.SalesReportEventHandler = salesReportEventHandler
 	app.SalesReportHandler = salesReportHandler
+
+	// Initialize Banking Context
+	bankAccountUC, bankTransactionUC, err := initBanking(db)
+	if err != nil {
+		return nil, err
+	}
+	app.BankAccountUseCase = bankAccountUC
+	app.BankTransactionUseCase = bankTransactionUC
 
 	// Initialize Scheduler (Fiscal retries, etc.)
 	schedulerEngine, err := initScheduler(cfg, db, receiptUC, printerEnabled, checkboxClient)
@@ -198,7 +213,7 @@ func runMigrations(db *sqlx.DB) error {
 	migrationManager := migration.NewManager(db, "migrations")
 	ctx := context.Background()
 
-	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "warehouse", "scripting", "fiscal", "ui"}
+	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "banking", "warehouse", "scripting", "fiscal", "ui"}
 	for _, ns := range namespaces {
 		if err := migrationManager.MigrateNamespace(ctx, ns); err != nil {
 			logger.Fatal("Failed to run migrations",
@@ -465,6 +480,23 @@ func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receiptUseCase.
 
 	logger.Info("Scheduler initialized")
 	return engine, nil
+}
+
+// initBanking initializes Banking Context (Bank Accounts + Bank Transactions)
+func initBanking(db *sqlx.DB) (bankAccountUseCase.IBankAccountUseCase, bankTransactionUseCase.IBankTransactionUseCase, error) {
+	// Initialize Bank Account Use Case
+	bankAccountRepository := bankAccountRepo.NewBankAccountRepository(db)
+	bankAccountUC := bankAccountUseCase.NewBankAccountUseCase(bankAccountRepository)
+
+	// Initialize Bank Transaction Use Case
+	bankTransactionRepository := bankTransactionRepo.NewBankTransactionRepository(db)
+	bankTransactionUC := bankTransactionUseCase.NewBankTransactionUseCase(bankTransactionRepository)
+
+	logger.Info("Banking Context initialized",
+		slog.String("component", "BankAccount + BankTransaction"),
+	)
+
+	return bankAccountUC, bankTransactionUC, nil
 }
 
 // Close gracefully closes all application dependencies

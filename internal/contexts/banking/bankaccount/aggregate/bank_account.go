@@ -1,19 +1,12 @@
 package aggregate
 
 import (
-	"errors"
 	"time"
 
+	"github.com/basilex/promenade/internal/contexts/banking/bankaccount"
 	"github.com/basilex/promenade/pkg/aggregate"
 	"github.com/basilex/promenade/pkg/jsonstore"
 	"github.com/basilex/promenade/pkg/uuidv7"
-)
-
-// Common errors
-var (
-	ErrBankAccountNotFound = errors.New("bank account not found")
-	ErrBankAccountInactive = errors.New("bank account is inactive")
-	ErrInvalidProvider     = errors.New("invalid bank provider")
 )
 
 // BankProvider represents external bank provider
@@ -61,19 +54,19 @@ func NewBankAccount(
 	lastUpdatedBy uuidv7.UUID,
 ) (*BankAccount, error) {
 	if organizationID == uuidv7.Nil {
-		return nil, errors.New("organization ID is required")
+		return nil, bankaccount.ErrInvalidOrganizationID
 	}
 	if name == "" {
-		return nil, errors.New("account name is required")
+		return nil, bankaccount.ErrInvalidAccountName
 	}
 	if bankName == "" {
-		return nil, errors.New("bank name is required")
+		return nil, bankaccount.ErrInvalidBankName
 	}
 	if currencyCode == "" {
 		currencyCode = "UAH"
 	}
 	if lastUpdatedBy == uuidv7.Nil {
-		return nil, errors.New("last updated by is required")
+		return nil, bankaccount.ErrInvalidLastUpdatedBy
 	}
 
 	return &BankAccount{
@@ -97,10 +90,10 @@ func (a *BankAccount) ConnectProvider(
 	iban, accountNumber string,
 ) error {
 	if provider == ProviderManual {
-		return ErrInvalidProvider
+		return bankaccount.ErrInvalidProvider
 	}
 	if providerAccountID == "" {
-		return errors.New("provider account ID is required")
+		return bankaccount.ErrInvalidProvider
 	}
 
 	a.Provider = provider
@@ -122,10 +115,10 @@ func (a *BankAccount) UpdateBalance(balanceCents int64) error {
 // RecordSync records successful synchronization
 func (a *BankAccount) RecordSync() error {
 	if a.Provider == ProviderManual {
-		return errors.New("manual accounts cannot be synced")
+		return bankaccount.ErrManualAccountCannotSync
 	}
 	if a.Status != BankAccountStatusActive {
-		return ErrBankAccountInactive
+		return bankaccount.ErrBankAccountInactive
 	}
 
 	now := time.Now()
@@ -152,7 +145,7 @@ func (a *BankAccount) Activate() error {
 		return nil
 	}
 	if a.Status == BankAccountStatusArchived {
-		return errors.New("cannot activate archived account")
+		return bankaccount.ErrArchivedAccountOperation
 	}
 
 	a.Status = BankAccountStatusActive

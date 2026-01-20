@@ -1,5 +1,216 @@
 basePath: /api/v1
 definitions:
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountListResponse:
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse:
+    properties:
+      account_number:
+        type: string
+      balance_cents:
+        type: integer
+      balance_formatted:
+        type: string
+      bank_name:
+        type: string
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      iban:
+        type: string
+      id:
+        type: string
+      last_sync_at:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      provider:
+        type: string
+      provider_account_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.ConnectProviderAccountRequest:
+    properties:
+      bank_name:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      provider:
+        type: string
+      provider_account_id:
+        type: string
+    required:
+    - bank_name
+    - name
+    - organization_id
+    - provider
+    - provider_account_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.CreateManualAccountRequest:
+    properties:
+      account_number:
+        type: string
+      bank_name:
+        type: string
+      currency_code:
+        type: string
+      iban:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+    required:
+    - bank_name
+    - name
+    - organization_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.UpdateAccountDetailsRequest:
+    properties:
+      account_number:
+        type: string
+      bank_name:
+        type: string
+      iban:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.UpdateBalanceRequest:
+    properties:
+      balance_cents:
+        type: integer
+    required:
+    - balance_cents
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+      transactions:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+        type: array
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse:
+    properties:
+      amount_cents:
+        type: integer
+      amount_formatted:
+        type: string
+      bank_account_id:
+        type: string
+      booked_at:
+        type: string
+      counterparty_iban:
+        type: string
+      counterparty_name:
+        type: string
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      description:
+        type: string
+      direction:
+        type: string
+      external_id:
+        type: string
+      id:
+        type: string
+      matched_at:
+        type: string
+      matched_entity_id:
+        type: string
+      matched_entity_type:
+        type: string
+      status:
+        type: string
+      transaction_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.MatchTransactionRequest:
+    properties:
+      entity_id:
+        type: string
+      entity_type:
+        enum:
+        - invoice
+        - order
+        - payment
+        type: string
+    required:
+    - entity_id
+    - entity_type
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.RecordTransactionRequest:
+    properties:
+      account_id:
+        type: string
+      amount_cents:
+        type: integer
+      counterparty_iban:
+        type: string
+      counterparty_name:
+        type: string
+      currency_code:
+        type: string
+      description:
+        type: string
+      direction:
+        enum:
+        - debit
+        - credit
+        type: string
+      external_id:
+        type: string
+      transaction_at:
+        type: string
+    required:
+    - account_id
+    - amount_cents
+    - description
+    - direction
+    - transaction_at
+    type: object
+  github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.SetCounterpartyRequest:
+    properties:
+      iban:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
   github_com_basilex_promenade_internal_contexts_billing_invoice_dto.AddLineItemRequest:
     properties:
       description:
@@ -2536,6 +2747,831 @@ paths:
       summary: Revoke current token
       tags:
       - auth
+  /banking/accounts:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of bank accounts for organization
+      parameters:
+      - description: Organization ID (UUID)
+        in: query
+        name: organization_id
+        required: true
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List bank accounts
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bank account (soft delete)
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete account
+      tags:
+      - Bank Accounts
+    get:
+      consumes:
+      - application/json
+      description: Get bank account details by ID
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get bank account by ID
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/activate:
+    post:
+      consumes:
+      - application/json
+      description: Activate an inactive bank account
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate account
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/archive:
+    post:
+      consumes:
+      - application/json
+      description: Archive a bank account (no further transactions)
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Archive account
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/balance:
+    put:
+      consumes:
+      - application/json
+      description: Update the current balance of a bank account
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Balance update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.UpdateBalanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update account balance
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/deactivate:
+    post:
+      consumes:
+      - application/json
+      description: Deactivate an active bank account
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Deactivate account
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/details:
+    put:
+      consumes:
+      - application/json
+      description: Update bank account name, bank name, IBAN, or account number
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Account details update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.UpdateAccountDetailsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update account details
+      tags:
+      - Bank Accounts
+  /banking/accounts/{id}/sync:
+    post:
+      consumes:
+      - application/json
+      description: Record a successful synchronization with external provider
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Balance from sync
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.UpdateBalanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Record sync
+      tags:
+      - Bank Accounts
+  /banking/accounts/connect:
+    post:
+      consumes:
+      - application/json
+      description: Connect a bank account from external provider (Monobank, Privat24,
+        etc.)
+      parameters:
+      - description: Provider account connection request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.ConnectProviderAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Connect provider account
+      tags:
+      - Bank Accounts
+  /banking/accounts/manual:
+    post:
+      consumes:
+      - application/json
+      description: Create a manually entered bank account
+      parameters:
+      - description: Manual account creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.CreateManualAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create manual bank account
+      tags:
+      - Bank Accounts
+  /banking/transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of transactions for a bank account
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: query
+        name: account_id
+        required: true
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List transactions by account
+      tags:
+      - Bank Transactions
+    post:
+      consumes:
+      - application/json
+      description: Record a new bank transaction (manual or from sync)
+      parameters:
+      - description: Transaction record request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.RecordTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Record bank transaction
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bank transaction (soft delete)
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete transaction
+      tags:
+      - Bank Transactions
+    get:
+      consumes:
+      - application/json
+      description: Get bank transaction details by ID
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get transaction by ID
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}/book:
+    post:
+      consumes:
+      - application/json
+      description: Mark a pending transaction as booked
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Book transaction
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a pending transaction
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Cancel transaction
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}/counterparty:
+    put:
+      consumes:
+      - application/json
+      description: Set or update counterparty name and IBAN
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Counterparty request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.SetCounterpartyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set counterparty
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}/match:
+    post:
+      consumes:
+      - application/json
+      description: Match a bank transaction to an invoice, order, or payment
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Match request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.MatchTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Match transaction
+      tags:
+      - Bank Transactions
+  /banking/transactions/{id}/unmatch:
+    post:
+      consumes:
+      - application/json
+      description: Remove matching from a bank transaction
+      parameters:
+      - description: Transaction ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Unmatch transaction
+      tags:
+      - Bank Transactions
+  /banking/transactions/unmatched:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of unmatched transactions for a bank account
+      parameters:
+      - description: Bank Account ID (UUID)
+        in: query
+        name: account_id
+        required: true
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_banking_banktransaction_dto.BankTransactionListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List unmatched transactions
+      tags:
+      - Bank Transactions
   /billing/payments:
     get:
       parameters:
