@@ -1,4 +1,4 @@
-// Package checkbox provides Checkbox API integration for Ukrainian fiscal compliance (ПРРО)
+// Package checkbox provides Checkbox API integration for Ukrainian fiscal compliance (RRO - Registrar of Settlement Operations)
 // API Documentation: https://dev.checkbox.ua/uk/docs/api/
 package checkbox
 
@@ -60,7 +60,7 @@ type Receipt struct {
 	Goods     []ReceiptGood `json:"goods"`
 	Payment   Payment       `json:"payment"`
 	Delivery  *Delivery     `json:"delivery,omitempty"`
-	TaxNumber string        `json:"tax_number,omitempty"` // ІПН покупця (optional)
+	TaxNumber string        `json:"tax_number,omitempty"` // Buyer's tax ID (optional)
 	Header    string        `json:"header,omitempty"`     // Text at top of receipt
 	Footer    string        `json:"footer,omitempty"`     // Text at bottom of receipt
 }
@@ -95,7 +95,7 @@ type ReceiptResponse struct {
 	ID         string    `json:"id"`
 	Type       string    `json:"type"`
 	Status     string    `json:"status"`
-	FiscalCode string    `json:"fiscal_code"` // Фіскальний номер
+	FiscalCode string    `json:"fiscal_code"` // Fiscal number
 	FiscalURL  string    `json:"fiscal_url"`  // URL to verify receipt
 	QRCodeURL  string    `json:"qrcode_url"`  // QR code image URL
 	CreatedAt  time.Time `json:"created_at"`

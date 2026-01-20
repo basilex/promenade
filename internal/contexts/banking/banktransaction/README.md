@@ -10,7 +10,7 @@ Bank transaction management with matching, reconciliation, and provider synchron
 - [Use Cases](#use-cases) - Available operations
 - [API Examples](#api-examples) - Usage patterns
 
-🔗 **Related**: [../README.md](../README.md) - Banking Context Overview
+ **Related**: [../README.md](../README.md) - Banking Context Overview
 
 ---
 
@@ -302,7 +302,7 @@ POST /api/v1/banking/transactions/:id/unmatch
 ```bash
 PUT /api/v1/banking/transactions/:id/counterparty
 {
-  "counterparty_name": "ТОВ Постачальник",
+  "counterparty_name": "LLC Supplier",
   "counterparty_iban": "UA123456789012345678901234567"
 }
 ```

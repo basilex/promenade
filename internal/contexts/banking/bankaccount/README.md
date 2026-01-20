@@ -10,7 +10,7 @@ Bank account management with support for manual accounts and external provider i
 - [Use Cases](#use-cases) - Available operations
 - [API Examples](#api-examples) - Usage patterns
 
-🔗 **Related**: [../README.md](../README.md) - Banking Context Overview
+ **Related**: [../README.md](../README.md) - Banking Context Overview
 
 ---
 
@@ -189,8 +189,8 @@ Archived (final state)
 POST /api/v1/banking/accounts
 {
   "organization_id": "01JGXYZ...",
-  "name": "Поточний рахунок UAH",
-  "bank_name": "ПриватБанк",
+  "name": "UAH Current Account",
+  "bank_name": "PrivatBank",
   "currency_code": "UAH",
   "last_updated_by": "01JGXYZ..."
 }

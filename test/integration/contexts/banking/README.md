@@ -62,7 +62,7 @@ go test -cover ./test/integration/contexts/banking/...
 
 ### Critical Tests
 
-- **BalancePrecision** 💰 - Exact kopiyky precision validation
+- **BalancePrecision**  - Exact kopiyky precision validation
 - **StatusTransitions** - Active → Inactive → Archived workflow
 
 ## BankTransaction Tests (17 tests)
@@ -100,7 +100,7 @@ go test -cover ./test/integration/contexts/banking/...
 ### Metadata
 
 - **Counterparty** - Store counterparty name and IBAN
-- **AmountPrecision** 💰 - Exact kopiyky precision validation
+- **AmountPrecision**  - Exact kopiyky precision validation
 
 ## Test Patterns
 
@@ -138,7 +138,7 @@ func TestBankAccountRepository_Create(t *testing.T) {
 }
 ```
 
-### Money Precision Pattern 💰
+### Money Precision Pattern 
 
 ```go
 // CRITICAL: Always verify kopiyky precision
@@ -266,30 +266,30 @@ Each test runs in isolated transaction via `db.WithTransaction()`:
 ### Issue 1: Constructor Parameter Mismatch
 
 ```go
-// ❌ Wrong - missing parameters
+//  Wrong - missing parameters
 acc, _ := aggregate.NewBankAccount(orgID, "Name")
 
-// ✅ Correct - all required parameters
+//  Correct - all required parameters
 acc, _ := aggregate.NewBankAccount(orgID, "Name", "Bank", "UAH", lastUpdatedBy)
 ```
 
 ### Issue 2: Status Constants
 
 ```go
-// ❌ Wrong - old naming
+//  Wrong - old naming
 assert.Equal(t, aggregate.StatusActive, acc.Status)
 
-// ✅ Correct - prefixed naming
+//  Correct - prefixed naming
 assert.Equal(t, aggregate.BankAccountStatusActive, acc.Status)
 ```
 
 ### Issue 3: Method Signatures
 
 ```go
-// ❌ Wrong - methods return error
+//  Wrong - methods return error
 transaction.SetCounterparty("Name", "IBAN")
 
-// ✅ Correct - SetCounterparty is void
+//  Correct - SetCounterparty is void
 tx.SetCounterparty("Name", "IBAN")  // No return value
 ```
 

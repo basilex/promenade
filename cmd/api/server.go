@@ -8,6 +8,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/basilex/promenade/internal/contexts/accounting"
 	"github.com/basilex/promenade/internal/contexts/billing"
 	"github.com/basilex/promenade/internal/contexts/banking"
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
@@ -105,7 +106,17 @@ func (s *Server) SetupRoutes() {
 
 			// Banking routes
 			banking.RegisterRoutes(v1, s.app.BankAccountUseCase, s.app.BankTransactionUseCase)
-
+		// Accounting routes
+		accounting.RegisterRoutes(
+			v1,
+			s.app.AccountUseCase,
+			s.app.JournalEntryUseCase,
+			s.app.FiscalPeriodUseCase,
+			s.app.TaxCodeUseCase,
+			s.app.BudgetUseCase,
+			s.app.CostCenterUseCase,
+			s.app.ReconciliationUseCase,
+		)
 			// Analytics routes
 			if s.app.SalesReportHandler != nil {
 				s.app.SalesReportHandler.RegisterRoutes(v1)

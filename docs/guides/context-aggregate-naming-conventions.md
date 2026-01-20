@@ -44,10 +44,10 @@ Each context contains **aggregates** (DDD aggregate roots). Structure is organiz
 
 ```
 /context-name/
-  /aggregate-name/          ❌ WRONG - we don't do this
+  /aggregate-name/           WRONG - we don't do this
 
 /context-name/
-  /aggregate/               ✅ CORRECT - all aggregates in one folder
+  /aggregate/                CORRECT - all aggregates in one folder
     account.go
     transaction.go
 ```
@@ -388,47 +388,47 @@ Each directory is a package:
 ### Aggregates
 
 ```go
-type BankAccount struct { ... }           ✅
-type bankAccount struct { ... }           ❌
-type BankAccountAggregate struct { ... }  ❌ (redundant)
+type BankAccount struct { ... }           
+type bankAccount struct { ... }           
+type BankAccountAggregate struct { ... }   (redundant)
 ```
 
 ### Repositories (Interfaces)
 
 ```go
-type IBankAccountRepository interface { ... }     ✅
-type BankAccountRepository interface { ... }      ❌ (no 'I' prefix)
-type BankAccountRepo interface { ... }            ❌ (no abbreviations)
+type IBankAccountRepository interface { ... }     
+type BankAccountRepository interface { ... }       (no 'I' prefix)
+type BankAccountRepo interface { ... }             (no abbreviations)
 ```
 
 ### Repositories (Implementations)
 
 ```go
-type BankAccountRepository struct { ... }         ✅ (implements IBankAccountRepository)
-type PostgresBankAccountRepository struct { ... } ❌ (redundant - in postgres package)
+type BankAccountRepository struct { ... }          (implements IBankAccountRepository)
+type PostgresBankAccountRepository struct { ... }  (redundant - in postgres package)
 ```
 
 ### Use Cases
 
 ```go
-type ConnectBankAccountUseCase struct { ... }     ✅
-type ConnectBankAccount struct { ... }            ❌ (missing UseCase suffix)
-type ConnectBankAccountService struct { ... }     ❌ (not a service)
+type ConnectBankAccountUseCase struct { ... }     
+type ConnectBankAccount struct { ... }             (missing UseCase suffix)
+type ConnectBankAccountService struct { ... }      (not a service)
 ```
 
 ### DTOs
 
 ```go
-type ConnectBankAccountRequest struct { ... }     ✅
-type BankAccountResponse struct { ... }           ✅
-type BankAccountDTO struct { ... }                ❌ (redundant - in dto package)
+type ConnectBankAccountRequest struct { ... }     
+type BankAccountResponse struct { ... }           
+type BankAccountDTO struct { ... }                 (redundant - in dto package)
 ```
 
 ### Handlers
 
 ```go
-type BankAccountHandler struct { ... }            ✅
-type BankAccountHTTPHandler struct { ... }        ❌ (redundant - in http package)
+type BankAccountHandler struct { ... }            
+type BankAccountHTTPHandler struct { ... }         (redundant - in http package)
 ```
 
 ---
@@ -438,27 +438,27 @@ type BankAccountHTTPHandler struct { ... }        ❌ (redundant - in http packa
 ### Aggregates (Domain Logic)
 
 ```go
-func (a *BankAccount) Connect(provider Provider) error { ... }        ✅
-func (a *BankAccount) UpdateBalance(cents int64) { ... }              ✅
-func (a *BankAccount) Activate() error { ... }                        ✅
-func (a *BankAccount) GetBalance() int64 { ... }                      ✅ (getter)
-func (a *BankAccount) IsActive() bool { ... }                         ✅ (predicate)
+func (a *BankAccount) Connect(provider Provider) error { ... }        
+func (a *BankAccount) UpdateBalance(cents int64) { ... }              
+func (a *BankAccount) Activate() error { ... }                        
+func (a *BankAccount) GetBalance() int64 { ... }                       (getter)
+func (a *BankAccount) IsActive() bool { ... }                          (predicate)
 ```
 
 ### Repositories (CRUD + Domain Queries)
 
 ```go
-func (r *IBankAccountRepository) Create(ctx, account) error           ✅
-func (r *IBankAccountRepository) GetByID(ctx, id) (*Account, error)   ✅
-func (r *IBankAccountRepository) Update(ctx, account) error           ✅
-func (r *IBankAccountRepository) Delete(ctx, id) error                ✅
-func (r *IBankAccountRepository) GetByOrganization(ctx, orgID) ([]*Account, error) ✅
+func (r *IBankAccountRepository) Create(ctx, account) error           
+func (r *IBankAccountRepository) GetByID(ctx, id) (*Account, error)   
+func (r *IBankAccountRepository) Update(ctx, account) error           
+func (r *IBankAccountRepository) Delete(ctx, id) error                
+func (r *IBankAccountRepository) GetByOrganization(ctx, orgID) ([]*Account, error) 
 ```
 
 ### Use Cases (Business Operations)
 
 ```go
-func (uc *ConnectBankAccountUseCase) Execute(ctx, req) (*Response, error) ✅
+func (uc *ConnectBankAccountUseCase) Execute(ctx, req) (*Response, error) 
 ```
 
 **Rule**: Use cases always have `Execute` method (single responsibility)
@@ -466,12 +466,12 @@ func (uc *ConnectBankAccountUseCase) Execute(ctx, req) (*Response, error) ✅
 ### Handlers (HTTP Endpoints)
 
 ```go
-func (h *BankAccountHandler) RegisterRoutes(router *gin.RouterGroup)  ✅
-func (h *BankAccountHandler) Create(c *gin.Context)                   ✅
-func (h *BankAccountHandler) GetByID(c *gin.Context)                  ✅
-func (h *BankAccountHandler) List(c *gin.Context)                     ✅
-func (h *BankAccountHandler) Update(c *gin.Context)                   ✅
-func (h *BankAccountHandler) Delete(c *gin.Context)                   ✅
+func (h *BankAccountHandler) RegisterRoutes(router *gin.RouterGroup)  
+func (h *BankAccountHandler) Create(c *gin.Context)                   
+func (h *BankAccountHandler) GetByID(c *gin.Context)                  
+func (h *BankAccountHandler) List(c *gin.Context)                     
+func (h *BankAccountHandler) Update(c *gin.Context)                   
+func (h *BankAccountHandler) Delete(c *gin.Context)                   
 ```
 
 ---
@@ -494,10 +494,10 @@ import (
 ### Cross-Context (Via Events Only!)
 
 ```go
-// ❌ WRONG - direct import from another context
+//  WRONG - direct import from another context
 import "github.com/basilex/promenade/internal/contexts/order-mgmt/aggregate"
 
-// ✅ CORRECT - via event bus
+//  CORRECT - via event bus
 import "github.com/basilex/promenade/pkg/bus"
 
 // Subscribe to order.created event
@@ -641,4 +641,4 @@ For analytics/reporting contexts with read models:
 ---
 
 **Last Updated**: January 17, 2026  
-**Status**: ✅ Approved Standard
+**Status**:  Approved Standard

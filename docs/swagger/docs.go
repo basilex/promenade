@@ -24,6 +24,3538 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/accounting/accounts": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Create account request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/children/{parentId}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List child accounts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Parent account ID",
+                        "name": "parentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/code/{code}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get an account by code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update account request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.UpdateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/{id}/activate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Activate an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/{id}/deactivate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts",
+                    "accounts"
+                ],
+                "summary": "Deactivate an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/accounts/{id}/parent": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Set parent account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Set parent request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.SetParentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "List bank reconciliations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Create a new bank reconciliation",
+                "parameters": [
+                    {
+                        "description": "Create bank reconciliation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/bank-account/{bankAccountId}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "List bank reconciliations by bank account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Account ID",
+                        "name": "bankAccountId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/status/{status}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "List bank reconciliations by status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Reconciliation status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Get a bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Delete a bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}/complete": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Complete bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}/items": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Add item to bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Add reconciliation item request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}/items/{itemId}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Remove item from bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}/items/{itemId}/match": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Mark reconciliation item as matched",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/bank-reconciliations/{id}/reopen": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-reconciliations"
+                ],
+                "summary": "Reopen bank reconciliation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank Reconciliation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "List budgets",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Create a new budget",
+                "parameters": [
+                    {
+                        "description": "Create budget request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.CreateBudgetRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/active": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "List active budgets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/name/{name}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Get a budget by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/status/{status}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "List budgets by status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Get a budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Delete a budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}/activate": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Activate budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}/approve": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Approve budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}/close": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Close budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}/lines": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Add line to budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Add line request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/budgets/{id}/lines/{lineId}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Update budget line",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Line ID",
+                        "name": "lineId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update line request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.UpdateLineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "budgets"
+                ],
+                "summary": "Remove line from budget",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Budget ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Line ID",
+                        "name": "lineId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "List cost centers",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Create a new cost center",
+                "parameters": [
+                    {
+                        "description": "Create cost center request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CreateCostCenterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/active": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "List active cost centers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/children/{parentId}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "List child cost centers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Parent cost center ID",
+                        "name": "parentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/code/{code}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Get a cost center by code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost center code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/type/{type}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "List cost centers by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Center type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Get a cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Delete a cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/{id}/activate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Activate a cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/{id}/deactivate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Deactivate a cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/{id}/manager": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Set manager for cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Set manager request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetManagerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/cost-centers/{id}/parent": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cost-centers"
+                ],
+                "summary": "Set parent cost center",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cost Center ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Set parent request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetParentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "List fiscal periods",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Create a new fiscal period",
+                "parameters": [
+                    {
+                        "description": "Create fiscal period request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.CreateFiscalPeriodRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/current": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Get current fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Date (YYYY-MM-DD), defaults to today",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/open": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "List open fiscal periods",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/year/{year}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "List fiscal periods by year",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Fiscal year",
+                        "name": "year",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Get a fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Delete a fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/{id}/close": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Close a fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/{id}/lock": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Lock a fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/fiscal-periods/{id}/reopen": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fiscal-periods"
+                ],
+                "summary": "Reopen a fiscal period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "List journal entries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by status (draft, posted, reversed)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Create a new journal entry",
+                "parameters": [
+                    {
+                        "description": "Create journal entry request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.CreateJournalEntryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/period/{periodId}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "List journal entries by period",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fiscal Period ID",
+                        "name": "periodId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Get a journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Delete a journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}/description": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Update journal entry description",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update description request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.UpdateDescriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}/lines": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Add line to journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Add line request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.AddLineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}/lines/{lineId}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Remove line from journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Line ID",
+                        "name": "lineId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}/post": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Post journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/journal-entries/{id}/reverse": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "journal-entries"
+                ],
+                "summary": "Reverse journal entry",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Journal Entry ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Reverse entry request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.ReverseEntryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "List tax codes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Create a new tax code",
+                "parameters": [
+                    {
+                        "description": "Create tax code request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.CreateTaxCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/active": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "List active tax codes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/code/{code}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Get a tax code by code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/type/{type}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "List tax codes by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Get a tax code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Update a tax code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update tax code request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.UpdateTaxCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Delete a tax code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/{id}/activate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Activate a tax code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/{id}/deactivate": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Deactivate a tax code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/{id}/payable-account": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Set tax payable account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Set account request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounting/tax-codes/{id}/receivable-account": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tax-codes"
+                ],
+                "summary": "Set tax receivable account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tax Code ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Set account request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_basilex_promenade_pkg_response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/analytics/sales-report": {
             "get": {
                 "description": "Retrieve sales report with filters (date range, manager, customer, status)",
@@ -14260,6 +17792,815 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_account_dto.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "code",
+                "currency_code",
+                "name"
+            ],
+            "properties": {
+                "account_type": {
+                    "type": "string",
+                    "enum": [
+                        "asset",
+                        "liability",
+                        "equity",
+                        "revenue",
+                        "expense"
+                    ]
+                },
+                "code": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_account_dto.SetParentRequest": {
+            "type": "object",
+            "required": [
+                "parent_id"
+            ],
+            "properties": {
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_account_dto.UpdateAccountRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest": {
+            "type": "object",
+            "required": [
+                "amount_cents",
+                "description",
+                "transaction_date",
+                "transaction_type"
+            ],
+            "properties": {
+                "amount_cents": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "transaction_date": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "approved_at": {
+                    "type": "string"
+                },
+                "approved_by": {
+                    "type": "string"
+                },
+                "bank_account_id": {
+                    "type": "string"
+                },
+                "bank_fees_cents": {
+                    "type": "integer"
+                },
+                "bank_statement_balance_cents": {
+                    "type": "integer"
+                },
+                "book_balance_cents": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "interest_earned_cents": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "outstanding_checks_cents": {
+                    "type": "integer"
+                },
+                "outstanding_deposits_cents": {
+                    "type": "integer"
+                },
+                "reconciled_at": {
+                    "type": "string"
+                },
+                "reconciled_by": {
+                    "type": "string"
+                },
+                "reconciliation_date": {
+                    "type": "string"
+                },
+                "statement_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest": {
+            "type": "object",
+            "required": [
+                "account_id",
+                "bank_account_id",
+                "bank_statement_balance_cents",
+                "book_balance_cents",
+                "reconciliation_date",
+                "statement_date"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "bank_account_id": {
+                    "type": "string"
+                },
+                "bank_statement_balance_cents": {
+                    "type": "integer"
+                },
+                "book_balance_cents": {
+                    "type": "integer"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "reconciliation_date": {
+                    "type": "string"
+                },
+                "statement_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse": {
+            "type": "object",
+            "properties": {
+                "amount_cents": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_matched": {
+                    "type": "boolean"
+                },
+                "matched_at": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "transaction_date": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest": {
+            "type": "object",
+            "required": [
+                "account_id",
+                "budget_amount"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "budget_amount": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetLineResponse": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "actual_amount": {
+                    "type": "integer"
+                },
+                "budget_amount": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "variance_amount": {
+                    "type": "integer"
+                },
+                "variance_percent": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse": {
+            "type": "object",
+            "properties": {
+                "approved_at": {
+                    "type": "string"
+                },
+                "approved_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fiscal_year": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetLineResponse"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_actual": {
+                    "type": "integer"
+                },
+                "total_budget": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.CreateBudgetRequest": {
+            "type": "object",
+            "required": [
+                "fiscal_year",
+                "name"
+            ],
+            "properties": {
+                "fiscal_year": {
+                    "type": "integer",
+                    "maximum": 2100,
+                    "minimum": 2000
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.UpdateLineRequest": {
+            "type": "object",
+            "required": [
+                "budget_amount"
+            ],
+            "properties": {
+                "budget_amount": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse": {
+            "type": "object",
+            "properties": {
+                "center_type": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "manager_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CreateCostCenterRequest": {
+            "type": "object",
+            "required": [
+                "center_type",
+                "code",
+                "name"
+            ],
+            "properties": {
+                "center_type": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "manager_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetManagerRequest": {
+            "type": "object",
+            "required": [
+                "manager_id"
+            ],
+            "properties": {
+                "manager_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetParentRequest": {
+            "type": "object",
+            "required": [
+                "parent_id"
+            ],
+            "properties": {
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.CreateFiscalPeriodRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "end_date",
+                "name",
+                "period_type",
+                "start_date"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "period_type": {
+                    "type": "string",
+                    "enum": [
+                        "month",
+                        "quarter",
+                        "year"
+                    ]
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse": {
+            "type": "object",
+            "properties": {
+                "closed_at": {
+                    "type": "string"
+                },
+                "closed_by": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lock_date": {
+                    "type": "string"
+                },
+                "locked_at": {
+                    "type": "string"
+                },
+                "locked_by": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "period_type": {
+                    "type": "string"
+                },
+                "reopened_at": {
+                    "type": "string"
+                },
+                "reopened_by": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.AddLineRequest": {
+            "type": "object",
+            "required": [
+                "account_id"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "credit_cents": {
+                    "type": "integer"
+                },
+                "debit_cents": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.CreateJournalEntryRequest": {
+            "type": "object",
+            "required": [
+                "description",
+                "entry_date",
+                "source_type"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "entry_date": {
+                    "type": "string"
+                },
+                "source_id": {
+                    "type": "string"
+                },
+                "source_type": {
+                    "type": "string",
+                    "enum": [
+                        "manual",
+                        "bank_transaction",
+                        "invoice",
+                        "payment",
+                        "receipt"
+                    ]
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryLineResponse": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "credit_cents": {
+                    "type": "integer"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "debit_cents": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "line_order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "entry_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryLineResponse"
+                    }
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "posted_at": {
+                    "type": "string"
+                },
+                "posted_by": {
+                    "type": "string"
+                },
+                "reversed_at": {
+                    "type": "string"
+                },
+                "reversed_by": {
+                    "type": "string"
+                },
+                "source_id": {
+                    "type": "string"
+                },
+                "source_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.ReverseEntryRequest": {
+            "type": "object",
+            "required": [
+                "reverse_description"
+            ],
+            "properties": {
+                "reverse_description": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.UpdateDescriptionRequest": {
+            "type": "object",
+            "required": [
+                "description"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.CreateTaxCodeRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "rate",
+                "tax_type"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rate": {
+                    "type": "integer",
+                    "maximum": 10000,
+                    "minimum": 0
+                },
+                "tax_type": {
+                    "type": "string",
+                    "enum": [
+                        "vat",
+                        "income_tax",
+                        "payroll_tax",
+                        "withholding",
+                        "excise",
+                        "customs",
+                        "property",
+                        "other"
+                    ]
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_id"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "rate": {
+                    "type": "integer"
+                },
+                "tax_payable_account_id": {
+                    "type": "string"
+                },
+                "tax_receivable_account_id": {
+                    "type": "string"
+                },
+                "tax_type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.UpdateTaxCodeRequest": {
+            "type": "object",
+            "required": [
+                "rate"
+            ],
+            "properties": {
+                "rate": {
+                    "type": "integer",
+                    "maximum": 10000,
+                    "minimum": 0
+                }
+            }
+        },
         "github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountListResponse": {
             "type": "object",
             "properties": {

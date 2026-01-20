@@ -33,6 +33,26 @@ import (
 	bankTransactionRepo "github.com/basilex/promenade/internal/contexts/banking/banktransaction/adapter/repository/postgres"
 	bankTransactionUseCase "github.com/basilex/promenade/internal/contexts/banking/banktransaction/usecase"
 
+	accountingAudit "github.com/basilex/promenade/internal/contexts/accounting/audit"
+	accountRepo "github.com/basilex/promenade/internal/contexts/accounting/account/adapter/repository/postgres"
+	accountCache "github.com/basilex/promenade/internal/contexts/accounting/account/cache"
+	accountUseCase "github.com/basilex/promenade/internal/contexts/accounting/account/usecase"
+	journalEntryRepo "github.com/basilex/promenade/internal/contexts/accounting/journalentry/adapter/repository/postgres"
+	journalEntryUseCase "github.com/basilex/promenade/internal/contexts/accounting/journalentry/usecase"
+	fiscalPeriodRepo "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/adapter/repository/postgres"
+	fiscalPeriodCache "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/cache"
+	fiscalPeriodUseCase "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/usecase"
+	taxCodeRepo "github.com/basilex/promenade/internal/contexts/accounting/taxcode/adapter/repository/postgres"
+	taxCodeCache "github.com/basilex/promenade/internal/contexts/accounting/taxcode/cache"
+	taxCodeUseCase "github.com/basilex/promenade/internal/contexts/accounting/taxcode/usecase"
+	budgetRepo "github.com/basilex/promenade/internal/contexts/accounting/budget/adapter/repository/postgres"
+	budgetUseCase "github.com/basilex/promenade/internal/contexts/accounting/budget/usecase"
+	costCenterRepo "github.com/basilex/promenade/internal/contexts/accounting/costcenter/adapter/repository/postgres"
+	costCenterUseCase "github.com/basilex/promenade/internal/contexts/accounting/costcenter/usecase"
+	reconciliationRepo "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/adapter/repository/postgres"
+	reconciliationUseCase "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/usecase"
+	accountingIntegration "github.com/basilex/promenade/internal/contexts/accounting/integration"
+
 	cashregisterRepo "github.com/basilex/promenade/internal/contexts/fiscal/cashregister/adapter/repository/postgres"
 	fiscalIntegration "github.com/basilex/promenade/internal/contexts/fiscal/integration"
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
@@ -42,8 +62,8 @@ import (
 
 // App holds all application dependencies
 type App struct {
-	Config                  *config.AppConfig
 	DB                      *sqlx.DB
+	Config                  *config.AppConfig
 	RedisClient             *redis.Client
 	CacheClient             cache.ICache
 	JWTManager              *jwt.Manager
@@ -53,10 +73,18 @@ type App struct {
 	OrderEventHandler       *integration.OrderEventHandler
 	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
 	SalesReportEventHandler *analyticsIntegration.SalesReportEventHandler
-	SalesReportHandler      *analyticsHandler.SalesReportHandler
-	BankAccountUseCase      bankAccountUseCase.IBankAccountUseCase
-	BankTransactionUseCase  bankTransactionUseCase.IBankTransactionUseCase
-	Scheduler               *scheduler.Engine
+	SalesReportHandler        *analyticsHandler.SalesReportHandler
+	BankAccountUseCase        bankAccountUseCase.IBankAccountUseCase
+	BankTransactionUseCase    bankTransactionUseCase.IBankTransactionUseCase
+	AccountUseCase            accountUseCase.IAccountUseCase
+	JournalEntryUseCase       journalEntryUseCase.IJournalEntryUseCase
+	FiscalPeriodUseCase       fiscalPeriodUseCase.IFiscalPeriodUseCase
+	TaxCodeUseCase            taxCodeUseCase.ITaxCodeUseCase
+	BudgetUseCase             budgetUseCase.IBudgetUseCase
+	CostCenterUseCase    costCenterUseCase.ICostCenterUseCase
+	ReconciliationUseCase reconciliationUseCase.IReconciliationUseCase
+	AccountingEventHandler *accountingIntegration.AccountingEventHandler
+	Scheduler                 *scheduler.Engine
 }
 
 // Bootstrap initializes all application dependencies
@@ -138,6 +166,20 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 	app.BankAccountUseCase = bankAccountUC
 	app.BankTransactionUseCase = bankTransactionUC
 
+	// Initialize Accounting Context
+	accountUC, journalEntryUC, fiscalPeriodUC, taxCodeUC, budgetUC, costCenterUC, reconciliationUC, accountingEventHandler, err := initAccounting(db, eventBus)
+	if err != nil {
+		return nil, err
+	}
+	app.AccountUseCase = accountUC
+	app.JournalEntryUseCase = journalEntryUC
+	app.FiscalPeriodUseCase = fiscalPeriodUC
+	app.TaxCodeUseCase = taxCodeUC
+	app.BudgetUseCase = budgetUC
+	app.CostCenterUseCase = costCenterUC
+	app.ReconciliationUseCase = reconciliationUC
+	app.AccountingEventHandler = accountingEventHandler
+
 	// Initialize Scheduler (Fiscal retries, etc.)
 	schedulerEngine, err := initScheduler(cfg, db, receiptUC, printerEnabled, checkboxClient)
 	if err != nil {
@@ -213,7 +255,7 @@ func runMigrations(db *sqlx.DB) error {
 	migrationManager := migration.NewManager(db, "migrations")
 	ctx := context.Background()
 
-	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "banking", "warehouse", "scripting", "fiscal", "ui"}
+	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "banking", "accounting", "warehouse", "scripting", "fiscal", "ui"}
 	for _, ns := range namespaces {
 		if err := migrationManager.MigrateNamespace(ctx, ns); err != nil {
 			logger.Fatal("Failed to run migrations",
@@ -497,6 +539,80 @@ func initBanking(db *sqlx.DB) (bankAccountUseCase.IBankAccountUseCase, bankTrans
 	)
 
 	return bankAccountUC, bankTransactionUC, nil
+}
+
+// initAccounting initializes Accounting Context (7 aggregates + event handlers)
+func initAccounting(db *sqlx.DB, eventBus bus.IBus) (
+	accountUseCase.IAccountUseCase,
+	journalEntryUseCase.IJournalEntryUseCase,
+	fiscalPeriodUseCase.IFiscalPeriodUseCase,
+	taxCodeUseCase.ITaxCodeUseCase,
+	budgetUseCase.IBudgetUseCase,
+	costCenterUseCase.ICostCenterUseCase,
+	reconciliationUseCase.IReconciliationUseCase,
+	*accountingIntegration.AccountingEventHandler,
+	error,
+) {
+	// Initialize Audit Logger
+	auditLogger := accountingAudit.NewAuditLogger(db)
+
+	// Initialize Account Use Case with Cache
+	accountRepository := accountRepo.NewAccountRepository(db)
+	accountCacheInstance := accountCache.NewAccountCache(accountRepository)
+	accountUC := accountUseCase.NewAccountUseCase(accountRepository, accountCacheInstance, auditLogger)
+
+	// Initialize Fiscal Period Use Case with Cache
+	fiscalPeriodRepository := fiscalPeriodRepo.NewFiscalPeriodRepository(db)
+	fiscalPeriodCacheInstance := fiscalPeriodCache.NewFiscalPeriodCache(fiscalPeriodRepository)
+	fiscalPeriodUC := fiscalPeriodUseCase.NewFiscalPeriodUseCase(fiscalPeriodRepository, fiscalPeriodCacheInstance, auditLogger)
+
+	// Initialize Tax Code Use Case with Cache
+	taxCodeRepository := taxCodeRepo.NewTaxCodeRepository(db)
+	taxCodeCacheInstance := taxCodeCache.NewTaxCodeCache(taxCodeRepository)
+	taxCodeUC := taxCodeUseCase.NewTaxCodeUseCase(taxCodeRepository, taxCodeCacheInstance, auditLogger)
+
+	// Initialize Journal Entry Use Case with Event Store
+	journalEntryRepository := journalEntryRepo.NewJournalEntryRepository(db)
+	eventStore := accountingAudit.NewEventStore(db)
+	journalEntryUC := journalEntryUseCase.NewJournalEntryUseCase(journalEntryRepository, eventStore, auditLogger)
+
+	// Initialize Budget Use Case
+	budgetRepository := budgetRepo.NewBudgetRepository(db)
+	budgetUC := budgetUseCase.NewBudgetUseCase(budgetRepository, auditLogger)
+
+	// Initialize Cost Center Use Case
+	costCenterRepository := costCenterRepo.NewCostCenterRepository(db)
+	costCenterUC := costCenterUseCase.NewCostCenterUseCase(costCenterRepository, auditLogger)
+
+	// Initialize Reconciliation Use Case
+	reconciliationRepository := reconciliationRepo.NewReconciliationRepository(db)
+	reconciliationUC := reconciliationUseCase.NewReconciliationUseCase(
+		reconciliationRepository,
+		auditLogger,
+	)
+
+	// Initialize Accounting Event Handler (for bank/billing/fiscal integration)
+	accountingEventHandler := accountingIntegration.NewAccountingEventHandler(
+		journalEntryUC,
+		accountUC,
+		fiscalPeriodUC,
+	)
+
+	// Register event handlers
+	if err := accountingEventHandler.RegisterHandlers(eventBus); err != nil {
+		logger.Fatal("Failed to register accounting event handlers", slog.Any("error", err))
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
+	}
+
+	logger.Info("Accounting Context initialized",
+		slog.String("component", "7 Aggregates + Event Integration"),
+		slog.Int("use_cases", 7),
+		slog.Int("caches", 3),
+		slog.Bool("audit_enabled", true),
+		slog.Bool("event_sourcing_enabled", true),
+	)
+
+	return accountUC, journalEntryUC, fiscalPeriodUC, taxCodeUC, budgetUC, costCenterUC, reconciliationUC, accountingEventHandler, nil
 }
 
 // Close gracefully closes all application dependencies

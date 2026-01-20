@@ -89,6 +89,7 @@ func TestBankTransactionRepository_Update(t *testing.T) {
 		require.NoError(t, err)
 
 		found, err := repo.GetByID(ctx, transaction.GetID())
+		require.NoError(t, err)
 		assert.Equal(t, "Updated description", found.Description)
 	})
 }

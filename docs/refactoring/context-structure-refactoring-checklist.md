@@ -16,7 +16,7 @@ This document tracks the migration of all contexts to the **standardized structu
 
 ### Phase 1: New Contexts (Start Here)
 
-- ✅ **banking** - Already follows new standard (completed Jan 17, 2026)
+-  **banking** - Already follows new standard (completed Jan 17, 2026)
 - All new contexts MUST follow standard from day 1
 
 ### Phase 2: Active Development Contexts
@@ -38,52 +38,52 @@ This document tracks the migration of all contexts to the **standardized structu
 
 ## Context Inventory & Status
 
-### ✅ Compliant Contexts
+###  Compliant Contexts
 
 | Context     | Status       | Notes                          | Last Updated |
 | ----------- | ------------ | ------------------------------ | ------------ |
-| **banking** | ✅ Compliant | New context following standard | Jan 17, 2026 |
+| **banking** |  Compliant | New context following standard | Jan 17, 2026 |
 
-### 🔄 In Progress
+###  In Progress
 
 | Context | Status | Priority | Assignee | Notes |
 | ------- | ------ | -------- | -------- | ----- |
 | -       | -      | -        | -        | -     |
 
-### ⚠️ Needs Refactoring (High Priority)
+###  Needs Refactoring (High Priority)
 
 | Context                       | Current State   | Issues                                                                                    | Priority  | Effort |
 | ----------------------------- | --------------- | ----------------------------------------------------------------------------------------- | --------- | ------ |
-| **customer-mgmt/analytics**   | Mixed structure | - Files in root + subdirs<br>- Inconsistent naming<br>- `usecase.go` + `usecase/` coexist | 🔴 High   | Medium |
-| **customer-mgmt/company**     | Flat structure  | - `entity.go` in root<br>- No `/aggregate/` folder<br>- No separate use case files        | 🔴 High   | Medium |
-| **customer-mgmt/deal**        | Flat structure  | - Same as company<br>- Mixed with adapter                                                 | 🔴 High   | Medium |
-| **customer-mgmt/customer**    | Flat structure  | - Same pattern as company                                                                 | 🟡 Medium | Medium |
-| **customer-mgmt/interaction** | Flat structure  | - Same pattern                                                                            | 🟡 Medium | Medium |
+| **customer-mgmt/analytics**   | Mixed structure | - Files in root + subdirs<br>- Inconsistent naming<br>- `usecase.go` + `usecase/` coexist |  High   | Medium |
+| **customer-mgmt/company**     | Flat structure  | - `entity.go` in root<br>- No `/aggregate/` folder<br>- No separate use case files        |  High   | Medium |
+| **customer-mgmt/deal**        | Flat structure  | - Same as company<br>- Mixed with adapter                                                 |  High   | Medium |
+| **customer-mgmt/customer**    | Flat structure  | - Same pattern as company                                                                 |  Medium | Medium |
+| **customer-mgmt/interaction** | Flat structure  | - Same pattern                                                                            |  Medium | Medium |
 
-### 🟢 Lower Priority (Stable)
+###  Lower Priority (Stable)
 
 | Context                     | Current State              | Priority  | Effort         |
 | --------------------------- | -------------------------- | --------- | -------------- |
-| **identity/user**           | Flat structure             | 🟡 Medium | Low            |
-| **identity/profile**        | Flat structure             | 🟡 Medium | Low            |
-| **identity/contact**        | Flat structure             | 🟡 Medium | Low            |
-| **identity/role**           | Flat structure             | 🟡 Medium | Low            |
-| **identity/permission**     | Flat structure             | 🟡 Medium | Low            |
-| **order-mgmt/order**        | Flat structure             | 🟡 Medium | Medium         |
-| **order-mgmt/contract**     | Flat structure             | 🟡 Medium | Low            |
-| **order-mgmt/fulfillment**  | Saga pattern               | 🟢 Low    | High (complex) |
-| **billing/invoice**         | Flat structure             | 🟡 Medium | Low            |
-| **billing/payment**         | Flat structure             | 🟡 Medium | Low            |
-| **billing/subscription**    | Flat structure             | 🟡 Medium | Low            |
-| **warehouse/product**       | Flat structure             | 🟡 Medium | Low            |
-| **warehouse/inventory**     | Flat structure             | 🟡 Medium | Medium         |
-| **warehouse/location**      | Flat structure             | 🟡 Medium | Low            |
-| **warehouse/stockmovement** | Flat structure             | 🟡 Medium | Low            |
-| **fiscal/receipt**          | Flat structure + providers | 🟡 Medium | Medium         |
-| **fiscal/cashregister**     | Flat structure             | 🟡 Medium | Low            |
-| **scripting/script**        | Flat structure             | 🟢 Low    | Low            |
+| **identity/user**           | Flat structure             |  Medium | Low            |
+| **identity/profile**        | Flat structure             |  Medium | Low            |
+| **identity/contact**        | Flat structure             |  Medium | Low            |
+| **identity/role**           | Flat structure             |  Medium | Low            |
+| **identity/permission**     | Flat structure             |  Medium | Low            |
+| **order-mgmt/order**        | Flat structure             |  Medium | Medium         |
+| **order-mgmt/contract**     | Flat structure             |  Medium | Low            |
+| **order-mgmt/fulfillment**  | Saga pattern               |  Low    | High (complex) |
+| **billing/invoice**         | Flat structure             |  Medium | Low            |
+| **billing/payment**         | Flat structure             |  Medium | Low            |
+| **billing/subscription**    | Flat structure             |  Medium | Low            |
+| **warehouse/product**       | Flat structure             |  Medium | Low            |
+| **warehouse/inventory**     | Flat structure             |  Medium | Medium         |
+| **warehouse/location**      | Flat structure             |  Medium | Low            |
+| **warehouse/stockmovement** | Flat structure             |  Medium | Low            |
+| **fiscal/receipt**          | Flat structure + providers |  Medium | Medium         |
+| **fiscal/cashregister**     | Flat structure             |  Medium | Low            |
+| **scripting/script**        | Flat structure             |  Low    | Low            |
 
-### 🔵 Special Cases (Keep As-Is)
+###  Special Cases (Keep As-Is)
 
 | Context              | Status       | Reason                   |
 | -------------------- | ------------ | ------------------------ |
@@ -97,7 +97,7 @@ This document tracks the migration of all contexts to the **standardized structu
 
 ## Detailed Refactoring Plans
 
-### 1. customer-mgmt/analytics (🔴 High Priority)
+### 1. customer-mgmt/analytics ( High Priority)
 
 **Current Structure**:
 
@@ -170,7 +170,7 @@ This document tracks the migration of all contexts to the **standardized structu
 
 ---
 
-### 2. customer-mgmt/company (🔴 High Priority)
+### 2. customer-mgmt/company ( High Priority)
 
 **Current Structure**:
 
@@ -248,19 +248,19 @@ This document tracks the migration of all contexts to the **standardized structu
 
 ---
 
-### 3. customer-mgmt/deal (🔴 High Priority)
+### 3. customer-mgmt/deal ( High Priority)
 
 **Same pattern as company** - follow identical migration steps.
 
 ---
 
-### 4. customer-mgmt/customer (🟡 Medium Priority)
+### 4. customer-mgmt/customer ( Medium Priority)
 
 **Same pattern as company** - follow identical migration steps.
 
 ---
 
-### 5. identity/user (🟡 Medium Priority)
+### 5. identity/user ( Medium Priority)
 
 **Current Structure**: Flat (same as company)
 
@@ -346,7 +346,7 @@ find . -type f -name "*.go" -exec sed -i '' \
 find . -type f -name "*.go" -exec sed -i '' \
   "s|${OLD_PATH}/adapter/http|${OLD_PATH}/dto|g" {} \;
 
-echo "✅ Updated imports for ${CONTEXT}"
+echo " Updated imports for ${CONTEXT}"
 ```
 
 ---
@@ -476,4 +476,4 @@ For each refactored context:
 ---
 
 **Last Updated**: January 17, 2026  
-**Status**: 🔄 In Progress (Phase 1 Complete)
+**Status**:  In Progress (Phase 1 Complete)

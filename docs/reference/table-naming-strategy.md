@@ -1,15 +1,16 @@
 # Table Naming Strategy - Analysis & Decision
 
 **Date**: 2026-01-01  
-**Status**:  CRITICAL - Requires decision before further development
+**Status**: CRITICAL - Requires decision before further development
 
 ---
 
 ## Current State (Inconsistent)
 
-###  Consistent Contexts
+### Consistent Contexts
 
 **Identity Context** (11 tables):
+
 ```
 identity_users
 identity_contacts
@@ -23,33 +24,40 @@ identity_password_reset_tokens
 identity_email_verification_tokens
 identity_login_attempts
 ```
+
 Pattern: `identity_<aggregate>`
 
 **Shared Context** (4 tables):
+
 ```
 shared_countries
 shared_currencies
 shared_languages
 shared_timezones
 ```
+
 Pattern: `shared_<aggregate>`
 
-###  Inconsistent Contexts
+### Inconsistent Contexts
 
 **Customer Management Context** (4 tables):
+
 ```
 customer_mgmt_customers    ← includes mgmt (migration 000001)
 customer_deals             ← missing mgmt (migration 000003)
 customer_companies         ← missing mgmt (migration 000002)
 customer_interactions      ← missing mgmt (migration 000004)
 ```
+
 Pattern: **INCONSISTENT**
 
 **Order Management Context** (2 tables):
+
 ```
 order_mgmt_orders
 order_mgmt_order_lines
 ```
+
 Pattern: `order_mgmt_<aggregate>`
 
 ---
@@ -59,16 +67,18 @@ Pattern: `order_mgmt_<aggregate>`
 ### 1. Why Inconsistency Happened?
 
 Looking at migration order:
-- `000001_customers.up.sql` - created `customer_mgmt_customers` (СТАРИЙ підхід з mgmt)
-- `000002_companies.up.sql` - created `customer_companies` (НОВИЙ підхід без mgmt)
-- `000003_deals.up.sql` - created `customer_deals` (НОВИЙ підхід без mgmt)
-- `000004_interactions.up.sql` - created `customer_interactions` (НОВИЙ підхід без mgmt)
+
+- `000001_customers.up.sql` - created `customer_mgmt_customers` (OLD approach with mgmt)
+- `000002_companies.up.sql` - created `customer_companies` (NEW approach without mgmt)
+- `000003_deals.up.sql` - created `customer_deals` (NEW approach without mgmt)
+- `000004_interactions.up.sql` - created `customer_interactions` (NEW approach without mgmt)
 
 **Root cause**: Migration 000001 was created BEFORE we established naming convention. Migrations 000002-000004 followed new pattern but 000001 was never updated.
 
 ### 2. Impact
 
 **Code affected**:
+
 - All SQL queries in `customer` aggregate reference `customer_mgmt_customers`
 - All SQL queries in other aggregates reference `customer_*` (no mgmt)
 - Analytics queries (just implemented) use mixed approach
@@ -79,9 +89,10 @@ Looking at migration order:
 
 ## Options Analysis
 
-### Option 1: `<context>_<aggregate>` (SHORT - without mgmt)  RECOMMENDED
+### Option 1: `<context>_<aggregate>` (SHORT - without mgmt) RECOMMENDED
 
 **Pattern**:
+
 ```
 customer_customers
 customer_deals
@@ -96,18 +107,20 @@ shared_countries    (already correct)
 ```
 
 **Pros**:
--  Shorter, cleaner
--  Consistent with Identity & Shared contexts
--  Logical: `customer_deals` = deals in customer context
--  No redundancy (`customer_mgmt` sounds like "customer management management")
--  Future-proof: easier to type, less DB storage
+
+- Shorter, cleaner
+- Consistent with Identity & Shared contexts
+- Logical: `customer_deals` = deals in customer context
+- No redundancy (`customer_mgmt` sounds like "customer management management")
+- Future-proof: easier to type, less DB storage
 
 **Cons**:
--  Requires renaming 3 tables:
-  - `customer_mgmt_customers` → `customer_customers`
-  - `order_mgmt_orders` → `order_orders`
-  - `order_mgmt_order_lines` → `order_lines`
--  Breaking change (but early in development)
+
+- Requires renaming 3 tables:
+- `customer_mgmt_customers` → `customer_customers`
+- `order_mgmt_orders` → `order_orders`
+- `order_mgmt_order_lines` → `order_lines`
+- Breaking change (but early in development)
 
 **Migration effort**: 3 tables × 1 migration each = **3 new migrations**
 
@@ -116,6 +129,7 @@ shared_countries    (already correct)
 ### Option 2: `<context_full>_<aggregate>` (FULL - with mgmt)
 
 **Pattern**:
+
 ```
 customer_mgmt_customers
 customer_mgmt_deals
@@ -130,17 +144,19 @@ shared_countries            (exception)
 ```
 
 **Pros**:
--  Keeps `customer_mgmt_customers` and `order_mgmt_*` as-is
--  No breaking changes for existing tables
+
+- Keeps `customer_mgmt_customers` and `order_mgmt_*` as-is
+- No breaking changes for existing tables
 
 **Cons**:
--  Longer, more verbose
--  Inconsistent with Identity & Shared (11+4=15 tables without mgmt)
--  Redundant (`customer_mgmt` = customer management context)
--  Requires renaming 3 customer tables:
-  - `customer_deals` → `customer_mgmt_deals`
-  - `customer_companies` → `customer_mgmt_companies`
-  - `customer_interactions` → `customer_mgmt_interactions`
+
+- Longer, more verbose
+- Inconsistent with Identity & Shared (11+4=15 tables without mgmt)
+- Redundant (`customer_mgmt` = customer management context)
+- Requires renaming 3 customer tables:
+- `customer_deals` → `customer_mgmt_deals`
+- `customer_companies` → `customer_mgmt_companies`
+- `customer_interactions` → `customer_mgmt_interactions`
 
 **Migration effort**: 3 tables × 1 migration each = **3 new migrations**
 
@@ -151,6 +167,7 @@ shared_countries            (exception)
 ### Option 3: `<short_context>_<aggregate>` (ABBR - abbreviated)
 
 **Pattern**:
+
 ```
 crm_customers
 crm_deals
@@ -165,20 +182,22 @@ shared_countries    (already correct)
 ```
 
 **Pros**:
--  Very short (`crm_` instead of `customer_`)
--  Domain-driven (CRM is ubiquitous language)
+
+- Very short (`crm_` instead of `customer_`)
+- Domain-driven (CRM is ubiquitous language)
 
 **Cons**:
--  Breaks established pattern (Identity & Shared use full context name)
--  `orders_orders` looks weird
--  Less clear for new developers (what is "crm"?)
--  Requires renaming ALL 6 tables in customer-mgmt and order-mgmt
+
+- Breaks established pattern (Identity & Shared use full context name)
+- `orders_orders` looks weird
+- Less clear for new developers (what is "crm"?)
+- Requires renaming ALL 6 tables in customer-mgmt and order-mgmt
 
 **Migration effort**: 6 tables × 1 migration each = **6 new migrations**
 
 ---
 
-## Recommendation: Option 1 
+## Recommendation: Option 1
 
 ### Rationale
 
@@ -247,7 +266,7 @@ ALTER TABLE customer_mgmt_customers RENAME TO customer_customers;
 -- Update indexes (PostgreSQL auto-renames, but explicit for clarity)
 -- customer_mgmt_customers_pkey → customer_customers_pkey (auto)
 -- idx_customer_mgmt_customers_email → idx_customer_customers_email
-ALTER INDEX IF EXISTS idx_customer_mgmt_customers_email 
+ALTER INDEX IF EXISTS idx_customer_mgmt_customers_email
     RENAME TO idx_customer_customers_email;
 
 -- ... (rename all indexes)
@@ -261,6 +280,7 @@ ALTER TABLE customer_customers RENAME TO customer_mgmt_customers;
 ```
 
 **Code changes**:
+
 - Update all SQL queries in `internal/contexts/customer-mgmt/customer/adapter/repository/postgres/`
 - Update analytics queries in `internal/contexts/customer-mgmt/analytics/usecase.go`
 - Update tests
@@ -279,6 +299,7 @@ ALTER TABLE order_mgmt_orders RENAME TO order_orders;
 ```
 
 **Code changes**:
+
 - Update all SQL queries in `internal/contexts/order-mgmt/order/adapter/repository/postgres/`
 - Update tests
 
@@ -296,6 +317,7 @@ ALTER TABLE order_mgmt_order_lines RENAME TO order_lines;
 ```
 
 **Code changes**:
+
 - Update all SQL queries in order aggregate
 - Update tests
 
@@ -342,5 +364,5 @@ ALTER TABLE order_mgmt_order_lines RENAME TO order_lines;
 ---
 
 **Status**: Awaiting decision  
-**Priority**:  HIGH - Should decide before next aggregate implementation  
+**Priority**: HIGH - Should decide before next aggregate implementation  
 **Impact**: Breaking change but fixable with migrations

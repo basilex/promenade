@@ -1,5 +1,5 @@
 -- ============================================================================
--- Fiscal Context: Cash Registers (ПРРО - Програмний РРО)
+-- Fiscal Context: Cash Registers (RRO - Registrar of Settlement Operations)
 -- ============================================================================
 -- Cash register aggregate for Ukrainian fiscal compliance
 -- Part of Fiscal Bounded Context
@@ -39,6 +39,6 @@ CREATE INDEX idx_fiscal_cash_registers_active ON fiscal_cash_registers(status) W
 CREATE INDEX idx_fiscal_cash_registers_provider_id ON fiscal_cash_registers(provider_cash_register_id) WHERE deleted_at IS NULL;
 
 -- Comments for documentation
-COMMENT ON TABLE fiscal_cash_registers IS 'Fiscal cash registers (ПРРО) for Ukrainian compliance';
+COMMENT ON TABLE fiscal_cash_registers IS 'Fiscal cash registers (RRO) for Ukrainian compliance';
 COMMENT ON COLUMN fiscal_cash_registers.version IS 'Optimistic locking version - incremented on every update';
 COMMENT ON COLUMN fiscal_cash_registers.deleted_at IS 'Soft delete timestamp - NULL means not deleted';

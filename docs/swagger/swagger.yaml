@@ -1,5 +1,551 @@
 basePath: /api/v1
 definitions:
+  github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse:
+    properties:
+      account_type:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      level:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: string
+      parent_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_account_dto.CreateAccountRequest:
+    properties:
+      account_type:
+        enum:
+        - asset
+        - liability
+        - equity
+        - revenue
+        - expense
+        type: string
+      code:
+        type: string
+      currency_code:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+    required:
+    - account_type
+    - code
+    - currency_code
+    - name
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_account_dto.SetParentRequest:
+    properties:
+      parent_id:
+        type: string
+    required:
+    - parent_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_account_dto.UpdateAccountRequest:
+    properties:
+      code:
+        type: string
+      currency_code:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest:
+    properties:
+      amount_cents:
+        type: integer
+      description:
+        type: string
+      notes:
+        type: string
+      transaction_date:
+        type: string
+      transaction_id:
+        type: string
+      transaction_type:
+        type: string
+    required:
+    - amount_cents
+    - description
+    - transaction_date
+    - transaction_type
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse:
+    properties:
+      account_id:
+        type: string
+      approved_at:
+        type: string
+      approved_by:
+        type: string
+      bank_account_id:
+        type: string
+      bank_fees_cents:
+        type: integer
+      bank_statement_balance_cents:
+        type: integer
+      book_balance_cents:
+        type: integer
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      id:
+        type: string
+      interest_earned_cents:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse'
+        type: array
+      notes:
+        type: string
+      organization_id:
+        type: string
+      outstanding_checks_cents:
+        type: integer
+      outstanding_deposits_cents:
+        type: integer
+      reconciled_at:
+        type: string
+      reconciled_by:
+        type: string
+      reconciliation_date:
+        type: string
+      statement_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest:
+    properties:
+      account_id:
+        type: string
+      bank_account_id:
+        type: string
+      bank_statement_balance_cents:
+        type: integer
+      book_balance_cents:
+        type: integer
+      currency_code:
+        type: string
+      reconciliation_date:
+        type: string
+      statement_date:
+        type: string
+    required:
+    - account_id
+    - bank_account_id
+    - bank_statement_balance_cents
+    - book_balance_cents
+    - reconciliation_date
+    - statement_date
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse:
+    properties:
+      amount_cents:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_matched:
+        type: boolean
+      matched_at:
+        type: string
+      notes:
+        type: string
+      transaction_date:
+        type: string
+      transaction_id:
+        type: string
+      transaction_type:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest:
+    properties:
+      account_id:
+        type: string
+      budget_amount:
+        minimum: 0
+        type: integer
+      description:
+        type: string
+    required:
+    - account_id
+    - budget_amount
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetLineResponse:
+    properties:
+      account_id:
+        type: string
+      actual_amount:
+        type: integer
+      budget_amount:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      variance_amount:
+        type: integer
+      variance_percent:
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse:
+    properties:
+      approved_at:
+        type: string
+      approved_by:
+        type: string
+      created_at:
+        type: string
+      fiscal_year:
+        type: integer
+      id:
+        type: string
+      lines:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetLineResponse'
+        type: array
+      name:
+        type: string
+      organization_id:
+        type: string
+      status:
+        type: string
+      total_actual:
+        type: integer
+      total_budget:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_budget_dto.CreateBudgetRequest:
+    properties:
+      fiscal_year:
+        maximum: 2100
+        minimum: 2000
+        type: integer
+      name:
+        type: string
+    required:
+    - fiscal_year
+    - name
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_budget_dto.UpdateLineRequest:
+    properties:
+      budget_amount:
+        minimum: 0
+        type: integer
+    required:
+    - budget_amount
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse:
+    properties:
+      center_type:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      level:
+        type: integer
+      manager_id:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      parent_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CreateCostCenterRequest:
+    properties:
+      center_type:
+        type: string
+      code:
+        type: string
+      description:
+        type: string
+      manager_id:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+    required:
+    - center_type
+    - code
+    - name
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetManagerRequest:
+    properties:
+      manager_id:
+        type: string
+    required:
+    - manager_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetParentRequest:
+    properties:
+      parent_id:
+        type: string
+    required:
+    - parent_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.CreateFiscalPeriodRequest:
+    properties:
+      code:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      period_type:
+        enum:
+        - month
+        - quarter
+        - year
+        type: string
+      start_date:
+        type: string
+    required:
+    - code
+    - end_date
+    - name
+    - period_type
+    - start_date
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse:
+    properties:
+      closed_at:
+        type: string
+      closed_by:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      lock_date:
+        type: string
+      locked_at:
+        type: string
+      locked_by:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      period_type:
+        type: string
+      reopened_at:
+        type: string
+      reopened_by:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.AddLineRequest:
+    properties:
+      account_id:
+        type: string
+      credit_cents:
+        type: integer
+      debit_cents:
+        type: integer
+      description:
+        type: string
+    required:
+    - account_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.CreateJournalEntryRequest:
+    properties:
+      description:
+        type: string
+      entry_date:
+        type: string
+      source_id:
+        type: string
+      source_type:
+        enum:
+        - manual
+        - bank_transaction
+        - invoice
+        - payment
+        - receipt
+        type: string
+    required:
+    - description
+    - entry_date
+    - source_type
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryLineResponse:
+    properties:
+      account_id:
+        type: string
+      credit_cents:
+        type: integer
+      currency_code:
+        type: string
+      debit_cents:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      line_order:
+        type: integer
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      entry_date:
+        type: string
+      id:
+        type: string
+      lines:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryLineResponse'
+        type: array
+      organization_id:
+        type: string
+      posted_at:
+        type: string
+      posted_by:
+        type: string
+      reversed_at:
+        type: string
+      reversed_by:
+        type: string
+      source_id:
+        type: string
+      source_type:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.ReverseEntryRequest:
+    properties:
+      reverse_description:
+        type: string
+    required:
+    - reverse_description
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.UpdateDescriptionRequest:
+    properties:
+      description:
+        type: string
+    required:
+    - description
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.CreateTaxCodeRequest:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      rate:
+        maximum: 10000
+        minimum: 0
+        type: integer
+      tax_type:
+        enum:
+        - vat
+        - income_tax
+        - payroll_tax
+        - withholding
+        - excise
+        - customs
+        - property
+        - other
+        type: string
+    required:
+    - code
+    - name
+    - rate
+    - tax_type
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest:
+    properties:
+      account_id:
+        type: string
+    required:
+    - account_id
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      organization_id:
+        type: string
+      rate:
+        type: integer
+      tax_payable_account_id:
+        type: string
+      tax_receivable_account_id:
+        type: string
+      tax_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.UpdateTaxCodeRequest:
+    properties:
+      rate:
+        maximum: 10000
+        minimum: 0
+        type: integer
+    required:
+    - rate
+    type: object
   github_com_basilex_promenade_internal_contexts_banking_bankaccount_dto.BankAccountListResponse:
     properties:
       accounts:
@@ -2630,6 +3176,2315 @@ info:
   title: Promenade Platform
   version: 0.1.0
 paths:
+  /api/v1/accounting/accounts:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List accounts
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create account request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new account
+      tags:
+      - accounts
+  /api/v1/accounting/accounts/{id}:
+    delete:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete an account
+      tags:
+      - accounts
+    get:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get an account
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update account request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update an account
+      tags:
+      - accounts
+  /api/v1/accounting/accounts/{id}/activate:
+    put:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate an account
+      tags:
+      - accounts
+  /api/v1/accounting/accounts/{id}/deactivate:
+    put:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Deactivate an account
+      tags:
+      - accounts
+      - accounts
+  /api/v1/accounting/accounts/{id}/parent:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Set parent request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.SetParentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set parent account
+      tags:
+      - accounts
+  /api/v1/accounting/accounts/children/{parentId}:
+    get:
+      parameters:
+      - description: Parent account ID
+        in: path
+        name: parentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List child accounts
+      tags:
+      - accounts
+  /api/v1/accounting/accounts/code/{code}:
+    get:
+      parameters:
+      - description: Account code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_account_dto.AccountResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get an account by code
+      tags:
+      - accounts
+  /api/v1/accounting/bank-reconciliations:
+    get:
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List bank reconciliations
+      tags:
+      - bank-reconciliations
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create bank reconciliation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}:
+    delete:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a bank reconciliation
+      tags:
+      - bank-reconciliations
+    get:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}/complete:
+    post:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Complete bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}/items:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Add reconciliation item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add item to bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}/items/{itemId}:
+    delete:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove item from bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}/items/{itemId}/match:
+    post:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Mark reconciliation item as matched
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/{id}/reopen:
+    post:
+      parameters:
+      - description: Bank Reconciliation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Reopen bank reconciliation
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/bank-account/{bankAccountId}:
+    get:
+      parameters:
+      - description: Bank Account ID
+        in: path
+        name: bankAccountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List bank reconciliations by bank account
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/bank-reconciliations/status/{status}:
+    get:
+      parameters:
+      - description: Reconciliation status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List bank reconciliations by status
+      tags:
+      - bank-reconciliations
+  /api/v1/accounting/budgets:
+    get:
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List budgets
+      tags:
+      - budgets
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create budget request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.CreateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}:
+    delete:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a budget
+      tags:
+      - budgets
+    get:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}/activate:
+    post:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}/approve:
+    post:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Approve budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}/close:
+    post:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Close budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}/lines:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Add line request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add line to budget
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/{id}/lines/{lineId}:
+    delete:
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line ID
+        in: path
+        name: lineId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove line from budget
+      tags:
+      - budgets
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Budget ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line ID
+        in: path
+        name: lineId
+        required: true
+        type: string
+      - description: Update line request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.UpdateLineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update budget line
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/active:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List active budgets
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/name/{name}:
+    get:
+      parameters:
+      - description: Budget name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a budget by name
+      tags:
+      - budgets
+  /api/v1/accounting/budgets/status/{status}:
+    get:
+      parameters:
+      - description: Budget status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_budget_dto.BudgetResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List budgets by status
+      tags:
+      - budgets
+  /api/v1/accounting/cost-centers:
+    get:
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List cost centers
+      tags:
+      - cost-centers
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create cost center request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CreateCostCenterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/{id}:
+    delete:
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a cost center
+      tags:
+      - cost-centers
+    get:
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/{id}/activate:
+    put:
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate a cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/{id}/deactivate:
+    put:
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Deactivate a cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/{id}/manager:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Set manager request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetManagerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set manager for cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/{id}/parent:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cost Center ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Set parent request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.SetParentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set parent cost center
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/active:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List active cost centers
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/children/{parentId}:
+    get:
+      parameters:
+      - description: Parent cost center ID
+        in: path
+        name: parentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List child cost centers
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/code/{code}:
+    get:
+      parameters:
+      - description: Cost center code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a cost center by code
+      tags:
+      - cost-centers
+  /api/v1/accounting/cost-centers/type/{type}:
+    get:
+      parameters:
+      - description: Center type
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_costcenter_dto.CostCenterResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List cost centers by type
+      tags:
+      - cost-centers
+  /api/v1/accounting/fiscal-periods:
+    get:
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List fiscal periods
+      tags:
+      - fiscal-periods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create fiscal period request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.CreateFiscalPeriodRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/{id}:
+    delete:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a fiscal period
+      tags:
+      - fiscal-periods
+    get:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/{id}/close:
+    put:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Close a fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/{id}/lock:
+    put:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Lock a fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/{id}/reopen:
+    put:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Reopen a fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/current:
+    get:
+      parameters:
+      - description: Date (YYYY-MM-DD), defaults to today
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get current fiscal period
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/open:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List open fiscal periods
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/fiscal-periods/year/{year}:
+    get:
+      parameters:
+      - description: Fiscal year
+        in: path
+        name: year
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_fiscalperiod_dto.FiscalPeriodResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List fiscal periods by year
+      tags:
+      - fiscal-periods
+  /api/v1/accounting/journal-entries:
+    get:
+      parameters:
+      - description: Filter by status (draft, posted, reversed)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List journal entries
+      tags:
+      - journal-entries
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create journal entry request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.CreateJournalEntryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}:
+    delete:
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a journal entry
+      tags:
+      - journal-entries
+    get:
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}/description:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update description request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.UpdateDescriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update journal entry description
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}/lines:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Add line request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.AddLineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Add line to journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}/lines/{lineId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Line ID
+        in: path
+        name: lineId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Remove line from journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}/post:
+    post:
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Post journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/{id}/reverse:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Journal Entry ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Reverse entry request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.ReverseEntryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Reverse journal entry
+      tags:
+      - journal-entries
+  /api/v1/accounting/journal-entries/period/{periodId}:
+    get:
+      parameters:
+      - description: Fiscal Period ID
+        in: path
+        name: periodId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_journalentry_dto.JournalEntryResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List journal entries by period
+      tags:
+      - journal-entries
+  /api/v1/accounting/tax-codes:
+    get:
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List tax codes
+      tags:
+      - tax-codes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create tax code request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.CreateTaxCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Create a new tax code
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/{id}:
+    delete:
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Delete a tax code
+      tags:
+      - tax-codes
+    get:
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a tax code
+      tags:
+      - tax-codes
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update tax code request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.UpdateTaxCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Update a tax code
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/{id}/activate:
+    put:
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Activate a tax code
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/{id}/deactivate:
+    put:
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Deactivate a tax code
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/{id}/payable-account:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Set account request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set tax payable account
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/{id}/receivable-account:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tax Code ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Set account request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.SetTaxAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Set tax receivable account
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/active:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List active tax codes
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/code/{code}:
+    get:
+      parameters:
+      - description: Tax code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: Get a tax code by code
+      tags:
+      - tax-codes
+  /api/v1/accounting/tax-codes/type/{type}:
+    get:
+      parameters:
+      - description: Tax type
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.TaxCodeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_basilex_promenade_pkg_response.Response'
+      summary: List tax codes by type
+      tags:
+      - tax-codes
   /api/v1/analytics/sales-report:
     get:
       consumes:

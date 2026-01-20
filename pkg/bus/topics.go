@@ -49,7 +49,7 @@ const (
 	TopicPaymentReceived  = "payment.received"
 	TopicPaymentFailed    = "payment.failed"
 
-	// Banking Context Topics (planned)
+	// Banking Context Topics
 	BankAccountCreated             = "bank.account.created"
 	BankAccountConnected           = "bank.account.connected"
 	BankAccountBalanceUpdated      = "bank.account.balance.updated"
@@ -60,8 +60,15 @@ const (
 	TopicBankingStatementImported  = "banking.statement.imported"
 	TopicBankingTransactionCreated = "banking.transaction.created"
 
-	// Accounting Context Topics (planned)
-	TopicAccountingEntryPosted = "accounting.entry.posted"
+	// Accounting Context Topics
+	TopicAccountCreated            = "accounting.account.created"
+	TopicAccountUpdated            = "accounting.account.updated"
+	TopicAccountDeactivated        = "accounting.account.deactivated"
+	TopicJournalEntryCreated       = "accounting.journal_entry.created"
+	TopicJournalEntryPosted        = "accounting.journal_entry.posted"
+	TopicJournalEntryReversed      = "accounting.journal_entry.reversed"
+	TopicLedgerBalanceUpdated      = "accounting.ledger.balance.updated"
+	TopicAccountingPeriodClosed    = "accounting.period.closed"
 
 	// Notification Topics (cross-cutting)
 	TopicNotificationEmail = "notification.email"

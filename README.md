@@ -12,7 +12,7 @@
 
 ---
 
-## 📋 What is Promenade?
+##  What is Promenade?
 
 Promenade is an **open-source business platform** that replaces multiple SaaS tools with a single, modular backend:
 
@@ -30,7 +30,7 @@ Promenade is an **open-source business platform** that replaces multiple SaaS to
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -66,7 +66,7 @@ Server starts at **http://localhost:8081**
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 ### For Business Users
 
@@ -109,23 +109,23 @@ Server starts at **http://localhost:8081**
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Domain-Driven Design
 
 Promenade follows **strict DDD** with 8 bounded contexts, each owning its domain model, database schema, and APIs:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Event Bus                             │
-│          (Async communication between contexts)              │
-└─────────────────────────────────────────────────────────────┘
-     ▲          ▲         ▲         ▲         ▲         ▲
-     │          │         │         │         │         │
-┌────┴───┐ ┌───┴────┐ ┌──┴────┐ ┌──┴────┐ ┌──┴─────┐ ┌┴─────┐
-│Identity│ │Customer│ │ Order │ │Billing│ │Warehouse│ │Fiscal│
-│        │ │  Mgmt  │ │  Mgmt │ │       │ │        │ │      │
-└────────┘ └────────┘ └───────┘ └───────┘ └────────┘ └──────┘
+
+                        Event Bus                             
+          (Async communication between contexts)              
+
+                                                   
+                                                   
+     
+Identity Customer  Order  Billing Warehouse Fiscal
+           Mgmt     Mgmt                         
+     
 ```
 
 **Key Principles**:
@@ -150,69 +150,69 @@ Promenade follows **strict DDD** with 8 bounded contexts, each owning its domain
 
 ---
 
-## 📦 Project Structure
+##  Project Structure
 
 ```
 promenade/
-├── cmd/                    # Application entry points
-│   ├── api/               # HTTP server (bootstrap, routes, shutdown)
-│   ├── migrate/           # Migration runner
-│   └── seed/              # Test data seeder
-├── internal/              # Private application code
-│   ├── contexts/          # 8 bounded contexts (DDD)
-│   │   ├── identity/      # Users, authentication, authorization
-│   │   ├── customer-mgmt/ # Customers, companies, deals, interactions
-│   │   ├── order-mgmt/    # Orders, fulfillment, contracts
-│   │   ├── billing/       # Invoices, payments, subscriptions
-│   │   ├── warehouse/     # Inventory, products, stock, locations
-│   │   ├── fiscal/        # Cash registers, receipts, tax compliance
-│   │   ├── shared/        # Countries, currencies, languages, timezones
-│   │   └── ui/            # UI metadata (forms, views)
-│   └── infrastructure/    # Cross-cutting concerns
-│       ├── health/        # Health checks
-│       ├── http/          # HTTP server, middleware, response helpers
-│       └── auth/          # JWT generation, validation
-├── pkg/                   # Reusable packages (can be extracted)
-│   ├── bus/              # Event Bus (memory, Redis)
-│   ├── aggregate/        # Base aggregate, change tracking
-│   ├── jsonstore/        # Type-safe JSON fields
-│   ├── uuidv7/           # Time-ordered UUIDs
-│   ├── middleware/       # HTTP middleware (auth, rate limiting, CORS)
-│   └── response/         # Standard HTTP responses
-├── migrations/           # Database migrations (per context)
-├── test/                 # Integration and smoke tests
-├── docs/                 # Documentation
-│   ├── business/        # Business overviews (8 languages)
-│   ├── concepts/        # Architecture concepts
-│   ├── guides/          # Development guides
-│   └── reference/       # API reference
-└── config/              # Configuration files (dev, test, prod)
+ cmd/                    # Application entry points
+    api/               # HTTP server (bootstrap, routes, shutdown)
+    migrate/           # Migration runner
+    seed/              # Test data seeder
+ internal/              # Private application code
+    contexts/          # 8 bounded contexts (DDD)
+       identity/      # Users, authentication, authorization
+       customer-mgmt/ # Customers, companies, deals, interactions
+       order-mgmt/    # Orders, fulfillment, contracts
+       billing/       # Invoices, payments, subscriptions
+       warehouse/     # Inventory, products, stock, locations
+       fiscal/        # Cash registers, receipts, tax compliance
+       shared/        # Countries, currencies, languages, timezones
+       ui/            # UI metadata (forms, views)
+    infrastructure/    # Cross-cutting concerns
+        health/        # Health checks
+        http/          # HTTP server, middleware, response helpers
+        auth/          # JWT generation, validation
+ pkg/                   # Reusable packages (can be extracted)
+    bus/              # Event Bus (memory, Redis)
+    aggregate/        # Base aggregate, change tracking
+    jsonstore/        # Type-safe JSON fields
+    uuidv7/           # Time-ordered UUIDs
+    middleware/       # HTTP middleware (auth, rate limiting, CORS)
+    response/         # Standard HTTP responses
+ migrations/           # Database migrations (per context)
+ test/                 # Integration and smoke tests
+ docs/                 # Documentation
+    business/        # Business overviews (8 languages)
+    concepts/        # Architecture concepts
+    guides/          # Development guides
+    reference/       # API reference
+ config/              # Configuration files (dev, test, prod)
 ```
 
 **Context Structure** (Clean Architecture):
 
 ```
 internal/contexts/{context}/
-├── {aggregate}/               # Domain aggregate (bounded context subdomain)
-│   ├── aggregate/            # Domain entities & value objects
-│   │   └── {entity}.go       # Entity with business logic
-│   ├── repository/           # Repository interface
-│   │   └── {entity}_repository.go
-│   ├── usecase/              # Use cases (application logic)
-│   │   └── {entity}_usecase.go
-│   ├── adapter/              # External adapters
-│   │   ├── repository/postgres/  # PostgreSQL implementation
-│   │   └── http/                 # HTTP handlers
-│   ├── dto/                  # Data Transfer Objects
-│   └── errors.go             # Domain error constants
-└── README.md                 # Context documentation
+ {aggregate}/               # Domain aggregate (bounded context subdomain)
+    aggregate/            # Domain entities & value objects
+       {entity}.go       # Entity with business logic
+    repository/           # Repository interface
+       {entity}_repository.go
+    usecase/              # Use cases (application logic)
+       {entity}_usecase.go
+    adapter/              # External adapters
+       repository/postgres/  # PostgreSQL implementation
+       http/                 # HTTP handlers
+    dto/                  # Data Transfer Objects
+    errors.go             # Domain error constants
+ README.md                 # Context documentation
 ```
 
 **Learn More**: [internal/contexts/README.md](internal/contexts/README.md)
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 Promenade has **comprehensive test coverage** across 4 test levels:
 
@@ -242,26 +242,26 @@ go test ./pkg/bus/...
 
 ### Test Results (Latest)
 
-- ✅ **Unit Tests**: 200+ passing
-- ✅ **Smoke Tests**: 26/26 passing (all contexts)
-- ✅ **Integration Tests**: 29/29 passing (100% compilation)
-- ✅ **Benchmarks**: 15+ benchmarks, 377K events/sec (Event Bus)
+-  **Unit Tests**: 200+ passing
+-  **Smoke Tests**: 26/26 passing (all contexts)
+-  **Integration Tests**: 29/29 passing (100% compilation)
+-  **Benchmarks**: 15+ benchmarks, 377K events/sec (Event Bus)
 
 **Learn More**: [test/README.md](test/README.md)
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 Promenade uses **YAML configuration** with environment-specific files:
 
 ```
 config/
-├── app.postgres-dev.yaml   # Development (PostgreSQL)
-├── app.postgres-prod.yaml  # Production (PostgreSQL)
-├── app.postgres-test.yaml  # Testing (PostgreSQL)
-├── app.sqlite-dev.yaml     # Development (SQLite)
-└── app.sqlite-test.yaml    # Testing (SQLite)
+ app.postgres-dev.yaml   # Development (PostgreSQL)
+ app.postgres-prod.yaml  # Production (PostgreSQL)
+ app.postgres-test.yaml  # Testing (PostgreSQL)
+ app.sqlite-dev.yaml     # Development (SQLite)
+ app.sqlite-test.yaml    # Testing (SQLite)
 ```
 
 ### Switch Database
@@ -306,7 +306,7 @@ event_bus:
 
 ---
 
-## 🛠️ Development
+##  Development
 
 ### Daily Commands
 
@@ -355,7 +355,7 @@ make pre-push
 
 ---
 
-## 📖 API Documentation
+##  API Documentation
 
 ### Swagger UI
 
@@ -389,33 +389,33 @@ Pre-built collection with all endpoints, authentication flows, and test scripts:
 
 ---
 
-## 🌍 Multi-Language Support
+##  Multi-Language Support
 
 Business documentation available in 8 languages:
 
 | Language     | Document                                                    | Audience          |
 | ------------ | ----------------------------------------------------------- | ----------------- |
-| 🇬🇧 English   | [Business Overview](docs/business/BUSINESS_OVERVIEW.md)     | Global audience   |
-| 🇺🇦 Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md)  | Ukrainian market  |
-| 🇩🇪 Deutsch   | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | German market     |
-| 🇫🇷 Français  | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md)  | French market     |
-| 🇪🇸 Español   | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Spanish market    |
-| 🇵🇹 Português | [Visão Geral](docs/business/BUSINESS_OVERVIEW_PT.md)        | Portuguese market |
-| 🇯🇵 日本語    | [ビジネス概要](docs/business/BUSINESS_OVERVIEW_JP.md)       | Japanese market   |
-| 🇨🇳 中文      | [商业概览](docs/business/BUSINESS_OVERVIEW_ZH.md)           | Chinese market    |
+|  English   | [Business Overview](docs/business/BUSINESS_OVERVIEW.md)     | Global audience   |
+|  Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md)  | Ukrainian market  |
+|  Deutsch   | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | German market     |
+|  Français  | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md)  | French market     |
+|  Español   | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Spanish market    |
+|  Português | [Visão Geral](docs/business/BUSINESS_OVERVIEW_PT.md)        | Portuguese market |
+|      | [](docs/business/BUSINESS_OVERVIEW_JP.md)       | Japanese market   |
+|        | [](docs/business/BUSINESS_OVERVIEW_ZH.md)           | Chinese market    |
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 ### Q1 2026 (Current)
 
-- ✅ DDD refactoring (24 aggregates, 150+ domain errors)
-- ✅ Security audit (36 handlers, 417 fixes)
-- ✅ Integration tests (29 packages, 100% passing)
-- ✅ Event Bus performance (377K events/sec)
-- 🔄 Web frontend (React/TypeScript)
-- 🔄 Mobile apps (iOS, Android)
+-  DDD refactoring (24 aggregates, 150+ domain errors)
+-  Security audit (36 handlers, 417 fixes)
+-  Integration tests (29 packages, 100% passing)
+-  Event Bus performance (377K events/sec)
+-  Web frontend (React/TypeScript)
+-  Mobile apps (iOS, Android)
 
 ### Q2 2026
 
@@ -436,7 +436,7 @@ Business documentation available in 8 languages:
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please read:
 
@@ -468,7 +468,7 @@ git push origin feature/my-feature
 
 ---
 
-## 📄 License
+##  License
 
 Promenade is open-source software licensed under the **MIT License**.
 
@@ -476,7 +476,7 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-## 💬 Support
+##  Support
 
 - **Documentation**: https://basilex.github.io/promenade/
 - **Issues**: https://github.com/basilex/promenade/issues
@@ -485,17 +485,17 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🏆 Status
+##  Status
 
 - **Version**: 1.0.0
 - **Status**: Production-ready
 - **Go Version**: 1.24+
 - **Database**: PostgreSQL 16, SQLite 3
-- **Tests**: ✅ 200+ unit, 26 smoke, 29 integration
-- **Code Quality**: ✅ 0 lint issues
-- **Security**: ✅ Audit complete (Jan 2026)
-- **Documentation**: ✅ Comprehensive (8 languages)
+- **Tests**:  200+ unit, 26 smoke, 29 integration
+- **Code Quality**:  0 lint issues
+- **Security**:  Audit complete (Jan 2026)
+- **Documentation**:  Comprehensive (8 languages)
 
 ---
 
-**Built with ❤️ using Domain-Driven Design and Go**
+**Built with  using Domain-Driven Design and Go**

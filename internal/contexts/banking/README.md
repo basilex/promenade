@@ -4,21 +4,21 @@
 
 ## Quick Navigation
 
-📋 **Design & Concepts**
+ **Design & Concepts**
 
 - [Architecture Overview](#architecture) - Clean architecture layers and structure
 - [Domain Model](#domain-model) - BankAccount and BankTransaction aggregates
 - [Business Rules](#business-rules) - Domain constraints and workflows
 - [Provider Integration](#provider-integration) - External bank connections
 
-📚 **Implementation Details**
+ **Implementation Details**
 
 - [Database Schema](#database-schema) - Table structures and relationships
 - [API Endpoints](#api-endpoints) - REST API documentation
 - [Testing Strategy](#testing) - Test structure and patterns
 - [Implementation Status](#implementation-status) - Current progress
 
-🔗 **Related Documentation**
+ **Related Documentation**
 
 - [../../docs/concepts/banking-integration.md](../../docs/concepts/banking-integration.md) - Banking integration patterns
 - [../../docs/guides/money-precision.md](../../docs/guides/money-precision.md) - Money handling best practices
@@ -309,16 +309,16 @@ banking/
 
 ## Implementation Status
 
-- ✅ **BankAccount aggregate** - Entity + business rules complete
-- ✅ **BankTransaction aggregate** - Entity + business rules complete
-- ✅ **Repository interfaces** - IBankAccountRepository, IBankTransactionRepository
-- ✅ **PostgreSQL implementations** - Full CRUD + domain queries
-- ✅ **Domain errors** - Typed error constants
-- ✅ **Use cases** - All use cases implemented
-- ✅ **DTOs** - Request/response data transfer objects
-- ✅ **HTTP handlers** - REST API endpoints complete
-- ✅ **Integration tests** - 27 tests (10 BankAccount + 17 BankTransaction)
-- ✅ **Smoke tests** - 23 tests (10 BankAccount + 13 BankTransaction)
+-  **BankAccount aggregate** - Entity + business rules complete
+-  **BankTransaction aggregate** - Entity + business rules complete
+-  **Repository interfaces** - IBankAccountRepository, IBankTransactionRepository
+-  **PostgreSQL implementations** - Full CRUD + domain queries
+-  **Domain errors** - Typed error constants
+-  **Use cases** - All use cases implemented
+-  **DTOs** - Request/response data transfer objects
+-  **HTTP handlers** - REST API endpoints complete
+-  **Integration tests** - 27 tests (10 BankAccount + 17 BankTransaction)
+-  **Smoke tests** - 23 tests (10 BankAccount + 13 BankTransaction)
 - ⏳ **Provider adapters** - Monobank/Privat24/PUMB (planned)
 - ⏳ **Statement import** - CSV/Excel import (planned)
 
@@ -326,14 +326,14 @@ banking/
 
 **Integration Tests** (Repository layer with real PostgreSQL):
 
-- ✅ `test/integration/contexts/banking/bankaccount/repository_test.go` - 10 tests
-- ✅ `test/integration/contexts/banking/banktransaction/repository_test.go` - 17 tests
-- 💰 **Money precision tests** - Exact kopiyky validation
+-  `test/integration/contexts/banking/bankaccount/repository_test.go` - 10 tests
+-  `test/integration/contexts/banking/banktransaction/repository_test.go` - 17 tests
+-  **Money precision tests** - Exact kopiyky validation
 
 **Smoke Tests** (Handler layer with mocked UseCases):
 
-- ✅ `test/smoke/contexts/banking/bankaccount/handler_test.go` - 10 tests
-- ✅ `test/smoke/contexts/banking/banktransaction/handler_test.go` - 13 tests
+-  `test/smoke/contexts/banking/bankaccount/handler_test.go` - 10 tests
+-  `test/smoke/contexts/banking/banktransaction/handler_test.go` - 13 tests
 
 See [test/smoke/contexts/banking/README.md](../../../test/smoke/contexts/banking/README.md) for detailed test documentation.
 

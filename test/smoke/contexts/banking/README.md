@@ -4,24 +4,24 @@ Comprehensive test suite for Banking bounded context covering repository and han
 
 ## Quick Navigation
 
-📊 **Test Overview**
+ **Test Overview**
 
 - [Status Summary](#status-summary) - Current completion status
 - [Test Structure](#test-structure) - File organization
 - [Running Tests](#running-tests) - Execution commands
 
-💰 **Critical Patterns**
+ **Critical Patterns**
 
 - [Money Precision](#1-money-precision-kopiyky--critical) - Kopiyky precision validation
 - [Matching Workflow](#2-matching-workflow) - Transaction reconciliation
 - [Provider Integration](#3-provider-accounts) - External bank connections
 
-📚 **Detailed Tests**
+ **Detailed Tests**
 
 - [Integration Tests](#completed-integration-tests-repository-layer-) - Repository layer with PostgreSQL
 - [Smoke Tests](#completed-smoke-tests-handler-layer-) - Handler layer with mocks
 
-🔗 **Related Documentation**
+ **Related Documentation**
 
 - [../../../internal/contexts/banking/README.md](../../../internal/contexts/banking/README.md) - Banking context implementation
 - [../../integration/contexts/banking/](../../integration/contexts/banking/) - Integration test source code
@@ -31,25 +31,25 @@ Comprehensive test suite for Banking bounded context covering repository and han
 
 ## Status Summary
 
-✅ **Integration Tests**: 27 repository tests completed and passing  
-✅ **Smoke Tests**: 23 handler tests completed and passing  
-📊 **Test Coverage**: Full coverage of repository and handler layers
+ **Integration Tests**: 27 repository tests completed and passing  
+ **Smoke Tests**: 23 handler tests completed and passing  
+ **Test Coverage**: Full coverage of repository and handler layers
 
 ## Test Structure
 
 ```
 test/
   smoke/contexts/banking/
-    bankaccount/handler_test.go      - ✅ 10 handler tests with mocked UseCase
-    banktransaction/handler_test.go  - ✅ 13 handler tests with mocked UseCase
+    bankaccount/handler_test.go      -  10 handler tests with mocked UseCase
+    banktransaction/handler_test.go  -  13 handler tests with mocked UseCase
     README.md                         - This file
 
   integration/contexts/banking/
-    bankaccount/repository_test.go   - ✅ 10 repository tests with PostgreSQL
-    banktransaction/repository_test.go - ✅ 17 repository tests with PostgreSQL
+    bankaccount/repository_test.go   -  10 repository tests with PostgreSQL
+    banktransaction/repository_test.go -  17 repository tests with PostgreSQL
 ```
 
-## Completed: Smoke Tests (Handler Layer) ✅
+## Completed: Smoke Tests (Handler Layer) 
 
 ### BankAccount Handler (10 tests)
 
@@ -98,7 +98,7 @@ test/
 
 - `TestBankTransactionHandler_SetCounterparty_Success` - Update counterparty
 
-## Completed: Integration Tests (Repository Layer) ✅
+## Completed: Integration Tests (Repository Layer) 
 
 ### BankAccount Repository (10 tests)
 
@@ -130,7 +130,7 @@ test/
 
 ## Test Patterns & Best Practices
 
-### 1. Money Precision (Kopiyky) ⚠️ CRITICAL
+### 1. Money Precision (Kopiyky)  CRITICAL
 
 ```go
 // ALWAYS test money precision to the kopiyok!
@@ -197,19 +197,19 @@ db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
 
 ## Test Coverage Goals
 
-- ✅ Integration tests: 27 repository tests with CRUD + business logic
+-  Integration tests: 27 repository tests with CRUD + business logic
 - ⏳ Smoke tests: Handler layer (needs UseCase alignment)
 - ⏳ Unit tests: Aggregate business logic (future)
 - ⏳ E2E tests: Full reconciliation workflow (future)
 
 ## Critical Business Rules Tested
 
-1. ✅ **Money Precision**: All amounts in kopiyky (cents), never float - TESTED in AmountPrecision/BalancePrecision
-2. ✅ **Matching Rules**: Only booked transactions can be matched - TESTED in MatchToInvoice/Order/Payment
+1.  **Money Precision**: All amounts in kopiyky (cents), never float - TESTED in AmountPrecision/BalancePrecision
+2.  **Matching Rules**: Only booked transactions can be matched - TESTED in MatchToInvoice/Order/Payment
 3. ⏳ **Provider Sync**: Only provider accounts can sync - NOT YET TESTED
-4. ✅ **External ID**: Unique per account (not globally unique) - TESTED in ExternalIDUnique
-5. ✅ **Status Transitions**: Pending → Booked → Reconciled/Canceled - TESTED in StatusTransitions
-6. ✅ **Soft Delete**: Accounts/transactions never hard deleted - TESTED in Delete tests
+4.  **External ID**: Unique per account (not globally unique) - TESTED in ExternalIDUnique
+5.  **Status Transitions**: Pending → Booked → Reconciled/Canceled - TESTED in StatusTransitions
+6.  **Soft Delete**: Accounts/transactions never hard deleted - TESTED in Delete tests
 
 ## Dependencies
 
