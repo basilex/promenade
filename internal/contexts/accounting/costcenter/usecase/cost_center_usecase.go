@@ -104,7 +104,7 @@ func (uc *costCenterUseCase) SetParent(ctx context.Context, id, parentID uuidv7.
 	}
 
 	// Set parent
-	if err := cc.SetParent(parentID, parent.Level+1); err != nil {
+	if err := cc.SetParent(parentID, parent.Level); err != nil {
 		return nil, err
 	}
 
