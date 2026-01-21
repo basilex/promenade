@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: promenade_test_db
+    container_name: promenade-postgres-test
     environment:
       POSTGRES_USER: system
       POSTGRES_PASSWORD: passw0rd
@@ -18,7 +18,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: promenade_test_redis
+    container_name: promenade-redis-test
     ports:
       - "6380:6379" # Use different port to avoid conflicts with dev Redis
     volumes:

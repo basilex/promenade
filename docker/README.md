@@ -4,7 +4,7 @@ Docker setup for Promenade with database-specific and environment-specific confi
 
 ## Structure
 
-```
+````
 docker/
  # PostgreSQL configurations
  docker-compose.postgres.dev.yml   # Development
@@ -18,22 +18,8 @@ docker/
 
  # Build and initialization
  Dockerfile                         # Production image build
- init-db.sh                        # PostgreSQL initialization
- init-db-mssql.sh                  # MS SQL Server initialization
-```
-
-**Pattern**: `docker-compose.{driver}.{environment}.yml`
-
-- `{driver}`: `postgres` | `mssql`
-- `{environment}`: `dev` | `test` | `prod`
-
-Makefile automatically selects the correct file based on `.promenade.workspace` configuration.
-
----
-
----
-
-## PostgreSQL Environments
+ init-db.postgres.sh               # PostgreSQL initialization
+ init-db.mssql.sh                  # MS SQL Server initialization
 
 ### Development (`docker-compose.postgres.dev.yml`)
 
@@ -51,7 +37,7 @@ make switch-postgres-dev
 make docker-up           # Start PostgreSQL containers (automatically uses correct file)
 make docker-down         # Stop containers
 make docker-logs         # View logs
-```
+````
 
 **Database**: `promenade_dev`
 

@@ -17,7 +17,7 @@ services:
       - "1433:1433"
     volumes:
       - mssql-test-data:/var/opt/mssql
-      - ./init-db-mssql.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - ./init-db.mssql.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestStrong@Passw0rd -Q "SELECT 1" || exit 1
       interval: 10s
