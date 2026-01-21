@@ -155,6 +155,10 @@ Identity Customer  Order  Billing Warehouse Fiscal
 promenade/
  cmd/                    # Application entry points
     api/               # HTTP server (bootstrap, routes, shutdown)
+       dependencies.go # Custom DI container (unified context initialization)
+       bootstrap.go    # Infrastructure setup (database, cache, event bus)
+       main.go         # Application entry point
+       server.go       # HTTP routing and middleware
     migrate/           # Migration runner
     seed/              # Test data seeder
  internal/              # Private application code
@@ -168,6 +172,7 @@ promenade/
        shared/        # Countries, currencies, languages, timezones
        ui/            # UI metadata (forms, views)
     infrastructure/    # Cross-cutting concerns
+        database/      # Connection managers (postgres, mssql), transactions
         health/        # Health checks
         http/          # HTTP server, middleware, response helpers
         auth/          # JWT generation, validation
@@ -178,14 +183,14 @@ promenade/
     uuidv7/           # Time-ordered UUIDs
     middleware/       # HTTP middleware (auth, rate limiting, CORS)
     response/         # Standard HTTP responses
- migrations/           # Database migrations (per context)
+ migrations/           # Database migrations (driver-based: postgres/, mssql/)
  test/                 # Integration and smoke tests
  docs/                 # Documentation
     business/        # Business overviews (8 languages)
     concepts/        # Architecture concepts
     guides/          # Development guides
     reference/       # API reference
- config/              # Configuration files (dev, test, prod)
+ config/              # Configuration files (driver-based: postgres-dev, mssql-prod, etc.)
 ```
 
 **Context Structure** (Clean Architecture):
@@ -200,14 +205,57 @@ internal/contexts/{context}/
     usecase/              # Use cases (application logic)
        {entity}_usecase.go
     adapter/              # External adapters
-       repository/postgres/  # PostgreSQL implementation
-       http/                 # HTTP handlers
+       repository/        # Repository implementations
+          postgres/       # PostgreSQL implementation
+          mssql/          # MS SQL Server implementation
+          factory.go      # Repository factory (driver selection)
+       http/              # HTTP handlers
     dto/                  # Data Transfer Objects
     errors.go             # Domain error constants
  README.md                 # Context documentation
 ```
 
 **Learn More**: [internal/contexts/README.md](internal/contexts/README.md)
+
+---
+
+## Dependency Injection
+
+Promenade uses a **custom, explicit DI container** ([cmd/api/dependencies.go](cmd/api/dependencies.go)) that provides:
+
+- **Type-safe** dependency injection without reflection
+- **Context grouping** by bounded context (Shared, Banking, Accounting, etc.)
+- **Single entry point**: `InitRepositories()` initializes all contexts
+- **Clear dependency graph** — explicit and readable
+- **Full IDE support** — no magic, no code generation
+
+### Structure
+
+```go
+type Dependencies struct {
+    Shared     *SharedUseCases        // Country, Currency, Language, Timezone
+    Banking    *BankingUseCases       // BankAccount, BankTransaction
+    Accounting *AccountingUseCases    // 7 aggregates + EventHandler
+    Warehouse  *WarehouseIntegration  // OrderEventHandler
+    Analytics  *AnalyticsComponents   // EventHandler + HTTPHandler
+}
+
+// Single call initializes all domain contexts
+deps, err := InitRepositories(db, cfg, eventBus, cacheClient)
+```
+
+### Benefits vs Traditional DI Frameworks
+
+| Aspect          | Custom DI (Promenade) | Wire/Fx/Dig        |
+| --------------- | --------------------- | ------------------ |
+| Type Safety     | ✅ Compile-time       | ✅ Compile-time    |
+| Reflection      | ❌ None               | ✅ Yes (runtime)   |
+| Code Generation | ❌ None               | ✅ Required (Wire) |
+| Debugging       | ✅ Easy (explicit)    | ⚠️ Complex         |
+| IDE Support     | ✅ Full               | ⚠️ Limited         |
+| DDD Boundaries  | ✅ Natural grouping   | ❌ Flat structure  |
+
+**Learn More**: [cmd/api/dependencies.go](cmd/api/dependencies.go), [docs/guides/dependency-injection.md](docs/guides/dependency-injection.md)
 
 ---
 
@@ -264,21 +312,29 @@ config/
  app.mssql-test.yaml     # Testing (MS SQL Server - planned)
 ```
 
-### Switch Environment
+### Switch Database & Environment
+
+Promenade supports **multi-database deployments** with driver-based configuration:
 
 ```bash
-# PostgreSQL (default, recommended)
-make switch-postgres-dev
-make dev
+# PostgreSQL (production, recommended)
+make switch-postgres-dev      # Development
+make switch-postgres-test     # Testing
+make switch-postgres-prod     # Production
 
-# PostgreSQL test environment
-make switch-postgres-test
-make test-integration
+# MS SQL Server (enterprise)
+make switch-mssql-dev         # Development
+make switch-mssql-test        # Testing
+make switch-mssql-prod        # Production
 
-# MS SQL Server (planned for enterprise customers)
-make switch-mssql-dev
+# Start development server
 make dev
 ```
+
+**Pattern**: `make switch-{driver}-{env}` where:
+
+- `driver` = `postgres` | `mssql`
+- `env` = `dev` | `test` | `prod`
 
 ### Configuration Structure
 
@@ -292,8 +348,26 @@ server:
   port: 8081
 
 database:
-  driver: "postgres" # Currently supported: postgres. Planned: mssql
-  dsn: "host=localhost port=5432 user=postgres password=postgres dbname=promenade_dev sslmode=disable"
+  driver: "postgres" # Supported: postgres, mssql
+
+  # PostgreSQL configuration
+  postgres:
+    host: "localhost"
+    port: 5432
+    database: "promenade_dev"
+    username: "promenade"
+    password: "promenade"
+    sslmode: "disable"
+
+  # MS SQL Server configuration
+  mssql:
+    host: "localhost"
+    port: 1433
+    database: "promenade_dev"
+    username: "sa"
+    password: "YourStrong!Passw0rd"
+    encrypt: false
+    trust_server_certificate: true
 
 jwt:
   private_key_path: "config/keys/jwt-private.pem"
@@ -494,7 +568,7 @@ See [LICENSE](LICENSE) file for details.
 - **Version**: 1.0.0
 - **Status**: Production-ready
 - **Go Version**: 1.24+
-- **Database**: PostgreSQL 16, MS SQL Server (planned)
+- **Database**: PostgreSQL 16, MS SQL Server
 - **Tests**: 200+ unit, 26 smoke, 29 integration
 - **Code Quality**: 0 lint issues
 - **Security**: Audit complete (Jan 2026)

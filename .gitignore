@@ -6,6 +6,7 @@
 /api
 /main
 bin/
+migrate
 seed
 *.exe
 *.exe~

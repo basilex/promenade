@@ -87,6 +87,11 @@ def should_process_file(filepath: str) -> bool:
         if skip in parts:
             return False
     
+    # Check if it's a Makefile (Makefile, Makefile.dev.mk, etc.)
+    filename = Path(filepath).name
+    if filename.startswith('Makefile'):
+        return True
+    
     # Process these file extensions
     allowed_extensions = {'.md', '.go', '.yaml', '.yml', '.json', '.toml'}
     return Path(filepath).suffix in allowed_extensions

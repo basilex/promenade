@@ -47,9 +47,9 @@ type ServerSection struct {
 
 // DatabasesSection holds all database configurations
 type DatabasesSection struct {
-	Driver   string          `yaml:"driver"`   // Database driver: currently only "postgres" supported
-	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config (required)
-	SQLite   SQLiteSection   `yaml:"sqlite"`   // SQLite config (deprecated, for legacy support only)
+	Driver   string          `yaml:"driver"`   // Database driver: "postgres" or "mssql"
+	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config
+	MSSQL    MSSQLSection    `yaml:"mssql"`    // MS SQL Server config
 	Redis    RedisSection    `yaml:"redis"`    // Redis for cache/sessions/bus
 }
 
@@ -67,13 +67,17 @@ type PostgresSection struct {
 	ConnMaxIdleTime time.Duration `yaml:"conn_max_idle_time"`
 }
 
-// SQLiteSection holds SQLite configuration
-type SQLiteSection struct {
-	Path         string `yaml:"path"`           // Database file path (e.g., "./data/promenade.db")
-	Mode         string `yaml:"mode"`           // rwc (read-write-create), ro (read-only), memory
-	Cache        string `yaml:"cache"`          // shared, private
-	MaxOpenConns int    `yaml:"max_open_conns"` // Default: 1 (SQLite limitation)
-	MaxIdleConns int    `yaml:"max_idle_conns"` // Default: 1
+// MSSQLSection holds MS SQL Server configuration
+type MSSQLSection struct {
+	Host            string `yaml:"host"`
+	Port            int    `yaml:"port"`
+	User            string `yaml:"user"`
+	Password        string `yaml:"password"`
+	Database        string `yaml:"database"`
+	Encrypt         string `yaml:"encrypt"`          // disable, false, true
+	TrustServerCert bool   `yaml:"trust_server_cert"` // true for self-signed certs
+	MaxOpenConns    int    `yaml:"max_open_conns"`
+	MaxIdleConns    int    `yaml:"max_idle_conns"`
 }
 
 type JWTSection struct {
@@ -294,19 +298,22 @@ func (cfg *AppConfig) Validate() error {
 
 	// Database validation (driver-specific)
 	switch cfg.Database.Driver {
-	case "postgres":
+	case "postgres", "postgresql":
 		if cfg.Database.Postgres.Host == "" {
 			return fmt.Errorf("database.postgres.host is required")
 		}
 		if cfg.Database.Postgres.Database == "" {
 			return fmt.Errorf("database.postgres.database is required")
 		}
-	case "sqlite":
-		if cfg.Database.SQLite.Path == "" {
-			return fmt.Errorf("database.sqlite.path is required")
+	case "mssql", "sqlserver":
+		if cfg.Database.MSSQL.Host == "" {
+			return fmt.Errorf("database.mssql.host is required")
+		}
+		if cfg.Database.MSSQL.Database == "" {
+			return fmt.Errorf("database.mssql.database is required")
 		}
 	default:
-		return fmt.Errorf("database.driver must be 'postgres' or 'sqlite'")
+		return fmt.Errorf("database.driver must be 'postgres' or 'mssql'")
 	}
 
 	// Server validation

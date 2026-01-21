@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"log/slog"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	_ "github.com/microsoft/go-mssqldb"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
+	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/internal/infrastructure/seed/shared"
 	"github.com/basilex/promenade/pkg/logger"
 )
@@ -49,31 +50,45 @@ func main() {
 
 	ctx := context.Background()
 
-	// Connect to database
-	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Database.Postgres.Host,
-		cfg.Database.Postgres.Port,
-		cfg.Database.Postgres.User,
-		cfg.Database.Postgres.Password,
-		cfg.Database.Postgres.Database,
-		cfg.Database.Postgres.SSLMode,
-	)
-
-	db, err := sqlx.Connect("postgres", dsn)
-	if err != nil {
-		logger.Fatal("Failed to connect to database", slog.Any("error", err))
+	// Get database driver from config (default: postgres)
+	driver := cfg.Database.Driver
+	if driver == "" {
+		driver = "postgres"
 	}
+
+	// Connect to database based on driver
+	var db *sqlx.DB
+	switch driver {
+	case "postgres":
+		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
+		if err != nil {
+			logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
+		}
+		logger.Info("Connected to PostgreSQL",
+			slog.String("host", cfg.Database.Postgres.Host),
+			slog.String("database", cfg.Database.Postgres.Database),
+		)
+	case "mssql":
+		db, err = database.NewMSSQLConnection(&cfg.Database.MSSQL)
+		if err != nil {
+			logger.Fatal("Failed to connect to MS SQL Server", slog.Any("error", err))
+		}
+		logger.Info("Connected to MS SQL Server",
+			slog.String("host", cfg.Database.MSSQL.Host),
+			slog.String("database", cfg.Database.MSSQL.Database),
+		)
+	default:
+		logger.Fatal("Unsupported database driver",
+			slog.String("driver", driver),
+			slog.String("supported", "postgres, mssql"),
+		)
+	}
+
 	defer func() {
 		if err := db.Close(); err != nil {
 			slog.Error("Failed to close database", slog.Any("error", err))
 		}
 	}()
-
-	logger.Info("Connected to database",
-		slog.String("host", cfg.Database.Postgres.Host),
-		slog.String("database", cfg.Database.Postgres.Database),
-	)
 
 	// Execute seeding based on context
 	switch *contextFlag {

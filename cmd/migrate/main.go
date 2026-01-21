@@ -9,7 +9,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	_ "github.com/microsoft/go-mssqldb"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
@@ -44,11 +46,29 @@ func main() {
 		Format: cfg.Logging.Format,
 	})
 
-	// Initialize database connection
-	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	// Get database driver from config (default: postgres)
+	driver := cfg.Database.Driver
+	if driver == "" {
+		driver = "postgres"
 	}
+
+	// Initialize database connection based on driver
+	var db *sqlx.DB
+	switch driver {
+	case "postgres":
+		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
+		if err != nil {
+			log.Fatalf("Failed to connect to PostgreSQL: %v", err)
+		}
+	case "mssql":
+		db, err = database.NewMSSQLConnection(&cfg.Database.MSSQL)
+		if err != nil {
+			log.Fatalf("Failed to connect to MS SQL Server: %v", err)
+		}
+	default:
+		log.Fatalf("Unsupported database driver: %s (supported: postgres, mssql)", driver)
+	}
+
 	defer func() {
 		if err := db.Close(); err != nil {
 			slog.Error("Failed to close database connection", slog.Any("error", err))
@@ -61,16 +81,12 @@ func main() {
 		migrationsDir = dir
 	}
 
-	// Get database driver from config (default: postgres)
-	driver := cfg.Database.Driver
-	if driver == "" {
-		driver = "postgres"
-	}
-
 	// Append driver subdirectory to migrations path
 	migrationsDir = filepath.Join(migrationsDir, driver)
 
 	// Create dialect for database-specific SQL
+	// Note: Using postgres dialect as it provides base SQL functionality
+	// Driver-specific SQL syntax is handled by migration files in migrations/{driver}/
 	dialect := postgres.NewDialect()
 	mgr := migration.NewManager(db, driver, migrationsDir, dialect)
 

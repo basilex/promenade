@@ -12,11 +12,11 @@
 
 test-all: validate-env  ## Run all tests (works in any environment, best with test)
 	@if [ "$(ENVIRONMENT)" != "test" ]; then \
-		echo "⚠️  Warning: Running tests in $(ENVIRONMENT) environment"; \
-		echo "💡 For best results: make switch-$(DATABASE_DRIVER)-test"; \
+		echo "  Warning: Running tests in $(ENVIRONMENT) environment"; \
+		echo " For best results: make switch-$(DATABASE_DRIVER)-test"; \
 		echo ""; \
 	fi
-	@echo "🧪 Running all tests ($(DATABASE_DRIVER) / $(ENVIRONMENT))..."
+	@echo " Running all tests ($(DATABASE_DRIVER) / $(ENVIRONMENT))..."
 	@$(MAKE) test
 
 # ============================================================================
@@ -26,7 +26,7 @@ test-all: validate-env  ## Run all tests (works in any environment, best with te
 test: validate-env  ## Run all tests (uses DATABASE_DRIVER and ENVIRONMENT from workspace)
 	@echo "Running all tests ($(DATABASE_DRIVER) / $(ENVIRONMENT))..."
 	@echo "Note: Race detector disabled (causes hangs with httptest/Redis tests)"
-	@echo "💡 To run with race detector: go test -race ./pkg/aggregate ./pkg/uuidv7 ..."
+	@echo " To run with race detector: go test -race ./pkg/aggregate ./pkg/uuidv7 ..."
 	go test -v ./pkg/... ./internal/... ./cmd/...
 
 test-unit:  ## Run only unit tests (fast, no DB, no workspace needed)
@@ -109,34 +109,34 @@ test-coverage:  ## Generate test coverage report (no workspace needed)
 	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 	@echo "Coverage report: coverage/coverage.html"
 
-test-db-start:  ## Start PostgreSQL test database on port 5433
+test-db-start:  ## Start test database (driver-aware)
 	@if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
-		echo "ℹ️  CI/CD environment detected - using existing PostgreSQL service"; \
+		echo "ℹ  CI/CD environment detected - using existing database service"; \
 	else \
-		echo "Starting PostgreSQL test database on port 5433..."; \
-		docker compose -f docker/docker-compose.postgres.test.yml down -v; \
-		docker compose -f docker/docker-compose.postgres.test.yml up -d; \
+		echo "Starting $(DATABASE_DRIVER) test database..."; \
+		docker compose -f docker/docker-compose.$(DATABASE_DRIVER).test.yml down -v; \
+		docker compose -f docker/docker-compose.$(DATABASE_DRIVER).test.yml up -d; \
 		echo "Waiting for test database health..."; \
 		ready=0; \
 		for i in $$(seq 1 30); do \
-			pg_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade-postgres-test 2>/dev/null); \
+			db_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade-$(DATABASE_DRIVER)-test 2>/dev/null); \
 			redis_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade-redis-test 2>/dev/null); \
-			if [ "$$pg_status" = "healthy" ] && [ "$$redis_status" = "healthy" ]; then \
+			if [ "$$db_status" = "healthy" ] && [ "$$redis_status" = "healthy" ]; then \
 				ready=1; \
 				break; \
 			fi; \
 			sleep 2; \
 		done; \
 		if [ "$$ready" -ne 1 ]; then \
-			echo "❌ Test database not healthy"; \
+			echo " Test database not healthy"; \
 			exit 1; \
 		fi; \
 	fi
 
 test-db-stop:  ## Stop test database
 	@if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \
-		echo "ℹ️  CI/CD environment detected - skipping database stop"; \
+		echo "ℹ  CI/CD environment detected - skipping database stop"; \
 	else \
-		echo "Stopping test database..."; \
-		docker compose -f docker/docker-compose.postgres.test.yml down; \
+		echo "Stopping $(DATABASE_DRIVER) test database..."; \
+		docker compose -f docker/docker-compose.$(DATABASE_DRIVER).test.yml down; \
 	fi

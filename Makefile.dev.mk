@@ -32,28 +32,28 @@
 
 dev: validate-env  ## Run development server (requires ENVIRONMENT=development)
 	@if [ "$(ENVIRONMENT)" != "development" ]; then \
-		echo "❌ Error: 'make dev' requires ENVIRONMENT=development"; \
+		echo " Error: 'make dev' requires ENVIRONMENT=development"; \
 		echo "   Current: $(ENVIRONMENT)"; \
 		echo ""; \
-		echo "💡 Switch to development:"; \
+		echo " Switch to development:"; \
 		echo "   make switch-$(DATABASE_DRIVER)-dev"; \
 		exit 1; \
 	fi
-	@echo "🚀 Starting development server ($(DATABASE_DRIVER))..."
+	@echo " Starting development server ($(DATABASE_DRIVER))..."
 	@$(MAKE) docker-up
 	@$(MAKE) migrate
 	@$(MAKE) run
 
 dev-fresh: validate-env  ## Fresh development start with clean database
 	@if [ "$(ENVIRONMENT)" != "development" ]; then \
-		echo "❌ Error: 'make dev-fresh' requires ENVIRONMENT=development"; \
+		echo " Error: 'make dev-fresh' requires ENVIRONMENT=development"; \
 		echo "   Current: $(ENVIRONMENT)"; \
 		echo ""; \
-		echo "💡 Switch to development:"; \
+		echo " Switch to development:"; \
 		echo "   make switch-$(DATABASE_DRIVER)-dev"; \
 		exit 1; \
 	fi
-	@echo "🔄 Fresh development setup ($(DATABASE_DRIVER))..."
+	@echo " Fresh development setup ($(DATABASE_DRIVER))..."
 	@$(MAKE) docker-up
 	@$(MAKE) db-fresh
 	@$(MAKE) run
@@ -71,29 +71,32 @@ run: build validate-env  ## Build and run the application
 # ============================================================================
 
 docker-up: validate-env  ## Start database and Redis containers
-	@echo "🐳 Starting $(DATABASE_DRIVER) + Redis containers..."
-	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	@echo " Starting $(DATABASE_DRIVER) + Redis containers..."
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$$ENV_SHORT.yml; \
 	if [ ! -f "$$COMPOSE_FILE" ]; then \
-		echo "❌ Error: $$COMPOSE_FILE not found"; \
+		echo " Error: $$COMPOSE_FILE not found"; \
 		exit 1; \
 	fi; \
-	$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE up -d
+	$(DOCKER_COMPOSE) -f $$COMPOSE_FILE up -d
 	@echo "⏳ Waiting for database to be ready..."
 	@sleep 5
-	@echo "✓ $(DATABASE_DRIVER) ready"
-	@echo "✓ Redis ready"
+	@echo " $(DATABASE_DRIVER) ready"
+	@echo " Redis ready"
 
 docker-down: validate-env  ## Stop database containers
-	@echo "🛑 Stopping $(DATABASE_DRIVER) containers..."
-	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	@echo " Stopping $(DATABASE_DRIVER) containers..."
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$$ENV_SHORT.yml; \
 	if [ -f "$$COMPOSE_FILE" ]; then \
-		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE down; \
+		$(DOCKER_COMPOSE) -f $$COMPOSE_FILE down; \
 	fi
 
 docker-logs: validate-env  ## Show Docker logs
-	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$$ENV_SHORT.yml; \
 	if [ -f "$$COMPOSE_FILE" ]; then \
-		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE logs -f; \
+		$(DOCKER_COMPOSE) -f $$COMPOSE_FILE logs -f; \
 	fi
 
 docker-ps: validate-env  ## Show running containers
@@ -101,36 +104,47 @@ docker-ps: validate-env  ## Show running containers
 	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 docker-clean: validate-env  ## Remove all containers and volumes (clean slate)
-	@echo "⚠️  Removing containers and volumes for $(DATABASE_DRIVER)..."
-	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	@echo "  Removing containers and volumes for $(DATABASE_DRIVER)..."
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$$ENV_SHORT.yml; \
 	if [ -f "$$COMPOSE_FILE" ]; then \
-		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE down -v; \
+		$(DOCKER_COMPOSE) -f $$COMPOSE_FILE down -v; \
 	fi
-	@echo "✓ Clean slate ready"
+	@echo " Clean slate ready"
 
 # ============================================================================
 # Database Management
 # ============================================================================
 
-db-create: validate-env  ## Create database
-	@echo "Creating database $(DB_NAME)..."
-	@docker exec -i promenade-postgres-dev psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
+db-create: validate-env  ## Create database (driver-aware)
+	@echo "Creating database $(DB_NAME) on $(DATABASE_DRIVER)..."
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
+		docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"; \
+	elif [ "$(DATABASE_DRIVER)" = "mssql" ]; then \
+		docker exec -i promenade-mssql-$$ENV_SHORT /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong@Passw0rd" -Q "CREATE DATABASE $(DB_NAME)" 2>/dev/null || echo "Database already exists"; \
+	fi
 
 db-drop: validate-env  ## Drop database (WARNING: destructive!)
-	@echo "⚠️  Dropping database $(DB_NAME)..."
-	@docker exec -i promenade-postgres-dev psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
-	@echo "✓ Database dropped"
+	@echo "  Dropping database $(DB_NAME) on $(DATABASE_DRIVER)..."
+	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
+	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
+		docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"; \
+	elif [ "$(DATABASE_DRIVER)" = "mssql" ]; then \
+		docker exec -i promenade-mssql-$$ENV_SHORT /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong@Passw0rd" -Q "DROP DATABASE IF EXISTS $(DB_NAME)"; \
+	fi
+	@echo " Database dropped"
 
 db-reset: validate-env  ## Drop and recreate database (WARNING: all data lost!)
-	@echo "⚠️  Resetting database ($(DATABASE_DRIVER))..."
+	@echo "  Resetting database ($(DATABASE_DRIVER))..."
 	@$(MAKE) db-drop
 	@$(MAKE) db-create
-	@echo "✓ Database reset complete"
+	@echo " Database reset complete"
 
 db-fresh: validate-env  ## Fresh database with all migrations
 	@$(MAKE) db-reset
 	@$(MAKE) migrate
-	@echo "✓ Fresh database ready!"
+	@echo " Fresh database ready!"
 
 # ============================================================================
 # Migrations (Database-Agnostic)
@@ -148,7 +162,7 @@ migrate: validate-env  ## Run all migrations (auto-detects database driver)
 	@$(MAKE) migrate-scripting
 	@$(MAKE) migrate-fiscal
 	@$(MAKE) migrate-ui
-	@echo "✓ All migrations completed for $(DATABASE_DRIVER)"
+	@echo " All migrations completed for $(DATABASE_DRIVER)"
 
 migrate-core: validate-env  ## Run core migrations (extensions, auth, RBAC)
 	@echo "Running core migrations ($(DATABASE_DRIVER))..."
@@ -223,27 +237,27 @@ seed-identity:  ## Seed identity context (RBAC)
 ci-check: ci-lint ci-test ci-build  ## Run all CI checks locally (lint + test + build)
 
 ci-lint:  ## Run linters (same as CI)
-	@echo "🔍 Running golangci-lint..."
-	@golangci-lint run --timeout=5m || (echo "❌ Lint failed" && exit 1)
-	@echo "✅ Lint passed"
+	@echo " Running golangci-lint..."
+	@golangci-lint run --timeout=5m || (echo " Lint failed" && exit 1)
+	@echo " Lint passed"
 
 ci-test:  ## Run all tests (same as CI)
-	@echo "🧪 Running unit tests..."
-	@make test-unit || (echo "❌ Unit tests failed" && exit 1)
-	@echo "✅ Unit tests passed"
+	@echo " Running unit tests..."
+	@make test-unit || (echo " Unit tests failed" && exit 1)
+	@echo " Unit tests passed"
 	@echo ""
-	@echo "🧪 Running integration tests..."
-	@make test-integration || (echo "❌ Integration tests failed" && exit 1)
-	@echo "✅ Integration tests passed"
+	@echo " Running integration tests..."
+	@make test-integration || (echo " Integration tests failed" && exit 1)
+	@echo " Integration tests passed"
 	@echo ""
-	@echo "ℹ️  Race detector skipped (hangs with httptest/Redis tests)"
-	@echo "💡 To test race conditions: go test -race ./pkg/uuidv7 ./pkg/logger ..."
+	@echo "ℹ  Race detector skipped (hangs with httptest/Redis tests)"
+	@echo " To test race conditions: go test -race ./pkg/uuidv7 ./pkg/logger ..."
 
 ci-build:  ## Test build (same as CI)
-	@echo "🔨 Testing build..."
-	@make build > /dev/null || (echo "❌ Build failed" && exit 1)
-	@echo "✅ Build passed"
+	@echo " Testing build..."
+	@make build > /dev/null || (echo " Build failed" && exit 1)
+	@echo " Build passed"
 
 pre-push: ci-check  ## Alias for ci-check (run before git push)
 	@echo ""
-	@echo "🎉 All CI checks passed! Safe to push."
+	@echo " All CI checks passed! Safe to push."

@@ -105,21 +105,21 @@ func (s *Server) SetupRoutes() {
 			uiRouter.RegisterRoutes(v1)           // UI Metadata Forms
 
 			// Banking routes
-			banking.RegisterRoutes(v1, s.app.BankAccountUseCase, s.app.BankTransactionUseCase)
+			banking.RegisterRoutes(v1, s.app.Dependencies.Banking.BankAccount, s.app.Dependencies.Banking.BankTransaction)
 		// Accounting routes
 		accounting.RegisterRoutes(
 			v1,
-			s.app.AccountUseCase,
-			s.app.JournalEntryUseCase,
-			s.app.FiscalPeriodUseCase,
-			s.app.TaxCodeUseCase,
-			s.app.BudgetUseCase,
-			s.app.CostCenterUseCase,
-			s.app.ReconciliationUseCase,
+			s.app.Dependencies.Accounting.Account,
+			s.app.Dependencies.Accounting.JournalEntry,
+			s.app.Dependencies.Accounting.FiscalPeriod,
+			s.app.Dependencies.Accounting.TaxCode,
+			s.app.Dependencies.Accounting.Budget,
+			s.app.Dependencies.Accounting.CostCenter,
+			s.app.Dependencies.Accounting.Reconciliation,
 		)
 			// Analytics routes
-			if s.app.SalesReportHandler != nil {
-				s.app.SalesReportHandler.RegisterRoutes(v1)
+			if s.app.Dependencies.Analytics.HTTPHandler != nil {
+				s.app.Dependencies.Analytics.HTTPHandler.RegisterRoutes(v1)
 			}
 		}
 	}

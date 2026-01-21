@@ -13,15 +13,15 @@
 
 prod: validate-env  ## Run production server (requires ENVIRONMENT=production)
 	@if [ "$(ENVIRONMENT)" != "production" ]; then \
-		echo "❌ Error: 'make prod' requires ENVIRONMENT=production"; \
+		echo " Error: 'make prod' requires ENVIRONMENT=production"; \
 		echo "   Current: $(ENVIRONMENT)"; \
 		echo ""; \
-		echo "💡 Switch to production:"; \
+		echo " Switch to production:"; \
 		echo "   make switch-$(DATABASE_DRIVER)-prod"; \
 		exit 1; \
 	fi
-	@echo "⚠️  Starting PRODUCTION server ($(DATABASE_DRIVER))..."
-	@echo "⚠️  Make sure you know what you're doing!"
+	@echo "  Starting PRODUCTION server ($(DATABASE_DRIVER))..."
+	@echo "  Make sure you know what you're doing!"
 	@$(MAKE) docker-up
 	@$(MAKE) migrate
 	@$(MAKE) run
@@ -34,12 +34,12 @@ docker-build: validate-env  ## Build production Docker image (uses DATABASE_DRIV
 	@echo "Building production Docker image ($(DATABASE_DRIVER))..."
 	docker build -t $(APP_NAME):$(VERSION) -f docker/Dockerfile .
 	docker tag $(APP_NAME):$(VERSION) $(APP_NAME):latest
-	@echo "✓ Built: $(APP_NAME):$(VERSION)"
-	@echo "✓ Tagged: $(APP_NAME):latest"
+	@echo " Built: $(APP_NAME):$(VERSION)"
+	@echo " Tagged: $(APP_NAME):latest"
 
 docker-push:  ## Push Docker image to registry (requires DOCKER_REGISTRY)
 	@if [ -z "$(DOCKER_REGISTRY)" ]; then \
-		echo "❌ Error: DOCKER_REGISTRY not set"; \
+		echo " Error: DOCKER_REGISTRY not set"; \
 		echo "Usage: make docker-push DOCKER_REGISTRY=your-registry.com"; \
 		exit 1; \
 	fi
@@ -48,7 +48,7 @@ docker-push:  ## Push Docker image to registry (requires DOCKER_REGISTRY)
 	docker tag $(APP_NAME):$(VERSION) $(DOCKER_REGISTRY)/$(APP_NAME):latest
 	docker push $(DOCKER_REGISTRY)/$(APP_NAME):$(VERSION)
 	docker push $(DOCKER_REGISTRY)/$(APP_NAME):latest
-	@echo "✓ Pushed to registry"
+	@echo " Pushed to registry"
 
 docker-run: validate-env  ## Run production Docker container (uses workspace configuration)
 	@echo "Running production container ($(DATABASE_DRIVER) / $(ENVIRONMENT))..."
@@ -65,8 +65,8 @@ docker-run: validate-env  ## Run production Docker container (uses workspace con
 swagger-generate:  ## Generate Swagger documentation
 	@echo "Generating Swagger docs..."
 	swag init -g cmd/api/main.go -o docs/swagger
-	@echo "✓ Swagger docs generated"
+	@echo " Swagger docs generated"
 
 swagger-all: swagger-generate  ## Generate all API documentation
-	@echo "✓ All API documentation generated"
+	@echo " All API documentation generated"
 

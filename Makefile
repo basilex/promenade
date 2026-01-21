@@ -37,10 +37,8 @@ APP_NAME=promenade
 VERSION?=0.1.0
 DOCKER_IMAGE_TAG=$(VERSION)-$(DATABASE_DRIVER)-$(ENVIRONMENT)
 
-# Docker Compose files (database-specific)
-DOCKER_COMPOSE_DEV=docker compose -f docker/docker-compose.dev.yml
-DOCKER_COMPOSE_TEST=docker compose -f docker/docker-compose.test.yml
-DOCKER_COMPOSE_PROD=docker compose -f docker/docker-compose.prod.yml
+# Docker Compose command (paths are constructed dynamically in commands)
+DOCKER_COMPOSE=docker compose
 
 # ============================================================================
 # Environment Validation & Status
@@ -48,22 +46,22 @@ DOCKER_COMPOSE_PROD=docker compose -f docker/docker-compose.prod.yml
 
 validate-env:  ## Validate .promenade.workspace exists and is configured
 	@if [ ! -f .promenade.workspace ]; then \
-		echo "❌ .promenade.workspace not found!"; \
+		echo " .promenade.workspace not found!"; \
 		echo ""; \
-		echo "💡 Quick start:"; \
+		echo " Quick start:"; \
 		echo "   cp .promenade.workspace.example .promenade.workspace"; \
 		echo "   OR"; \
 		echo "   make switch-postgres-dev  # PostgreSQL + development"; \
 		echo ""; \
-		echo "📖 See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"; \
+		echo " See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"; \
 		exit 1; \
 	fi
 	@if [ -z "$(DATABASE_DRIVER)" ]; then \
-		echo "❌ DATABASE_DRIVER not set in .promenade.workspace"; \
+		echo " DATABASE_DRIVER not set in .promenade.workspace"; \
 		exit 1; \
 	fi
 	@if [ -z "$(ENVIRONMENT)" ]; then \
-		echo "❌ ENVIRONMENT not set in .promenade.workspace"; \
+		echo " ENVIRONMENT not set in .promenade.workspace"; \
 		exit 1; \
 	fi
 
@@ -73,14 +71,14 @@ workspace:  ## Show current workspace configuration
 	@echo "=================================="
 	@if [ -f .promenade.workspace ]; then \
 		echo ""; \
-		echo "📄 .promenade.workspace:"; \
+		echo " .promenade.workspace:"; \
 		cat .promenade.workspace | grep -v '^#' | grep -v '^$$'; \
 		echo ""; \
-		echo "✅ Configuration loaded"; \
+		echo " Configuration loaded"; \
 	else \
 		echo ""; \
-		echo "❌ .promenade.workspace not found"; \
-		echo "💡 Run: make switch-postgres-dev OR make switch-sqlite-dev"; \
+		echo " .promenade.workspace not found"; \
+		echo " Run: make switch-postgres-dev OR make switch-sqlite-dev"; \
 	fi
 	@echo ""
 
@@ -135,42 +133,42 @@ check-emoji:  ## Check for emoji violations (CI mode, exit 1 if found)
 switch-postgres-dev:  ## Switch to: PostgreSQL + development (→ app.postgres-dev.yaml)
 	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
 	@echo "ENVIRONMENT=development" >> .promenade.workspace
-	@echo "✅ Switched to: postgres + development"
-	@echo "💡 Next: make dev"
+	@echo " Switched to: postgres + development"
+	@echo " Next: make dev"
 
 switch-postgres-test:  ## Switch to: PostgreSQL + test (→ app.postgres-test.yaml)
 	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
 	@echo "ENVIRONMENT=test" >> .promenade.workspace
-	@echo "✅ Switched to: postgres + test"
-	@echo "💡 Next: make test-all"
+	@echo " Switched to: postgres + test"
+	@echo " Next: make test-all"
 
 switch-postgres-prod:  ## Switch to: PostgreSQL + production (→ app.postgres-prod.yaml)
 	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
 	@echo "ENVIRONMENT=production" >> .promenade.workspace
-	@echo "⚠️  Switched to: postgres + PRODUCTION"
-	@echo "⚠️  Make sure you know what you're doing!"
+	@echo "  Switched to: postgres + PRODUCTION"
+	@echo "  Make sure you know what you're doing!"
 
 # MS SQL Server configurations (planned)
 switch-mssql-dev:  ## Switch to: MS SQL Server + development (→ app.mssql-dev.yaml)
 	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
 	@echo "ENVIRONMENT=development" >> .promenade.workspace
-	@echo "✅ Switched to: mssql + development"
-	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
-	@echo "💡 Next: make docker-up && make dev"
+	@echo " Switched to: mssql + development"
+	@echo "  Note: MS SQL Server support is planned, not yet fully implemented"
+	@echo " Next: make docker-up && make dev"
 
 switch-mssql-test:  ## Switch to: MS SQL Server + test (→ app.mssql-test.yaml)
 	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
 	@echo "ENVIRONMENT=test" >> .promenade.workspace
-	@echo "✅ Switched to: mssql + test"
-	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
-	@echo "💡 Next: make docker-up && make test-all"
+	@echo " Switched to: mssql + test"
+	@echo "  Note: MS SQL Server support is planned, not yet fully implemented"
+	@echo " Next: make docker-up && make test-all"
 
 switch-mssql-prod:  ## Switch to: MS SQL Server + production (→ app.mssql-prod.yaml)
 	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
 	@echo "ENVIRONMENT=production" >> .promenade.workspace
-	@echo "⚠️  Switched to: mssql + PRODUCTION"
-	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
-	@echo "⚠️  Make sure you know what you're doing!"
+	@echo "  Switched to: mssql + PRODUCTION"
+	@echo "  Note: MS SQL Server support is planned, not yet fully implemented"
+	@echo "  Make sure you know what you're doing!"
 
 # Include modular makefiles
 include Makefile.dev.mk
@@ -186,39 +184,39 @@ help:  ## Show this help message
 	@echo "================================================================"
 	@echo ""
 	@if [ -f .promenade.workspace ]; then \
-		echo "📄 Current Workspace:"; \
+		echo " Current Workspace:"; \
 		cat .promenade.workspace | grep -v '^#' | grep -v '^$$' | sed 's/^/   /'; \
 		echo ""; \
 	else \
-		echo "⚠️  No workspace configured!"; \
-		echo "💡 Run: make switch-postgres-dev"; \
+		echo "  No workspace configured!"; \
+		echo " Run: make switch-postgres-dev"; \
 		echo ""; \
 	fi
-	@echo "🔧 SWITCHERS"
+	@echo " SWITCHERS"
 	@awk 'BEGIN {FS = ":.*##"} /^switch-[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "🔍 WORKSPACE"
+	@echo " WORKSPACE"
 	@awk 'BEGIN {FS = ":.*##"} /^(workspace|validate-env):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "⚙️  GO WORKSPACE COMMANDS"
+	@echo "  GO WORKSPACE COMMANDS"
 	@awk 'BEGIN {FS = ":.*##"} /^(install|build|clean|fmt|lint):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "🧹 EMOJI CLEANING (Official Policy)"
+	@echo " EMOJI CLEANING (Official Policy)"
 	@awk 'BEGIN {FS = ":.*##"} /^(clean-emoji|clean-emoji-apply|check-emoji):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile
 	@echo ""
-	@echo "🛠️  DEVELOPMENT (Makefile.dev.mk)"
+	@echo "  DEVELOPMENT (Makefile.dev.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^(dev|dev-fresh|build|run|install|clean|fmt|lint|docker-up|docker-down|docker-logs|docker-ps|docker-clean|db-create|db-drop|db-reset|db-fresh|migrate|migrate-core|migrate-shared|migrate-identity|migrate-customer-mgmt|migrate-order-mgmt|migrate-status|migrate-new|seed|seed-shared|seed-identity|ci-check|ci-lint|ci-test|ci-build|pre-push):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.dev.mk
 	@echo ""
-	@echo "🧪 TESTING (Makefile.test.mk)"
+	@echo " TESTING (Makefile.test.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^test[a-zA-Z_-]*:.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.test.mk
 	@echo ""
-	@echo "🐳 PRODUCTION (Makefile.prod.mk)"
+	@echo " PRODUCTION (Makefile.prod.mk)"
 	@awk 'BEGIN {FS = ":.*##"} /^(prod|docker-build|docker-push|docker-run|swagger-generate|swagger-all):.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2}' Makefile.prod.mk
 	@echo ""
-	@echo "📖 Quick Start:"
+	@echo " Quick Start:"
 	@echo "   make switch-postgres-dev  # Configure workspace"
 	@echo "   make dev                  # Start development"
 	@echo "   make workspace            # Show current config"
 	@echo ""
-	@echo "📚 Documentation: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"
+	@echo " Documentation: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"
 	@echo ""
