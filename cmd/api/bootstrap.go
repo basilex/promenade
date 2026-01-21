@@ -15,6 +15,7 @@ import (
 	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/cache"
+	"github.com/basilex/promenade/pkg/cache/noop"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
@@ -60,6 +61,8 @@ import (
 	receiptPrinter "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/printer"
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
 	receiptUseCase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
+
+	countryUseCase "github.com/basilex/promenade/internal/contexts/shared/country/usecase"
 )
 
 // App holds all application dependencies
@@ -86,6 +89,7 @@ type App struct {
 	CostCenterUseCase    costCenterUseCase.ICostCenterUseCase
 	ReconciliationUseCase reconciliationUseCase.IReconciliationUseCase
 	AccountingEventHandler *accountingIntegration.AccountingEventHandler
+	CountryUseCase         countryUseCase.ICountryUseCase
 	Scheduler                 *scheduler.Engine
 }
 
@@ -167,6 +171,13 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 	}
 	app.BankAccountUseCase = bankAccountUC
 	app.BankTransactionUseCase = bankTransactionUC
+
+	// Initialize Shared Context (Country)
+	countryUC, err := initSharedCountry(db, cfg)
+	if err != nil {
+		return nil, err
+	}
+	app.CountryUseCase = countryUC
 
 	// Initialize Accounting Context
 	accountUC, journalEntryUC, fiscalPeriodUC, taxCodeUC, budgetUC, costCenterUC, reconciliationUC, accountingEventHandler, err := initAccounting(db, eventBus)
@@ -536,6 +547,25 @@ func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receiptUseCase.
 
 	logger.Info("Scheduler initialized")
 	return engine, nil
+}
+
+// initSharedCountry initializes Shared Context - Country (with multi-database support)
+func initSharedCountry(db *sqlx.DB, cfg *config.AppConfig) (countryUseCase.ICountryUseCase, error) {
+	// Create repository using factory (driver-agnostic)
+	countryRepo, err := newCountryRepository(db, cfg.Database.Driver)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize Country Use Case (cache-enabled)
+	countryUC := countryUseCase.NewCountryUseCase(countryRepo, noop.NewNoOpCache())
+
+	logger.Info("Shared Context initialized",
+		slog.String("component", "Country"),
+		slog.String("driver", cfg.Database.Driver),
+	)
+
+	return countryUC, nil
 }
 
 // initBanking initializes Banking Context (Bank Accounts + Bank Transactions)
