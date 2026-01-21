@@ -20,6 +20,7 @@
 .PHONY: dev dev-fresh
 .PHONY: run
 .PHONY: docker-up docker-down docker-logs docker-ps docker-clean
+.PHONY: docker-up-mssql docker-down-mssql
 .PHONY: db-create db-drop db-reset db-fresh
 .PHONY: migrate migrate-core migrate-all migrate-status migrate-new
 .PHONY: seed seed-shared seed-identity
@@ -69,28 +70,42 @@ run: build validate-env  ## Build and run the application
 # Docker (Database-Aware)
 # ============================================================================
 
-docker-up: validate-env  ## Start PostgreSQL and Redis containers
-	@echo "🐘 Starting PostgreSQL container..."
-	$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml up -d
-	@echo "Waiting for PostgreSQL to be ready..."
-	@sleep 3
-	@echo "✓ PostgreSQL ready on localhost:5432"
-	@echo "✓ Redis ready on localhost:6379"
+docker-up: validate-env  ## Start database and Redis containers
+	@echo "🐳 Starting $(DATABASE_DRIVER) + Redis containers..."
+	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	if [ ! -f "$$COMPOSE_FILE" ]; then \
+		echo "❌ Error: $$COMPOSE_FILE not found"; \
+		exit 1; \
+	fi; \
+	$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE up -d
+	@echo "⏳ Waiting for database to be ready..."
+	@sleep 5
+	@echo "✓ $(DATABASE_DRIVER) ready"
+	@echo "✓ Redis ready"
 
 docker-down: validate-env  ## Stop database containers
-	@echo "Stopping PostgreSQL container..."
-	$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml down
+	@echo "🛑 Stopping $(DATABASE_DRIVER) containers..."
+	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	if [ -f "$$COMPOSE_FILE" ]; then \
+		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE down; \
+	fi
 
 docker-logs: validate-env  ## Show Docker logs
-	$(DOCKER_COMPOSE_DEV) logs -f
+	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	if [ -f "$$COMPOSE_FILE" ]; then \
+		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE logs -f; \
+	fi
 
 docker-ps: validate-env  ## Show running containers
 	@echo "Running containers:"
 	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 docker-clean: validate-env  ## Remove all containers and volumes (clean slate)
-	@echo "⚠️  Removing containers and volumes..."
-	$(DOCKER_COMPOSE_DEV) down -v
+	@echo "⚠️  Removing containers and volumes for $(DATABASE_DRIVER)..."
+	@COMPOSE_FILE=docker/docker-compose.$(DATABASE_DRIVER).$(ENVIRONMENT).yml; \
+	if [ -f "$$COMPOSE_FILE" ]; then \
+		$(DOCKER_COMPOSE_DEV) -f $$COMPOSE_FILE down -v; \
+	fi
 	@echo "✓ Clean slate ready"
 
 # ============================================================================

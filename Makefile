@@ -2,6 +2,7 @@
 .PHONY: install build clean fmt lint
 .PHONY: clean-emoji clean-emoji-apply check-emoji
 .PHONY: switch-postgres-dev switch-postgres-test switch-postgres-prod
+.PHONY: switch-mssql-dev switch-mssql-test switch-mssql-prod
 
 # ============================================================================
 # Promenade - Modular Makefile System with Workspace State Management
@@ -147,6 +148,28 @@ switch-postgres-prod:  ## Switch to: PostgreSQL + production (→ app.postgres-p
 	@echo "DATABASE_DRIVER=postgres" > .promenade.workspace
 	@echo "ENVIRONMENT=production" >> .promenade.workspace
 	@echo "⚠️  Switched to: postgres + PRODUCTION"
+	@echo "⚠️  Make sure you know what you're doing!"
+
+# MS SQL Server configurations (planned)
+switch-mssql-dev:  ## Switch to: MS SQL Server + development (→ app.mssql-dev.yaml)
+	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
+	@echo "ENVIRONMENT=development" >> .promenade.workspace
+	@echo "✅ Switched to: mssql + development"
+	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
+	@echo "💡 Next: make docker-up && make dev"
+
+switch-mssql-test:  ## Switch to: MS SQL Server + test (→ app.mssql-test.yaml)
+	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
+	@echo "ENVIRONMENT=test" >> .promenade.workspace
+	@echo "✅ Switched to: mssql + test"
+	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
+	@echo "💡 Next: make docker-up && make test-all"
+
+switch-mssql-prod:  ## Switch to: MS SQL Server + production (→ app.mssql-prod.yaml)
+	@echo "DATABASE_DRIVER=mssql" > .promenade.workspace
+	@echo "ENVIRONMENT=production" >> .promenade.workspace
+	@echo "⚠️  Switched to: mssql + PRODUCTION"
+	@echo "⚠️  Note: MS SQL Server support is planned, not yet fully implemented"
 	@echo "⚠️  Make sure you know what you're doing!"
 
 # Include modular makefiles

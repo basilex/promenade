@@ -4,30 +4,41 @@
 
 Promenade uses a **namespace-based migration system** where each module maintains its own independent migration history. This ensures true module autonomy - modules can be enabled/disabled without affecting other modules' database state.
 
+**Multi-database support**: Migrations are organized by database driver, allowing different SQL syntax for PostgreSQL and MS SQL Server.
+
 ## Structure
 
 ```
 migrations/
- core/           # Core infrastructure (auth, RBAC, reference data)
-    000001_init_schema_deps.up.sql
-    000001_init_schema_deps.down.sql
-    000002_create_auth_schema.up.sql
-    000003_create_rbac_tables.up.sql
-    000004_create_timezones_table.up.sql
-    000005_create_languages_table.up.sql
-    000006_create_countries_currencies.up.sql
-    000007_create_regions_cities.up.sql
-    000008_create_payment_methods.up.sql
+ postgres/       # PostgreSQL migrations (production-ready)
+    core/        # Core infrastructure (auth, RBAC, reference data)
+       000001_init_schema_deps.up.sql
+       000001_init_schema_deps.down.sql
+       000002_create_auth_schema.up.sql
+       000003_create_rbac_tables.up.sql
+       ...
+    identity/    # Identity module (users, contacts, profiles)
+       000001_create_users_table.up.sql
+       000001_create_users_table.down.sql
+       ...
+    customer-mgmt/  # Customer management
+    order-mgmt/     # Order management
+    billing/        # Billing
+    warehouse/      # Warehouse
+    accounting/     # Accounting
+    banking/        # Banking
+    fiscal/         # Fiscal integration
+    shared/         # Shared reference data
+    ui/             # UI metadata
+    scripting/      # Scripting engine
+
+ mssql/          # MS SQL Server migrations (planned)
+    core/        # (To be implemented)
+    identity/
     ...
- posts/          # Posts module (posts + comments + likes)
-    000001_create_user_posts.up.sql
-    000001_create_user_posts.down.sql
-    ...
- profiles/       # Profiles module (user contacts + profiles)
-     000001_create_user_contacts.up.sql
-     000002_create_user_profiles.up.sql
-     ...
 ```
+
+**Note**: Migration manager automatically selects the correct directory based on `DATABASE_DRIVER` configuration.
 
 ## Key Features
 
@@ -82,14 +93,16 @@ make migrate-create-core NAME=add_audit_log
 Migrations run automatically on application startup:
 
 - **Core** migrations always run first
-- **IModule** migrations run only for enabled modules (from config)
+- **Module** migrations run for all namespaces in sequence
 
-See [cmd/api/main.go](../cmd/api/main.go):
+The migration manager automatically uses the correct database-specific migrations based on `DATABASE_DRIVER` configuration.
+
+See [cmd/api/bootstrap.go](../cmd/api/bootstrap.go):
 
 ```go
-migrationManager := migration.NewManager(db, "migrations")
-enabledModules := cfg.Modules.Enabled
-migrationManager.MigrateAll(ctx, enabledModules)
+driver := cfg.Database.Driver  // "postgres" or "mssql"
+migrationManager := migration.NewManager(db, driver, "migrations")
+// Runs migrations from migrations/{driver}/{namespace}/
 ```
 
 ### Manual Migration Management
@@ -98,12 +111,12 @@ migrationManager.MigrateAll(ctx, enabledModules)
 # Build migration CLI tool
 go build -o bin/migrate ./cmd/migrate/main.go
 
-# Run migrations
+# Run migrations (uses DATABASE_DRIVER from config)
 ./bin/migrate -cmd=up -all                # All namespaces
-./bin/migrate -cmd=up -namespace=posts    # Specific namespace
+./bin/migrate -cmd=up -namespace=core     # Specific namespace
 
 # Rollback
-./bin/migrate -cmd=down -namespace=posts -steps=2
+./bin/migrate -cmd=down -namespace=core -steps=2
 
 # Check status
 ./bin/migrate -cmd=status
@@ -134,16 +147,41 @@ go build -o bin/migrate ./cmd/migrate/main.go
    # 000003_create_comment_likes_table.up.sql → next is 000004
    ```
 
-2. Create migration files:
+2. Create migration files in the correct database directory:
 
    ```bash
-   touch migrations/posts/000004_add_post_views.up.sql
-   touch migrations/posts/000004_add_post_views.down.sql
+   # PostgreSQL
+   touch migrations/postgres/core/000004_add_audit_log.up.sql
+   touch migrations/postgres/core/000004_add_audit_log.down.sql
+
+   # MS SQL Server (when implemented)
+   touch migrations/mssql/core/000004_add_audit_log.up.sql
+   touch migrations/mssql/core/000004_add_audit_log.down.sql
    ```
 
 3. Write SQL:
    - **UP**: DDL to apply changes
    - **DOWN**: DDL to revert changes
+   - **Note**: Use database-specific syntax appropriate for the driver
+
+## Database-Specific Considerations
+
+### PostgreSQL (migrations/postgres/)
+
+- Use PostgreSQL-native features: JSONB, UUID, materialized views
+- PL/pgSQL for stored procedures
+- `RETURNING` clause for insert/update operations
+- GIN indexes for JSONB columns
+
+### MS SQL Server (migrations/mssql/)
+
+- Use T-SQL syntax
+- `UNIQUEIDENTIFIER` for UUIDs
+- `NVARCHAR(MAX)` for JSON storage
+- `OUTPUT INSERTED` instead of `RETURNING`
+- Indexed Views instead of materialized views
+
+**Migration manager automatically selects the correct directory based on DATABASE_DRIVER configuration.**
 
 ## Migration Naming Convention
 

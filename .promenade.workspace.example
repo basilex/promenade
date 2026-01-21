@@ -5,7 +5,12 @@
 
 # Database Driver Selection
 # -------------------------
-# PostgreSQL is the only supported database
+# Supported: postgres | mssql
+#
+# Current status:
+# - postgres: Production-ready (PostgreSQL 14+)
+# - mssql: Planned for future enterprise deployments
+#
 # Default: postgres
 DATABASE_DRIVER=postgres
 
@@ -19,13 +24,21 @@ ENVIRONMENT=development
 # ----------------------------------------
 # Uncomment to override defaults from config/app.{driver}-{env}.yaml
 
-# PostgreSQL (required)
+# PostgreSQL (current)
 # DB_HOST=localhost
 # DB_PORT=5432
 # DB_USER=system
 # DB_PASSWORD=passw0rd
 # DB_NAME=promenade_dev
 # DB_SSLMODE=disable
+
+# MS SQL Server (future)
+# DB_HOST=localhost
+# DB_PORT=1433
+# DB_USER=sa
+# DB_PASSWORD=YourPassword123
+# DB_NAME=promenade_dev
+# DB_INSTANCE=SQLEXPRESS  # Optional: named instance
 
 # Redis
 # REDIS_ADDR=localhost:6379
@@ -44,6 +57,8 @@ ENVIRONMENT=development
 # Notes:
 # ------
 # 1. .promenade.workspace is git-ignored (local only)
-# 2. Use 'make switch-postgres-dev' for quick switching
-# 3. All make commands read this file automatically
-# 4. PostgreSQL 14+ required - use Docker Compose for local development
+# 2. Use 'make switch-postgres-dev' to switch to PostgreSQL development
+# 3. Use 'make switch-mssql-dev' when MS SQL Server support is ready
+# 4. All make commands read this file automatically
+# 5. Migrations are database-specific: migrations/{driver}/{namespace}/
+# 6. PostgreSQL 14+ required - use Docker Compose for local development

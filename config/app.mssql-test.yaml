@@ -1,0 +1,98 @@
+# Test Environment Configuration (MS SQL Server)
+# Isolated test database with minimal logging
+
+app:
+  name: "Promenade Platform"
+  environment: "test"
+  version: "0.1.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8082
+  read_timeout: 5s
+  write_timeout: 5s
+
+# Centralized database configuration
+database:
+  driver: "mssql" # Database driver: "postgres" or "mssql"
+
+  # MS SQL Server - test database
+  mssql:
+    host: "localhost"
+    port: 1433
+    user: "sa"
+    password: "YourStrong@Passw0rd"
+    database: "promenade_test"
+    instance: ""
+    encrypt: "disable"
+    trust_server_certificate: true
+
+  # Redis - test instance
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    pool_size: 5
+    max_retries: 2
+    databases:
+      revocation: 10 # Separate DB numbers for test
+      bus: 11
+      cache: 12
+      sessions: 13
+
+jwt:
+  secret: "test-secret-key-do-not-use-in-production"
+  access_token_duration: 5m
+  refresh_token_duration: 24h
+  issuer: "promenade-test"
+
+logging:
+  level: "error" # Minimal logging in tests
+  format: "text"
+  add_source: false
+
+# Event Bus Configuration
+event_bus:
+  adapter: "memory" # Always memory for tests
+
+# Cache Configuration
+cache:
+  adapter: "memory" # Always memory for tests
+  ttl: 60
+  cleanup_interval: 120
+
+# CORS Configuration (minimal for tests)
+cors:
+  allowed_origins:
+    - "*"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+  allowed_headers:
+    - "*"
+  allow_credentials: true
+  max_age: 3600
+
+# Rate Limiting
+rate_limit:
+  enabled: false # Disabled in tests
+
+# Module Configuration
+modules:
+  identity:
+    enabled: true
+  customer_management:
+    enabled: true
+  order_management:
+    enabled: true
+  billing:
+    enabled: true
+  warehouse:
+    enabled: true
+  fiscal:
+    enabled: true
+  scripting:
+    enabled: false

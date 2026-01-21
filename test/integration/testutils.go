@@ -313,7 +313,7 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 	}
 
 	migrationsPath := filepath.Join(projectRoot, "migrations")
-	mgr := migration.NewManager(db, migrationsPath)
+	mgr := migration.NewManager(db, "postgres", migrationsPath)
 	ctx := context.Background()
 
 	// Run core migrations

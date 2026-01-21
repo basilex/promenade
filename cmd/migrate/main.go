@@ -59,7 +59,13 @@ func main() {
 		migrationsDir = dir
 	}
 
-	mgr := migration.NewManager(db, migrationsDir)
+	// Get database driver from config (default: postgres)
+	driver := cfg.Database.Driver
+	if driver == "" {
+		driver = "postgres"
+	}
+
+	mgr := migration.NewManager(db, driver, migrationsDir)
 
 	// Execute command
 	switch *command {

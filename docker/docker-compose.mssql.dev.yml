@@ -1,0 +1,60 @@
+# MS SQL Server Development Environment
+# Docker Compose configuration for local development with MS SQL Server 2022
+
+version: "3.8"
+
+services:
+  # MS SQL Server 2022 (Linux container)
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: promenade-mssql-dev
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Developer # Developer edition (free)
+      - MSSQL_TCP_PORT=1433
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+      - ./init-db-mssql.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - promenade-network
+
+  # Redis (shared between PostgreSQL and MS SQL Server setups)
+  redis:
+    image: redis:7-alpine
+    container_name: promenade-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: redis-cli ping || exit 1
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - promenade-network
+
+volumes:
+  mssql-data:
+    driver: local
+    name: promenade-mssql-dev-data
+  redis-data:
+    driver: local
+    name: promenade-redis-data
+
+networks:
+  promenade-network:
+    driver: bridge
+    name: promenade-dev-network

@@ -61,13 +61,17 @@ type MigrationFile struct {
 type manager struct {
 	db            *sqlx.DB
 	migrationsDir string
+	driver        string // Database driver: postgres, mssql
 }
 
 // NewManager creates a new migration manager
-func NewManager(db *sqlx.DB, migrationsDir string) Manager {
+// driver: "postgres" or "mssql"
+// migrationsDir: base directory (e.g., "migrations"), manager will look in {migrationsDir}/{driver}/
+func NewManager(db *sqlx.DB, driver string, migrationsDir string) Manager {
 	return &manager{
 		db:            db,
 		migrationsDir: migrationsDir,
+		driver:        driver,
 	}
 }
 
@@ -136,11 +140,12 @@ func (m *manager) deleteVersion(ctx context.Context, namespace string, version i
 
 // loadMigrationFiles reads migration files from disk for a namespace
 func (m *manager) loadMigrationFiles(namespace string) ([]MigrationFile, error) {
-	namespacePath := filepath.Join(m.migrationsDir, namespace)
+	// Construct driver-specific path: migrations/{driver}/{namespace}
+	namespacePath := filepath.Join(m.migrationsDir, m.driver, namespace)
 
 	// Check if namespace directory exists
 	if _, err := os.Stat(namespacePath); os.IsNotExist(err) {
-		logger.Warn("Migration directory not found", "namespace", namespace, "path", namespacePath)
+		logger.Warn("Migration directory not found", "namespace", namespace, "driver", m.driver, "path", namespacePath)
 		return []MigrationFile{}, nil // No migrations for this namespace
 	}
 

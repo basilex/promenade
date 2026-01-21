@@ -1,0 +1,103 @@
+# Production Environment Configuration (MS SQL Server)
+# Security-hardened settings for production deployment
+
+app:
+  name: "Promenade Platform"
+  environment: "production"
+  version: "1.0.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8081
+  read_timeout: 30s
+  write_timeout: 30s
+
+# Centralized database configuration
+database:
+  driver: "mssql" # Database driver: "postgres" or "mssql"
+
+  # MS SQL Server - production database
+  mssql:
+    host: "${DB_HOST}" # Override via environment variable
+    port: 1433
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    database: "${DB_NAME}"
+    instance: ""
+    encrypt: "true"
+    trust_server_certificate: false
+
+  # Redis - production instance
+  redis:
+    addr: "${REDIS_ADDR}"
+    password: "${REDIS_PASSWORD}"
+    pool_size: 100
+    max_retries: 3
+    databases:
+      revocation: 0
+      bus: 1
+      cache: 2
+      sessions: 3
+
+jwt:
+  secret: "${JWT_SECRET}" # MUST be set via environment variable
+  access_token_duration: 15m
+  refresh_token_duration: 168h
+  issuer: "promenade-platform"
+
+logging:
+  level: "info"
+  format: "json"
+  add_source: false
+
+# Event Bus Configuration
+event_bus:
+  adapter: "redis" # Redis for production
+
+# Cache Configuration
+cache:
+  adapter: "redis" # Redis for production
+  ttl: 300
+  cleanup_interval: 600
+
+# CORS Configuration
+cors:
+  allowed_origins:
+    - "${FRONTEND_URL}" # Set via environment
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+  allowed_headers:
+    - "Authorization"
+    - "Content-Type"
+    - "X-Request-ID"
+  expose_headers:
+    - "X-Request-ID"
+  allow_credentials: true
+  max_age: 3600
+
+# Rate Limiting
+rate_limit:
+  enabled: true
+  requests_per_second: 1000
+  burst: 2000
+
+# Module Configuration
+modules:
+  identity:
+    enabled: true
+  customer_management:
+    enabled: true
+  order_management:
+    enabled: true
+  billing:
+    enabled: true
+  warehouse:
+    enabled: true
+  fiscal:
+    enabled: true
+  scripting:
+    enabled: false # Disabled in production for security

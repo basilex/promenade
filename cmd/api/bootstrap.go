@@ -109,7 +109,7 @@ func Bootstrap(cfg *config.AppConfig) (*App, error) {
 	app.DB = db
 
 	// Run migrations
-	if err := runMigrations(db); err != nil {
+	if err := runMigrations(cfg, db); err != nil {
 		return nil, err
 	}
 
@@ -250,9 +250,16 @@ func initDatabase(cfg *config.AppConfig) (*sqlx.DB, error) {
 }
 
 // runMigrations runs all database migrations
-func runMigrations(db *sqlx.DB) error {
+func runMigrations(cfg *config.AppConfig, db *sqlx.DB) error {
 	logger.Info("Running database migrations...")
-	migrationManager := migration.NewManager(db, "migrations")
+	
+	// Get database driver from config (default: postgres)
+	driver := cfg.Database.Driver
+	if driver == "" {
+		driver = "postgres"
+	}
+	
+	migrationManager := migration.NewManager(db, driver, "migrations")
 	ctx := context.Background()
 
 	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "banking", "accounting", "warehouse", "scripting", "fiscal", "ui"}

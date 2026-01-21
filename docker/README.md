@@ -1,23 +1,43 @@
 # Docker Configuration
 
-Docker setup for Promenade with environment-specific configurations.
+Docker setup for Promenade with database-specific and environment-specific configurations.
 
 ## Structure
 
 ```
 docker/
- docker-compose.dev.yml   # Development (local)
- docker-compose.test.yml  # Testing (CI/CD)
- docker-compose.prod.yml  # Production (deployment)
- Dockerfile               # Production image build
- init-db.sh              # Database initialization script
+ # PostgreSQL configurations
+ docker-compose.postgres.dev.yml   # Development
+ docker-compose.postgres.test.yml  # Testing
+ docker-compose.postgres.prod.yml  # Production
+
+ # MS SQL Server configurations (planned)
+ docker-compose.mssql.dev.yml      # Development
+ docker-compose.mssql.test.yml     # Testing
+ docker-compose.mssql.prod.yml     # Production
+
+ # Build and initialization
+ Dockerfile                         # Production image build
+ init-db.sh                        # PostgreSQL initialization
+ init-db-mssql.sh                  # MS SQL Server initialization
 ```
 
-## Environment Files
+**Pattern**: `docker-compose.{driver}.{environment}.yml`
 
-### Development (`docker-compose.dev.yml`)
+- `{driver}`: `postgres` | `mssql`
+- `{environment}`: `dev` | `test` | `prod`
 
-**Purpose**: Local development environment
+Makefile automatically selects the correct file based on `.promenade.workspace` configuration.
+
+---
+
+---
+
+## PostgreSQL Environments
+
+### Development (`docker-compose.postgres.dev.yml`)
+
+**Purpose**: Local development environment with PostgreSQL
 
 **Services**:
 
@@ -27,16 +47,17 @@ docker/
 **Usage**:
 
 ```bash
-make docker-up      # Start containers
-make docker-down    # Stop containers
-make docker-logs    # View logs
+make switch-postgres-dev
+make docker-up           # Start PostgreSQL containers (automatically uses correct file)
+make docker-down         # Stop containers
+make docker-logs         # View logs
 ```
 
 **Database**: `promenade_dev`
 
 ---
 
-### Testing (`docker-compose.test.yml`)
+### Testing (`docker-compose.postgres.test.yml`)
 
 **Purpose**: Automated testing environment
 
@@ -48,15 +69,19 @@ make docker-logs    # View logs
 **Usage**:
 
 ```bash
-make test-db-start  # Start test containers
-make test-db-stop   # Stop test containers
+make switch-postgres-test
+make docker-up          # Uses postgres.test.yml automatically
 ```
 
 **Database**: `promenade_test`
 
 ---
 
-### Production (`docker-compose.prod.yml`)
+**Database**: `promenade_test`
+
+---
+
+### Production (`docker-compose.postgres.prod.yml`)
 
 **Purpose**: Production deployment
 
@@ -64,28 +89,73 @@ make test-db-stop   # Stop test containers
 
 - PostgreSQL 16 (port 5432) - Production database
 - Redis 7 (port 6379) - Production cache/session store
-- App (port 8080) - Promenade API
 
 **Usage**:
 
 ```bash
-make docker-build       # Build production image
-make docker-prod-up     # Start production stack
-make docker-prod-down   # Stop production stack
-make docker-prod-logs   # View production logs
+make switch-postgres-prod
+make docker-up          # Uses postgres.prod.yml automatically
 ```
 
 **Database**: `promenade_prod`
 
 ---
 
+## MS SQL Server Environments (Planned)
+
+### Development (`docker-compose.mssql.dev.yml`)
+
+**Purpose**: Local development environment with MS SQL Server 2022
+
+**Services**:
+
+- MS SQL Server 2022 (port 1433) - Development database (Developer Edition)
+- Redis 7 (port 6379) - Development cache/session store
+
+**Usage**:
+
+```bash
+make switch-mssql-dev
+make docker-up          # Will use mssql.dev.yml when MS SQL Server support is ready
+```
+
+**Database**: `promenade_dev`
+
+**Status**: Configuration ready, waiting for MS SQL Server dialect implementation
+
+---
+
+### Testing (`docker-compose.mssql.test.yml`)
+
+**Purpose**: Automated testing with MS SQL Server
+
+**Services**:
+
+- MS SQL Server 2022 (port 1433) - Test database
+- Redis 7 (port 6380) - Test cache/session store
+
+---
+
+### Production (`docker-compose.mssql.prod.yml`)
+
+**Purpose**: Production deployment with MS SQL Server (Standard Edition)
+
+**Services**:
+
+- MS SQL Server 2022 (port 1433) - Production database
+- Redis 7 (port 6379) - Production cache/session store
+
+**Note**: For production, consider using managed MS SQL Server (Azure SQL Database, AWS RDS)
+
+---
+
 ## Port Allocation
 
-| Environment | PostgreSQL | Redis | App  |
-| ----------- | ---------- | ----- | ---- |
-| Development | 5432       | 6379  | 8081 |
-| Testing     | 5433       | 6380  | -    |
-| Production  | 5432       | 6379  | 8080 |
+| Environment     | PostgreSQL | MS SQL | Redis | App  |
+| --------------- | ---------- | ------ | ----- | ---- |
+| **Development** | 5432       | 1433   | 6379  | 8081 |
+| **Testing**     | 5433       | 1433   | 6380  | -    |
+| **Production**  | 5432       | 1433   | 6379  | 8080 |
 
 ## Environment Variables
 
