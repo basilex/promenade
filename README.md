@@ -83,6 +83,7 @@ Server starts at **http://localhost:8081**
 - **[Testing Guide](test/README.md)** — Unit, smoke, integration, benchmark tests
 - **[Security Patterns](docs/guides/security-patterns.md)** — Error handling, validation, authentication
 - **[Domain Errors](docs/guides/domain-errors.md)** — Type-safe error handling patterns
+- **[Database Strategy](docs/guides/database-strategy.md)** — PostgreSQL-first approach, MS SQL Server roadmap
 
 ### Core Concepts
 
@@ -488,7 +489,7 @@ See [LICENSE](LICENSE) file for details.
 - **Version**: 1.0.0
 - **Status**: Production-ready
 - **Go Version**: 1.24+
-- **Database**: PostgreSQL 16, SQLite 3
+- **Database**: PostgreSQL 16, MS SQL Server (planned)
 - **Tests**: 200+ unit, 26 smoke, 29 integration
 - **Code Quality**: 0 lint issues
 - **Security**: Audit complete (Jan 2026)
