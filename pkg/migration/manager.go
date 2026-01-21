@@ -166,8 +166,8 @@ func (m *manager) deleteVersion(ctx context.Context, namespace string, version i
 
 // loadMigrationFiles reads migration files from disk for a namespace
 func (m *manager) loadMigrationFiles(namespace string) ([]MigrationFile, error) {
-	// Construct driver-specific path: migrations/{driver}/{namespace}
-	namespacePath := filepath.Join(m.migrationsDir, m.driver, namespace)
+	// migrationsDir already includes driver path: migrations/{driver}
+	namespacePath := filepath.Join(m.migrationsDir, namespace)
 
 	// Check if namespace directory exists
 	if _, err := os.Stat(namespacePath); os.IsNotExist(err) {
