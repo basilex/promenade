@@ -1,5 +1,5 @@
-// Package jsonstore provides database-agnostic JSON storage.
-// Works with PostgreSQL JSONB, SQLite TEXT, MySQL JSON, and SQL Server NVARCHAR.
+// Package jsonstore provides type-safe JSON storage for PostgreSQL.
+// Optimized for PostgreSQL JSONB with automatic marshaling/unmarshaling.
 package jsonstore
 
 import (
@@ -8,14 +8,11 @@ import (
 	"fmt"
 )
 
-// Field represents a JSON-serializable field that can be stored in any database.
+// Field represents a JSON-serializable field for PostgreSQL JSONB storage.
 // It implements sql.Scanner and driver.Valuer for seamless database integration.
 //
-// Supports:
-//   - PostgreSQL: JSONB (native, optimized)
-//   - SQLite: TEXT (JSON string)
-//   - MySQL: JSON (native)
-//   - SQL Server: NVARCHAR(MAX) (JSON string)
+// PostgreSQL storage:
+//   - JSONB (native, optimized, indexed)
 //
 // Example usage:
 //
@@ -137,9 +134,7 @@ func (f Field[T]) Value() (driver.Value, error) {
 		return nil, fmt.Errorf("jsonstore: failed to marshal JSON: %w", err)
 	}
 
-	// Return as string for maximum compatibility
-	// PostgreSQL will convert to JSONB automatically
-	// SQLite/MySQL store as TEXT/JSON directly
+	// Return as string - PostgreSQL will convert to JSONB automatically
 	return string(bytes), nil
 }
 

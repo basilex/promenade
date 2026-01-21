@@ -47,9 +47,9 @@ type ServerSection struct {
 
 // DatabasesSection holds all database configurations
 type DatabasesSection struct {
-	Driver   string          `yaml:"driver"`   // Database driver: "postgres", "sqlite", "mysql"
-	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config (when driver=postgres)
-	SQLite   SQLiteSection   `yaml:"sqlite"`   // SQLite config (when driver=sqlite)
+	Driver   string          `yaml:"driver"`   // Database driver: currently only "postgres" supported
+	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config (required)
+	SQLite   SQLiteSection   `yaml:"sqlite"`   // SQLite config (deprecated, for legacy support only)
 	Redis    RedisSection    `yaml:"redis"`    // Redis for cache/sessions/bus
 }
 

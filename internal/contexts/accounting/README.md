@@ -171,7 +171,7 @@ accounting/
                        ↓
 
   Infrastructure Layer (Repositories, Cache, Events)
-  - PostgreSQL/SQLite repositories
+  - PostgreSQL repositories
   - In-memory caching (5-15 min TTL)
   - Event store (journal entries)
   - Audit logger

@@ -121,8 +121,6 @@ Promenade follows **strict DDD** with 8 bounded contexts, each owning its domain
           (Async communication between contexts)
 
 
-
-
 Identity Customer  Order  Billing Warehouse Fiscal
            Mgmt     Mgmt
 

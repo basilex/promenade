@@ -1,55 +1,54 @@
-// Package database provides database adapter abstraction for multi-database support.
-// Supports PostgreSQL, SQLite, MySQL, and future databases.
+// Package database provides database adapter abstraction.
+// Optimized for PostgreSQL with dialect interface for potential future extensions.
 package database
 
 import "fmt"
 
-// Dialect abstracts SQL syntax differences between databases.
-// Each database has its own dialect implementation (Postgres, SQLite, MySQL, etc.)
+// Dialect abstracts SQL syntax differences for PostgreSQL.
+// Interface design allows for potential future database support.
 type Dialect interface {
-	// Name returns the database name (e.g., "postgres", "sqlite", "mysql")
+	// Name returns the database name (currently only "postgres" supported)
 	Name() string
 
 	// Placeholder returns the parameter placeholder for position n (1-indexed)
 	// Postgres: $1, $2, $3
-	// SQLite/MySQL: ?, ?, ?
 	// SQL Server: @p1, @p2, @p3
 	Placeholder(n int) string
 
 	// SupportsReturning returns true if database supports RETURNING clause
-	// Postgres: true, SQLite 3.35+: true, MySQL < 8.0: false
+	// Postgres: true
 	SupportsReturning() bool
 
 	// SupportsJSON returns true if database has native JSON type
-	// Postgres: true (JSONB), MySQL 5.7+: true (JSON), SQLite: false (use TEXT)
+	// Postgres: true (JSONB)
 	SupportsJSON() bool
 
 	// SupportsJSONIndex returns true if database can index JSON fields
-	// Postgres: true (GIN index), MySQL: true (generated columns), SQLite: false
+	// Postgres: true (GIN index)
 	SupportsJSONIndex() bool
 
 	// SupportsUUID returns true if database has native UUID type
-	// Postgres: true, SQLite: false (use TEXT), MySQL: false (use CHAR(36))
+	// Postgres: true
 	SupportsUUID() bool
 
 	// QuoteIdentifier quotes table/column names for safe SQL
-	// Postgres: "table_name", MySQL: `table_name`, SQL Server: [table_name]
+	// Postgres: "table_name"
 	QuoteIdentifier(name string) string
 
 	// UUIDType returns the SQL type for storing UUIDs
-	// Postgres: "UUID", SQLite: "TEXT", MySQL: "CHAR(36)"
+	// Postgres: "UUID"
 	UUIDType() string
 
 	// JSONType returns the SQL type for storing JSON
-	// Postgres: "JSONB", MySQL: "JSON", SQLite: "TEXT"
+	// Postgres: "JSONB"
 	JSONType() string
 
 	// TimestampType returns the SQL type for timestamps
-	// Postgres: "TIMESTAMP", MySQL: "DATETIME", SQLite: "DATETIME"
+	// Postgres: "TIMESTAMP"
 	TimestampType() string
 
 	// BoolType returns the SQL type for booleans
-	// Postgres: "BOOLEAN", MySQL: "TINYINT(1)", SQLite: "BOOLEAN"
+	// Postgres: "BOOLEAN"
 	BoolType() string
 }
 
@@ -69,14 +68,14 @@ func (d BaseDialect) Name() string {
 }
 
 // ConvertPlaceholders converts $1, $2, $3 style placeholders to database-specific format
-// Useful when writing queries in Postgres style and converting for other databases
+// Currently optimized for PostgreSQL (no conversion needed)
 func ConvertPlaceholders(query string, dialect Dialect) string {
 	if dialect.Name() == "postgres" {
 		return query // Already in correct format
 	}
 
-	// Simple implementation for ? placeholders (SQLite, MySQL)
-	// For production, use a proper SQL parser
+	// Implementation for alternative placeholder styles
+	// Reserved for potential future database support
 	result := ""
 	paramNum := 1
 	inString := false

@@ -1,10 +1,9 @@
 // Package jsonb provides PostgreSQL JSONB type wrappers for Go structs.
 //
-//	DEPRECATED: Use pkg/jsonstore instead for cross-database compatibility.
+//	DEPRECATED: Use pkg/jsonstore instead.
 //
-// This package is PostgreSQL-specific (JSONB type). The new pkg/jsonstore package
-// provides the same functionality but works with all databases (PostgreSQL, SQLite,
-// MySQL, SQL Server) by storing JSON as TEXT.
+// This package provides PostgreSQL-specific JSONB support. The new pkg/jsonstore
+// package offers better type safety and performance for PostgreSQL JSONB.
 //
 // Migration guide:
 //   - jsonb.Map → Use jsonstore.Field[map[string]any]
