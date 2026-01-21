@@ -19,6 +19,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 	"github.com/basilex/promenade/pkg/uuidv7"
@@ -312,8 +313,9 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("failed to find project root: %w", err)
 	}
 
-	migrationsPath := filepath.Join(projectRoot, "migrations")
-	mgr := migration.NewManager(db, "postgres", migrationsPath)
+	migrationsPath := filepath.Join(projectRoot, "migrations", "postgres")
+	dialect := postgres.NewDialect()
+	mgr := migration.NewManager(db, "postgres", migrationsPath, dialect)
 	ctx := context.Background()
 
 	// Run core migrations

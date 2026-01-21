@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/basilex/promenade/pkg/database"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/jmoiron/sqlx"
 )
@@ -23,8 +24,8 @@ func min(a, b int) int {
 	return b
 }
 
-// Manager manages database migrations with namespace support
-type Manager interface {
+// IMigrationManager manages database migrations with namespace support
+type IMigrationManager interface {
 	// MigrateNamespace applies all pending migrations for a namespace
 	MigrateNamespace(ctx context.Context, namespace string) error
 
@@ -62,16 +63,19 @@ type manager struct {
 	db            *sqlx.DB
 	migrationsDir string
 	driver        string // Database driver: postgres, mssql
+	dialect       database.Dialect
 }
 
 // NewManager creates a new migration manager
 // driver: "postgres" or "mssql"
 // migrationsDir: base directory (e.g., "migrations"), manager will look in {migrationsDir}/{driver}/
-func NewManager(db *sqlx.DB, driver string, migrationsDir string) Manager {
+// dialect: database dialect for SQL syntax differences
+func NewManager(db *sqlx.DB, driver string, migrationsDir string, dialect database.Dialect) IMigrationManager {
 	return &manager{
 		db:            db,
 		migrationsDir: migrationsDir,
 		driver:        driver,
+		dialect:       dialect,
 	}
 }
 
@@ -99,13 +103,13 @@ func (m *manager) getCurrentVersion(ctx context.Context, namespace string) (int,
 	var version int
 	var dirty bool
 
-	query := `
+	query := fmt.Sprintf(`
 		SELECT version, dirty 
 		FROM schema_migrations 
-		WHERE namespace = $1 
+		WHERE namespace = %s 
 		ORDER BY version DESC 
 		LIMIT 1
-	`
+	`, m.dialect.Placeholder(1))
 
 	err := m.db.QueryRowContext(ctx, query, namespace).Scan(&version, &dirty)
 	if err == sql.ErrNoRows {
@@ -120,12 +124,33 @@ func (m *manager) getCurrentVersion(ctx context.Context, namespace string) (int,
 
 // setVersion sets the current version for a namespace
 func (m *manager) setVersion(ctx context.Context, namespace string, version int, dirty bool) error {
-	query := `
-		INSERT INTO schema_migrations (namespace, version, dirty, applied_at)
-		VALUES ($1, $2, $3, $4)
-		ON CONFLICT (namespace, version) 
-		DO UPDATE SET dirty = $3, applied_at = $4
-	`
+	// PostgreSQL: INSERT ... ON CONFLICT
+	// MS SQL Server: Use MERGE or separate IF EXISTS check
+	if m.driver == "postgres" {
+		query := fmt.Sprintf(`
+			INSERT INTO schema_migrations (namespace, version, dirty, applied_at)
+			VALUES (%s, %s, %s, %s)
+			ON CONFLICT (namespace, version) 
+			DO UPDATE SET dirty = %s, applied_at = %s
+		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3), 
+		   m.dialect.Placeholder(4), m.dialect.Placeholder(3), m.dialect.Placeholder(4))
+		_, err := m.db.ExecContext(ctx, query, namespace, version, dirty, time.Now())
+		return err
+	}
+
+	// MS SQL Server: MERGE statement
+	query := fmt.Sprintf(`
+		MERGE INTO schema_migrations AS target
+		USING (SELECT %s AS namespace, %s AS version) AS source
+		ON target.namespace = source.namespace AND target.version = source.version
+		WHEN MATCHED THEN
+			UPDATE SET dirty = %s, applied_at = %s
+		WHEN NOT MATCHED THEN
+			INSERT (namespace, version, dirty, applied_at)
+			VALUES (%s, %s, %s, %s);
+	`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
+	   m.dialect.Placeholder(4), m.dialect.Placeholder(1), m.dialect.Placeholder(2),
+	   m.dialect.Placeholder(3), m.dialect.Placeholder(4))
 
 	_, err := m.db.ExecContext(ctx, query, namespace, version, dirty, time.Now())
 	return err
@@ -133,7 +158,8 @@ func (m *manager) setVersion(ctx context.Context, namespace string, version int,
 
 // deleteVersion removes a version from schema_migrations
 func (m *manager) deleteVersion(ctx context.Context, namespace string, version int) error {
-	query := `DELETE FROM schema_migrations WHERE namespace = $1 AND version = $2`
+	query := fmt.Sprintf("DELETE FROM schema_migrations WHERE namespace = %s AND version = %s",
+		m.dialect.Placeholder(1), m.dialect.Placeholder(2))
 	_, err := m.db.ExecContext(ctx, query, namespace, version)
 	return err
 }

@@ -7,11 +7,13 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"path/filepath"
 
 	_ "github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
+	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/logger"
 	"github.com/basilex/promenade/pkg/migration"
 )
@@ -65,7 +67,12 @@ func main() {
 		driver = "postgres"
 	}
 
-	mgr := migration.NewManager(db, driver, migrationsDir)
+	// Append driver subdirectory to migrations path
+	migrationsDir = filepath.Join(migrationsDir, driver)
+
+	// Create dialect for database-specific SQL
+	dialect := postgres.NewDialect()
+	mgr := migration.NewManager(db, driver, migrationsDir, dialect)
 
 	// Execute command
 	switch *command {
@@ -100,7 +107,7 @@ func main() {
 	}
 }
 
-func runMigrateUp(ctx context.Context, mgr migration.Manager, namespace string, all bool, cfg *config.AppConfig) error {
+func runMigrateUp(ctx context.Context, mgr migration.IMigrationManager, namespace string, all bool, cfg *config.AppConfig) error {
 	if all {
 		// Get enabled modules from config
 		enabledModules := getEnabledModules(cfg)
@@ -116,12 +123,12 @@ func runMigrateUp(ctx context.Context, mgr migration.Manager, namespace string, 
 	return mgr.MigrateNamespace(ctx, namespace)
 }
 
-func runRollback(ctx context.Context, mgr migration.Manager, namespace string, steps int) error {
+func runRollback(ctx context.Context, mgr migration.IMigrationManager, namespace string, steps int) error {
 	fmt.Printf("Rolling back %d migration(s) for namespace: %s\n", steps, namespace)
 	return mgr.Rollback(ctx, namespace, steps)
 }
 
-func runStatus(ctx context.Context, mgr migration.Manager) error {
+func runStatus(ctx context.Context, mgr migration.IMigrationManager) error {
 	status, err := mgr.Status(ctx)
 	if err != nil {
 		return err
@@ -149,7 +156,7 @@ func runStatus(ctx context.Context, mgr migration.Manager) error {
 	return nil
 }
 
-func runVersion(ctx context.Context, mgr migration.Manager, namespace string) error {
+func runVersion(ctx context.Context, mgr migration.IMigrationManager, namespace string) error {
 	version, err := mgr.Version(ctx, namespace)
 	if err != nil {
 		return err

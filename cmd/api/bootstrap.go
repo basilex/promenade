@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/internal/infrastructure/health"
+	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/cache"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
@@ -259,7 +261,12 @@ func runMigrations(cfg *config.AppConfig, db *sqlx.DB) error {
 		driver = "postgres"
 	}
 	
-	migrationManager := migration.NewManager(db, driver, "migrations")
+	// Construct migrations path with driver subdirectory
+	migrationsPath := fmt.Sprintf("migrations/%s", driver)
+	
+	// Create dialect for database-specific SQL
+	dialect := postgres.NewDialect()
+	migrationManager := migration.NewManager(db, driver, migrationsPath, dialect)
 	ctx := context.Background()
 
 	namespaces := []string{"core", "shared", "identity", "customer-mgmt", "order-mgmt", "billing", "banking", "accounting", "warehouse", "scripting", "fiscal", "ui"}

@@ -1,12 +1,28 @@
 package migration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 )
+
+// mockDialect implements database.Dialect for testing
+type mockDialect struct{}
+
+func (d *mockDialect) Name() string                { return "postgres" }
+func (d *mockDialect) Placeholder(n int) string    { return fmt.Sprintf("$%d", n) }
+func (d *mockDialect) SupportsReturning() bool     { return true }
+func (d *mockDialect) SupportsJSON() bool          { return true }
+func (d *mockDialect) SupportsJSONIndex() bool     { return true }
+func (d *mockDialect) SupportsUUID() bool          { return true }
+func (d *mockDialect) QuoteIdentifier(name string) string { return `"` + name + `"` }
+func (d *mockDialect) UUIDType() string            { return "UUID" }
+func (d *mockDialect) JSONType() string            { return "JSONB" }
+func (d *mockDialect) TimestampType() string       { return "TIMESTAMP" }
+func (d *mockDialect) BoolType() string            { return "BOOLEAN" }
 
 func setupMockDB(t *testing.T) (*sqlx.DB, sqlmock.Sqlmock) {
 	mockDB, mock, err := sqlmock.New()
@@ -22,7 +38,8 @@ func TestNewManager(t *testing.T) {
 	db, _ := setupMockDB(t)
 	defer func() { _ = db.Close() }()
 
-	mgr := NewManager(db, "postgres", "test_migrations")
+	dialect := &mockDialect{}
+	mgr := NewManager(db, "postgres", "test_migrations", dialect)
 
 	assert.NotNil(t, mgr)
 }
@@ -61,8 +78,9 @@ func TestManager_InterfaceCompliance(t *testing.T) {
 	db, _ := setupMockDB(t)
 	defer func() { _ = db.Close() }()
 
-	var mgr interface{} = NewManager(db, "postgres", "test")
+	dialect := &mockDialect{}
+	var mgr interface{} = NewManager(db, "postgres", "test", dialect)
 
-	_, ok := mgr.(Manager)
-	assert.True(t, ok, "manager should implement Manager interface")
+	_, ok := mgr.(IMigrationManager)
+	assert.True(t, ok, "manager should implement IMigrationManager interface")
 }
