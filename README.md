@@ -259,19 +259,24 @@ config/
  app.postgres-dev.yaml   # Development (PostgreSQL)
  app.postgres-prod.yaml  # Production (PostgreSQL)
  app.postgres-test.yaml  # Testing (PostgreSQL)
- app.sqlite-dev.yaml     # Development (SQLite)
- app.sqlite-test.yaml    # Testing (SQLite)
+ app.mssql-dev.yaml      # Development (MS SQL Server - planned)
+ app.mssql-prod.yaml     # Production (MS SQL Server - planned)
+ app.mssql-test.yaml     # Testing (MS SQL Server - planned)
 ```
 
-### Switch Database
+### Switch Environment
 
 ```bash
-# PostgreSQL (default)
+# PostgreSQL (default, recommended)
 make switch-postgres-dev
 make dev
 
-# SQLite (faster startup, single file)
-make switch-sqlite-dev
+# PostgreSQL test environment
+make switch-postgres-test
+make test-integration
+
+# MS SQL Server (planned for enterprise customers)
+make switch-mssql-dev
 make dev
 ```
 
@@ -287,7 +292,7 @@ server:
   port: 8081
 
 database:
-  driver: "postgres" # or "sqlite3"
+  driver: "postgres" # Currently supported: postgres. Planned: mssql
   dsn: "host=localhost port=5432 user=postgres password=postgres dbname=promenade_dev sslmode=disable"
 
 jwt:
@@ -301,7 +306,7 @@ event_bus:
   max_retries: 3
 ```
 
-**Learn More**: [config/README.md](config/README.md)
+**Learn More**: [config/README.md](config/README.md), [Database Strategy](docs/guides/database-strategy.md)
 
 ---
 

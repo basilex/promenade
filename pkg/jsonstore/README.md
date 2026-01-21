@@ -1,6 +1,6 @@
 # JSON Store Package
 
-**Database-agnostic JSON storage** for Promenade Platform - works with PostgreSQL JSONB, SQLite TEXT, MySQL JSON, and SQL Server NVARCHAR.
+**Type-safe JSON storage** for Promenade Platform - optimized for PostgreSQL JSONB with MS SQL Server support planned.
 
 ---
 
@@ -12,12 +12,13 @@ The `jsonstore` package provides a **generic `Field[T]` type** that seamlessly h
 
 ## Features
 
--  **Type-Safe**: Generic `Field[T]` for any JSON-serializable type
--  **Database-Agnostic**: Works with PostgreSQL, SQLite, MySQL, SQL Server
--  **Automatic Marshaling**: JSON encoding/decoding handled automatically
--  **NULL Support**: Proper handling of NULL database values
--  **Deep Copy**: `Clone()` method for safe copies
--  **Zero Dependencies**: Uses only standard library `encoding/json`
+- **Type-Safe**: Generic `Field[T]` for any JSON-serializable type
+- **PostgreSQL Optimized**: Leverages JSONB for fast queries and indexing
+- **MS SQL Server Ready**: Compatible with NVARCHAR(MAX) JSON storage
+- **Automatic Marshaling**: JSON encoding/decoding handled automatically
+- **NULL Support**: Proper handling of NULL database values
+- **Deep Copy**: `Clone()` method for safe copies
+- **Zero Dependencies**: Uses only standard library `encoding/json`
 
 ---
 
@@ -119,42 +120,7 @@ var customer Customer
 db.Get(&customer, "SELECT * FROM customers WHERE id = $1", id)
 ```
 
-### SQLite (TEXT)
-
-```sql
-CREATE TABLE customers (
-    id TEXT PRIMARY KEY,
-    tags TEXT DEFAULT '[]',
-    metadata TEXT DEFAULT '{}',
-    CHECK(json_valid(tags)),
-    CHECK(json_valid(metadata))
-);
-
--- Query with json_extract
-SELECT * FROM customers WHERE json_extract(tags, '$') LIKE '%"vip"%';
-```
-
-```go
-// SQLite driver returns string
-// Field.Scan() handles it automatically
-var customer Customer
-db.Get(&customer, "SELECT * FROM customers WHERE id = ?", id)
-```
-
-### MySQL (JSON)
-
-```sql
-CREATE TABLE customers (
-    id CHAR(36) PRIMARY KEY,
-    tags JSON,
-    metadata JSON
-);
-
--- Query with JSON_CONTAINS
-SELECT * FROM customers WHERE JSON_CONTAINS(tags, '"vip"');
-```
-
-### SQL Server (NVARCHAR)
+### MS SQL Server (NVARCHAR - Planned)
 
 ```sql
 CREATE TABLE customers (
@@ -425,7 +391,7 @@ customer := &Customer{
     Tags: jsonstore.NewNullField[[]string](), // NULL
 }
 
-db.Exec("INSERT INTO customers (name, tags) VALUES ($1, $2)", 
+db.Exec("INSERT INTO customers (name, tags) VALUES ($1, $2)",
     customer.Name, customer.Tags) // tags = NULL
 ```
 
@@ -435,9 +401,9 @@ db.Exec("INSERT INTO customers (name, tags) VALUES ($1, $2)",
 
 ### PostgreSQL (Native JSONB)
 
--  **Fast**: GIN indexes, native operators (@>, ->, ->>)
--  **Storage**: Compressed binary format
--  **Queries**: Index-optimized searches
+- **Fast**: GIN indexes, native operators (@>, ->, ->>)
+- **Storage**: Compressed binary format
+- **Queries**: Index-optimized searches
 
 ```sql
 -- GIN index for array searches
@@ -447,35 +413,11 @@ CREATE INDEX idx_tags ON customers USING gin(tags);
 SELECT * FROM customers WHERE tags @> '["vip"]'::jsonb;
 ```
 
-### SQLite (TEXT)
+### MS SQL Server (Planned)
 
--  **Slower**: No JSON indexes, TEXT storage
--  **Simple**: json_extract functions available
--  **Queries**: Full table scans for complex queries
-
-**Recommendation**: Filter in Go for SQLite:
-
-```go
-// Fetch all, filter in memory (acceptable for dev/testing)
-var customers []Customer
-db.Select(&customers, "SELECT * FROM customers")
-
-filtered := []Customer{}
-for _, c := range customers {
-    if c.HasTag("vip") {
-        filtered = append(filtered, c)
-    }
-}
-```
-
-### Benchmarks
-
-| Operation       | PostgreSQL JSONB | SQLite TEXT | MySQL JSON |
-| --------------- | ---------------- | ----------- | ---------- |
-| Scan (read)     | 50ns             | 80ns        | 60ns       |
-| Value (write)   | 45ns             | 75ns        | 55ns       |
-| Array search    | 0.5ms (indexed)  | 50ms (scan) | 2ms        |
-| Object extract  | 0.1ms            | 5ms         | 1ms        |
+- **JSON Support**: NVARCHAR(MAX) with ISJSON constraints
+- **Queries**: JSON_VALUE, JSON_QUERY functions
+- **Performance**: Good for medium datasets, no specialized JSON indexes
 
 ---
 
@@ -498,20 +440,20 @@ go test -bench=. ./pkg/jsonstore
 
 ## Best Practices
 
-### DO 
+### DO
 
 - Use `Field[T]` for all JSON columns in entities
 - Initialize with `NewField()` in constructors
 - Check `IsNull()` before accessing values from database
-- Use database-specific optimizations when available
-- Test with both PostgreSQL and SQLite
+- Use PostgreSQL JSONB for production (fast, indexed)
+- Leverage GIN indexes for array/object queries
 
-### DON'T 
+### DON'T
 
 - Don't access `.value` directly (use `Get()` method)
 - Don't mutate returned values without calling `Set()`
-- Don't assume JSON queries are fast on all databases
 - Don't store large JSON documents (> 1MB)
+- Don't rely on JSON queries for high-frequency operations
 - Don't use for frequently-queried nested fields (normalize instead)
 
 ---
@@ -540,32 +482,33 @@ go test -bench=. ./pkg/jsonstore
 -- PostgreSQL
 ALTER TABLE customers ADD CHECK (jsonb_typeof(tags) = 'array');
 
--- SQLite
-ALTER TABLE customers ADD CHECK (json_valid(tags));
+-- MS SQL Server (planned)
+ALTER TABLE customers ADD CHECK (ISJSON(tags) = 1);
 ```
 
 ### Performance Issue: Slow Queries
 
 **Cause**: No JSON index, full table scan
 
-**Solution**: 
-1. PostgreSQL: Create GIN index
-2. SQLite: Filter in Go
-3. Consider denormalizing frequently-queried fields
+**Solution**:
+
+1. PostgreSQL: Create GIN index on JSONB column
+2. Consider denormalizing frequently-queried fields
+3. Use materialized views for complex JSON queries
 
 ---
 
 ## Related Documentation
 
 - [Database Package](../database/README.md) - Dialect abstraction
-- [Database Adapters Guide](../../docs/guides/database-adapters.md) - Multi-database support
-- [JSONB Strategy Guide](../../docs/guides/jsonb-strategy.md) - Cross-database JSON handling
-- [Testing Guide](../../test/README.md) - Multi-database testing
+- [Database Strategy](../../docs/guides/database-strategy.md) - PostgreSQL-first approach
+- [Migration Guide](../../migrations/README.md) - Database schema management
+- [Testing Guide](../../test/README.md) - Integration testing
 
 ---
 
-**Status**:  Production Ready  
+**Status**: Production Ready  
 **Version**: 1.0.0  
 **Test Coverage**: TBD  
 **Maintainer**: Promenade Team  
-**Last Updated**: January 3, 2026
+**Last Updated**: January 21, 2026

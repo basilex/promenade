@@ -15,7 +15,7 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
   - `errors.go` — Domain error constants (validation, not-found, business logic)
 - **Dependency wiring** in [cmd/api/bootstrap.go](cmd/api/bootstrap.go); entry point is [cmd/api/main.go](cmd/api/main.go).
 - **Modules vs contexts**: modules are technical/feature toggles in `internal/modules/`; contexts are domain boundaries with DDD patterns (see [internal/contexts/README.md](internal/contexts/README.md)).
-- **Multi-DB support**: PostgreSQL (prod), SQLite (dev/test). Migrations must be DB-agnostic: use `TEXT` for UUID/JSON columns, IDs generated in Go (see [migrations/README.md](migrations/README.md)).
+- **Database support**: PostgreSQL 14+ (production), MS SQL Server (planned for enterprise). All migrations must support both databases.
 
 ## Project-specific conventions
 
@@ -49,8 +49,8 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
 ## Critical workflows
 
 - **Workspace state**: `.promenade.workspace` controls DATABASE_DRIVER + ENVIRONMENT.
-  - Initial setup: `make switch-postgres-dev` or `make switch-sqlite-dev`
-  - Switch environments: `make switch-{driver}-{env}` (postgres-dev, sqlite-test, etc.)
+  - Initial setup: `make switch-postgres-dev`
+  - Switch environments: `make switch-{driver}-{env}` (postgres-dev, postgres-test, mssql-dev, etc.)
   - Start dev server: `make dev` (hot-reload) or `make dev-fresh` (rebuild migrations)
 - **Tests** are four-tiered (see [test/README.md](test/README.md)):
   - Unit tests: in-place next to code (`*_test.go`)

@@ -85,29 +85,29 @@ Returns database-specific parameter placeholder:
 pgDialect.Placeholder(1)  // "$1"
 pgDialect.Placeholder(2)  // "$2"
 
-// SQLite
-sqliteDialect.Placeholder(1)  // "?"
-sqliteDialect.Placeholder(2)  // "?"
+// MS SQL Server (planned)
+mssqlDialect.Placeholder(1)  // "@p1"
+mssqlDialect.Placeholder(2)  // "@p2"
 ```
 
 ### Type Mapping
 
 ```go
 // UUID storage
-pgDialect.UUIDType()      // "UUID"
-sqliteDialect.UUIDType()  // "TEXT"
+pgDialect.UUIDType()       // "UUID"
+mssqlDialect.UUIDType()    // "UNIQUEIDENTIFIER" (planned)
 
 // JSON storage
-pgDialect.JSONType()      // "JSONB"
-sqliteDialect.JSONType()  // "TEXT"
+pgDialect.JSONType()       // "JSONB"
+mssqlDialect.JSONType()    // "NVARCHAR(MAX)" (planned)
 
 // Timestamp storage
 pgDialect.TimestampType()      // "TIMESTAMP"
-sqliteDialect.TimestampType()  // "DATETIME"
+mssqlDialect.TimestampType()   // "DATETIME2" (planned)
 
 // Boolean storage
-pgDialect.BoolType()      // "BOOLEAN"
-sqliteDialect.BoolType()  // "BOOLEAN" (0/1 internally)
+pgDialect.BoolType()       // "BOOLEAN"
+mssqlDialect.BoolType()    // "BIT" (planned)
 ```
 
 ### Feature Detection
@@ -140,7 +140,7 @@ if dialect.SupportsJSONIndex() {
 // Quote identifiers to prevent SQL injection
 tableName := dialect.QuoteIdentifier("users")
 // PostgreSQL: "users"
-// SQLite: `users`
+// MS SQL Server: [users] (planned)
 
 // Validate identifier
 if err := database.ValidateIdentifier(userInput); err != nil {
@@ -284,11 +284,11 @@ CREATE TABLE customers (
     tags JSONB DEFAULT '[]'
 );
 
--- SQLite
+-- MS SQL Server (planned)
 CREATE TABLE customers (
-    id TEXT PRIMARY KEY,  -- UUID as TEXT
-    tags TEXT DEFAULT '[]',
-    CHECK(json_valid(tags))
+    id UNIQUEIDENTIFIER PRIMARY KEY,
+    tags NVARCHAR(MAX) DEFAULT '[]',
+    CHECK(ISJSON(tags) = 1)
 );
 ```
 
