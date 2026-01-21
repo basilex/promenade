@@ -4,8 +4,6 @@
 -- Comprehensive audit trail for compliance and debugging
 -- Event sourcing for journal entries
 -- ============================================================================
-
--- ============================================================================
 -- Audit Log (Enhanced version of existing table)
 -- ============================================================================
 

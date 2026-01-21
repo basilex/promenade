@@ -88,7 +88,7 @@ func (s *Server) SetupRoutes() {
 		{
 			v1.GET("", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{
-					"message": "Promenade CRM Platform API v1",
+					"message": "Promenade CRM/ERP Platform API v1",
 					"version": s.app.Config.App.Version,
 				})
 			})

@@ -12,8 +12,11 @@
 
 ```
 scripts/
- create-migration.sh   # Create new migration files
- clean-docs.py         # Documentation cleanup utility
+ create-migration.sh               # Create new migration files
+ clean-emojies.py                  # Remove emojis from documentation
+ check-links.py                    # Validate markdown links (Python)
+ check-links.sh                    # Validate markdown links (Bash)
+ generate-accounting-postman.sh    # Generate Postman collection for accounting
 ```
 
 ---
@@ -35,6 +38,7 @@ make migrate-new CONTEXT=identity NAME=add_email_verification
 ```
 
 **What it does**:
+
 1. Gets next migration number for namespace
 2. Creates `migrations/{namespace}/{number}_{name}.up.sql`
 3. Creates `migrations/{namespace}/{number}_{name}.down.sql`
@@ -52,20 +56,64 @@ Created:
 
 ---
 
-### clean-docs.py
+### clean-emojies.py
 
-**Python utility** for documentation maintenance.
+**Removes emojis** from markdown documentation files.
 
 **Usage**:
 
 ```bash
-python scripts/clean-docs.py
+python scripts/clean-emojies.py
 ```
 
 **What it does**:
-- Removes temporary files
-- Validates markdown links
-- Checks documentation structure
+
+- Scans all .md files in docs/
+- Removes emoji characters
+- Preserves markdown formatting
+- Creates backups before modifying
+
+---
+
+### check-links.py / check-links.sh
+
+**Validates markdown links** in documentation.
+
+**Usage**:
+
+```bash
+# Python version (more features)
+python scripts/check-links.py
+
+# Bash version (faster)
+bash scripts/check-links.sh
+```
+
+**What it does**:
+
+- Checks all markdown links
+- Reports broken internal links
+- Validates file references
+- Checks heading anchors
+
+---
+
+### generate-accounting-postman.sh
+
+**Generates Postman collection fragment** for Accounting context.
+
+**Usage**:
+
+```bash
+bash scripts/generate-accounting-postman.sh
+```
+
+**What it does**:
+
+- Creates Postman requests for all accounting endpoints
+- Generates /tmp/accounting-postman.json
+- Includes all CRUD operations
+- Ready for import into main collection
 
 ---
 

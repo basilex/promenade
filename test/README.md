@@ -41,7 +41,7 @@ internal/contexts/identity/contact/
 
 **Location**: `test/smoke/contexts/` (mirror path)  
 **Purpose**: HTTP handler validation (80/20 rule)  
-**Status**:  **COMPLETE** - 20/20 handlers, 196 tests, 100% pass rate
+**Status**: **COMPLETE** - 27/27 handlers, 252 tests, 100% pass rate
 
 ```
 test/smoke/
@@ -54,40 +54,50 @@ test/smoke/
        profile/handler_test.go
        role/handler_test.go
        permission/handler_test.go
-     customer-mgmt/          # 4 handlers, 33 tests
+    customer-mgmt/          # 4 handlers, 33 tests
        company/handler_test.go
        customer/handler_test.go  # Most complex: 12 tests, 23-method mock
        deal/handler_test.go
        interaction/handler_test.go
     order-mgmt/             # 1 handler, 10 tests
        order/handler_test.go
-     billing/                # 2 handlers, 16 tests
-         invoice/handler_test.go
-         payment/handler_test.go
+    billing/                # 2 handlers, 16 tests
+        invoice/handler_test.go
+        payment/handler_test.go
     shared/                 # 4 handlers, 36 tests
        country/handler_test.go
        currency/handler_test.go
        language/handler_test.go
        timezone/handler_test.go
-     ui/                     # 1 handler, 8 tests
-         metadata/
-             form/handler_test.go
+    ui/                     # 1 handler, 8 tests
+        metadata/
+            form/handler_test.go
     fiscal/                 # 2 handlers, 15 tests
         cashregister/handler_test.go
         receipt/handler_test.go
+    accounting/             # 7 handlers, 56 tests
+        account/handler_test.go
+        budget/handler_test.go
+        costcenter/handler_test.go
+        fiscalperiod/handler_test.go
+        journalentry/handler_test.go
+        reconciliation/handler_test.go
+        taxcode/handler_test.go
 ```
 
 **Key Characteristics**:
+
 - Mock UseCase with function fields + nil-check methods
 - Test HTTP status codes (200/201/404/400/500)
 - Validate response format (`{"status":"success"}`)
 - No database dependencies (pure mocks)
-- Fast execution (~0.6s for all 196 tests, cached)
+- Fast execution (~1.0s for all 252 tests, cached)
 - 6-12 tests per handler (simple to complex)
 - Error code patterns vary by context:
   - Identity/Order Management: Simple "NOT_FOUND"
   - Customer Management: Standard helpers (NotFound, BadRequest, InternalError)
   - Shared: Entity-specific codes (COUNTRY_NOT_FOUND, VALIDATION_ERROR, 204 Delete)
+  - Accounting: Domain error constants mapped to HTTP status codes
 
 ### 3. Integration Tests (Mirror Path, With DB)
 
@@ -132,6 +142,7 @@ test/benchmark/
 ```
 
 **Key characteristics**:
+
 - Measure query performance and memory usage
 - Validate optimizations (e.g., N+1 query fixes)
 - Require real database (like integration tests)
@@ -149,7 +160,7 @@ test/benchmark/
 go test ./... -short -v
 
 # Smoke tests (handler validation, no DB)
-make test-smoke                     # Run all 196 smoke tests
+make test-smoke                     # Run all 252 smoke tests
 
 # Integration tests (with real DB)
 make test-integration
@@ -168,12 +179,12 @@ make test
 
 ### Test Comparison
 
-| Type            | Location                      | Database   | Speed         | Run When              |
-| --------------- | ----------------------------- | ---------- | ------------- | --------------------- |
-| **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save            |
-| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~2s)    | Before commit         |
-| **Integration** | `/test/integration/contexts/` | Real DB    | Medium (~14s) | Before merge          |
-| **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations   |
+| Type            | Location                      | Database   | Speed         | Run When            |
+| --------------- | ----------------------------- | ---------- | ------------- | ------------------- |
+| **Unit**        | In-place (`*_test.go`)        | No (mocks) | Fast (~5s)    | Every save          |
+| **Smoke**       | `/test/smoke/contexts/`       | No (mocks) | Fast (~2s)    | Before commit       |
+| **Integration** | `/test/integration/contexts/` | Real DB    | Medium (~14s) | Before merge        |
+| **Benchmark**   | `/test/benchmark/contexts/`   | Real DB    | Variable      | After optimizations |
 
 ### Baseline Budget (per aggregate)
 
@@ -182,6 +193,7 @@ make test
 - Integration tests: 6–10 (happy path + not found + constraint)
 
 Risk tiers:
+
 - Low risk: baseline only
 - Medium risk: add a few transition tests
 - High risk (payments, fiscal, auth): allow +30–50% tests
@@ -192,6 +204,7 @@ go test ./internal/contexts/identity/... -v
 go test ./internal/contexts/shared/... -v
 
 # Benchmark tests (manual, for specific optimization validation)
+
 go test -bench=. -benchmem ./test/benchmark/contexts/identity/user
 
 # Package tests
@@ -204,7 +217,7 @@ go test ./pkg/uuidv7/... -v
 go test ./... -cover -coverprofile=coverage.out
 go tool cover -html=coverage.out
 
-```
+````
 
 ### Makefile Targets
 
@@ -215,7 +228,7 @@ make test-integration     # Integration tests (with real DB)
 make test-benchmark       # Benchmark tests (auto DB setup, 5s per benchmark)
 make test-benchmark-all   # Extended benchmarks (10s per benchmark)
 make test-coverage        # HTML coverage report
-```
+````
 
 ---
 
@@ -585,7 +598,7 @@ make test-unit || exit 1
 ## What We Test
 
 **Unit Tests**: Entities, use cases, value objects, handlers  
-**Smoke Tests**: HTTP handlers with mocks (196 tests across 20 handlers)   
+**Smoke Tests**: HTTP handlers with mocks (196 tests across 20 handlers)  
 **Integration Tests**: Repositories with real database  
 **Benchmark Tests**: Performance measurement and optimization validation  
 **Package Tests**: Shared utilities (bus, logger, uuidv7)

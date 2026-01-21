@@ -1,6 +1,6 @@
 # Promenade API - Postman Collection
 
-**Complete Postman collection** for Promenade Platform API with 160+ endpoints across 6 bounded contexts.
+**Complete Postman collection** for Promenade Platform API with 270+ endpoints including Accounting context (41 endpoints).
 
 ---
 
@@ -16,6 +16,7 @@
 4. Click **Import**
 
 **Or use URL import**:
+
 ```
 https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.postman_collection.json
 ```
@@ -29,6 +30,7 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 - **Production**: `Production.postman_environment.json` (production server)
 
 **Steps**:
+
 1. Click **Environments** (left sidebar)
 2. Click **Import**
 3. Select environment file
@@ -44,6 +46,7 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 **Request**: `POST /api/v1/identity/users/register`
 
 **Body**:
+
 ```json
 {
   "email": "{{user_email}}",
@@ -59,6 +62,7 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 **Request**: `POST /api/v1/identity/users/login`
 
 **Body**:
+
 ```json
 {
   "email": "{{user_email}}",
@@ -67,6 +71,7 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 ```
 
 **Response**:
+
 ```json
 {
   "status": "success",
@@ -81,13 +86,14 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 ```
 
 **Auto-save tokens** (add to Tests tab):
+
 ```javascript
 // Save tokens to environment
 const response = pm.response.json();
 if (response.status === "success" && response.data.access_token) {
-    pm.environment.set("access_token", response.data.access_token);
-    pm.environment.set("refresh_token", response.data.refresh_token);
-    console.log(" Tokens saved to environment");
+  pm.environment.set("access_token", response.data.access_token);
+  pm.environment.set("refresh_token", response.data.refresh_token);
+  console.log(" Tokens saved to environment");
 }
 ```
 
@@ -105,15 +111,15 @@ Postman auto-injects `{{access_token}}` from environment variables.
 
 ## Environment Variables
 
-| Variable          | Description                      | Example                          |
-| ----------------- | -------------------------------- | -------------------------------- |
-| `base_url`        | API base URL                     | `http://localhost:8081`          |
-| `api_version`     | API version                      | `v1`                             |
-| `access_token`    | JWT access token (auto-saved)    | `eyJhbGciOiJIUzI1NiIsInR5cCI...` |
-| `refresh_token`   | JWT refresh token (auto-saved)   | `eyJhbGciOiJIUzI1NiIsInR5cCI...` |
-| `user_email`      | Test user email                  | `dev@example.com`                |
-| `user_password`   | Test user password               | `DevPassword123`                 |
-| `environment`     | Environment name                 | `development`                    |
+| Variable        | Description                    | Example                          |
+| --------------- | ------------------------------ | -------------------------------- |
+| `base_url`      | API base URL                   | `http://localhost:8081`          |
+| `api_version`   | API version                    | `v1`                             |
+| `access_token`  | JWT access token (auto-saved)  | `eyJhbGciOiJIUzI1NiIsInR5cCI...` |
+| `refresh_token` | JWT refresh token (auto-saved) | `eyJhbGciOiJIUzI1NiIsInR5cCI...` |
+| `user_email`    | Test user email                | `dev@example.com`                |
+| `user_password` | Test user password             | `DevPassword123`                 |
+| `environment`   | Environment name               | `development`                    |
 
 ---
 
@@ -122,45 +128,55 @@ Postman auto-injects `{{access_token}}` from environment variables.
 ### Identity Context (35 endpoints)
 
 **Users** (8 endpoints):
+
 - Register, Login, Logout, Refresh token
 - Get by ID, List, Update, Suspend/Ban/Delete
 
 **Contacts** (8 endpoints):
+
 - Create (email/phone/address), Get by ID, List, Update, Delete
 - Verify contact, Set as primary
 
 **Profiles** (9 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - List public profiles, Update visibility
 
 **Roles** (5 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 
 **Permissions** (5 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 
 ### Customer Management Context (48 endpoints)
 
 **Customers** (14 endpoints):
+
 - Create B2C/B2B, Get by ID, List, Update, Delete
 - Lifecycle transitions (Qualify, Convert, Churn)
 - Tier management, Tags, Sales rep assignment
 
 **Companies** (14 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Industry/size management, Parent company, Legal info
 
 **Deals** (12 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Stage transitions, Mark Won/Lost, Pipeline stats
 
 **Interactions** (8 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Start/End interaction, Mark completed
 
 ### Order Management Context (14 endpoints)
 
 **Orders** (14 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Add/Remove/Update line items
 - State transitions (Confirm, Start Processing, Mark Fulfilled, Cancel)
@@ -168,20 +184,67 @@ Postman auto-injects `{{access_token}}` from environment variables.
 ### Billing Context (22 endpoints)
 
 **Invoices** (8 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Finalize, Void, Mark Paid/Cancelled
 
 **Payments** (8 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Process, Mark Failed, Refund
 
 **Subscriptions** (6 endpoints):
+
 - Create, Get by ID, List, Update, Delete
 - Activate, Suspend, Resume, Cancel
+
+### Accounting Context (41 endpoints)
+
+**Accounts** (6 endpoints):
+
+- Create account (asset, liability, equity, revenue, expense)
+- Get by ID, List, Update
+- Activate/Deactivate
+
+**Budgets** (6 endpoints):
+
+- Create budget, Get by ID, List
+- Add budget line, Approve, Activate
+
+**Cost Centers** (6 endpoints):
+
+- Create cost center (cost, profit, investment)
+- Get by ID, List, Set manager
+- Activate/Deactivate
+
+**Fiscal Periods** (5 endpoints):
+
+- Create period (month, quarter, year)
+- Get by ID, List
+- Close/Reopen period
+
+**Journal Entries** (6 endpoints):
+
+- Create journal entry, Get by ID, List
+- Add entry line (debit/credit)
+- Post entry, Reverse entry
+
+**Bank Reconciliations** (5 endpoints):
+
+- Create reconciliation, Get by ID, List
+- Add reconciliation item
+- Complete reconciliation
+
+**Tax Codes** (7 endpoints):
+
+- Create tax code (VAT, sales tax, withholding)
+- Get by ID, List, Update
+- Set payable account, Activate/Deactivate
 
 ### Shared Context (9 endpoints)
 
 **Reference Data**:
+
 - Countries (3 endpoints): List, Get by code, Get by ID
 - Currencies (3 endpoints): List, Get by code, Get by ID
 - Languages (3 endpoints): List, Get by code, Get by ID
@@ -190,6 +253,7 @@ Postman auto-injects `{{access_token}}` from environment variables.
 ### Infrastructure (4 endpoints)
 
 **Health Checks**:
+
 - `/health` - Overall system health
 - `/health/db` - Database health
 - `/health/redis` - Redis health
@@ -207,51 +271,54 @@ Postman auto-injects `{{access_token}}` from environment variables.
 // Check if access token is expired
 const accessToken = pm.environment.get("access_token");
 if (!accessToken) {
-    console.log(" No access token - please login first");
-    return;
+  console.log(" No access token - please login first");
+  return;
 }
 
 // Decode JWT to check expiration (simple parsing, not validation)
 try {
-    const payload = JSON.parse(atob(accessToken.split('.')[1]));
-    const expiresAt = payload.exp * 1000; // Convert to milliseconds
-    const now = Date.now();
-    
-    // Refresh if token expires in < 1 minute
-    if (expiresAt - now < 60000) {
-        console.log(" Token expiring soon, refreshing...");
-        
-        const refreshToken = pm.environment.get("refresh_token");
-        const baseUrl = pm.environment.get("base_url");
-        const apiVersion = pm.environment.get("api_version");
-        
-        pm.sendRequest({
-            url: `${baseUrl}/api/${apiVersion}/identity/auth/refresh`,
-            method: 'POST',
-            header: {
-                'Content-Type': 'application/json'
-            },
-            body: {
-                mode: 'raw',
-                raw: JSON.stringify({
-                    refresh_token: refreshToken
-                })
-            }
-        }, (err, res) => {
-            if (err) {
-                console.error(" Token refresh failed:", err);
-            } else {
-                const data = res.json();
-                if (data.status === "success") {
-                    pm.environment.set("access_token", data.data.access_token);
-                    pm.environment.set("refresh_token", data.data.refresh_token);
-                    console.log(" Token refreshed successfully");
-                }
-            }
-        });
-    }
+  const payload = JSON.parse(atob(accessToken.split(".")[1]));
+  const expiresAt = payload.exp * 1000; // Convert to milliseconds
+  const now = Date.now();
+
+  // Refresh if token expires in < 1 minute
+  if (expiresAt - now < 60000) {
+    console.log(" Token expiring soon, refreshing...");
+
+    const refreshToken = pm.environment.get("refresh_token");
+    const baseUrl = pm.environment.get("base_url");
+    const apiVersion = pm.environment.get("api_version");
+
+    pm.sendRequest(
+      {
+        url: `${baseUrl}/api/${apiVersion}/identity/auth/refresh`,
+        method: "POST",
+        header: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          mode: "raw",
+          raw: JSON.stringify({
+            refresh_token: refreshToken,
+          }),
+        },
+      },
+      (err, res) => {
+        if (err) {
+          console.error(" Token refresh failed:", err);
+        } else {
+          const data = res.json();
+          if (data.status === "success") {
+            pm.environment.set("access_token", data.data.access_token);
+            pm.environment.set("refresh_token", data.data.refresh_token);
+            console.log(" Token refreshed successfully");
+          }
+        }
+      },
+    );
+  }
 } catch (e) {
-    console.error(" Failed to parse token:", e);
+  console.error(" Failed to parse token:", e);
 }
 ```
 
@@ -266,41 +333,41 @@ try {
 ```javascript
 // Check response time
 pm.test("Response time < 500ms", () => {
-    pm.expect(pm.response.responseTime).to.be.below(500);
+  pm.expect(pm.response.responseTime).to.be.below(500);
 });
 
 // Check status code for success endpoints
 if (pm.request.method !== "DELETE") {
-    pm.test("Status code is 200 or 201", () => {
-        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
-    });
+  pm.test("Status code is 200 or 201", () => {
+    pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+  });
 }
 
 // Validate response structure
 pm.test("Response has status field", () => {
-    const response = pm.response.json();
-    pm.expect(response).to.have.property("status");
-    pm.expect(response.status).to.be.oneOf(["success", "error"]);
+  const response = pm.response.json();
+  pm.expect(response).to.have.property("status");
+  pm.expect(response.status).to.be.oneOf(["success", "error"]);
 });
 
 // For success responses, validate data field
 if (pm.response.code === 200 || pm.response.code === 201) {
-    pm.test("Success response has data field", () => {
-        const response = pm.response.json();
-        if (response.status === "success") {
-            pm.expect(response).to.have.property("data");
-        }
-    });
+  pm.test("Success response has data field", () => {
+    const response = pm.response.json();
+    if (response.status === "success") {
+      pm.expect(response).to.have.property("data");
+    }
+  });
 }
 
 // For error responses, validate error field
 if (pm.response.code >= 400) {
-    pm.test("Error response has error field", () => {
-        const response = pm.response.json();
-        pm.expect(response).to.have.property("error");
-        pm.expect(response.error).to.have.property("code");
-        pm.expect(response.error).to.have.property("message");
-    });
+  pm.test("Error response has error field", () => {
+    const response = pm.response.json();
+    pm.expect(response).to.have.property("error");
+    pm.expect(response.error).to.have.property("code");
+    pm.expect(response.error).to.have.property("message");
+  });
 }
 ```
 
@@ -364,6 +431,7 @@ if (pm.response.code >= 400) {
 **Symptoms**: All requests return 401 Unauthorized
 
 **Solution**:
+
 1. Check `{{access_token}}` is set in environment
 2. Re-login via `/identity/users/login`
 3. Verify token auto-save script in Login request Tests tab
@@ -374,6 +442,7 @@ if (pm.response.code >= 400) {
 **Symptoms**: 401 error with message "token expired"
 
 **Solution**:
+
 1. Use Refresh Token endpoint: `POST /identity/auth/refresh`
 2. Or re-login: `POST /identity/users/login`
 3. Enable auto-refresh in Collection Pre-request Script (see above)
@@ -383,6 +452,7 @@ if (pm.response.code >= 400) {
 **Symptoms**: `{{variable}}` showing as literal text in requests
 
 **Solution**:
+
 1. Verify environment is selected (dropdown top-right)
 2. Check variable names match exactly (case-sensitive)
 3. Re-import environment file if needed
@@ -392,6 +462,7 @@ if (pm.response.code >= 400) {
 **Symptoms**: Network error, CORS policy blocked
 
 **Solution**:
+
 1. Use Postman Desktop app (not web version)
 2. Or enable CORS in server config for dev environment
 3. Development server should allow `Access-Control-Allow-Origin: *`
@@ -410,16 +481,19 @@ if (pm.response.code >= 400) {
 ### Share with Team
 
 **Option 1: Team Workspace** (Recommended)
+
 - Create Team Workspace in Postman
 - Share collection with team members
 - Auto-sync changes
 
 **Option 2: Git Repository**
+
 - Commit collection to Git
 - Team imports from repository
 - Manual sync required
 
 **Option 3: Public Link**
+
 - Publish collection in Postman
 - Share read-only link
 - View-only access
@@ -431,11 +505,13 @@ if (pm.response.code >= 400) {
 ### Newman CLI
 
 **Install Newman**:
+
 ```bash
 npm install -g newman
 ```
 
 **Run collection**:
+
 ```bash
 newman run Promenade_API.postman_collection.json \
   -e Development.postman_environment.json \
@@ -444,6 +520,7 @@ newman run Promenade_API.postman_collection.json \
 ```
 
 **Run in CI pipeline** (.github/workflows/api-tests.yml):
+
 ```yaml
 - name: Run API Tests
   run: |

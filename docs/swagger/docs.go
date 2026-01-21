@@ -500,7 +500,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                             }
                         }
                     },
@@ -530,7 +530,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.CreateReconciliationRequest"
                         }
                     }
                 ],
@@ -538,7 +538,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -580,7 +580,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                             }
                         }
                     },
@@ -623,7 +623,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                                "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                             }
                         }
                     },
@@ -664,7 +664,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "404": {
@@ -748,7 +748,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -798,7 +798,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.AddReconciliationItemRequest"
                         }
                     }
                 ],
@@ -806,7 +806,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -859,7 +859,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -912,7 +912,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -958,7 +958,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse"
+                            "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse"
                         }
                     },
                     "400": {
@@ -17888,178 +17888,6 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest": {
-            "type": "object",
-            "required": [
-                "amount_cents",
-                "description",
-                "transaction_date",
-                "transaction_type"
-            ],
-            "properties": {
-                "amount_cents": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "transaction_date": {
-                    "type": "string"
-                },
-                "transaction_id": {
-                    "type": "string"
-                },
-                "transaction_type": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse": {
-            "type": "object",
-            "properties": {
-                "account_id": {
-                    "type": "string"
-                },
-                "approved_at": {
-                    "type": "string"
-                },
-                "approved_by": {
-                    "type": "string"
-                },
-                "bank_account_id": {
-                    "type": "string"
-                },
-                "bank_fees_cents": {
-                    "type": "integer"
-                },
-                "bank_statement_balance_cents": {
-                    "type": "integer"
-                },
-                "book_balance_cents": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency_code": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "interest_earned_cents": {
-                    "type": "integer"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse"
-                    }
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "organization_id": {
-                    "type": "string"
-                },
-                "outstanding_checks_cents": {
-                    "type": "integer"
-                },
-                "outstanding_deposits_cents": {
-                    "type": "integer"
-                },
-                "reconciled_at": {
-                    "type": "string"
-                },
-                "reconciled_by": {
-                    "type": "string"
-                },
-                "reconciliation_date": {
-                    "type": "string"
-                },
-                "statement_date": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest": {
-            "type": "object",
-            "required": [
-                "account_id",
-                "bank_account_id",
-                "bank_statement_balance_cents",
-                "book_balance_cents",
-                "reconciliation_date",
-                "statement_date"
-            ],
-            "properties": {
-                "account_id": {
-                    "type": "string"
-                },
-                "bank_account_id": {
-                    "type": "string"
-                },
-                "bank_statement_balance_cents": {
-                    "type": "integer"
-                },
-                "book_balance_cents": {
-                    "type": "integer"
-                },
-                "currency_code": {
-                    "type": "string"
-                },
-                "reconciliation_date": {
-                    "type": "string"
-                },
-                "statement_date": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse": {
-            "type": "object",
-            "properties": {
-                "amount_cents": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_matched": {
-                    "type": "boolean"
-                },
-                "matched_at": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "transaction_date": {
-                    "type": "string"
-                },
-                "transaction_id": {
-                    "type": "string"
-                },
-                "transaction_type": {
-                    "type": "string"
-                }
-            }
-        },
         "github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest": {
             "type": "object",
             "required": [
@@ -18500,6 +18328,178 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.AddReconciliationItemRequest": {
+            "type": "object",
+            "required": [
+                "amount_cents",
+                "description",
+                "transaction_date",
+                "transaction_type"
+            ],
+            "properties": {
+                "amount_cents": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "transaction_date": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.CreateReconciliationRequest": {
+            "type": "object",
+            "required": [
+                "account_id",
+                "bank_account_id",
+                "bank_statement_balance_cents",
+                "book_balance_cents",
+                "reconciliation_date",
+                "statement_date"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "bank_account_id": {
+                    "type": "string"
+                },
+                "bank_statement_balance_cents": {
+                    "type": "integer"
+                },
+                "book_balance_cents": {
+                    "type": "integer"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "reconciliation_date": {
+                    "type": "string"
+                },
+                "statement_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationItemResponse": {
+            "type": "object",
+            "properties": {
+                "amount_cents": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_matched": {
+                    "type": "boolean"
+                },
+                "matched_at": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "transaction_date": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "transaction_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "approved_at": {
+                    "type": "string"
+                },
+                "approved_by": {
+                    "type": "string"
+                },
+                "bank_account_id": {
+                    "type": "string"
+                },
+                "bank_fees_cents": {
+                    "type": "integer"
+                },
+                "bank_statement_balance_cents": {
+                    "type": "integer"
+                },
+                "book_balance_cents": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "interest_earned_cents": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationItemResponse"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "outstanding_checks_cents": {
+                    "type": "integer"
+                },
+                "outstanding_deposits_cents": {
+                    "type": "integer"
+                },
+                "reconciled_at": {
+                    "type": "string"
+                },
+                "reconciled_by": {
+                    "type": "string"
+                },
+                "reconciliation_date": {
+                    "type": "string"
+                },
+                "statement_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

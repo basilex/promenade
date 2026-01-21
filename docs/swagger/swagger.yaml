@@ -65,122 +65,6 @@ definitions:
       name:
         type: string
     type: object
-  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest:
-    properties:
-      amount_cents:
-        type: integer
-      description:
-        type: string
-      notes:
-        type: string
-      transaction_date:
-        type: string
-      transaction_id:
-        type: string
-      transaction_type:
-        type: string
-    required:
-    - amount_cents
-    - description
-    - transaction_date
-    - transaction_type
-    type: object
-  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse:
-    properties:
-      account_id:
-        type: string
-      approved_at:
-        type: string
-      approved_by:
-        type: string
-      bank_account_id:
-        type: string
-      bank_fees_cents:
-        type: integer
-      bank_statement_balance_cents:
-        type: integer
-      book_balance_cents:
-        type: integer
-      created_at:
-        type: string
-      currency_code:
-        type: string
-      id:
-        type: string
-      interest_earned_cents:
-        type: integer
-      items:
-        items:
-          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse'
-        type: array
-      notes:
-        type: string
-      organization_id:
-        type: string
-      outstanding_checks_cents:
-        type: integer
-      outstanding_deposits_cents:
-        type: integer
-      reconciled_at:
-        type: string
-      reconciled_by:
-        type: string
-      reconciliation_date:
-        type: string
-      statement_date:
-        type: string
-      status:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest:
-    properties:
-      account_id:
-        type: string
-      bank_account_id:
-        type: string
-      bank_statement_balance_cents:
-        type: integer
-      book_balance_cents:
-        type: integer
-      currency_code:
-        type: string
-      reconciliation_date:
-        type: string
-      statement_date:
-        type: string
-    required:
-    - account_id
-    - bank_account_id
-    - bank_statement_balance_cents
-    - book_balance_cents
-    - reconciliation_date
-    - statement_date
-    type: object
-  github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.ReconciliationItemResponse:
-    properties:
-      amount_cents:
-        type: integer
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      is_matched:
-        type: boolean
-      matched_at:
-        type: string
-      notes:
-        type: string
-      transaction_date:
-        type: string
-      transaction_id:
-        type: string
-      transaction_type:
-        type: string
-    type: object
   github_com_basilex_promenade_internal_contexts_accounting_budget_dto.AddLineRequest:
     properties:
       account_id:
@@ -477,6 +361,122 @@ definitions:
         type: string
     required:
     - description
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.AddReconciliationItemRequest:
+    properties:
+      amount_cents:
+        type: integer
+      description:
+        type: string
+      notes:
+        type: string
+      transaction_date:
+        type: string
+      transaction_id:
+        type: string
+      transaction_type:
+        type: string
+    required:
+    - amount_cents
+    - description
+    - transaction_date
+    - transaction_type
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.CreateReconciliationRequest:
+    properties:
+      account_id:
+        type: string
+      bank_account_id:
+        type: string
+      bank_statement_balance_cents:
+        type: integer
+      book_balance_cents:
+        type: integer
+      currency_code:
+        type: string
+      reconciliation_date:
+        type: string
+      statement_date:
+        type: string
+    required:
+    - account_id
+    - bank_account_id
+    - bank_statement_balance_cents
+    - book_balance_cents
+    - reconciliation_date
+    - statement_date
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationItemResponse:
+    properties:
+      amount_cents:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_matched:
+        type: boolean
+      matched_at:
+        type: string
+      notes:
+        type: string
+      transaction_date:
+        type: string
+      transaction_id:
+        type: string
+      transaction_type:
+        type: string
+    type: object
+  github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse:
+    properties:
+      account_id:
+        type: string
+      approved_at:
+        type: string
+      approved_by:
+        type: string
+      bank_account_id:
+        type: string
+      bank_fees_cents:
+        type: integer
+      bank_statement_balance_cents:
+        type: integer
+      book_balance_cents:
+        type: integer
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      id:
+        type: string
+      interest_earned_cents:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationItemResponse'
+        type: array
+      notes:
+        type: string
+      organization_id:
+        type: string
+      outstanding_checks_cents:
+        type: integer
+      outstanding_deposits_cents:
+        type: integer
+      reconciled_at:
+        type: string
+      reconciled_by:
+        type: string
+      reconciliation_date:
+        type: string
+      statement_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
     type: object
   github_com_basilex_promenade_internal_contexts_accounting_taxcode_dto.CreateTaxCodeRequest:
     properties:
@@ -3487,7 +3487,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
             type: array
         "500":
           description: Internal Server Error
@@ -3505,14 +3505,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.CreateBankReconciliationRequest'
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.CreateReconciliationRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3567,7 +3567,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "404":
           description: Not Found
           schema:
@@ -3593,7 +3593,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3624,14 +3624,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.AddReconciliationItemRequest'
+          $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.AddReconciliationItemRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3666,7 +3666,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3701,7 +3701,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3731,7 +3731,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+            $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
         "400":
           description: Bad Request
           schema:
@@ -3762,7 +3762,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
             type: array
         "400":
           description: Bad Request
@@ -3790,7 +3790,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_bankreconciliation_dto.BankReconciliationResponse'
+              $ref: '#/definitions/github_com_basilex_promenade_internal_contexts_accounting_reconciliation_dto.ReconciliationResponse'
             type: array
         "400":
           description: Bad Request
