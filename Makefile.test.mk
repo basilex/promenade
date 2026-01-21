@@ -52,15 +52,9 @@ test-integration: validate-env  ## Run integration tests (uses DATABASE_DRIVER f
 		else \
 			echo "CI environment: Using PostgreSQL service on localhost:5432"; \
 		fi; \
-	else \
-		echo "Test DB: SQLite (embedded, no Docker needed)"; \
 	fi; \
 	echo "Note: Tests run sequentially (-p 1) to prevent foreign key deadlocks"; \
-	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		DB_HOST=$${DB_HOST:-127.0.0.1} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-127.0.0.1:6380} go test -v -p 1 $$PATH_ARG; \
-	else \
-		go test -v -p 1 $$PATH_ARG; \
-	fi; \
+	DB_HOST=$${DB_HOST:-127.0.0.1} DB_PORT=$${DB_PORT:-5433} DB_USER=$${DB_USER:-system} DB_PASSWORD=$${DB_PASSWORD:-passw0rd} DB_NAME=$${DB_NAME:-promenade_test} REDIS_ADDR=$${REDIS_ADDR:-127.0.0.1:6380} go test -v -p 1 $$PATH_ARG; \
 	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
 		if [ -z "$$CI" ] && [ -z "$$GITHUB_ACTIONS" ]; then \
 			$(MAKE) test-db-stop; \

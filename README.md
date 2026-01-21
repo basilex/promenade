@@ -12,7 +12,7 @@
 
 ---
 
-##  What is Promenade?
+## What is Promenade?
 
 Promenade is an **open-source business platform** that replaces multiple SaaS tools with a single, modular backend:
 
@@ -30,7 +30,7 @@ Promenade is an **open-source business platform** that replaces multiple SaaS to
 
 ---
 
-##  Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -66,7 +66,7 @@ Server starts at **http://localhost:8081**
 
 ---
 
-##  Documentation
+## Documentation
 
 ### For Business Users
 
@@ -95,7 +95,7 @@ Server starts at **http://localhost:8081**
 
 - **[Event Bus](pkg/bus/README.md)** — Memory and Redis adapters, 377K events/sec
 - **[Aggregates](pkg/aggregate/README.md)** — Base aggregate, change tracking
-- **[JSON Store](pkg/jsonstore/README.md)** — Type-safe JSON fields for PostgreSQL/SQLite
+- **[JSON Store](pkg/jsonstore/README.md)** — Type-safe JSON fields for PostgreSQL JSONB
 - **[UUIDv7](pkg/uuidv7/README.md)** — Time-ordered UUIDs, 100 million IDs/sec
 
 ### Context Documentation
@@ -109,7 +109,7 @@ Server starts at **http://localhost:8081**
 
 ---
 
-##  Architecture
+## Architecture
 
 ### Domain-Driven Design
 
@@ -117,15 +117,15 @@ Promenade follows **strict DDD** with 8 bounded contexts, each owning its domain
 
 ```
 
-                        Event Bus                             
-          (Async communication between contexts)              
+                        Event Bus
+          (Async communication between contexts)
 
-                                                   
-                                                   
-     
+
+
+
 Identity Customer  Order  Billing Warehouse Fiscal
-           Mgmt     Mgmt                         
-     
+           Mgmt     Mgmt
+
 ```
 
 **Key Principles**:
@@ -141,7 +141,7 @@ Identity Customer  Order  Billing Warehouse Fiscal
 ### Technology Stack
 
 - **Language**: Go 1.24 (performance, concurrency, type safety)
-- **Database**: PostgreSQL 16 (primary), SQLite 3 (dev/test)
+- **Database**: PostgreSQL 14+ (required for production)
 - **HTTP Framework**: Gin (high performance, middleware)
 - **Event Bus**: Memory (dev), Redis (production)
 - **Authentication**: JWT with RS256 (stateless, secure)
@@ -150,7 +150,7 @@ Identity Customer  Order  Billing Warehouse Fiscal
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 promenade/
@@ -212,7 +212,7 @@ internal/contexts/{context}/
 
 ---
 
-##  Testing
+## Testing
 
 Promenade has **comprehensive test coverage** across 4 test levels:
 
@@ -242,16 +242,16 @@ go test ./pkg/bus/...
 
 ### Test Results (Latest)
 
--  **Unit Tests**: 200+ passing
--  **Smoke Tests**: 26/26 passing (all contexts)
--  **Integration Tests**: 29/29 passing (100% compilation)
--  **Benchmarks**: 15+ benchmarks, 377K events/sec (Event Bus)
+- **Unit Tests**: 200+ passing
+- **Smoke Tests**: 26/26 passing (all contexts)
+- **Integration Tests**: 29/29 passing (100% compilation)
+- **Benchmarks**: 15+ benchmarks, 377K events/sec (Event Bus)
 
 **Learn More**: [test/README.md](test/README.md)
 
 ---
 
-##  Configuration
+## Configuration
 
 Promenade uses **YAML configuration** with environment-specific files:
 
@@ -306,7 +306,7 @@ event_bus:
 
 ---
 
-##  Development
+## Development
 
 ### Daily Commands
 
@@ -355,7 +355,7 @@ make pre-push
 
 ---
 
-##  API Documentation
+## API Documentation
 
 ### Swagger UI
 
@@ -389,33 +389,33 @@ Pre-built collection with all endpoints, authentication flows, and test scripts:
 
 ---
 
-##  Multi-Language Support
+## Multi-Language Support
 
 Business documentation available in 8 languages:
 
-| Language     | Document                                                    | Audience          |
-| ------------ | ----------------------------------------------------------- | ----------------- |
-|  English   | [Business Overview](docs/business/BUSINESS_OVERVIEW.md)     | Global audience   |
-|  Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md)  | Ukrainian market  |
-|  Deutsch   | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | German market     |
-|  Français  | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md)  | French market     |
-|  Español   | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Spanish market    |
-|  Português | [Visão Geral](docs/business/BUSINESS_OVERVIEW_PT.md)        | Portuguese market |
-|      | [](docs/business/BUSINESS_OVERVIEW_JP.md)       | Japanese market   |
-|        | [](docs/business/BUSINESS_OVERVIEW_ZH.md)           | Chinese market    |
+| Language  | Document                                                    | Audience          |
+| --------- | ----------------------------------------------------------- | ----------------- |
+| English   | [Business Overview](docs/business/BUSINESS_OVERVIEW.md)     | Global audience   |
+| Ukrainian | [Business Overview](docs/business/BUSINESS_OVERVIEW_UK.md)  | Ukrainian market  |
+| Deutsch   | [Geschäftsübersicht](docs/business/BUSINESS_OVERVIEW_DE.md) | German market     |
+| Français  | [Aperçu Commercial](docs/business/BUSINESS_OVERVIEW_FR.md)  | French market     |
+| Español   | [Resumen de Negocio](docs/business/BUSINESS_OVERVIEW_ES.md) | Spanish market    |
+| Português | [Visão Geral](docs/business/BUSINESS_OVERVIEW_PT.md)        | Portuguese market |
+|           | [](docs/business/BUSINESS_OVERVIEW_JP.md)                   | Japanese market   |
+|           | [](docs/business/BUSINESS_OVERVIEW_ZH.md)                   | Chinese market    |
 
 ---
 
-##  Roadmap
+## Roadmap
 
 ### Q1 2026 (Current)
 
--  DDD refactoring (24 aggregates, 150+ domain errors)
--  Security audit (36 handlers, 417 fixes)
--  Integration tests (29 packages, 100% passing)
--  Event Bus performance (377K events/sec)
--  Web frontend (React/TypeScript)
--  Mobile apps (iOS, Android)
+- DDD refactoring (24 aggregates, 150+ domain errors)
+- Security audit (36 handlers, 417 fixes)
+- Integration tests (29 packages, 100% passing)
+- Event Bus performance (377K events/sec)
+- Web frontend (React/TypeScript)
+- Mobile apps (iOS, Android)
 
 ### Q2 2026
 
@@ -436,7 +436,7 @@ Business documentation available in 8 languages:
 
 ---
 
-##  Contributing
+## Contributing
 
 We welcome contributions! Please read:
 
@@ -468,7 +468,7 @@ git push origin feature/my-feature
 
 ---
 
-##  License
+## License
 
 Promenade is open-source software licensed under the **MIT License**.
 
@@ -476,7 +476,7 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-##  Support
+## Support
 
 - **Documentation**: https://basilex.github.io/promenade/
 - **Issues**: https://github.com/basilex/promenade/issues
@@ -485,17 +485,17 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-##  Status
+## Status
 
 - **Version**: 1.0.0
 - **Status**: Production-ready
 - **Go Version**: 1.24+
 - **Database**: PostgreSQL 16, SQLite 3
-- **Tests**:  200+ unit, 26 smoke, 29 integration
-- **Code Quality**:  0 lint issues
-- **Security**:  Audit complete (Jan 2026)
-- **Documentation**:  Comprehensive (8 languages)
+- **Tests**: 200+ unit, 26 smoke, 29 integration
+- **Code Quality**: 0 lint issues
+- **Security**: Audit complete (Jan 2026)
+- **Documentation**: Comprehensive (8 languages)
 
 ---
 
-**Built with  using Domain-Driven Design and Go**
+**Built with using Domain-Driven Design and Go**

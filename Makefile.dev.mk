@@ -69,83 +69,42 @@ run: build validate-env  ## Build and run the application
 # Docker (Database-Aware)
 # ============================================================================
 
-docker-up: validate-env  ## Start database containers (database-aware)
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "ℹ️  SQLite mode - no Docker containers needed"; \
-		echo "💡 Database will be created at ./data/promenade.db"; \
-	elif [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "🐘 Starting PostgreSQL container..."; \
-		$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml up -d; \
-		echo "Waiting for PostgreSQL to be ready..."; \
-		sleep 3; \
-		echo "✓ PostgreSQL ready on localhost:5432"; \
-		echo "✓ Redis ready on localhost:6379"; \
-	elif [ "$(DATABASE_DRIVER)" = "mysql" ]; then \
-		echo "🐬 Starting MySQL container..."; \
-		$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.mysql.yml up -d; \
-		echo "Waiting for MySQL to be ready..."; \
-		sleep 5; \
-		echo "✓ MySQL ready on localhost:3306"; \
-	else \
-		echo "❌ Unknown DATABASE_DRIVER: $(DATABASE_DRIVER)"; \
-		exit 1; \
-	fi
+docker-up: validate-env  ## Start PostgreSQL and Redis containers
+	@echo "🐘 Starting PostgreSQL container..."
+	$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml up -d
+	@echo "Waiting for PostgreSQL to be ready..."
+	@sleep 3
+	@echo "✓ PostgreSQL ready on localhost:5432"
+	@echo "✓ Redis ready on localhost:6379"
 
 docker-down: validate-env  ## Stop database containers
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "ℹ️  SQLite mode - no Docker containers to stop"; \
-	elif [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "Stopping PostgreSQL container..."; \
-		$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml down; \
-	elif [ "$(DATABASE_DRIVER)" = "mysql" ]; then \
-		echo "Stopping MySQL container..."; \
-		$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.mysql.yml down; \
-	fi
+	@echo "Stopping PostgreSQL container..."
+	$(DOCKER_COMPOSE_DEV) -f docker/docker-compose.dev.yml down
 
 docker-logs: validate-env  ## Show Docker logs
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "ℹ️  SQLite mode - no Docker logs"; \
-	else \
-		$(DOCKER_COMPOSE_DEV) logs -f; \
-	fi
+	$(DOCKER_COMPOSE_DEV) logs -f
 
 docker-ps: validate-env  ## Show running containers
 	@echo "Running containers:"
 	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 docker-clean: validate-env  ## Remove all containers and volumes (clean slate)
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "ℹ️  SQLite mode - cleaning data directory"; \
-		rm -rf ./data/*.db; \
-		echo "✓ SQLite data cleaned"; \
-	else \
-		echo "⚠️  Removing containers and volumes..."; \
-		$(DOCKER_COMPOSE_DEV) down -v; \
-		echo "✓ Clean slate ready"; \
-	fi
+	@echo "⚠️  Removing containers and volumes..."
+	$(DOCKER_COMPOSE_DEV) down -v
+	@echo "✓ Clean slate ready"
 
 # ============================================================================
-# Database Management (PostgreSQL-specific, skipped for SQLite)
+# Database Management
 # ============================================================================
 
-db-create: validate-env  ## Create database (PostgreSQL only)
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "ℹ️  SQLite mode - database created automatically"; \
-	elif [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "Creating database $(DB_NAME)..."; \
-		docker exec -i promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"; \
-	fi
+db-create: validate-env  ## Create database
+	@echo "Creating database $(DB_NAME)..."
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
 
-db-drop: validate-env  ## Drop database (PostgreSQL only, WARNING: destructive!)
-	@if [ "$(DATABASE_DRIVER)" = "sqlite" ]; then \
-		echo "⚠️  Dropping SQLite database..."; \
-		rm -f ./data/promenade.db; \
-		echo "✓ Database dropped"; \
-	elif [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		echo "⚠️  Dropping database $(DB_NAME)..."; \
-		docker exec -i promenade_postgres psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"; \
-		echo "✓ Database dropped"; \
-	fi
+db-drop: validate-env  ## Drop database (WARNING: destructive!)
+	@echo "⚠️  Dropping database $(DB_NAME)..."
+	@docker exec -i promenade_postgres psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+	@echo "✓ Database dropped"
 
 db-reset: validate-env  ## Drop and recreate database (WARNING: all data lost!)
 	@echo "⚠️  Resetting database ($(DATABASE_DRIVER))..."

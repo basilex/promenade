@@ -2,8 +2,6 @@
 .PHONY: install build clean fmt lint
 .PHONY: clean-emoji clean-emoji-apply check-emoji
 .PHONY: switch-postgres-dev switch-postgres-test switch-postgres-prod
-.PHONY: switch-sqlite-dev switch-sqlite-test switch-sqlite-prod
-.PHONY: switch-mysql-dev switch-mysql-test switch-mysql-prod
 
 # ============================================================================
 # Promenade - Modular Makefile System with Workspace State Management
@@ -24,7 +22,7 @@
 # Quick Start:
 #   1. Configure workspace: make switch-postgres-dev
 #   2. Start development: make dev
-#   3. Run tests: make switch-sqlite-test && make test-all
+#   3. Run tests: make switch-postgres-test && make test-all
 #
 # See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md
 # ============================================================================
@@ -55,7 +53,6 @@ validate-env:  ## Validate .promenade.workspace exists and is configured
 		echo "   cp .promenade.workspace.example .promenade.workspace"; \
 		echo "   OR"; \
 		echo "   make switch-postgres-dev  # PostgreSQL + development"; \
-		echo "   make switch-sqlite-dev    # SQLite + development"; \
 		echo ""; \
 		echo "📖 See: docs/work-in-progress/WORKFLOW_STATE_MANAGEMENT.md"; \
 		exit 1; \
@@ -152,44 +149,6 @@ switch-postgres-prod:  ## Switch to: PostgreSQL + production (→ app.postgres-p
 	@echo "⚠️  Switched to: postgres + PRODUCTION"
 	@echo "⚠️  Make sure you know what you're doing!"
 
-# SQLite configurations
-switch-sqlite-dev:  ## Switch to: SQLite + development (→ app.sqlite-dev.yaml)
-	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
-	@echo "ENVIRONMENT=development" >> .promenade.workspace
-	@echo "✅ Switched to: sqlite + development"
-	@echo "💡 Next: make dev (no Docker needed)"
-
-switch-sqlite-test:  ## Switch to: SQLite + test (→ app.sqlite-test.yaml)
-	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
-	@echo "ENVIRONMENT=test" >> .promenade.workspace
-	@echo "✅ Switched to: sqlite + test"
-	@echo "💡 Next: make test-all (no Docker needed)"
-
-switch-sqlite-prod:  ## Switch to: SQLite + production (→ app.sqlite-prod.yaml)
-	@echo "DATABASE_DRIVER=sqlite" > .promenade.workspace
-	@echo "ENVIRONMENT=production" >> .promenade.workspace
-	@echo "⚠️  Switched to: sqlite + PRODUCTION"
-	@echo "⚠️  SQLite in production: single-writer only!"
-
-# MySQL configurations (planned)
-switch-mysql-dev:  ## Switch to: MySQL + development (→ app.mysql-dev.yaml - planned)
-	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
-	@echo "ENVIRONMENT=development" >> .promenade.workspace
-	@echo "✅ Switched to: mysql + development"
-	@echo "⚠️  MySQL support coming soon"
-
-switch-mysql-test:  ## Switch to: MySQL + test (→ app.mysql-test.yaml - planned)
-	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
-	@echo "ENVIRONMENT=test" >> .promenade.workspace
-	@echo "✅ Switched to: mysql + test"
-	@echo "⚠️  MySQL support coming soon"
-
-switch-mysql-prod:  ## Switch to: MySQL + production (→ app.mysql-prod.yaml - planned)
-	@echo "DATABASE_DRIVER=mysql" > .promenade.workspace
-	@echo "ENVIRONMENT=production" >> .promenade.workspace
-	@echo "⚠️  Switched to: mysql + PRODUCTION"
-	@echo "⚠️  MySQL support coming soon"
-
 # Include modular makefiles
 include Makefile.dev.mk
 include Makefile.test.mk
@@ -209,7 +168,7 @@ help:  ## Show this help message
 		echo ""; \
 	else \
 		echo "⚠️  No workspace configured!"; \
-		echo "💡 Run: make switch-postgres-dev OR make switch-sqlite-dev"; \
+		echo "💡 Run: make switch-postgres-dev"; \
 		echo ""; \
 	fi
 	@echo "🔧 SWITCHERS"
