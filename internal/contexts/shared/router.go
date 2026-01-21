@@ -5,7 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	countryHTTP "github.com/basilex/promenade/internal/contexts/shared/country/adapter/http"
-	countryPostgres "github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository/postgres"
+	countryRepositoryFactory "github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository"
 	countryusecase "github.com/basilex/promenade/internal/contexts/shared/country/usecase"
 
 	currencyHTTP "github.com/basilex/promenade/internal/contexts/shared/currency/adapter/http"
@@ -21,6 +21,7 @@ import (
 	timezoneusecase "github.com/basilex/promenade/internal/contexts/shared/timezone/usecase"
 
 	"github.com/basilex/promenade/pkg/cache"
+	"github.com/basilex/promenade/pkg/logger"
 )
 
 // Router handles HTTP routing for Shared Context (Reference Data)
@@ -32,23 +33,27 @@ type Router struct {
 }
 
 // NewRouter creates a new Shared Context router with Clean Architecture layers
-func NewRouter(db *sqlx.DB, cacheClient cache.ICache) *Router {
-	// Country aggregate
-	countryRepo := countryPostgres.NewRepository(db)
+// driver parameter enables multi-database support (postgres, mssql)
+func NewRouter(db *sqlx.DB, driver string, cacheClient cache.ICache) *Router {
+	// Country aggregate - multi-database support via factory
+	countryRepo, err := countryRepositoryFactory.NewCountryRepository(db, driver)
+	if err != nil {
+		logger.Fatal("Failed to create country repository", "error", err)
+	}
 	countryUC := countryusecase.NewCountryUseCase(countryRepo, cacheClient)
 	countryHandler := countryHTTP.NewHandler(countryUC)
 
-	// Currency aggregate
+	// Currency aggregate - PostgreSQL only (for now)
 	currencyRepo := currencyPostgres.NewRepository(db)
 	currencyUC := currencyusecase.NewCurrencyUseCase(currencyRepo, cacheClient)
 	currencyHandler := currencyHTTP.NewHandler(currencyUC)
 
-	// Language aggregate
+	// Language aggregate - PostgreSQL only (for now)
 	languageRepo := languagePostgres.NewRepository(db)
 	languageUC := languageusecase.NewLanguageUseCase(languageRepo, cacheClient)
 	languageHandler := languageHTTP.NewHandler(languageUC)
 
-	// Timezone aggregate
+	// Timezone aggregate - PostgreSQL only (for now)
 	timezoneRepo := timezonePostgres.NewRepository(db)
 	timezoneUC := timezoneusecase.NewTimezoneUseCase(timezoneRepo, cacheClient)
 	timezoneHandler := timezoneHTTP.NewHandler(timezoneUC)

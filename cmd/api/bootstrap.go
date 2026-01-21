@@ -62,6 +62,7 @@ import (
 	receiptRepo "github.com/basilex/promenade/internal/contexts/fiscal/receipt/adapter/repository/postgres"
 	receiptUseCase "github.com/basilex/promenade/internal/contexts/fiscal/receipt/usecase"
 
+	countryRepositoryFactory "github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository"
 	countryUseCase "github.com/basilex/promenade/internal/contexts/shared/country/usecase"
 )
 
@@ -552,7 +553,7 @@ func initScheduler(cfg *config.AppConfig, db *sqlx.DB, receiptUC receiptUseCase.
 // initSharedCountry initializes Shared Context - Country (with multi-database support)
 func initSharedCountry(db *sqlx.DB, cfg *config.AppConfig) (countryUseCase.ICountryUseCase, error) {
 	// Create repository using factory (driver-agnostic)
-	countryRepo, err := newCountryRepository(db, cfg.Database.Driver)
+	countryRepo, err := countryRepositoryFactory.NewCountryRepository(db, cfg.Database.Driver)
 	if err != nil {
 		return nil, err
 	}

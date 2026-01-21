@@ -62,7 +62,7 @@ func (s *Server) SetupRoutes() {
 	s.router.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Initialize context routers
-	sharedRouter := shared.NewRouter(s.app.DB, s.app.CacheClient)
+	sharedRouter := shared.NewRouter(s.app.DB, s.app.Config.Database.Driver, s.app.CacheClient)
 	identityRouter := identity.NewRouter(s.app.DB, s.app.JWTManager, s.app.TokenRevoker)
 	customerMgmtRouter := customermgmt.NewRouter(s.app.DB)
 	orderMgmtRouter := ordermgmt.NewRouter(s.app.DB, s.app.EventBus)
