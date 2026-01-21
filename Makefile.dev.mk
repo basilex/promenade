@@ -114,11 +114,11 @@ docker-clean: validate-env  ## Remove all containers and volumes (clean slate)
 
 db-create: validate-env  ## Create database
 	@echo "Creating database $(DB_NAME)..."
-	@docker exec -i promenade_postgres psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
+	@docker exec -i promenade-postgres-dev psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
 
 db-drop: validate-env  ## Drop database (WARNING: destructive!)
 	@echo "⚠️  Dropping database $(DB_NAME)..."
-	@docker exec -i promenade_postgres psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+	@docker exec -i promenade-postgres-dev psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
 	@echo "✓ Database dropped"
 
 db-reset: validate-env  ## Drop and recreate database (WARNING: all data lost!)

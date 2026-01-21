@@ -24,6 +24,7 @@ This guide covers:
 ### Problem: Server Won't Start
 
 **Symptoms**:
+
 ```bash
 $ make dev
 Error: failed to start server
@@ -34,11 +35,13 @@ Error: failed to start server
 #### Cause 1: Port Already in Use
 
 **Check**:
+
 ```bash
 lsof -i :8081
 ```
 
 **Solution**:
+
 ```bash
 # Kill process using port
 kill -9 <PID>
@@ -54,12 +57,14 @@ server:
 #### Cause 2: Database Not Running
 
 **Check**:
+
 ```bash
 make docker-ps
 # Should show promenade_postgres running
 ```
 
 **Solution**:
+
 ```bash
 # Start database
 make docker-up
@@ -76,6 +81,7 @@ make dev
 #### Cause 3: Invalid Configuration
 
 **Check logs**:
+
 ```bash
 # Look for validation errors
 ./bin/promenade
@@ -85,6 +91,7 @@ make dev
 ```
 
 **Solution**:
+
 ```bash
 # Check config file
 cat config/app.postgres-dev.yaml
@@ -100,6 +107,7 @@ cat config/app.postgres-dev.yaml
 ### Problem: Application Crashes on Startup
 
 **Symptoms**:
+
 ```
 panic: runtime error: invalid memory address
 ```
@@ -109,12 +117,14 @@ panic: runtime error: invalid memory address
 #### Cause 1: Missing Environment Variables
 
 **Check**:
+
 ```bash
 echo $DATABASE_DRIVER
 echo $ENVIRONMENT
 ```
 
 **Solution**:
+
 ```bash
 # Configure workspace
 make switch-postgres-dev
@@ -129,17 +139,20 @@ export ENVIRONMENT=development
 #### Cause 2: Database Connection Failed
 
 **Error**:
+
 ```
 FATAL: Failed to connect to PostgreSQL: connection refused
 ```
 
 **Check**:
+
 ```bash
 # Test PostgreSQL connection
 docker exec -it promenade_postgres psql -U system -d promenade_dev -c "SELECT 1;"
 ```
 
 **Solution**:
+
 ```bash
 # Restart database
 make docker-down
@@ -154,11 +167,13 @@ docker logs promenade_postgres
 ### Problem: Migrations Fail
 
 **Symptoms**:
+
 ```
 ERROR: Failed to run migrations namespace=core error=pq: relation already exists
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check migration status
 make migrate-status
@@ -170,12 +185,14 @@ psql -h localhost -U system -d promenade_dev -c "SELECT * FROM schema_migrations
 **Solutions**:
 
 #### Option 1: Reset Database (Development Only)
+
 ```bash
 make db-fresh
 # Drops database, recreates, runs all migrations
 ```
 
 #### Option 2: Manual Migration Fix
+
 ```bash
 # Rollback specific migration
 psql -h localhost -U system -d promenade_dev
@@ -194,6 +211,7 @@ make migrate-core
 ### Problem: 401 Unauthorized - Missing Token
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -207,6 +225,7 @@ make migrate-core
 **Cause**: Authorization header not included in request
 
 **Solution**:
+
 ```bash
 # Include Bearer token
 curl -X GET http://localhost:8081/api/v1/customers \
@@ -221,6 +240,7 @@ echo $TOKEN
 ### Problem: 401 Unauthorized - Invalid Token
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -236,6 +256,7 @@ echo $TOKEN
 #### Cause 1: Token Corrupted
 
 **Check**:
+
 ```bash
 # View token (should have 3 parts separated by dots)
 echo $TOKEN
@@ -249,6 +270,7 @@ echo $TOKEN
 #### Cause 2: Wrong JWT Secret
 
 **Check**:
+
 ```bash
 # Ensure JWT_SECRET matches between token generation and validation
 grep "secret:" config/app.postgres-dev.yaml
@@ -261,6 +283,7 @@ grep "secret:" config/app.postgres-dev.yaml
 ### Problem: 401 Unauthorized - Expired Token
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -276,6 +299,7 @@ grep "secret:" config/app.postgres-dev.yaml
 **Solutions**:
 
 #### Option 1: Refresh Token
+
 ```bash
 curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
   -H "Content-Type: application/json" \
@@ -283,6 +307,7 @@ curl -X POST http://localhost:8081/api/v1/identity/auth/refresh \
 ```
 
 #### Option 2: Login Again
+
 ```bash
 curl -X POST http://localhost:8081/api/v1/identity/users/login \
   -H "Content-Type: application/json" \
@@ -290,6 +315,7 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login \
 ```
 
 #### Option 3: Auto-Refresh Script
+
 ```bash
 # Save to refresh-token.sh
 #!/bin/bash
@@ -301,13 +327,13 @@ refresh_token() {
   RESPONSE=$(curl -s -X POST http://localhost:8081/api/v1/identity/auth/refresh \
     -H "Content-Type: application/json" \
     -d '{"refresh_token":"'"$REFRESH_TOKEN"'"}')
-  
+
   NEW_TOKEN=$(echo $RESPONSE | jq -r '.data.access_token')
   NEW_REFRESH=$(echo $RESPONSE | jq -r '.data.refresh_token')
-  
+
   echo $NEW_TOKEN > $TOKEN_FILE
   echo $NEW_REFRESH > $REFRESH_TOKEN_FILE
-  
+
   export TOKEN=$NEW_TOKEN
   export REFRESH_TOKEN=$NEW_REFRESH
 }
@@ -324,6 +350,7 @@ done
 ### Problem: 403 Forbidden - Insufficient Permissions
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -335,6 +362,7 @@ done
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check current user roles
 curl -X GET http://localhost:8081/api/v1/identity/users/me \
@@ -353,9 +381,11 @@ curl -X GET http://localhost:8081/api/v1/identity/users/me \
 **Solutions**:
 
 #### Option 1: Request Admin Access
+
 Contact system administrator to assign admin role
 
 #### Option 2: Login as Admin
+
 ```bash
 # Use admin credentials
 curl -X POST http://localhost:8081/api/v1/identity/users/login \
@@ -368,6 +398,7 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login \
 ### Problem: 429 Too Many Requests
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -381,10 +412,12 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login \
 **Cause**: Rate limit exceeded
 
 **Rate Limits**:
+
 - Login: 5 requests/minute per IP
 - Register: 3 requests/minute per IP
 
 **Solution**:
+
 ```bash
 # Wait for rate limit window
 sleep 60
@@ -394,6 +427,7 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login ...
 ```
 
 **Prevention**:
+
 ```bash
 # Add delay between requests in scripts
 for i in {1..10}; do
@@ -409,11 +443,13 @@ done
 ### Problem: Database Connection Refused
 
 **Error**:
+
 ```
 FATAL: Failed to connect to PostgreSQL: connection refused
 ```
 
 **Check**:
+
 ```bash
 # Is database running?
 make docker-ps
@@ -425,12 +461,14 @@ psql -h localhost -U system -d promenade_dev -c "SELECT 1;"
 **Solutions**:
 
 #### Solution 1: Start Database
+
 ```bash
 make docker-up
 sleep 3  # Wait for startup
 ```
 
 #### Solution 2: Check Port
+
 ```bash
 # Verify PostgreSQL on port 5432
 netstat -an | grep 5432
@@ -440,6 +478,7 @@ docker port promenade_postgres
 ```
 
 #### Solution 3: Check Credentials
+
 ```bash
 # Verify config
 grep -A5 "postgres:" config/app.postgres-dev.yaml
@@ -457,11 +496,13 @@ grep -A5 "postgres:" config/app.postgres-dev.yaml
 ### Problem: Migration Already Applied
 
 **Error**:
+
 ```
 ERROR: pq: duplicate key value violates unique constraint "schema_migrations_pkey"
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check applied migrations
 psql -h localhost -U system -d promenade_dev -c \
@@ -469,6 +510,7 @@ psql -h localhost -U system -d promenade_dev -c \
 ```
 
 **Solution**:
+
 ```bash
 # Skip duplicate (migration system handles this)
 # Or reset database for clean slate
@@ -480,18 +522,20 @@ make db-fresh
 ### Problem: Slow Queries
 
 **Symptoms**:
+
 - API responses > 1 second
 - Database CPU usage high
 
 **Diagnosis**:
+
 ```sql
 -- Check slow queries (PostgreSQL)
-SELECT 
+SELECT
   pid,
   now() - query_start AS duration,
-  query 
-FROM pg_stat_activity 
-WHERE state = 'active' 
+  query
+FROM pg_stat_activity
+WHERE state = 'active'
   AND now() - query_start > interval '1 second'
 ORDER BY duration DESC;
 ```
@@ -501,19 +545,21 @@ ORDER BY duration DESC;
 #### Cause 1: Missing Index
 
 **Check**:
+
 ```sql
 -- List tables without indexes
-SELECT tablename 
-FROM pg_tables 
-WHERE schemaname = 'public' 
+SELECT tablename
+FROM pg_tables
+WHERE schemaname = 'public'
   AND tablename NOT IN (
-    SELECT DISTINCT tablename 
-    FROM pg_indexes 
+    SELECT DISTINCT tablename
+    FROM pg_indexes
     WHERE schemaname = 'public'
   );
 ```
 
 **Solution**: Add index
+
 ```sql
 -- Example: Index on customer email
 CREATE INDEX idx_customers_email ON customer_customers(email);
@@ -529,6 +575,7 @@ CREATE INDEX idx_orders_customer_id ON order_orders(customer_id);
 **Symptoms**: Multiple queries in loop
 
 **Example Bad Code**:
+
 ```go
 // BAD: N+1 queries
 customers, _ := repo.ListCustomers(ctx, 1, 100)
@@ -539,10 +586,11 @@ for _, customer := range customers {
 ```
 
 **Solution**: LEFT JOIN
+
 ```go
 // GOOD: Single query with JOIN
 query := `
-  SELECT 
+  SELECT
     c.*,
     comp.name AS company_name
   FROM customer_customers c
@@ -556,14 +604,16 @@ query := `
 ### Problem: Database Locks
 
 **Error**:
+
 ```
 ERROR: deadlock detected
 ```
 
 **Diagnosis**:
+
 ```sql
 -- Check locks
-SELECT 
+SELECT
   l.pid,
   l.locktype,
   l.relation::regclass,
@@ -575,6 +625,7 @@ WHERE NOT l.granted;
 ```
 
 **Solution**:
+
 ```bash
 # Kill blocking query
 psql -h localhost -U system -d promenade_dev -c "SELECT pg_terminate_backend(<PID>);"
@@ -591,6 +642,7 @@ make docker-up
 ### Problem: 400 Bad Request - Validation Error
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -604,6 +656,7 @@ make docker-up
 **Common Causes**:
 
 #### Cause 1: Invalid Email Format
+
 ```bash
 # BAD
 curl -X POST ... -d '{"email":"not-an-email"}'
@@ -613,6 +666,7 @@ curl -X POST ... -d '{"email":"user@example.com"}'
 ```
 
 #### Cause 2: Missing Required Field
+
 ```bash
 # BAD
 curl -X POST ... -d '{"name":"John"}'
@@ -622,6 +676,7 @@ curl -X POST ... -d '{"name":"John","email":"john@example.com","password":"Pass1
 ```
 
 #### Cause 3: Invalid Password
+
 ```bash
 # BAD (too short)
 curl -X POST ... -d '{"password":"123"}'
@@ -635,6 +690,7 @@ curl -X POST ... -d '{"password":"SecurePass123"}'
 ### Problem: 404 Not Found
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -646,6 +702,7 @@ curl -X POST ... -d '{"password":"SecurePass123"}'
 ```
 
 **Diagnosis**:
+
 ```bash
 # Verify resource exists
 curl -X GET http://localhost:8081/api/v1/customer-mgmt/customers/$CUSTOMER_ID \
@@ -657,6 +714,7 @@ echo $CUSTOMER_ID
 ```
 
 **Common Mistakes**:
+
 - Wrong UUID format
 - Resource was deleted (soft delete)
 - Wrong endpoint URL
@@ -666,6 +724,7 @@ echo $CUSTOMER_ID
 ### Problem: 500 Internal Server Error
 
 **Error Response**:
+
 ```json
 {
   "status": "error",
@@ -677,6 +736,7 @@ echo $CUSTOMER_ID
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check server logs
 docker logs promenade_api
@@ -685,6 +745,7 @@ docker logs promenade_api
 ```
 
 **Common Causes**:
+
 - Nil pointer dereference
 - Database constraint violation
 - Unhandled edge case
@@ -696,11 +757,13 @@ docker logs promenade_api
 ### Problem: Request Timeout
 
 **Error**:
+
 ```
 curl: (28) Operation timed out after 30000 milliseconds
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check server health
 curl http://localhost:8081/health
@@ -710,6 +773,7 @@ curl http://localhost:8081/health/db
 ```
 
 **Common Causes**:
+
 - Database query too slow
 - Server overloaded
 - Network issue
@@ -717,11 +781,13 @@ curl http://localhost:8081/health/db
 **Solutions**:
 
 #### Solution 1: Increase Timeout
+
 ```bash
 curl --max-time 60 http://localhost:8081/api/v1/customers
 ```
 
 #### Solution 2: Add Pagination
+
 ```bash
 # BAD: Fetch all customers (slow)
 curl http://localhost:8081/api/v1/customer-mgmt/customers
@@ -737,10 +803,12 @@ curl "http://localhost:8081/api/v1/customer-mgmt/customers?page=1&page_size=20"
 ### Problem: Memory Leak
 
 **Symptoms**:
+
 - Memory usage grows over time
 - Eventually causes OOM (Out of Memory)
 
 **Diagnosis**:
+
 ```bash
 # Monitor memory usage
 docker stats promenade_api
@@ -751,11 +819,13 @@ go tool pprof heap.prof
 ```
 
 **Common Causes**:
+
 - Goroutine leak (missing context cancellation)
 - Database connection leak (missing Close())
 - Cache without TTL
 
 **Prevention**:
+
 ```go
 // Always use context with timeout
 ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -774,6 +844,7 @@ cache.Set(ctx, key, value, 1*time.Hour)  // Not forever!
 ### Problem: High CPU Usage
 
 **Diagnosis**:
+
 ```bash
 # CPU profiling
 curl http://localhost:8081/debug/pprof/profile?seconds=30 > cpu.prof
@@ -781,11 +852,13 @@ go tool pprof cpu.prof
 ```
 
 **Common Causes**:
+
 - Inefficient algorithm (O(n²) instead of O(n))
 - Too many goroutines
 - JSON marshaling in tight loop
 
 **Solutions**:
+
 - Use proper data structures (map instead of array for lookups)
 - Limit goroutine pool size
 - Cache expensive computations
@@ -797,11 +870,13 @@ go tool pprof cpu.prof
 ### Problem: Docker Container Won't Start
 
 **Error**:
+
 ```
 ERROR: Cannot start service postgres: driver failed
 ```
 
 **Diagnosis**:
+
 ```bash
 # Check Docker daemon
 docker ps
@@ -816,6 +891,7 @@ df -h
 **Solutions**:
 
 #### Solution 1: Restart Docker
+
 ```bash
 # macOS
 killall Docker && open /Applications/Docker.app
@@ -825,12 +901,14 @@ sudo systemctl restart docker
 ```
 
 #### Solution 2: Remove Old Containers
+
 ```bash
 make docker-clean
 make docker-up
 ```
 
 #### Solution 3: Prune Docker System
+
 ```bash
 # WARNING: Removes all unused containers, networks, images
 docker system prune -a --volumes
@@ -841,22 +919,25 @@ docker system prune -a --volumes
 ### Problem: Port Conflict
 
 **Error**:
+
 ```
 ERROR: Port 5432 is already allocated
 ```
 
 **Diagnosis**:
+
 ```bash
 # Find process using port
 lsof -i :5432
 ```
 
 **Solution**:
+
 ```bash
 # Kill process
 kill -9 <PID>
 
-# Or change port in docker-compose.dev.yml
+# Or change port in docker-compose.postgres.dev.yml
 ports:
   - "5433:5432"  # Use 5433 instead
 ```
@@ -868,6 +949,7 @@ ports:
 ### Problem: Tests Fail Randomly
 
 **Symptoms**:
+
 - Tests pass locally, fail in CI
 - Tests fail intermittently
 
@@ -876,6 +958,7 @@ ports:
 #### Cause 1: Race Condition
 
 **Solution**: Run with race detector
+
 ```bash
 go test -race ./...
 ```
@@ -883,6 +966,7 @@ go test -race ./...
 #### Cause 2: Shared State
 
 **Bad Test**:
+
 ```go
 // BAD: Shared global variable
 var testDB *sqlx.DB
@@ -897,6 +981,7 @@ func TestB(t *testing.T) {
 ```
 
 **Good Test**:
+
 ```go
 // GOOD: Isolated database per test
 func TestA(t *testing.T) {
@@ -911,14 +996,16 @@ func TestA(t *testing.T) {
 ### Problem: Test Database Connection Failed
 
 **Error**:
+
 ```
 ERROR: Failed to connect to test database
 ```
 
 **Check**:
+
 ```bash
 # Verify test DB running
-docker ps | grep promenade_test_postgres
+docker ps | grep promenade-postgres-test
 
 # Start test database
 make test-db-start
@@ -931,11 +1018,13 @@ make test-db-start
 ### Problem: Go Module Issues
 
 **Error**:
+
 ```
 go: module requires Go 1.24 or later
 ```
 
 **Solution**:
+
 ```bash
 # Check Go version
 go version
@@ -952,11 +1041,13 @@ sudo snap refresh go --classic
 ### Problem: Import Path Errors
 
 **Error**:
+
 ```
 cannot find package "github.com/basilex/promenade/pkg/uuidv7"
 ```
 
 **Solution**:
+
 ```bash
 # Tidy modules
 go mod tidy
@@ -973,11 +1064,13 @@ go mod verify
 ### Problem: Git Push Rejected
 
 **Error**:
+
 ```
 ! [rejected] dev -> dev (non-fast-forward)
 ```
 
 **Solution**:
+
 ```bash
 # Pull latest changes
 git pull origin dev
@@ -1044,6 +1137,7 @@ git push origin dev
 ### Reporting Bugs
 
 Include:
+
 1. **Environment**: OS, Go version, database driver
 2. **Steps to reproduce**: Exact commands/API calls
 3. **Expected behavior**: What should happen

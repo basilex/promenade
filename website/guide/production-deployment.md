@@ -20,7 +20,7 @@ cp config/app.postgres-prod.yaml config/app.postgres-prod.local.yaml
 vim config/app.postgres-prod.local.yaml  # Set DB_PASSWORD, JWT_SECRET, etc.
 
 # 3. Start production stack
-docker compose -f docker/docker-compose.prod.yml up -d
+docker compose -f docker/docker-compose.postgres.prod.yml up -d
 
 # 4. Run migrations
 docker exec promenade_api /app/bin/migrate up
@@ -59,9 +59,10 @@ kubectl logs -f deployment/promenade-api -n promenade
 
 ### Production Docker Compose
 
-**docker/docker-compose.prod.yml**:
+**docker/docker-compose.postgres.prod.yml**:
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -132,6 +133,7 @@ volumes:
 ### Build Production Image
 
 **docker/Dockerfile** (Multi-stage build):
+
 ```dockerfile
 # Stage 1: Build
 FROM golang:1.23-alpine AS builder
@@ -180,6 +182,7 @@ docker push promenade/api:latest
 ### Production Config File
 
 **config/app.postgres-prod.yaml**:
+
 ```yaml
 app:
   name: "Promenade Platform"
@@ -217,11 +220,11 @@ database:
 jwt:
   secret: "${JWT_SECRET}"
   access_token_duration: 15m
-  refresh_token_duration: 168h  # 7 days
+  refresh_token_duration: 168h # 7 days
   issuer: "promenade-platform"
 
 bus:
-  adapter: "redis"  # Distributed event bus
+  adapter: "redis" # Distributed event bus
   worker_pool_size: 50
   buffer_size: 10000
   retry_attempts: 5
@@ -234,9 +237,9 @@ cache:
   adapter: "redis"
   prefix: "promenade:"
   ttl:
-    reference: 86400  # 24 hours
-    user: 1800        # 30 minutes
-    session: 3600     # 1 hour
+    reference: 86400 # 24 hours
+    user: 1800 # 30 minutes
+    session: 3600 # 1 hour
 
 logging:
   level: "info"
@@ -247,6 +250,7 @@ logging:
 ### Environment Variables
 
 **Required secrets** (store in `.env.prod` or secrets manager):
+
 ```bash
 # Database
 export DB_HOST=your-db-host.rds.amazonaws.com
@@ -267,6 +271,7 @@ export SLACK_WEBHOOK=https://hooks.slack.com/services/YOUR/WEBHOOK
 ```
 
 **Load secrets**:
+
 ```bash
 # From file (development/staging)
 source .env.prod
@@ -288,6 +293,7 @@ az keyvault secret show --vault-name promenade-vault --name prod-secrets
 ### AWS ECS Fargate
 
 **1. Infrastructure Setup**:
+
 ```bash
 # Create VPC, subnets, security groups
 terraform init
@@ -301,6 +307,7 @@ aws cloudformation create-stack \
 ```
 
 **2. Database (RDS PostgreSQL)**:
+
 ```bash
 # Create database instance
 aws rds create-db-instance \
@@ -318,6 +325,7 @@ aws rds create-db-instance \
 ```
 
 **3. Cache (ElastiCache Redis)**:
+
 ```bash
 # Create Redis cluster
 aws elasticache create-cache-cluster \
@@ -330,6 +338,7 @@ aws elasticache create-cache-cluster \
 ```
 
 **4. Container (ECS Fargate)**:
+
 ```bash
 # Create ECS cluster
 aws ecs create-cluster --cluster-name promenade-prod
@@ -348,6 +357,7 @@ aws ecs create-service \
 ```
 
 **5. Load Balancer (ALB)**:
+
 ```bash
 # Create target group
 aws elbv2 create-target-group \
@@ -369,6 +379,7 @@ aws elbv2 create-load-balancer \
 ### Google Cloud Platform (GCP)
 
 **1. Cloud SQL (PostgreSQL)**:
+
 ```bash
 # Create database instance
 gcloud sql instances create promenade-prod \
@@ -383,6 +394,7 @@ gcloud sql databases create promenade_prod --instance=promenade-prod
 ```
 
 **2. Memorystore (Redis)**:
+
 ```bash
 # Create Redis instance
 gcloud redis instances create promenade-redis \
@@ -393,6 +405,7 @@ gcloud redis instances create promenade-redis \
 ```
 
 **3. Cloud Run**:
+
 ```bash
 # Deploy service
 gcloud run deploy promenade-api \
@@ -411,6 +424,7 @@ gcloud run deploy promenade-api \
 ### Azure
 
 **1. Azure Database for PostgreSQL**:
+
 ```bash
 # Create resource group
 az group create --name promenade-prod --location eastus
@@ -428,6 +442,7 @@ az postgres flexible-server create \
 ```
 
 **2. Azure Cache for Redis**:
+
 ```bash
 # Create Redis cache
 az redis create \
@@ -439,6 +454,7 @@ az redis create \
 ```
 
 **3. Container Apps**:
+
 ```bash
 # Create container app environment
 az containerapp env create \
@@ -475,6 +491,7 @@ az containerapp create \
 ### Running Migrations
 
 **Option 1: Manual (via container)**:
+
 ```bash
 # Connect to running API container
 docker exec -it promenade_api bash
@@ -487,6 +504,7 @@ docker exec -it promenade_api bash
 ```
 
 **Option 2: Automated (CI/CD)**:
+
 ```yaml
 # .github/workflows/deploy.yml
 - name: Run Migrations
@@ -499,6 +517,7 @@ docker exec -it promenade_api bash
 ```
 
 **Option 3: Kubernetes Job**:
+
 ```yaml
 # k8s/migration-job.yaml
 apiVersion: batch/v1
@@ -509,27 +528,29 @@ spec:
   template:
     spec:
       containers:
-      - name: migrate
-        image: promenade/api:latest
-        command: ["/app/bin/migrate", "up"]
-        env:
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: promenade-secrets
-              key: db-host
+        - name: migrate
+          image: promenade/api:latest
+          command: ["/app/bin/migrate", "up"]
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: promenade-secrets
+                  key: db-host
       restartPolicy: OnFailure
 ```
 
 ### Zero-Downtime Migrations
 
 **Strategy**:
+
 1. **Backward-compatible changes**: Add new columns (nullable), new tables
 2. **Deploy new code**: App works with old and new schema
 3. **Run migration**: Add columns, backfill data
 4. **Remove old code**: Clean up deprecated fields
 
 **Example**:
+
 ```sql
 -- Migration 1: Add new column (nullable)
 ALTER TABLE customer_customers ADD COLUMN email_verified BOOLEAN DEFAULT FALSE;
@@ -550,6 +571,7 @@ ALTER TABLE customer_customers ALTER COLUMN email_verified SET NOT NULL;
 ### Health Checks
 
 **Kubernetes Probes**:
+
 ```yaml
 livenessProbe:
   httpGet:
@@ -567,6 +589,7 @@ readinessProbe:
 ```
 
 **Load Balancer Health**:
+
 - ALB: `/health` every 30s
 - NGINX: `health_check` directive
 - HAProxy: `option httpchk GET /health`
@@ -574,6 +597,7 @@ readinessProbe:
 ### Logging
 
 **Centralized Logging** (ELK Stack, CloudWatch, Stackdriver):
+
 ```yaml
 # Fluent Bit config (ship logs to Elasticsearch)
 [OUTPUT]
@@ -586,6 +610,7 @@ readinessProbe:
 ```
 
 **Structured Logs** (JSON format in production):
+
 ```json
 {
   "timestamp": "2025-12-29T10:15:30Z",
@@ -602,6 +627,7 @@ readinessProbe:
 ### Metrics
 
 **Prometheus Metrics** (future):
+
 ```go
 // Instrument code with metrics
 httpRequestsTotal.WithLabelValues("POST", "/customers").Inc()
@@ -609,6 +635,7 @@ httpRequestDuration.WithLabelValues("POST", "/customers").Observe(duration.Secon
 ```
 
 **Grafana Dashboard**:
+
 - Request rate (req/s)
 - Response time (p50, p95, p99)
 - Error rate (%)
@@ -618,6 +645,7 @@ httpRequestDuration.WithLabelValues("POST", "/customers").Observe(duration.Secon
 ### Error Tracking
 
 **Sentry Integration** (future):
+
 ```go
 import "github.com/getsentry/sentry-go"
 
@@ -637,11 +665,13 @@ sentry.CaptureException(err)
 ### Horizontal Scaling (Multiple Instances)
 
 **Benefits**:
+
 - Handle more traffic
 - High availability (redundancy)
 - Rolling deployments (zero downtime)
 
 **Implementation**:
+
 ```bash
 # Docker Swarm
 docker service scale promenade_api=5
@@ -654,6 +684,7 @@ aws ecs update-service --service promenade-api --desired-count 5
 ```
 
 **Auto-scaling**:
+
 ```yaml
 # Kubernetes HPA (Horizontal Pod Autoscaler)
 apiVersion: autoscaling/v2
@@ -668,27 +699,30 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 ### Database Scaling
 
 **Read Replicas**:
+
 - Route read queries to replicas
 - Write queries to primary
 - Reduce load on primary database
 
 **Connection Pooling**:
+
 - Use PgBouncer for PostgreSQL
 - Max connections: 100 (application pool)
 - Database max connections: 200
 
 **Query Optimization**:
+
 - Add indexes for common queries
 - Use EXPLAIN ANALYZE for slow queries
 - Enable query caching (Redis)
@@ -696,11 +730,13 @@ spec:
 ### Redis Scaling
 
 **Cluster Mode**:
+
 - Sharding for large datasets
 - High availability with replicas
 - Automatic failover
 
 **Configuration**:
+
 ```yaml
 redis:
   mode: cluster
@@ -731,6 +767,7 @@ redis:
 ### TLS/SSL Setup
 
 **Let's Encrypt (Free Certificate)**:
+
 ```bash
 # Install Certbot
 sudo apt-get install certbot
@@ -742,10 +779,10 @@ sudo certbot certonly --standalone -d api.promenade.com
 server {
     listen 443 ssl;
     server_name api.promenade.com;
-    
+
     ssl_certificate /etc/letsencrypt/live/api.promenade.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/api.promenade.com/privkey.pem;
-    
+
     location / {
         proxy_pass http://localhost:8081;
     }
@@ -759,6 +796,7 @@ server {
 ### GitHub Actions Workflow
 
 **.github/workflows/deploy.yml**:
+
 ```yaml
 name: Deploy to Production
 
@@ -771,15 +809,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
-      
+          go-version: "1.23"
+
       - name: Run tests
         run: make test
-      
+
       - name: Run linter
         run: make lint
 
@@ -788,10 +826,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker image
         run: docker build -f docker/Dockerfile -t promenade/api:${{ github.sha }} .
-      
+
       - name: Push to registry
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
@@ -818,6 +856,7 @@ jobs:
 ### Database Backups
 
 **Automated Backups**:
+
 ```bash
 # RDS PostgreSQL (AWS)
 aws rds modify-db-instance \
@@ -831,6 +870,7 @@ gcloud sql instances patch promenade-prod \
 ```
 
 **Manual Backup**:
+
 ```bash
 # pg_dump backup
 pg_dump -h your-db-host.com -U promenade promenade_prod > backup_$(date +%Y%m%d).sql
@@ -840,6 +880,7 @@ aws s3 cp backup_$(date +%Y%m%d).sql s3://promenade-backups/
 ```
 
 **Restore**:
+
 ```bash
 # Download backup
 aws s3 cp s3://promenade-backups/backup_20250129.sql .
@@ -851,6 +892,7 @@ psql -h your-db-host.com -U promenade promenade_prod < backup_20250129.sql
 ### Point-in-Time Recovery
 
 **Enable PITR** (RDS, Cloud SQL):
+
 - Restore to any second within retention period
 - Useful for accidental data deletion
 - Retention: 7-35 days
@@ -862,12 +904,14 @@ psql -h your-db-host.com -U promenade promenade_prod < backup_20250129.sql
 ### Resource Sizing
 
 **Start Small**:
+
 - API: 2 vCPU, 4GB RAM (1-2 instances)
 - DB: db.t3.medium (2 vCPU, 4GB RAM)
 - Redis: cache.t3.micro (1GB RAM)
 - **Est. Cost**: $200-300/month (AWS)
 
 **Scale as Needed**:
+
 - Monitor CPU/Memory usage
 - Upgrade when consistently > 70%
 - Use auto-scaling to save costs
@@ -887,6 +931,7 @@ psql -h your-db-host.com -U promenade promenade_prod < backup_20250129.sql
 ### Common Issues
 
 **1. Database Connection Failures**
+
 ```bash
 # Check database reachability
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME
@@ -899,6 +944,7 @@ docker logs promenade_api | grep "database"
 ```
 
 **2. Redis Connection Errors**
+
 ```bash
 # Test Redis connection
 redis-cli -h $REDIS_ADDR -a $REDIS_PASSWORD ping
@@ -908,6 +954,7 @@ redis-cli -h $REDIS_ADDR -a $REDIS_PASSWORD INFO memory
 ```
 
 **3. High CPU/Memory Usage**
+
 ```bash
 # Check container stats
 docker stats promenade_api
@@ -917,6 +964,7 @@ kubectl top pods -n promenade
 ```
 
 **4. Slow API Responses**
+
 ```bash
 # Enable query logging (PostgreSQL)
 ALTER DATABASE promenade_prod SET log_min_duration_statement = 1000;  # Log queries > 1s

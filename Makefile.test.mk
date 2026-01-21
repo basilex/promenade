@@ -114,13 +114,13 @@ test-db-start:  ## Start PostgreSQL test database on port 5433
 		echo "ℹ️  CI/CD environment detected - using existing PostgreSQL service"; \
 	else \
 		echo "Starting PostgreSQL test database on port 5433..."; \
-		docker compose -f docker/docker-compose.test.yml down -v; \
-		docker compose -f docker/docker-compose.test.yml up -d; \
+		docker compose -f docker/docker-compose.postgres.test.yml down -v; \
+		docker compose -f docker/docker-compose.postgres.test.yml up -d; \
 		echo "Waiting for test database health..."; \
 		ready=0; \
 		for i in $$(seq 1 30); do \
-			pg_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade_test_db 2>/dev/null); \
-			redis_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade_test_redis 2>/dev/null); \
+			pg_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade-postgres-test 2>/dev/null); \
+			redis_status=$$(docker inspect --format='{{.State.Health.Status}}' promenade-redis-test 2>/dev/null); \
 			if [ "$$pg_status" = "healthy" ] && [ "$$redis_status" = "healthy" ]; then \
 				ready=1; \
 				break; \
@@ -138,5 +138,5 @@ test-db-stop:  ## Stop test database
 		echo "ℹ️  CI/CD environment detected - skipping database stop"; \
 	else \
 		echo "Stopping test database..."; \
-		docker compose -f docker/docker-compose.test.yml down; \
+		docker compose -f docker/docker-compose.postgres.test.yml down; \
 	fi

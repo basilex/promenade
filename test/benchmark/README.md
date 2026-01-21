@@ -62,12 +62,12 @@ go tool pprof mem.prof
 
 ### Makefile Targets
 
-| Target                 | Description                                    | Duration  |
-| ---------------------- | ---------------------------------------------- | --------- |
-| `make test-benchmark`  | Run all benchmarks (5s per benchmark)         | ~30s      |
-| `make test-benchmark-all` | Extended benchmarks (10s per benchmark)     | ~60s      |
-| `make test-db-start`   | Start test database (port 5433)                | Instant   |
-| `make test-db-stop`    | Stop test database                             | Instant   |
+| Target                    | Description                             | Duration |
+| ------------------------- | --------------------------------------- | -------- |
+| `make test-benchmark`     | Run all benchmarks (5s per benchmark)   | ~30s     |
+| `make test-benchmark-all` | Extended benchmarks (10s per benchmark) | ~60s     |
+| `make test-db-start`      | Start test database (port 5433)         | Instant  |
+| `make test-db-stop`       | Stop test database                      | Instant  |
 
 **Note**: Makefile targets automatically start/stop test database
 
@@ -83,9 +83,9 @@ package user_test
 import (
     "context"
     "testing"
-    
+
     "github.com/jmoiron/sqlx"
-    
+
     "github.com/basilex/promenade/internal/contexts/identity/user"
     userRepo "github.com/basilex/promenade/internal/contexts/identity/user/adapter/repository/postgres"
 )
@@ -94,16 +94,16 @@ import (
 func BenchmarkListUsers_SmallDataset(b *testing.B) {
     db := setupBenchmarkDB(b)
     defer db.Close()
-    
+
     repo := userRepo.NewUserRepository(db)
     ctx := context.Background()
-    
+
     // Setup: Create test data (BEFORE b.ResetTimer)
     setupTestData(b, ctx, repo, 20)
-    
+
     // Reset timer after setup (exclude setup time from benchmark)
     b.ResetTimer()
-    
+
     // Benchmark loop
     for i := 0; i < b.N; i++ {
         users, total, err := repo.ListUsers(ctx, 1, 20)
@@ -126,12 +126,12 @@ func setupBenchmarkDB(b *testing.B) *sqlx.DB {
     if dsn == "" {
         dsn = "postgresql://system:passw0rd@localhost:5433/promenade_test?sslmode=disable"
     }
-    
+
     db, err := sqlx.Connect("postgres", dsn)
     if err != nil {
         b.Fatalf("Failed to connect to test database: %v", err)
     }
-    
+
     // Clean tables
     tables := []string{"identity_users", "identity_roles"}
     for _, table := range tables {
@@ -140,7 +140,7 @@ func setupBenchmarkDB(b *testing.B) *sqlx.DB {
             b.Fatalf("Failed to truncate table %s: %v", table, err)
         }
     }
-    
+
     return db
 }
 ```
@@ -238,7 +238,7 @@ BenchmarkListUsers_After-16    1484     701680 ns/op     50309 B/op     558 allo
 
 **Connection**: `postgresql://system:passw0rd@localhost:5433/promenade_test`
 
-**Managed by**: `docker-compose.test.yml`
+**Managed by**: `docker-compose.postgres.test.yml`
 
 ```bash
 # Start test DB

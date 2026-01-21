@@ -264,7 +264,7 @@ make test-db-stop
 docker volume rm promenade_postgres_test_data promenade_redis_test_data
 
 # Production
-docker-compose -f docker/docker-compose.prod.yml down -v
+docker-compose -f docker/docker-compose.postgres.prod.yml down -v
 ```
 
 **Database not ready**:
