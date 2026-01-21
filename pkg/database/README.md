@@ -1,34 +1,33 @@
 # Database Package
 
-**Database adapter abstraction** for multi-database support in Promenade Platform.
+**Database adapter abstraction** for PostgreSQL with planned MS SQL Server support.
 
 ---
 
 ## Overview
 
-The `database` package provides a **unified interface** for working with different SQL databases (PostgreSQL, SQLite, MySQL, SQL Server). It abstracts away database-specific syntax differences (placeholders, types, features) while preserving database-specific optimizations.
+The `database` package provides a **dialect interface** for database abstraction in Promenade Platform. Currently focused on PostgreSQL with future support for MS SQL Server to address enterprise market needs.
 
 ---
 
 ## Features
 
--  **Dialect Abstraction**: Postgres ($1), SQLite (?), MySQL (?), SQL Server (@p1)
--  **Type Mapping**: UUID, JSON, TIMESTAMP differences handled automatically
--  **Feature Detection**: RETURNING, JSON indexes, native UUID support
--  **SQL Safety**: Identifier validation, quote escaping, injection prevention
--  **Placeholder Conversion**: Auto-convert $1 style to database-specific format
+- **Dialect Abstraction**: Postgres ($1), planned MS SQL (@p1)
+- **Type Mapping**: UUID, JSON, TIMESTAMP differences handled
+- **Feature Detection**: RETURNING, JSON indexes, native UUID support
+- **SQL Safety**: Identifier validation, quote escaping, injection prevention
+- **Placeholder Conversion**: Convert between placeholder styles
 
 ---
 
 ## Supported Databases
 
-| Database     | Status         | Dialect           | Native UUID | Native JSON | Indexes  |
-| ------------ | -------------- | ----------------- | ----------- | ----------- | -------- |
-| PostgreSQL   |  Production  | `postgres.Dialect` | YES         | JSONB       | GIN      |
-| SQLite       |  Production  | `sqlite.Dialect`   | NO (TEXT)   | NO (TEXT)   | Standard |
-| MySQL        |  Planned     | `mysql.Dialect`    | NO (CHAR)   | JSON        | Generated|
-| SQL Server   |  Planned     | `mssql.Dialect`    | NO (NCHAR)  | NO (NVARCHAR)| Standard|
-| CockroachDB  |  Future      | Uses `postgres`    | YES         | JSONB       | GIN      |
+| Database      | Status     | Dialect            | Native UUID      | Native JSON   | Indexes       |
+| ------------- | ---------- | ------------------ | ---------------- | ------------- | ------------- |
+| PostgreSQL    | Production | `postgres.Dialect` | YES              | JSONB         | GIN           |
+| MS SQL Server | Planned    | `mssql.Dialect`    | UNIQUEIDENTIFIER | CHECK(ISJSON) | Indexed Views |
+
+**Rationale**: PostgreSQL provides production-grade features. MS SQL Server support planned for enterprise deployments with existing Microsoft infrastructure.
 
 ---
 
@@ -39,14 +38,13 @@ The `database` package provides a **unified interface** for working with differe
 ```go
 import (
     "github.com/basilex/promenade/pkg/database/postgres"
-    "github.com/basilex/promenade/pkg/database/sqlite"
 )
 
-// PostgreSQL
+// PostgreSQL (production-ready)
 pgDialect := postgres.NewDialect()
 
-// SQLite
-sqliteDialect := sqlite.NewDialect()
+// MS SQL Server (planned)
+// mssqlDialect := mssql.NewDialect()
 ```
 
 ### 2. Use Dialect for Queries
@@ -60,18 +58,18 @@ query := fmt.Sprintf(
 )
 
 // PostgreSQL: INSERT INTO users (id, email) VALUES ($1, $2)
-// SQLite:     INSERT INTO users (id, email) VALUES (?, ?)
+// MS SQL (future): INSERT INTO users (id, email) VALUES (@p1, @p2)
 ```
 
 ### 3. Convert Existing Queries
 
 ```go
-// Write query in Postgres style
+// Write query in Postgres style (standard)
 query := "SELECT * FROM users WHERE id = $1 AND email = $2"
 
-// Convert to target database
-converted := database.ConvertPlaceholders(query, sqliteDialect)
-// SQLite result: "SELECT * FROM users WHERE id = ? AND email = ?"
+// Convert to target database when needed
+converted := database.ConvertPlaceholders(query, targetDialect)
+// Result depends on target dialect placeholder style
 ```
 
 ---
@@ -174,35 +172,19 @@ index := pgDialect.CreateJSONIndex("customers", "tags", "idx_tags")
 
 ---
 
-## SQLite Dialect
+## Future: MS SQL Server Dialect
 
-### JSON Operations (Limited)
+MS SQL Server support is planned to address enterprise market needs.
 
-```go
-sqliteDialect := sqlite.NewDialect()
+**Planned features:**
 
-// Extract value using json_extract
-select := sqliteDialect.JSONExtract("metadata", "score")
-// Result: json_extract(`metadata`, '$.score')
+- OUTPUT clause (equivalent to RETURNING)
+- UNIQUEIDENTIFIER type for UUIDs
+- Indexed Views (materialized views)
+- JSON validation via CHECK constraints
+- Full enterprise feature compatibility
 
-// Check if array contains value (less efficient)
-where := sqliteDialect.JSONArrayContains("tags", "vip")
-// Result: json_extract(`tags`, '$') LIKE '%"vip"%'
-```
-
-**Note**: SQLite JSON queries are less efficient. For production, use PostgreSQL JSONB optimizations and filter in Go for SQLite.
-
-### Constraints
-
-```go
-// UUID format validation
-constraint := sqliteDialect.CreateUUIDCheckConstraint("id")
-// Result: CHECK(length(`id`) = 36 AND `id` GLOB '[0-9a-f]...')
-
-// JSON format validation
-constraint := sqliteDialect.CreateJSONCheckConstraint("metadata")
-// Result: CHECK(json_valid(`metadata`))
-```
+Implementation timeline: TBD based on market demand.
 
 ---
 
@@ -228,7 +210,7 @@ func (r *CustomerRepository) GetByID(ctx context.Context, id uuid.UUID) (*Custom
         "SELECT * FROM customers WHERE id = %s",
         r.dialect.Placeholder(1),
     )
-    
+
     var customer Customer
     err := r.db.GetContext(ctx, &customer, query, id)
     return &customer, err
@@ -245,12 +227,12 @@ func (r *CustomerRepository) GetByTag(ctx context.Context, tag string) ([]*Custo
         pgDialect := r.dialect.(*postgres.Dialect)
         where := pgDialect.JSONContains("tags", fmt.Sprintf(`["%s"]`, tag))
         query := fmt.Sprintf("SELECT * FROM customers WHERE %s", where)
-        
+
         var customers []*Customer
         err := r.db.SelectContext(ctx, &customers, query)
         return customers, err
     }
-    
+
     // Fallback: Fetch all and filter in Go (slower but works)
     query := "SELECT * FROM customers"
     var customers []*Customer
@@ -258,7 +240,7 @@ func (r *CustomerRepository) GetByTag(ctx context.Context, tag string) ([]*Custo
     if err != nil {
         return nil, err
     }
-    
+
     // Filter in memory
     filtered := []*Customer{}
     for _, c := range customers {
@@ -266,7 +248,7 @@ func (r *CustomerRepository) GetByTag(ctx context.Context, tag string) ([]*Custo
             filtered = append(filtered, c)
         }
     }
-    
+
     return filtered, nil
 }
 ```
@@ -339,9 +321,6 @@ go test ./pkg/database -v
 # Test PostgreSQL dialect
 go test ./pkg/database/postgres -v
 
-# Test SQLite dialect
-go test ./pkg/database/sqlite -v
-
 # Benchmark placeholder conversion
 go test -bench=. ./pkg/database
 ```
@@ -350,7 +329,7 @@ go test -bench=. ./pkg/database
 
 ## Best Practices
 
-### DO 
+### DO
 
 - Use `dialect.Placeholder(n)` for all parameterized queries
 - Check feature support with `SupportsXxx()` methods
@@ -358,7 +337,7 @@ go test -bench=. ./pkg/database
 - Validate identifiers with `ValidateIdentifier()` before use
 - Use database-specific optimizations when available (fallback for others)
 
-### DON'T 
+### DON'T
 
 - Don't hardcode $1, $2 placeholders (use `Placeholder()`)
 - Don't assume all databases support RETURNING
@@ -370,11 +349,11 @@ go test -bench=. ./pkg/database
 
 ## Future Enhancements
 
-- [ ] MySQL dialect implementation
-- [ ] SQL Server dialect implementation
+- [ ] MS SQL Server dialect implementation (priority)
 - [ ] Query builder for complex queries
 - [ ] Migration generator from dialect
-- [ ] Performance benchmarks per database
+- [ ] Performance benchmarks
+- [ ] MS SQL Server indexed views support
 
 ---
 
@@ -387,7 +366,7 @@ go test -bench=. ./pkg/database
 
 ---
 
-**Status**:  Production Ready  
+**Status**: Production Ready  
 **Version**: 1.0.0  
 **Maintainer**: Promenade Team  
 **Last Updated**: January 3, 2026
