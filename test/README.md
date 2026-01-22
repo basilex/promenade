@@ -43,6 +43,8 @@ internal/contexts/identity/contact/
 **Purpose**: HTTP handler validation (80/20 rule)  
 **Status**: **COMPLETE** - 27/27 handlers, 252 tests, 100% pass rate
 
+> **Note**: All smoke tests are database-independent and run in parallel.
+
 ```
 test/smoke/
  README.md                   # Smoke testing guide
@@ -104,9 +106,12 @@ test/smoke/
 **Location**: `test/integration/contexts/` (mirror path)  
 **Purpose**: Full E2E testing with real database
 
+> **Important**: Integration tests must run sequentially (`-p 1`) due to PostgreSQL advisory locks  
+> used in `CleanAllTables()` to prevent TRUNCATE CASCADE deadlocks. See [pgx Migration Notes](#pgx-driver-notes) below.
+
 ```
 test/integration/
- testutils.go                # Shared test utilities
+ testutils.go                # Shared test utilities (with advisory lock)
  contexts/                   # Mirror path structure
     shared/
        country/repository_test.go       #  Repository tests with real DB
@@ -607,6 +612,61 @@ make test-unit || exit 1
 
 ---
 
+## pgx Driver Notes
+
+Promenade uses **pgx/v5/stdlib** (20-30% faster than lib/pq) with specific test infrastructure requirements:
+
+### Integration Test Constraints
+
+**Sequential Execution Required** (`-p 1`):
+
+- `CleanAllTables()` uses PostgreSQL advisory lock (`pg_advisory_lock(123456)`)
+- Advisory lock serializes table cleanup across parallel tests
+- Prevents TRUNCATE CASCADE deadlocks during concurrent test execution
+- Makefile automatically sets `-p 1` for integration tests
+
+### Array Handling
+
+**PostgreSQL TEXT[] arrays** require custom scanner:
+
+- pgx returns `string` for empty `ARRAY_AGG` results (not `[]string`)
+- Custom `stringSlice` type in repositories handles all array scanning cases
+- See `internal/contexts/identity/user/adapter/repository/postgres/user_repository.go` for implementation
+
+### Type Casting
+
+**SQL Concatenation** requires explicit casting:
+
+```go
+// ❌ WRONG (fails with pgx)
+query := "SELECT CONCAT(field, 123)"
+
+// ✅ CORRECT (pgx requires explicit type cast)
+query := "SELECT CONCAT(field, 123::text)"
+```
+
+### Connection Pool
+
+**DSN Parameters**:
+
+- pgx does NOT support `pool_max_conns`, `pool_max_conn_lifetime` in DSN
+- Use `db.SetMaxOpenConns()`, `db.SetConnMaxLifetime()` instead
+- Connection pooling configured via database/sql API, not DSN
+
+### Driver Name
+
+**Critical**: Use `"pgx"` not `"postgres"`:
+
+```go
+db, err := sqlx.Connect("pgx", dsn)  // ✅ CORRECT
+db, err := sqlx.Connect("postgres", dsn)  // ❌ WRONG (unknown driver error)
+```
+
+See also:
+
+- [docs/adr/adr-0003-migrate-to-pgx-stdlib.md](../docs/adr/adr-0003-migrate-to-pgx-stdlib.md) - Migration decision record
+- [pkg/database/README.md](../pkg/database/README.md) - Database layer documentation
+
 ---
 
 ## Resources
@@ -615,6 +675,7 @@ make test-unit || exit 1
 - [Testify Documentation](https://github.com/stretchr/testify)
 - [Table-Driven Tests in Go](https://dave.cheney.net/2019/05/07/prefer-table-driven-tests)
 - [Effective Go - Testing](https://go.dev/doc/effective_go#testing)
+- [pgx Documentation](https://github.com/jackc/pgx) - PostgreSQL driver used in Promenade
 
 ---
 

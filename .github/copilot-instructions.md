@@ -16,6 +16,10 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
 - **Dependency wiring** in [cmd/api/bootstrap.go](cmd/api/bootstrap.go); entry point is [cmd/api/main.go](cmd/api/main.go).
 - **Modules vs contexts**: modules are technical/feature toggles in `internal/modules/`; contexts are domain boundaries with DDD patterns (see [internal/contexts/README.md](internal/contexts/README.md)).
 - **Database support**: PostgreSQL 14+ only. Migrations in [migrations/postgres/](migrations/postgres/). Driver: **pgx/v5/stdlib** (20-30% faster than lib/pq).
+  - Driver name is `"pgx"` not `"postgres"` in `sqlx.Connect("pgx", dsn)`
+  - Use `db.SetMaxOpenConns()` for pool config; DSN params like `pool_max_conns` not supported
+  - SQL concatenation requires explicit casting: `CONCAT(field, 123::text)` not `CONCAT(field, 123)`
+  - PostgreSQL arrays may need custom scanner (see identity/user repository for TEXT[] example)
 - **Available contexts**: identity, customer-mgmt, order-mgmt, billing, warehouse, accounting, banking, fiscal, shared, ui, scripting (see [internal/contexts/](internal/contexts/)).
 
 ## Project-specific conventions
@@ -57,9 +61,10 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
 - **Tests** are four-tiered (see [test/README.md](test/README.md)):
   - Unit tests: in-place next to code (`*_test.go`)
   - Smoke tests: `make test-smoke` (handler-only, no DB, mirror path under `test/smoke/contexts/`)
-  - Integration tests: `make test-integration` (full DB, under `test/integration/contexts/`)
+  - Integration tests: `make test-integration` (full DB, under `test/integration/contexts/`, **runs with `-p 1` due to advisory locks**)
   - Benchmarks: `make test-benchmark`
   - Run all: `make test`
+  - **Note**: Integration tests use PostgreSQL advisory locks in `CleanAllTables()` to prevent TRUNCATE deadlocks, requiring sequential execution.
 - **Migrations**: namespace-based (core, identity, customer-mgmt, etc.) in [migrations/](migrations/).
   - Run all: `make migrate`
   - Run specific: `make migrate-module MODULE=order-mgmt`

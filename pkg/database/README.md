@@ -10,11 +10,17 @@ The `database` package provides a **dialect interface** for PostgreSQL database 
 
 **Driver:** We use **pgx/v5/stdlib** instead of lib/pq for:
 
-- 20-30% performance improvement
-- Better PostgreSQL feature support
+- **20-30% performance improvement** over lib/pq
+- Better PostgreSQL feature support (arrays, JSON, custom types)
 - Active development (lib/pq is in maintenance mode)
-- Full compatibility with database/sql and sqlx
+- Full compatibility with database/sql and sqlx APIs
 - Future path to native pgx API (50-60% gains when needed)
+
+**Important Notes:**
+
+- Driver name is `"pgx"` not `"postgres"` in `sqlx.Connect()`
+- DSN parameters like `pool_max_conns` are not supported (use `db.SetMaxOpenConns()`)
+- See [ADR-0003](../../docs/adr/adr-0003-migrate-to-pgx-stdlib.md) for migration details
 
 ---
 
@@ -301,6 +307,9 @@ go test -bench=. ./pkg/database
 - Quote identifiers with `QuoteIdentifier()` when using user input
 - Validate identifiers with `ValidateIdentifier()` before use
 - Use database-specific optimizations when available (fallback for others)
+- **Use `"pgx"` as driver name** in `sqlx.Connect("pgx", dsn)`
+- **Cast integers to text** in SQL concatenations: `CONCAT(field, 123::text)`
+- **Configure connection pool** via Go API: `db.SetMaxOpenConns()`, not DSN
 
 ### DON'T
 
@@ -309,6 +318,9 @@ go test -bench=. ./pkg/database
 - Don't rely on native JSON type (use `jsonstore` package)
 - Don't skip identifier validation for user input
 - Don't write database-specific code without feature detection
+- **Don't use `"postgres"` as driver name** (causes "unknown driver" error)
+- **Don't use pool parameters in DSN** (`pool_max_conns`, etc. - not supported by pgx)
+- **Don't rely on implicit type coercion** in SQL (pgx is strict about types)
 
 ---
 
@@ -332,5 +344,6 @@ Query builder for complex queries
 
 **Status**: Production Ready  
 **Version**: 1.0.0  
+**Driver**: pgx/v5/stdlib (v5.7.2)  
 **Maintainer**: Promenade Team  
-**Last Updated**: January 3, 2026
+**Last Updated**: January 22, 2026
