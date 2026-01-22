@@ -62,7 +62,7 @@ ADRs are numbered sequentially:
 ```
 adr-0001-use-uuid-v7.md
 adr-0002-use-sqlx-over-gorm.md
-adr-0003-use-redis-for-caching.md
+adr-0003-migrate-to-pgx-stdlib.md
 ```
 
 ---
@@ -73,9 +73,10 @@ adr-0003-use-redis-for-caching.md
 | ------------------------------------------------ | ---------------------------------------- | -------- | ---------- |
 | [0001](adr-0001-use-uuid-v7.md)                  | Use UUID v7 for Primary Keys             | Accepted | 2026-01-15 |
 | [0002](adr-0002-use-sqlx-over-gorm.md)           | Use sqlx Instead of GORM                 | Accepted | 2026-01-15 |
-| [0003](adr-0003-use-redis-for-caching.md)        | Use Redis for Caching Layer              | Accepted | 2026-01-15 |
-| [0004](adr-0004-event-bus-architecture.md)       | In-Memory Event Bus for Bounded Contexts | Accepted | 2026-01-18 |
-| [0005](adr-0005-saga-pattern-for-fulfillment.md) | Saga Pattern for Order Fulfillment       | Accepted | 2026-01-20 |
+| [0003](adr-0003-migrate-to-pgx-stdlib.md)        | Migrate from lib/pq to pgx/v5/stdlib     | Accepted | 2026-01-22 |
+| [0004](adr-0003-use-redis-for-caching.md)        | Use Redis for Caching Layer              | Accepted | 2026-01-15 |
+| [0005](adr-0004-event-bus-architecture.md)       | In-Memory Event Bus for Bounded Contexts | Accepted | 2026-01-18 |
+| [0006](adr-0005-saga-pattern-for-fulfillment.md) | Saga Pattern for Order Fulfillment       | Accepted | 2026-01-20 |
 
 ---
 

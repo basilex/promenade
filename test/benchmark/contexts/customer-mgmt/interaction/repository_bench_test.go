@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 
 	customerRepo "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/adapter/repository/postgres"
 	customerAggregate "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"

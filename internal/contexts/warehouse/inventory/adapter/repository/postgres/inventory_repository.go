@@ -8,8 +8,8 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 
 	inventoryerrors "github.com/basilex/promenade/internal/contexts/warehouse/inventory"
 	"github.com/basilex/promenade/internal/contexts/warehouse/inventory/aggregate"
@@ -238,8 +238,8 @@ func (r *inventoryRepository) Create(ctx context.Context, inv *aggregate.Invento
 
 	if err != nil {
 		// Check for unique constraint violation on SKU
-		if pqErr, ok := err.(*pq.Error); ok {
-			if pqErr.Code == "23505" { // unique_violation
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			if pgErr.Code == "23505" { // unique_violation
 				return inventoryerrors.ErrInventoryAlreadyExists
 			}
 		}

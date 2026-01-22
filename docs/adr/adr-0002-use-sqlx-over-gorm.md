@@ -5,6 +5,8 @@
 **Deciders**: Core Architecture Team  
 **Tags**: database, orm, performance, clean-architecture
 
+**Update (January 2026):** Migrated from `lib/pq` to `pgx/v5/stdlib` driver for 20-30% performance improvement while maintaining full sqlx compatibility.
+
 ---
 
 ## Context

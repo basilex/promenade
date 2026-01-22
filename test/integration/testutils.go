@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/pkg/database/postgres"

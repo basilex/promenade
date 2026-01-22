@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 
 	usererrors "github.com/basilex/promenade/internal/contexts/identity/user"
 	"github.com/basilex/promenade/internal/contexts/identity/user/aggregate"
@@ -76,7 +75,7 @@ type userRow struct {
 // userRowWithRoles extends userRow with roles array (for batch loading optimization)
 type userRowWithRoles struct {
 	userRow
-	Roles pq.StringArray `db:"roles"` // PostgreSQL TEXT[] array (use pq.StringArray for scanning)
+	Roles []string `db:"roles"` // PostgreSQL TEXT[] array (pgx handles natively)
 }
 
 // toEntity converts database row to domain entity
@@ -358,8 +357,8 @@ func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*a
 		if err != nil {
 			return nil, 0, fmt.Errorf("failed to convert row to entity: %w", err)
 		}
-		// Assign roles from batch-loaded array (convert pq.StringArray to []string)
-		u.Roles = []string(row.Roles)
+		// Assign roles from batch-loaded array
+		u.Roles = row.Roles
 		users = append(users, u)
 	}
 

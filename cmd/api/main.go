@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/pkg/logger"

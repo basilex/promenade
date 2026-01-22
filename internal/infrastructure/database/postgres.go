@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/pkg/logger"

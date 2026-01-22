@@ -8,6 +8,14 @@
 
 The `database` package provides a **dialect interface** for PostgreSQL database abstraction in Promenade Platform.
 
+**Driver:** We use **pgx/v5/stdlib** instead of lib/pq for:
+
+- 20-30% performance improvement
+- Better PostgreSQL feature support
+- Active development (lib/pq is in maintenance mode)
+- Full compatibility with database/sql and sqlx
+- Future path to native pgx API (50-60% gains when needed)
+
 ---
 
 ## Features

@@ -15,7 +15,7 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
   - `errors.go` — Domain error constants (validation, not-found, business logic)
 - **Dependency wiring** in [cmd/api/bootstrap.go](cmd/api/bootstrap.go); entry point is [cmd/api/main.go](cmd/api/main.go).
 - **Modules vs contexts**: modules are technical/feature toggles in `internal/modules/`; contexts are domain boundaries with DDD patterns (see [internal/contexts/README.md](internal/contexts/README.md)).
-- **Database support**: PostgreSQL 14+ only. Migrations in [migrations/postgres/](migrations/postgres/).
+- **Database support**: PostgreSQL 14+ only. Migrations in [migrations/postgres/](migrations/postgres/). Driver: **pgx/v5/stdlib** (20-30% faster than lib/pq).
 - **Available contexts**: identity, customer-mgmt, order-mgmt, billing, warehouse, accounting, banking, fiscal, shared, ui, scripting (see [internal/contexts/](internal/contexts/)).
 
 ## Project-specific conventions
