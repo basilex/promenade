@@ -520,7 +520,7 @@ func (r *contractRepository) ListExpiringSoon(ctx context.Context, days int) ([]
 		FROM order_contracts
 		WHERE expires_at IS NOT NULL
 		  AND expires_at > NOW()
-		  AND expires_at <= NOW() + ($1 || ' days')::INTERVAL
+		  AND expires_at <= NOW() + make_interval(days => $1)
 		  AND deleted_at IS NULL
 		ORDER BY expires_at ASC
 	`

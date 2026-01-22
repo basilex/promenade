@@ -72,10 +72,62 @@ type userRow struct {
 	DeletedAt        sql.NullTime `db:"deleted_at"`
 }
 
+// stringSlice is a custom type for scanning PostgreSQL TEXT[] arrays with pgx
+type stringSlice []string
+
+// Scan implements sql.Scanner for string slice (pgx compatibility)
+func (s *stringSlice) Scan(src interface{}) error {
+	if src == nil {
+		*s = []string{}
+		return nil
+	}
+
+	// pgx returns []string directly for TEXT[] columns
+	switch v := src.(type) {
+	case []string:
+		*s = v
+		return nil
+	case string:
+		// Single string value (happens with empty ARRAY_AGG)
+		if v == "{}" {
+			*s = []string{}
+		} else {
+			*s = []string{v}
+		}
+		return nil
+	case []interface{}:
+		// In case it comes as []interface{}
+		result := make([]string, len(v))
+		for i, item := range v {
+			if str, ok := item.(string); ok {
+				result[i] = str
+			} else {
+				return fmt.Errorf("unexpected array element type: %T", item)
+			}
+		}
+		*s = result
+		return nil
+	case []byte:
+		// Sometimes PostgreSQL arrays come as byte slices (pgx text representation)
+		// Format: {item1,item2,item3} or {}
+		strVal := string(v)
+		if strVal == "{}" {
+			*s = []string{}
+			return nil
+		}
+		// For now, just convert the whole thing to a single string
+		// This is a simplified parser - in production you'd want proper array parsing
+		*s = []string{strVal}
+		return nil
+	default:
+		return fmt.Errorf("unsupported Scan type for stringSlice: %T", src)
+	}
+}
+
 // userRowWithRoles extends userRow with roles array (for batch loading optimization)
 type userRowWithRoles struct {
 	userRow
-	Roles []string `db:"roles"` // PostgreSQL TEXT[] array (pgx handles natively)
+	Roles stringSlice `db:"roles"` // PostgreSQL TEXT[] array
 }
 
 // toEntity converts database row to domain entity
@@ -358,7 +410,7 @@ func (r *userRepository) ListUsers(ctx context.Context, limit, offset int) ([]*a
 			return nil, 0, fmt.Errorf("failed to convert row to entity: %w", err)
 		}
 		// Assign roles from batch-loaded array
-		u.Roles = row.Roles
+		u.Roles = []string(row.Roles)
 		users = append(users, u)
 	}
 

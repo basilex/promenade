@@ -125,6 +125,13 @@ func SetupTestDBWithCleanTables(t *testing.T) *TestDB {
 
 // CleanAllTables truncates all tables for a fresh test state
 func (tdb *TestDB) CleanAllTables() {
+	// Use advisory lock to prevent parallel TRUNCATE operations (prevents deadlocks)
+	// Lock ID: 123456 (arbitrary number for table cleaning)
+	_, _ = tdb.DB.Exec("SELECT pg_advisory_lock(123456)")
+	defer func() {
+		_, _ = tdb.DB.Exec("SELECT pg_advisory_unlock(123456)")
+	}()
+
 	// List all tables that need cleaning (order doesn't matter with CASCADE)
 	tables := []string{
 		// Customer Management Context tables
@@ -289,7 +296,7 @@ func connectDB(cfg Config) (*sqlx.DB, error) {
 		return nil, fmt.Errorf("failed to connect: %w", err)
 	}
 
-	// Configure connection pool
+	// Configure connection pool for pgx
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(5 * time.Minute)
