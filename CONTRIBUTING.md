@@ -38,6 +38,9 @@ This project adheres to a code of conduct. By participating, you are expected to
 git clone https://github.com/basilex/promenade.git
 cd promenade
 
+# Install git hooks (optional but recommended)
+make setup-hooks
+
 # Start PostgreSQL
 make docker-up
 
@@ -99,6 +102,29 @@ git push origin feature/my-feature
 ```
 
 **See**: [Local CI Validation Guide](docs/guides/local-ci.md) for details on running CI checks locally.
+
+### Git Hooks (Recommended)
+
+Install git hooks to automatically run checks before commits and pushes:
+
+```bash
+# One-time setup
+make setup-hooks
+```
+
+This installs:
+
+- **pre-commit**: Runs `make lint` + `make test-unit` before every commit (fast, ~10s)
+- **pre-push**: Runs `make pre-push` (full CI: lint, tests, build) before every push (~2-3min)
+
+**Skip hooks** (not recommended):
+
+```bash
+git commit --no-verify  # Skip pre-commit hook
+git push --no-verify    # Skip pre-push hook
+```
+
+**See**: [.githooks/](.githooks/) directory for hook implementations.
 
 ---
 

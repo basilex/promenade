@@ -74,7 +74,7 @@ type MSSQLSection struct {
 	User            string `yaml:"user"`
 	Password        string `yaml:"password"`
 	Database        string `yaml:"database"`
-	Encrypt         string `yaml:"encrypt"`          // disable, false, true
+	Encrypt         string `yaml:"encrypt"`           // disable, false, true
 	TrustServerCert bool   `yaml:"trust_server_cert"` // true for self-signed certs
 	MaxOpenConns    int    `yaml:"max_open_conns"`
 	MaxIdleConns    int    `yaml:"max_idle_conns"`

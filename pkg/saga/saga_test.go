@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/basilex/promenade/pkg/saga"
 )
@@ -550,4 +551,93 @@ func findSubstring(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+// TestSaga_ContextPropagation tests context timeout and cancellation.
+func TestSaga_ContextPropagation(t *testing.T) {
+	t.Run("respects context timeout", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+		defer cancel()
+
+		s := saga.New("timeout-test")
+		s.AddStep(saga.Step{
+			Name: "slow-step",
+			Execute: func(ctx context.Context) error {
+				select {
+				case <-time.After(100 * time.Millisecond):
+					return nil
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			},
+		})
+
+		err := s.Execute(ctx)
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("expected context.DeadlineExceeded, got %v", err)
+		}
+	})
+
+	t.Run("cancellation stops execution", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+
+		step1Executed := false
+
+		s := saga.New("cancel-test")
+		s.AddStep(saga.Step{
+			Name: "step1",
+			Execute: func(ctx context.Context) error {
+				step1Executed = true
+				cancel() // Cancel after first step
+				return nil
+			},
+		})
+		s.AddStep(saga.Step{
+			Name: "step2",
+			Execute: func(ctx context.Context) error {
+				// This might or might not execute depending on implementation
+				return nil
+			},
+		})
+
+		_ = s.Execute(ctx)
+
+		if !step1Executed {
+			t.Error("step1 should have executed")
+		}
+		// Note: step2 execution depends on saga implementation
+		// Some implementations check ctx.Done() between steps
+	})
+
+	t.Run("propagates deadline to all steps", func(t *testing.T) {
+		deadline := time.Now().Add(50 * time.Millisecond)
+		ctx, cancel := context.WithDeadline(context.Background(), deadline)
+		defer cancel()
+
+		deadlineChecked := false
+
+		s := saga.New("deadline-test")
+		s.AddStep(saga.Step{
+			Name: "check-deadline",
+			Execute: func(ctx context.Context) error {
+				d, ok := ctx.Deadline()
+				if !ok {
+					return errors.New("deadline not propagated")
+				}
+				if !d.Equal(deadline) {
+					return errors.New("deadline mismatch")
+				}
+				deadlineChecked = true
+				return nil
+			},
+		})
+
+		err := s.Execute(ctx)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+		if !deadlineChecked {
+			t.Error("deadline was not checked")
+		}
+	})
 }

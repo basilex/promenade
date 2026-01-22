@@ -12,84 +12,84 @@ import (
 type CenterType string
 
 const (
-    CenterTypeCost       CenterType = "cost_center"
-    CenterTypeProfit     CenterType = "profit_center"
-    CenterTypeInvestment CenterType = "investment_center"
+	CenterTypeCost       CenterType = "cost_center"
+	CenterTypeProfit     CenterType = "profit_center"
+	CenterTypeInvestment CenterType = "investment_center"
 )
 
 // CostCenter represents a cost or profit center for management accounting
 type CostCenter struct {
-    aggregate.BaseAggregate
+	aggregate.BaseAggregate
 
-    OrganizationID uuidv7.UUID
-    Code           string
-    Name           string
-    CenterType     CenterType
-    ParentID       *uuidv7.UUID // For hierarchical structure
-    Level          int
-    ManagerID      *uuidv7.UUID // Person responsible
-    IsActive       bool
-    Description    string
-    LastUpdatedBy  uuidv7.UUID
+	OrganizationID uuidv7.UUID
+	Code           string
+	Name           string
+	CenterType     CenterType
+	ParentID       *uuidv7.UUID // For hierarchical structure
+	Level          int
+	ManagerID      *uuidv7.UUID // Person responsible
+	IsActive       bool
+	Description    string
+	LastUpdatedBy  uuidv7.UUID
 }
 
 // NewCostCenter creates a new cost center
 func NewCostCenter(
-    organizationID uuidv7.UUID,
-    code string,
-    name string,
-    centerType CenterType,
-    createdBy uuidv7.UUID,
+	organizationID uuidv7.UUID,
+	code string,
+	name string,
+	centerType CenterType,
+	createdBy uuidv7.UUID,
 ) (*CostCenter, error) {
-    if code == "" {
-        return nil, costcenter.ErrCodeRequired
-    }
-    if name == "" {
-        return nil, costcenter.ErrNameRequired
-    }
-    if centerType != CenterTypeCost && centerType != CenterTypeProfit && centerType != CenterTypeInvestment {
-        return nil, costcenter.ErrInvalidCenterType
-    }
+	if code == "" {
+		return nil, costcenter.ErrCodeRequired
+	}
+	if name == "" {
+		return nil, costcenter.ErrNameRequired
+	}
+	if centerType != CenterTypeCost && centerType != CenterTypeProfit && centerType != CenterTypeInvestment {
+		return nil, costcenter.ErrInvalidCenterType
+	}
 
-    now := time.Now()
-    cc := &CostCenter{
-        BaseAggregate: aggregate.BaseAggregate{
-            ID:        uuidv7.New(),
-            Version:   1,
-            CreatedAt: now,
-            UpdatedAt: now,
-        },
-        OrganizationID: organizationID,
-        Code:           code,
-        Name:           name,
-        CenterType:     centerType,
-        Level:          1, // Root level by default
-        IsActive:       true,
-        LastUpdatedBy:  createdBy,
-    }
+	now := time.Now()
+	cc := &CostCenter{
+		BaseAggregate: aggregate.BaseAggregate{
+			ID:        uuidv7.New(),
+			Version:   1,
+			CreatedAt: now,
+			UpdatedAt: now,
+		},
+		OrganizationID: organizationID,
+		Code:           code,
+		Name:           name,
+		CenterType:     centerType,
+		Level:          1, // Root level by default
+		IsActive:       true,
+		LastUpdatedBy:  createdBy,
+	}
 
-    return cc, nil
+	return cc, nil
 }
 
 // NewChildCostCenter creates a child cost center under a parent
 func NewChildCostCenter(
-    organizationID uuidv7.UUID,
-    code string,
-    name string,
-    centerType CenterType,
-    parentID uuidv7.UUID,
-    parentLevel int,
-    createdBy uuidv7.UUID,
+	organizationID uuidv7.UUID,
+	code string,
+	name string,
+	centerType CenterType,
+	parentID uuidv7.UUID,
+	parentLevel int,
+	createdBy uuidv7.UUID,
 ) (*CostCenter, error) {
-    cc, err := NewCostCenter(organizationID, code, name, centerType, createdBy)
-    if err != nil {
-        return nil, err
-    }
+	cc, err := NewCostCenter(organizationID, code, name, centerType, createdBy)
+	if err != nil {
+		return nil, err
+	}
 
-    cc.ParentID = &parentID
-    cc.Level = parentLevel + 1
+	cc.ParentID = &parentID
+	cc.Level = parentLevel + 1
 
-    return cc, nil
+	return cc, nil
 }
 
 // SetParent sets the parent cost center

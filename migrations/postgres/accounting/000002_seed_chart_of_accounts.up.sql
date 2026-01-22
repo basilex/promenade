@@ -5,99 +5,81 @@
 -- Simplified version with essential accounts for SME
 -- ============================================================================
 
--- 1. ASSETS (Активи) - Class 1-3
--- ============================================================================
+-- System user for seeds
+DO $$ 
+DECLARE
+    system_user_id TEXT := '00000000-0000-0000-0000-000000000000';
+    system_org_id TEXT := '00000000-0000-0000-0000-000000000001';
+BEGIN
+    -- Delete existing seed data to allow re-running
+    DELETE FROM accounting_chart_of_accounts WHERE organization_id = system_org_id;
 
--- Class 1: Нематеріальні активи та основні засоби
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('01000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', '10', 'Основні засоби', 'asset', NULL, TRUE, 'Матеріальні активи тривалого використання', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000001', '103', 'Будівлі та споруди', 'asset', '01000000-0000-0000-0000-000000000010', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000000001', '104', 'Машини та обладнання', 'asset', '01000000-0000-0000-0000-000000000010', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    -- 1. ASSETS (Активи) - Class 1-3
+    -- Class 1: Основні засоби
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('01000000-0000-0000-0000-000000000010', system_org_id, '10', 'Основні засоби', 'asset', NULL, 1, 'UAH', TRUE, 'Матеріальні активи тривалого використання', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000103', system_org_id, '103', 'Будівлі та споруди', 'asset', '01000000-0000-0000-0000-000000000010', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000104', system_org_id, '104', 'Машини та обладнання', 'asset', '01000000-0000-0000-0000-000000000010', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id);
 
--- Class 2: Запаси
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('01000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', '20', 'Виробничі запаси', 'asset', NULL, TRUE, 'Сировина, матеріали, паливо', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000001', '201', 'Сировина і матеріали', 'asset', '01000000-0000-0000-0000-000000000020', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000028', '00000000-0000-0000-0000-000000000001', '28', 'Товари', 'asset', NULL, TRUE, 'Товари для перепродажу', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000281', '00000000-0000-0000-0000-000000000001', '281', 'Товари на складі', 'asset', '01000000-0000-0000-0000-000000000028', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    -- Class 2: Запаси
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('01000000-0000-0000-0000-000000000020', system_org_id, '20', 'Виробничі запаси', 'asset', NULL, 1, 'UAH', TRUE, 'Сировина, матеріали, паливо', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000201', system_org_id, '201', 'Сировина і матеріали', 'asset', '01000000-0000-0000-0000-000000000020', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000028', system_org_id, '28', 'Товари', 'asset', NULL, 1, 'UAH', TRUE, 'Товари для перепродажу', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000281', system_org_id, '281', 'Товари на складі', 'asset', '01000000-0000-0000-0000-000000000028', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id);
 
--- Class 3: Грошові кошти, розрахунки та інші активи
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('01000000-0000-0000-0000-000000000030', '00000000-0000-0000-0000-000000000001', '30', 'Каса', 'asset', NULL, TRUE, 'Готівка в касі', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000301', '00000000-0000-0000-0000-000000000001', '301', 'Каса в національній валюті', 'asset', '01000000-0000-0000-0000-000000000030', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000031', '00000000-0000-0000-0000-000000000001', '31', 'Рахунки в банках', 'asset', NULL, TRUE, 'Безготівкові кошти на розрахункових рахунках', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000311', '00000000-0000-0000-0000-000000000001', '311', 'Розрахункові рахунки в банках', 'asset', '01000000-0000-0000-0000-000000000031', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000036', '00000000-0000-0000-0000-000000000001', '36', 'Розрахунки з покупцями та замовниками', 'asset', NULL, TRUE, 'Дебіторська заборгованість', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('01000000-0000-0000-0000-000000000361', '00000000-0000-0000-0000-000000000001', '361', 'Розрахунки з вітчизняними покупцями', 'asset', '01000000-0000-0000-0000-000000000036', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    -- Class 3: Грошові кошти
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('01000000-0000-0000-0000-000000000030', system_org_id, '30', 'Каса', 'asset', NULL, 1, 'UAH', TRUE, 'Готівка в касі', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000301', system_org_id, '301', 'Каса в національній валюті', 'asset', '01000000-0000-0000-0000-000000000030', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000031', system_org_id, '31', 'Рахунки в банках', 'asset', NULL, 1, 'UAH', TRUE, 'Безготівкові кошти', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000311', system_org_id, '311', 'Розрахункові рахунки', 'asset', '01000000-0000-0000-0000-000000000031', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000036', system_org_id, '36', 'Розрахунки з покупцями', 'asset', NULL, 1, 'UAH', TRUE, 'Дебіторська заборгованість', system_user_id, system_user_id),
+    ('01000000-0000-0000-0000-000000000361', system_org_id, '361', 'Розрахунки з вітчизняними покупцями', 'asset', '01000000-0000-0000-0000-000000000036', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id);
 
--- 2. EQUITY (Власний капітал) - Class 4
--- ============================================================================
+    -- 2. EQUITY (Власний капітал) - Class 4
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('04000000-0000-0000-0000-000000000040', system_org_id, '40', 'Статутний капітал', 'equity', NULL, 1, 'UAH', TRUE, 'Зареєстрований капітал', system_user_id, system_user_id),
+    ('04000000-0000-0000-0000-000000000401', system_org_id, '401', 'Статутний капітал', 'equity', '04000000-0000-0000-0000-000000000040', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('04000000-0000-0000-0000-000000000044', system_org_id, '44', 'Нерозподілені прибутки', 'equity', NULL, 1, 'UAH', TRUE, 'Фінансовий результат', system_user_id, system_user_id),
+    ('04000000-0000-0000-0000-000000000441', system_org_id, '441', 'Прибуток нерозподілений', 'equity', '04000000-0000-0000-0000-000000000044', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id);
 
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('04000000-0000-0000-0000-000000000040', '00000000-0000-0000-0000-000000000001', '40', 'Зареєстрований (пайовий) капітал', 'equity', NULL, TRUE, 'Статутний капітал підприємства', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('04000000-0000-0000-0000-000000000401', '00000000-0000-0000-0000-000000000001', '401', 'Статутний капітал', 'equity', '04000000-0000-0000-0000-000000000040', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('04000000-0000-0000-0000-000000000044', '00000000-0000-0000-0000-000000000001', '44', 'Нерозподілені прибутки (непокриті збитки)', 'equity', NULL, TRUE, 'Фінансовий результат', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('04000000-0000-0000-0000-000000000441', '00000000-0000-0000-0000-000000000001', '441', 'Прибуток нерозподілений', 'equity', '04000000-0000-0000-0000-000000000044', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    -- 3. LIABILITIES (Зобов'язання) - Class 5-6
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('05000000-0000-0000-0000-000000000050', system_org_id, '50', 'Довгострокові позики', 'liability', NULL, 1, 'UAH', TRUE, 'Кредити банків', system_user_id, system_user_id),
+    ('05000000-0000-0000-0000-000000000501', system_org_id, '501', 'Довгострокові кредити', 'liability', '05000000-0000-0000-0000-000000000050', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('06000000-0000-0000-0000-000000000063', system_org_id, '63', 'Розрахунки з постачальниками', 'liability', NULL, 1, 'UAH', TRUE, 'Кредиторська заборгованість', system_user_id, system_user_id),
+    ('06000000-0000-0000-0000-000000000631', system_org_id, '631', 'Розрахунки з вітчизняними постачальниками', 'liability', '06000000-0000-0000-0000-000000000063', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('06000000-0000-0000-0000-000000000064', system_org_id, '64', 'Розрахунки з податків', 'liability', NULL, 1, 'UAH', TRUE, 'Податки і збори', system_user_id, system_user_id),
+    ('06000000-0000-0000-0000-000000000641', system_org_id, '641', 'Податок на прибуток', 'liability', '06000000-0000-0000-0000-000000000064', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id);
 
--- 3. LIABILITIES (Зобов'язання) - Class 5-6
--- ============================================================================
+    -- 4. INCOME (Доходи) - Class 7
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('07000000-0000-0000-0000-000000000070', system_org_id, '70', 'Дохід від реалізації', 'income', NULL, 1, 'UAH', TRUE, 'Виручка від продажу', system_user_id, system_user_id),
+    ('07000000-0000-0000-0000-000000000701', system_org_id, '701', 'Дохід від реалізації товарів', 'income', '07000000-0000-0000-0000-000000000070', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('07000000-0000-0000-0000-000000000702', system_org_id, '702', 'Дохід від реалізації послуг', 'income', '07000000-0000-0000-0000-000000000070', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('07000000-0000-0000-0000-000000000071', system_org_id, '71', 'Інший операційний дохід', 'income', NULL, 1, 'UAH', TRUE, 'Додатковий дохід', system_user_id, system_user_id);
 
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('06000000-0000-0000-0000-000000000050', '00000000-0000-0000-0000-000000000001', '50', 'Довгострокові позики', 'liability', NULL, TRUE, 'Кредити терміном більше року', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000501', '00000000-0000-0000-0000-000000000001', '501', 'Довгострокові кредити банків', 'liability', '06000000-0000-0000-0000-000000000050', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000060', '00000000-0000-0000-0000-000000000001', '60', 'Короткострокові позики', 'liability', NULL, TRUE, 'Кредити терміном до року', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000601', '00000000-0000-0000-0000-000000000001', '601', 'Короткострокові кредити банків', 'liability', '06000000-0000-0000-0000-000000000060', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000063', '00000000-0000-0000-0000-000000000001', '63', 'Розрахунки з постачальниками та підрядниками', 'liability', NULL, TRUE, 'Кредиторська заборгованість', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000631', '00000000-0000-0000-0000-000000000001', '631', 'Розрахунки з вітчизняними постачальниками', 'liability', '06000000-0000-0000-0000-000000000063', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000064', '00000000-0000-0000-0000-000000000001', '64', 'Розрахунки за податками', 'liability', NULL, TRUE, 'Податкові зобов''язання', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000641', '00000000-0000-0000-0000-000000000001', '641', 'Розрахунки за податками', 'liability', '06000000-0000-0000-0000-000000000064', TRUE, 'ПДВ, податок на прибуток', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000066', '00000000-0000-0000-0000-000000000001', '66', 'Розрахунки з оплати праці', 'liability', NULL, TRUE, 'Заробітна плата', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('06000000-0000-0000-0000-000000000661', '00000000-0000-0000-0000-000000000001', '661', 'Розрахунки за заробітною платою', 'liability', '06000000-0000-0000-0000-000000000066', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    -- 5. EXPENSES (Витрати) - Class 9
+    INSERT INTO accounting_chart_of_accounts 
+    (id, organization_id, code, name, type, parent_id, level, currency_code, is_active, description, created_by, last_updated_by)
+    VALUES
+    ('09000000-0000-0000-0000-000000000090', system_org_id, '90', 'Собівартість реалізації', 'expense', NULL, 1, 'UAH', TRUE, 'Прямі витрати', system_user_id, system_user_id),
+    ('09000000-0000-0000-0000-000000000901', system_org_id, '901', 'Собівартість реалізованих товарів', 'expense', '09000000-0000-0000-0000-000000000090', 2, 'UAH', TRUE, NULL, system_user_id, system_user_id),
+    ('09000000-0000-0000-0000-000000000092', system_org_id, '92', 'Адміністративні витрати', 'expense', NULL, 1, 'UAH', TRUE, 'Загальні витрати', system_user_id, system_user_id),
+    ('09000000-0000-0000-0000-000000000093', system_org_id, '93', 'Витрати на збут', 'expense', NULL, 1, 'UAH', TRUE, 'Витрати на продаж', system_user_id, system_user_id),
+    ('09000000-0000-0000-0000-000000000094', system_org_id, '94', 'Інші операційні витрати', 'expense', NULL, 1, 'UAH', TRUE, 'Додаткові витрати', system_user_id, system_user_id);
 
--- 4. INCOME (Доходи) - Class 7
--- ============================================================================
-
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('07000000-0000-0000-0000-000000000070', '00000000-0000-0000-0000-000000000001', '70', 'Дохід від реалізації', 'income', NULL, TRUE, 'Виручка від реалізації товарів/послуг', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('07000000-0000-0000-0000-000000000701', '00000000-0000-0000-0000-000000000001', '701', 'Дохід від реалізації готової продукції', 'income', '07000000-0000-0000-0000-000000000070', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('07000000-0000-0000-0000-000000000702', '00000000-0000-0000-0000-000000000001', '702', 'Дохід від реалізації товарів', 'income', '07000000-0000-0000-0000-000000000070', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('07000000-0000-0000-0000-000000000703', '00000000-0000-0000-0000-000000000001', '703', 'Дохід від реалізації робіт і послуг', 'income', '07000000-0000-0000-0000-000000000070', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('07000000-0000-0000-0000-000000000071', '00000000-0000-0000-0000-000000000001', '71', 'Інший операційний дохід', 'income', NULL, TRUE, 'Інші операційні доходи', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('07000000-0000-0000-0000-000000000712', '00000000-0000-0000-0000-000000000001', '712', 'Дохід від відсотків', 'income', '07000000-0000-0000-0000-000000000071', TRUE, 'Відсотки по депозитах', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
--- 5. EXPENSES (Витрати) - Class 8-9
--- ============================================================================
-
-INSERT INTO accounting_chart_of_accounts 
-(id, organization_id, code, name, type, parent_id, is_active, description, last_updated_by, created_at, updated_at)
-VALUES
-('09000000-0000-0000-0000-000000000090', '00000000-0000-0000-0000-000000000001', '90', 'Собівартість реалізації', 'expense', NULL, TRUE, 'Собівартість реалізованої продукції/товарів', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000901', '00000000-0000-0000-0000-000000000001', '901', 'Собівартість реалізованої готової продукції', 'expense', '09000000-0000-0000-0000-000000000090', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000902', '00000000-0000-0000-0000-000000000001', '902', 'Собівартість реалізованих товарів', 'expense', '09000000-0000-0000-0000-000000000090', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000092', '00000000-0000-0000-0000-000000000001', '92', 'Адміністративні витрати', 'expense', NULL, TRUE, 'Загальногосподарські витрати', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000093', '00000000-0000-0000-0000-000000000001', '93', 'Витрати на збут', 'expense', NULL, TRUE, 'Витрати на реалізацію продукції', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000094', '00000000-0000-0000-0000-000000000001', '94', 'Інші витрати операційної діяльності', 'expense', NULL, TRUE, 'Інші операційні витрати', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000095', '00000000-0000-0000-0000-000000000001', '95', 'Фінансові витрати', 'expense', NULL, TRUE, 'Відсотки за кредитами', '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('09000000-0000-0000-0000-000000000951', '00000000-0000-0000-0000-000000000001', '951', 'Відсотки за кредит', 'expense', '09000000-0000-0000-0000-000000000095', TRUE, NULL, '00000000-0000-0000-0000-000000000000', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
--- ============================================================================
--- Summary:
--- - 10 Asset accounts (Class 1-3)
--- - 4 Equity accounts (Class 4)  
--- - 8 Liability accounts (Class 5-6)
--- - 6 Income accounts (Class 7)
--- - 8 Expense accounts (Class 8-9)
--- Total: 36 accounts
--- ============================================================================
+END $$;

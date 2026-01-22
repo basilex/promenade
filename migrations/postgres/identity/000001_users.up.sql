@@ -47,7 +47,7 @@ CREATE INDEX idx_identity_users_deleted_at ON identity_users(deleted_at) WHERE d
 COMMENT ON TABLE identity_users IS 'User aggregate root (Identity Bounded Context)';
 COMMENT ON COLUMN identity_users.id IS 'UUID v7 stored as TEXT (time-ordered primary key)';
 COMMENT ON COLUMN identity_users.email IS 'Unique email address for authentication';
-COMMENT ON COLUMN identity_users.password_hash IS 'Bcrypt hashed password';
+COMMENT ON COLUMN identity_users.password_hash IS 'Bcrypt hashed password (cost=10, auto-salted). See docs/guides/password-hashing-strategy.md';
 COMMENT ON COLUMN identity_users.status IS 'Account lifecycle status';
 COMMENT ON COLUMN identity_users.email_verified IS 'Whether email has been verified';
 COMMENT ON COLUMN identity_users.email_verified_at IS 'Email verification timestamp';

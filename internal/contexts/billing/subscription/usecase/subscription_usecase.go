@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	subscriptionerrors "github.com/basilex/promenade/internal/contexts/billing/subscription"
 	"github.com/basilex/promenade/internal/contexts/billing/subscription/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 )
@@ -113,7 +112,7 @@ func (uc *SubscriptionUseCase) CreateSubscription(ctx context.Context, customerI
 	}
 
 	if err := uc.repo.Create(ctx, subscription); err != nil {
-		return nil, subscriptionerrors.ErrCreateFailed
+		return nil, err
 	}
 
 	return subscription, nil
@@ -137,42 +136,23 @@ func (uc *SubscriptionUseCase) UpdateSubscription(ctx context.Context, id uuidv7
 	subscription.Amount.Amount = amount
 	subscription.Touch()
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) DeleteSubscription(ctx context.Context, id uuidv7.UUID) error {
-	if err := uc.repo.Delete(ctx, id); err != nil {
-		return subscriptionerrors.ErrDeleteFailed
-	}
-	return nil
+	return uc.repo.Delete(ctx, id)
 }
 
 func (uc *SubscriptionUseCase) ListSubscriptions(ctx context.Context, page, pageSize int) ([]*aggregate.Subscription, error) {
-	subscriptions, err := uc.repo.ListSubscriptions(ctx, page, pageSize)
-	if err != nil {
-		return nil, subscriptionerrors.ErrQueryFailed
-	}
-	return subscriptions, nil
+	return uc.repo.ListSubscriptions(ctx, page, pageSize)
 }
 
 func (uc *SubscriptionUseCase) ListByCustomer(ctx context.Context, customerID uuidv7.UUID) ([]*aggregate.Subscription, error) {
-	subscriptions, err := uc.repo.ListByCustomer(ctx, customerID)
-	if err != nil {
-		return nil, subscriptionerrors.ErrQueryFailed
-	}
-	return subscriptions, nil
+	return uc.repo.ListByCustomer(ctx, customerID)
 }
 
 func (uc *SubscriptionUseCase) ListByStatus(ctx context.Context, status aggregate.SubscriptionStatus) ([]*aggregate.Subscription, error) {
-	subscriptions, err := uc.repo.ListByStatus(ctx, status)
-	if err != nil {
-		return nil, subscriptionerrors.ErrQueryFailed
-	}
-	return subscriptions, nil
+	return uc.repo.ListByStatus(ctx, status)
 }
 
 func (uc *SubscriptionUseCase) ActivateSubscription(ctx context.Context, id uuidv7.UUID) error {
@@ -185,11 +165,7 @@ func (uc *SubscriptionUseCase) ActivateSubscription(ctx context.Context, id uuid
 		return err // Propagate domain error (subscriptionerrors.ErrCannotActivate)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) PauseSubscription(ctx context.Context, id uuidv7.UUID) error {
@@ -202,11 +178,7 @@ func (uc *SubscriptionUseCase) PauseSubscription(ctx context.Context, id uuidv7.
 		return err // Propagate domain error (subscriptionerrors.ErrCanOnlyPauseActive)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) ResumeSubscription(ctx context.Context, id uuidv7.UUID) error {
@@ -219,11 +191,7 @@ func (uc *SubscriptionUseCase) ResumeSubscription(ctx context.Context, id uuidv7
 		return err // Propagate domain error (subscriptionerrors.ErrCanOnlyResumePaused)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) CancelSubscription(ctx context.Context, id uuidv7.UUID, reason string, effectiveDate time.Time) error {
@@ -236,11 +204,7 @@ func (uc *SubscriptionUseCase) CancelSubscription(ctx context.Context, id uuidv7
 		return err // Propagate domain error (subscriptionerrors.ErrAlreadyInTerminalStatus)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) RenewSubscription(ctx context.Context, id uuidv7.UUID) error {
@@ -253,11 +217,7 @@ func (uc *SubscriptionUseCase) RenewSubscription(ctx context.Context, id uuidv7.
 		return err // Propagate domain error (subscriptionerrors.ErrCanOnlyRenewActive)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) ExpireSubscription(ctx context.Context, id uuidv7.UUID) error {
@@ -270,25 +230,13 @@ func (uc *SubscriptionUseCase) ExpireSubscription(ctx context.Context, id uuidv7
 		return err // Propagate domain error (subscriptionerrors.ErrAlreadyExpired)
 	}
 
-	if err := uc.repo.Update(ctx, subscription); err != nil {
-		return subscriptionerrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, subscription)
 }
 
 func (uc *SubscriptionUseCase) CountByStatus(ctx context.Context, status aggregate.SubscriptionStatus) (int64, error) {
-	count, err := uc.repo.CountByStatus(ctx, status)
-	if err != nil {
-		return 0, subscriptionerrors.ErrQueryFailed
-	}
-	return count, nil
+	return uc.repo.CountByStatus(ctx, status)
 }
 
 func (uc *SubscriptionUseCase) GetTotalRevenue(ctx context.Context) (int64, error) {
-	revenue, err := uc.repo.GetTotalRevenue(ctx)
-	if err != nil {
-		return 0, subscriptionerrors.ErrQueryFailed
-	}
-	return revenue, nil
+	return uc.repo.GetTotalRevenue(ctx)
 }

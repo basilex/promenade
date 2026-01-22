@@ -9,13 +9,14 @@
 Promenade uses **OpenAPI 3.0** specification with **Swagger UI** to provide interactive, self-documenting REST API. All endpoints across 5 bounded contexts are automatically documented from code annotations.
 
 **Key Features**:
--  120+ documented endpoints
--  Interactive Swagger UI for testing
--  OpenAPI 3.0 JSON/YAML export
--  Request/Response schemas with examples
--  Authentication flows (JWT Bearer tokens)
--  Error code documentation
--  Auto-generated from code annotations
+
+- 120+ documented endpoints
+- Interactive Swagger UI for testing
+- OpenAPI 3.0 JSON/YAML export
+- Request/Response schemas with examples
+- Authentication flows (JWT Bearer tokens)
+- Error code documentation
+- Auto-generated from code annotations
 
 ---
 
@@ -31,6 +32,7 @@ make dev
 ```
 
 **Swagger UI provides**:
+
 - Interactive API explorer
 - Try-it-out functionality
 - Request/response examples
@@ -49,6 +51,7 @@ docs/swagger/
 ```
 
 **Export formats**:
+
 - **JSON**: http://localhost:8081/api/docs/doc.json
 - **YAML**: http://localhost:8081/api/docs/swagger.yaml
 - **Go code**: `docs/swagger/docs.go` (embedded in binary)
@@ -76,10 +79,12 @@ Interactive Documentation (browser)
 ### Tools & Dependencies
 
 **Generation Tool**:
+
 - **swaggo/swag** v1.16.6 - Swagger documentation generator for Go
 - Installation: `go install github.com/swaggo/swag/cmd/swag@latest`
 
 **Runtime Dependencies**:
+
 - **gin-swagger** v1.6.1 - Gin middleware for Swagger UI
 - **swaggo/files** v1.0.1 - Static file embedder
 
@@ -126,24 +131,24 @@ func (h *OrderHandler) Create(c *gin.Context) {
 
 **Required Annotations**:
 
-| Annotation       | Purpose                           | Example                                        |
-| ---------------- | --------------------------------- | ---------------------------------------------- |
-| `@Summary`       | Short description (1 line)        | `@Summary Create new order`                    |
-| `@Description`   | Detailed explanation              | `@Description Create order with line items`    |
-| `@Tags`          | Group endpoints                   | `@Tags orders`                                 |
-| `@Accept`        | Request content type              | `@Accept json`                                 |
-| `@Produce`       | Response content type             | `@Produce json`                                |
-| `@Success`       | Successful response               | `@Success 200 {object} response.Response`      |
-| `@Failure`       | Error response                    | `@Failure 404 {object} response.Response`      |
-| `@Router`        | Route path and method             | `@Router /orders [post]`                       |
+| Annotation     | Purpose                    | Example                                     |
+| -------------- | -------------------------- | ------------------------------------------- |
+| `@Summary`     | Short description (1 line) | `@Summary Create new order`                 |
+| `@Description` | Detailed explanation       | `@Description Create order with line items` |
+| `@Tags`        | Group endpoints            | `@Tags orders`                              |
+| `@Accept`      | Request content type       | `@Accept json`                              |
+| `@Produce`     | Response content type      | `@Produce json`                             |
+| `@Success`     | Successful response        | `@Success 200 {object} response.Response`   |
+| `@Failure`     | Error response             | `@Failure 404 {object} response.Response`   |
+| `@Router`      | Route path and method      | `@Router /orders [post]`                    |
 
 **Optional Annotations**:
 
-| Annotation    | Purpose                    | Example                                    |
-| ------------- | -------------------------- | ------------------------------------------ |
-| `@Param`      | Request parameters         | `@Param id path string true "Order ID"`    |
-| `@Security`   | Authentication required    | `@Security BearerAuth`                     |
-| `@Deprecated` | Mark endpoint as deprecated | `@Deprecated`                             |
+| Annotation    | Purpose                     | Example                                 |
+| ------------- | --------------------------- | --------------------------------------- |
+| `@Param`      | Request parameters          | `@Param id path string true "Order ID"` |
+| `@Security`   | Authentication required     | `@Security BearerAuth`                  |
+| `@Deprecated` | Mark endpoint as deprecated | `@Deprecated`                           |
 
 ### Response Type Patterns
 
@@ -189,20 +194,21 @@ func (h *OrderHandler) Create(c *gin.Context) {
 
 ### Endpoint Coverage by Context
 
-| Context                | Aggregates                   | Endpoints | Documentation |
-| ---------------------- | ---------------------------- | --------- | ------------- |
-| **Identity**           | User, Contact, Profile, Role, Permission | 35        |  Complete    |
-| **Customer Management** | Customer, Company, Deal, Interaction, Analytics | 48        |  Complete    |
-| **Order Management**   | Order (full lifecycle)       | 14        |  Complete    |
-| **Billing**            | Invoice, Payment, Subscription | 22        |  Complete    |
-| **Shared**             | Country, Currency, Language, Timezone | 9         |  Complete    |
-| **Infrastructure**     | Health Checks                | 4         |  Complete    |
+| Context                 | Aggregates                                      | Endpoints | Documentation |
+| ----------------------- | ----------------------------------------------- | --------- | ------------- |
+| **Identity**            | User, Contact, Profile, Role, Permission        | 35        | Complete      |
+| **Customer Management** | Customer, Company, Deal, Interaction, Analytics | 48        | Complete      |
+| **Order Management**    | Order (full lifecycle)                          | 14        | Complete      |
+| **Billing**             | Invoice, Payment, Subscription                  | 22        | Complete      |
+| **Shared**              | Country, Currency, Language, Timezone           | 9         | Complete      |
+| **Infrastructure**      | Health Checks                                   | 4         | Complete      |
 
 **Total**: **120+ endpoints** across **5 bounded contexts**
 
 ### Documentation by Aggregate
 
 **Identity Context** (35 endpoints):
+
 - User: 8 endpoints (register, login, CRUD, password management)
 - Contact: 8 endpoints (email, phone, address management)
 - Profile: 9 endpoints (personal info, social links, localization)
@@ -210,6 +216,7 @@ func (h *OrderHandler) Create(c *gin.Context) {
 - Permission: 7 endpoints (RBAC permission management)
 
 **Customer Management Context** (48 endpoints):
+
 - Customer: 14 endpoints (lifecycle, segmentation, B2C/B2B)
 - Company: 8 endpoints (B2B organizations, hierarchies)
 - Deal: 12 endpoints (sales pipeline, stage management)
@@ -217,20 +224,24 @@ func (h *OrderHandler) Create(c *gin.Context) {
 - Analytics: 8 endpoints (dashboards, metrics, time series)
 
 **Order Management Context** (14 endpoints):
+
 - Order: 14 endpoints (creation, lifecycle, line items)
 
 **Billing Context** (22 endpoints):
+
 - Invoice: 8 endpoints (generation, line items, status management)
 - Payment: 14 endpoints (processing, refunds, provider integration)
 - Subscription: 8 endpoints (recurring billing, lifecycle)
 
 **Shared Context** (9 endpoints):
+
 - Country: 3 endpoints (reference data)
 - Currency: 2 endpoints (reference data)
 - Language: 2 endpoints (reference data)
 - Timezone: 2 endpoints (reference data)
 
 **Infrastructure** (4 endpoints):
+
 - Health: 4 endpoints (overall, database, redis, event bus)
 
 ---
@@ -258,6 +269,7 @@ $GOPATH/bin/swag init -g cmd/api/main.go -o docs/swagger --parseDependency --par
 ```
 
 **Flags explained**:
+
 - `-g` - Entry point file with API metadata
 - `-o` - Output directory for generated files
 - `--parseDependency` - Parse vendor dependencies
@@ -281,6 +293,7 @@ curl -X POST http://localhost:8081/api/v1/identity/users/login \
 ```
 
 Response:
+
 ```json
 {
   "status": "success",
@@ -300,12 +313,13 @@ Response:
 
 ### Protected Endpoints
 
-Endpoints requiring authentication are marked with lock icon  in Swagger UI.
+Endpoints requiring authentication are marked with lock icon in Swagger UI.
 
 **Example**:
--  `GET /api/v1/identity/users` - Requires JWT
--  `POST /api/v1/identity/users/register` - Public
--  `POST /api/v1/identity/users/login` - Public
+
+- `GET /api/v1/identity/users` - Requires JWT
+- `POST /api/v1/identity/users/register` - Public
+- `POST /api/v1/identity/users/login` - Public
 
 ---
 
@@ -383,41 +397,46 @@ type Pagination struct {
 
 ### Standard HTTP Status Codes
 
-| Status | Code | Usage                           |
-| ------ | ---- | ------------------------------- |
-| 200    | OK   | Successful GET/PUT/DELETE       |
-| 201    | Created | Successful POST               |
-| 204    | No Content | Successful DELETE (Shared) |
-| 400    | Bad Request | Validation errors          |
-| 401    | Unauthorized | Missing/invalid JWT       |
-| 403    | Forbidden | Insufficient permissions     |
-| 404    | Not Found | Resource not found           |
-| 409    | Conflict | Duplicate resource            |
-| 500    | Internal Server Error | Server error    |
+| Status | Code                  | Usage                      |
+| ------ | --------------------- | -------------------------- |
+| 200    | OK                    | Successful GET/PUT/DELETE  |
+| 201    | Created               | Successful POST            |
+| 204    | No Content            | Successful DELETE (Shared) |
+| 400    | Bad Request           | Validation errors          |
+| 401    | Unauthorized          | Missing/invalid JWT        |
+| 403    | Forbidden             | Insufficient permissions   |
+| 404    | Not Found             | Resource not found         |
+| 409    | Conflict              | Duplicate resource         |
+| 500    | Internal Server Error | Server error               |
 
 ### Error Code Patterns
 
 **Identity Context**:
+
 - `USER_NOT_FOUND`, `CONTACT_NOT_FOUND`, `PROFILE_NOT_FOUND`
 - `INVALID_CREDENTIALS`, `WEAK_PASSWORD`
 - `EMAIL_ALREADY_EXISTS`, `PHONE_ALREADY_EXISTS`
 
 **Customer Management Context**:
+
 - `CUSTOMER_NOT_FOUND`, `COMPANY_NOT_FOUND`, `DEAL_NOT_FOUND`
 - `INVALID_STATE_TRANSITION`
 - `VALIDATION_ERROR`
 
 **Order Management Context**:
+
 - `ORDER_NOT_FOUND`, `ORDER_ALREADY_CONFIRMED`
 - `INVALID_STATUS_TRANSITION`
 - `NO_LINE_ITEMS`
 
 **Billing Context**:
+
 - `INVOICE_NOT_FOUND`, `PAYMENT_NOT_FOUND`, `SUBSCRIPTION_NOT_FOUND`
 - `INVOICE_ALREADY_PAID`, `PAYMENT_ALREADY_COMPLETED`
 - `INVALID_AMOUNT`
 
 **Shared Context** (unique pattern):
+
 - `COUNTRY_NOT_FOUND`, `CURRENCY_NOT_FOUND`, `LANGUAGE_NOT_FOUND`, `TIMEZONE_NOT_FOUND`
 - `VALIDATION_ERROR` (not BAD_REQUEST)
 - `DELETE_ERROR` (500 status for delete failures)
@@ -444,6 +463,7 @@ type Pagination struct {
 ### Example Workflow
 
 **1. Register new user**:
+
 - Endpoint: `POST /api/v1/identity/users/register`
 - Body:
   ```json
@@ -455,6 +475,7 @@ type Pagination struct {
   ```
 
 **2. Login to get JWT**:
+
 - Endpoint: `POST /api/v1/identity/users/login`
 - Body:
   ```json
@@ -466,10 +487,12 @@ type Pagination struct {
 - Copy `access_token` from response
 
 **3. Authorize Swagger UI**:
+
 - Click "Authorize" button
 - Enter: `Bearer <access_token>`
 
 **4. Create customer** (protected endpoint):
+
 - Endpoint: `POST /api/v1/customer-mgmt/customers`
 - Body:
   ```json
@@ -483,6 +506,7 @@ type Pagination struct {
   ```
 
 **5. List customers** (protected endpoint):
+
 - Endpoint: `GET /api/v1/customer-mgmt/customers`
 - Query params: `page=1`, `page_size=20`
 
@@ -504,17 +528,19 @@ type Pagination struct {
 4. Select **Development** environment (top-right dropdown)
 
 **Or import via URL**:
+
 ```
 https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.postman_collection.json
 ```
 
 **Features**:
--  120+ endpoints organized by context
--  Auto-save JWT tokens after login
--  Auto-refresh expired tokens
--  Pre-configured environments (Dev/Staging/Prod)
--  Test scripts for response validation
--  Authentication flow examples
+
+- 120+ endpoints organized by context
+- Auto-save JWT tokens after login
+- Auto-refresh expired tokens
+- Pre-configured environments (Dev/Staging/Prod)
+- Test scripts for response validation
+- Authentication flow examples
 
 **Complete guide**: [postman/README.md](../../postman/README.md)
 
@@ -531,10 +557,10 @@ https://raw.githubusercontent.com/basilex/promenade/dev/postman/Promenade_API.po
 {
   "name": "Promenade Dev",
   "values": [
-    {"key": "base_url", "value": "http://localhost:8081"},
-    {"key": "api_version", "value": "v1"},
-    {"key": "access_token", "value": ""},
-    {"key": "refresh_token", "value": ""}
+    { "key": "base_url", "value": "http://localhost:8081" },
+    { "key": "api_version", "value": "v1" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" }
   ]
 }
 ```
@@ -599,6 +625,7 @@ make build
 **2. Endpoints not showing up**
 
 **Causes**:
+
 - Missing Swagger annotations in handler
 - Handler not registered in router
 - Annotation syntax errors
@@ -613,22 +640,25 @@ grep -r "func.*Handler.*gin.Context" internal/contexts --include="*.go" -A 5 | g
 **3. Type definition errors during generation**
 
 **Example error**:
+
 ```
 cannot find type definition: response.ErrorResponse
 ```
 
 **Solution**: Use correct types from `pkg/response`:
--  `response.Response`
--  `response.ErrorResponse` (function, not type)
--  `response.SuccessResponse` (function, not type)
+
+- `response.Response`
+- `response.ErrorResponse` (function, not type)
+- `response.SuccessResponse` (function, not type)
 
 **4. Authentication not working in Swagger UI**
 
 **Checklist**:
--  JWT token obtained via `/api/v1/identity/users/login`
--  Token format: `Bearer <access_token>` (with space)
--  Token not expired (15 minutes validity)
--  "Authorize" button clicked after entering token
+
+- JWT token obtained via `/api/v1/identity/users/login`
+- Token format: `Bearer <access_token>` (with space)
+- Token not expired (15 minutes validity)
+- "Authorize" button clicked after entering token
 
 ---
 
@@ -637,26 +667,29 @@ cannot find type definition: response.ErrorResponse
 ### Documentation Standards
 
 **DO**:
--  Write clear, concise summaries (1 line)
--  Add detailed descriptions for complex operations
--  Document all parameters (path, query, body)
--  Include example request/response bodies
--  Document all possible error codes
--  Group related endpoints with same `@Tags`
--  Keep annotations up-to-date with code changes
+
+- Write clear, concise summaries (1 line)
+- Add detailed descriptions for complex operations
+- Document all parameters (path, query, body)
+- Include example request/response bodies
+- Document all possible error codes
+- Group related endpoints with same `@Tags`
+- Keep annotations up-to-date with code changes
 
 **DON'T**:
--  Skip `@Summary` or `@Description`
--  Use incorrect type references
--  Forget to document error responses
--  Leave endpoints without `@Tags`
--  Hardcode URLs in descriptions (use relative paths)
+
+- Skip `@Summary` or `@Description`
+- Use incorrect type references
+- Forget to document error responses
+- Leave endpoints without `@Tags`
+- Hardcode URLs in descriptions (use relative paths)
 
 ### Versioning
 
 **Current version**: v1 (`/api/v1/`)
 
 **Future versioning strategy**:
+
 - Breaking changes → new version (`/api/v2/`)
 - Non-breaking changes → same version
 - Deprecation warnings in Swagger UI
@@ -755,15 +788,151 @@ import (
 func (s *Server) SetupRoutes() {
     // Swagger UI documentation
     s.router.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-    
+
     // API routes...
 }
 ```
 
 ---
 
+## HTTP Response Standards
+
+### Always Use Response Package
+
+All handlers MUST use standardized response helpers from `pkg/response` package. **Never use `c.JSON()` directly.**
+
+**Import**:
+
+```go
+import "github.com/basilex/promenade/pkg/response"
+```
+
+###  Correct Patterns
+
+**Success Responses**:
+
+```go
+// 200 OK - successful retrieval
+response.Success(c, data)
+
+// 201 Created - resource creation
+response.Created(c, data)
+```
+
+**Error Responses**:
+
+```go
+// 400 Bad Request - validation errors
+response.BadRequest(c, "invalid input")
+
+// 401 Unauthorized - authentication required
+response.Unauthorized(c, "authentication required")
+
+// 403 Forbidden - insufficient permissions
+response.Forbidden(c, "access denied")
+
+// 404 Not Found - resource doesn't exist
+response.NotFound(c, "resource not found")
+
+// 500 Internal Server Error - server errors
+response.InternalServerError(c, "operation failed")
+```
+
+###  Incorrect Patterns
+
+**DON'T use `c.JSON()` directly**:
+
+```go
+//  WRONG - Inconsistent structure
+c.JSON(http.StatusOK, gin.H{"data": data})
+c.JSON(http.StatusBadRequest, gin.H{"error": "validation failed"})
+c.JSON(200, map[string]interface{}{"result": data})
+
+//  WRONG - Security issue (exposes internal errors)
+c.JSON(500, gin.H{"error": err.Error()})
+```
+
+**DON'T return after setting status**:
+
+```go
+//  WRONG - Missing return statement
+if err != nil {
+    response.InternalServerError(c, "operation failed")
+    // Missing return - execution continues!
+}
+response.Success(c, data)  // Will execute even on error!
+
+//  CORRECT - Always return after error response
+if err != nil {
+    response.InternalServerError(c, "operation failed")
+    return
+}
+response.Success(c, data)
+```
+
+### Benefits of Standard Response Package
+
+1. **Consistent Structure** - All responses follow same JSON format
+2. **Security** - Automatic sanitization of error messages (no internal details exposed)
+3. **Logging** - Automatic correlation with request ID
+4. **HTTP Semantics** - Proper status codes enforced
+5. **Type Safety** - Compile-time validation via generics
+6. **Documentation** - Swagger annotations work correctly
+
+### Complete Handler Example
+
+```go
+func (h *CustomerHandler) GetByID(c *gin.Context) {
+    // Parse ID
+    customerID, err := uuidv7.Parse(c.Param("id"))
+    if err != nil {
+        response.BadRequest(c, "invalid customer ID format")
+        return
+    }
+
+    // Fetch customer
+    ctx := c.Request.Context()
+    customer, err := h.usecase.GetCustomer(ctx, customerID)
+
+    // Handle not found
+    if errors.Is(err, customer.ErrCustomerNotFound) {
+        response.NotFound(c, "customer not found")
+        return
+    }
+
+    // Handle system errors
+    if err != nil {
+        logger.FromContext(ctx).Error("failed to get customer",
+            slog.Any("error", err),
+            slog.String("customer_id", customerID.String()),
+        )
+        response.InternalServerError(c, "failed to fetch customer")
+        return
+    }
+
+    // Success
+    response.Success(c, customer)
+}
+```
+
+### Error Handling Standards
+
+See [Error Handling Patterns](error-handling-patterns.md) and [Security Patterns](security-patterns.md) for complete guidance on:
+
+- Domain error discrimination (`errors.Is()`)
+- User-facing vs internal error messages
+- Logging before responding with errors
+- Security-audited response patterns
+
+**Golden Rule**: Use `response` package for ALL HTTP responses. No exceptions.
+
+---
+
 ## Related Documentation
 
+- [Response Package README](../../pkg/response/README.md) - Complete API reference and examples
+- [Error Handling Patterns](error-handling-patterns.md) - Domain error handling
+- [Security Patterns](security-patterns.md) - Security-audited response patterns
 - [Main README](../../README.md) - Project overview
 - [API Reference](../reference/api-reference.md) - Endpoint specifications
 - [Testing Guide](../../test/README.md) - API testing patterns

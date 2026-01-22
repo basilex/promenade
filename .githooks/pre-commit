@@ -1,0 +1,29 @@
+#!/bin/bash
+# Pre-commit hook: Run linting and fast checks before commit
+# Install: make setup-hooks
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+echo ""
+
+# 1. Run linter
+echo "1️⃣  Linting code..."
+if ! make lint; then
+    echo ""
+    echo "❌ Linting failed. Fix errors and try again."
+    echo "   Hint: Use 'golangci-lint run --fix' for auto-fixes"
+    exit 1
+fi
+
+# 2. Run unit tests (fast)
+echo ""
+echo "2️⃣  Running unit tests..."
+if ! make test-unit; then
+    echo ""
+    echo "❌ Unit tests failed. Fix tests and try again."
+    exit 1
+fi
+
+echo ""
+echo "✅ Pre-commit checks passed!"

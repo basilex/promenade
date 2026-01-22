@@ -92,7 +92,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, sku, name string) (
 	// Check SKU uniqueness
 	exists, err := uc.repo.ExistsBySKU(ctx, sku)
 	if err != nil {
-		return nil, producterrors.ErrCheckSKUFailed
+		return nil, err
 	}
 	if exists {
 		return nil, producterrors.ErrProductSKUDuplicate
@@ -111,7 +111,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, sku, name string) (
 
 	// Persist
 	if err := uc.repo.Create(ctx, product); err != nil {
-		return nil, producterrors.ErrCreateFailed
+		return nil, err
 	}
 
 	return product, nil
@@ -143,11 +143,7 @@ func (uc *ProductUseCase) UpdateProduct(ctx context.Context, product *aggregate.
 	}
 
 	// Persist
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrUpdateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // DeleteProduct soft-deletes a product.
@@ -162,65 +158,37 @@ func (uc *ProductUseCase) DeleteProduct(ctx context.Context, id uuidv7.UUID) err
 	product.SoftDelete()
 
 	// Persist
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrDeleteFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // ListProducts retrieves paginated list of products.
 func (uc *ProductUseCase) ListProducts(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.List(ctx, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrListFailed
-	}
-	return products, nil
+	return uc.repo.List(ctx, page, pageSize)
 }
 
 // ListProductsByCategory retrieves products by category.
 func (uc *ProductUseCase) ListProductsByCategory(ctx context.Context, category string, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.ListByCategory(ctx, category, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrListByCategoryFailed
-	}
-	return products, nil
+	return uc.repo.ListByCategory(ctx, category, page, pageSize)
 }
 
 // ListProductsByBrand retrieves products by brand.
 func (uc *ProductUseCase) ListProductsByBrand(ctx context.Context, brand string, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.ListByBrand(ctx, brand, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrListByBrandFailed
-	}
-	return products, nil
+	return uc.repo.ListByBrand(ctx, brand, page, pageSize)
 }
 
 // ListProductsByStatus retrieves products by status.
 func (uc *ProductUseCase) ListProductsByStatus(ctx context.Context, status aggregate.ProductStatus, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.ListByStatus(ctx, status, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrListByStatusFailed
-	}
-	return products, nil
+	return uc.repo.ListByStatus(ctx, status, page, pageSize)
 }
 
 // SearchProducts performs full-text search.
 func (uc *ProductUseCase) SearchProducts(ctx context.Context, query string, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.Search(ctx, query, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrSearchFailed
-	}
-	return products, nil
+	return uc.repo.Search(ctx, query, page, pageSize)
 }
 
 // CountProducts returns total number of products.
 func (uc *ProductUseCase) CountProducts(ctx context.Context) (int, error) {
-	count, err := uc.repo.Count(ctx)
-	if err != nil {
-		return 0, producterrors.ErrCountFailed
-	}
-	return count, nil
+	return uc.repo.Count(ctx)
 }
 
 // ActivateProduct transitions product to Active status.
@@ -234,11 +202,7 @@ func (uc *ProductUseCase) ActivateProduct(ctx context.Context, id uuidv7.UUID) e
 		return err
 	}
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrActivateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // DeactivateProduct transitions product to OutOfStock status.
@@ -252,11 +216,7 @@ func (uc *ProductUseCase) DeactivateProduct(ctx context.Context, id uuidv7.UUID)
 		return err
 	}
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrDeactivateFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // DiscontinueProduct marks product as discontinued.
@@ -270,11 +230,7 @@ func (uc *ProductUseCase) DiscontinueProduct(ctx context.Context, id uuidv7.UUID
 		return err
 	}
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrDiscontinueFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // UpdateInventorySettings updates inventory tracking settings.
@@ -286,11 +242,7 @@ func (uc *ProductUseCase) UpdateInventorySettings(ctx context.Context, id uuidv7
 
 	product.SetInventorySettings(trackInventory, allowBackorder)
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrUpdateInventorySettingsFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // SetReorderPoint sets reorder threshold and quantity.
@@ -304,11 +256,7 @@ func (uc *ProductUseCase) SetReorderPoint(ctx context.Context, id uuidv7.UUID, p
 		return err
 	}
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrSetReorderPointFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // SetPhysicalProperties sets weight and dimensions.
@@ -322,18 +270,10 @@ func (uc *ProductUseCase) SetPhysicalProperties(ctx context.Context, id uuidv7.U
 		return err
 	}
 
-	if err := uc.repo.Update(ctx, product); err != nil {
-		return producterrors.ErrSetPhysicalPropertiesFailed
-	}
-
-	return nil
+	return uc.repo.Update(ctx, product)
 }
 
 // ListLowStockProducts retrieves products below reorder point.
 func (uc *ProductUseCase) ListLowStockProducts(ctx context.Context, page, pageSize int) ([]*aggregate.Product, error) {
-	products, err := uc.repo.ListLowStock(ctx, page, pageSize)
-	if err != nil {
-		return nil, producterrors.ErrListLowStockFailed
-	}
-	return products, nil
+	return uc.repo.ListLowStock(ctx, page, pageSize)
 }

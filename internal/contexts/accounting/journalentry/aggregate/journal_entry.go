@@ -83,7 +83,7 @@ func NewJournalEntry(organizationID uuidv7.UUID, entryDate time.Time, descriptio
 		Lines:          make([]*JournalEntryLine, 0),
 		SourceType:     sourceType,
 		LastUpdatedBy:  createdBy,
-		SourceID:      sourceID,
+		SourceID:       sourceID,
 	}, nil
 }
 

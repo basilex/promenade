@@ -102,12 +102,29 @@ test-benchmark-all: validate-env  ## Run all benchmark tests with extended time
 		fi \
 	fi
 
-test-coverage:  ## Generate test coverage report (no workspace needed)
+test-coverage:  ## Generate test coverage report with metrics (no workspace needed)
 	@echo "Generating coverage report..."
 	@mkdir -p coverage
 	go test -coverprofile=coverage/coverage.out ./...
 	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
-	@echo "Coverage report: coverage/coverage.html"
+	@echo ""
+	@echo " Coverage Report Generated"
+	@echo ""
+	@echo "HTML Report:  coverage/coverage.html"
+	@echo "Profile Data: coverage/coverage.out"
+	@echo ""
+	@echo " Coverage Summary"
+	@go tool cover -func=coverage/coverage.out | tail -1
+	@echo ""
+	@COVERAGE=$$(go tool cover -func=coverage/coverage.out | tail -1 | awk '{print $$3}' | sed 's/%//'); \
+	if [ $$(echo "$$COVERAGE < 70" | bc -l) -eq 1 ]; then \
+		echo " Warning: Coverage below 70% threshold (current: $$COVERAGE%)"; \
+	elif [ $$(echo "$$COVERAGE < 80" | bc -l) -eq 1 ]; then \
+		echo " Good: Coverage at $$COVERAGE% (target: 80%+)"; \
+	else \
+		echo " Excellent: Coverage at $$COVERAGE%"; \
+	fi
+	@echo ""
 
 test-db-start:  ## Start test database (driver-aware)
 	@if [ -n "$$CI" ] || [ -n "$$GITHUB_ACTIONS" ]; then \

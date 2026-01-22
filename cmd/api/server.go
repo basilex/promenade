@@ -9,8 +9,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/basilex/promenade/internal/contexts/accounting"
-	"github.com/basilex/promenade/internal/contexts/billing"
 	"github.com/basilex/promenade/internal/contexts/banking"
+	"github.com/basilex/promenade/internal/contexts/billing"
 	customermgmt "github.com/basilex/promenade/internal/contexts/customer-mgmt"
 	"github.com/basilex/promenade/internal/contexts/fiscal"
 	"github.com/basilex/promenade/internal/contexts/identity"
@@ -106,17 +106,17 @@ func (s *Server) SetupRoutes() {
 
 			// Banking routes
 			banking.RegisterRoutes(v1, s.app.Dependencies.Banking.BankAccount, s.app.Dependencies.Banking.BankTransaction)
-		// Accounting routes
-		accounting.RegisterRoutes(
-			v1,
-			s.app.Dependencies.Accounting.Account,
-			s.app.Dependencies.Accounting.JournalEntry,
-			s.app.Dependencies.Accounting.FiscalPeriod,
-			s.app.Dependencies.Accounting.TaxCode,
-			s.app.Dependencies.Accounting.Budget,
-			s.app.Dependencies.Accounting.CostCenter,
-			s.app.Dependencies.Accounting.Reconciliation,
-		)
+			// Accounting routes
+			accounting.RegisterRoutes(
+				v1,
+				s.app.Dependencies.Accounting.Account,
+				s.app.Dependencies.Accounting.JournalEntry,
+				s.app.Dependencies.Accounting.FiscalPeriod,
+				s.app.Dependencies.Accounting.TaxCode,
+				s.app.Dependencies.Accounting.Budget,
+				s.app.Dependencies.Accounting.CostCenter,
+				s.app.Dependencies.Accounting.Reconciliation,
+			)
 			// Analytics routes
 			if s.app.Dependencies.Analytics.HTTPHandler != nil {
 				s.app.Dependencies.Analytics.HTTPHandler.RegisterRoutes(v1)

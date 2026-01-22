@@ -15,10 +15,13 @@ CREATE TABLE IF NOT EXISTS accounting_chart_of_accounts (
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('asset', 'liability', 'equity', 'income', 'expense')),
     parent_id TEXT,
+    level INTEGER NOT NULL DEFAULT 1,
 
+    currency_code CHAR(3) NOT NULL DEFAULT 'UAH',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     description TEXT,
 
+    created_by TEXT NOT NULL,
     last_updated_by TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,9 +31,12 @@ CREATE TABLE IF NOT EXISTS accounting_chart_of_accounts (
 CREATE UNIQUE INDEX uq_accounting_accounts_code ON accounting_chart_of_accounts(organization_id, code) WHERE deleted_at IS NULL;
 CREATE INDEX idx_accounting_accounts_org ON accounting_chart_of_accounts(organization_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_accounting_accounts_type ON accounting_chart_of_accounts(type) WHERE deleted_at IS NULL;
+CREATE INDEX idx_accounting_accounts_level ON accounting_chart_of_accounts(level) WHERE deleted_at IS NULL;
 
 COMMENT ON TABLE accounting_chart_of_accounts IS 'Chart of accounts for double-entry bookkeeping';
 COMMENT ON COLUMN accounting_chart_of_accounts.version IS 'Optimistic locking version - incremented on every update';
+COMMENT ON COLUMN accounting_chart_of_accounts.level IS 'Hierarchy level (1 = top-level, 2 = child, etc.)';
+COMMENT ON COLUMN accounting_chart_of_accounts.currency_code IS 'Default currency code (ISO 4217)';
 COMMENT ON COLUMN accounting_chart_of_accounts.deleted_at IS 'Soft delete timestamp - NULL means not deleted';
 
 -- Journal entries (header)
@@ -39,7 +45,7 @@ CREATE TABLE IF NOT EXISTS accounting_journal_entries (
     version INTEGER NOT NULL DEFAULT 1,
 
     organization_id TEXT NOT NULL,
-    entry_number VARCHAR(50) NOT NULL,
+    entry_number VARCHAR(50),
     description TEXT,
     entry_date DATE NOT NULL,
 
@@ -53,15 +59,18 @@ CREATE TABLE IF NOT EXISTS accounting_journal_entries (
     currency_code CHAR(3) NOT NULL DEFAULT 'UAH',
 
     posted_at TIMESTAMP,
-    created_by TEXT NOT NULL,
+    posted_by TEXT,
+    reversed_at TIMESTAMP,
+    reversed_by TEXT,
 
+    created_by TEXT NOT NULL,
     last_updated_by TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
 
-CREATE UNIQUE INDEX uq_accounting_entries_number ON accounting_journal_entries(organization_id, entry_number) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX uq_accounting_entries_number ON accounting_journal_entries(organization_id, entry_number) WHERE deleted_at IS NULL AND entry_number IS NOT NULL;
 CREATE INDEX idx_accounting_entries_org ON accounting_journal_entries(organization_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_accounting_entries_status ON accounting_journal_entries(status) WHERE deleted_at IS NULL;
 CREATE INDEX idx_accounting_entries_date ON accounting_journal_entries(entry_date DESC) WHERE deleted_at IS NULL;
@@ -69,6 +78,9 @@ CREATE INDEX idx_accounting_entries_source ON accounting_journal_entries(source_
 
 COMMENT ON TABLE accounting_journal_entries IS 'Journal entry headers (double-entry)';
 COMMENT ON COLUMN accounting_journal_entries.version IS 'Optimistic locking version - incremented on every update';
+COMMENT ON COLUMN accounting_journal_entries.entry_number IS 'Entry number (nullable for drafts, required before posting)';
+COMMENT ON COLUMN accounting_journal_entries.posted_by IS 'User who posted the entry';
+COMMENT ON COLUMN accounting_journal_entries.reversed_by IS 'User who reversed the entry';
 COMMENT ON COLUMN accounting_journal_entries.deleted_at IS 'Soft delete timestamp - NULL means not deleted';
 
 -- Journal entry lines
@@ -79,13 +91,14 @@ CREATE TABLE IF NOT EXISTS accounting_journal_entry_lines (
     journal_entry_id TEXT NOT NULL,
     account_id TEXT NOT NULL,
 
-    direction VARCHAR(10) NOT NULL CHECK (direction IN ('debit', 'credit')),
-    amount_cents INTEGER NOT NULL,
+    debit_cents BIGINT NOT NULL DEFAULT 0,
+    credit_cents BIGINT NOT NULL DEFAULT 0,
     currency_code CHAR(3) NOT NULL DEFAULT 'UAH',
 
     description TEXT,
+    line_order INTEGER NOT NULL DEFAULT 0,
 
-    last_updated_by TEXT NOT NULL,
+    last_updated_by TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -93,10 +106,13 @@ CREATE TABLE IF NOT EXISTS accounting_journal_entry_lines (
 
 CREATE INDEX idx_accounting_entry_lines_entry ON accounting_journal_entry_lines(journal_entry_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_accounting_entry_lines_account ON accounting_journal_entry_lines(account_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_accounting_entry_lines_direction ON accounting_journal_entry_lines(direction) WHERE deleted_at IS NULL;
+CREATE INDEX idx_accounting_entry_lines_order ON accounting_journal_entry_lines(journal_entry_id, line_order) WHERE deleted_at IS NULL;
 
 COMMENT ON TABLE accounting_journal_entry_lines IS 'Journal entry lines for debit/credit postings';
 COMMENT ON COLUMN accounting_journal_entry_lines.version IS 'Optimistic locking version - incremented on every update';
+COMMENT ON COLUMN accounting_journal_entry_lines.debit_cents IS 'Debit amount in cents (0 if credit line)';
+COMMENT ON COLUMN accounting_journal_entry_lines.credit_cents IS 'Credit amount in cents (0 if debit line)';
+COMMENT ON COLUMN accounting_journal_entry_lines.line_order IS 'Display order within journal entry';
 COMMENT ON COLUMN accounting_journal_entry_lines.deleted_at IS 'Soft delete timestamp - NULL means not deleted';
 
 -- Posting rules

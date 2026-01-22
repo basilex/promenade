@@ -107,9 +107,10 @@ func TestSalesReportUseCase_GetSalesReport_WithRealData(t *testing.T) {
 	})
 
 	t.Run("Filter by date range", func(t *testing.T) {
-		now := time.Now()
-		startDate := now.Add(-1 * time.Hour)
-		endDate := now.Add(1 * time.Hour)
+		// Use UTC to match database timestamps
+		now := time.Now().UTC()
+		startDate := now.Add(-5 * time.Minute) // 5 minutes before now
+		endDate := now.Add(5 * time.Minute)    // 5 minutes after now
 
 		filters := dto.SalesReportRequest{
 			StartDate: &startDate,
@@ -120,8 +121,9 @@ func TestSalesReportUseCase_GetSalesReport_WithRealData(t *testing.T) {
 		report, err := analyticsUC.GetSalesReport(ctx, filters)
 		require.NoError(t, err)
 
-		// Should return orders within date range
-		assert.GreaterOrEqual(t, report.TotalCount, 4)
+		// Should return 3 orders within date range (cancelled order has past timestamp)
+		assert.GreaterOrEqual(t, report.TotalCount, 3)
+		assert.LessOrEqual(t, report.TotalCount, 3) // Expect exactly 3
 
 		for _, order := range report.Orders {
 			assert.True(t, order.ConfirmedAt.After(startDate) || order.ConfirmedAt.Equal(startDate))
@@ -325,10 +327,20 @@ func createTestOrder(t *testing.T, db *sqlx.DB, ctx context.Context, customerID 
 	require.NoError(t, err)
 
 	// Populate read model (analytics_sales_orders) since events are not published in this test
+	// Only set confirmed_at for confirmed/paid/fulfilled orders
+	var confirmedAtValue interface{}
+	if status == "cancelled" {
+		// For cancelled orders, use a timestamp in the past (before common date filters)
+		pastTime := time.Now().UTC().Add(-24 * time.Hour)
+		confirmedAtValue = pastTime
+	} else {
+		confirmedAtValue = time.Now().UTC()
+	}
+
 	_, err = db.ExecContext(ctx, `
 		INSERT INTO analytics_sales_orders (order_id, customer_id, currency_code, total_cents, status, confirmed_at)
-		VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-	`, order.ID, customerID, "USD", totalCents, status)
+		VALUES ($1, $2, $3, $4, $5, $6)
+	`, order.ID, customerID, "USD", totalCents, status, confirmedAtValue)
 	require.NoError(t, err)
 
 	// Insert line items into read model

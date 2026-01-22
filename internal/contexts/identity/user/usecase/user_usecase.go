@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	rolerepository "github.com/basilex/promenade/internal/contexts/identity/role/repository"
 	usererrors "github.com/basilex/promenade/internal/contexts/identity/user"
@@ -89,23 +90,29 @@ func (u *UserUseCase) Register(ctx context.Context, email, name, password string
 	if err != nil {
 		// Log warning but don't fail registration if role not found
 		// (migrations might not have run yet in tests)
-		fmt.Printf("[WARN] Failed to get default 'user' role: %v\n", err)
+		slog.Warn("failed to get default user role",
+			slog.String("error", err.Error()))
 		return user, nil
 	}
 
 	if err := u.roleRepo.AssignRoleToUser(ctx, user.ID, defaultRole.ID, nil); err != nil {
 		// Log warning but don't fail registration
-		fmt.Printf("[WARN] Failed to assign 'user' role to user %s: %v\n", user.ID.String(), err)
+		slog.Warn("failed to assign user role",
+			slog.String("user_id", user.ID.String()),
+			slog.String("error", err.Error()))
 		return user, nil
 	}
 
-	fmt.Printf("[INFO] Assigned 'user' role to user %s\n", user.ID.String())
+	slog.Info("assigned default user role",
+		slog.String("user_id", user.ID.String()))
 
 	// Reload user to get roles
 	user, err = u.userRepo.GetByID(ctx, user.ID)
 	if err != nil {
 		// Return user without roles if reload fails
-		fmt.Printf("[WARN] Failed to reload user after role assignment: %v\n", err)
+		slog.Warn("failed to reload user after role assignment",
+			slog.String("user_id", user.ID.String()),
+			slog.String("error", err.Error()))
 		return user, nil
 	}
 

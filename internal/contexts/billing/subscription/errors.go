@@ -6,18 +6,6 @@ import "errors"
 var (
 	// ErrSubscriptionNotFound is returned when subscription doesn't exist in database
 	ErrSubscriptionNotFound = errors.New("subscription not found")
-
-	// ErrQueryFailed is returned when database query operation fails
-	ErrQueryFailed = errors.New("failed to query subscriptions")
-
-	// ErrCreateFailed is returned when subscription creation fails in database
-	ErrCreateFailed = errors.New("failed to create subscription")
-
-	// ErrUpdateFailed is returned when subscription update fails in database
-	ErrUpdateFailed = errors.New("failed to update subscription")
-
-	// ErrDeleteFailed is returned when subscription deletion fails in database
-	ErrDeleteFailed = errors.New("failed to delete subscription")
 )
 
 // Business Logic Errors - Domain rule violations (constructor validation)

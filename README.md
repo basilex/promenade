@@ -248,12 +248,12 @@ deps, err := InitRepositories(db, cfg, eventBus, cacheClient)
 
 | Aspect          | Custom DI (Promenade) | Wire/Fx/Dig        |
 | --------------- | --------------------- | ------------------ |
-| Type Safety     | ✅ Compile-time       | ✅ Compile-time    |
-| Reflection      | ❌ None               | ✅ Yes (runtime)   |
-| Code Generation | ❌ None               | ✅ Required (Wire) |
-| Debugging       | ✅ Easy (explicit)    | ⚠️ Complex         |
-| IDE Support     | ✅ Full               | ⚠️ Limited         |
-| DDD Boundaries  | ✅ Natural grouping   | ❌ Flat structure  |
+| Type Safety     |  Compile-time       |  Compile-time    |
+| Reflection      |  None               |  Yes (runtime)   |
+| Code Generation |  None               |  Required (Wire) |
+| Debugging       |  Easy (explicit)    |  Complex         |
+| IDE Support     |  Full               |  Limited         |
+| DDD Boundaries  |  Natural grouping   |  Flat structure  |
 
 **Learn More**: [cmd/api/dependencies.go](cmd/api/dependencies.go), [docs/guides/dependency-injection.md](docs/guides/dependency-injection.md)
 

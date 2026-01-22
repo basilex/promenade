@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	customererrors "github.com/basilex/promenade/internal/contexts/customer-mgmt/customer"
 	"github.com/basilex/promenade/internal/contexts/customer-mgmt/customer/aggregate"
@@ -509,6 +510,62 @@ func TestUseCase_GetCustomerStats(t *testing.T) {
 		assert.Equal(t, 3, stats.ChurnedCustomers)
 		assert.Equal(t, 10, stats.ByStatus[aggregate.CustomerStatusLead])
 		assert.Equal(t, 15, stats.ByTier[aggregate.CustomerTierFree])
+		repo.AssertExpectations(t)
+	})
+}
+
+// TestUseCase_ContextPropagation tests context timeout and cancellation handling.
+func TestUseCase_ContextPropagation(t *testing.T) {
+	t.Run("respects context timeout on create", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+		defer cancel()
+
+		time.Sleep(5 * time.Millisecond) // Ensure timeout
+
+		repo := new(MockRepository)
+		repo.On("ExistsByEmail", ctx, "test@example.com").Return(false, context.DeadlineExceeded)
+
+		uc := NewCustomerUseCase(repo)
+		assignedTo := uuidv7.New()
+		_, err := uc.CreateCustomer(ctx, "Test Customer", "test@example.com", "website", assignedTo)
+
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, context.DeadlineExceeded)
+	})
+
+	t.Run("respects context cancellation on get", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel() // Cancel immediately
+
+		repo := new(MockRepository)
+		customerID := uuidv7.New()
+		repo.On("GetByID", ctx, customerID).Return(nil, context.Canceled)
+
+		uc := NewCustomerUseCase(repo)
+		_, err := uc.GetCustomer(ctx, customerID)
+
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, context.Canceled)
+	})
+
+	t.Run("propagates deadline to repository", func(t *testing.T) {
+		deadline := time.Now().Add(100 * time.Millisecond)
+		ctx, cancel := context.WithDeadline(context.Background(), deadline)
+		defer cancel()
+
+		repo := new(MockRepository)
+		repo.On("ExistsByEmail", mock.MatchedBy(func(c context.Context) bool {
+			d, ok := c.Deadline()
+			return ok && d.Equal(deadline)
+		}), "test@example.com").Return(false, nil)
+
+		repo.On("Create", mock.Anything, mock.Anything).Return(nil)
+
+		uc := NewCustomerUseCase(repo)
+		assignedTo := uuidv7.New()
+		_, err := uc.CreateCustomer(ctx, "Test", "test@example.com", "website", assignedTo)
+
+		assert.NoError(t, err)
 		repo.AssertExpectations(t)
 	})
 }

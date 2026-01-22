@@ -12,9 +12,9 @@ import (
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
 	"github.com/basilex/promenade/internal/infrastructure/health"
-	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/bus"
 	"github.com/basilex/promenade/pkg/cache"
+	"github.com/basilex/promenade/pkg/database/postgres"
 	"github.com/basilex/promenade/pkg/fiscal/checkbox"
 	"github.com/basilex/promenade/pkg/jwt"
 	"github.com/basilex/promenade/pkg/logger"
@@ -31,22 +31,22 @@ import (
 // App holds all application dependencies
 type App struct {
 	// Infrastructure
-	DB          *sqlx.DB
-	Config      *config.AppConfig
-	RedisClient *redis.Client
-	CacheClient cache.ICache
-	JWTManager  *jwt.Manager
-	TokenRevoker *jwt.TokenRevoker
-	EventBus     bus.IBus
+	DB            *sqlx.DB
+	Config        *config.AppConfig
+	RedisClient   *redis.Client
+	CacheClient   cache.ICache
+	JWTManager    *jwt.Manager
+	TokenRevoker  *jwt.TokenRevoker
+	EventBus      bus.IBus
 	HealthChecker *health.Checker
-	
+
 	// Domain Dependencies (all contexts)
 	Dependencies *Dependencies
-	
+
 	// Fiscal Integration (special case - needs printer/checkbox config)
 	FiscalOrderEventHandler *fiscalIntegration.OrderEventHandler
 	ReceiptUseCase          receiptUseCase.IReceiptUseCase
-	
+
 	// Scheduler
 	Scheduler *scheduler.Engine
 }
@@ -187,16 +187,16 @@ func initDatabase(cfg *config.AppConfig) (*sqlx.DB, error) {
 // runMigrations runs all database migrations
 func runMigrations(cfg *config.AppConfig, db *sqlx.DB) error {
 	logger.Info("Running database migrations...")
-	
+
 	// Get database driver from config (default: postgres)
 	driver := cfg.Database.Driver
 	if driver == "" {
 		driver = "postgres"
 	}
-	
+
 	// Construct migrations path with driver subdirectory
 	migrationsPath := fmt.Sprintf("migrations/%s", driver)
-	
+
 	// Create dialect for database-specific SQL
 	dialect := postgres.NewDialect()
 	migrationManager := migration.NewManager(db, driver, migrationsPath, dialect)

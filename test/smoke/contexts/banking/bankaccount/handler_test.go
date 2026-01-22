@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	accountAggregate "github.com/basilex/promenade/internal/contexts/banking/bankaccount/aggregate"
 	accountHTTP "github.com/basilex/promenade/internal/contexts/banking/bankaccount/adapter/http"
+	accountAggregate "github.com/basilex/promenade/internal/contexts/banking/bankaccount/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )

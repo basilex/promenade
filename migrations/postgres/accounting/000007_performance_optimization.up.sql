@@ -50,8 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_accounting_budgets_org_status_year
 
 -- Budget Lines: budget + account (for lookups)
 CREATE INDEX IF NOT EXISTS idx_accounting_budget_lines_budget_account 
-    ON accounting_budget_lines(budget_id, account_id) 
-    WHERE deleted_at IS NULL;
+    ON accounting_budget_lines(budget_id, account_id);
 
 -- Cost Centers: organization + active + type
 CREATE INDEX IF NOT EXISTS idx_accounting_cost_centers_org_active_type 
@@ -95,8 +94,7 @@ SELECT
     l.updated_at AS last_calculated_at
 FROM accounting_ledger l
 JOIN accounting_chart_of_accounts a ON l.account_id = a.id AND a.deleted_at IS NULL
-JOIN accounting_fiscal_periods fp ON l.fiscal_period_id = fp.id AND fp.deleted_at IS NULL
-WHERE l.deleted_at IS NULL;
+JOIN accounting_fiscal_periods fp ON l.fiscal_period_id = fp.id AND fp.deleted_at IS NULL;
 
 CREATE UNIQUE INDEX idx_accounting_mv_balances_unique 
     ON accounting_mv_account_balances(account_id, fiscal_period_id);
@@ -136,15 +134,15 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS accounting_mv_budget_vs_actual AS
 SELECT 
     b.organization_id,
     b.id AS budget_id,
-    b.budget_name,
+    b.name AS budget_name,
     b.fiscal_year,
     b.status AS budget_status,
     bl.account_id,
     a.code AS account_code,
     a.name AS account_name,
-    bl.budgeted_amount_cents,
+    bl.budget_amount_cents,
     bl.actual_amount_cents,
-    bl.variance_cents,
+    bl.variance_percent,
     b.updated_at AS last_updated_at
 FROM accounting_budgets b
 JOIN accounting_budget_lines bl ON b.id = bl.budget_id

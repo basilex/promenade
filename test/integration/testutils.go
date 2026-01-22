@@ -348,6 +348,11 @@ func runMigrations(db *sqlx.DB, log *slog.Logger) error {
 		return fmt.Errorf("billing migrations failed: %w", err)
 	}
 
+	// Run accounting context migrations
+	if err := mgr.MigrateNamespace(ctx, "accounting"); err != nil {
+		return fmt.Errorf("accounting migrations failed: %w", err)
+	}
+
 	// Run banking context migrations
 	if err := mgr.MigrateNamespace(ctx, "banking"); err != nil {
 		return fmt.Errorf("banking migrations failed: %w", err)
@@ -422,4 +427,95 @@ func FakeSKU(suffix int) string {
 // FakeName generates a test name with prefix and suffix
 func FakeName(prefix string, suffix int) string {
 	return fmt.Sprintf("%s %d", prefix, suffix)
+}
+
+// ============================================================================
+// Chart of Accounts Helpers
+// ============================================================================
+
+// CreateBasicChartOfAccounts creates a minimal chart of accounts for testing.
+// Returns map of account codes to their IDs for easy reference in tests.
+func CreateBasicChartOfAccounts(ctx context.Context, db *sqlx.DB, orgID, userID uuidv7.UUID) (map[string]uuidv7.UUID, error) {
+	accounts := make(map[string]uuidv7.UUID)
+
+	// Define essential accounts for testing
+	accountsToCreate := []struct {
+		code        string
+		name        string
+		accountType string
+		parentCode  string // empty if root
+		level       int
+	}{
+		// Assets
+		{"30", "Каса", "asset", "", 1},
+		{"301", "Каса в національній валюті", "asset", "30", 2},
+		{"31", "Рахунки в банках", "asset", "", 1},
+		{"311", "Розрахункові рахунки", "asset", "31", 2},
+		{"36", "Розрахунки з покупцями", "asset", "", 1},
+		{"361", "Розрахунки з вітчизняними покупцями", "asset", "36", 2},
+
+		// Liabilities
+		{"63", "Розрахунки з постачальниками", "liability", "", 1},
+		{"631", "Розрахунки з вітчизняними постачальниками", "liability", "63", 2},
+		{"64", "Розрахунки з податків", "liability", "", 1},
+		{"641", "Податок на прибуток", "liability", "64", 2},
+
+		// Equity
+		{"40", "Статутний капітал", "equity", "", 1},
+		{"401", "Статутний капітал", "equity", "40", 2},
+
+		// Income
+		{"70", "Дохід від реалізації", "income", "", 1},
+		{"701", "Дохід від реалізації товарів", "income", "70", 2},
+
+		// Expenses
+		{"90", "Собівартість реалізації", "expense", "", 1},
+		{"901", "Собівартість реалізованих товарів", "expense", "90", 2},
+		{"92", "Адміністративні витрати", "expense", "", 1},
+	}
+
+	// Create accounts in order (parents first)
+	for _, acc := range accountsToCreate {
+		id := uuidv7.New()
+		accounts[acc.code] = id
+
+		var parentID *string
+		if acc.parentCode != "" {
+			if parentUUID, ok := accounts[acc.parentCode]; ok {
+				parentStr := parentUUID.String()
+				parentID = &parentStr
+			}
+		}
+
+		query := `
+			INSERT INTO accounting_chart_of_accounts (
+				id, organization_id, code, name, type, parent_id, level,
+				currency_code, is_active, created_by, last_updated_by,
+				created_at, updated_at
+			) VALUES (
+				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+			)`
+
+		_, err := db.ExecContext(
+			ctx, query,
+			id.String(),
+			orgID.String(),
+			acc.code,
+			acc.name,
+			acc.accountType,
+			parentID,
+			acc.level,
+			"UAH",
+			true,
+			userID.String(),
+			userID.String(),
+			time.Now(),
+			time.Now(),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create account %s: %w", acc.code, err)
+		}
+	}
+
+	return accounts, nil
 }

@@ -1,10 +1,10 @@
 package repository
 
 import (
-"context"
+	"context"
 
-"github.com/basilex/promenade/internal/contexts/banking/bankaccount/aggregate"
-"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/internal/contexts/banking/bankaccount/aggregate"
+	"github.com/basilex/promenade/pkg/uuidv7"
 )
 
 // IBankAccountRepository defines the interface for bank account persistence

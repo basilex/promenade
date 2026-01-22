@@ -14,39 +14,6 @@ import "errors"
 var (
 	// ErrProductNotFound is returned when a product cannot be found by ID or SKU.
 	ErrProductNotFound = errors.New("product not found")
-
-	// ErrCheckSKUFailed is returned when SKU uniqueness check fails due to database error.
-	ErrCheckSKUFailed = errors.New("failed to check SKU uniqueness")
-
-	// ErrCreateFailed is returned when product creation fails due to database error.
-	ErrCreateFailed = errors.New("failed to create product")
-
-	// ErrUpdateFailed is returned when product update fails due to database error.
-	ErrUpdateFailed = errors.New("failed to update product")
-
-	// ErrDeleteFailed is returned when product deletion fails due to database error.
-	ErrDeleteFailed = errors.New("failed to delete product")
-
-	// ErrListFailed is returned when product listing fails due to database error.
-	ErrListFailed = errors.New("failed to list products")
-
-	// ErrListByCategoryFailed is returned when category filtering fails.
-	ErrListByCategoryFailed = errors.New("failed to list products by category")
-
-	// ErrListByBrandFailed is returned when brand filtering fails.
-	ErrListByBrandFailed = errors.New("failed to list products by brand")
-
-	// ErrListByStatusFailed is returned when status filtering fails.
-	ErrListByStatusFailed = errors.New("failed to list products by status")
-
-	// ErrSearchFailed is returned when product search fails due to database error.
-	ErrSearchFailed = errors.New("failed to search products")
-
-	// ErrCountFailed is returned when product count query fails.
-	ErrCountFailed = errors.New("failed to count products")
-
-	// ErrListLowStockFailed is returned when low stock query fails.
-	ErrListLowStockFailed = errors.New("failed to list low stock products")
 )
 
 // ============================================================================

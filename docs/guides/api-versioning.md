@@ -13,6 +13,201 @@ Promenade Platform uses **URL-based versioning** to ensure API stability and all
 
 ---
 
+## Current Implementation
+
+### Production Status
+
+**Implementation**:  **Fully Implemented**  
+**Location**: [cmd/api/server.go](../../cmd/api/server.go)  
+**Current Version**: v1  
+**Base Path**: `/api/v1`
+
+### Routing Structure
+
+All API endpoints are grouped under `/api/v1`:
+
+```go
+// cmd/api/server.go (lines 88-130)
+func (s *Server) SetupRoutes() {
+    // Health checks (unversioned)
+    healthHandler := health.NewHandler(s.app.HealthChecker)
+    healthHandler.RegisterRoutes(s.router)
+
+    // Swagger documentation (unversioned)
+    s.router.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+    // API routes with versioning
+    api := s.router.Group("/api")
+    {
+        v1 := api.Group("/v1")
+        {
+            // API info endpoint
+            v1.GET("", func(c *gin.Context) {
+                c.JSON(http.StatusOK, gin.H{
+                    "message": "Promenade CRM/ERP Platform API v1",
+                    "version": s.app.Config.App.Version,
+                })
+            })
+
+            // Register all context routes under /api/v1
+            sharedRouter.RegisterRoutes(v1)       // /api/v1/shared/*
+            identityRouter.RegisterRoutes(v1)     // /api/v1/identity/*
+            customerMgmtRouter.RegisterRoutes(v1) // /api/v1/customer-mgmt/*
+            orderMgmtRouter.RegisterRoutes(v1)    // /api/v1/order-mgmt/*
+            billingRouter.RegisterRoutes(v1)      // /api/v1/billing/*
+            fiscalRouter.RegisterRoutes(v1)       // /api/v1/fiscal/*
+            warehouseRouter.RegisterRoutes(v1)    // /api/v1/warehouse/*
+            scriptingRouter.RegisterRoutes(v1)    // /api/v1/scripting/*
+            uiRouter.RegisterRoutes(v1)           // /api/v1/ui/*
+
+            // Function-based routes
+            banking.RegisterRoutes(v1, ...)       // /api/v1/banking/*
+            accounting.RegisterRoutes(v1, ...)    // /api/v1/accounting/*
+            analytics.RegisterRoutes(v1, ...)     // /api/v1/analytics/*
+        }
+    }
+}
+```
+
+### Endpoint Examples
+
+**Live Endpoints**:
+
+```
+GET  /api/v1                              # API info
+GET  /api/v1/shared/countries             # Shared context
+POST /api/v1/identity/users/register      # Identity context
+GET  /api/v1/customer-mgmt/customers      # Customer management
+POST /api/v1/order-mgmt/orders            # Order management
+GET  /api/v1/billing/invoices             # Billing
+POST /api/v1/fiscal/receipts              # Fiscal (ПРРО)
+GET  /api/v1/warehouse/inventory          # Warehouse
+POST /api/v1/scripting/scripts            # Scripting (Lua)
+GET  /api/v1/ui/forms                     # UI Metadata
+POST /api/v1/banking/bank-accounts        # Banking
+GET  /api/v1/accounting/accounts          # Accounting
+```
+
+**Test It**:
+
+```bash
+# Start dev server
+make dev
+
+# Test API info endpoint
+curl http://localhost:8081/api/v1
+
+# Response:
+# {
+#   "message": "Promenade CRM/ERP Platform API v1",
+#   "version": "0.1.0"
+# }
+```
+
+### Context Router Pattern
+
+Each bounded context implements `RegisterRoutes(group *gin.RouterGroup)`:
+
+```go
+// Example: internal/contexts/customer-mgmt/router.go
+type Router struct {
+    handler *customer.CustomerHandler
+}
+
+func NewRouter(db *sqlx.DB) *Router {
+    // Initialize dependencies...
+    return &Router{handler: handler}
+}
+
+func (r *Router) RegisterRoutes(group *gin.RouterGroup) {
+    customers := group.Group("/customer-mgmt/customers")
+    {
+        customers.POST("", r.handler.Create)
+        customers.GET("/:id", r.handler.GetByID)
+        customers.PUT("/:id", r.handler.Update)
+        customers.DELETE("/:id", r.handler.Delete)
+        customers.GET("", r.handler.List)
+    }
+}
+```
+
+**Result**: Routes automatically versioned under `/api/v1/customer-mgmt/customers`
+
+### Future v2 Implementation
+
+When v2 is needed, add parallel group:
+
+```go
+func (s *Server) SetupRoutes() {
+    api := s.router.Group("/api")
+    {
+        // v1 - deprecated but still active
+        v1 := api.Group("/v1")
+        v1.Use(middleware.DeprecateEndpoint(
+            time.Date(2028, 1, 1, 0, 0, 0, 0, time.UTC),
+            "/api/v2",
+        ))
+        {
+            // Register v1 routes...
+        }
+
+        // v2 - current version
+        v2 := api.Group("/v2")
+        {
+            // Register v2 routes (with breaking changes)...
+        }
+    }
+}
+```
+
+### Swagger/OpenAPI Integration
+
+Versioning reflected in OpenAPI spec:
+
+```go
+// cmd/api/main.go
+// @title Promenade Platform
+// @version 0.1.0
+// @description Modern backend platform for customer management
+// @BasePath /api/v1  ← Version in BasePath
+```
+
+**Swagger UI**: http://localhost:8081/api/docs/index.html
+
+All endpoints automatically documented under `/api/v1` base path.
+
+### Configuration
+
+Version metadata from config:
+
+```yaml
+# config/app.postgres-dev.yaml
+app:
+  name: Promenade
+  environment: development
+  version: "0.1.0" # Returned in /api/v1 response
+
+server:
+  host: "0.0.0.0"
+  port: 8081
+  base_url: "http://localhost:8081"
+```
+
+### Health Checks (Unversioned)
+
+Health endpoints remain unversioned for monitoring tools:
+
+```
+GET /health          # Overall health
+GET /health/db       # Database health
+GET /health/redis    # Redis health
+GET /health/eventbus # Event bus health
+```
+
+**Rationale**: Monitoring tools expect stable endpoints
+
+---
+
 ## Versioning Approach
 
 ### URL-Based Versioning
@@ -25,12 +220,14 @@ https://api.promenade.example.com/api/v2/customers
 ```
 
 **Rationale**:
+
 - **Clear**: Version explicit in URL
 - **Cacheable**: Different versions can be cached separately
 - **Simple**: No custom headers needed
 - **Documentation-friendly**: Swagger groups by version
 
 **Alternative approaches NOT used**:
+
 - Header versioning (`Accept: application/vnd.promenade.v1+json`) - harder for developers
 - Query parameter (`/api/customers?version=1`) - breaks caching
 - Content negotiation - complex for REST API
@@ -45,6 +242,7 @@ https://api.promenade.example.com/api/v2/customers
 **Current**: v1 (launched January 2026)
 
 **Guarantees**:
+
 - Bug fixes applied immediately
 - Security patches prioritized
 - New features added
@@ -58,6 +256,7 @@ https://api.promenade.example.com/api/v2/customers
 **Example**: v1 deprecated when v2 released (12 months support)
 
 **Guarantees**:
+
 - Critical bug fixes only
 - Security patches applied
 - No new features
@@ -65,6 +264,7 @@ https://api.promenade.example.com/api/v2/customers
 - Migration guide available
 
 **Indicators**:
+
 - HTTP header: `Deprecation: true`
 - HTTP header: `Sunset: 2027-06-01T00:00:00Z` (RFC 8594)
 - HTTP header: `Link: </api/v2/customers>; rel="successor-version"`
@@ -76,6 +276,7 @@ https://api.promenade.example.com/api/v2/customers
 **Timing**: 12 months after deprecation announcement
 
 **Response**:
+
 ```http
 HTTP/1.1 410 Gone
 Content-Type: application/json
@@ -100,52 +301,59 @@ Link: </api/v2/customers>; rel="successor-version"
 **Major version bump required (v1 → v2)** for:
 
 1. **Removing fields** from response
+
    ```json
    // v1
    {"id": "123", "name": "John", "email": "john@example.com"}
-   
+
    // v2 (BREAKING - removed email)
    {"id": "123", "name": "John"}
    ```
 
 2. **Renaming fields**
+
    ```json
    // v1
    {"customer_id": "123"}
-   
+
    // v2 (BREAKING - renamed field)
    {"customerId": "123"}
    ```
 
 3. **Changing field types**
+
    ```json
    // v1
    {"amount": 100}
-   
+
    // v2 (BREAKING - string to number)
    {"amount": "100.00"}
    ```
 
 4. **Removing endpoints**
+
    ```
    DELETE /api/v1/users/:id  // Removed in v2
    ```
 
 5. **Changing HTTP methods**
+
    ```
    PATCH /api/v1/users/:id   // Changed to PUT in v2
    ```
 
 6. **Changing authentication scheme**
+
    ```
    Bearer token → OAuth 2.0
    ```
 
 7. **Changing error response format**
+
    ```json
    // v1
    {"error": "Not found"}
-   
+
    // v2 (BREAKING - new structure)
    {"status": "error", "error": {"code": "NOT_FOUND", "message": "Not found"}}
    ```
@@ -155,25 +363,29 @@ Link: </api/v2/customers>; rel="successor-version"
 **Minor version updates (documentation only)** for:
 
 1. **Adding new fields** (with defaults)
+
    ```json
    // v1
    {"id": "123", "name": "John"}
-   
+
    // v1.1 (NON-BREAKING - added optional field)
    {"id": "123", "name": "John", "phone": "+1234567890"}
    ```
 
 2. **Adding new endpoints**
+
    ```
    POST /api/v1/customers/:id/notes  // New in v1.1
    ```
 
 3. **Adding new optional query parameters**
+
    ```
    GET /api/v1/customers?filter=active  // New in v1.1
    ```
 
 4. **Expanding enum values** (if clients ignore unknown values)
+
    ```json
    // v1: status = "active" | "suspended"
    // v1.1: status = "active" | "suspended" | "pending"  // Added pending
@@ -226,6 +438,7 @@ X-API-Warn: This endpoint is deprecated and will be removed on 2027-06-01
 ```
 
 **Implementation**:
+
 ```go
 // middleware/deprecation.go
 func DeprecateEndpoint(sunsetDate time.Time, successorURL string) gin.HandlerFunc {
@@ -276,6 +489,7 @@ When releasing v2, create comprehensive migration guide:
 **Template**: `docs/migration/v1-to-v2.md`
 
 **Structure**:
+
 1. **Overview** - Summary of changes
 2. **Breaking Changes** - Detailed list with examples
 3. **Step-by-Step Migration** - Code examples (before/after)
@@ -302,6 +516,7 @@ January 2028: v1 sunset
 ```
 
 **Benefits**:
+
 - Zero downtime migration
 - Clients migrate at their own pace
 - A/B testing possible
@@ -320,6 +535,7 @@ curl https://api.promenade.example.com/api/v1
 ```
 
 **Response**:
+
 ```json
 {
   "message": "Promenade CRM Platform API v1",
@@ -338,6 +554,7 @@ curl https://api.promenade.example.com/api/v1
 ```
 
 **Response** (after v2 release):
+
 ```json
 {
   "message": "Promenade CRM Platform API v1",
@@ -358,11 +575,13 @@ curl https://api.promenade.example.com/api/v1
 ### When to Maintain Backward Compatibility
 
 **Always maintain** for:
+
 1. Security patches in deprecated versions
 2. Critical bug fixes
 3. Data integrity issues
 
 **Never maintain** for:
+
 1. New features in deprecated versions
 2. Performance optimizations (unless critical)
 3. Non-critical bug fixes
@@ -384,7 +603,7 @@ func (a *CustomerAdapterV1) GetByID(c *gin.Context) {
         // Handle error
         return
     }
-    
+
     // Convert v2 response to v1 format
     v1Response := convertToV1Format(customer)
     c.JSON(200, v1Response)
@@ -431,6 +650,7 @@ internal/
 ```
 
 **Alternative** (shared core, versioned adapters):
+
 ```
 internal/
   contexts/
@@ -458,13 +678,13 @@ internal/
 // cmd/api/server.go
 func (s *Server) SetupRoutes() {
     api := s.router.Group("/api")
-    
+
     // v1 routes
     v1 := api.Group("/v1")
     {
         customermgmt.RegisterRoutesV1(v1, s.app.DB)
     }
-    
+
     // v2 routes (when ready)
     v2 := api.Group("/v2")
     {
@@ -526,10 +746,10 @@ Log API version with each request:
 func VersionLogger() gin.HandlerFunc {
     return func(c *gin.Context) {
         version := extractVersion(c.Request.URL.Path) // Extract from /api/v1/...
-        
+
         // Log metrics
         metrics.APIVersionUsage.WithLabelValues(version).Inc()
-        
+
         c.Next()
     }
 }
@@ -540,12 +760,12 @@ func VersionLogger() gin.HandlerFunc {
 Track deprecated endpoint usage:
 
 ```sql
-SELECT 
+SELECT
     endpoint,
     COUNT(*) as calls,
     COUNT(DISTINCT client_id) as unique_clients
 FROM api_logs
-WHERE version = 'v1' 
+WHERE version = 'v1'
   AND deprecated = true
   AND timestamp > NOW() - INTERVAL '30 days'
 GROUP BY endpoint
@@ -553,6 +773,7 @@ ORDER BY calls DESC;
 ```
 
 **Alerts**:
+
 - Email clients still using deprecated endpoints (6 months before sunset)
 - Dashboard showing migration progress
 - Slack notifications for high-volume deprecated endpoint usage
@@ -593,7 +814,7 @@ When releasing new version or deprecating old:
 ```
 Hello Promenade Developer,
 
-We're excited to announce the release of Promenade API v2 with improved 
+We're excited to announce the release of Promenade API v2 with improved
 performance and new features!
 
 IMPORTANT: API v1 will be sunset on June 1, 2027 (12 months from now).
@@ -621,7 +842,7 @@ Promenade API Team
 
 **File**: `docs/migration/v1-to-v2.md`
 
-```markdown
+````markdown
 # Migration Guide: API v1 → v2
 
 **Released**: January 1, 2027  
@@ -644,6 +865,7 @@ This guide helps you migrate from v1 to v2 with minimal disruption.
 ### 1. Field Renames
 
 **Customer Response**:
+
 ```json
 // v1
 {
@@ -657,19 +879,22 @@ This guide helps you migrate from v1 to v2 with minimal disruption.
   "name": "John Doe"
 }
 ```
+````
 
 **Action**: Update field names in your code.
 
 ### 2. Date Format
 
 **v1**: Unix timestamp (integer)
+
 ```json
-{"created_at": 1704067200}
+{ "created_at": 1704067200 }
 ```
 
 **v2**: ISO 8601 (string)
+
 ```json
-{"created_at": "2024-01-01T00:00:00Z"}
+{ "created_at": "2024-01-01T00:00:00Z" }
 ```
 
 **Action**: Update date parsing logic.
@@ -677,9 +902,11 @@ This guide helps you migrate from v1 to v2 with minimal disruption.
 ### 3. Removed Endpoints
 
 **Removed**:
+
 - `DELETE /api/v1/customers/:id/hard-delete`
 
 **Replacement**:
+
 - Use soft delete: `DELETE /api/v2/customers/:id` (reversible)
 - Use purge API: `POST /api/v2/admin/purge/customers/:id` (admin only)
 
@@ -691,10 +918,10 @@ This guide helps you migrate from v1 to v2 with minimal disruption.
 
 ```javascript
 // Before (v1)
-const API_BASE = 'https://api.promenade.example.com/api/v1';
+const API_BASE = "https://api.promenade.example.com/api/v1";
 
 // After (v2)
-const API_BASE = 'https://api.promenade.example.com/api/v2';
+const API_BASE = "https://api.promenade.example.com/api/v2";
 ```
 
 ### Step 2: Update Field Names
@@ -750,12 +977,14 @@ v1 will remain available until January 1, 2028.
 ## Support
 
 **Questions?**
+
 - Email: api-support@promenade.example.com
 - Discord: https://discord.gg/promenade-dev
 - GitHub: https://github.com/basilex/promenade/discussions
 
 **Stuck?**
 We offer free migration consulting calls. Book here: https://calendly.com/promenade-api
+
 ```
 
 ---
@@ -769,7 +998,8 @@ We offer free migration consulting calls. Book here: https://calendly.com/promen
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: January 5, 2026  
-**Status**: Official Policy  
+**Version**: 1.0.0
+**Last Updated**: January 5, 2026
+**Status**: Official Policy
 **Maintainer**: Promenade API Team
+```

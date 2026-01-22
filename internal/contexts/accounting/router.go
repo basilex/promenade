@@ -5,8 +5,6 @@ import (
 
 	accounthttp "github.com/basilex/promenade/internal/contexts/accounting/account/adapter/http"
 	accountusecase "github.com/basilex/promenade/internal/contexts/accounting/account/usecase"
-	reconciliationhttp "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/adapter/http"
-	reconciliationusecase "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/usecase"
 	budgethttp "github.com/basilex/promenade/internal/contexts/accounting/budget/adapter/http"
 	budgetusecase "github.com/basilex/promenade/internal/contexts/accounting/budget/usecase"
 	costcenterhttp "github.com/basilex/promenade/internal/contexts/accounting/costcenter/adapter/http"
@@ -15,6 +13,8 @@ import (
 	fiscalperiodusecase "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/usecase"
 	journalentryhttp "github.com/basilex/promenade/internal/contexts/accounting/journalentry/adapter/http"
 	journalentryusecase "github.com/basilex/promenade/internal/contexts/accounting/journalentry/usecase"
+	reconciliationhttp "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/adapter/http"
+	reconciliationusecase "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/usecase"
 	taxcodehttp "github.com/basilex/promenade/internal/contexts/accounting/taxcode/adapter/http"
 	taxcodeusecase "github.com/basilex/promenade/internal/contexts/accounting/taxcode/usecase"
 )

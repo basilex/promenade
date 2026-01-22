@@ -1,0 +1,20 @@
+#!/bin/bash
+# Pre-push hook: Run full CI checks before pushing
+# Install: make setup-hooks
+
+set -e
+
+echo "🚀 Running pre-push checks..."
+echo ""
+
+# Run full pre-push suite
+if ! make pre-push; then
+    echo ""
+    echo "❌ Pre-push checks failed. Fix errors before pushing."
+    echo ""
+    echo "💡 Skip with: git push --no-verify (NOT RECOMMENDED)"
+    exit 1
+fi
+
+echo ""
+echo "✅ All checks passed! Ready to push."

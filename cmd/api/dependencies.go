@@ -30,25 +30,25 @@ import (
 	bankTransactionUseCase "github.com/basilex/promenade/internal/contexts/banking/banktransaction/usecase"
 
 	// Accounting Context
-	accountingAudit "github.com/basilex/promenade/internal/contexts/accounting/audit"
 	accountRepo "github.com/basilex/promenade/internal/contexts/accounting/account/adapter/repository/postgres"
 	accountCache "github.com/basilex/promenade/internal/contexts/accounting/account/cache"
 	accountUseCase "github.com/basilex/promenade/internal/contexts/accounting/account/usecase"
-	journalEntryRepo "github.com/basilex/promenade/internal/contexts/accounting/journalentry/adapter/repository/postgres"
-	journalEntryUseCase "github.com/basilex/promenade/internal/contexts/accounting/journalentry/usecase"
-	fiscalPeriodRepo "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/adapter/repository/postgres"
-	fiscalPeriodCache "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/cache"
-	fiscalPeriodUseCase "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/usecase"
-	taxCodeRepo "github.com/basilex/promenade/internal/contexts/accounting/taxcode/adapter/repository/postgres"
-	taxCodeCache "github.com/basilex/promenade/internal/contexts/accounting/taxcode/cache"
-	taxCodeUseCase "github.com/basilex/promenade/internal/contexts/accounting/taxcode/usecase"
+	accountingAudit "github.com/basilex/promenade/internal/contexts/accounting/audit"
 	budgetRepo "github.com/basilex/promenade/internal/contexts/accounting/budget/adapter/repository/postgres"
 	budgetUseCase "github.com/basilex/promenade/internal/contexts/accounting/budget/usecase"
 	costCenterRepo "github.com/basilex/promenade/internal/contexts/accounting/costcenter/adapter/repository/postgres"
 	costCenterUseCase "github.com/basilex/promenade/internal/contexts/accounting/costcenter/usecase"
+	fiscalPeriodRepo "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/adapter/repository/postgres"
+	fiscalPeriodCache "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/cache"
+	fiscalPeriodUseCase "github.com/basilex/promenade/internal/contexts/accounting/fiscalperiod/usecase"
+	accountingIntegration "github.com/basilex/promenade/internal/contexts/accounting/integration"
+	journalEntryRepo "github.com/basilex/promenade/internal/contexts/accounting/journalentry/adapter/repository/postgres"
+	journalEntryUseCase "github.com/basilex/promenade/internal/contexts/accounting/journalentry/usecase"
 	reconciliationRepo "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/adapter/repository/postgres"
 	reconciliationUseCase "github.com/basilex/promenade/internal/contexts/accounting/reconciliation/usecase"
-	accountingIntegration "github.com/basilex/promenade/internal/contexts/accounting/integration"
+	taxCodeRepo "github.com/basilex/promenade/internal/contexts/accounting/taxcode/adapter/repository/postgres"
+	taxCodeCache "github.com/basilex/promenade/internal/contexts/accounting/taxcode/cache"
+	taxCodeUseCase "github.com/basilex/promenade/internal/contexts/accounting/taxcode/usecase"
 
 	// Shared Context (Reference Data)
 	countryRepositoryFactory "github.com/basilex/promenade/internal/contexts/shared/country/adapter/repository"
@@ -81,7 +81,7 @@ type SharedUseCases struct {
 
 // BankingUseCases holds all Banking Context use cases
 type BankingUseCases struct {
-	BankAccount    bankAccountUseCase.IBankAccountUseCase
+	BankAccount     bankAccountUseCase.IBankAccountUseCase
 	BankTransaction bankTransactionUseCase.IBankTransactionUseCase
 }
 
@@ -196,7 +196,7 @@ func initBankingContext(db *sqlx.DB) (*BankingUseCases, error) {
 	)
 
 	return &BankingUseCases{
-		BankAccount:    bankAccountUC,
+		BankAccount:     bankAccountUC,
 		BankTransaction: bankTransactionUC,
 	}, nil
 }

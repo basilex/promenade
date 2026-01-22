@@ -16,12 +16,12 @@ import (
 
 // StandardAccounts holds account IDs for automatic journal entries
 type StandardAccounts struct {
-	BankAccount         uuidv7.UUID // 311 - Bank Accounts
-	CashRegister        uuidv7.UUID // 301 - Cash Register
-	AccountsReceivable  uuidv7.UUID // 361 - Accounts Receivable
-	SalesRevenue        uuidv7.UUID // 702 - Sales Revenue
-	OperatingExpenses   uuidv7.UUID // 902 - Operating Expenses
-	AccountsPayable     uuidv7.UUID // 631 - Accounts Payable
+	BankAccount        uuidv7.UUID // 311 - Bank Accounts
+	CashRegister       uuidv7.UUID // 301 - Cash Register
+	AccountsReceivable uuidv7.UUID // 361 - Accounts Receivable
+	SalesRevenue       uuidv7.UUID // 702 - Sales Revenue
+	OperatingExpenses  uuidv7.UUID // 902 - Operating Expenses
+	AccountsPayable    uuidv7.UUID // 631 - Accounts Payable
 }
 
 // BankEventHandler handles banking events and creates journal entries

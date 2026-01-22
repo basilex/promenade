@@ -28,7 +28,7 @@ type IReconciliationUseCase interface {
 
 type reconciliationUseCase struct {
 	reconciliationRepo repository.IReconciliationRepository
-	auditLogger            *audit.AuditLogger
+	auditLogger        *audit.AuditLogger
 }
 
 // NewReconciliationUseCase creates a new bank reconciliation use case
@@ -38,7 +38,7 @@ func NewReconciliationUseCase(
 ) IReconciliationUseCase {
 	return &reconciliationUseCase{
 		reconciliationRepo: reconciliationRepo,
-		auditLogger:            auditLogger,
+		auditLogger:        auditLogger,
 	}
 }
 

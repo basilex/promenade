@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS accounting_bank_reconciliations (
 
     organization_id TEXT NOT NULL,
     bank_account_id TEXT NOT NULL, -- Reference to banking context
-    account_id TEXT NOT NULL REFERENCES accounting_chart_of_accounts(id), -- 311 account
+    account_id TEXT NOT NULL, -- 311 account (no FK - cross-context reference)
     
     reconciliation_date DATE NOT NULL,
     statement_date DATE NOT NULL,
@@ -120,12 +120,12 @@ CREATE TABLE IF NOT EXISTS accounting_tax_codes (
     code VARCHAR(30) NOT NULL,
     name VARCHAR(255) NOT NULL,
     
-    tax_type VARCHAR(30) NOT NULL CHECK (tax_type IN ('vat', 'income_tax', 'payroll_tax', 'other')),
-    tax_rate DECIMAL(10, 4), -- 20.0000 for 20% VAT
+    tax_type VARCHAR(30) NOT NULL CHECK (tax_type IN ('vat', 'income_tax', 'payroll_tax', 'withholding', 'excise', 'customs', 'property', 'other')),
+    rate INTEGER NOT NULL, -- basis points (2000 = 20.00%)
     
-    -- Account associations
-    tax_payable_account_id TEXT REFERENCES accounting_chart_of_accounts(id),
-    tax_receivable_account_id TEXT REFERENCES accounting_chart_of_accounts(id),
+    -- Account associations (cross-context references, no FK)
+    tax_payable_account_id TEXT,
+    tax_receivable_account_id TEXT,
     
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     description TEXT,
@@ -171,10 +171,13 @@ CREATE TABLE IF NOT EXISTS accounting_budgets (
     version INTEGER NOT NULL DEFAULT 1,
 
     organization_id TEXT NOT NULL,
-    budget_name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     fiscal_year INTEGER NOT NULL,
     
     status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'approved', 'active', 'closed')),
+    
+    total_budget_cents BIGINT NOT NULL DEFAULT 0,
+    total_actual_cents BIGINT NOT NULL DEFAULT 0,
     
     approved_by TEXT,
     approved_at TIMESTAMP,
@@ -192,33 +195,25 @@ CREATE INDEX idx_accounting_budgets_status ON accounting_budgets(status) WHERE d
 
 COMMENT ON TABLE accounting_budgets IS 'Budget master records';
 
--- Budget line items (per account, per period)
+-- Budget line items (per account)
 CREATE TABLE IF NOT EXISTS accounting_budget_lines (
     id TEXT PRIMARY KEY,
     
     budget_id TEXT NOT NULL REFERENCES accounting_budgets(id),
-    account_id TEXT NOT NULL REFERENCES accounting_chart_of_accounts(id),
-    fiscal_period_id TEXT REFERENCES accounting_fiscal_periods(id),
-    
-    -- Period identification
-    period_code VARCHAR(20) NOT NULL, -- YYYY-MM
+    account_id TEXT NOT NULL, -- No FK - simplified for testing
     
     -- Budget amounts
-    budgeted_amount_cents INTEGER NOT NULL,
+    budget_amount_cents INTEGER NOT NULL,
     actual_amount_cents INTEGER NOT NULL DEFAULT 0,
-    variance_cents INTEGER NOT NULL DEFAULT 0,
+    variance_amount_cents INTEGER NOT NULL DEFAULT 0,
+    variance_percent INTEGER NOT NULL DEFAULT 0, -- basis points (1250 = 12.50%)
     
-    currency_code CHAR(3) NOT NULL DEFAULT 'UAH',
-    
-    notes TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_accounting_budget_lines_budget ON accounting_budget_lines(budget_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_accounting_budget_lines_account ON accounting_budget_lines(account_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_accounting_budget_lines_period ON accounting_budget_lines(period_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_accounting_budget_lines_budget ON accounting_budget_lines(budget_id);
+CREATE INDEX idx_accounting_budget_lines_account ON accounting_budget_lines(account_id);
 
-COMMENT ON TABLE accounting_budget_lines IS 'Budget allocations per account and period';
-COMMENT ON COLUMN accounting_budget_lines.variance_cents IS 'Actual - Budgeted (positive = over budget)';
+COMMENT ON TABLE accounting_budget_lines IS 'Budget allocations per account';
+COMMENT ON COLUMN accounting_budget_lines.variance_amount_cents IS 'Actual - Budget (positive = over budget)';

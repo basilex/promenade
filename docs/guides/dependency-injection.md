@@ -16,11 +16,11 @@ Promenade uses a **custom, explicit dependency injection (DI) container** instea
 
 **Custom DI in Promenade**:
 
-- ✅ **Explicit** — Every dependency is clear and traceable
-- ✅ **Type-safe** — Compile-time safety without reflection
-- ✅ **Debuggable** — Step through initialization easily
-- ✅ **Readable** — No magic, no generated code
-- ✅ **DDD-aligned** — Groups dependencies by bounded context
+-  **Explicit** — Every dependency is clear and traceable
+-  **Type-safe** — Compile-time safety without reflection
+-  **Debuggable** — Step through initialization easily
+-  **Readable** — No magic, no generated code
+-  **DDD-aligned** — Groups dependencies by bounded context
 
 ## Architecture
 
@@ -176,10 +176,10 @@ func (app *App) setupRoutes() *echo.Echo {
 No reflection means all errors are caught at compile time:
 
 ```go
-// ✅ Compiler checks this
+//  Compiler checks this
 deps.Shared.Country.UseCase.Create(ctx, dto)
 
-// ❌ Typo caught immediately
+//  Typo caught immediately
 deps.Shared.Contry.UseCase.Create(ctx, dto)
 ```
 
@@ -199,16 +199,16 @@ Dependencies are **explicit and traceable**:
 
 ```
 InitRepositories()
-├─ initSharedContext()
-│  ├─ countryRepo = NewFactory(db, driver)
-│  ├─ countryUseCase = New(countryRepo, eventBus)
-│  └─ countryHTTPHandler = New(countryUseCase)
-├─ initBankingContext()
-│  ├─ bankAccountRepo = NewFactory(db, driver)
-│  ├─ bankAccountUseCase = New(bankAccountRepo, eventBus)
-│  └─ bankAccountHTTPHandler = New(bankAccountUseCase)
-└─ initAccountingContext()
-   └─ ... 7 aggregates
+ initSharedContext()
+   countryRepo = NewFactory(db, driver)
+   countryUseCase = New(countryRepo, eventBus)
+   countryHTTPHandler = New(countryUseCase)
+ initBankingContext()
+   bankAccountRepo = NewFactory(db, driver)
+   bankAccountUseCase = New(bankAccountRepo, eventBus)
+   bankAccountHTTPHandler = New(bankAccountUseCase)
+ initAccountingContext()
+    ... 7 aggregates
 ```
 
 ### 4. Easy Debugging
@@ -240,15 +240,15 @@ Warehouse Context   → deps.Warehouse.OrderEventHandler
 | Aspect             | Custom DI (Promenade)  | Wire                         | Fx/Dig                         |
 | ------------------ | ---------------------- | ---------------------------- | ------------------------------ |
 | **Implementation** | Explicit functions     | Code generation              | Runtime reflection             |
-| **Type Safety**    | ✅ Compile-time        | ✅ Compile-time              | ✅ Compile-time (with caveats) |
-| **Debugging**      | ✅ Step-through easily | ⚠️ Generated code complexity | ❌ Opaque dependency graph     |
-| **IDE Support**    | ✅ Full autocomplete   | ⚠️ Limited (generated code)  | ⚠️ Limited (reflection)        |
-| **Performance**    | ✅ Zero overhead       | ✅ Zero overhead             | ⚠️ Reflection overhead         |
-| **Learning Curve** | ✅ Simple (plain Go)   | ⚠️ Provider syntax           | ⚠️ Lifecycle concepts          |
-| **DDD Boundaries** | ✅ Natural grouping    | ❌ Flat structure            | ❌ Flat structure              |
-| **Error Messages** | ✅ Clear and traceable | ⚠️ Generated code references | ❌ Runtime reflection errors   |
-| **Testability**    | ✅ Mock any dependency | ✅ Mock dependencies         | ⚠️ Complex mocking             |
-| **Refactoring**    | ✅ Safe with IDE       | ⚠️ Regenerate code           | ⚠️ Runtime discovery           |
+| **Type Safety**    |  Compile-time        |  Compile-time              |  Compile-time (with caveats) |
+| **Debugging**      |  Step-through easily |  Generated code complexity |  Opaque dependency graph     |
+| **IDE Support**    |  Full autocomplete   |  Limited (generated code)  |  Limited (reflection)        |
+| **Performance**    |  Zero overhead       |  Zero overhead             |  Reflection overhead         |
+| **Learning Curve** |  Simple (plain Go)   |  Provider syntax           |  Lifecycle concepts          |
+| **DDD Boundaries** |  Natural grouping    |  Flat structure            |  Flat structure              |
+| **Error Messages** |  Clear and traceable |  Generated code references |  Runtime reflection errors   |
+| **Testability**    |  Mock any dependency |  Mock dependencies         |  Complex mocking             |
+| **Refactoring**    |  Safe with IDE       |  Regenerate code           |  Runtime discovery           |
 
 ## Adding New Dependencies
 
@@ -374,12 +374,12 @@ func TestBankingIntegration(t *testing.T) {
 Each context init function should be < 100 lines:
 
 ```go
-// ✅ Good: focused and readable
+//  Good: focused and readable
 func initSharedContext(...) (*SharedUseCases, error) {
     // Initialize 3-5 aggregates
 }
 
-// ❌ Bad: too many responsibilities
+//  Bad: too many responsibilities
 func initEverything(...) (*AllDependencies, error) {
     // Initialize 20+ aggregates
 }
@@ -390,14 +390,14 @@ func initEverything(...) (*AllDependencies, error) {
 Match DDD architecture:
 
 ```go
-// ✅ Good: grouped by domain
+//  Good: grouped by domain
 type Dependencies struct {
     Shared     *SharedUseCases
     Banking    *BankingUseCases
     Accounting *AccountingUseCases
 }
 
-// ❌ Bad: flat technical grouping
+//  Bad: flat technical grouping
 type Dependencies struct {
     Repositories map[string]interface{}
     UseCases     map[string]interface{}
@@ -410,10 +410,10 @@ type Dependencies struct {
 Keep domain layer database-agnostic:
 
 ```go
-// ✅ Good: factory in infrastructure layer
+//  Good: factory in infrastructure layer
 countryRepo, err := countryrepository.NewFactory(db, cfg.Database.Driver)
 
-// ❌ Bad: direct driver selection in domain
+//  Bad: direct driver selection in domain
 var countryRepo country.Repository
 if driver == "postgres" {
     countryRepo = postgresrepo.New(db)
@@ -427,12 +427,12 @@ if driver == "postgres" {
 Wrap errors to provide clear debugging information:
 
 ```go
-// ✅ Good: wrapped errors with context
+//  Good: wrapped errors with context
 if err != nil {
     return nil, fmt.Errorf("failed to initialize banking context: %w", err)
 }
 
-// ❌ Bad: lost error context
+//  Bad: lost error context
 if err != nil {
     return nil, err
 }

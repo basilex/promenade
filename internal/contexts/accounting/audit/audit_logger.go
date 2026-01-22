@@ -143,9 +143,9 @@ func (l *AuditLogger) GetAuditTrail(ctx context.Context, entityType string, enti
 	for rows.Next() {
 		var (
 			id, entType, entID, action, changeType, orgID, userID string
-			beforeStateJSON, afterStateJSON, detailsJSON           *string
-			ipAddress, userAgent                                    *string
-			timestamp                                               time.Time
+			beforeStateJSON, afterStateJSON, detailsJSON          *string
+			ipAddress, userAgent                                  *string
+			timestamp                                             time.Time
 		)
 
 		err := rows.Scan(&id, &entType, &entID, &action, &changeType, &orgID, &userID,

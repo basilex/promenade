@@ -2,7 +2,7 @@ package health
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -109,7 +109,9 @@ func (c *Checker) checkDatabase(ctx context.Context) Check {
 	err := c.db.PingContext(ctx)
 	if err != nil {
 		check.Status = StatusUnhealthy
-		check.Message = fmt.Sprintf("database ping failed: %v", err)
+		check.Message = "database ping failed"
+		slog.Error("database health check failed",
+			slog.String("error", err.Error()))
 		check.Duration = time.Since(start)
 		return check
 	}
@@ -155,7 +157,9 @@ func (c *Checker) checkRedis(ctx context.Context) Check {
 	err := c.redis.Ping(ctx).Err()
 	if err != nil {
 		check.Status = StatusUnhealthy
-		check.Message = fmt.Sprintf("redis ping failed: %v", err)
+		check.Message = "redis ping failed"
+		slog.Error("redis health check failed",
+			slog.String("error", err.Error()))
 		check.Duration = time.Since(start)
 		return check
 	}
@@ -182,7 +186,9 @@ func (c *Checker) checkEventBus(ctx context.Context) Check {
 	err := c.eventBus.Health(ctx)
 	if err != nil {
 		check.Status = StatusUnhealthy
-		check.Message = fmt.Sprintf("event bus unhealthy: %v", err)
+		check.Message = "event bus unhealthy"
+		slog.Error("event bus health check failed",
+			slog.String("error", err.Error()))
 		check.Duration = time.Since(start)
 		return check
 	}

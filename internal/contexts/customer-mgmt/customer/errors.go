@@ -67,27 +67,3 @@ var (
 	// ErrCustomerNotLinkedToUser is returned when trying to operate on user link when none exists
 	ErrCustomerNotLinkedToUser = errors.New("customer not linked to user")
 )
-
-// Technical Operation Errors - Infrastructure failures
-var (
-	// ErrCustomerCreateFailed is returned when customer creation fails
-	ErrCustomerCreateFailed = errors.New("failed to create customer")
-
-	// ErrCustomerGetFailed is returned when customer retrieval fails
-	ErrCustomerGetFailed = errors.New("failed to retrieve customer")
-
-	// ErrCustomerUpdateFailed is returned when customer update fails
-	ErrCustomerUpdateFailed = errors.New("failed to update customer")
-
-	// ErrCustomerDeleteFailed is returned when customer deletion fails
-	ErrCustomerDeleteFailed = errors.New("failed to delete customer")
-
-	// ErrCustomerListFailed is returned when customer listing fails
-	ErrCustomerListFailed = errors.New("failed to list customers")
-
-	// ErrCustomerEmailCheckFailed is returned when email existence check fails
-	ErrCustomerEmailCheckFailed = errors.New("failed to check customer email existence")
-
-	// ErrCustomerStatsFailed is returned when retrieving customer statistics fails
-	ErrCustomerStatsFailed = errors.New("failed to retrieve customer statistics")
-)

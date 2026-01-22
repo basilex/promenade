@@ -3,6 +3,7 @@ package saga
 import (
 	"context"
 	"fmt"
+	"log/slog"
 )
 
 // Orchestrator coordinates the execution of saga steps
@@ -77,7 +78,10 @@ func (o *Orchestrator) compensate(ctx context.Context, saga *FulfillmentSaga, fa
 		if err := step.Compensate(ctx, saga); err != nil {
 			// Log compensation failure but continue
 			// In production, would retry or alert operations team
-			fmt.Printf("WARNING: Compensation failed for step %s: %v\n", step.Name(), err)
+			slog.Warn("compensation failed for saga step",
+				slog.String("step", step.Name()),
+				slog.String("saga_id", saga.ID.String()),
+				slog.String("error", err.Error()))
 			// Continue with other compensations
 		}
 	}

@@ -70,7 +70,7 @@ func TestBankAccountRepository_Update(t *testing.T) {
 func TestBankAccountRepository_Delete(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := postgres.NewBankAccountRepository(db.DB)
+		repo := postgres.NewBankAccountRepository(db.DB)
 
 		orgID := uuidv7.New()
 		acc, _ := aggregate.NewBankAccount(orgID, "To Delete", "Delete Bank", "UAH", uuidv7.New())
@@ -87,7 +87,7 @@ func TestBankAccountRepository_Delete(t *testing.T) {
 func TestBankAccountRepository_List(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := postgres.NewBankAccountRepository(db.DB)
+		repo := postgres.NewBankAccountRepository(db.DB)
 
 		orgID := uuidv7.New()
 
@@ -145,7 +145,7 @@ func TestBankAccountRepository_CountByOrganization(t *testing.T) {
 func TestBankAccountRepository_BalancePrecision(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := postgres.NewBankAccountRepository(db.DB)
+		repo := postgres.NewBankAccountRepository(db.DB)
 
 		orgID := uuidv7.New()
 		acc, _ := aggregate.NewBankAccount(orgID, "Precision Test", "Precision Bank", "UAH", uuidv7.New())
@@ -163,7 +163,7 @@ func TestBankAccountRepository_BalancePrecision(t *testing.T) {
 func TestBankAccountRepository_ProviderAccounts(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := postgres.NewBankAccountRepository(db.DB)
+		repo := postgres.NewBankAccountRepository(db.DB)
 
 		orgID := uuidv7.New()
 
@@ -193,7 +193,7 @@ func TestBankAccountRepository_ProviderAccounts(t *testing.T) {
 func TestBankAccountRepository_StatusTransitions(t *testing.T) {
 	db := integration.SetupTestDB(t)
 	db.WithTransaction(t, func(ctx context.Context, tx *sqlx.Tx) {
-			repo := postgres.NewBankAccountRepository(db.DB)
+		repo := postgres.NewBankAccountRepository(db.DB)
 
 		orgID := uuidv7.New()
 		acc, _ := aggregate.NewBankAccount(orgID, "Status Test", "Status Bank", "UAH", uuidv7.New())

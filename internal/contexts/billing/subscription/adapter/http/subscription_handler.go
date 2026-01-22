@@ -89,15 +89,6 @@ func (h *SubscriptionHandler) handleError(c *gin.Context, err error, defaultCode
 		return
 	}
 
-	// 500 Internal Server Error - Technical Errors (hide details)
-	if errors.Is(err, subscriptionerrors.ErrQueryFailed) ||
-		errors.Is(err, subscriptionerrors.ErrCreateFailed) ||
-		errors.Is(err, subscriptionerrors.ErrUpdateFailed) ||
-		errors.Is(err, subscriptionerrors.ErrDeleteFailed) {
-		response.ErrorResponse(c, http.StatusInternalServerError, defaultCode, defaultMessage)
-		return
-	}
-
 	// Default: 500 Internal Server Error
 	response.ErrorResponse(c, http.StatusInternalServerError, defaultCode, defaultMessage)
 }

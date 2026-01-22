@@ -12,17 +12,17 @@ import (
 // mockDialect implements database.Dialect for testing
 type mockDialect struct{}
 
-func (d *mockDialect) Name() string                { return "postgres" }
-func (d *mockDialect) Placeholder(n int) string    { return fmt.Sprintf("$%d", n) }
-func (d *mockDialect) SupportsReturning() bool     { return true }
-func (d *mockDialect) SupportsJSON() bool          { return true }
-func (d *mockDialect) SupportsJSONIndex() bool     { return true }
-func (d *mockDialect) SupportsUUID() bool          { return true }
+func (d *mockDialect) Name() string                       { return "postgres" }
+func (d *mockDialect) Placeholder(n int) string           { return fmt.Sprintf("$%d", n) }
+func (d *mockDialect) SupportsReturning() bool            { return true }
+func (d *mockDialect) SupportsJSON() bool                 { return true }
+func (d *mockDialect) SupportsJSONIndex() bool            { return true }
+func (d *mockDialect) SupportsUUID() bool                 { return true }
 func (d *mockDialect) QuoteIdentifier(name string) string { return `"` + name + `"` }
-func (d *mockDialect) UUIDType() string            { return "UUID" }
-func (d *mockDialect) JSONType() string            { return "JSONB" }
-func (d *mockDialect) TimestampType() string       { return "TIMESTAMP" }
-func (d *mockDialect) BoolType() string            { return "BOOLEAN" }
+func (d *mockDialect) UUIDType() string                   { return "UUID" }
+func (d *mockDialect) JSONType() string                   { return "JSONB" }
+func (d *mockDialect) TimestampType() string              { return "TIMESTAMP" }
+func (d *mockDialect) BoolType() string                   { return "BOOLEAN" }
 
 func setupMockDB(t *testing.T) (*sqlx.DB, sqlmock.Sqlmock) {
 	mockDB, mock, err := sqlmock.New()

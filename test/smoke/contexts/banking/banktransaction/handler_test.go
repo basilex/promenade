@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
-	txAggregate "github.com/basilex/promenade/internal/contexts/banking/banktransaction/aggregate"
 	txHTTP "github.com/basilex/promenade/internal/contexts/banking/banktransaction/adapter/http"
+	txAggregate "github.com/basilex/promenade/internal/contexts/banking/banktransaction/aggregate"
 	"github.com/basilex/promenade/pkg/uuidv7"
 	"github.com/basilex/promenade/test/smoke"
 )
 
 type MockBankTransactionUseCase struct {
-	RecordTransactionFunc              func(ctx context.Context, accountID uuidv7.UUID, direction txAggregate.TransactionDirection, amountCents int64, currencyCode string, transactionAt time.Time, description string, lastUpdatedBy uuidv7.UUID) (*txAggregate.BankTransaction, error)
+	RecordTransactionFunc               func(ctx context.Context, accountID uuidv7.UUID, direction txAggregate.TransactionDirection, amountCents int64, currencyCode string, transactionAt time.Time, description string, lastUpdatedBy uuidv7.UUID) (*txAggregate.BankTransaction, error)
 	RecordTransactionWithExternalIDFunc func(ctx context.Context, accountID uuidv7.UUID, externalID string, direction txAggregate.TransactionDirection, amountCents int64, currencyCode string, transactionAt time.Time, description string, lastUpdatedBy uuidv7.UUID) (*txAggregate.BankTransaction, error)
 	GetTransactionFunc                  func(ctx context.Context, id uuidv7.UUID) (*txAggregate.BankTransaction, error)
 	GetTransactionByExternalIDFunc      func(ctx context.Context, accountID uuidv7.UUID, externalID string) (*txAggregate.BankTransaction, error)

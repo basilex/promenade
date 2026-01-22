@@ -33,50 +33,6 @@ var (
 	// ErrPaymentFailed is returned when payment processing fails
 	ErrPaymentFailed = errors.New("payment processing failed")
 
-	// Technical operation errors
-
-	// ErrPaymentCreateFailed is returned when payment creation fails
-	ErrPaymentCreateFailed = errors.New("payment creation failed")
-
-	// ErrPaymentGetFailed is returned when payment retrieval fails
-	ErrPaymentGetFailed = errors.New("payment retrieval failed")
-
-	// ErrPaymentUpdateFailed is returned when payment update fails
-	ErrPaymentUpdateFailed = errors.New("payment update failed")
-
-	// ErrPaymentDeleteFailed is returned when payment deletion fails
-	ErrPaymentDeleteFailed = errors.New("payment deletion failed")
-
-	// ErrPaymentNumberGenerationFailed is returned when payment number generation fails
-	ErrPaymentNumberGenerationFailed = errors.New("payment number generation failed")
-
-	// ErrPaymentLinkFailed is returned when linking payment to invoice fails
-	ErrPaymentLinkFailed = errors.New("payment link operation failed")
-
-	// ErrPaymentProcessingFailed is returned when payment processing operation fails
-	ErrPaymentProcessingFailed = errors.New("payment processing operation failed")
-
-	// ErrPaymentCompletionFailed is returned when payment completion operation fails
-	ErrPaymentCompletionFailed = errors.New("payment completion operation failed")
-
-	// ErrPaymentFailureFailed is returned when marking payment as failed fails
-	ErrPaymentFailureFailed = errors.New("payment failure operation failed")
-
-	// ErrPaymentRefundOperationFailed is returned when payment refund operation fails
-	ErrPaymentRefundOperationFailed = errors.New("payment refund operation failed")
-
-	// ErrPaymentCancellationFailed is returned when payment cancellation operation fails
-	ErrPaymentCancellationFailed = errors.New("payment cancellation operation failed")
-
-	// ErrPaymentListFailed is returned when listing payments fails
-	ErrPaymentListFailed = errors.New("payment list operation failed")
-
-	// ErrPaymentTotalCalculationFailed is returned when calculating payment totals fails
-	ErrPaymentTotalCalculationFailed = errors.New("payment total calculation failed")
-
-	// ErrMoneyCreationFailed is returned when creating money value object fails
-	ErrMoneyCreationFailed = errors.New("money creation failed")
-
 	// ErrPaymentInvalidStatusForDeletion is returned when attempting to delete payment with invalid status
 	ErrPaymentInvalidStatusForDeletion = errors.New("payment status invalid for deletion")
 )

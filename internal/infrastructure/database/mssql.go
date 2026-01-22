@@ -18,11 +18,11 @@ func NewMSSQLConnection(cfg *config.MSSQLSection) (*sqlx.DB, error) {
 	// Format: sqlserver://username:password@host:port?database=dbname&param=value
 	query := url.Values{}
 	query.Add("database", cfg.Database)
-	
+
 	if cfg.Encrypt != "" {
 		query.Add("encrypt", cfg.Encrypt)
 	}
-	
+
 	if cfg.TrustServerCert {
 		query.Add("TrustServerCertificate", "true")
 	}

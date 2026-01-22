@@ -1,5 +1,6 @@
 .PHONY: help validate-env workspace
 .PHONY: install build clean fmt lint
+.PHONY: setup-hooks
 .PHONY: clean-emoji clean-emoji-apply check-emoji
 .PHONY: switch-postgres-dev switch-postgres-test switch-postgres-prod
 .PHONY: switch-mssql-dev switch-mssql-test switch-mssql-prod
@@ -108,6 +109,26 @@ fmt:  ## Format code
 lint:  ## Run linters
 	@echo "Running linters..."
 	golangci-lint run ./...
+
+# ============================================================================
+# Git Hooks Setup
+# ============================================================================
+
+setup-hooks:  ## Install git hooks (pre-commit, pre-push)
+	@echo " Installing git hooks..."
+	@if [ ! -d .git ]; then \
+		echo " Error: Not a git repository"; \
+		exit 1; \
+	fi
+	@mkdir -p .git/hooks
+	@cp .githooks/pre-commit .git/hooks/pre-commit
+	@cp .githooks/pre-push .git/hooks/pre-push
+	@chmod +x .git/hooks/pre-commit .git/hooks/pre-push
+	@echo " Git hooks installed:"
+	@echo "   - pre-commit: lint + unit tests"
+	@echo "   - pre-push: full CI checks"
+	@echo ""
+	@echo " Skip hooks with: git commit --no-verify"
 
 # ============================================================================
 # Emoji Cleaning (Official Policy Enforcement)

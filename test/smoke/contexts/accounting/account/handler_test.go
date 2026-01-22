@@ -1,124 +1,124 @@
 package account_test
 
 import (
-    "context"
-    "fmt"
-    "net/http"
-    "testing"
+	"context"
+	"fmt"
+	"net/http"
+	"testing"
 
-    "github.com/basilex/promenade/internal/contexts/accounting/account"
-    accountHTTP "github.com/basilex/promenade/internal/contexts/accounting/account/adapter/http"
-    accountAggregate "github.com/basilex/promenade/internal/contexts/accounting/account/aggregate"
-    "github.com/basilex/promenade/pkg/uuidv7"
-    "github.com/basilex/promenade/test/smoke"
-    "github.com/gin-gonic/gin"
-    "github.com/stretchr/testify/assert"
+	"github.com/basilex/promenade/internal/contexts/accounting/account"
+	accountHTTP "github.com/basilex/promenade/internal/contexts/accounting/account/adapter/http"
+	accountAggregate "github.com/basilex/promenade/internal/contexts/accounting/account/aggregate"
+	"github.com/basilex/promenade/pkg/uuidv7"
+	"github.com/basilex/promenade/test/smoke"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 // MockAccountUseCase implements usecase.IAccountUseCase for testing
 type MockAccountUseCase struct {
-    CreateAccountFunc              func(ctx context.Context, organizationID uuidv7.UUID, code, name string, accountType accountAggregate.AccountType, parentID *uuidv7.UUID, createdBy uuidv7.UUID) (*accountAggregate.Account, error)
-    GetAccountByIDFunc             func(ctx context.Context, id uuidv7.UUID) (*accountAggregate.Account, error)
-    GetAccountByCodeFunc           func(ctx context.Context, organizationID uuidv7.UUID, code string) (*accountAggregate.Account, error)
-    UpdateAccountFunc              func(ctx context.Context, id uuidv7.UUID, name string, updatedBy uuidv7.UUID) (*accountAggregate.Account, error)
-    SetParentFunc                  func(ctx context.Context, id, parentID uuidv7.UUID, updatedBy uuidv7.UUID) error
-    ActivateAccountFunc            func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error
-    DeactivateAccountFunc          func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error
-    DeleteAccountFunc              func(ctx context.Context, id uuidv7.UUID) error
-    ListAccountsByOrganizationFunc func(ctx context.Context, organizationID uuidv7.UUID, includeInactive bool) ([]*accountAggregate.Account, error)
-    ListAccountsByTypeFunc         func(ctx context.Context, organizationID uuidv7.UUID, accountType accountAggregate.AccountType) ([]*accountAggregate.Account, error)
-    ListChildAccountsFunc          func(ctx context.Context, parentID uuidv7.UUID) ([]*accountAggregate.Account, error)
+	CreateAccountFunc              func(ctx context.Context, organizationID uuidv7.UUID, code, name string, accountType accountAggregate.AccountType, parentID *uuidv7.UUID, createdBy uuidv7.UUID) (*accountAggregate.Account, error)
+	GetAccountByIDFunc             func(ctx context.Context, id uuidv7.UUID) (*accountAggregate.Account, error)
+	GetAccountByCodeFunc           func(ctx context.Context, organizationID uuidv7.UUID, code string) (*accountAggregate.Account, error)
+	UpdateAccountFunc              func(ctx context.Context, id uuidv7.UUID, name string, updatedBy uuidv7.UUID) (*accountAggregate.Account, error)
+	SetParentFunc                  func(ctx context.Context, id, parentID uuidv7.UUID, updatedBy uuidv7.UUID) error
+	ActivateAccountFunc            func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error
+	DeactivateAccountFunc          func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error
+	DeleteAccountFunc              func(ctx context.Context, id uuidv7.UUID) error
+	ListAccountsByOrganizationFunc func(ctx context.Context, organizationID uuidv7.UUID, includeInactive bool) ([]*accountAggregate.Account, error)
+	ListAccountsByTypeFunc         func(ctx context.Context, organizationID uuidv7.UUID, accountType accountAggregate.AccountType) ([]*accountAggregate.Account, error)
+	ListChildAccountsFunc          func(ctx context.Context, parentID uuidv7.UUID) ([]*accountAggregate.Account, error)
 }
 
 func (m *MockAccountUseCase) CreateAccount(ctx context.Context, organizationID uuidv7.UUID, code, name string, accountType accountAggregate.AccountType, parentID *uuidv7.UUID, createdBy uuidv7.UUID) (*accountAggregate.Account, error) {
-    if m.CreateAccountFunc != nil {
-        return m.CreateAccountFunc(ctx, organizationID, code, name, accountType, parentID, createdBy)
-    }
-    return nil, fmt.Errorf("CreateAccountFunc not implemented")
+	if m.CreateAccountFunc != nil {
+		return m.CreateAccountFunc(ctx, organizationID, code, name, accountType, parentID, createdBy)
+	}
+	return nil, fmt.Errorf("CreateAccountFunc not implemented")
 }
 
 func (m *MockAccountUseCase) GetAccountByID(ctx context.Context, id uuidv7.UUID) (*accountAggregate.Account, error) {
-    if m.GetAccountByIDFunc != nil {
-        return m.GetAccountByIDFunc(ctx, id)
-    }
-    return nil, fmt.Errorf("GetAccountByIDFunc not implemented")
+	if m.GetAccountByIDFunc != nil {
+		return m.GetAccountByIDFunc(ctx, id)
+	}
+	return nil, fmt.Errorf("GetAccountByIDFunc not implemented")
 }
 
 func (m *MockAccountUseCase) GetAccountByCode(ctx context.Context, organizationID uuidv7.UUID, code string) (*accountAggregate.Account, error) {
-    if m.GetAccountByCodeFunc != nil {
-        return m.GetAccountByCodeFunc(ctx, organizationID, code)
-    }
-    return nil, fmt.Errorf("GetAccountByCodeFunc not implemented")
+	if m.GetAccountByCodeFunc != nil {
+		return m.GetAccountByCodeFunc(ctx, organizationID, code)
+	}
+	return nil, fmt.Errorf("GetAccountByCodeFunc not implemented")
 }
 
 func (m *MockAccountUseCase) UpdateAccount(ctx context.Context, id uuidv7.UUID, name string, updatedBy uuidv7.UUID) (*accountAggregate.Account, error) {
-    if m.UpdateAccountFunc != nil {
-        return m.UpdateAccountFunc(ctx, id, name, updatedBy)
-    }
-    return nil, fmt.Errorf("UpdateAccountFunc not implemented")
+	if m.UpdateAccountFunc != nil {
+		return m.UpdateAccountFunc(ctx, id, name, updatedBy)
+	}
+	return nil, fmt.Errorf("UpdateAccountFunc not implemented")
 }
 
 func (m *MockAccountUseCase) SetParent(ctx context.Context, id, parentID uuidv7.UUID, updatedBy uuidv7.UUID) error {
-    if m.SetParentFunc != nil {
-        return m.SetParentFunc(ctx, id, parentID, updatedBy)
-    }
-    return fmt.Errorf("SetParentFunc not implemented")
+	if m.SetParentFunc != nil {
+		return m.SetParentFunc(ctx, id, parentID, updatedBy)
+	}
+	return fmt.Errorf("SetParentFunc not implemented")
 }
 
 func (m *MockAccountUseCase) ActivateAccount(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
-    if m.ActivateAccountFunc != nil {
-        return m.ActivateAccountFunc(ctx, id, updatedBy)
-    }
-    return fmt.Errorf("ActivateAccountFunc not implemented")
+	if m.ActivateAccountFunc != nil {
+		return m.ActivateAccountFunc(ctx, id, updatedBy)
+	}
+	return fmt.Errorf("ActivateAccountFunc not implemented")
 }
 
 func (m *MockAccountUseCase) DeactivateAccount(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
-    if m.DeactivateAccountFunc != nil {
-        return m.DeactivateAccountFunc(ctx, id, updatedBy)
-    }
-    return fmt.Errorf("DeactivateAccountFunc not implemented")
+	if m.DeactivateAccountFunc != nil {
+		return m.DeactivateAccountFunc(ctx, id, updatedBy)
+	}
+	return fmt.Errorf("DeactivateAccountFunc not implemented")
 }
 
 func (m *MockAccountUseCase) DeleteAccount(ctx context.Context, id uuidv7.UUID) error {
-    if m.DeleteAccountFunc != nil {
-        return m.DeleteAccountFunc(ctx, id)
-    }
-    return fmt.Errorf("DeleteAccountFunc not implemented")
+	if m.DeleteAccountFunc != nil {
+		return m.DeleteAccountFunc(ctx, id)
+	}
+	return fmt.Errorf("DeleteAccountFunc not implemented")
 }
 
 func (m *MockAccountUseCase) ListAccountsByOrganization(ctx context.Context, organizationID uuidv7.UUID, includeInactive bool) ([]*accountAggregate.Account, error) {
-    if m.ListAccountsByOrganizationFunc != nil {
-        return m.ListAccountsByOrganizationFunc(ctx, organizationID, includeInactive)
-    }
-    return nil, fmt.Errorf("ListAccountsByOrganizationFunc not implemented")
+	if m.ListAccountsByOrganizationFunc != nil {
+		return m.ListAccountsByOrganizationFunc(ctx, organizationID, includeInactive)
+	}
+	return nil, fmt.Errorf("ListAccountsByOrganizationFunc not implemented")
 }
 
 func (m *MockAccountUseCase) ListAccountsByType(ctx context.Context, organizationID uuidv7.UUID, accountType accountAggregate.AccountType) ([]*accountAggregate.Account, error) {
-    if m.ListAccountsByTypeFunc != nil {
-        return m.ListAccountsByTypeFunc(ctx, organizationID, accountType)
-    }
-    return nil, fmt.Errorf("ListAccountsByTypeFunc not implemented")
+	if m.ListAccountsByTypeFunc != nil {
+		return m.ListAccountsByTypeFunc(ctx, organizationID, accountType)
+	}
+	return nil, fmt.Errorf("ListAccountsByTypeFunc not implemented")
 }
 
 func (m *MockAccountUseCase) ListChildAccounts(ctx context.Context, parentID uuidv7.UUID) ([]*accountAggregate.Account, error) {
-    if m.ListChildAccountsFunc != nil {
-        return m.ListChildAccountsFunc(ctx, parentID)
-    }
-    return nil, fmt.Errorf("ListChildAccountsFunc not implemented")
+	if m.ListChildAccountsFunc != nil {
+		return m.ListChildAccountsFunc(ctx, parentID)
+	}
+	return nil, fmt.Errorf("ListChildAccountsFunc not implemented")
 }
 
 func setupRouter(mockUC *MockAccountUseCase) *gin.Engine {
-    router := smoke.SetupRouter()
-    handler := accountHTTP.NewAccountHandler(mockUC)
+	router := smoke.SetupRouter()
+	handler := accountHTTP.NewAccountHandler(mockUC)
 
-    router.Use(func(c *gin.Context) {
-        c.Set("organization_id", uuidv7.New().String())
-        c.Set("user_id", uuidv7.New().String())
-        c.Next()
-    })
+	router.Use(func(c *gin.Context) {
+		c.Set("organization_id", uuidv7.New().String())
+		c.Set("user_id", uuidv7.New().String())
+		c.Next()
+	})
 
-    handler.RegisterRoutes(router.Group("/api/v1/accounting"))
-    return router
+	handler.RegisterRoutes(router.Group("/api/v1/accounting"))
+	return router
 }
 
 func TestCreateAccount_Success(t *testing.T) {
@@ -188,18 +188,18 @@ func TestGetAccount_Success(t *testing.T) {
 }
 
 func TestGetAccount_NotFound(t *testing.T) {
-    accountID := uuidv7.New()
+	accountID := uuidv7.New()
 
-    mockUC := &MockAccountUseCase{
-        GetAccountByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*accountAggregate.Account, error) {
-            return nil, account.ErrAccountNotFound
-        },
-    }
+	mockUC := &MockAccountUseCase{
+		GetAccountByIDFunc: func(ctx context.Context, id uuidv7.UUID) (*accountAggregate.Account, error) {
+			return nil, account.ErrAccountNotFound
+		},
+	}
 
-    router := setupRouter(mockUC)
+	router := setupRouter(mockUC)
 
-    w := smoke.MakeRequest(t, router, "GET", "/api/v1/accounting/accounts/"+accountID.String(), nil)
-    assert.Equal(t, http.StatusNotFound, w.Code)
+	w := smoke.MakeRequest(t, router, "GET", "/api/v1/accounting/accounts/"+accountID.String(), nil)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestUpdateAccount_Success(t *testing.T) {
@@ -227,48 +227,48 @@ func TestUpdateAccount_Success(t *testing.T) {
 }
 
 func TestActivateAccount_Success(t *testing.T) {
-    accountID := uuidv7.New()
+	accountID := uuidv7.New()
 
-    mockUC := &MockAccountUseCase{
-        ActivateAccountFunc: func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
-            return nil
-        },
-    }
+	mockUC := &MockAccountUseCase{
+		ActivateAccountFunc: func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
+			return nil
+		},
+	}
 
-    router := setupRouter(mockUC)
+	router := setupRouter(mockUC)
 
-    w := smoke.MakeRequest(t, router, "PUT", "/api/v1/accounting/accounts/"+accountID.String()+"/activate", nil)
-    assert.Equal(t, http.StatusOK, w.Code)
+	w := smoke.MakeRequest(t, router, "PUT", "/api/v1/accounting/accounts/"+accountID.String()+"/activate", nil)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeactivateAccount_Success(t *testing.T) {
-    accountID := uuidv7.New()
+	accountID := uuidv7.New()
 
-    mockUC := &MockAccountUseCase{
-        DeactivateAccountFunc: func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
-            return nil
-        },
-    }
+	mockUC := &MockAccountUseCase{
+		DeactivateAccountFunc: func(ctx context.Context, id uuidv7.UUID, updatedBy uuidv7.UUID) error {
+			return nil
+		},
+	}
 
-    router := setupRouter(mockUC)
+	router := setupRouter(mockUC)
 
-    w := smoke.MakeRequest(t, router, "PUT", "/api/v1/accounting/accounts/"+accountID.String()+"/deactivate", nil)
-    assert.Equal(t, http.StatusOK, w.Code)
+	w := smoke.MakeRequest(t, router, "PUT", "/api/v1/accounting/accounts/"+accountID.String()+"/deactivate", nil)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeleteAccount_Success(t *testing.T) {
-    accountID := uuidv7.New()
+	accountID := uuidv7.New()
 
-    mockUC := &MockAccountUseCase{
-        DeleteAccountFunc: func(ctx context.Context, id uuidv7.UUID) error {
-            return nil
-        },
-    }
+	mockUC := &MockAccountUseCase{
+		DeleteAccountFunc: func(ctx context.Context, id uuidv7.UUID) error {
+			return nil
+		},
+	}
 
-    router := setupRouter(mockUC)
+	router := setupRouter(mockUC)
 
-    w := smoke.MakeRequest(t, router, "DELETE", "/api/v1/accounting/accounts/"+accountID.String(), nil)
-    assert.Equal(t, http.StatusOK, w.Code)
+	w := smoke.MakeRequest(t, router, "DELETE", "/api/v1/accounting/accounts/"+accountID.String(), nil)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestListAccounts_Success(t *testing.T) {

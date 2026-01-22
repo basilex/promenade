@@ -61,14 +61,14 @@ const (
 	TopicBankingTransactionCreated = "banking.transaction.created"
 
 	// Accounting Context Topics
-	TopicAccountCreated            = "accounting.account.created"
-	TopicAccountUpdated            = "accounting.account.updated"
-	TopicAccountDeactivated        = "accounting.account.deactivated"
-	TopicJournalEntryCreated       = "accounting.journal_entry.created"
-	TopicJournalEntryPosted        = "accounting.journal_entry.posted"
-	TopicJournalEntryReversed      = "accounting.journal_entry.reversed"
-	TopicLedgerBalanceUpdated      = "accounting.ledger.balance.updated"
-	TopicAccountingPeriodClosed    = "accounting.period.closed"
+	TopicAccountCreated         = "accounting.account.created"
+	TopicAccountUpdated         = "accounting.account.updated"
+	TopicAccountDeactivated     = "accounting.account.deactivated"
+	TopicJournalEntryCreated    = "accounting.journal_entry.created"
+	TopicJournalEntryPosted     = "accounting.journal_entry.posted"
+	TopicJournalEntryReversed   = "accounting.journal_entry.reversed"
+	TopicLedgerBalanceUpdated   = "accounting.ledger.balance.updated"
+	TopicAccountingPeriodClosed = "accounting.period.closed"
 
 	// Notification Topics (cross-cutting)
 	TopicNotificationEmail = "notification.email"

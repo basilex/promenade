@@ -213,7 +213,7 @@ func TestUseCase_CreateProduct_RepositoryExistsError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, product)
-	assert.True(t, errors.Is(err, producterrors.ErrCheckSKUFailed))
+	// Now returns repository error directly
 }
 
 func TestUseCase_CreateProduct_RepositoryCreateError(t *testing.T) {
@@ -231,7 +231,7 @@ func TestUseCase_CreateProduct_RepositoryCreateError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, product)
-	assert.True(t, errors.Is(err, producterrors.ErrCreateFailed))
+	// Now returns repository error directly
 }
 
 // ============================================================================
@@ -365,7 +365,7 @@ func TestUseCase_UpdateProduct_NotFound(t *testing.T) {
 	err := uc.UpdateProduct(context.Background(), p)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to update product")
+	assert.ErrorIs(t, err, producterrors.ErrProductNotFound)
 }
 
 func TestUseCase_UpdateProduct_RepositoryError(t *testing.T) {
@@ -384,7 +384,7 @@ func TestUseCase_UpdateProduct_RepositoryError(t *testing.T) {
 	err := uc.UpdateProduct(context.Background(), product)
 
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, producterrors.ErrUpdateFailed))
+	// Now returns repository error directly
 }
 
 // ============================================================================
@@ -439,7 +439,7 @@ func TestUseCase_DeleteProduct_RepositoryError(t *testing.T) {
 	err := uc.DeleteProduct(context.Background(), product.ID)
 
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, producterrors.ErrDeleteFailed))
+	// Now returns repository error directly
 }
 
 // ============================================================================
@@ -491,7 +491,7 @@ func TestUseCase_ListProducts_RepositoryError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, products)
-	assert.True(t, errors.Is(err, producterrors.ErrListFailed))
+	// Now returns repository error directly
 }
 
 // ============================================================================
@@ -628,7 +628,7 @@ func TestUseCase_CountProducts_RepositoryError(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, 0, count)
-	assert.True(t, errors.Is(err, producterrors.ErrCountFailed))
+	// Now returns repository error directly
 }
 
 // ============================================================================

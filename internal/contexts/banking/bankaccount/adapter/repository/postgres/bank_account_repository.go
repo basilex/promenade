@@ -313,7 +313,7 @@ func (r *BankAccountRepository) CountByOrganization(ctx context.Context, organiz
 		FROM banking_bank_accounts 
 		WHERE organization_id = $1 AND deleted_at IS NULL
 	`
-	
+
 	var count int
 	if err := r.Get(ctx, &count, query, organizationID.String()); err != nil {
 		return 0, err

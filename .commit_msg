@@ -1,0 +1,30 @@
+docs: complete LOW PRIORITY issues (4.1-4.8) and fix integration tests
+
+LOW PRIORITY Completions:
+
+- Enhanced test-coverage with metrics and thresholds (4.1)
+- Created profiling guide (CPU/memory, pprof, Pyroscope) (4.2)
+- Added git hooks (pre-commit, pre-push) with setup-hooks target (4.3)
+- Created CHANGELOG.md (Keep a Changelog format) (4.4)
+- Added Architecture Decision Records with 3 initial records (4.5)
+- Created Postman API examples for 3 contexts (4.6)
+- Added load testing guide (k6, vegeta, hey) (4.7)
+- Created deployment documentation (K8s, AWS, monitoring) (4.8)
+
+Documentation Cleanup:
+
+- Removed 594 emoji from 20 files (policy enforcement)
+- Replaced ASCII art with markdown tables in deployment guides
+
+Test Fixes (Migration Consolidation):
+
+- Fixed accounting/account tests (added missing Create calls)
+- Fixed accounting/budget tests (order-agnostic assertions)
+- Fixed accounting/journalentry tests (added Create before Update/Delete)
+- Fixed customer-mgmt/analytics date range filter test (UTC timestamps)
+
+All integration tests now pass. Migration consolidation removed implicit
+seed data that tests relied on. Tests now explicitly create all required
+test data.
+
+Closes: LOW PRIORITY issues 4.1-4.8 from CODE_REVIEW_2026-01-22.md

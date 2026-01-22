@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS accounting_fiscal_periods (
     -- Period close tracking
     closed_at TIMESTAMP,
     closed_by TEXT,
+    reopened_at TIMESTAMP,
+    reopened_by TEXT,
+    locked_at TIMESTAMP,
+    locked_by TEXT,
     lock_date DATE, -- Transactions before this date cannot be modified
     
     -- Financial summary (denormalized for performance)

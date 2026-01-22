@@ -82,7 +82,7 @@ func NewManager(db *sqlx.DB, driver string, migrationsDir string, dialect databa
 // ensureMigrationsTable creates the schema_migrations table if it doesn't exist
 func (m *manager) ensureMigrationsTable(ctx context.Context) error {
 	var query string
-	
+
 	switch m.driver {
 	case "postgres", "postgresql":
 		query = `
@@ -161,7 +161,7 @@ func (m *manager) getCurrentVersion(ctx context.Context, namespace string) (int,
 // setVersion sets the current version for a namespace
 func (m *manager) setVersion(ctx context.Context, namespace string, version int, dirty bool) error {
 	var query string
-	
+
 	switch m.driver {
 	case "postgres", "postgresql":
 		// PostgreSQL: INSERT ... ON CONFLICT
@@ -170,9 +170,9 @@ func (m *manager) setVersion(ctx context.Context, namespace string, version int,
 			VALUES (%s, %s, %s, %s)
 			ON CONFLICT (namespace, version) 
 			DO UPDATE SET dirty = %s, applied_at = %s
-		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3), 
-		   m.dialect.Placeholder(4), m.dialect.Placeholder(3), m.dialect.Placeholder(4))
-		
+		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
+			m.dialect.Placeholder(4), m.dialect.Placeholder(3), m.dialect.Placeholder(4))
+
 	case "mssql", "sqlserver":
 		// MS SQL Server: MERGE statement
 		query = fmt.Sprintf(`
@@ -185,9 +185,9 @@ func (m *manager) setVersion(ctx context.Context, namespace string, version int,
 				INSERT (namespace, version, dirty, applied_at)
 				VALUES (%s, %s, %s, %s);
 		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
-		   m.dialect.Placeholder(4), m.dialect.Placeholder(1), m.dialect.Placeholder(2),
-		   m.dialect.Placeholder(3), m.dialect.Placeholder(4))
-		
+			m.dialect.Placeholder(4), m.dialect.Placeholder(1), m.dialect.Placeholder(2),
+			m.dialect.Placeholder(3), m.dialect.Placeholder(4))
+
 	default:
 		return fmt.Errorf("unsupported database driver: %s", m.driver)
 	}

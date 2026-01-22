@@ -14,12 +14,12 @@ import (
 type EventType string
 
 const (
-	EventEntryCreated      EventType = "entry_created"
-	EventLineAdded         EventType = "line_added"
-	EventLineRemoved       EventType = "line_removed"
-	EventLineUpdated       EventType = "line_updated"
-	EventEntryPosted       EventType = "entry_posted"
-	EventEntryReversed     EventType = "entry_reversed"
+	EventEntryCreated       EventType = "entry_created"
+	EventLineAdded          EventType = "line_added"
+	EventLineRemoved        EventType = "line_removed"
+	EventLineUpdated        EventType = "line_updated"
+	EventEntryPosted        EventType = "entry_posted"
+	EventEntryReversed      EventType = "entry_reversed"
 	EventDescriptionUpdated EventType = "description_updated"
 )
 
@@ -130,12 +130,12 @@ func (s *EventStore) GetEventHistory(ctx context.Context, journalEntryID uuidv7.
 	var events []JournalEntryEvent
 	for rows.Next() {
 		var (
-			id, jeID, orgID, userID             string
-			eventTypeStr, eventDataJSON         string
-			causationIDStr, correlationIDStr    *string
-			metadataJSON                        *string
-			eventVersion                        int
-			timestamp                           time.Time
+			id, jeID, orgID, userID          string
+			eventTypeStr, eventDataJSON      string
+			causationIDStr, correlationIDStr *string
+			metadataJSON                     *string
+			eventVersion                     int
+			timestamp                        time.Time
 		)
 
 		err := rows.Scan(&id, &jeID, &eventTypeStr, &eventVersion, &eventDataJSON,
@@ -192,12 +192,12 @@ func (s *EventStore) GetEventsByCorrelation(ctx context.Context, correlationID u
 	var events []JournalEntryEvent
 	for rows.Next() {
 		var (
-			id, jeID, orgID, userID             string
-			eventTypeStr, eventDataJSON         string
-			causationIDStr, correlationIDStr    *string
-			metadataJSON                        *string
-			eventVersion                        int
-			timestamp                           time.Time
+			id, jeID, orgID, userID          string
+			eventTypeStr, eventDataJSON      string
+			causationIDStr, correlationIDStr *string
+			metadataJSON                     *string
+			eventVersion                     int
+			timestamp                        time.Time
 		)
 
 		err := rows.Scan(&id, &jeID, &eventTypeStr, &eventVersion, &eventDataJSON,
@@ -244,20 +244,20 @@ func (s *EventStore) getNextVersion(ctx context.Context, journalEntryID uuidv7.U
 
 	var version int
 	executor := s.getExecutor(ctx)
-	
+
 	// Use QueryxContext for sqlx.ExtContext compatibility
 	rows, err := executor.QueryxContext(ctx, query, journalEntryID.String())
 	if err != nil {
 		return 0, err
 	}
 	defer func() { _ = rows.Close() }()
-	
+
 	if rows.Next() {
 		if err := rows.Scan(&version); err != nil {
 			return 0, err
 		}
 	}
-	
+
 	return version, rows.Err()
 }
 

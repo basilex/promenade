@@ -364,21 +364,21 @@ func (r *BankTransactionRepository) ListUnmatched(ctx context.Context, accountID
 	var transactions []*aggregate.BankTransaction
 	for rows.Next() {
 		var (
-			dbID                          string
-			version                       int
-			accountID_str                 string
-			amountCents                   int64
-			direction                     string
-			status                        string
-			transactionDate               time.Time
-			externalID                    *string
-			counterpartyName              *string
-			matchedEntityType             *string
-			matchedEntityID               *string
-			matchedAt                     *time.Time
-			rawPayloadJSON                string
-			createdAt                     time.Time
-			updatedAt                     time.Time
+			dbID              string
+			version           int
+			accountID_str     string
+			amountCents       int64
+			direction         string
+			status            string
+			transactionDate   time.Time
+			externalID        *string
+			counterpartyName  *string
+			matchedEntityType *string
+			matchedEntityID   *string
+			matchedAt         *time.Time
+			rawPayloadJSON    string
+			createdAt         time.Time
+			updatedAt         time.Time
 		)
 
 		if err := rows.Scan(
@@ -394,12 +394,12 @@ func (r *BankTransactionRepository) ListUnmatched(ctx context.Context, accountID
 		accID, _ := uuidv7.Parse(accountID_str)
 
 		transaction := &aggregate.BankTransaction{
-			BankAccountID:    accID,
-			AmountCents:      amountCents,
-			Direction:        aggregate.TransactionDirection(direction),
-			Status:           aggregate.TransactionStatus(status),
-			TransactionAt:    transactionDate,
-			CurrencyCode:     "UAH",
+			BankAccountID: accID,
+			AmountCents:   amountCents,
+			Direction:     aggregate.TransactionDirection(direction),
+			Status:        aggregate.TransactionStatus(status),
+			TransactionAt: transactionDate,
+			CurrencyCode:  "UAH",
 		}
 
 		if externalID != nil {
@@ -547,7 +547,7 @@ func (r *BankTransactionRepository) CountByAccount(ctx context.Context, accountI
 		FROM banking_bank_transactions 
 		WHERE bank_account_id = $1 AND deleted_at IS NULL
 	`
-	
+
 	var count int
 	if err := r.Get(ctx, &count, query, accountID.String()); err != nil {
 		return 0, err
