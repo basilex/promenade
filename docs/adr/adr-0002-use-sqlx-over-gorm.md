@@ -9,7 +9,7 @@
 
 ## Context
 
-Promenade requires a database access layer for PostgreSQL and future MS SQL Server support. The application follows **Clean Architecture** with:
+Promenade requires a database access layer for PostgreSQL. The application follows **Clean Architecture** with:
 
 - Domain aggregates (business logic)
 - Repository interfaces (domain layer)
@@ -20,7 +20,7 @@ Promenade requires a database access layer for PostgreSQL and future MS SQL Serv
 - Raw SQL control (complex joins, CTEs, window functions)
 - High performance (10K+ TPS target)
 - Clean separation of concerns (no ORM "magic")
-- Support for PostgreSQL and MS SQL Server
+- PostgreSQL 14+ support
 - Transaction propagation via context
 
 **Concerns**:
@@ -60,11 +60,11 @@ Promenade requires a database access layer for PostgreSQL and future MS SQL Serv
   - Associations (has-many, belongs-to)
   - Query builder
 - **Cons**:
-  -  **Performance**: 40-60% slower than raw SQL (query builder overhead)
-  -  **Magic**: Implicit behavior (joins, lazy loading) breaks Clean Architecture
-  -  **N+1 Problem**: Easy to write inefficient queries
-  -  **Limited SQL**: CTEs, window functions require raw SQL anyway
-  -  **Version risk**: Breaking changes between major versions
+  - **Performance**: 40-60% slower than raw SQL (query builder overhead)
+  - **Magic**: Implicit behavior (joins, lazy loading) breaks Clean Architecture
+  - **N+1 Problem**: Easy to write inefficient queries
+  - **Limited SQL**: CTEs, window functions require raw SQL anyway
+  - **Version risk**: Breaking changes between major versions
 - **Example**:
   ```go
   db.Where("status = ?", "active").Find(&customers)  // Hidden SQL
@@ -73,12 +73,12 @@ Promenade requires a database access layer for PostgreSQL and future MS SQL Serv
 ### Option 3: sqlx (SQL Extension)
 
 - **Pros**:
-  -  **Struct scanning**: `sqlx.Get(&customer, query)` (no manual Scan)
-  -  **Named parameters**: `:name` instead of `$1, $2, ...`
-  -  **Raw SQL control**: Write exact SQL needed
-  -  **Transaction propagation**: `sqlx.ExtContext` interface
-  -  **Performance**: Near-native (5-10% overhead vs database/sql)
-  -  **Multi-DB**: PostgreSQL, MySQL, MS SQL Server, SQLite
+  - **Struct scanning**: `sqlx.Get(&customer, query)` (no manual Scan)
+  - **Named parameters**: `:name` instead of `$1, $2, ...`
+  - **Raw SQL control**: Write exact SQL needed
+  - **Transaction propagation**: `sqlx.ExtContext` interface
+  - **Performance**: Near-native (5-10% overhead vs database/sql)
+  - **Multi-DB**: PostgreSQL, MySQL, SQLite
 - **Cons**:
   - No query builder (write SQL manually)
   - No auto-migrations (use dedicated migration tool)
@@ -180,21 +180,21 @@ func (uc *UseCase) CreateCustomer(ctx context.Context, req CreateCustomerRequest
 
 ### Positive
 
--  **Performance**: 5-10% overhead (vs 40-60% for GORM)
--  **SQL control**: Write exact queries needed (no query builder limitations)
--  **Clean Architecture**: Explicit repository implementations (no hidden behavior)
--  **Debugging**: Raw SQL visible in code (no generated queries)
--  **Flexibility**: Easy to optimize hot paths (add indexes, rewrite queries)
--  **Multi-DB**: PostgreSQL (current), MS SQL Server (Phase 2), SQLite (tests)
+- **Performance**: 5-10% overhead (vs 40-60% for GORM)
+- **SQL control**: Write exact queries needed (no query builder limitations)
+- **Clean Architecture**: Explicit repository implementations (no hidden behavior)
+- **Debugging**: Raw SQL visible in code (no generated queries)
+- **Flexibility**: Easy to optimize hot paths (add indexes, rewrite queries)
+- **Multi-DB**: PostgreSQL (production), SQLite (tests)
 
 ### Negative
 
--  **Manual SQL**: No query builder (must write SQL by hand)
-  - Mitigation: Repository pattern abstracts SQL from use cases
--  **No auto-migrations**: Use dedicated tool (`golang-migrate/migrate`)
-  - Mitigation: Already implemented (`migrations/` directory, `make migrate`)
--  **Struct tags**: Requires `db:` tags on aggregates
-  - Mitigation: Standard practice, same as JSON tags
+- **Manual SQL**: No query builder (must write SQL by hand)
+- Mitigation: Repository pattern abstracts SQL from use cases
+- **No auto-migrations**: Use dedicated tool (`golang-migrate/migrate`)
+- Mitigation: Already implemented (`migrations/` directory, `make migrate`)
+- **Struct tags**: Requires `db:` tags on aggregates
+- Mitigation: Standard practice, same as JSON tags
 
 ### Neutral
 
@@ -208,9 +208,9 @@ func (uc *UseCase) CreateCustomer(ctx context.Context, req CreateCustomerRequest
 
 **Rollout**:
 
-- **Phase 1**  (2026-01-15): `pkg/database` wrapper created
-- **Phase 2**  (2026-01-16): All repositories migrated to sqlx
-- **Phase 3**  (2026-01-17): Transaction propagation tested (102+ integration tests)
+- **Phase 1** (2026-01-15): `pkg/database` wrapper created
+- **Phase 2** (2026-01-16): All repositories migrated to sqlx
+- **Phase 3** (2026-01-17): Transaction propagation tested (102+ integration tests)
 
 **Affected Components**:
 

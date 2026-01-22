@@ -33,9 +33,8 @@ type Router struct {
 }
 
 // NewRouter creates a new Shared Context router with Clean Architecture layers
-// driver parameter enables multi-database support (postgres, mssql)
 func NewRouter(db *sqlx.DB, driver string, cacheClient cache.ICache) *Router {
-	// Country aggregate - multi-database support via factory
+	// Country aggregate - PostgreSQL support
 	countryRepo, err := countryRepositoryFactory.NewCountryRepository(db, driver)
 	if err != nil {
 		logger.Fatal("Failed to create country repository", "error", err)
@@ -43,7 +42,7 @@ func NewRouter(db *sqlx.DB, driver string, cacheClient cache.ICache) *Router {
 	countryUC := countryusecase.NewCountryUseCase(countryRepo, cacheClient)
 	countryHandler := countryHTTP.NewHandler(countryUC)
 
-	// Currency aggregate - PostgreSQL only (for now)
+	// Currency aggregate - PostgreSQL only
 	currencyRepo := currencyPostgres.NewRepository(db)
 	currencyUC := currencyusecase.NewCurrencyUseCase(currencyRepo, cacheClient)
 	currencyHandler := currencyHTTP.NewHandler(currencyUC)

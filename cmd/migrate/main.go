@@ -9,9 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	_ "github.com/microsoft/go-mssqldb"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
@@ -52,21 +50,14 @@ func main() {
 		driver = "postgres"
 	}
 
-	// Initialize database connection based on driver
-	var db *sqlx.DB
-	switch driver {
-	case "postgres":
-		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
-		if err != nil {
-			log.Fatalf("Failed to connect to PostgreSQL: %v", err)
-		}
-	case "mssql":
-		db, err = database.NewMSSQLConnection(&cfg.Database.MSSQL)
-		if err != nil {
-			log.Fatalf("Failed to connect to MS SQL Server: %v", err)
-		}
-	default:
-		log.Fatalf("Unsupported database driver: %s (supported: postgres, mssql)", driver)
+	// Initialize database connection (PostgreSQL only)
+	if driver != "postgres" && driver != "postgresql" {
+		log.Fatalf("Unsupported database driver: %s (only postgres is supported)", driver)
+	}
+
+	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
+	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
 
 	defer func() {

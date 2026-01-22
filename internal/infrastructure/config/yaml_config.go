@@ -47,9 +47,8 @@ type ServerSection struct {
 
 // DatabasesSection holds all database configurations
 type DatabasesSection struct {
-	Driver   string          `yaml:"driver"`   // Database driver: "postgres" or "mssql"
+	Driver   string          `yaml:"driver"`   // Database driver: "postgres"
 	Postgres PostgresSection `yaml:"postgres"` // PostgreSQL config
-	MSSQL    MSSQLSection    `yaml:"mssql"`    // MS SQL Server config
 	Redis    RedisSection    `yaml:"redis"`    // Redis for cache/sessions/bus
 }
 
@@ -65,19 +64,6 @@ type PostgresSection struct {
 	MaxIdleConns    int           `yaml:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `yaml:"conn_max_lifetime"`
 	ConnMaxIdleTime time.Duration `yaml:"conn_max_idle_time"`
-}
-
-// MSSQLSection holds MS SQL Server configuration
-type MSSQLSection struct {
-	Host            string `yaml:"host"`
-	Port            int    `yaml:"port"`
-	User            string `yaml:"user"`
-	Password        string `yaml:"password"`
-	Database        string `yaml:"database"`
-	Encrypt         string `yaml:"encrypt"`           // disable, false, true
-	TrustServerCert bool   `yaml:"trust_server_cert"` // true for self-signed certs
-	MaxOpenConns    int    `yaml:"max_open_conns"`
-	MaxIdleConns    int    `yaml:"max_idle_conns"`
 }
 
 type JWTSection struct {
@@ -305,15 +291,8 @@ func (cfg *AppConfig) Validate() error {
 		if cfg.Database.Postgres.Database == "" {
 			return fmt.Errorf("database.postgres.database is required")
 		}
-	case "mssql", "sqlserver":
-		if cfg.Database.MSSQL.Host == "" {
-			return fmt.Errorf("database.mssql.host is required")
-		}
-		if cfg.Database.MSSQL.Database == "" {
-			return fmt.Errorf("database.mssql.database is required")
-		}
 	default:
-		return fmt.Errorf("database.driver must be 'postgres' or 'mssql'")
+		return fmt.Errorf("database.driver must be 'postgres'")
 	}
 
 	// Server validation

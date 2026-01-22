@@ -16,11 +16,11 @@ Promenade uses a **custom, explicit dependency injection (DI) container** instea
 
 **Custom DI in Promenade**:
 
--  **Explicit** — Every dependency is clear and traceable
--  **Type-safe** — Compile-time safety without reflection
--  **Debuggable** — Step through initialization easily
--  **Readable** — No magic, no generated code
--  **DDD-aligned** — Groups dependencies by bounded context
+- **Explicit** — Every dependency is clear and traceable
+- **Type-safe** — Compile-time safety without reflection
+- **Debuggable** — Step through initialization easily
+- **Readable** — No magic, no generated code
+- **DDD-aligned** — Groups dependencies by bounded context
 
 ## Architecture
 
@@ -99,7 +99,7 @@ func initSharedContext(
 
 ### Repository Factory Pattern
 
-For multi-database support, repositories use the **factory pattern**:
+For potential multi-database support, repositories use the **factory pattern**:
 
 ```go
 // adapter/repository/factory.go (infrastructure layer)
@@ -107,8 +107,6 @@ func NewFactory(db *sqlx.DB, driver string) (country.Repository, error) {
     switch driver {
     case "postgres":
         return postgresrepo.New(db), nil
-    case "mssql":
-        return mssqlrepo.New(db), nil
     default:
         return nil, fmt.Errorf("unsupported database driver: %s", driver)
     }
@@ -126,7 +124,7 @@ func NewFactory(db *sqlx.DB, driver string) (country.Repository, error) {
 func Bootstrap(cfgPath string) (*App, error) {
     // 1. Initialize infrastructure (logger, database, cache, event bus)
     logger := logger.New(cfg)
-    db := database.NewPostgresConnection(cfg) // or NewMSSQLConnection
+    db := database.NewPostgresConnection(cfg)
     eventBus := bus.NewMemoryBus(logger)
     cacheClient := cache.NewRedisClient(cfg)
 
@@ -237,18 +235,18 @@ Warehouse Context   → deps.Warehouse.OrderEventHandler
 
 ## Comparison with Traditional DI
 
-| Aspect             | Custom DI (Promenade)  | Wire                         | Fx/Dig                         |
-| ------------------ | ---------------------- | ---------------------------- | ------------------------------ |
-| **Implementation** | Explicit functions     | Code generation              | Runtime reflection             |
-| **Type Safety**    |  Compile-time        |  Compile-time              |  Compile-time (with caveats) |
-| **Debugging**      |  Step-through easily |  Generated code complexity |  Opaque dependency graph     |
-| **IDE Support**    |  Full autocomplete   |  Limited (generated code)  |  Limited (reflection)        |
-| **Performance**    |  Zero overhead       |  Zero overhead             |  Reflection overhead         |
-| **Learning Curve** |  Simple (plain Go)   |  Provider syntax           |  Lifecycle concepts          |
-| **DDD Boundaries** |  Natural grouping    |  Flat structure            |  Flat structure              |
-| **Error Messages** |  Clear and traceable |  Generated code references |  Runtime reflection errors   |
-| **Testability**    |  Mock any dependency |  Mock dependencies         |  Complex mocking             |
-| **Refactoring**    |  Safe with IDE       |  Regenerate code           |  Runtime discovery           |
+| Aspect             | Custom DI (Promenade) | Wire                      | Fx/Dig                      |
+| ------------------ | --------------------- | ------------------------- | --------------------------- |
+| **Implementation** | Explicit functions    | Code generation           | Runtime reflection          |
+| **Type Safety**    | Compile-time          | Compile-time              | Compile-time (with caveats) |
+| **Debugging**      | Step-through easily   | Generated code complexity | Opaque dependency graph     |
+| **IDE Support**    | Full autocomplete     | Limited (generated code)  | Limited (reflection)        |
+| **Performance**    | Zero overhead         | Zero overhead             | Reflection overhead         |
+| **Learning Curve** | Simple (plain Go)     | Provider syntax           | Lifecycle concepts          |
+| **DDD Boundaries** | Natural grouping      | Flat structure            | Flat structure              |
+| **Error Messages** | Clear and traceable   | Generated code references | Runtime reflection errors   |
+| **Testability**    | Mock any dependency   | Mock dependencies         | Complex mocking             |
+| **Refactoring**    | Safe with IDE         | Regenerate code           | Runtime discovery           |
 
 ## Adding New Dependencies
 
@@ -410,15 +408,15 @@ type Dependencies struct {
 Keep domain layer database-agnostic:
 
 ```go
-//  Good: factory in infrastructure layer
+// ✅ Good: factory in infrastructure layer
 countryRepo, err := countryrepository.NewFactory(db, cfg.Database.Driver)
 
-//  Bad: direct driver selection in domain
+// ❌ Bad: direct driver selection in domain
 var countryRepo country.Repository
 if driver == "postgres" {
     countryRepo = postgresrepo.New(db)
 } else {
-    countryRepo = mssqlrepo.New(db)
+    // Future database implementations
 }
 ```
 

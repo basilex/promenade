@@ -10,27 +10,21 @@
 
 ## File Naming Convention
 
-**Format**: `app.{driver}-{env}.yaml`
+**Format**: `app.postgres-{env}.yaml`
 
 ```
 config/
- # PostgreSQL configurations (production-ready)
+ # PostgreSQL configurations
  app.postgres-dev.yaml    # PostgreSQL + development
  app.postgres-test.yaml   # PostgreSQL + testing
  app.postgres-prod.yaml   # PostgreSQL + production
-
- # MS SQL Server configurations (planned)
- app.mssql-dev.yaml       # MS SQL Server + development
- app.mssql-test.yaml      # MS SQL Server + testing
- app.mssql-prod.yaml      # MS SQL Server + production
 ```
 
 **Benefits**:
 
 - Clear environment separation
-- Database-specific configurations
+- PostgreSQL-specific configurations
 - Simple configuration management
-- Ready for multi-database support
 
 ---
 
@@ -42,9 +36,6 @@ Configuration is loaded automatically based on the **DATABASE_DRIVER** and **ENV
 # PostgreSQL + Development
 DATABASE_DRIVER=postgres ENVIRONMENT=development ./bin/promenade
 
-# MS SQL Server + Development (when ready)
-DATABASE_DRIVER=mssql ENVIRONMENT=development ./bin/promenade
-
 # Testing
 DATABASE_DRIVER=postgres ENVIRONMENT=test ./bin/promenade
 ```
@@ -54,20 +45,14 @@ DATABASE_DRIVER=postgres ENVIRONMENT=test ./bin/promenade
 **Makefile shortcuts**:
 
 ```bash
-# PostgreSQL (production-ready)
+# PostgreSQL
 make switch-postgres-dev
-make dev
-
-# MS SQL Server (planned)
-make switch-mssql-dev
-make docker-up-mssql
 make dev
 ```
 
 **Requirements**:
 
-- PostgreSQL 14+ (production-ready)
-- MS SQL Server 2022+ (planned)
+- PostgreSQL 14+
 - Docker Compose for local development
 - See [docker/README.md](../docker/README.md) for setup
 

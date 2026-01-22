@@ -151,35 +151,22 @@ func initLogger(cfg *config.AppConfig) error {
 	return nil
 }
 
-// initDatabase initializes database connection (PostgreSQL or MS SQL Server)
+// initDatabase initializes database connection (PostgreSQL)
 func initDatabase(cfg *config.AppConfig) (*sqlx.DB, error) {
-	var db *sqlx.DB
-	var err error
-
-	switch cfg.Database.Driver {
-	case "postgres", "postgresql":
-		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
-		if err != nil {
-			logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
-			return nil, err
-		}
-		logger.Info("PostgreSQL connected successfully")
-
-	case "mssql", "sqlserver":
-		db, err = database.NewMSSQLConnection(&cfg.Database.MSSQL)
-		if err != nil {
-			logger.Fatal("Failed to connect to MS SQL Server", slog.Any("error", err))
-			return nil, err
-		}
-		logger.Info("MS SQL Server connected successfully")
-
-	default:
+	if cfg.Database.Driver != "postgres" && cfg.Database.Driver != "postgresql" {
 		logger.Fatal("Unsupported database driver",
 			slog.String("driver", cfg.Database.Driver),
-			slog.String("supported", "postgres, mssql"),
+			slog.String("supported", "postgres"),
 		)
 		return nil, fmt.Errorf("unsupported database driver: %s", cfg.Database.Driver)
 	}
+
+	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
+	if err != nil {
+		logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
+		return nil, err
+	}
+	logger.Info("PostgreSQL connected successfully")
 
 	return db, nil
 }

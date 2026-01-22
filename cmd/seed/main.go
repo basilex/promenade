@@ -7,9 +7,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	_ "github.com/microsoft/go-mssqldb"
 
 	"github.com/basilex/promenade/internal/infrastructure/config"
 	"github.com/basilex/promenade/internal/infrastructure/database"
@@ -56,33 +54,22 @@ func main() {
 		driver = "postgres"
 	}
 
-	// Connect to database based on driver
-	var db *sqlx.DB
-	switch driver {
-	case "postgres":
-		db, err = database.NewPostgresConnection(&cfg.Database.Postgres)
-		if err != nil {
-			logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
-		}
-		logger.Info("Connected to PostgreSQL",
-			slog.String("host", cfg.Database.Postgres.Host),
-			slog.String("database", cfg.Database.Postgres.Database),
-		)
-	case "mssql":
-		db, err = database.NewMSSQLConnection(&cfg.Database.MSSQL)
-		if err != nil {
-			logger.Fatal("Failed to connect to MS SQL Server", slog.Any("error", err))
-		}
-		logger.Info("Connected to MS SQL Server",
-			slog.String("host", cfg.Database.MSSQL.Host),
-			slog.String("database", cfg.Database.MSSQL.Database),
-		)
-	default:
+	// Connect to database (PostgreSQL only)
+	if driver != "postgres" && driver != "postgresql" {
 		logger.Fatal("Unsupported database driver",
 			slog.String("driver", driver),
-			slog.String("supported", "postgres, mssql"),
+			slog.String("supported", "postgres"),
 		)
 	}
+
+	db, err := database.NewPostgresConnection(&cfg.Database.Postgres)
+	if err != nil {
+		logger.Fatal("Failed to connect to PostgreSQL", slog.Any("error", err))
+	}
+	logger.Info("Connected to PostgreSQL",
+		slog.String("host", cfg.Database.Postgres.Host),
+		slog.String("database", cfg.Database.Postgres.Database),
+	)
 
 	defer func() {
 		if err := db.Close(); err != nil {

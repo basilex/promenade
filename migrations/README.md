@@ -4,13 +4,13 @@
 
 Promenade uses a **namespace-based migration system** where each module maintains its own independent migration history. This ensures true module autonomy - modules can be enabled/disabled without affecting other modules' database state.
 
-**Multi-database support**: Migrations are organized by database driver, allowing different SQL syntax for PostgreSQL and MS SQL Server.
+**Database**: PostgreSQL 14+ only.
 
 ## Structure
 
 ```
 migrations/
- postgres/       # PostgreSQL migrations (production-ready)
+ postgres/       # PostgreSQL migrations
     core/        # Core infrastructure (auth, RBAC, reference data)
        000001_init_schema_deps.up.sql
        000001_init_schema_deps.down.sql
@@ -31,14 +31,7 @@ migrations/
     shared/         # Shared reference data
     ui/             # UI metadata
     scripting/      # Scripting engine
-
- mssql/          # MS SQL Server migrations (planned)
-    core/        # (To be implemented)
-    identity/
-    ...
 ```
-
-**Note**: Migration manager automatically selects the correct directory based on `DATABASE_DRIVER` configuration.
 
 ## Key Features
 
@@ -95,35 +88,28 @@ Migrations run automatically on application startup:
 - **Core** migrations always run first
 - **Module** migrations run for all namespaces in sequence
 
-The migration manager automatically uses the correct database-specific migrations based on `DATABASE_DRIVER` configuration.
+The migration manager automatically uses PostgreSQL migrations based on `DATABASE_DRIVER` configuration.
 
-See [cmd/api/bootstrap.go](../cmd/api/bootstrap.go):
-
-```go
-driver := cfg.Database.Driver  // "postgres" or "mssql"
-migrationManager := migration.NewManager(db, driver, "migrations")
-// Runs migrations from migrations/{driver}/{namespace}/
-```
-
-### Manual Migration Management
-
-```bash
-# Build migration CLI tool
-go build -o bin/migrate ./cmd/migrate/main.go
+See [cmd/api/bootstrap.go](../cmd/api/bootstrap.go).
 
 # Run migrations (uses DATABASE_DRIVER from config)
-./bin/migrate -cmd=up -all                # All namespaces
-./bin/migrate -cmd=up -namespace=core     # Specific namespace
+
+./bin/migrate -cmd=up -all # All namespaces
+./bin/migrate -cmd=up -namespace=core # Specific namespace
 
 # Rollback
+
 ./bin/migrate -cmd=down -namespace=core -steps=2
 
 # Check status
+
 ./bin/migrate -cmd=status
 
 # Check version
+
 ./bin/migrate -cmd=version -namespace=core
-```
+
+````
 
 ## Creating New Migrations
 
@@ -136,7 +122,7 @@ go build -o bin/migrate ./cmd/migrate/main.go
 # Output:
 # migrations/posts/000004_add_post_views.up.sql
 # migrations/posts/000004_add_post_views.down.sql
-```
+````
 
 ### Manually
 
@@ -153,35 +139,21 @@ go build -o bin/migrate ./cmd/migrate/main.go
    # PostgreSQL
    touch migrations/postgres/core/000004_add_audit_log.up.sql
    touch migrations/postgres/core/000004_add_audit_log.down.sql
-
-   # MS SQL Server (when implemented)
-   touch migrations/mssql/core/000004_add_audit_log.up.sql
-   touch migrations/mssql/core/000004_add_audit_log.down.sql
    ```
 
 3. Write SQL:
    - **UP**: DDL to apply changes
    - **DOWN**: DDL to revert changes
-   - **Note**: Use database-specific syntax appropriate for the driver
 
-## Database-Specific Considerations
+## Database Considerations
 
-### PostgreSQL (migrations/postgres/)
+Use PostgreSQL-native features:
 
-- Use PostgreSQL-native features: JSONB, UUID, materialized views
+- JSONB for flexible data
+- UUID for identifiers
+- Materialized views for complex queries
 - PL/pgSQL for stored procedures
-- `RETURNING` clause for insert/update operations
 - GIN indexes for JSONB columns
-
-### MS SQL Server (migrations/mssql/)
-
-- Use T-SQL syntax
-- `UNIQUEIDENTIFIER` for UUIDs
-- `NVARCHAR(MAX)` for JSON storage
-- `OUTPUT INSERTED` instead of `RETURNING`
-- Indexed Views instead of materialized views
-
-**Migration manager automatically selects the correct directory based on DATABASE_DRIVER configuration.**
 
 ## Migration Naming Convention
 

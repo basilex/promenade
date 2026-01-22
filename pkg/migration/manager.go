@@ -62,12 +62,12 @@ type MigrationFile struct {
 type manager struct {
 	db            *sqlx.DB
 	migrationsDir string
-	driver        string // Database driver: postgres, mssql
+	driver        string // Database driver: postgres
 	dialect       database.Dialect
 }
 
 // NewManager creates a new migration manager
-// driver: "postgres" or "mssql"
+// driver: "postgres"
 // migrationsDir: base directory (e.g., "migrations"), manager will look in {migrationsDir}/{driver}/
 // dialect: database dialect for SQL syntax differences
 func NewManager(db *sqlx.DB, driver string, migrationsDir string, dialect database.Dialect) IMigrationManager {
@@ -81,41 +81,18 @@ func NewManager(db *sqlx.DB, driver string, migrationsDir string, dialect databa
 
 // ensureMigrationsTable creates the schema_migrations table if it doesn't exist
 func (m *manager) ensureMigrationsTable(ctx context.Context) error {
-	var query string
+	query := `
+		CREATE TABLE IF NOT EXISTS schema_migrations (
+			version     BIGINT       NOT NULL,
+			namespace   VARCHAR(50)  NOT NULL,
+			dirty       BOOLEAN      NOT NULL DEFAULT FALSE,
+			applied_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (namespace, version)
+		);
 
-	switch m.driver {
-	case "postgres", "postgresql":
-		query = `
-			CREATE TABLE IF NOT EXISTS schema_migrations (
-				version     BIGINT       NOT NULL,
-				namespace   VARCHAR(50)  NOT NULL,
-				dirty       BOOLEAN      NOT NULL DEFAULT FALSE,
-				applied_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-				PRIMARY KEY (namespace, version)
-			);
-
-			CREATE INDEX IF NOT EXISTS idx_schema_migrations_namespace 
-			ON schema_migrations(namespace);
-		`
-	case "mssql", "sqlserver":
-		query = `
-			IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'schema_migrations')
-			BEGIN
-				CREATE TABLE schema_migrations (
-					version     BIGINT       NOT NULL,
-					namespace   VARCHAR(50)  NOT NULL,
-					dirty       BIT          NOT NULL DEFAULT 0,
-					applied_at  DATETIME2    DEFAULT GETDATE(),
-					PRIMARY KEY (namespace, version)
-				);
-
-				CREATE INDEX idx_schema_migrations_namespace 
-				ON schema_migrations(namespace);
-			END
-		`
-	default:
-		return fmt.Errorf("unsupported database driver: %s", m.driver)
-	}
+		CREATE INDEX IF NOT EXISTS idx_schema_migrations_namespace 
+		ON schema_migrations(namespace);
+	`
 
 	_, err := m.db.ExecContext(ctx, query)
 	return err
@@ -126,26 +103,13 @@ func (m *manager) getCurrentVersion(ctx context.Context, namespace string) (int,
 	var version int
 	var dirty bool
 
-	var query string
-	switch m.driver {
-	case "postgres", "postgresql":
-		query = fmt.Sprintf(`
-			SELECT version, dirty 
-			FROM schema_migrations 
-			WHERE namespace = %s 
-			ORDER BY version DESC 
-			LIMIT 1
-		`, m.dialect.Placeholder(1))
-	case "mssql", "sqlserver":
-		query = fmt.Sprintf(`
-			SELECT TOP 1 version, dirty 
-			FROM schema_migrations 
-			WHERE namespace = %s 
-			ORDER BY version DESC
-		`, m.dialect.Placeholder(1))
-	default:
-		return 0, false, fmt.Errorf("unsupported database driver: %s", m.driver)
-	}
+	query := fmt.Sprintf(`
+		SELECT version, dirty 
+		FROM schema_migrations 
+		WHERE namespace = %s 
+		ORDER BY version DESC 
+		LIMIT 1
+	`, m.dialect.Placeholder(1))
 
 	err := m.db.QueryRowContext(ctx, query, namespace).Scan(&version, &dirty)
 	if err == sql.ErrNoRows {
@@ -160,37 +124,13 @@ func (m *manager) getCurrentVersion(ctx context.Context, namespace string) (int,
 
 // setVersion sets the current version for a namespace
 func (m *manager) setVersion(ctx context.Context, namespace string, version int, dirty bool) error {
-	var query string
-
-	switch m.driver {
-	case "postgres", "postgresql":
-		// PostgreSQL: INSERT ... ON CONFLICT
-		query = fmt.Sprintf(`
-			INSERT INTO schema_migrations (namespace, version, dirty, applied_at)
-			VALUES (%s, %s, %s, %s)
-			ON CONFLICT (namespace, version) 
-			DO UPDATE SET dirty = %s, applied_at = %s
-		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
-			m.dialect.Placeholder(4), m.dialect.Placeholder(3), m.dialect.Placeholder(4))
-
-	case "mssql", "sqlserver":
-		// MS SQL Server: MERGE statement
-		query = fmt.Sprintf(`
-			MERGE INTO schema_migrations AS target
-			USING (SELECT %s AS namespace, %s AS version) AS source
-			ON target.namespace = source.namespace AND target.version = source.version
-			WHEN MATCHED THEN
-				UPDATE SET dirty = %s, applied_at = %s
-			WHEN NOT MATCHED THEN
-				INSERT (namespace, version, dirty, applied_at)
-				VALUES (%s, %s, %s, %s);
-		`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
-			m.dialect.Placeholder(4), m.dialect.Placeholder(1), m.dialect.Placeholder(2),
-			m.dialect.Placeholder(3), m.dialect.Placeholder(4))
-
-	default:
-		return fmt.Errorf("unsupported database driver: %s", m.driver)
-	}
+	query := fmt.Sprintf(`
+		INSERT INTO schema_migrations (namespace, version, dirty, applied_at)
+		VALUES (%s, %s, %s, %s)
+		ON CONFLICT (namespace, version) 
+		DO UPDATE SET dirty = %s, applied_at = %s
+	`, m.dialect.Placeholder(1), m.dialect.Placeholder(2), m.dialect.Placeholder(3),
+		m.dialect.Placeholder(4), m.dialect.Placeholder(3), m.dialect.Placeholder(4))
 
 	_, err := m.db.ExecContext(ctx, query, namespace, version, dirty, time.Now())
 	return err

@@ -15,7 +15,8 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
   - `errors.go` — Domain error constants (validation, not-found, business logic)
 - **Dependency wiring** in [cmd/api/bootstrap.go](cmd/api/bootstrap.go); entry point is [cmd/api/main.go](cmd/api/main.go).
 - **Modules vs contexts**: modules are technical/feature toggles in `internal/modules/`; contexts are domain boundaries with DDD patterns (see [internal/contexts/README.md](internal/contexts/README.md)).
-- **Database support**: PostgreSQL 14+ (production), MS SQL Server (planned for enterprise). All migrations must support both databases.
+- **Database support**: PostgreSQL 14+ only. Migrations in [migrations/postgres/](migrations/postgres/).
+- **Available contexts**: identity, customer-mgmt, order-mgmt, billing, warehouse, accounting, banking, fiscal, shared, ui, scripting (see [internal/contexts/](internal/contexts/)).
 
 ## Project-specific conventions
 
@@ -40,6 +41,7 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
       return r.db
   }
   ```
+- **Value objects**: use types from [pkg/valueobject](pkg/valueobject/README.md) for emails, phones, addresses (validation built-in).
 - **Error handling**: Use cases return domain error constants from `errors.go`; handlers discriminate with `errors.Is()` and return:
   - **Validation errors** → `response.BadRequest(c, err.Error())` (expose details to user)
   - **Not-found errors** → `response.NotFound(c, "resource not found")` (generic message)
@@ -50,7 +52,7 @@ See [README.md](README.md) and [docs/INDEX.md](docs/INDEX.md) for full context.
 
 - **Workspace state**: `.promenade.workspace` controls DATABASE_DRIVER + ENVIRONMENT.
   - Initial setup: `make switch-postgres-dev`
-  - Switch environments: `make switch-{driver}-{env}` (postgres-dev, postgres-test, mssql-dev, etc.)
+  - Switch environments: `make switch-postgres-{env}` (dev, test, prod)
   - Start dev server: `make dev` (hot-reload) or `make dev-fresh` (rebuild migrations)
 - **Tests** are four-tiered (see [test/README.md](test/README.md)):
   - Unit tests: in-place next to code (`*_test.go`)

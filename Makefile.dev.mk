@@ -20,7 +20,6 @@
 .PHONY: dev dev-fresh
 .PHONY: run
 .PHONY: docker-up docker-down docker-logs docker-ps docker-clean
-.PHONY: docker-up-mssql docker-down-mssql
 .PHONY: db-create db-drop db-reset db-fresh
 .PHONY: migrate migrate-core migrate-all migrate-status migrate-new
 .PHONY: seed seed-shared seed-identity
@@ -119,20 +118,12 @@ docker-clean: validate-env  ## Remove all containers and volumes (clean slate)
 db-create: validate-env  ## Create database (driver-aware)
 	@echo "Creating database $(DB_NAME) on $(DATABASE_DRIVER)..."
 	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
-	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"; \
-	elif [ "$(DATABASE_DRIVER)" = "mssql" ]; then \
-		docker exec -i promenade-mssql-$$ENV_SHORT /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong@Passw0rd" -Q "CREATE DATABASE $(DB_NAME)" 2>/dev/null || echo "Database already exists"; \
-	fi
+	docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "CREATE DATABASE $(DB_NAME);" 2>/dev/null || echo "Database already exists"
 
 db-drop: validate-env  ## Drop database (WARNING: destructive!)
 	@echo "  Dropping database $(DB_NAME) on $(DATABASE_DRIVER)..."
 	@ENV_SHORT=$$(echo $(ENVIRONMENT) | sed 's/development/dev/;s/production/prod/'); \
-	if [ "$(DATABASE_DRIVER)" = "postgres" ]; then \
-		docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"; \
-	elif [ "$(DATABASE_DRIVER)" = "mssql" ]; then \
-		docker exec -i promenade-mssql-$$ENV_SHORT /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong@Passw0rd" -Q "DROP DATABASE IF EXISTS $(DB_NAME)"; \
-	fi
+	docker exec -i promenade-postgres-$$ENV_SHORT psql -U system -d postgres -c "DROP DATABASE IF EXISTS $(DB_NAME);"
 	@echo " Database dropped"
 
 db-reset: validate-env  ## Drop and recreate database (WARNING: all data lost!)

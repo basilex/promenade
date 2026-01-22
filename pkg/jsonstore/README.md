@@ -1,12 +1,12 @@
 # JSON Store Package
 
-**Type-safe JSON storage** for Promenade Platform - optimized for PostgreSQL JSONB with MS SQL Server support planned.
+**Type-safe JSON storage** for Promenade Platform - optimized for PostgreSQL 14+ JSONB.
 
 ---
 
 ## Overview
 
-The `jsonstore` package provides a **generic `Field[T]` type** that seamlessly handles JSON serialization/deserialization across different databases. It implements `sql.Scanner` and `driver.Valuer` for transparent database integration.
+The `jsonstore` package provides a **generic `Field[T]` type** that seamlessly handles JSON serialization/deserialization. It implements `sql.Scanner` and `driver.Valuer` for transparent database integration.
 
 ---
 
@@ -14,7 +14,6 @@ The `jsonstore` package provides a **generic `Field[T]` type** that seamlessly h
 
 - **Type-Safe**: Generic `Field[T]` for any JSON-serializable type
 - **PostgreSQL Optimized**: Leverages JSONB for fast queries and indexing
-- **MS SQL Server Ready**: Compatible with NVARCHAR(MAX) JSON storage
 - **Automatic Marshaling**: JSON encoding/decoding handled automatically
 - **NULL Support**: Proper handling of NULL database values
 - **Deep Copy**: `Clone()` method for safe copies
@@ -118,21 +117,6 @@ SELECT * FROM customers WHERE tags @> '["vip"]'::jsonb;
 // Field.Scan() handles it automatically
 var customer Customer
 db.Get(&customer, "SELECT * FROM customers WHERE id = $1", id)
-```
-
-### MS SQL Server (NVARCHAR - Planned)
-
-```sql
-CREATE TABLE customers (
-    id NCHAR(36) PRIMARY KEY,
-    tags NVARCHAR(MAX),
-    metadata NVARCHAR(MAX),
-    CHECK(ISJSON(tags) = 1),
-    CHECK(ISJSON(metadata) = 1)
-);
-
--- Query with JSON_VALUE
-SELECT * FROM customers WHERE JSON_VALUE(tags, '$[0]') = 'vip';
 ```
 
 ---
@@ -413,12 +397,6 @@ CREATE INDEX idx_tags ON customers USING gin(tags);
 SELECT * FROM customers WHERE tags @> '["vip"]'::jsonb;
 ```
 
-### MS SQL Server (Planned)
-
-- **JSON Support**: NVARCHAR(MAX) with ISJSON constraints
-- **Queries**: JSON_VALUE, JSON_QUERY functions
-- **Performance**: Good for medium datasets, no specialized JSON indexes
-
 ---
 
 ## Testing
@@ -428,12 +406,6 @@ Repository-wide testing strategy and baseline budgets are documented in [docs/gu
 ```bash
 # Run tests
 go test ./pkg/jsonstore -v
-
-# With coverage
-go test ./pkg/jsonstore -cover
-
-# Benchmark
-go test -bench=. ./pkg/jsonstore
 ```
 
 ---
@@ -481,14 +453,9 @@ go test -bench=. ./pkg/jsonstore
 ```sql
 -- PostgreSQL
 ALTER TABLE customers ADD CHECK (jsonb_typeof(tags) = 'array');
-
--- MS SQL Server (planned)
-ALTER TABLE customers ADD CHECK (ISJSON(tags) = 1);
 ```
 
 ### Performance Issue: Slow Queries
-
-**Cause**: No JSON index, full table scan
 
 **Solution**:
 

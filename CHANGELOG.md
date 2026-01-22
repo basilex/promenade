@@ -174,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Namespace-Based Migrations**:
 
 - 11 namespaces (core, identity, customer-mgmt, order-mgmt, billing, accounting, warehouse, fiscal, banking, ui, scripting)
-- PostgreSQL 14+ and MS SQL Server support
+- PostgreSQL 14+ support
 - Auto-run on app startup
 - `make migrate` - Run all migrations
 - `make migrate-module MODULE=order-mgmt` - Run specific module

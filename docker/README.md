@@ -1,6 +1,6 @@
 # Docker Configuration
 
-Docker setup for Promenade with database-specific and environment-specific configurations.
+Docker setup for Promenade with environment-specific PostgreSQL configurations.
 
 ## Structure
 
@@ -11,15 +11,9 @@ docker/
  docker-compose.postgres.test.yml  # Testing
  docker-compose.postgres.prod.yml  # Production
 
- # MS SQL Server configurations (planned)
- docker-compose.mssql.dev.yml      # Development
- docker-compose.mssql.test.yml     # Testing
- docker-compose.mssql.prod.yml     # Production
-
  # Build and initialization
  Dockerfile                         # Production image build
  init-db.postgres.sh               # PostgreSQL initialization
- init-db.mssql.sh                  # MS SQL Server initialization
 
 ### Development (`docker-compose.postgres.dev.yml`)
 
@@ -87,61 +81,13 @@ make docker-up          # Uses postgres.prod.yml automatically
 
 ---
 
-## MS SQL Server Environments (Planned)
-
-### Development (`docker-compose.mssql.dev.yml`)
-
-**Purpose**: Local development environment with MS SQL Server 2022
-
-**Services**:
-
-- MS SQL Server 2022 (port 1433) - Development database (Developer Edition)
-- Redis 7 (port 6379) - Development cache/session store
-
-**Usage**:
-
-```bash
-make switch-mssql-dev
-make docker-up          # Will use mssql.dev.yml when MS SQL Server support is ready
-```
-
-**Database**: `promenade_dev`
-
-**Status**: Configuration ready, waiting for MS SQL Server dialect implementation
-
----
-
-### Testing (`docker-compose.mssql.test.yml`)
-
-**Purpose**: Automated testing with MS SQL Server
-
-**Services**:
-
-- MS SQL Server 2022 (port 1433) - Test database
-- Redis 7 (port 6380) - Test cache/session store
-
----
-
-### Production (`docker-compose.mssql.prod.yml`)
-
-**Purpose**: Production deployment with MS SQL Server (Standard Edition)
-
-**Services**:
-
-- MS SQL Server 2022 (port 1433) - Production database
-- Redis 7 (port 6379) - Production cache/session store
-
-**Note**: For production, consider using managed MS SQL Server (Azure SQL Database, AWS RDS)
-
----
-
 ## Port Allocation
 
-| Environment     | PostgreSQL | MS SQL | Redis | App  |
-| --------------- | ---------- | ------ | ----- | ---- |
-| **Development** | 5432       | 1433   | 6379  | 8081 |
-| **Testing**     | 5433       | 1433   | 6380  | -    |
-| **Production**  | 5432       | 1433   | 6379  | 8080 |
+| Environment     | PostgreSQL | Redis | App  |
+| --------------- | ---------- | ----- | ---- |
+| **Development** | 5432       | 6379  | 8081 |
+| **Testing**     | 5433       | 6380  | -    |
+| **Production**  | 5432       | 6379  | 8080 |
 
 ## Environment Variables
 

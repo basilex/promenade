@@ -1,33 +1,28 @@
 # Database Package
 
-**Database adapter abstraction** for PostgreSQL with planned MS SQL Server support.
+**Database adapter abstraction** for PostgreSQL 14+.
 
 ---
 
 ## Overview
 
-The `database` package provides a **dialect interface** for database abstraction in Promenade Platform. Currently focused on PostgreSQL with future support for MS SQL Server to address enterprise market needs.
+The `database` package provides a **dialect interface** for PostgreSQL database abstraction in Promenade Platform.
 
 ---
 
 ## Features
 
-- **Dialect Abstraction**: Postgres ($1), planned MS SQL (@p1)
-- **Type Mapping**: UUID, JSON, TIMESTAMP differences handled
+- **Dialect Abstraction**: PostgreSQL placeholders ($1, $2, ...)
+- **Type Mapping**: UUID, JSON, TIMESTAMP native types
 - **Feature Detection**: RETURNING, JSON indexes, native UUID support
 - **SQL Safety**: Identifier validation, quote escaping, injection prevention
-- **Placeholder Conversion**: Convert between placeholder styles
+- **Placeholder Conversion**: Numbered placeholders for queries
 
 ---
 
 ## Supported Databases
 
-| Database      | Status     | Dialect            | Native UUID      | Native JSON   | Indexes       |
-| ------------- | ---------- | ------------------ | ---------------- | ------------- | ------------- |
-| PostgreSQL    | Production | `postgres.Dialect` | YES              | JSONB         | GIN           |
-| MS SQL Server | Planned    | `mssql.Dialect`    | UNIQUEIDENTIFIER | CHECK(ISJSON) | Indexed Views |
-
-**Rationale**: PostgreSQL provides production-grade features. MS SQL Server support planned for enterprise deployments with existing Microsoft infrastructure.
+PostgreSQL 14+ is the only supported database, providing production-grade features including native UUID, JSONB, and GIN indexes.
 
 ---
 
@@ -42,9 +37,6 @@ import (
 
 // PostgreSQL (production-ready)
 pgDialect := postgres.NewDialect()
-
-// MS SQL Server (planned)
-// mssqlDialect := mssql.NewDialect()
 ```
 
 ### 2. Use Dialect for Queries
@@ -58,7 +50,6 @@ query := fmt.Sprintf(
 )
 
 // PostgreSQL: INSERT INTO users (id, email) VALUES ($1, $2)
-// MS SQL (future): INSERT INTO users (id, email) VALUES (@p1, @p2)
 ```
 
 ### 3. Convert Existing Queries
@@ -84,10 +75,6 @@ Returns database-specific parameter placeholder:
 // PostgreSQL
 pgDialect.Placeholder(1)  // "$1"
 pgDialect.Placeholder(2)  // "$2"
-
-// MS SQL Server (planned)
-mssqlDialect.Placeholder(1)  // "@p1"
-mssqlDialect.Placeholder(2)  // "@p2"
 ```
 
 ### Type Mapping
@@ -95,19 +82,15 @@ mssqlDialect.Placeholder(2)  // "@p2"
 ```go
 // UUID storage
 pgDialect.UUIDType()       // "UUID"
-mssqlDialect.UUIDType()    // "UNIQUEIDENTIFIER" (planned)
 
 // JSON storage
 pgDialect.JSONType()       // "JSONB"
-mssqlDialect.JSONType()    // "NVARCHAR(MAX)" (planned)
 
 // Timestamp storage
-pgDialect.TimestampType()      // "TIMESTAMP"
-mssqlDialect.TimestampType()   // "DATETIME2" (planned)
+pgDialect.TimestampType()  // "TIMESTAMP"
 
 // Boolean storage
 pgDialect.BoolType()       // "BOOLEAN"
-mssqlDialect.BoolType()    // "BIT" (planned)
 ```
 
 ### Feature Detection
@@ -140,7 +123,6 @@ if dialect.SupportsJSONIndex() {
 // Quote identifiers to prevent SQL injection
 tableName := dialect.QuoteIdentifier("users")
 // PostgreSQL: "users"
-// MS SQL Server: [users] (planned)
 
 // Validate identifier
 if err := database.ValidateIdentifier(userInput); err != nil {
@@ -171,24 +153,6 @@ index := pgDialect.CreateJSONIndex("customers", "tags", "idx_tags")
 ```
 
 ---
-
-## Future: MS SQL Server Dialect
-
-MS SQL Server support is planned to address enterprise market needs.
-
-**Planned features:**
-
-- OUTPUT clause (equivalent to RETURNING)
-- UNIQUEIDENTIFIER type for UUIDs
-- Indexed Views (materialized views)
-- JSON validation via CHECK constraints
-- Full enterprise feature compatibility
-
-Implementation timeline: TBD based on market demand.
-
----
-
-## Usage Patterns
 
 ### Repository with Dialect
 
@@ -283,13 +247,6 @@ CREATE TABLE customers (
     id UUID PRIMARY KEY,  -- No DEFAULT (generated in Go)
     tags JSONB DEFAULT '[]'
 );
-
--- MS SQL Server (planned)
-CREATE TABLE customers (
-    id UNIQUEIDENTIFIER PRIMARY KEY,
-    tags NVARCHAR(MAX) DEFAULT '[]',
-    CHECK(ISJSON(tags) = 1)
-);
 ```
 
 ```go
@@ -349,18 +306,17 @@ go test -bench=. ./pkg/database
 
 ## Future Enhancements
 
-- [ ] MS SQL Server dialect implementation (priority)
 - [ ] Query builder for complex queries
 - [ ] Migration generator from dialect
 - [ ] Performance benchmarks
-- [ ] MS SQL Server indexed views support
+- [ ] Multi-database testing
 
 ---
 
-## Related Documentation
+Query builder for complex queries
 
-- [JSON Store Package](../jsonstore/README.md) - Database-agnostic JSON storage
-- [Testing Guide](../../test/README.md) - Multi-database testing
+- [ ] Migration generator from dialect
+- [ ] Performance benchmarks Multi-database testing
 - [Database Adapters Guide](../../docs/guides/database-adapters.md) - Multi-database support strategy
 - [JSONB Strategy Guide](../../docs/guides/jsonb-strategy.md) - Cross-database JSON handling
 

@@ -31,62 +31,6 @@
 
 ---
 
-## Planned: MS SQL Server
-
-**Status:** Planned for enterprise deployments
-
-**Timeline:** Implementation based on market demand
-
-**Rationale:**
-
-- Large enterprise footprint (many companies already have licenses)
-- Strong presence in banking, insurance, government sectors
-- Integration with existing Microsoft infrastructure (.NET, Azure)
-- IT departments familiar with MS SQL ecosystem
-- Docker support (Linux containers available)
-
-**Feature compatibility:**
-
-```
-MS SQL Server 2022 capabilities:
-- Materialized views (Indexed Views)
-- JSON support (OPENJSON, FOR JSON)
-- CTEs and window functions
-- Full-text search
-- Partitioning
-- OUTPUT clause (equivalent to RETURNING)
-- UNIQUEIDENTIFIER type (UUIDs)
-- Advanced enterprise features
-```
-
-**Implementation approach:**
-
-- PostgreSQL remains reference implementation
-- MS SQL gets feature parity where possible
-- Clear documentation of any differences
-- Graceful degradation for missing features
-
-**Estimated effort:** 2-3 months for production-ready support
-
----
-
-## Database Comparison Matrix
-
-| Feature                | PostgreSQL | MS SQL Server         | Notes                                |
-| ---------------------- | ---------- | --------------------- | ------------------------------------ |
-| **Status**             | Production | Planned               | -                                    |
-| **Native UUID**        | UUID       | UNIQUEIDENTIFIER      | Different syntax                     |
-| **JSON Storage**       | JSONB      | NVARCHAR(MAX) + CHECK | Validation via constraints           |
-| **JSON Indexing**      | GIN        | Indexed Views         | Different approach, similar result   |
-| **Materialized Views** | Native     | Indexed Views         | MS SQL equivalent                    |
-| **RETURNING/OUTPUT**   | RETURNING  | OUTPUT INSERTED       | Different syntax, same functionality |
-| **Full-text Search**   | Native     | Native                | Both supported                       |
-| **CTEs**               | Yes        | Yes                   | Same syntax                          |
-| **Window Functions**   | Yes        | Yes                   | Same syntax                          |
-| **Partitioning**       | Native     | Native                | Both supported                       |
-| **Cost**               | Free       | Licensed              | PostgreSQL = $0, MS SQL = $$$        |
-| **Docker Support**     | Excellent  | Good                  | Both have official images            |
-
 ---
 
 ## Rejected Databases
@@ -118,7 +62,7 @@ MS SQL Server 2022 capabilities:
 - No materialized views
 - Weaker window functions support
 - Less advanced query optimizer
-- No significant market advantage over PostgreSQL or MS SQL
+- No significant market advantage over PostgreSQL
 
 **Conclusion:** Offers no compelling reason to support
 
@@ -168,33 +112,7 @@ MS SQL Server 2022 capabilities:
 
 ---
 
-### Phase 2: MS SQL Server Support (Future)
-
-**When:** Based on customer demand from enterprise sector
-
-**Steps:**
-
-1. Dialect layer implementation (pkg/database/mssql/)
-2. Migration adapter (PostgreSQL → MS SQL syntax)
-3. Repository testing with MS SQL
-4. Docker Compose setup for local development
-5. CI/CD integration
-6. Documentation and examples
-
-**Estimated timeline:** 2-3 months
-
-**Success criteria:**
-
-- Core features work identically
-- Clear documentation of differences
-- Automated testing for both databases
-- Zero performance regression for PostgreSQL
-
----
-
-### Phase 3: Advanced Features (Long-term)
-
-**Conditional on Phase 2 success:**
+### Phase 2: Advanced Features (Long-term)
 
 - Query builder (database-agnostic)
 - Migration generator
@@ -225,36 +143,13 @@ MS SQL Server 2022 capabilities:
 
 ### Current decisions:
 
-- PostgreSQL: YES (primary database)
-- MS SQL Server: YES (when demand justifies it)
+- PostgreSQL: YES (primary and only supported database)
 - SQLite: NO (not production-grade for ERP)
 - MySQL: NO (no compelling advantages)
 - Oracle: NO (cost prohibitive)
+- MS SQL Server: NO (no market demand)
 
 ---
-
-## Migration Path
-
-### For users wanting MS SQL Server:
-
-**Phase 1:** Use PostgreSQL
-
-- Deploy with Docker Compose
-- All features available
-- Reference implementation
-
-**Phase 2:** When MS SQL support ships
-
-- Migration tools provided
-- Schema conversion automated
-- Data migration scripts included
-- Rollback capability maintained
-
-**Phase 3:** Production on MS SQL
-
-- Feature parity documented
-- Known differences clearly stated
-- Support available
 
 ---
 
@@ -265,10 +160,7 @@ MS SQL Server 2022 capabilities:
 ```
 database/
   dialect.go         # Interface definition
-  postgres/          # PostgreSQL implementation (current)
-    dialect.go
-    dialect_test.go
-  mssql/            # MS SQL Server (future)
+  postgres/          # PostgreSQL implementation
     dialect.go
     dialect_test.go
 ```
@@ -283,7 +175,6 @@ type Repository struct {
     dialect database.Dialect
 }
 
-// Works with both PostgreSQL and MS SQL
 func (r *Repository) Create(ctx context.Context, entity Entity) error {
     query := fmt.Sprintf(
         "INSERT INTO entities (...) VALUES (%s, %s) %s",
@@ -299,13 +190,10 @@ func (r *Repository) Create(ctx context.Context, entity Entity) error {
 
 ```yaml
 database:
-  driver: postgres # or: mssql (when available)
+  driver: postgres
   postgres:
     host: localhost
-    # ...
-  mssql: # future
-    host: localhost
-    instance: SQLEXPRESS
+    port: 5432
     # ...
 ```
 
@@ -313,11 +201,11 @@ database:
 
 ## Maintenance Philosophy
 
-1. **PostgreSQL First:** Always optimize for PostgreSQL
-2. **Feature Parity:** MS SQL gets equivalent functionality, not limited by it
-3. **Clear Documentation:** Any differences clearly documented
-4. **Test Coverage:** Both databases tested in CI/CD
-5. **No Compromise:** Adding databases never compromises existing quality
+1. **PostgreSQL Excellence:** Focus on making PostgreSQL implementation world-class
+2. **Feature Completeness:** Use all PostgreSQL advanced features
+3. **Clear Documentation:** Comprehensive guides and examples
+4. **Test Coverage:** Full CI/CD coverage
+5. **No Compromise:** Quality over quantity
 
 ---
 
@@ -345,15 +233,13 @@ If customer demand emerges:
 
 ## Summary
 
-**Current:** PostgreSQL only - production-ready, all features
+**Current:** PostgreSQL only - production-ready, all features, only supported database
 
-**Near future:** MS SQL Server support when market demands
+**Philosophy:** Focus on quality over quantity - maintain excellence with PostgreSQL rather than spreading efforts across multiple databases
 
-**Long-term:** Maintain focus on quality over quantity of databases
-
-**Never:** SQLite, MySQL, Oracle, or databases without compelling business case
+**Never:** SQLite, MySQL, Oracle, MS SQL Server, or databases without compelling business case
 
 ---
 
-**Last updated:** January 21, 2026  
-**Next review:** When MS SQL Server implementation begins
+**Last updated:** January 2026  
+**Next review:** As needed
