@@ -14,17 +14,17 @@ server:
 
 # Centralized database configuration
 database:
-  driver: "postgres"  # Database driver: "postgres" or "sqlite"
-  
+  driver: "postgres" # Database driver: "postgres" or "sqlite"
+
   # PostgreSQL - main database
   postgres:
     host: "localhost"
-    port: 5432
+    port: 5433
     user: "system"
     password: "passw0rd"
     database: "promenade_dev"
     sslmode: "disable"
-  
+
   # Redis - unified connection for all services
   redis:
     addr: "localhost:6379"
@@ -33,15 +33,15 @@ database:
     max_retries: 3
     # Logical separation via database numbers
     databases:
-      revocation: 0  # JWT token blacklist
-      bus: 1         # Event Bus (when redis adapter used)
-      cache: 2       # Cache layer
-      sessions: 3    # Future: User sessions
+      revocation: 0 # JWT token blacklist
+      bus: 1 # Event Bus (when redis adapter used)
+      cache: 2 # Cache layer
+      sessions: 3 # Future: User sessions
 
 jwt:
   secret: "dev-secret-key-change-in-production"
   access_token_duration: 15m
-  refresh_token_duration: 168h  # 7 days
+  refresh_token_duration: 168h # 7 days
   issuer: "promenade-platform"
 
 logging:
@@ -62,7 +62,7 @@ bus:
 # Cache Layer - Redis for development
 cache:
   enabled: true
-  adapter: "redis"  # redis or noop
+  adapter: "redis" # redis or noop
   prefix: "promenade:dev:"
   default_ttl: "5m"
   ttl:
@@ -87,7 +87,6 @@ scheduler:
   default_retry_attempts: 3
   default_retry_delay: 60s
 
-
 # Fiscal integrations
 fiscal:
   checkbox:
@@ -97,4 +96,3 @@ fiscal:
   pdf_output_dir: "${FISCAL_PDF_OUTPUT_DIR:-tmp/fiscal/receipts}" # PDF output directory
   shift_open_cron: "0 9 * * *"
   shift_close_cron: "0 23 * * *"
-

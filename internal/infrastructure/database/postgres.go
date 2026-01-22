@@ -25,7 +25,7 @@ func NewPostgresConnection(cfg *config.PostgresSection) (*sqlx.DB, error) {
 		slog.String("sslmode", cfg.SSLMode),
 	)
 
-	db, err := sqlx.Connect("postgres", dsn)
+	db, err := sqlx.Connect("pgx", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}

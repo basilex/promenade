@@ -284,7 +284,7 @@ func connectDB(cfg Config) (*sqlx.DB, error) {
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
 	)
 
-	db, err := sqlx.Connect("postgres", dsn)
+	db, err := sqlx.Connect("pgx", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect: %w", err)
 	}

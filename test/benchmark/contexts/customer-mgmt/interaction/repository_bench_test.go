@@ -26,7 +26,7 @@ func setupBenchmarkDB(b *testing.B) *sqlx.DB {
 		dsn = "postgresql://system:passw0rd@localhost:5433/promenade_test?sslmode=disable"
 	}
 
-	db, err := sqlx.Connect("postgres", dsn)
+	db, err := sqlx.Connect("pgx", dsn)
 	if err != nil {
 		b.Fatalf("Failed to connect to test database: %v", err)
 	}

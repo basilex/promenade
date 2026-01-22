@@ -27,7 +27,7 @@ func setupTestDB(t *testing.T) *sqlx.DB {
 
 	dsn := "host=" + host + " port=" + port + " user=" + user + " password=" + password + " dbname=" + dbname + " sslmode=disable"
 
-	db, err := sqlx.Connect("postgres", dsn)
+	db, err := sqlx.Connect("pgx", dsn)
 	require.NoError(t, err, "Failed to connect to test database")
 
 	t.Cleanup(func() {
