@@ -1,6 +1,10 @@
 MIT License
 
-Copyright (c) 2025 Oleksandr Vasylenko
+Copyright (c) 2025-2026 Oleksandr Vasylenko
+
+NOTE: This license applies ONLY to Promenade Core (v0.1.0-dev) - the backend API
+and core bounded contexts. Commercial modules (UI, mobile apps, multi-tenancy,
+enterprise features) are distributed separately under proprietary licenses.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

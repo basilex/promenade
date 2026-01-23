@@ -573,11 +573,72 @@ git push origin feature/your-feature-name
 
 ---
 
-## 📄 License
+## 📄 License & Commercial Offerings
+
+### Core Backend (This Repository)
 
 **MIT License** — See [LICENSE](LICENSE) file for details.
 
-Free to use for commercial and non-commercial projects. Attribution appreciated but not required.
+The core Promenade backend API (v0.1.0-dev) is free and open source:
+
+- ✅ Backend API with 11 bounded contexts
+- ✅ PostgreSQL database layer (pgx driver)
+- ✅ Event-driven architecture
+- ✅ Complete documentation and tests
+- ✅ Free for commercial and non-commercial use
+- ✅ Self-hosted deployment
+
+### Commercial Modules (Private Repositories)
+
+Advanced features are available under **commercial licenses** in separate private repositories:
+
+**🎨 Promenade UI** (`promenade-ui` - private repository)
+
+- Next.js Admin Panel with modern UI/UX
+- Flutter Mobile App (iOS/Android)
+- Design system and component library
+- White-label customization
+- **License**: Proprietary, paid subscription required
+
+**🏢 Promenade Enterprise** (`promenade-enterprise` - private repository)
+
+- Multi-tenancy and organization isolation
+- Advanced analytics and BI dashboards
+- Bank integrations (Monobank, PrivatBank, etc.)
+- Advanced billing and subscription management
+- Email/SMS notifications
+- Priority support and SLA
+- **License**: Proprietary, enterprise agreement required
+
+### Pricing
+
+**Community (Free)**
+
+- Core backend API (this repo)
+- Self-hosted
+- Community support
+
+**Professional ($99/month)**
+
+- Core backend API
+- UI/UX (web + mobile)
+- Up to 3 organizations
+- Email support
+
+**Enterprise (Custom)**
+
+- Everything in Professional
+- Unlimited organizations
+- Advanced analytics
+- Bank integrations
+- Priority support
+- Custom development
+
+**Contact**: alexander.vasilenko@gmail.com for commercial inquiries
+
+> **Note**: This open-core model ensures the core backend remains free and open source,
+> while protecting commercial investments in UI/UX and enterprise features.
+> Commercial modules are kept in private repositories to prevent unauthorized use.
 
 ---
 
