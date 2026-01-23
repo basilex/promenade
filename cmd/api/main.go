@@ -15,7 +15,7 @@ import (
 )
 
 // @title Promenade Platform
-// @version 0.1.0
+// @version 0.2.0-dev
 // @description Modern backend platform for customer management, orders, and business workflows with clean DDD architecture
 // @termsOfService http://swagger.io/terms/
 

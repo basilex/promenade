@@ -7,27 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [Unreleased] - 0.2.0-dev
 
 ### Added
 
-- Git hooks for pre-commit and pre-push CI checks (`.githooks/`)
-- `make setup-hooks` target to install git hooks
-- Enhanced `make test-coverage` with coverage summary and thresholds
-- Performance profiling guide ([docs/guides/profiling.md](docs/guides/profiling.md))
-- Observability strategy documentation ([docs/guides/observability-strategy.md](docs/guides/observability-strategy.md))
-- JSON field validation guide ([docs/guides/json-field-validation.md](docs/guides/json-field-validation.md))
-- Migration rollback testing guide ([docs/guides/migration-testing-rollback.md](docs/guides/migration-testing-rollback.md))
-- pgx migration plan ([docs/guides/pgx-migration-plan.md](docs/guides/pgx-migration-plan.md))
-- Documentation for UI context ([internal/contexts/ui/README.md](internal/contexts/ui/README.md))
-- Documentation for Scripting context ([internal/contexts/scripting/README.md](internal/contexts/scripting/README.md))
-- HTTP Response Standards section in API documentation guide
-- Performance baselines and regression detection in benchmark README
+- Multi-tenancy support (organization isolation, data partitioning)
+- Frontend applications (Next.js admin panel, Flutter mobile app)
+- Advanced analytics (BI dashboards, custom reports)
+- Monobank integration (bank statement import, automatic reconciliation)
+- Email/SMS notifications (transactional, marketing campaigns)
 
 ### Changed
 
-- Updated accounting integration test README with comprehensive test coverage (102+ tests)
-- Enhanced API versioning guide with current implementation details
+- N/A
 
 ### Fixed
 
@@ -44,6 +36,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - N/A
+
+---
+
+## [0.1.0-dev] - 2026-01-22
+
+### Added
+
+- Git hooks for pre-commit and pre-push CI checks (`.githooks/`)
+- `make setup-hooks` target to install git hooks
+- Enhanced `make test-coverage` with coverage summary and thresholds
+- Performance profiling guide ([docs/guides/profiling.md](docs/guides/profiling.md))
+- Observability strategy documentation ([docs/guides/observability-strategy.md](docs/guides/observability-strategy.md))
+- JSON field validation guide ([docs/guides/json-field-validation.md](docs/guides/json-field-validation.md))
+- Migration rollback testing guide ([docs/guides/migration-testing-rollback.md](docs/guides/migration-testing-rollback.md))
+- pgx migration documentation and implementation
+- Documentation for UI context ([internal/contexts/ui/README.md](internal/contexts/ui/README.md))
+- Documentation for Scripting context ([internal/contexts/scripting/README.md](internal/contexts/scripting/README.md))
+- HTTP Response Standards section in API documentation guide
+- Performance baselines and regression detection in benchmark README
+
+### Changed
+
+- **BREAKING**: Migrated from lib/pq to pgx/v5/stdlib (20-30% performance improvement)
+- **BREAKING**: Removed MSSQL support (PostgreSQL 14+ only)
+- Updated accounting integration test README with comprehensive test coverage (102+ tests)
+- Enhanced API versioning guide with current implementation details
+- Integration tests now run sequentially (-p 1) due to advisory locks
+
+### Fixed
+
+- Integration test deadlocks with pgx driver (added advisory locks in CleanAllTables)
+- Array scanning for PostgreSQL TEXT[] columns (custom stringSlice scanner)
+- SQL type casting for CONCAT operations (explicit int::text casting)
 
 ---
 
